@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="8dp">
+
+    <Spinner
+        android:id="@+id/sp_sensor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/sensor_array" />
+
+    <EditText
+        android:id="@+id/et_target"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Target"
+        android:inputType="numberDecimal|numberSigned" />
+
+    <RadioGroup
+        android:id="@+id/rg_sensor_axis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_sensor_axis_x"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="X" />
+
+        <RadioButton
+            android:id="@+id/rb_sensor_axis_y"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:enabled="false"
+            android:text="Y" />
+
+        <RadioButton
+            android:id="@+id/rb_sensor_axis_z"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="Z" />
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/rg_trigger_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/rb_trigger_below"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Below" />
+
+        <RadioButton
+            android:id="@+id/rb_trigger_exact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Exact" />
+
+        <RadioButton
+            android:id="@+id/rb_trigger_above"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Above" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save" />
+
+</LinearLayout>

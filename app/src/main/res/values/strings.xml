@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ACNSENSA Demo</string>
+    <string name="permission_fail">Cannot proceed without the requested permissions.</string>
+</resources>
