@@ -19,7 +19,7 @@ data class SensorRawCsvRecord(val time: Int,
                               val magnetometerZ: Double) : SensorCsvRecord() {
 
     constructor(data: SensorCsv) : this(
-            data.time,
+            (data.time / 1000).toInt(),
             data.battery.toInt(),
             data.sensors.light.value.toInt(),
             data.sensors.temperature.value.toDouble(),
