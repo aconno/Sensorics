@@ -50,7 +50,7 @@ class SensorBleService : BleService() {
         val data = device.data ?: return@BeaconnoScanner
         logD(data)
         val dataCsv = mapSensorRaw(data)
-        handleRaw(dataCsv, device)
+        handleRaw(dataCsv)
         persistToPreferences(data)
         binder.onData(data)
     }
@@ -87,7 +87,7 @@ class SensorBleService : BleService() {
             }
         }
 
-        val time: Int = System.currentTimeMillis().toInt()
+        val time: Long = System.currentTimeMillis()
         return SensorCsv(
                 0,
                 time,
@@ -102,13 +102,10 @@ class SensorBleService : BleService() {
     }
 
 
-    private fun handleRaw(data: SensorCsv, device: BeaconnoDevice<SensorData>) {
-        val correctedData = if (data.time == 0) data.copy(time = correctTime()) else data
-        if (data.time == 0) ntpWriteGate { writeNtp(device) }
-
-        binder.onData(correctedData)
-        Log.e("SENSOR", "Write to CSV")
-        csvWriteGate { persistToCsv(SensorRawCsvRecord(correctedData)) }
+    private fun handleRaw(data: SensorCsv) {
+        binder.onData(data)
+        Log.e("SENSOR", "----------------------Write to CSV------------------------------------")
+        csvWriteGate { persistToCsv(SensorRawCsvRecord(data)) }
     }
 
     override val actors = listOf(scanner)
