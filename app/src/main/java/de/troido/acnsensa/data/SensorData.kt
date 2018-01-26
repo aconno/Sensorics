@@ -7,7 +7,7 @@ sealed class SensorRaw : SensorData() {
 }
 
 data class SensorCsv(val battery: Byte,
-                     val time: Int,
+                     val time: Long,
                      val sensors: SensorSet) : SensorData()
 
 data class SensorRaw1(val gyroscope: AxisVector<GyroscopeAxis>,
