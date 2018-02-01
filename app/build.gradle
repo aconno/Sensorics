@@ -11,8 +11,8 @@ android {
         minSdkVersion 21
         targetSdkVersion 27
 
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -42,7 +42,7 @@ dependencies {
     })
     testCompile 'junit:junit:4.12'
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.20"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.21"
     compile 'org.jetbrains.kotlinx:kotlinx.reflect.lite:1.0.0'
 
     compile 'com.android.support:appcompat-v7:27.0.2'
@@ -64,6 +64,10 @@ dependencies {
     compile group: 'com.twofortyfouram', name: 'android-plugin-api-for-locale', version: "${TWOFORTYFOURAM_PLUGIN_API_VERSION_MATCHER}"
 //    compile group:'com.twofortyfouram', name:'android-plugin-client-sdk-for-locale', version:"${TWOFORTYFOURAM_PLUGIN_CLIENT_SDK_VERSION_MATCHER}"
     compile group: 'com.twofortyfouram', name: 'android-spackle', version: "${TWOFORTYFOURAM_SPACKLE_VERSION_MATCHER}"
+
+    //MPAndroidChart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 }
 
 repositories {
