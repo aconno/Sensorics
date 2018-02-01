@@ -1,6 +1,7 @@
 package de.troido.acnsensa
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import de.troido.acnsensa.data.*
@@ -48,8 +49,29 @@ class SensorActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        sensor_temperature.setOnClickListener { startGraphActivity() }
+        sensor_light.setOnClickListener { startGraphActivity() }
+        sensor_humidity.setOnClickListener { startGraphActivity() }
+        sensor_pressure.setOnClickListener { startGraphActivity() }
+
+        sensor_magnetometer_x.setOnClickListener { startGraphActivity() }
+        sensor_magnetometer_y.setOnClickListener { startGraphActivity() }
+        sensor_magnetometer_z.setOnClickListener { startGraphActivity() }
+
+        sensor_gyroscope_x.setOnClickListener { startGraphActivity() }
+        sensor_gyroscope_y.setOnClickListener { startGraphActivity() }
+        sensor_gyroscope_z.setOnClickListener { startGraphActivity() }
+
+        sensor_accelerometer_x.setOnClickListener { startGraphActivity() }
+        sensor_accelerometer_y.setOnClickListener { startGraphActivity() }
+        sensor_accelerometer_z.setOnClickListener { startGraphActivity() }
+
         // Gates the rest of the application with the requested permissions.
         permissionGate(PERMISSIONS, this::startBle)
+    }
+
+    private fun startGraphActivity() {
+        startActivity(Intent(this, GraphActivity::class.java))
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, PERMISSIONS: Array<out String>,

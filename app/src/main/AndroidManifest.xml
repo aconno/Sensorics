@@ -50,6 +50,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".GraphActivity"
+            android:screenOrientation="landscape" />
+
         <receiver
             android:name="de.troido.acnsensa.tasker.QueryReceiver"
             android:exported="true"
