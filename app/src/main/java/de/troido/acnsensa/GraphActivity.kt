@@ -21,6 +21,8 @@ import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
+private const val LIMIT: Int = 1000
+
 class GraphActivity : AppCompatActivity() {
 
     private val receiver: PublishSubject<Sensor<*>> = PublishSubject.create()
@@ -176,10 +178,16 @@ class GraphActivity : AppCompatActivity() {
         override val lineData = LineData(dataSet)
 
         override fun addEntry(timestamp: Float, value: Float) {
-            val entry = Entry(timestamp, value)
-            dataSet.addEntry(entry)
-            dataSet.notifyDataSetChanged()
-            lineData.notifyDataChanged()
+            val lastTimestamp = entries.last().x
+            if (timestamp - lastTimestamp > 1000) {
+                val entry = Entry(timestamp, value)
+                if (entries.size > LIMIT) {
+                    dataSet.removeFirst()
+                }
+                dataSet.addEntry(entry)
+                dataSet.notifyDataSetChanged()
+                lineData.notifyDataChanged()
+            }
         }
     }
 
@@ -217,23 +225,42 @@ class GraphActivity : AppCompatActivity() {
         override val lineData = LineData(xDataSet, yDataSet, zDataSet)
 
         override fun addEntry(timestamp: Float, value: Pair<Int, Float>) {
+
             when (value.first) {
                 1 -> {
-                    val xEntry = Entry(timestamp, value.second)
-                    xDataSet.addEntry(xEntry)
-                    xDataSet.notifyDataSetChanged()
+                    val lastTimestamp = xEntries.last().x
+                    if (timestamp - lastTimestamp > 1000) {
+                        val xEntry = Entry(timestamp, value.second)
+                        if (xEntries.size > LIMIT) {
+                            xDataSet.removeFirst()
+                        }
+                        xDataSet.addEntry(xEntry)
+                        xDataSet.notifyDataSetChanged()
+                    }
 
                 }
                 2 -> {
-                    val yEntry = Entry(timestamp, value.second)
-                    yDataSet.addEntry(yEntry)
-                    yDataSet.notifyDataSetChanged()
+                    val lastTimestamp = yEntries.last().x
+                    if (timestamp - lastTimestamp > 1000) {
+                        val yEntry = Entry(timestamp, value.second)
+                        if (yEntries.size > LIMIT) {
+                            yDataSet.removeFirst()
+                        }
+                        yDataSet.addEntry(yEntry)
+                        yDataSet.notifyDataSetChanged()
+                    }
 
                 }
                 3 -> {
-                    val zEntry = Entry(timestamp, value.second)
-                    zDataSet.addEntry(zEntry)
-                    zDataSet.notifyDataSetChanged()
+                    val lastTimestamp = zEntries.last().x
+                    if (timestamp - lastTimestamp > 1000) {
+                        val zEntry = Entry(timestamp, value.second)
+                        if (zEntries.size > LIMIT) {
+                            zDataSet.removeFirst()
+                        }
+                        zDataSet.addEntry(zEntry)
+                        zDataSet.notifyDataSetChanged()
+                    }
                 }
             }
 
