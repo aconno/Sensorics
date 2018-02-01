@@ -1,4 +1,25 @@
 <resources>
     <string name="app_name">ACNSENSA Demo</string>
     <string name="permission_fail">Cannot proceed without the requested permissions.</string>
+
+    <string name="temperature_chart_title">Temperature</string>
+    <string name="temperature_chart_description">Temperature measured in degrees celsius.</string>
+
+    <string name="light_chart_title">Light</string>
+    <string name="light_chart_description">Light measured in percentage.</string>
+
+    <string name="humidity_chart_title">Humidity</string>
+    <string name="humidity_chart_description">Humidity measured in percentage.</string>
+
+    <string name="pressure_chart_title">Pressure</string>
+    <string name="pressure_chart_description">Pressure measured in mPa.</string>
+
+    <string name="magnetometer_chart_title">Magnetometer</string>
+    <string name="magnetometer_chart_description">Magnetometer measured in Gauss.</string>
+
+    <string name="gyro_chart_title">Gyroscope</string>
+    <string name="gyro_chart_description">Gyroscope measured in dps.</string>
+
+    <string name="accelerometer_chart_title">Accelerometer</string>
+    <string name="accelerometer_chart_description">Accelerometer measured in g.</string>
 </resources>

@@ -64,6 +64,10 @@ dependencies {
     compile group: 'com.twofortyfouram', name: 'android-plugin-api-for-locale', version: "${TWOFORTYFOURAM_PLUGIN_API_VERSION_MATCHER}"
 //    compile group:'com.twofortyfouram', name:'android-plugin-client-sdk-for-locale', version:"${TWOFORTYFOURAM_PLUGIN_CLIENT_SDK_VERSION_MATCHER}"
     compile group: 'com.twofortyfouram', name: 'android-spackle', version: "${TWOFORTYFOURAM_SPACKLE_VERSION_MATCHER}"
+
+    //MPAndroidChart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 }
 
 repositories {
