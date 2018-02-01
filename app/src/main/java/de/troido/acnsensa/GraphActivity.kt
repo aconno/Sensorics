@@ -21,7 +21,7 @@ import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
-private const val LIMIT: Int = 1000
+private const val LIMIT: Int = 500
 
 class GraphActivity : AppCompatActivity() {
 
@@ -411,5 +411,6 @@ class GraphActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         unbindService(conn)
+        finish()
     }
 }
