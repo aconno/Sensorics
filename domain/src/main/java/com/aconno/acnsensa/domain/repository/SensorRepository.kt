@@ -8,8 +8,6 @@ interface SensorRepository {
 
     fun getAllDevices(): Single<List<Device>>
 
-    fun getDevice(macAddress: String): Single<Device>
-
     fun addDevice(macAddress: String): Completable
 
     fun addDevice(macAddress: String, name: String): Completable
