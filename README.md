@@ -44,6 +44,49 @@ pressure, light).
 | 28   | 0x00    | Unused. This value is not guaranteed to be 0x00                              |
 | 29   | 0x00    | Unused. This value is not guaranteed to be 0x00                              |
 
+Furthermore, the short values gotten for the Gyroscope, Accelerometer, and Magnetometer need to be
+scaled using the following factors.
+
+| Type          | Scale Factor       | Example                               |
+|---------------|--------------------|---------------------------------------|
+| Gyroscope     |  245.0f / 32768.0f | 1580 * 245.0f /32768.0f = 11.8133545  |
+| Accelerometer |  2.0f / 32768.0f   | -694 * 2.0f / 32768.0f = -0.0423584   |
+| Magnetometer  |  0.00014f          | 3474 * 0.00014 = 0.48636              |
+
+For the Advertisement 1, the format is as follows:
+
+| Byte | Example | Description                                                                  |
+|------|---------|------------------------------------------------------------------------------|
+| 0    | 0x02    | Length of EIR packet ( Type + Data ) in bytes. Example: 2 bytes              |
+| 1    | 0x01    | Type                                                                         |
+| 2    | 0x04    | Type Value                                                                   |
+| 3    | 0x1A    | Length of EIR packet ( Type + Data ) in bytes. Example: 0x1A equals 26 bytes.|
+| 4    | 0xFF    | Type                                                                         |
+| 5    | 0x59    | Byte 1 of Vendor ID. Example: Nordic ID is 0x59 0x00                         |
+| 6    | 0x00    | Byte 2 of Vendor ID. Example: Nordic ID is 0x59 0x00                         |
+| 7    | 0x17    | Byte 1 of App ID. Example: App ID is 0x17 0xCF                               |
+| 8    | 0xCF    | Byte 2 of App ID. Example: App ID is 0x17 0xCF                               |
+| 9    | 0x01    | Advertisement type. Example: Advertisement type 1.                           |
+| 10   | 0xB9    | Byte 4 of temperature. Example: 0x41 0xE3 0x6D 0xB9 = (float) 28.428576      |
+| 11   | 0x6D    | Byte 3 of temperature. Example: 0x41 0xE3 0x6D 0xB9 = (float) 28.428576      |
+| 12   | 0xE3    | Byte 2 of temperature. Example: 0x41 0xE3 0x6D 0xB9 = (float) 28.428576      |
+| 13   | 0x41    | Byte 1 of temperature. Example: 0x41 0xE3 0x6D 0xB9 = (float) 28.428576      |
+| 14   | 0x28    | Byte 4 of humidity. Example: 0x42 0x45 0x54 0x28 = (float) 49.332184         |
+| 15   | 0x54    | Byte 3 of humidity. Example: 0x42 0x45 0x54 0x28 = (float) 49.332184         |
+| 16   | 0x45    | Byte 2 of humidity. Example: 0x42 0x45 0x54 0x28 = (float) 49.332184         |
+| 17   | 0x42    | Byte 1 of humidity. Example: 0x42 0x45 0x54 0x28 = (float) 49.332184         |
+| 18   | 0xB2    | Byte 4 of pressure. Example: 0x44 0x80 0x4E 0xB2 = (float) 1026.4592         |
+| 19   | 0x4E    | Byte 3 of pressure. Example: 0x44 0x80 0x4E 0xB2 = (float) 1026.4592         |
+| 20   | 0x80    | Byte 2 of pressure. Example: 0x44 0x80 0x4E 0xB2 = (float) 1026.4592         |
+| 21   | 0x44    | Byte 1 of pressure. Example: 0x44 0x80 0x4E 0xB2 = (float) 1026.4592         |
+| 22   | 0x82    | Byte 4 of light. Example: 0x40 0x48 0x0C 0x82 = (float) 3.1257634            |
+| 23   | 0x0C    | Byte 3 of light. Example: 0x40 0x48 0x0C 0x82 = (float) 3.1257634            |
+| 24   | 0x48    | Byte 2 of light. Example: 0x40 0x48 0x0C 0x82 = (float) 3.1257634            |
+| 25   | 0x40    | Byte 1 of light. Example: 0x40 0x48 0x0C 0x82 = (float) 3.1257634            |
+| 26   | 0x2B    | Unused. This value is not guaranteed to be 0x00.                             |
+| 27   | 0x09    | Unused. This value is not guaranteed to be 0x00.                             |
+| 28   | 0x00    | Unused. This value is not guaranteed to be 0x00.                             |
+| 29   | 0x00    | Unused. This value is not guaranteed to be 0x00.                             |
 
 
 
