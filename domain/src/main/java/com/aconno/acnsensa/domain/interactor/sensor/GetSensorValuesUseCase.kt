@@ -123,7 +123,13 @@ private fun getValue(
     val bytes: List<Byte> = advertisement.rawData
     val byteBuffer: ByteBuffer = generateByteBuffer(bytes, advertisementFormat, type)
 
-    return getNumber(byteBuffer, type)
+    val valFormat = advertisementFormat.getFormat()[type]
+    valFormat?.let {
+        return getNumber(byteBuffer, valFormat.targetType)
+    }
+
+    throw NoSuchElementException("No type $type in the advertisement format.")
+
 }
 
 private fun generateByteBuffer(
@@ -149,7 +155,7 @@ private fun getNumber(byteBuffer: ByteBuffer, targetType: String): Number {
         SupportedTypes.FLOAT -> byteBuffer.getFloat(0)
         SupportedTypes.SHORT -> byteBuffer.getShort(0)
         SupportedTypes.BYTE -> byteBuffer.get(0)
-        else -> throw Exception("WTF")
+        else -> throw Exception("Invalid target Type: $targetType")
     }
 }
 
