@@ -15,6 +15,7 @@ class BluetoothImpl(
 ) : Bluetooth {
 
     var scanCallback: ScanCallback? = null
+    val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
 
     override fun enable() {
         if (bluetoothPermission.isGranted) {
@@ -32,13 +33,11 @@ class BluetoothImpl(
         }
     }
 
-    override fun startScanning(): Observable<ScanResult> {
+    override fun startScanning() {
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         if (bluetoothPermission.isGranted) {
-            val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
             scanCallback = BluetoothScanCallback(scanResults)
             bluetoothLeScanner.startScan(scanCallback)
-            return scanResults
         } else {
             throw BluetoothException("Bluetooth permission not granted")
         }
@@ -47,5 +46,9 @@ class BluetoothImpl(
     override fun stopScanning() {
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         scanCallback?.let { bluetoothLeScanner.stopScan(it) }
+    }
+
+    override fun getScanResults(): Observable<ScanResult> {
+        return scanResults
     }
 }

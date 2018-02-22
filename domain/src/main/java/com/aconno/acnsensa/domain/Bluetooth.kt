@@ -9,7 +9,9 @@ interface Bluetooth {
 
     fun disable()
 
-    fun startScanning(): Observable<ScanResult>
+    fun startScanning()
 
     fun stopScanning()
+
+    fun getScanResults(): Observable<ScanResult>
 }
