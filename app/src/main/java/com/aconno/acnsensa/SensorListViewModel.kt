@@ -48,6 +48,4 @@ class SensorListViewModel(
     fun getResult(): MutableLiveData<Map<String, Number>> {
         return result
     }
-
-
 }

@@ -1,65 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="@dimen/toolbar_elevation"
+        android:title="@string/app_name"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:titleTextColor="@android:color/white" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include
-            android:id="@+id/sensor_temperature"
-            layout="@layout/item_sensor" />
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:columnOrderPreserved="true"
+            android:padding="@dimen/card_margin"
+            android:rowOrderPreserved="true"
+            android:useDefaultMargins="true">
 
-        <include
-            android:id="@+id/sensor_light"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_humidity"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_pressure"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_humidity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_magnetometer_x"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_pressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_magnetometer_y"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_magnetometer_x"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_magnetometer_z"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_accelerometer_x"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_accelerometer_x"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_magnetometer_y"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_accelerometer_y"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_accelerometer_y"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_accelerometer_z"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_magnetometer_z"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_gyroscope_x"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_accelerometer_z"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_gyroscope_y"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_gyroscope_x"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-        <include
-            android:id="@+id/sensor_gyroscope_z"
-            layout="@layout/item_sensor" />
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_gyroscope_y"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
 
-    </LinearLayout>
-
-</ScrollView>
+            <com.aconno.acnsensa.SensorCardView
+                android:id="@+id/sensor_gyroscope_z"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_margin="@dimen/card_margin" />
+        </GridLayout>
+    </ScrollView>
+</LinearLayout>
