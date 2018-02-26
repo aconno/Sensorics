@@ -11,7 +11,9 @@ class SensorListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        addFragment()
+        if (savedInstanceState == null) {
+            addFragment()
+        }
     }
 
     private fun addFragment() {
