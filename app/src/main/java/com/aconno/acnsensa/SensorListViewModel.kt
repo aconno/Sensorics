@@ -6,7 +6,7 @@ import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.interactor.type.MaybeUseCaseWithParameter
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.acnsensa.domain.model.ScanResult
-import io.reactivex.Observable
+import io.reactivex.Flowable
 
 /**
  * @author aconno
@@ -21,7 +21,7 @@ class SensorListViewModel(
 
 
     fun subscribe() {
-        val observable: Observable<ScanResult> = bluetooth.getScanResults()
+        val observable: Flowable<ScanResult> = bluetooth.getScanResults()
         observable.subscribe { scanResult ->
             filterAdvertisementsUseCase
                 .execute(scanResult)

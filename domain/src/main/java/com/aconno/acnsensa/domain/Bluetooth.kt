@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.domain
 
 import com.aconno.acnsensa.domain.model.ScanResult
-import io.reactivex.Observable
+import io.reactivex.Flowable
 
 interface Bluetooth {
 
@@ -13,5 +13,5 @@ interface Bluetooth {
 
     fun stopScanning()
 
-    fun getScanResults(): Observable<ScanResult>
+    fun getScanResults(): Flowable<ScanResult>
 }

@@ -5,7 +5,8 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanCallback
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.model.ScanResult
-import io.reactivex.Observable
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
 import io.reactivex.subjects.PublishSubject
 
 @SuppressLint("MissingPermission")
@@ -48,7 +49,7 @@ class BluetoothImpl(
         scanCallback?.let { bluetoothLeScanner.stopScan(it) }
     }
 
-    override fun getScanResults(): Observable<ScanResult> {
-        return scanResults
+    override fun getScanResults(): Flowable<ScanResult> {
+        return scanResults.toFlowable(BackpressureStrategy.LATEST)
     }
 }
