@@ -3,6 +3,7 @@ package com.aconno.acnsensa.device.bluetooth
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanSettings
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.BackpressureStrategy
@@ -38,7 +39,10 @@ class BluetoothImpl(
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         if (bluetoothPermission.isGranted) {
             scanCallback = BluetoothScanCallback(scanResults)
-            bluetoothLeScanner.startScan(scanCallback)
+            val settingsBuilder = ScanSettings.Builder()
+
+            settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setReportDelay(0)
+            bluetoothLeScanner.startScan(null, settingsBuilder.build(), scanCallback)
         } else {
             throw BluetoothException("Bluetooth permission not granted")
         }
