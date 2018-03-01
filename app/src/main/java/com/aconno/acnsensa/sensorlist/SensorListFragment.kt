@@ -1,59 +1,34 @@
 package com.aconno.acnsensa.sensorlist
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.SensorListViewModel
-import com.aconno.acnsensa.domain.Bluetooth
-import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
 import kotlinx.android.synthetic.main.fragment_sensor_list.*
 import kotlinx.android.synthetic.main.view_sensor_card.view.*
+import javax.inject.Inject
 
 //TODO: This needs refactoring.
 class SensorListFragment : Fragment() {
 
-    private lateinit var sensorListViewModel: SensorListViewModel
+    @Inject
+    lateinit var sensorListViewModel: SensorListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        val advertisementMatcher = AdvertisementMatcher()
-
-        val filterAdvertisementsUseCase = FilterAdvertisementsUseCase(advertisementMatcher)
-        val sensorValuesUseCase = GetSensorValuesUseCase(advertisementMatcher)
-
-        val acnSensaApplication: AcnSensaApplication? =
-            activity?.application as? AcnSensaApplication
-        acnSensaApplication?.let {
-            val sensorListViewModelFactory = SensorListViewModelFactory(
-                it.bluetooth,
-                filterAdvertisementsUseCase,
-                sensorValuesUseCase
-            )
-            sensorListViewModel = ViewModelProviders.of(this, sensorListViewModelFactory)
-                .get(SensorListViewModel::class.java)
-        }
+        val mainActivity: MainActivity? = activity as MainActivity
+        mainActivity?.mainActivityComponent?.inject(this)
     }
 
     override fun onResume() {
         super.onResume()
         sensorListViewModel.getResult().observe(this, Observer { displaySensorValues(it) })
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     override fun onCreateView(
@@ -178,16 +153,3 @@ class SensorListFragment : Fragment() {
     }
 }
 
-class SensorListViewModelFactory(
-    val bluetooth: Bluetooth,
-    val filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
-    val sensorValuesUseCase: GetSensorValuesUseCase
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val viewModel: T? =
-            SensorListViewModel(bluetooth, filterAdvertisementsUseCase, sensorValuesUseCase) as? T
-        viewModel?.let { return viewModel }
-
-        throw IllegalArgumentException("Invalid cast")
-    }
-}

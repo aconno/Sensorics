@@ -1,10 +1,6 @@
 package com.aconno.acnsensa.sensorlist
 
-import android.app.Application
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -13,22 +9,34 @@ import android.view.MenuItem
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothScanningViewModel
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.dagger.DaggerMainActivityComponent
+import com.aconno.acnsensa.dagger.MainActivityComponent
+import com.aconno.acnsensa.dagger.MainActivityModule
 import com.aconno.acnsensa.domain.model.ScanEvent
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 //TODO: This needs refactoring.
-class SensorListActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var bluetoothScanningViewModel: BluetoothScanningViewModel
 
     private var mainMenu: Menu? = null
 
-    private lateinit var bluetoothScanningViewModel: BluetoothScanningViewModel
+    val mainActivityComponent: MainActivityComponent by lazy {
+        val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
+        DaggerMainActivityComponent.builder()
+            .appComponent(acnSensaApplication?.appComponent)
+            .mainActivityModule(MainActivityModule(this))
+            .build()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.e("oncreate", "oncreate")
         setContentView(R.layout.activity_main)
 
+        mainActivityComponent.inject(this)
         custom_toolbar.title = "AcnSensa"
         setSupportActionBar(custom_toolbar)
 
@@ -37,26 +45,6 @@ class SensorListActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             addFragment()
         }
-
-        val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
-        acnSensaApplication?.let {
-            val bluetoothScanningViewModelFactory =
-                BluetoothScanningViewModelFactory(it.bluetooth, application)
-
-            bluetoothScanningViewModel =
-                    ViewModelProviders.of(this, bluetoothScanningViewModelFactory)
-                        .get(BluetoothScanningViewModel::class.java)
-        }
-
-        Log.e("oncreatefinished", "oncreatefinished")
-
-
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.e("onstart", "onstart")
-
     }
 
     override fun onResume() {
@@ -138,14 +126,3 @@ class SensorListActivity : AppCompatActivity() {
     }
 }
 
-class BluetoothScanningViewModelFactory(val bluetooth: Bluetooth, val application: Application) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val ret: T? = BluetoothScanningViewModel(bluetooth, application) as? T
-        ret?.let {
-            return ret
-        }
-
-        throw IllegalArgumentException("Invalid cast")
-    }
-}

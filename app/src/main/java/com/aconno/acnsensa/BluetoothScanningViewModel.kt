@@ -1,6 +1,5 @@
 package com.aconno.acnsensa
 
-import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.content.Intent
@@ -15,7 +14,7 @@ import io.reactivex.Flowable
  * @aconno
  */
 class BluetoothScanningViewModel(
-    private val bluetooth: Bluetooth, application: Application
+    private val bluetooth: Bluetooth, application: AcnSensaApplication
 ) : AndroidViewModel(application) {
 
     private val result: MutableLiveData<ScanEvent> = MutableLiveData()

@@ -13,6 +13,8 @@ import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
+import com.aconno.acnsensa.domain.Bluetooth
+import javax.inject.Inject
 
 //TODO: This needs refactoring.
 private fun createNotificationsChannel(application: Context) {
@@ -26,6 +28,9 @@ private fun createNotificationsChannel(application: Context) {
 
 class BluetoothScanningService : Service() {
 
+    @Inject
+    lateinit var bluetooth: Bluetooth
+
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -33,7 +38,7 @@ class BluetoothScanningService : Service() {
 
 
     val receiver = BluetoothScanningServiceReceiver()
-    val filter = IntentFilter(STOP)
+    private val filter = IntentFilter(STOP)
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -56,7 +61,9 @@ class BluetoothScanningService : Service() {
         startForeground(1, notification)
 
         val application: AcnSensaApplication? = application as? AcnSensaApplication
-        application?.bluetooth?.startScanning()
+        application?.appComponent?.inject(this)
+
+        bluetooth.startScanning()
         return START_STICKY
     }
 
@@ -83,8 +90,7 @@ class BluetoothScanningService : Service() {
             val localBroadcastManager =
                 LocalBroadcastManager.getInstance(this@BluetoothScanningService)
             localBroadcastManager.unregisterReceiver(receiver)
-            val application: AcnSensaApplication? = application as? AcnSensaApplication
-            application?.bluetooth?.stopScanning()
+            bluetooth.stopScanning()
             stopSelf()
         }
     }
@@ -99,7 +105,7 @@ class MyNotificationChannel(private val notificationManager: NotificationManager
                 NotificationChannel(
                     CHANNEL_ID,
                     CHANNEL_NAME,
-                    IMPORTANCE
+                    NotificationManager.IMPORTANCE_LOW
                 )
             } else {
                 TODO("VERSION.SDK_INT < O")
@@ -109,9 +115,8 @@ class MyNotificationChannel(private val notificationManager: NotificationManager
     }
 
     companion object {
-        val CHANNEL_ID = "channel"
-        private val CHANNEL_NAME = "Default"
-        private val IMPORTANCE = 5
+        const val CHANNEL_ID = "channel"
+        private const val CHANNEL_NAME = "Default"
     }
 }
 
