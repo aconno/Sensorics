@@ -14,6 +14,7 @@ import com.aconno.acnsensa.dagger.MainActivityComponent
 import com.aconno.acnsensa.dagger.MainActivityModule
 import com.aconno.acnsensa.domain.model.ScanEvent
 import kotlinx.android.synthetic.main.activity_main.*
+import timber.log.Timber
 import javax.inject.Inject
 
 //TODO: This needs refactoring.
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleScanEvent(scanEvent: ScanEvent?) {
-        Log.e("HANDLER", "handle ${scanEvent?.message}")
+        Timber.d("Handle scan event ${scanEvent?.message}")
         val eventType: Int? = scanEvent?.type
         when (eventType) {
             ScanEvent.SCAN_FAILED_ALREADY_STARTED -> onScanFailedAlreadyStarted()
