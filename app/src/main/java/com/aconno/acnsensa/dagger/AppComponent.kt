@@ -1,7 +1,6 @@
 package com.aconno.acnsensa.dagger
 
 import com.aconno.acnsensa.AcnSensaApplication
-import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.domain.Bluetooth
 import dagger.Component
 import javax.inject.Singleton
@@ -18,5 +17,4 @@ interface AppComponent {
     fun bluetooth(): Bluetooth
 
     //Here is where the code defines what classes can accept injected dependencies.
-    fun inject(bluetoothScanningService: BluetoothScanningService)
 }
