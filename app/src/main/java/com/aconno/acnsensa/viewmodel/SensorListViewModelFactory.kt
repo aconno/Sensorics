@@ -1,4 +1,4 @@
-package com.aconno.acnsensa
+package com.aconno.acnsensa.viewmodel
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
@@ -18,7 +18,11 @@ class SensorListViewModelFactory(
     @Suppress("UNCHECKED_CAST") //Safe to suppress since as? casting is being used.
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel: T? =
-            SensorListViewModel(bluetooth, filterAdvertisementsUseCase, sensorValuesUseCase) as? T
+            SensorListViewModel(
+                bluetooth,
+                filterAdvertisementsUseCase,
+                sensorValuesUseCase
+            ) as? T
         viewModel?.let { return viewModel }
 
         throw IllegalArgumentException("Illegal cast for SensorListViewModel")

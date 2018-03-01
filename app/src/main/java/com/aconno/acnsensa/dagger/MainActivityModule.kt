@@ -1,12 +1,16 @@
 package com.aconno.acnsensa.dagger
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.acnsensa.*
+import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
 import com.aconno.acnsensa.ui.MainActivity
+import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
+import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModelFactory
+import com.aconno.acnsensa.viewmodel.SensorListViewModel
+import com.aconno.acnsensa.viewmodel.SensorListViewModelFactory
 import dagger.Module
 import dagger.Provides
 
@@ -42,7 +46,11 @@ class MainActivityModule(private val mainActivity: MainActivity) {
         bluetooth: Bluetooth,
         filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
         sensorValuesUseCase: GetSensorValuesUseCase
-    ) = SensorListViewModelFactory(bluetooth, filterAdvertisementsUseCase, sensorValuesUseCase)
+    ) = SensorListViewModelFactory(
+        bluetooth,
+        filterAdvertisementsUseCase,
+        sensorValuesUseCase
+    )
 
     @Provides
     @MainActivityScope
@@ -56,7 +64,10 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     fun provideBluetoothScanningViewModelFactory(
         bluetooth: Bluetooth,
         acnSensaApplication: AcnSensaApplication
-    ) = BluetoothScanningViewModelFactory(bluetooth, acnSensaApplication)
+    ) = BluetoothScanningViewModelFactory(
+        bluetooth,
+        acnSensaApplication
+    )
 
     @Provides
     @MainActivityScope

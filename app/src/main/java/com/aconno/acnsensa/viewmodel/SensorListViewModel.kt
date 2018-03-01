@@ -1,4 +1,4 @@
-package com.aconno.acnsensa
+package com.aconno.acnsensa.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel

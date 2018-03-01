@@ -1,9 +1,11 @@
-package com.aconno.acnsensa
+package com.aconno.acnsensa.viewmodel
 
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.content.Intent
 import android.support.v4.content.LocalBroadcastManager
+import com.aconno.acnsensa.AcnSensaApplication
+import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.model.ScanEvent
 import io.reactivex.Flowable

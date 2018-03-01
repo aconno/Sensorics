@@ -6,12 +6,12 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.aconno.acnsensa.AcnSensaApplication
-import com.aconno.acnsensa.BluetoothScanningViewModel
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.MainActivityComponent
 import com.aconno.acnsensa.dagger.MainActivityModule
 import com.aconno.acnsensa.domain.model.ScanEvent
+import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject

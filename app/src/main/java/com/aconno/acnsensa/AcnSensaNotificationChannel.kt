@@ -2,7 +2,6 @@ package com.aconno.acnsensa
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.os.Build
 
 /**
@@ -29,13 +28,4 @@ class AcnSensaNotificationChannel(private val notificationManager: NotificationM
         const val CHANNEL_ID = "channel"
         private const val CHANNEL_NAME = "Default"
     }
-}
-
-fun createNotificationsChannel(application: Context) {
-    val notificationManager =
-        application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-    val statsNotificationChannel = AcnSensaNotificationChannel(notificationManager)
-
-    statsNotificationChannel.create()
 }
