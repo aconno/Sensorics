@@ -3,7 +3,6 @@ package com.aconno.acnsensa.sensorlist
 import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.aconno.acnsensa.AcnSensaApplication
@@ -17,7 +16,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
 
-//TODO: This needs refactoring.
 class MainActivity : AppCompatActivity() {
 
     @Inject
@@ -38,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         mainActivityComponent.inject(this)
-        custom_toolbar.title = "AcnSensa"
+        custom_toolbar.title = getString(R.string.app_name)
         setSupportActionBar(custom_toolbar)
 
         invalidateOptionsMenu()
@@ -77,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
             menuItem?.let {
                 it.isChecked = true
-                it.setTitle("Stop scanning")
+                it.setTitle(getString(R.string.stop_scanning))
             }
         }
     }
@@ -87,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
             menuItem?.let {
                 it.isChecked = false
-                it.setTitle("Scan")
+                it.setTitle(getString(R.string.scan))
             }
         }
     }
@@ -99,7 +97,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        Log.e("onprepare", "prepate")
         mainMenu = menu
         menuInflater.inflate(R.menu.main_menu, menu)
 
