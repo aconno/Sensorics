@@ -1,8 +1,6 @@
 package com.aconno.acnsensa
 
 import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -12,46 +10,33 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
-import android.util.Log
 import com.aconno.acnsensa.domain.Bluetooth
 import javax.inject.Inject
 
-//TODO: This needs refactoring.
-private fun createNotificationsChannel(application: Context) {
-    val notificationManager =
-        application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-    val statsNotificationChannel = MyNotificationChannel(notificationManager)
-
-    statsNotificationChannel.create()
-}
-
+/**
+ * @author aconno
+ */
 class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var bluetooth: Bluetooth
 
-
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
-
 
     val receiver = BluetoothScanningServiceReceiver()
     private val filter = IntentFilter(STOP)
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.e("Startservice", "startservice")
-
-
         val localBroadcastManager = LocalBroadcastManager.getInstance(this)
         localBroadcastManager.registerReceiver(receiver, filter)
 
         val builder =
             NotificationCompat.Builder(
                 this,
-                MyNotificationChannel.CHANNEL_ID
+                AcnSensaNotificationChannel.CHANNEL_ID
             )
                 .setContentTitle("Title")
                 .setContentText("Text")
@@ -72,7 +57,6 @@ class BluetoothScanningService : Service() {
         private const val DEFAULT_CHANNEL_ID: String = "con.aconno.acnsensa.DEFAULT_CHANNEL"
 
         fun start(context: Context) {
-            Log.e("static start", "static start")
             createNotificationsChannel(context)
             val intent = Intent(context, BluetoothScanningService::class.java)
 
@@ -97,28 +81,6 @@ class BluetoothScanningService : Service() {
 
 }
 
-class MyNotificationChannel(private val notificationManager: NotificationManager) {
-
-    fun create() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel(
-                    CHANNEL_ID,
-                    CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_LOW
-                )
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
-            notificationManager.createNotificationChannel(notificationChannel)
-        }
-    }
-
-    companion object {
-        const val CHANNEL_ID = "channel"
-        private const val CHANNEL_NAME = "Default"
-    }
-}
 
 
 
