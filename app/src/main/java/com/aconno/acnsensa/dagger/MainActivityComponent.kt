@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.dagger
 
-import com.aconno.acnsensa.sensorlist.MainActivity
-import com.aconno.acnsensa.sensorlist.SensorListFragment
+import com.aconno.acnsensa.ui.MainActivity
+import com.aconno.acnsensa.ui.SensorListFragment
 import dagger.Component
 
 /**

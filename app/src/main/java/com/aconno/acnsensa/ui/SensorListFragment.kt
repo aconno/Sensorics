@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.sensorlist
+package com.aconno.acnsensa.ui
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle

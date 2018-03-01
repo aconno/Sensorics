@@ -6,7 +6,7 @@ import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
-import com.aconno.acnsensa.sensorlist.MainActivity
+import com.aconno.acnsensa.ui.MainActivity
 import dagger.Module
 import dagger.Provides
 
