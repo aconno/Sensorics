@@ -23,16 +23,16 @@ class BluetoothScanningService : Service() {
     @Inject
     lateinit var bluetooth: Bluetooth
 
-    //@Inject
+    @Inject
     lateinit var receiver: BroadcastReceiver
 
     @Inject
     lateinit var filter: IntentFilter
 
-    //@Inject
+    @Inject
     lateinit var notification: Notification
 
-    val bluetoothScanningServiceComponent: BluetoothScanningServiceComponent by lazy {
+    private val bluetoothScanningServiceComponent: BluetoothScanningServiceComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
         DaggerBluetoothScanningServiceComponent.builder()
             .appComponent(acnSensaApplication?.appComponent)
