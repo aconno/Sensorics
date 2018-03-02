@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         mainMenu = menu
+        mainMenu?.clear()
         menuInflater.inflate(R.menu.main_menu, menu)
 
         handleScanEvent(bluetoothScanningViewModel.getResult().value)
