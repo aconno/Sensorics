@@ -1,14 +1,11 @@
 package com.aconno.acnsensa.dagger
 
 import android.app.Notification
-import android.app.NotificationManager
 import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.IntentFilter
-import android.support.v4.app.NotificationCompat
-import com.aconno.acnsensa.AcnSensaNotificationChannel
 import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.BluetoothScanningServiceReceiver
+import com.aconno.acnsensa.device.notification.NotificationFactory
 import dagger.Module
 import dagger.Provides
 
@@ -27,24 +24,8 @@ class BluetoothScanningServiceModule(
     @Provides
     @BluetoothScanningServiceScope
     fun provideNotification(): Notification {
-        createNotificationsChannel(bluetoothScanningService)
-        return NotificationCompat.Builder(
-            bluetoothScanningService,
-            AcnSensaNotificationChannel.CHANNEL_ID
-        )
-            .setContentTitle("Title")
-            .setContentText("Text")
-            .setAutoCancel(true)
-            .build()
-    }
-
-    private fun createNotificationsChannel(application: Context) {
-        val notificationManager =
-            application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        val statsNotificationChannel = AcnSensaNotificationChannel(notificationManager)
-
-        statsNotificationChannel.create()
+        val notificationFactory = NotificationFactory()
+        return notificationFactory.makeForegroundServiceNotification(bluetoothScanningService)
     }
 
     @Provides
@@ -55,5 +36,4 @@ class BluetoothScanningServiceModule(
     @Provides
     @BluetoothScanningServiceScope
     fun provideBluetoothScanningReceiverIntentFilter() = IntentFilter("com.aconno.acnsensa.STOP")
-
 }

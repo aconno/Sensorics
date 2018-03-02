@@ -1,4 +1,4 @@
-package com.aconno.acnsensa
+package com.aconno.acnsensa.device.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
