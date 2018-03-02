@@ -43,3 +43,5 @@ dependencies {
 
     implementation 'com.jakewharton.timber:timber:4.6.1'
 }
+
+apply plugin: 'kotlin-android-extensions'

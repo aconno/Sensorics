@@ -4,11 +4,16 @@ import android.annotation.SuppressLint
 import android.bluetooth.le.ScanCallback
 import com.aconno.acnsensa.domain.model.Advertisement
 import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
-class BluetoothScanCallback(val scanResults: PublishSubject<ScanResult>) : ScanCallback() {
+//TODO: This needs refactoring.
+class BluetoothScanCallback(
+    val scanResults: PublishSubject<ScanResult>,
+    val scanEvents: PublishSubject<ScanEvent>
+) : ScanCallback() {
 
     override fun onScanResult(callbackType: Int, result: android.bluetooth.le.ScanResult?) {
         super.onScanResult(callbackType, result)
@@ -32,5 +37,18 @@ class BluetoothScanCallback(val scanResults: PublishSubject<ScanResult>) : ScanC
     override fun onScanFailed(errorCode: Int) {
         super.onScanFailed(errorCode)
         Timber.e("Scan failed with error code %d", errorCode)
+        when (errorCode) {
+            SCAN_FAILED_ALREADY_STARTED ->
+                scanEvents.onNext(
+                    ScanEvent(
+                        ScanEvent.SCAN_FAILED_ALREADY_STARTED,
+                        "Scan Failed with error code $errorCode"
+                    )
+                )
+            else ->
+                scanEvents.onNext(
+                    ScanEvent(ScanEvent.SCAN_FAILED, "Scan failed with error code $errorCode")
+                )
+        }
     }
 }

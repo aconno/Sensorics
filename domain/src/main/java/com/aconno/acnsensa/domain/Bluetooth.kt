@@ -1,5 +1,6 @@
 package com.aconno.acnsensa.domain
 
+import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.Flowable
 
@@ -14,4 +15,6 @@ interface Bluetooth {
     fun stopScanning()
 
     fun getScanResults(): Flowable<ScanResult>
+
+    fun getScanEvents(): Flowable<ScanEvent>
 }

@@ -1,4 +1,4 @@
-package com.aconno.acnsensa
+package com.aconno.acnsensa.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
@@ -8,6 +8,7 @@ import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.Flowable
 
+//TODO: This needs refactoring.
 /**
  * @author aconno
  */
@@ -19,8 +20,11 @@ class SensorListViewModel(
 
     private val result: MutableLiveData<Map<String, Number>> = MutableLiveData()
 
+    init {
+        subscribe()
+    }
 
-    fun subscribe() {
+    private fun subscribe() {
         val observable: Flowable<ScanResult> = bluetooth.getScanResults()
         observable.subscribe { scanResult ->
             filterAdvertisementsUseCase
@@ -31,14 +35,6 @@ class SensorListViewModel(
                         .subscribe { sensorValues -> processSensorValues(sensorValues) }
                 }
         }
-    }
-
-    fun startScanning() {
-        bluetooth.startScanning()
-    }
-
-    fun stopScanning() {
-        bluetooth.stopScanning()
     }
 
     private fun processSensorValues(values: Map<String, Number>) {
