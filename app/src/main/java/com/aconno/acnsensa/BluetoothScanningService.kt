@@ -1,7 +1,6 @@
 package com.aconno.acnsensa
 
 import android.app.Notification
-import android.app.NotificationManager
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -69,7 +68,6 @@ class BluetoothScanningService : Service() {
     companion object {
 
         fun start(context: Context) {
-            createNotificationsChannel(context)
             val intent = Intent(context, BluetoothScanningService::class.java)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -77,15 +75,6 @@ class BluetoothScanningService : Service() {
             } else {
                 context.startService(intent)
             }
-        }
-
-        private fun createNotificationsChannel(application: Context) {
-            val notificationManager =
-                application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            val statsNotificationChannel = AcnSensaNotificationChannel(notificationManager)
-
-            statsNotificationChannel.create()
         }
     }
 }
