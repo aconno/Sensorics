@@ -1,8 +1,9 @@
-package com.aconno.acnsensa
+package com.aconno.acnsensa.ui
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import com.aconno.acnsensa.R
 
 import kotlinx.android.synthetic.main.view_sensor_card.view.*
 

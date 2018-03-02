@@ -1,3 +1,46 @@
 <resources>
+    <!-- MainActivity -->
     <string name="app_name">AcnSensaDroid</string>
+    <string name="scan">Scan</string>
+    <string name="stop_scanning">Stop scanning</string>
+
+    <!-- SensorListFragment -->
+    <string name="temperature">Temperature</string>
+    <string name="default_temperature">0°C</string>
+
+    <string name="light">Light</string>
+    <string name="default_light">0.00%</string>
+
+    <string name="humidity">Humidity</string>
+    <string name="default_humidity">0.00%</string>
+
+    <string name="pressure">Pressure</string>
+    <string name="default_pressure">0000.00hPa</string>
+
+    <string name="magnetometer_x">Magnetometer X</string>
+    <string name="default_magnetometer_x">0.00µT</string>
+
+    <string name="magnetometer_y">Magnetometer Y</string>
+    <string name="default_magnetometer_y">0.00µT</string>
+
+    <string name="magnetometer_z">Magnetometer Z</string>
+    <string name="default_magnetometer_z">0.00µT</string>
+
+    <string name="accelerometer_x">Accelerometer X</string>
+    <string name="default_accelerometer_x">0.00mg</string>
+
+    <string name="accelerometer_y">Accelerometer Y</string>
+    <string name="default_accelerometer_y">0.00mg</string>
+
+    <string name="accelerometer_z">Accelerometer Z</string>
+    <string name="default_accelerometer_z">0.00mg</string>
+
+    <string name="gyro_x">Gyroscope X</string>
+    <string name="default_gyro_x">0.00dps</string>
+
+    <string name="gyro_y">Gyroscope Y</string>
+    <string name="default_gyro_y">0.00dps</string>
+
+    <string name="gyro_z">Gyroscope Z</string>
+    <string name="default_gyro_z">0.00dps</string>
 </resources>

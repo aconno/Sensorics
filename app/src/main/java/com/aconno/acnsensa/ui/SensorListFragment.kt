@@ -1,59 +1,33 @@
-package com.aconno.acnsensa.sensorlist
+package com.aconno.acnsensa.ui
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.SensorListViewModel
-import com.aconno.acnsensa.domain.Bluetooth
-import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
+import com.aconno.acnsensa.viewmodel.SensorListViewModel
 import kotlinx.android.synthetic.main.fragment_sensor_list.*
 import kotlinx.android.synthetic.main.view_sensor_card.view.*
+import timber.log.Timber
+import javax.inject.Inject
 
-//TODO: This needs refactoring.
 class SensorListFragment : Fragment() {
 
-    private lateinit var sensorListViewModel: SensorListViewModel
+    @Inject
+    lateinit var sensorListViewModel: SensorListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        val advertisementMatcher = AdvertisementMatcher()
-
-        val filterAdvertisementsUseCase = FilterAdvertisementsUseCase(advertisementMatcher)
-        val sensorValuesUseCase = GetSensorValuesUseCase(advertisementMatcher)
-
-        val acnSensaApplication: AcnSensaApplication? =
-            activity?.application as? AcnSensaApplication
-        acnSensaApplication?.let {
-            val sensorListViewModelFactory = SensorListViewModelFactory(
-                it.bluetooth,
-                filterAdvertisementsUseCase,
-                sensorValuesUseCase
-            )
-            sensorListViewModel = ViewModelProviders.of(this, sensorListViewModelFactory)
-                .get(SensorListViewModel::class.java)
-        }
+        val mainActivity: MainActivity? = activity as MainActivity
+        mainActivity?.mainActivityComponent?.inject(this)
     }
 
     override fun onResume() {
         super.onResume()
         sensorListViewModel.getResult().observe(this, Observer { displaySensorValues(it) })
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     override fun onCreateView(
@@ -71,75 +45,75 @@ class SensorListFragment : Fragment() {
 
     private fun initView() {
         sensor_temperature.icon.setImageResource(R.drawable.ic_temperature)
-        sensor_temperature.name.text = "Temperature"
-        sensor_temperature.value.text = "0°C"
+        sensor_temperature.name.text = getString(R.string.temperature)
+        sensor_temperature.value.text = getString(R.string.default_temperature)
 
         sensor_light.icon.setImageResource(R.drawable.ic_light)
-        sensor_light.name.text = "Light"
-        sensor_light.value.text = "0.00%"
+        sensor_light.name.text = getString(R.string.light)
+        sensor_light.value.text = getString(R.string.default_light)
 
         sensor_humidity.icon.setImageResource(R.drawable.ic_humidity)
-        sensor_humidity.name.text = "Humidity"
-        sensor_humidity.value.text = "0.00%"
+        sensor_humidity.name.text = getString(R.string.humidity)
+        sensor_humidity.value.text = getString(R.string.default_humidity)
 
         sensor_pressure.icon.setImageResource(R.drawable.ic_pressure)
-        sensor_pressure.name.text = "Pressure"
-        sensor_pressure.value.text = "0000.00hPa"
+        sensor_pressure.name.text = getString(R.string.pressure)
+        sensor_pressure.value.text = getString(R.string.default_pressure)
 
         sensor_magnetometer_x.icon.setImageResource(R.drawable.ic_compass)
-        sensor_magnetometer_x.name.text = "Magnetometer X"
-        sensor_magnetometer_x.value.text = "0.00µT"
+        sensor_magnetometer_x.name.text = getString(R.string.magnetometer_x)
+        sensor_magnetometer_x.value.text = getString(R.string.default_magnetometer_x)
 
         sensor_magnetometer_y.icon.setImageResource(R.drawable.ic_compass)
-        sensor_magnetometer_y.name.text = "Magnetometer Y"
-        sensor_magnetometer_y.value.text = "0.00µT"
+        sensor_magnetometer_y.name.text = getString(R.string.magnetometer_y)
+        sensor_magnetometer_y.value.text = getString(R.string.default_magnetometer_y)
 
         sensor_magnetometer_z.icon.setImageResource(R.drawable.ic_compass)
-        sensor_magnetometer_z.name.text = "Magnetometer Z"
-        sensor_magnetometer_z.value.text = "0.00µT"
+        sensor_magnetometer_z.name.text = getString(R.string.magnetometer_z)
+        sensor_magnetometer_z.value.text = getString(R.string.default_magnetometer_z)
 
         sensor_accelerometer_x.icon.setImageResource(R.drawable.ic_acc)
-        sensor_accelerometer_x.name.text = "Accelerometer X"
-        sensor_accelerometer_x.value.text = "0.00mg"
+        sensor_accelerometer_x.name.text = getString(R.string.accelerometer_x)
+        sensor_accelerometer_x.value.text = getString(R.string.default_accelerometer_x)
 
         sensor_accelerometer_y.icon.setImageResource(R.drawable.ic_acc)
-        sensor_accelerometer_y.name.text = "Accelerometer Y"
-        sensor_accelerometer_y.value.text = "0.00mg"
+        sensor_accelerometer_y.name.text = getString(R.string.accelerometer_y)
+        sensor_accelerometer_y.value.text = getString(R.string.default_accelerometer_y)
 
         sensor_accelerometer_z.icon.setImageResource(R.drawable.ic_acc)
-        sensor_accelerometer_z.name.text = "Accelerometer Z"
-        sensor_accelerometer_z.value.text = "0.00mg"
+        sensor_accelerometer_z.name.text = getString(R.string.accelerometer_z)
+        sensor_accelerometer_z.value.text = getString(R.string.default_accelerometer_z)
 
         sensor_gyroscope_x.icon.setImageResource(R.drawable.ic_gyro)
-        sensor_gyroscope_x.name.text = "Gyroscope X"
-        sensor_gyroscope_x.value.text = "0.00dps"
+        sensor_gyroscope_x.name.text = getString(R.string.gyro_x)
+        sensor_gyroscope_x.value.text = getString(R.string.default_gyro_x)
 
         sensor_gyroscope_y.icon.setImageResource(R.drawable.ic_gyro)
-        sensor_gyroscope_y.name.text = "Gyroscope Y"
-        sensor_gyroscope_y.value.text = "0.00dps"
+        sensor_gyroscope_y.name.text = getString(R.string.gyro_y)
+        sensor_gyroscope_y.value.text = getString(R.string.default_gyro_y)
 
         sensor_gyroscope_z.icon.setImageResource(R.drawable.ic_gyro)
-        sensor_gyroscope_z.name.text = "Gyroscope Z"
-        sensor_gyroscope_z.value.text = "0.00dps"
+        sensor_gyroscope_z.name.text = getString(R.string.gyro_z)
+        sensor_gyroscope_z.value.text = getString(R.string.default_gyro_z)
 
     }
 
     private fun displaySensorValues(values: Map<String, Number>?) {
-        Log.e("Display values!!!!!!", values.toString())
+        Timber.d(values.toString())
         values?.let {
-            val temperatureLabel = "Temperature"
-            val lightLabel = "Light"
-            val humidityLabel = "Humidity"
-            val pressureLabel = "Pressure"
-            val magnetoXLabel = "Magnetometer X"
-            val magnetoYLabel = "Magnetometer Y"
-            val magnetoZLabel = "Magnetometer Z"
-            val accelerometerXLabel = "Accelerometer X"
-            val accelerometerYLabel = "Accelerometer Y"
-            val accelerometerZLabel = "Accelerometer Z"
-            val gyroXLabel = "Gyroscope X"
-            val gyroYLabel = "Gyroscope Y"
-            val gyroZLabel = "Gyroscope Z"
+            val temperatureLabel = getString(R.string.temperature)
+            val lightLabel = getString(R.string.light)
+            val humidityLabel = getString(R.string.humidity)
+            val pressureLabel = getString(R.string.pressure)
+            val magnetoXLabel = getString(R.string.magnetometer_x)
+            val magnetoYLabel = getString(R.string.magnetometer_y)
+            val magnetoZLabel = getString(R.string.magnetometer_z)
+            val accelerometerXLabel = getString(R.string.accelerometer_x)
+            val accelerometerYLabel = getString(R.string.accelerometer_y)
+            val accelerometerZLabel = getString(R.string.accelerometer_z)
+            val gyroXLabel = getString(R.string.gyro_x)
+            val gyroYLabel = getString(R.string.gyro_y)
+            val gyroZLabel = getString(R.string.gyro_z)
 
             val temperature = values["Temperature"]
             val light = values["Light"]
@@ -178,16 +152,3 @@ class SensorListFragment : Fragment() {
     }
 }
 
-class SensorListViewModelFactory(
-    val bluetooth: Bluetooth,
-    val filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
-    val sensorValuesUseCase: GetSensorValuesUseCase
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val viewModel: T? =
-            SensorListViewModel(bluetooth, filterAdvertisementsUseCase, sensorValuesUseCase) as? T
-        viewModel?.let { return viewModel }
-
-        throw IllegalArgumentException("Invalid cast")
-    }
-}

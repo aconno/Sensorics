@@ -1,8 +1,6 @@
 package com.aconno.acnsensa
 
 import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -10,63 +8,66 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
-import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
-import android.util.Log
+import com.aconno.acnsensa.dagger.BluetoothScanningServiceComponent
+import com.aconno.acnsensa.dagger.BluetoothScanningServiceModule
+import com.aconno.acnsensa.dagger.DaggerBluetoothScanningServiceComponent
+import com.aconno.acnsensa.domain.Bluetooth
+import javax.inject.Inject
 
-//TODO: This needs refactoring.
-private fun createNotificationsChannel(application: Context) {
-    val notificationManager =
-        application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-    val statsNotificationChannel = MyNotificationChannel(notificationManager)
-
-    statsNotificationChannel.create()
-}
-
+/**
+ * @author aconno
+ */
 class BluetoothScanningService : Service() {
 
+    @Inject
+    lateinit var bluetooth: Bluetooth
+
+    @Inject
+    lateinit var receiver: BroadcastReceiver
+
+    @Inject
+    lateinit var filter: IntentFilter
+
+    @Inject
+    lateinit var notification: Notification
+
+    private val bluetoothScanningServiceComponent: BluetoothScanningServiceComponent by lazy {
+        val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
+        DaggerBluetoothScanningServiceComponent.builder()
+            .appComponent(acnSensaApplication?.appComponent)
+            .bluetoothScanningServiceModule(BluetoothScanningServiceModule(this))
+            .build()
+    }
 
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
 
-
-    val receiver = BluetoothScanningServiceReceiver()
-    val filter = IntentFilter(STOP)
-
+    override fun onCreate() {
+        super.onCreate()
+        bluetoothScanningServiceComponent.inject(this)
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.e("Startservice", "startservice")
-
 
         val localBroadcastManager = LocalBroadcastManager.getInstance(this)
         localBroadcastManager.registerReceiver(receiver, filter)
 
-        val builder =
-            NotificationCompat.Builder(
-                this,
-                MyNotificationChannel.CHANNEL_ID
-            )
-                .setContentTitle("Title")
-                .setContentText("Text")
-                .setAutoCancel(true)
-
-        val notification: Notification = builder.build()
         startForeground(1, notification)
 
-        val application: AcnSensaApplication? = application as? AcnSensaApplication
-        application?.bluetooth?.startScanning()
+        bluetooth.startScanning()
         return START_STICKY
     }
 
+    fun stopScanning() {
+        bluetooth.stopScanning()
+        stopSelf()
+    }
+
     companion object {
-        private const val STOP = "com.aconno.acnsensa.STOP"
-        private const val DEFAULT_CHANNEL_ID: String = "con.aconno.acnsensa.DEFAULT_CHANNEL"
 
         fun start(context: Context) {
-            Log.e("static start", "static start")
-            createNotificationsChannel(context)
             val intent = Intent(context, BluetoothScanningService::class.java)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -76,44 +77,4 @@ class BluetoothScanningService : Service() {
             }
         }
     }
-
-    inner class BluetoothScanningServiceReceiver : BroadcastReceiver() {
-
-        override fun onReceive(arg0: Context, intent: Intent) {
-            val localBroadcastManager =
-                LocalBroadcastManager.getInstance(this@BluetoothScanningService)
-            localBroadcastManager.unregisterReceiver(receiver)
-            val application: AcnSensaApplication? = application as? AcnSensaApplication
-            application?.bluetooth?.stopScanning()
-            stopSelf()
-        }
-    }
-
 }
-
-class MyNotificationChannel(private val notificationManager: NotificationManager) {
-
-    fun create() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel(
-                    CHANNEL_ID,
-                    CHANNEL_NAME,
-                    IMPORTANCE
-                )
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
-            notificationManager.createNotificationChannel(notificationChannel)
-        }
-    }
-
-    companion object {
-        val CHANNEL_ID = "channel"
-        private val CHANNEL_NAME = "Default"
-        private val IMPORTANCE = 5
-    }
-}
-
-
-
