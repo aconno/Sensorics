@@ -3,4 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorText">#404041</color>
+    <color name="graph_x">#FF0000</color>
+    <color name="graph_y">#00FF00</color>
+    <color name="graph_z">#0000FF</color>
 </resources>
