@@ -1,13 +1,14 @@
 package com.aconno.acnsensa.ui
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.viewmodel.BleGraph
 import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
-import com.github.mikephil.charting.components.Description
-import com.github.mikephil.charting.data.LineData
 import kotlinx.android.synthetic.main.activity_graph.*
 
 /**
@@ -21,15 +22,27 @@ class LiveGraphActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_graph)
-        val type: Int = intent.getIntExtra(EXTRA_GRAPH_TYPE, -1)
-        displayGraph(type)
+
+        liveGraphViewModel = ViewModelProviders.of(this).get(LiveGraphViewModel::class.java)
     }
 
-    private fun displayGraph(type: Int) {
-        val description = Description()
-        description.text = "Hardcoded description: $type "
-        line_chart.description = description
-        line_chart.data = LineData()
+    override fun onResume() {
+        super.onResume()
+        val type: Int = intent.getIntExtra(EXTRA_GRAPH_TYPE, -1)
+        liveGraphViewModel.updates.observe(this, Observer { updateGraph() })
+        loadGraph(type)
+    }
+
+
+    private fun loadGraph(type: Int) {
+        val graph: BleGraph = liveGraphViewModel.getGraph(type)
+        line_chart.description = graph.getDescription()
+        line_chart.data = graph.lineData
+        line_chart.invalidate()
+    }
+
+    private fun updateGraph() {
+        line_chart.notifyDataSetChanged()
         line_chart.invalidate()
     }
 
@@ -42,3 +55,5 @@ class LiveGraphActivity : AppCompatActivity() {
         }
     }
 }
+
+
