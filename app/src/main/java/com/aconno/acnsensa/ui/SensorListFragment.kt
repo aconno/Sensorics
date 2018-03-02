@@ -41,6 +41,28 @@ class SensorListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        setClickListeners()
+    }
+
+    private fun setClickListeners() {
+        context?.let { context ->
+            sensor_temperature.setOnClickListener { LiveGraphActivity.start(context, 0) }
+            sensor_light.setOnClickListener { LiveGraphActivity.start(context, 1) }
+            sensor_humidity.setOnClickListener { LiveGraphActivity.start(context, 2) }
+            sensor_pressure.setOnClickListener { LiveGraphActivity.start(context, 3) }
+
+            sensor_magnetometer_x.setOnClickListener { LiveGraphActivity.start(context, 4) }
+            sensor_magnetometer_y.setOnClickListener { LiveGraphActivity.start(context, 4) }
+            sensor_magnetometer_z.setOnClickListener { LiveGraphActivity.start(context, 4) }
+
+            sensor_accelerometer_x.setOnClickListener { LiveGraphActivity.start(context, 5) }
+            sensor_accelerometer_y.setOnClickListener { LiveGraphActivity.start(context, 5) }
+            sensor_accelerometer_z.setOnClickListener { LiveGraphActivity.start(context, 5) }
+
+            sensor_gyroscope_x.setOnClickListener { LiveGraphActivity.start(context, 6) }
+            sensor_gyroscope_y.setOnClickListener { LiveGraphActivity.start(context, 6) }
+            sensor_gyroscope_z.setOnClickListener { LiveGraphActivity.start(context, 6) }
+        }
     }
 
     private fun initView() {
