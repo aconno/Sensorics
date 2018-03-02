@@ -12,4 +12,11 @@ class AccelerometerReading(
     override fun getSensorType(): SensorType {
         return SensorType.ACCELEROMETER
     }
+
+    override fun getCsvString(): String {
+        return timestamp.toString() + "," +
+                accelerometerX.toString() + "," +
+                accelerometerY.toString() + "," +
+                accelerometerZ.toString()
+    }
 }

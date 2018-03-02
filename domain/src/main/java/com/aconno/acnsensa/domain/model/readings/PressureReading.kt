@@ -10,4 +10,9 @@ class PressureReading(
     override fun getSensorType(): SensorType {
         return SensorType.PRESSURE
     }
+
+    override fun getCsvString(): String {
+        return timestamp.toString() + "," +
+                pressure.toString()
+    }
 }
