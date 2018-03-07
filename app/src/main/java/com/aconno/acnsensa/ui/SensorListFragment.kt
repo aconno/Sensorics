@@ -46,8 +46,8 @@ class SensorListFragment : Fragment() {
 
     private fun setClickListeners() {
         context?.let { context ->
-            sensor_temperature.setOnClickListener { LiveGraphActivity.start(context, 0) }
-            sensor_light.setOnClickListener { LiveGraphActivity.start(context, 1) }
+            sensor_temperature.setOnClickListener { LiveGraphActivity.start(context, 1) }
+            sensor_light.setOnClickListener { LiveGraphActivity.start(context, 2) }
             sensor_humidity.setOnClickListener { LiveGraphActivity.start(context, 2) }
             sensor_pressure.setOnClickListener { LiveGraphActivity.start(context, 3) }
 
