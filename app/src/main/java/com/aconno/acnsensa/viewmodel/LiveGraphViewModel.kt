@@ -2,10 +2,6 @@ package com.aconno.acnsensa.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.aconno.acnsensa.domain.Bluetooth
-import com.aconno.acnsensa.domain.interactor.type.MaybeUseCaseWithParameter
-import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
-import com.aconno.acnsensa.domain.model.ScanResult
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -16,9 +12,7 @@ import io.reactivex.Flowable
  * @aconno
  */
 class LiveGraphViewModel(
-    private val bluetooth: Bluetooth,
-    private val filterAdvertisementsUseCase: MaybeUseCaseWithParameter<ScanResult, ScanResult>,
-    private val sensorValuesUseCase: SingleUseCaseWithParameter<Map<String, Number>, ScanResult>
+    private val sensorValues: Flowable<Map<String, Number>>
 ) : ViewModel() {
     val updates: MutableLiveData<Unit> = MutableLiveData()
 
@@ -40,13 +34,25 @@ class LiveGraphViewModel(
     val lightGraph = BleGraph("Light", "Light Graph", listOf(lightSeries))
     val humidityGraph = BleGraph("Humidity", "Humidity Graph", listOf(humiditySeries))
     val pressureGraph = BleGraph("Test", "Description", listOf(pressureSeries))
-    val magnetometerGraph = BleGraph("Test", "Description", listOf(xMagnetometerSeries, yMagnetometerSeries, zMagnetometerSeries))
-    val accelerometerGraph = BleGraph("Test", "Description", listOf(xAccelerometerSeries, yAccelerometerSeries, zAccelerometerSeries))
-    val gyroscopeGraph = BleGraph("Test", "Description", listOf(xGyroscopeSeries, yGyroscopeSeries, zGyroscopeSeries))
+    val magnetometerGraph = BleGraph(
+        "Test",
+        "Description",
+        listOf(xMagnetometerSeries, yMagnetometerSeries, zMagnetometerSeries)
+    )
+    val accelerometerGraph = BleGraph(
+        "Test",
+        "Description",
+        listOf(xAccelerometerSeries, yAccelerometerSeries, zAccelerometerSeries)
+    )
+    val gyroscopeGraph = BleGraph(
+        "Test",
+        "Description",
+        listOf(xGyroscopeSeries, yGyroscopeSeries, zGyroscopeSeries)
+    )
 
 
     fun getGraph(type: Int): BleGraph {
-        return when(type) {
+        return when (type) {
             1 -> temperatureGraph
             2 -> lightGraph
             3 -> humidityGraph
@@ -64,23 +70,21 @@ class LiveGraphViewModel(
     }
 
     private fun subscribe() {
-        val observable: Flowable<ScanResult> = bluetooth.getScanResults()
-        observable.subscribe { scanResult ->
-            filterAdvertisementsUseCase
-                .execute(scanResult)
-                .subscribe { filteredScanResult ->
-                    sensorValuesUseCase
-                        .execute(filteredScanResult)
-                        .subscribe { sensorValues -> processSensorValues(sensorValues) }
-                }
-        }
+        sensorValues.subscribe { processSensorValues(it) }
     }
 
     private fun processSensorValues(sensorValues: Map<String, Number>?) {
         sensorValues?.let {
-            for((a, b) in it) {
+            for ((a, b) in it) {
                 when (a) {
-                    "Temperature" -> temperatureSeries.updateDataSet(listOf(Pair(System.currentTimeMillis(),b)))
+                    "Temperature" -> temperatureSeries.updateDataSet(
+                        listOf(
+                            Pair(
+                                System.currentTimeMillis(),
+                                b
+                            )
+                        )
+                    )
                 }
             }
         }
