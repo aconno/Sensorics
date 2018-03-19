@@ -27,7 +27,8 @@ class SensorListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        sensorListViewModel.getResult().observe(this, Observer { displaySensorValues(it) })
+        sensorListViewModel.getSensorValuesLiveData()
+            .observe(this, Observer { displaySensorValues(it) })
     }
 
     override fun onCreateView(

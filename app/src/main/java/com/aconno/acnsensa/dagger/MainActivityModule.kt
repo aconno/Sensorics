@@ -3,9 +3,6 @@ package com.aconno.acnsensa.dagger
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.domain.Bluetooth
-import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
 import com.aconno.acnsensa.ui.MainActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModelFactory
@@ -13,26 +10,13 @@ import com.aconno.acnsensa.viewmodel.SensorListViewModel
 import com.aconno.acnsensa.viewmodel.SensorListViewModelFactory
 import dagger.Module
 import dagger.Provides
+import io.reactivex.Flowable
 
 /**
  * @author aconno
  */
 @Module
 class MainActivityModule(private val mainActivity: MainActivity) {
-
-    @Provides
-    @MainActivityScope
-    fun provideAdvertisementMatcher() = AdvertisementMatcher()
-
-    @Provides
-    @MainActivityScope
-    fun provideFilterAdvertisementUseCase(advertisementMatcher: AdvertisementMatcher) =
-        FilterAdvertisementsUseCase(advertisementMatcher)
-
-    @Provides
-    @MainActivityScope
-    fun provideSensorValuesUseCase(advertisementMatcher: AdvertisementMatcher) =
-        GetSensorValuesUseCase(advertisementMatcher)
 
     @Provides
     @MainActivityScope
@@ -43,14 +27,8 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     @Provides
     @MainActivityScope
     fun provideSensorListViewModelFactory(
-        bluetooth: Bluetooth,
-        filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
-        sensorValuesUseCase: GetSensorValuesUseCase
-    ) = SensorListViewModelFactory(
-        bluetooth,
-        filterAdvertisementsUseCase,
-        sensorValuesUseCase
-    )
+        sensorValues: Flowable<Map<String, Number>>
+    ) = SensorListViewModelFactory(sensorValues)
 
     @Provides
     @MainActivityScope
