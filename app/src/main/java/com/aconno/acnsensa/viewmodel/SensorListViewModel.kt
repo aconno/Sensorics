@@ -25,16 +25,15 @@ class SensorListViewModel(
     }
 
     private fun subscribe() {
+
+        getSensorValuesFlowable().subscribe { processSensorValues(it) }
+    }
+
+    private fun getSensorValuesFlowable(): Flowable<Map<String, Number>> {
         val observable: Flowable<ScanResult> = bluetooth.getScanResults()
-        observable.subscribe { scanResult ->
-            filterAdvertisementsUseCase
-                .execute(scanResult)
-                .subscribe { filteredScanResult ->
-                    sensorValuesUseCase
-                        .execute(filteredScanResult)
-                        .subscribe { sensorValues -> processSensorValues(sensorValues) }
-                }
-        }
+        return observable
+            .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
+            .concatMap { sensorValuesUseCase.execute(it).toFlowable() }
     }
 
     private fun processSensorValues(values: Map<String, Number>) {
