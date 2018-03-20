@@ -75,7 +75,9 @@ class BluetoothScanningService : Service() {
     }
 
     private fun startRecording() {
-        sensorValues.subscribe { recordUseCase.execute(it) }
+        sensorValues.subscribe {
+            recordUseCase.execute(it)
+        }
     }
 
     companion object {

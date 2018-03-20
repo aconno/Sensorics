@@ -1,5 +1,5 @@
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.model.Advertisement
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
@@ -8,12 +8,12 @@ import com.aconno.acnsensa.domain.vectorsAdvertisement
 import io.reactivex.Single
 import org.junit.Test
 
-class GetSensorValuesUseCaseTest {
+class DeserializeScanResultUseCaseTest {
 
     @Test
     fun correctDeserializationOfScalarsAdvertisement() {
         val advertisementMatcher = AdvertisementMatcher()
-        val getSensorValuesUseCase = GetSensorValuesUseCase(advertisementMatcher)
+        val getSensorValuesUseCase = DeserializeScanResultUseCase(advertisementMatcher)
 
         val testDevice = Device("TestName", "D9:D9:D9:D9:D9:D9")
 
@@ -29,7 +29,7 @@ class GetSensorValuesUseCaseTest {
     @Test
     fun correctDeserializationOfVectorsAdvertisement() {
         val advertisementMatcher = AdvertisementMatcher()
-        val getSensorValuesUseCase = GetSensorValuesUseCase(advertisementMatcher)
+        val getSensorValuesUseCase = DeserializeScanResultUseCase(advertisementMatcher)
 
         val testDevice = Device("TestName", "D9:D9:D9:D9:D9:D9")
 

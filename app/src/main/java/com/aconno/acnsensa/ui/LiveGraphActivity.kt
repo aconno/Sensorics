@@ -40,8 +40,8 @@ class LiveGraphActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         val type: Int = intent.getIntExtra(EXTRA_GRAPH_TYPE, -1)
-        liveGraphViewModel.updates.observe(this, Observer { updateGraph() })
         loadGraph(type)
+        liveGraphViewModel.getUpdates().observe(this, Observer { updateGraph(it) })
     }
 
 
@@ -52,7 +52,8 @@ class LiveGraphActivity : AppCompatActivity() {
         line_chart.invalidate()
     }
 
-    private fun updateGraph() {
+    private fun updateGraph(long: Long?) {
+        line_chart.data.notifyDataChanged()
         line_chart.notifyDataSetChanged()
         line_chart.invalidate()
     }
