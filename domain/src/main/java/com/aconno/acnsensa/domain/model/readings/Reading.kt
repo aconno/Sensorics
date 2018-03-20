@@ -6,4 +6,6 @@ abstract class Reading(
     val timestamp: Long
 ) {
     abstract fun getSensorType(): SensorType
+
+    abstract fun getCsvString(): String
 }

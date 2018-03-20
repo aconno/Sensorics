@@ -10,4 +10,9 @@ class HumidityReading(
     override fun getSensorType(): SensorType {
         return SensorType.HUMIDITY
     }
+
+    override fun getCsvString(): String {
+        return timestamp.toString() + "," +
+                humidity.toString()
+    }
 }

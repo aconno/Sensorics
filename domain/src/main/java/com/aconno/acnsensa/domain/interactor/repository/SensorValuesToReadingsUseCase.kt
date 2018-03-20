@@ -1,19 +1,17 @@
-package com.aconno.acnsensa.domain.interactor.bluetooth
+package com.aconno.acnsensa.domain.interactor.repository
 
 import com.aconno.acnsensa.domain.format.ScalarsAdvertisementFormat
 import com.aconno.acnsensa.domain.format.VectorsAdvertisementFormat
-import com.aconno.acnsensa.domain.interactor.type.CompletableUseCaseWithParameter
+import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.acnsensa.domain.model.readings.*
-import com.aconno.acnsensa.domain.repository.InMemoryRepository
-import io.reactivex.Completable
+import io.reactivex.Single
 
 /**
- * @author aconno
+ * @aconno
  */
-class RecordSensorValuesUseCase(private val readingsRepository: InMemoryRepository) :
-    CompletableUseCaseWithParameter<Map<String, Number>> {
-
-    override fun execute(parameter: Map<String, Number>): Completable {
+class SensorValuesToReadingsUseCase :
+    SingleUseCaseWithParameter<List<Reading>, Map<String, Number>> {
+    override fun execute(parameter: Map<String, Number>): Single<List<Reading>> {
         val timestamp: Long = System.currentTimeMillis()
 
         val readings: List<Reading?> = listOf(
@@ -26,8 +24,7 @@ class RecordSensorValuesUseCase(private val readingsRepository: InMemoryReposito
             makeTemperatureReading(timestamp, parameter)
         )
 
-        readings.filterNotNull().forEach { readingsRepository.addReading(it) }
-        return Completable.complete()
+        return Single.just(readings.filterNotNull())
     }
 
     private fun makeAccelerometerReading(timestamp: Long, values: Map<String, Number>): Reading? {

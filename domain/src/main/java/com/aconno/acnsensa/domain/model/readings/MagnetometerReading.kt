@@ -12,4 +12,11 @@ class MagnetometerReading(
     override fun getSensorType(): SensorType {
         return SensorType.MAGNETOMETER
     }
+
+    override fun getCsvString(): String {
+        return timestamp.toString() + "," +
+                magnetometerX.toString() + "," +
+                magnetometerY.toString() + "," +
+                magnetometerZ.toString()
+    }
 }

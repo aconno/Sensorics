@@ -12,4 +12,11 @@ class GyroscopeReading(
     override fun getSensorType(): SensorType {
         return SensorType.GYROSCOPE
     }
+
+    override fun getCsvString(): String {
+        return timestamp.toString() + "," +
+                gyroscopeX.toString() + "," +
+                gyroscopeY.toString() + "," +
+                gyroscopeZ.toString()
+    }
 }

@@ -2,7 +2,7 @@ package com.aconno.acnsensa.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
 import com.aconno.acnsensa.domain.model.SensorType
 import com.aconno.acnsensa.domain.model.readings.*
 import com.github.mikephil.charting.components.Description
@@ -16,7 +16,7 @@ import io.reactivex.Flowable
  */
 class LiveGraphViewModel(
     private val sensorValues: Flowable<Map<String, Number>>,
-    private val getSensorValuesUseCase: GetSensorValuesUseCase
+    private val getReadingsUseCase: GetReadingsUseCase
 ) : ViewModel() {
     private val refreshTimestamp: MutableLiveData<Long> = MutableLiveData()
 
@@ -86,31 +86,31 @@ class LiveGraphViewModel(
     private fun processSensorValues() {
         when (graphType) {
             GraphType.TEMPERATURE ->
-                getSensorValuesUseCase
+                getReadingsUseCase
                     .execute(SensorType.TEMPERATURE)
                     .subscribe { readings -> updateTemperatureValues(readings) }
             GraphType.LIGHT ->
-                getSensorValuesUseCase
+                getReadingsUseCase
                     .execute(SensorType.LIGHT)
                     .subscribe { readings -> updateLightValues(readings) }
             GraphType.HUMIDITY ->
-                getSensorValuesUseCase
+                getReadingsUseCase
                     .execute(SensorType.HUMIDITY)
                     .subscribe { readings -> updateHumidityValues(readings) }
             GraphType.PRESSURE ->
-                getSensorValuesUseCase
+                getReadingsUseCase
                     .execute(SensorType.PRESSURE)
                     .subscribe { readings -> updatePressureValues(readings) }
             GraphType.MAGNETOMETER ->
-                getSensorValuesUseCase
+                getReadingsUseCase
                     .execute(SensorType.MAGNETOMETER)
                     .subscribe { readings -> updateMagnetometerValues(readings) }
             GraphType.ACCELEROMETER ->
-                getSensorValuesUseCase
+                getReadingsUseCase
                     .execute(SensorType.ACCELEROMETER)
                     .subscribe { readings -> updateAccelerometerValues(readings) }
             GraphType.GYROSCOPE ->
-                getSensorValuesUseCase
+                getReadingsUseCase
                     .execute(SensorType.GYROSCOPE)
                     .subscribe { readings -> updateGyroscopeValues(readings) }
             else -> throw IllegalArgumentException()

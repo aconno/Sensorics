@@ -10,4 +10,9 @@ class TemperatureReading(
     override fun getSensorType(): SensorType {
         return SensorType.TEMPERATURE
     }
+
+    override fun getCsvString(): String {
+        return timestamp.toString() + "," +
+                temperature.toString()
+    }
 }
