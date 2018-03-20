@@ -4,10 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
 import com.aconno.acnsensa.domain.model.SensorType
-import com.aconno.acnsensa.domain.model.readings.HumidityReading
-import com.aconno.acnsensa.domain.model.readings.LightReading
-import com.aconno.acnsensa.domain.model.readings.Reading
-import com.aconno.acnsensa.domain.model.readings.TemperatureReading
+import com.aconno.acnsensa.domain.model.readings.*
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -99,7 +96,10 @@ class LiveGraphViewModel(
                 getSensorValuesUseCase
                     .execute(SensorType.HUMIDITY)
                     .subscribe { readings -> updateHumidityValues(readings) }
-            GraphType.PRESSURE -> updatePressureValues()
+            GraphType.PRESSURE ->
+                getSensorValuesUseCase
+                    .execute(SensorType.PRESSURE)
+                    .subscribe { readings -> updatePressureValues(readings) }
             GraphType.MAGNETOMETER -> updateMagnetometerValues()
             GraphType.ACCELEROMETER -> updateAccelerometerValues()
             GraphType.GYROSCOPE -> updateGyroscopeValues()
@@ -139,8 +139,10 @@ class LiveGraphViewModel(
         humiditySeries.updateDataSet(dataPoints)
     }
 
-    private fun updatePressureValues() {
-
+    private fun updatePressureValues(readings: List<Reading>) {
+        val pressureValues: List<PressureReading> = getList(readings, PressureReading::class.java)
+        val dataPoints = pressureValues.map { Pair(it.timestamp, it.pressure) }
+        pressureSeries.updateDataSet(dataPoints)
     }
 
     private fun updateMagnetometerValues() {
