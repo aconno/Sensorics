@@ -1,25 +1,46 @@
 <resources>
-    <string name="app_name">ACNSENSA Demo</string>
-    <string name="permission_fail">Cannot proceed without the requested permissions.</string>
+    <!-- MainActivity -->
+    <string name="app_name">AcnSensaDroid</string>
+    <string name="scan">Scan</string>
+    <string name="stop_scanning">Stop scanning</string>
 
-    <string name="temperature_chart_title">Temperature</string>
-    <string name="temperature_chart_description">Temperature measured in degrees celsius.</string>
+    <!-- SensorListFragment -->
+    <string name="temperature">Temperature</string>
+    <string name="default_temperature">0°C</string>
 
-    <string name="light_chart_title">Light</string>
-    <string name="light_chart_description">Light measured in percentage.</string>
+    <string name="light">Light</string>
+    <string name="default_light">0.00%</string>
 
-    <string name="humidity_chart_title">Humidity</string>
-    <string name="humidity_chart_description">Humidity measured in percentage.</string>
+    <string name="humidity">Humidity</string>
+    <string name="default_humidity">0.00%</string>
 
-    <string name="pressure_chart_title">Pressure</string>
-    <string name="pressure_chart_description">Pressure measured in mPa.</string>
+    <string name="pressure">Pressure</string>
+    <string name="default_pressure">0000.00hPa</string>
 
-    <string name="magnetometer_chart_title">Magnetometer</string>
-    <string name="magnetometer_chart_description">Magnetometer measured in Gauss.</string>
+    <string name="magnetometer_x">Magnetometer X</string>
+    <string name="default_magnetometer_x">0.00µT</string>
 
-    <string name="gyro_chart_title">Gyroscope</string>
-    <string name="gyro_chart_description">Gyroscope measured in dps.</string>
+    <string name="magnetometer_y">Magnetometer Y</string>
+    <string name="default_magnetometer_y">0.00µT</string>
 
-    <string name="accelerometer_chart_title">Accelerometer</string>
-    <string name="accelerometer_chart_description">Accelerometer measured in g.</string>
+    <string name="magnetometer_z">Magnetometer Z</string>
+    <string name="default_magnetometer_z">0.00µT</string>
+
+    <string name="accelerometer_x">Accelerometer X</string>
+    <string name="default_accelerometer_x">0.00mg</string>
+
+    <string name="accelerometer_y">Accelerometer Y</string>
+    <string name="default_accelerometer_y">0.00mg</string>
+
+    <string name="accelerometer_z">Accelerometer Z</string>
+    <string name="default_accelerometer_z">0.00mg</string>
+
+    <string name="gyro_x">Gyroscope X</string>
+    <string name="default_gyro_x">0.00dps</string>
+
+    <string name="gyro_y">Gyroscope Y</string>
+    <string name="default_gyro_y">0.00dps</string>
+
+    <string name="gyro_z">Gyroscope Z</string>
+    <string name="default_gyro_z">0.00dps</string>
 </resources>

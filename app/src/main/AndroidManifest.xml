@@ -1,68 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="de.troido.acnsensa">
-
-    <uses-feature
-        android:name="android.hardware.bluetooth_le"
-        android:required="true" />
+    package="com.aconno.acnsensa">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name="de.troido.acnsensa.SensorApplication"
+        android:name=".AcnSensaApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name="de.troido.acnsensa.SensorActivity"
-            android:screenOrientation="portrait">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <service android:name="de.troido.acnsensa.service.SensorBleService" />
-
-        <receiver android:name="de.troido.acnsensa.service.SensorBootBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
-        <activity
-            android:name="de.troido.acnsensa.tasker.SensorTaskerActivity"
-            android:exported="true"
-            android:icon="@drawable/ic_temperature"
-            android:label="Sensor"
-            tools:ignore="ExportedActivity">
-            <intent-filter>
-                <action android:name="net.dinglisch.android.tasker.ACTION_EDIT_EVENT" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".GraphActivity"
-            android:screenOrientation="landscape" />
-
-        <receiver
-            android:name="de.troido.acnsensa.tasker.QueryReceiver"
-            android:exported="true"
-            android:process=":background"
-            tools:ignore="ExportedReceiver">
-            <intent-filter>
-                <action android:name="com.twofortyfouram.locale.intent.action.QUERY_CONDITION" />
-            </intent-filter>
-        </receiver>
-
+        <activity android:name=".ui.LiveGraphActivity" />
     </application>
+
 </manifest>
