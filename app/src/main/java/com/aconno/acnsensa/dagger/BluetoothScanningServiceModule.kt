@@ -7,6 +7,7 @@ import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.BluetoothScanningServiceReceiver
 import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
+import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Module
 import dagger.Provides
@@ -47,5 +48,12 @@ class BluetoothScanningServiceModule(
         return RecordSensorValuesUseCase(
             inMemoryRepository
         )
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideSensorValuesToReadingsUseCase(): SensorValuesToReadingsUseCase {
+        return SensorValuesToReadingsUseCase()
+
     }
 }
