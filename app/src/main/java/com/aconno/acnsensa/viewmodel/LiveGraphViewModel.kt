@@ -41,21 +41,22 @@ class LiveGraphViewModel(
     private val yGyroscopeSeries = BleDataSeries("Gyroscope Y")
     private val zGyroscopeSeries = BleDataSeries("Gyroscope Z")
 
-    val temperatureGraph = BleGraph("Temperature", "Temperature Graph", listOf(temperatureSeries))
-    val lightGraph = BleGraph("Light", "Light Graph", listOf(lightSeries))
-    val humidityGraph = BleGraph("Humidity", "Humidity Graph", listOf(humiditySeries))
-    val pressureGraph = BleGraph("Test", "Description", listOf(pressureSeries))
-    val magnetometerGraph = BleGraph(
+    private val temperatureGraph =
+        BleGraph("Temperature", "Temperature Graph", listOf(temperatureSeries))
+    private val lightGraph = BleGraph("Light", "Light Graph", listOf(lightSeries))
+    private val humidityGraph = BleGraph("Humidity", "Humidity Graph", listOf(humiditySeries))
+    private val pressureGraph = BleGraph("Test", "Description", listOf(pressureSeries))
+    private val magnetometerGraph = BleGraph(
         "Test",
         "Description",
         listOf(xMagnetometerSeries, yMagnetometerSeries, zMagnetometerSeries)
     )
-    val accelerometerGraph = BleGraph(
+    private val accelerometerGraph = BleGraph(
         "Test",
         "Description",
         listOf(xAccelerometerSeries, yAccelerometerSeries, zAccelerometerSeries)
     )
-    val gyroscopeGraph = BleGraph(
+    private val gyroscopeGraph = BleGraph(
         "Test",
         "Description",
         listOf(xGyroscopeSeries, yGyroscopeSeries, zGyroscopeSeries)
@@ -100,9 +101,18 @@ class LiveGraphViewModel(
                 getSensorValuesUseCase
                     .execute(SensorType.PRESSURE)
                     .subscribe { readings -> updatePressureValues(readings) }
-            GraphType.MAGNETOMETER -> updateMagnetometerValues()
-            GraphType.ACCELEROMETER -> updateAccelerometerValues()
-            GraphType.GYROSCOPE -> updateGyroscopeValues()
+            GraphType.MAGNETOMETER ->
+                getSensorValuesUseCase
+                    .execute(SensorType.MAGNETOMETER)
+                    .subscribe { readings -> updateMagnetometerValues(readings) }
+            GraphType.ACCELEROMETER ->
+                getSensorValuesUseCase
+                    .execute(SensorType.ACCELEROMETER)
+                    .subscribe { readings -> updateAccelerometerValues(readings) }
+            GraphType.GYROSCOPE ->
+                getSensorValuesUseCase
+                    .execute(SensorType.GYROSCOPE)
+                    .subscribe { readings -> updateGyroscopeValues(readings) }
             else -> throw IllegalArgumentException()
         }
 
@@ -145,16 +155,40 @@ class LiveGraphViewModel(
         pressureSeries.updateDataSet(dataPoints)
     }
 
-    private fun updateMagnetometerValues() {
+    private fun updateMagnetometerValues(readings: List<Reading>) {
+        val magnetometerValues: List<MagnetometerReading> =
+            getList(readings, MagnetometerReading::class.java)
+        val xDataPoints = magnetometerValues.map { Pair(it.timestamp, it.magnetometerX) }
+        val yDataPoints = magnetometerValues.map { Pair(it.timestamp, it.magnetometerY) }
+        val zDataPoints = magnetometerValues.map { Pair(it.timestamp, it.magnetometerZ) }
 
+        xMagnetometerSeries.updateDataSet(xDataPoints)
+        yMagnetometerSeries.updateDataSet(yDataPoints)
+        zMagnetometerSeries.updateDataSet(zDataPoints)
     }
 
-    private fun updateAccelerometerValues() {
+    private fun updateAccelerometerValues(readings: List<Reading>) {
+        val accelerometerValues: List<AccelerometerReading> =
+            getList(readings, AccelerometerReading::class.java)
+        val xDataPoints = accelerometerValues.map { Pair(it.timestamp, it.accelerometerX) }
+        val yDataPoints = accelerometerValues.map { Pair(it.timestamp, it.accelerometerY) }
+        val zDataPoints = accelerometerValues.map { Pair(it.timestamp, it.accelerometerZ) }
 
+        xAccelerometerSeries.updateDataSet(xDataPoints)
+        yAccelerometerSeries.updateDataSet(yDataPoints)
+        zAccelerometerSeries.updateDataSet(zDataPoints)
     }
 
-    private fun updateGyroscopeValues() {
+    private fun updateGyroscopeValues(readings: List<Reading>) {
+        val gyroscopeValues: List<GyroscopeReading> =
+            getList(readings, GyroscopeReading::class.java)
+        val xDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.gyroscopeX) }
+        val yDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.gyroscopeY) }
+        val zDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.gyroscopeZ) }
 
+        xGyroscopeSeries.updateDataSet(xDataPoints)
+        yGyroscopeSeries.updateDataSet(yDataPoints)
+        zGyroscopeSeries.updateDataSet(zDataPoints)
     }
 }
 
@@ -185,7 +219,7 @@ class BleDataSeries(val title: String) {
     }
 }
 
-class BleGraph(val title: String, val description: String, val series: List<BleDataSeries>) {
+class BleGraph(val title: String, private val description: String, series: List<BleDataSeries>) {
 
 
     val lineData = LineData(series.map { it.lineDataSet })
