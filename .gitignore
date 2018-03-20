@@ -34,7 +34,14 @@ captures/
 
 # Intellij
 *.iml
-.idea/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/dictionaries
+.idea/libraries
+
+# Keystore files
+*.jks
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
@@ -42,8 +49,13 @@ captures/
 # Google Services (e.g. APIs or Firebase)
 google-services.json
 
-# macOS clutter
-*.DS_Store
+# Freeline
+freeline.py
+freeline/
+freeline_project_description.json
 
-# Windows clutter
+# OSX files
+.DS_Store
+
+# Windows files
 Thumbs.db
