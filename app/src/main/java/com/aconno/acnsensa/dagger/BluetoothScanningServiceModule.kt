@@ -6,6 +6,8 @@ import android.content.IntentFilter
 import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.BluetoothScanningServiceReceiver
 import com.aconno.acnsensa.device.notification.NotificationFactory
+import com.aconno.acnsensa.domain.interactor.bluetooth.RecordSensorValuesUseCase
+import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Module
 import dagger.Provides
 
@@ -36,4 +38,12 @@ class BluetoothScanningServiceModule(
     @Provides
     @BluetoothScanningServiceScope
     fun provideBluetoothScanningReceiverIntentFilter() = IntentFilter("com.aconno.acnsensa.STOP")
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideRecordSensorValuesUseCase(
+        inMemoryRepository: InMemoryRepository
+    ): RecordSensorValuesUseCase {
+        return RecordSensorValuesUseCase(inMemoryRepository)
+    }
 }

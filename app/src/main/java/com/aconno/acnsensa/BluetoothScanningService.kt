@@ -13,6 +13,8 @@ import com.aconno.acnsensa.dagger.BluetoothScanningServiceComponent
 import com.aconno.acnsensa.dagger.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.DaggerBluetoothScanningServiceComponent
 import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.interactor.bluetooth.RecordSensorValuesUseCase
+import io.reactivex.Flowable
 import javax.inject.Inject
 
 /**
@@ -22,6 +24,12 @@ class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var bluetooth: Bluetooth
+
+    @Inject
+    lateinit var sensorValues: Flowable<Map<String, Number>>
+
+    @Inject
+    lateinit var recordUseCase: RecordSensorValuesUseCase
 
     @Inject
     lateinit var receiver: BroadcastReceiver
@@ -57,12 +65,19 @@ class BluetoothScanningService : Service() {
         startForeground(1, notification)
 
         bluetooth.startScanning()
+        startRecording()
         return START_STICKY
     }
 
     fun stopScanning() {
         bluetooth.stopScanning()
         stopSelf()
+    }
+
+    private fun startRecording() {
+        sensorValues.subscribe {
+            recordUseCase.execute(it)
+        }
     }
 
     companion object {
