@@ -13,7 +13,7 @@ import com.aconno.acnsensa.dagger.BluetoothScanningServiceComponent
 import com.aconno.acnsensa.dagger.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.DaggerBluetoothScanningServiceComponent
 import com.aconno.acnsensa.domain.Bluetooth
-import com.aconno.acnsensa.domain.interactor.bluetooth.RecordSensorValuesUseCase
+import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import io.reactivex.Flowable
 import javax.inject.Inject
 
