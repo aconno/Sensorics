@@ -9,18 +9,23 @@ import io.reactivex.Completable
  * @aconno
  */
 class LogReadingUseCase(private val fileStorage: FileStorage) :
-    CompletableUseCaseWithParameter<Reading> {
-    override fun execute(parameter: Reading): Completable {
-        when (parameter) {
-            is TemperatureReading -> fileStorage.storeReading(parameter, "temperature.csv")
-            is LightReading -> fileStorage.storeReading(parameter, "light.csv")
-            is HumidityReading -> fileStorage.storeReading(parameter, "humidity.csv")
-            is PressureReading -> fileStorage.storeReading(parameter, "pressure.csv")
-            is MagnetometerReading -> fileStorage.storeReading(parameter, "magnetometer.csv")
-            is AccelerometerReading -> fileStorage.storeReading(parameter, "accelerometer.csv")
-            is GyroscopeReading -> fileStorage.storeReading(parameter, "gyroscope.csv")
+    CompletableUseCaseWithParameter<List<Reading>> {
+    override fun execute(parameter: List<Reading>): Completable {
+        for (reading in parameter) {
+            logReading(reading)
         }
-
         return Completable.complete()
+    }
+
+    private fun logReading(reading: Reading) {
+        when (reading) {
+            is TemperatureReading -> fileStorage.storeReading(reading, "temperature.csv")
+            is LightReading -> fileStorage.storeReading(reading, "light.csv")
+            is HumidityReading -> fileStorage.storeReading(reading, "humidity.csv")
+            is PressureReading -> fileStorage.storeReading(reading, "pressure.csv")
+            is MagnetometerReading -> fileStorage.storeReading(reading, "magnetometer.csv")
+            is AccelerometerReading -> fileStorage.storeReading(reading, "accelerometer.csv")
+            is GyroscopeReading -> fileStorage.storeReading(reading, "gyroscope.csv")
+        }
     }
 }

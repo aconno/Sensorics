@@ -6,6 +6,8 @@ import android.content.IntentFilter
 import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.BluetoothScanningServiceReceiver
 import com.aconno.acnsensa.device.notification.NotificationFactory
+import com.aconno.acnsensa.device.storage.FileStorageImpl
+import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
@@ -45,9 +47,7 @@ class BluetoothScanningServiceModule(
     fun provideRecordSensorValuesUseCase(
         inMemoryRepository: InMemoryRepository
     ): RecordSensorValuesUseCase {
-        return RecordSensorValuesUseCase(
-            inMemoryRepository
-        )
+        return RecordSensorValuesUseCase(inMemoryRepository)
     }
 
     @Provides
@@ -55,5 +55,11 @@ class BluetoothScanningServiceModule(
     fun provideSensorValuesToReadingsUseCase(): SensorValuesToReadingsUseCase {
         return SensorValuesToReadingsUseCase()
 
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideLogReadingsUseCase(): LogReadingUseCase {
+        return LogReadingUseCase(FileStorageImpl(bluetoothScanningService))
     }
 }
