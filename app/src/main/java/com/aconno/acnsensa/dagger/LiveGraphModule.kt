@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.dagger
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.ui.LiveGraphActivity
 import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
@@ -20,9 +20,9 @@ class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
     @LiveGraphScope
     fun provideLiveGraphViewModelFactory(
         sensorValues: Flowable<Map<String, Number>>,
-        getSensorValuesUseCase: GetSensorValuesUseCase
+        getReadingsUseCase: GetReadingsUseCase
     ) =
-        LiveGraphViewModelFactory(sensorValues, getSensorValuesUseCase)
+        LiveGraphViewModelFactory(sensorValues, getReadingsUseCase)
 
     @Provides
     @LiveGraphScope
@@ -36,5 +36,5 @@ class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
     @LiveGraphScope
     fun provideGetSensorValuesUseCase(
         inMemoryRepository: InMemoryRepository
-    ) = GetSensorValuesUseCase(inMemoryRepository)
+    ) = GetReadingsUseCase(inMemoryRepository)
 }

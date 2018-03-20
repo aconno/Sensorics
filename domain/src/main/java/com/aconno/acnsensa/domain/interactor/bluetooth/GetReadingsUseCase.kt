@@ -9,7 +9,7 @@ import io.reactivex.Single
 /**
  * @author aconno
  */
-class GetSensorValuesUseCase(
+class GetReadingsUseCase(
     private val inMemoryRepository: InMemoryRepository
 ) : SingleUseCaseWithParameter<List<Reading>, SensorType> {
 
