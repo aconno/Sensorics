@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
 import com.aconno.acnsensa.domain.model.SensorType
+import com.aconno.acnsensa.domain.model.readings.HumidityReading
 import com.aconno.acnsensa.domain.model.readings.LightReading
 import com.aconno.acnsensa.domain.model.readings.Reading
 import com.aconno.acnsensa.domain.model.readings.TemperatureReading
@@ -94,7 +95,10 @@ class LiveGraphViewModel(
                 getSensorValuesUseCase
                     .execute(SensorType.LIGHT)
                     .subscribe { readings -> updateLightValues(readings) }
-            GraphType.HUMIDITY -> updateHumidityValues()
+            GraphType.HUMIDITY ->
+                getSensorValuesUseCase
+                    .execute(SensorType.HUMIDITY)
+                    .subscribe { readings -> updateHumidityValues(readings) }
             GraphType.PRESSURE -> updatePressureValues()
             GraphType.MAGNETOMETER -> updateMagnetometerValues()
             GraphType.ACCELEROMETER -> updateAccelerometerValues()
@@ -129,7 +133,10 @@ class LiveGraphViewModel(
         lightSeries.updateDataSet(dataPoints)
     }
 
-    private fun updateHumidityValues() {
+    private fun updateHumidityValues(readings: List<Reading>) {
+        val humidityReadings: List<HumidityReading> = getList(readings, HumidityReading::class.java)
+        val dataPoints = humidityReadings.map { Pair(it.timestamp, it.humidity) }
+        humiditySeries.updateDataSet(dataPoints)
     }
 
     private fun updatePressureValues() {
