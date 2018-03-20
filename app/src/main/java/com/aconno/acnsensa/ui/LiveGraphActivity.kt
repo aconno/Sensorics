@@ -40,8 +40,9 @@ class LiveGraphActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         val type: Int = intent.getIntExtra(EXTRA_GRAPH_TYPE, -1)
-        loadGraph(type)
+        liveGraphViewModel.graphType = type
         liveGraphViewModel.getUpdates().observe(this, Observer { updateGraph(it) })
+        loadGraph(type)
     }
 
 

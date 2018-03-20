@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
 import com.aconno.acnsensa.domain.model.SensorType
+import com.aconno.acnsensa.domain.model.readings.Reading
 import com.aconno.acnsensa.domain.model.readings.TemperatureReading
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.Entry
@@ -23,6 +24,9 @@ class LiveGraphViewModel(
     fun getUpdates(): MutableLiveData<Long> {
         return refreshTimestamp
     }
+
+    //TODO Custom setter to check if graph type is valid.
+    var graphType: Int = -1
 
     private val temperatureSeries = BleDataSeries("Temperature")
     private val lightSeries = BleDataSeries("Light")
@@ -58,7 +62,6 @@ class LiveGraphViewModel(
         listOf(xGyroscopeSeries, yGyroscopeSeries, zGyroscopeSeries)
     )
 
-
     fun getGraph(type: Int): BleGraph {
         return when (type) {
             GraphType.TEMPERATURE -> temperatureGraph
@@ -77,18 +80,61 @@ class LiveGraphViewModel(
     }
 
     private fun subscribe() {
-        sensorValues.subscribe { processSensorValues(it) }
+        sensorValues.subscribe { processSensorValues() }
     }
 
-    private fun processSensorValues(sensorValues: Map<String, Number>?) {
-        val listReading: List<TemperatureReading> =
-            getSensorValuesUseCase.execute(SensorType.TEMPERATURE).blockingGet() as List<TemperatureReading>
+    private fun processSensorValues() {
+        when (graphType) {
+            GraphType.TEMPERATURE ->
+                getSensorValuesUseCase.execute(SensorType.TEMPERATURE).subscribe { readings ->
+                    updateTemperatureValues(
+                        readings
+                    )
+                }
+            GraphType.LIGHT -> updateLightValues()
+            GraphType.HUMIDITY -> updateHumidityValues()
+            GraphType.PRESSURE -> updatePressureValues()
+            GraphType.MAGNETOMETER -> updateMagnetometerValues()
+            GraphType.ACCELEROMETER -> updateAccelerometerValues()
+            GraphType.GYROSCOPE -> updateGyroscopeValues()
+            else -> throw IllegalArgumentException()
+        }
 
-        val input = listReading.map { Pair(it.timestamp, it.temperature) }
-        temperatureSeries.updateDataSet(listReading.map { Pair(it.timestamp, it.temperature) })
+    }
 
+    private fun updateTemperatureValues(readings: List<Reading>) {
+        val listReading: List<TemperatureReading> = readings.filterIsInstance<TemperatureReading>()
+        if (listReading.size == readings.size) {
+            val dataPoints = listReading.map { Pair(it.timestamp, it.temperature) }
+            temperatureSeries.updateDataSet(dataPoints)
+            refreshTimestamp.value = System.currentTimeMillis()
+        } else {
+            throw IllegalStateException("List contains readings of different types.")
+        }
+    }
 
-        refreshTimestamp.value = System.currentTimeMillis()
+    private fun updateLightValues() {
+
+    }
+
+    private fun updateHumidityValues() {
+
+    }
+
+    private fun updatePressureValues() {
+
+    }
+
+    private fun updateMagnetometerValues() {
+
+    }
+
+    private fun updateAccelerometerValues() {
+
+    }
+
+    private fun updateGyroscopeValues() {
+
     }
 }
 
