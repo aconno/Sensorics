@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorValuesUseCase
 import com.aconno.acnsensa.domain.model.SensorType
+import com.aconno.acnsensa.domain.model.readings.LightReading
 import com.aconno.acnsensa.domain.model.readings.Reading
 import com.aconno.acnsensa.domain.model.readings.TemperatureReading
 import com.github.mikephil.charting.components.Description
@@ -86,12 +87,13 @@ class LiveGraphViewModel(
     private fun processSensorValues() {
         when (graphType) {
             GraphType.TEMPERATURE ->
-                getSensorValuesUseCase.execute(SensorType.TEMPERATURE).subscribe { readings ->
-                    updateTemperatureValues(
-                        readings
-                    )
-                }
-            GraphType.LIGHT -> updateLightValues()
+                getSensorValuesUseCase
+                    .execute(SensorType.TEMPERATURE)
+                    .subscribe { readings -> updateTemperatureValues(readings) }
+            GraphType.LIGHT ->
+                getSensorValuesUseCase
+                    .execute(SensorType.LIGHT)
+                    .subscribe { readings -> updateLightValues(readings) }
             GraphType.HUMIDITY -> updateHumidityValues()
             GraphType.PRESSURE -> updatePressureValues()
             GraphType.MAGNETOMETER -> updateMagnetometerValues()
@@ -100,25 +102,34 @@ class LiveGraphViewModel(
             else -> throw IllegalArgumentException()
         }
 
+        refreshTimestamp.value = System.currentTimeMillis()
+
     }
 
-    private fun updateTemperatureValues(readings: List<Reading>) {
-        val listReading: List<TemperatureReading> = readings.filterIsInstance<TemperatureReading>()
-        if (listReading.size == readings.size) {
-            val dataPoints = listReading.map { Pair(it.timestamp, it.temperature) }
-            temperatureSeries.updateDataSet(dataPoints)
-            refreshTimestamp.value = System.currentTimeMillis()
+    private fun <T> getList(readings: List<Reading>, targetClass: Class<T>): List<T> {
+        val typedReadings: List<T> = readings.filterIsInstance(targetClass)
+        if (typedReadings.size == readings.size) {
+            return typedReadings
         } else {
             throw IllegalStateException("List contains readings of different types.")
         }
     }
 
-    private fun updateLightValues() {
+    private fun updateTemperatureValues(readings: List<Reading>) {
+        val temperatureReadings: List<TemperatureReading> =
+            getList(readings, TemperatureReading::class.java)
 
+        val dataPoints = temperatureReadings.map { Pair(it.timestamp, it.temperature) }
+        temperatureSeries.updateDataSet(dataPoints)
+    }
+
+    private fun updateLightValues(readings: List<Reading>) {
+        val lightReadings: List<LightReading> = getList(readings, LightReading::class.java)
+        val dataPoints = lightReadings.map { Pair(it.timestamp, it.light) }
+        lightSeries.updateDataSet(dataPoints)
     }
 
     private fun updateHumidityValues() {
-
     }
 
     private fun updatePressureValues() {
@@ -150,7 +161,6 @@ class BleDataSeries(val title: String) {
 
     fun updateDataSet(newEntries: List<Pair<Long, Number>>) {
 
-        //TODO: uncomment
         entries.clear()
 
         if (!newEntries.isEmpty()) {
