@@ -61,13 +61,13 @@ class LiveGraphViewModel(
 
     fun getGraph(type: Int): BleGraph {
         return when (type) {
-            1 -> temperatureGraph
-            2 -> lightGraph
-            3 -> humidityGraph
-            4 -> pressureGraph
-            5 -> magnetometerGraph
-            6 -> accelerometerGraph
-            7 -> gyroscopeGraph
+            GraphType.TEMPERATURE -> temperatureGraph
+            GraphType.LIGHT -> lightGraph
+            GraphType.HUMIDITY -> humidityGraph
+            GraphType.PRESSURE -> pressureGraph
+            GraphType.MAGNETOMETER -> magnetometerGraph
+            GraphType.ACCELEROMETER -> accelerometerGraph
+            GraphType.GYROSCOPE -> gyroscopeGraph
             else -> throw IllegalArgumentException()
         }
     }
@@ -135,4 +135,14 @@ class BleGraph(val title: String, val description: String, val series: List<BleD
         description.text = this.description
         return description
     }
+}
+
+object GraphType {
+    const val TEMPERATURE: Int = 1
+    const val LIGHT: Int = 2
+    const val HUMIDITY: Int = 3
+    const val PRESSURE: Int = 4
+    const val MAGNETOMETER: Int = 5
+    const val ACCELEROMETER: Int = 6
+    const val GYROSCOPE: Int = 7
 }
