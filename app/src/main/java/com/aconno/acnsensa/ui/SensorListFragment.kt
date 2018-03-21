@@ -90,6 +90,10 @@ class SensorListFragment : Fragment() {
             sensor_gyroscope_z.setOnClickListener {
                 LiveGraphActivity.start(context, GraphType.GYROSCOPE)
             }
+
+            sensor_battery_level.setOnClickListener {
+                LiveGraphActivity.start(context, GraphType.BATTERY_LEVEL)
+            }
         }
     }
 
