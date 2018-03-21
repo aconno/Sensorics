@@ -2,8 +2,10 @@ package com.aconno.acnsensa.ui
 
 import android.Manifest
 import android.arch.lifecycle.Observer
+import android.bluetooth.BluetoothAdapter
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -57,6 +59,11 @@ class MainActivity : AppCompatActivity() {
 
         if (!hasPermissions()) {
             requestPermissions()
+        } else if (!isBtEnabled()) {
+            Timber.e("BT enabled")
+            Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.enable) { enableBt() }
+                .show()
         }
     }
 
@@ -165,6 +172,16 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    private fun isBtEnabled(): Boolean {
+        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        return bluetoothAdapter?.isEnabled ?: false
+    }
+
+    private fun enableBt() {
+        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        bluetoothAdapter.enable()
     }
 
     companion object {

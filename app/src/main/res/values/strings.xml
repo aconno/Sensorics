@@ -47,4 +47,6 @@
     <string name="battery_level">Battery Level</string>
     <string name="default_battery_level">0%</string>
     <string name="grant_permissions">Please grant required permissions.</string>
+    <string name="bt_disabled">Bluetooth is disabled</string>
+    <string name="enable">Enable</string>
 </resources>

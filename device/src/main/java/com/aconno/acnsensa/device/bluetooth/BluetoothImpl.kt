@@ -39,6 +39,7 @@ class BluetoothImpl(
     }
 
     override fun startScanning() {
+
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         if (bluetoothPermission.isGranted) {
             val settingsBuilder = ScanSettings.Builder()
