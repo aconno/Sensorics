@@ -12,38 +12,38 @@ pressure, light, battery level).
 
  The detailed format of the Advertisement 0 is as follows:
 
-| Byte | Example | Description                                                                  |
-|------|---------|------------------------------------------------------------------------------|
-| 0    | 0x02    | Length of EIR packet ( Type + Data ) in bytes. Example: 2 bytes              |
-| 1    | 0x01    | Type                                                                         |
-| 2    | 0x04    | Type Value                                                                   |
-| 3    | 0x1A    | Length of EIR packet ( Type + Data ) in bytes. Example: 0x1A equals 26 bytes.|
-| 4    | 0xFF    | Type                                                                         |
-| 5    | 0x59    | Byte 1 of Vendor ID. Example: Nordic ID is 0x59 0x00                         |
-| 6    | 0x00    | Byte 2 of Vendor ID. Example: Nordic ID is 0x59 0x00                         |
-| 7    | 0x17    | Byte 1 of App ID. Example: App ID is 0x17 0xCF                               |
-| 8    | 0xCF    | Byte 2 of App ID. Example: App ID is 0x17 0xCF                               |
-| 9    | 0x00    | Advertisement Type. Example: Advertisement type 0.                           |
-| 10   | 0x2C    | Byte 2 of Gyroscope X value. Example: 0x06 0x2c = (short) 1580               |
-| 11   | 0x06    | Byte 1 of Gyroscope X value. Example: 0x06 0x2c = (short) 1580               |
-| 12   | 0xA8    | Byte 2 of Gyroscope Y value. Example: 0x0E 0xA8 = (short) 3752               |
-| 13   | 0x0E    | Byte 1 of Gyroscope Y value. Example: 0x0E 0xA8 = (short) 3752               |
-| 14   | 0x4D    | Byte 2 of Gyroscope Z value. Example: 0x08 0x4D = (short) 2125               |
-| 15   | 0x08    | Byte 1 of Gyroscope Z value. Example: 0x08 0x4D = (short) 2125               |
-| 16   | 0x4A    | Byte 2 of Accelerometer X value. Example: 0xFD 0x4A = (short) -694           |
-| 17   | 0xFD    | Byte 1 of Accelerometer X value. Example: 0xFD 0x4A = (short) -694           |
-| 18   | 0x61    | Byte 2 of Accelerometer Y value. Example: 0x06 0x61 = (short) 1633           |
-| 19   | 0x06    | Byte 1 of Accelerometer Y value. Example: 0x06 0x61 = (short) 1633           |
-| 20   | 0x15    | Byte 2 of Accelerometer Z value. Example: 0xDB 0x15 = (short) -9451          |
-| 21   | 0xDB    | Byte 1 of Accelerometer Z value. Example: 0xDB 0x15 = (short) -9451          |
-| 22   | 0x92    | Byte 2 of Magnetometer X value. Example: 0x0D 0x92 = (short) 3474            |
-| 23   | 0x0D    | Byte 1 of Magnetometer X value. Example: 0x0D 0x92 = (short) 3474            |
-| 24   | 0x50    | Byte 2 of Magnetometer Y value. Example: 0xFE 0x50 = (short) -432            |
-| 25   | 0xFE    | Byte 1 of Magnetometer Y value. Example: 0xFE 0x50 = (short) -432            |
-| 26   | 0x33    | Byte 2 of Magnetometer Z value. Example: 0x09 0x33 = (short) 2355            |
-| 27   | 0x09    | Byte 1 of Magnetometer Z value. Example: 0x09 0x33 = (short) 2355            |
-| 28   | 0x9E    | Byte 2 of Accelerometer scaling factor. Example: 0x0F 0x9E = (short) 3998    |
-| 29   | 0x0F    | Byte 1 of Accelerometer scaling factor. Example: 0x0F 0x9E = (short) 3998    |
+| Byte | Example | Description                                                                          |
+|------|---------|--------------------------------------------------------------------------------------|
+| 0    | 0x02    | Length of EIR packet ( Type + Data ) in bytes. Example: 2 bytes                      |
+| 1    | 0x01    | Type                                                                                 |
+| 2    | 0x04    | Type Value                                                                           |
+| 3    | 0x1A    | Length of EIR packet ( Type + Data ) in bytes. Example: 0x1A equals 26 bytes.        |
+| 4    | 0xFF    | Type                                                                                 |
+| 5    | 0x59    | Byte 1 of Vendor ID. Example: Nordic ID is 0x59 0x00                                 |
+| 6    | 0x00    | Byte 2 of Vendor ID. Example: Nordic ID is 0x59 0x00                                 |
+| 7    | 0x17    | Byte 1 of App ID. Example: App ID is 0x17 0xCF                                       |
+| 8    | 0xCF    | Byte 2 of App ID. Example: App ID is 0x17 0xCF                                       |
+| 9    | 0x00    | Advertisement Type. Example: Advertisement type 0.                                   |
+| 10   | 0x2C    | Byte 2 of Gyroscope X value. Example: 0x06 0x2c = (short) 1580                       |
+| 11   | 0x06    | Byte 1 of Gyroscope X value. Example: 0x06 0x2c = (short) 1580                       |
+| 12   | 0xA8    | Byte 2 of Gyroscope Y value. Example: 0x0E 0xA8 = (short) 3752                       |
+| 13   | 0x0E    | Byte 1 of Gyroscope Y value. Example: 0x0E 0xA8 = (short) 3752                       |
+| 14   | 0x4D    | Byte 2 of Gyroscope Z value. Example: 0x08 0x4D = (short) 2125                       |
+| 15   | 0x08    | Byte 1 of Gyroscope Z value. Example: 0x08 0x4D = (short) 2125                       |
+| 16   | 0x4A    | Byte 2 of Accelerometer X value. Example: 0xFD 0x4A = (short) -694                   |
+| 17   | 0xFD    | Byte 1 of Accelerometer X value. Example: 0xFD 0x4A = (short) -694                   |
+| 18   | 0x61    | Byte 2 of Accelerometer Y value. Example: 0x06 0x61 = (short) 1633                   |
+| 19   | 0x06    | Byte 1 of Accelerometer Y value. Example: 0x06 0x61 = (short) 1633                   |
+| 20   | 0x15    | Byte 2 of Accelerometer Z value. Example: 0xDB 0x15 = (short) -9451                  |
+| 21   | 0xDB    | Byte 1 of Accelerometer Z value. Example: 0xDB 0x15 = (short) -9451                  |
+| 22   | 0x92    | Byte 2 of Magnetometer X value. Example: 0x0D 0x92 = (short) 3474                    |
+| 23   | 0x0D    | Byte 1 of Magnetometer X value. Example: 0x0D 0x92 = (short) 3474                    |
+| 24   | 0x50    | Byte 2 of Magnetometer Y value. Example: 0xFE 0x50 = (short) -432                    |
+| 25   | 0xFE    | Byte 1 of Magnetometer Y value. Example: 0xFE 0x50 = (short) -432                    |
+| 26   | 0x33    | Byte 2 of Magnetometer Z value. Example: 0x09 0x33 = (short) 2355                    |
+| 27   | 0x09    | Byte 1 of Magnetometer Z value. Example: 0x09 0x33 = (short) 2355                    |
+| 28   | 0x9E    | Byte 2 of Accelerometer scaling factor. Example: 0x0F 0x9E = (unsigned short) 3998   |
+| 29   | 0x0F    | Byte 1 of Accelerometer scaling factor. Example: 0x0F 0x9E = (unsigned short) 3998   |
 
 Furthermore, the short values gotten for the Gyroscope, Accelerometer, and Magnetometer need to be
 scaled using the following factors.
