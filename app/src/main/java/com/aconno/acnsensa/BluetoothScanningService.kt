@@ -12,6 +12,7 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.dagger.BluetoothScanningServiceComponent
 import com.aconno.acnsensa.dagger.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.DaggerBluetoothScanningServiceComponent
+import com.aconno.acnsensa.data.startMqtt
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
@@ -73,6 +74,7 @@ class BluetoothScanningService : Service() {
         startForeground(1, notification)
 
         bluetooth.startScanning()
+        startMqtt(applicationContext)
         startRecording()
         startLogging()
         return START_STICKY
