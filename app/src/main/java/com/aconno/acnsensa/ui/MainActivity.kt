@@ -1,10 +1,15 @@
 package com.aconno.acnsensa.ui
 
+import android.Manifest
 import android.arch.lifecycle.Observer
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.DaggerMainActivityComponent
@@ -49,6 +54,10 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
+
+        if (!hasPermissions()) {
+            requestPermissions()
+        }
     }
 
     private fun handleScanEvent(scanEvent: ScanEvent?) {
@@ -122,6 +131,51 @@ class MainActivity : AppCompatActivity() {
                 bluetoothScanningViewModel.startScanning()
             }
         }
+    }
+
+    /**
+     * Checks if all the permissions are granted
+     *
+     * @return true if all the permissions are granted
+     */
+    private fun hasPermissions(): Boolean {
+        val result = PERMISSIONS.sumBy { ContextCompat.checkSelfPermission(this, it) }
+        return result == PackageManager.PERMISSION_GRANTED
+    }
+
+    /**
+     * Requests all the permissions needed
+     */
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSIONS)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_PERMISSIONS) {
+            val result = grantResults.sum()
+
+            if (result != PackageManager.PERMISSION_GRANTED) {
+
+                Toast.makeText(this, R.string.grant_permissions, Toast.LENGTH_LONG)
+                    .show()
+                finish()
+            }
+        }
+    }
+
+    companion object {
+
+        const val REQUEST_PERMISSIONS = 0x0001
+
+        val PERMISSIONS = arrayOf(
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
     }
 }
 

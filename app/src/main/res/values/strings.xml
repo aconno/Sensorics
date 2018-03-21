@@ -46,4 +46,5 @@
 
     <string name="battery_level">Battery Level</string>
     <string name="default_battery_level">0%</string>
+    <string name="grant_permissions">Please grant required permissions.</string>
 </resources>
