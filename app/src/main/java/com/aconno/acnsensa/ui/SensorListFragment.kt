@@ -146,6 +146,9 @@ class SensorListFragment : Fragment() {
         sensor_gyroscope_z.name.text = getString(R.string.gyro_z)
         sensor_gyroscope_z.value.text = getString(R.string.default_gyro_z)
 
+        sensor_battery_level.icon.setImageResource(R.drawable.ic_pressure)
+        sensor_battery_level.name.text = getString(R.string.battery_level)
+        sensor_battery_level.value.text = getString(R.string.default_battery_level)
     }
 
     private fun displaySensorValues(values: Map<String, Number>?) {
@@ -164,6 +167,7 @@ class SensorListFragment : Fragment() {
             val gyroXLabel = getString(R.string.gyro_x)
             val gyroYLabel = getString(R.string.gyro_y)
             val gyroZLabel = getString(R.string.gyro_z)
+            val batteryLabel = getString(R.string.battery_level)
 
             val temperature = values["Temperature"]
             val light = values["Light"]
@@ -178,6 +182,7 @@ class SensorListFragment : Fragment() {
             val gyroscopeX = values["Gyroscope X"]
             val gyroscopeY = values["Gyroscope Y"]
             val gyroscopeZ = values["Gyroscope Z"]
+            val batteryLevel = values["Battery Level"]
 
             temperature?.let { sensor_temperature.update(temperatureLabel, "$temperature°C") }
             light?.let { sensor_light.update(lightLabel, "$light%") }
@@ -198,6 +203,8 @@ class SensorListFragment : Fragment() {
             gyroscopeX?.let { sensor_gyroscope_x.update(gyroXLabel, "${gyroscopeX}dps") }
             gyroscopeY?.let { sensor_gyroscope_y.update(gyroYLabel, "${gyroscopeY}dps") }
             gyroscopeZ?.let { sensor_gyroscope_z.update(gyroZLabel, "${gyroscopeZ}dps") }
+
+            batteryLevel?.let { sensor_battery_level.update(batteryLabel, "$batteryLevel%") }
         }
     }
 }

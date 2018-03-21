@@ -43,4 +43,7 @@
 
     <string name="gyro_z">Gyroscope Z</string>
     <string name="default_gyro_z">0.00dps</string>
+
+    <string name="battery_level">Battery Level</string>
+    <string name="default_battery_level">0%</string>
 </resources>
