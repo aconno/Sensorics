@@ -50,9 +50,25 @@ interface AdvertisementDeserializer {
         return when (targetType) {
             SupportedTypes.FLOAT -> byteBuffer.getFloat(0)
             SupportedTypes.SHORT -> byteBuffer.getShort(0)
+            SupportedTypes.UNSIGNED_SHORT -> deserializeUnsignedShort(byteBuffer)
             SupportedTypes.BYTE -> byteBuffer.get(0)
             else -> throw Exception("Invalid target Type: $targetType")
         }
     }
+
+    private fun deserializeUnsignedShort(byteBuffer: ByteBuffer): Int {
+        val size = byteBuffer.capacity()
+        if (size == 2) {
+            val signedValue = byteBuffer.short
+            return if (signedValue < 0) {
+                signedValue.toInt() + 65536
+            } else {
+                signedValue.toInt()
+            }
+        }
+
+        throw IllegalArgumentException("Invalid size for unsigned short: $size")
+    }
+
 
 }
