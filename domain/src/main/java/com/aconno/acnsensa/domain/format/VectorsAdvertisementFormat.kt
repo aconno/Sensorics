@@ -80,7 +80,7 @@ class VectorsAdvertisementFormat : AcnSensaBaseFormat() {
                 startIndexInclusive = 28,
                 endIndexExclusive = 30,
                 isReversed = true,
-                targetType = SupportedTypes.SHORT
+                targetType = SupportedTypes.UNSIGNED_SHORT
             )
         )
 

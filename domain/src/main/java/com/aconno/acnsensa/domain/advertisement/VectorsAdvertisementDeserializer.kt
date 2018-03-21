@@ -47,7 +47,7 @@ class VectorsAdvertisementDeserializer(
             VectorsAdvertisementFormat.ACCELEROMETER_SCALE_FACTOR
         )
 
-        val accelerometerScaleFactor = accelerometerBaseScale.toShort() / 65536f
+        val accelerometerScaleFactor = accelerometerBaseScale.toInt() / 65536f
         val gyroscopeScaleFactor = 245.0f / 32768.0f
         val magnetometerScaleFactor = 0.00014f
 

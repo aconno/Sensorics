@@ -6,5 +6,6 @@ package com.aconno.acnsensa.domain.format
 object SupportedTypes {
     const val FLOAT = "Float"
     const val SHORT = "Short"
+    const val UNSIGNED_SHORT = "Unsigned Short"
     const val BYTE = "Byte"
 }
