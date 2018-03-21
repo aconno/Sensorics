@@ -41,16 +41,53 @@ class VectorsAdvertisementDeserializer(
             advertisement, vectorsAdvertisementFormat, VectorsAdvertisementFormat.MAGNETOMETER_Z
         )
 
+        val accelerometerBaseScale = getValue(
+            advertisement,
+            vectorsAdvertisementFormat,
+            VectorsAdvertisementFormat.ACCELEROMETER_SCALE_FACTOR
+        )
+
+        val accelerometerScaleFactor = accelerometerBaseScale.toShort() / 65536f
+        val gyroscopeScaleFactor = 245.0f / 32768.0f
+        val magnetometerScaleFactor = 0.00014f
+
         return mapOf(
-            Pair(VectorsAdvertisementFormat.GYROSCOPE_X, gyroscopeX),
-            Pair(VectorsAdvertisementFormat.GYROSCOPE_Y, gyroscopeY),
-            Pair(VectorsAdvertisementFormat.GYROSCOPE_Z, gyroscopeZ),
-            Pair(VectorsAdvertisementFormat.ACCELEROMETER_X, accelerometerX),
-            Pair(VectorsAdvertisementFormat.ACCELEROMETER_Y, accelerometerY),
-            Pair(VectorsAdvertisementFormat.ACCELEROMETER_Z, accelerometerZ),
-            Pair(VectorsAdvertisementFormat.MAGNETOMETER_X, magnetometerX),
-            Pair(VectorsAdvertisementFormat.MAGNETOMETER_Y, magnetometerY),
-            Pair(VectorsAdvertisementFormat.MAGNETOMETER_Z, magnetometerZ)
+            Pair(
+                VectorsAdvertisementFormat.GYROSCOPE_X,
+                gyroscopeX.toFloat() * gyroscopeScaleFactor
+            ),
+            Pair(
+                VectorsAdvertisementFormat.GYROSCOPE_Y,
+                gyroscopeY.toFloat() * gyroscopeScaleFactor
+            ),
+            Pair(
+                VectorsAdvertisementFormat.GYROSCOPE_Z,
+                gyroscopeZ.toFloat() * gyroscopeScaleFactor
+            ),
+            Pair(
+                VectorsAdvertisementFormat.ACCELEROMETER_X,
+                accelerometerX.toFloat() * accelerometerScaleFactor
+            ),
+            Pair(
+                VectorsAdvertisementFormat.ACCELEROMETER_Y,
+                accelerometerY.toFloat() * accelerometerScaleFactor
+            ),
+            Pair(
+                VectorsAdvertisementFormat.ACCELEROMETER_Z,
+                accelerometerZ.toFloat() * accelerometerScaleFactor
+            ),
+            Pair(
+                VectorsAdvertisementFormat.MAGNETOMETER_X,
+                magnetometerX.toFloat() * magnetometerScaleFactor
+            ),
+            Pair(
+                VectorsAdvertisementFormat.MAGNETOMETER_Y,
+                magnetometerY.toFloat() * magnetometerScaleFactor
+            ),
+            Pair(
+                VectorsAdvertisementFormat.MAGNETOMETER_Z,
+                magnetometerZ.toFloat() * magnetometerScaleFactor
+            )
         )
     }
 }
