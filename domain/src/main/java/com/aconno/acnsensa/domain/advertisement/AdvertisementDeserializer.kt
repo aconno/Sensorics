@@ -39,8 +39,8 @@ interface AdvertisementDeserializer {
             var byteRange = rawBytes.subList(format.startIndexInclusive, format.endIndexExclusive)
             if (format.isReversed) {
                 byteRange = byteRange.reversed()
-                return ByteBuffer.wrap(byteRange.toByteArray())
             }
+            return ByteBuffer.wrap(byteRange.toByteArray())
         }
 
         throw NoSuchElementException("No type $type in the advertisement format.")

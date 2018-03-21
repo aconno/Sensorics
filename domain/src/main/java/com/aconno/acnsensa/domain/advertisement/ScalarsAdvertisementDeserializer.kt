@@ -23,11 +23,19 @@ class ScalarsAdvertisementDeserializer(
         val light =
             getValue(advertisement, scalarsAdvertisementFormat, ScalarsAdvertisementFormat.LIGHT)
 
+        val batteryLevel = getValue(
+            advertisement,
+            scalarsAdvertisementFormat,
+            ScalarsAdvertisementFormat.BATTERY_LEVEL
+        )
+
+
         return mapOf(
             Pair(ScalarsAdvertisementFormat.TEMPERATURE, temperature),
             Pair(ScalarsAdvertisementFormat.HUMIDITY, humidity),
             Pair(ScalarsAdvertisementFormat.PRESSURE, pressure),
-            Pair(ScalarsAdvertisementFormat.LIGHT, light)
+            Pair(ScalarsAdvertisementFormat.LIGHT, light),
+            Pair(ScalarsAdvertisementFormat.BATTERY_LEVEL, batteryLevel)
         )
     }
 }

@@ -26,6 +26,7 @@ class LogReadingUseCase(private val fileStorage: FileStorage) :
             is MagnetometerReading -> fileStorage.storeReading(reading, "magnetometer.csv")
             is AccelerometerReading -> fileStorage.storeReading(reading, "accelerometer.csv")
             is GyroscopeReading -> fileStorage.storeReading(reading, "gyroscope.csv")
+            is BatteryReading -> fileStorage.storeReading(reading, "battery.csv")
         }
     }
 }

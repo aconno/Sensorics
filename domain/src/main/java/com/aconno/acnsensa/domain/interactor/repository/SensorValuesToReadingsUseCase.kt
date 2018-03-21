@@ -21,7 +21,8 @@ class SensorValuesToReadingsUseCase :
             makeLightReading(timestamp, parameter),
             makeMagnetometerReading(timestamp, parameter),
             makePressureReading(timestamp, parameter),
-            makeTemperatureReading(timestamp, parameter)
+            makeTemperatureReading(timestamp, parameter),
+            makeBatteryLevelReading(timestamp, parameter)
         )
 
         return Single.just(readings.filterNotNull())
@@ -84,6 +85,12 @@ class SensorValuesToReadingsUseCase :
     private fun makeTemperatureReading(timestamp: Long, values: Map<String, Number>): Reading? {
         val temperature = values[ScalarsAdvertisementFormat.TEMPERATURE]
         temperature?.let { return TemperatureReading(timestamp, it) }
+        return null
+    }
+
+    private fun makeBatteryLevelReading(timestamp: Long, values: Map<String, Number>): Reading? {
+        val batteryLevel = values[ScalarsAdvertisementFormat.BATTERY_LEVEL]
+        batteryLevel?.let { return BatteryReading(timestamp, it) }
         return null
     }
 }

@@ -47,7 +47,17 @@ class ScalarsAdvertisementFormat : AcnSensaBaseFormat() {
             )
         )
 
-        return baseFormat + mapOf(temperature, humidity, pressure, light)
+        val batteryLevel = Pair(
+            BATTERY_LEVEL,
+            ByteFormat(
+                startIndexInclusive = 26,
+                endIndexExclusive = 27,
+                isReversed = false,
+                targetType = SupportedTypes.BYTE
+            )
+        )
+
+        return baseFormat + mapOf(temperature, humidity, pressure, light, batteryLevel)
     }
 
     override fun getRequiredFormat(): List<Byte> = requiredFormat
@@ -55,10 +65,10 @@ class ScalarsAdvertisementFormat : AcnSensaBaseFormat() {
     override fun getMaskBytePositions(): List<Int> = acnSensaMaskBytesPosition
 
     companion object {
-
         const val TEMPERATURE = "Temperature"
         const val HUMIDITY = "Humidity"
         const val PRESSURE = "Pressure"
         const val LIGHT = "Light"
+        const val BATTERY_LEVEL = "Battery Level"
     }
 }

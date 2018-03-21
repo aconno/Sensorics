@@ -4,10 +4,11 @@ Android app for displaying sensor readings from the ACNSENSA aconno board. Senso
 gotten from the board using only BLE advertisements. For this purpose two advertisements are used:
 
 - Advertisement 0: This advertisement contains all the data for 3D values (gyro, accelerometer,
-and magnetometer).
+and magnetometer). Additionally, this advertisement also contains the scaling factor for the
+accelerometer.
 
 - Advertisement 1: This advertisement contains all the data for 1D values (temperature, humidity,
-pressure, light).
+pressure, light, battery level).
 
  The detailed format of the Advertisement 0 is as follows:
 
@@ -33,25 +34,25 @@ pressure, light).
 | 17   | 0xFD    | Byte 1 of Accelerometer X value. Example: 0xFD 0x4A = (short) -694           |
 | 18   | 0x61    | Byte 2 of Accelerometer Y value. Example: 0x06 0x61 = (short) 1633           |
 | 19   | 0x06    | Byte 1 of Accelerometer Y value. Example: 0x06 0x61 = (short) 1633           |
-| 20   | 0xC0    | Byte 2 of Accelerometer Z value. Example: 0xB5 0xC0 = (short) -19008         |
-| 21   | 0xB5    | Byte 1 of Accelerometer Z value. Example: 0xB5 0xC0 = (short) -19008         |
+| 20   | 0x15    | Byte 2 of Accelerometer Z value. Example: 0xDB 0x15 = (short) -9451          |
+| 21   | 0xDB    | Byte 1 of Accelerometer Z value. Example: 0xDB 0x15 = (short) -9451          |
 | 22   | 0x92    | Byte 2 of Magnetometer X value. Example: 0x0D 0x92 = (short) 3474            |
 | 23   | 0x0D    | Byte 1 of Magnetometer X value. Example: 0x0D 0x92 = (short) 3474            |
 | 24   | 0x50    | Byte 2 of Magnetometer Y value. Example: 0xFE 0x50 = (short) -432            |
 | 25   | 0xFE    | Byte 1 of Magnetometer Y value. Example: 0xFE 0x50 = (short) -432            |
 | 26   | 0x33    | Byte 2 of Magnetometer Z value. Example: 0x09 0x33 = (short) 2355            |
 | 27   | 0x09    | Byte 1 of Magnetometer Z value. Example: 0x09 0x33 = (short) 2355            |
-| 28   | 0x00    | Unused. This value is not guaranteed to be 0x00                              |
-| 29   | 0x00    | Unused. This value is not guaranteed to be 0x00                              |
+| 28   | 0x9E    | Byte 2 of Accelerometer scaling factor. Example: 0x0F 0x9E = (short) 3998    |
+| 29   | 0x0F    | Byte 1 of Accelerometer scaling factor. Example: 0x0F 0x9E = (short) 3998    |
 
 Furthermore, the short values gotten for the Gyroscope, Accelerometer, and Magnetometer need to be
 scaled using the following factors.
 
-| Type          | Scale Factor       | Example                               |
-|---------------|--------------------|---------------------------------------|
-| Gyroscope     |  245.0f / 32768.0f | 1580 * 245.0f /32768.0f = 11.8133545  |
-| Accelerometer |  2.0f / 32768.0f   | -694 * 2.0f / 32768.0f = -0.0423584   |
-| Magnetometer  |  0.00014f          | 3474 * 0.00014 = 0.48636              |
+| Type          | Scale Factor          | Example                               |
+|---------------|-----------------------|---------------------------------------|
+| Gyroscope     |  245.0f / 32768.0f    | 1580 * 245.0f /32768.0f = 11.8133545  |
+| Accelerometer |  scaleFactor / 65536  | -9451 * (3998 / 65536f) = -576.5548   |
+| Magnetometer  |  0.00014f             | 3474 * 0.00014 = 0.48636              |
 
 For the Advertisement 1, the format is as follows:
 
@@ -83,10 +84,8 @@ For the Advertisement 1, the format is as follows:
 | 23   | 0x0C    | Byte 3 of light. Example: 0x40 0x48 0x0C 0x82 = (float) 3.1257634            |
 | 24   | 0x48    | Byte 2 of light. Example: 0x40 0x48 0x0C 0x82 = (float) 3.1257634            |
 | 25   | 0x40    | Byte 1 of light. Example: 0x40 0x48 0x0C 0x82 = (float) 3.1257634            |
-| 26   | 0x2B    | Unused. This value is not guaranteed to be 0x00.                             |
+| 26   | 0x4B    | Battery level percentage. Example:  0x4B = (byte) 75 decimal                 |
 | 27   | 0x09    | Unused. This value is not guaranteed to be 0x00.                             |
 | 28   | 0x00    | Unused. This value is not guaranteed to be 0x00.                             |
 | 29   | 0x00    | Unused. This value is not guaranteed to be 0x00.                             |
-
-
 

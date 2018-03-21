@@ -74,6 +74,16 @@ class VectorsAdvertisementFormat : AcnSensaBaseFormat() {
             )
         )
 
+        val accelerometerScaleFactor = Pair(
+            ACCELEROMETER_SCALE_FACTOR,
+            ByteFormat(
+                startIndexInclusive = 28,
+                endIndexExclusive = 30,
+                isReversed = true,
+                targetType = SupportedTypes.SHORT
+            )
+        )
+
         return baseFormat + mapOf(
             gyroscopeX,
             gyroscopeY,
@@ -83,7 +93,8 @@ class VectorsAdvertisementFormat : AcnSensaBaseFormat() {
             accelerometerZ,
             magnetometerX,
             magnetometerY,
-            magnetometerZ
+            magnetometerZ,
+            accelerometerScaleFactor
         )
     }
 
@@ -103,5 +114,7 @@ class VectorsAdvertisementFormat : AcnSensaBaseFormat() {
         const val MAGNETOMETER_X = "Magnetometer X"
         const val MAGNETOMETER_Y = "Magnetometer Y"
         const val MAGNETOMETER_Z = "Magnetometer Z"
+
+        const val ACCELEROMETER_SCALE_FACTOR = "Accelerometer Scale Factor"
     }
 }

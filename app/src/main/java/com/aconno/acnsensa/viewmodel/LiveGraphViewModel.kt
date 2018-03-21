@@ -40,27 +40,31 @@ class LiveGraphViewModel(
     private val xGyroscopeSeries = BleDataSeries("Gyroscope X")
     private val yGyroscopeSeries = BleDataSeries("Gyroscope Y")
     private val zGyroscopeSeries = BleDataSeries("Gyroscope Z")
+    private val batteryLevelSeries = BleDataSeries("Battery Level")
 
     private val temperatureGraph =
         BleGraph("Temperature", "Temperature Graph", listOf(temperatureSeries))
     private val lightGraph = BleGraph("Light", "Light Graph", listOf(lightSeries))
     private val humidityGraph = BleGraph("Humidity", "Humidity Graph", listOf(humiditySeries))
-    private val pressureGraph = BleGraph("Test", "Description", listOf(pressureSeries))
+    private val pressureGraph = BleGraph("Pressure", "Pressure Graph", listOf(pressureSeries))
     private val magnetometerGraph = BleGraph(
-        "Test",
-        "Description",
+        "Magnetometer",
+        "Magnetometer Graph",
         listOf(xMagnetometerSeries, yMagnetometerSeries, zMagnetometerSeries)
     )
     private val accelerometerGraph = BleGraph(
-        "Test",
-        "Description",
+        "Accelerometer",
+        "Accelerometer Graph",
         listOf(xAccelerometerSeries, yAccelerometerSeries, zAccelerometerSeries)
     )
     private val gyroscopeGraph = BleGraph(
-        "Test",
-        "Description",
+        "Gyroscope",
+        "Gyroscope Graph",
         listOf(xGyroscopeSeries, yGyroscopeSeries, zGyroscopeSeries)
     )
+
+    private val batteryLevelGraph =
+        BleGraph("Battery Level", "Battery Level Graph", listOf(batteryLevelSeries))
 
     fun getGraph(type: Int): BleGraph {
         return when (type) {
@@ -71,6 +75,7 @@ class LiveGraphViewModel(
             GraphType.MAGNETOMETER -> magnetometerGraph
             GraphType.ACCELEROMETER -> accelerometerGraph
             GraphType.GYROSCOPE -> gyroscopeGraph
+            GraphType.BATTERY_LEVEL -> batteryLevelGraph
             else -> throw IllegalArgumentException()
         }
     }
@@ -113,6 +118,10 @@ class LiveGraphViewModel(
                 getReadingsUseCase
                     .execute(SensorType.GYROSCOPE)
                     .subscribe { readings -> updateGyroscopeValues(readings) }
+            GraphType.BATTERY_LEVEL ->
+                getReadingsUseCase
+                    .execute(SensorType.BATTERY_LEVEL)
+                    .subscribe { readings -> updateBatteryLevelValues(readings) }
             else -> throw IllegalArgumentException()
         }
 
@@ -190,6 +199,12 @@ class LiveGraphViewModel(
         yGyroscopeSeries.updateDataSet(yDataPoints)
         zGyroscopeSeries.updateDataSet(zDataPoints)
     }
+
+    private fun updateBatteryLevelValues(readings: List<Reading>) {
+        val batteryReadings: List<BatteryReading> = getList(readings, BatteryReading::class.java)
+        val dataPoints = batteryReadings.map { Pair(it.timestamp, it.batteryLevel) }
+        batteryLevelSeries.updateDataSet(dataPoints)
+    }
 }
 
 
@@ -244,4 +259,5 @@ object GraphType {
     const val MAGNETOMETER: Int = 5
     const val ACCELEROMETER: Int = 6
     const val GYROSCOPE: Int = 7
+    const val BATTERY_LEVEL: Int = 8
 }
