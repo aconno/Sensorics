@@ -7,5 +7,6 @@ enum class SensorType {
     PRESSURE,
     MAGNETOMETER,
     ACCELEROMETER,
-    GYROSCOPE
+    GYROSCOPE,
+    BATTERY_LEVEL
 }

@@ -13,6 +13,7 @@ class InMemoryRepositoryImpl : InMemoryRepository {
     private val magnetometerReadings = mutableListOf<Reading>()
     private val accelerometerReadings = mutableListOf<Reading>()
     private val gyroscopeReadings = mutableListOf<Reading>()
+    private val batteryLevelReadings = mutableListOf<Reading>()
 
 
     override fun addReading(reading: Reading) {
@@ -24,6 +25,7 @@ class InMemoryRepositoryImpl : InMemoryRepository {
             SensorType.MAGNETOMETER -> addToBuffer(reading, magnetometerReadings)
             SensorType.ACCELEROMETER -> addToBuffer(reading, accelerometerReadings)
             SensorType.GYROSCOPE -> addToBuffer(reading, gyroscopeReadings)
+            SensorType.BATTERY_LEVEL -> addToBuffer(reading, batteryLevelReadings)
         }
     }
 
@@ -43,6 +45,7 @@ class InMemoryRepositoryImpl : InMemoryRepository {
             SensorType.MAGNETOMETER -> magnetometerReadings
             SensorType.ACCELEROMETER -> accelerometerReadings
             SensorType.GYROSCOPE -> gyroscopeReadings
+            SensorType.BATTERY_LEVEL -> batteryLevelReadings
         }
     }
 
