@@ -69,6 +69,7 @@ class BluetoothScanningServiceModule(
     @Provides
     @BluetoothScanningServiceScope
     fun providePublisher(): Publisher {
+        //TODO: Do not hardcode user name and password
         val username = ""
         val password = ""
         return AconnoCumulocityPublisher(bluetoothScanningService, username, password)
