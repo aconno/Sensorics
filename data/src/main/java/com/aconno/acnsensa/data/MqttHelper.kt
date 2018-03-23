@@ -13,13 +13,13 @@ import java.nio.charset.Charset
 class MqttHelper(context: Context) {
     var mqttAndroidClient: MqttAndroidClient
 
-    internal val serverUri = "tcp://m23.cloudmqtt.com:18293"
+    internal val serverUri = "tcp://aconno.cumulocity.com:1883"
 
     private val clientId = "ExampleAndroidClient"
     private val subscriptionTopic = "sensor"
 
-    private val username = "cxniojst"
-    private val password = "bSjzJLP3fs1N"
+    private val username = "aconno/miroslav@aconno.de"
+    private val password = "aconnoadmin"
 
     init {
         mqttAndroidClient = MqttAndroidClient(context, serverUri, clientId)
