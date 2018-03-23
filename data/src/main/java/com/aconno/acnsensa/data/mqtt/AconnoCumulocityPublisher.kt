@@ -4,14 +4,17 @@ import android.content.Context
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.model.readings.*
 import org.eclipse.paho.android.service.MqttAndroidClient
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
-import org.eclipse.paho.client.mqttv3.MqttMessage
+import org.eclipse.paho.client.mqttv3.*
 import timber.log.Timber
+import java.nio.charset.Charset
+import java.util.*
 
-class AconnoCumulocityPublisher(context: Context) : Publisher {
+class AconnoCumulocityPublisher(context: Context, val username: String, val password: String) :
+    Publisher {
 
     private val mqttAndroidClient: MqttAndroidClient
+
+    private val messagesQueue: Queue<String> = LinkedList<String>()
 
     init {
         mqttAndroidClient = MqttAndroidClient(context, SERVER_URI, CLIENT_ID)
@@ -35,8 +38,63 @@ class AconnoCumulocityPublisher(context: Context) : Publisher {
         })
     }
 
+    private fun connect() {
+        val options = getConnectOptions()
+        try {
+            mqttAndroidClient.connect(options, null, object : IMqttActionListener {
+
+                override fun onSuccess(asyncActionToken: IMqttToken?) {
+                    Timber.d("Successful connect to server, token: %s", asyncActionToken)
+                    publishMessagesFromQueue()
+                }
+
+                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                    Timber.e(exception, "Failed to connect to server")
+                }
+            })
+        } catch (e: MqttException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun getConnectOptions(): MqttConnectOptions {
+        val options = MqttConnectOptions()
+        options.isAutomaticReconnect = true
+        options.isCleanSession = false
+        options.userName = username
+        options.password = password.toCharArray()
+        return options
+    }
+
+    fun publish(message: String) {
+        if (mqttAndroidClient.isConnected) {
+            publishMessage(message)
+        } else {
+            connect()
+            messagesQueue.add(message)
+        }
+    }
+
+    private fun publishMessage(message: String) {
+        mqttAndroidClient.publish(
+            CUMULOSITY_SUBSCRIBTION_TOPIC,
+            message.toByteArray(Charset.defaultCharset()),
+            QUALITY_OF_SERVICE,
+            RETENTION_POLICY
+        )
+    }
+
+    private fun publishMessagesFromQueue() {
+        while (messagesQueue.isNotEmpty()) {
+            publish(messagesQueue.poll())
+        }
+    }
+
     override fun publish(reading: Reading) {
         val messages = mapReadingToMessage(reading)
+        for(message in messages) {
+            publish(message)
+        }
     }
 
     private fun mapReadingToMessage(reading: Reading): List<String> {
@@ -107,5 +165,10 @@ class AconnoCumulocityPublisher(context: Context) : Publisher {
         private const val SERVER_URI = "tcp://aconno.cumulocity.com:1883"
 
         private const val CLIENT_ID = "AcnSensaClient"
+
+        private const val CUMULOSITY_SUBSCRIBTION_TOPIC = "s/us"
+        private const val QUALITY_OF_SERVICE = 0
+        private const val RETENTION_POLICY = false
+
     }
 }
