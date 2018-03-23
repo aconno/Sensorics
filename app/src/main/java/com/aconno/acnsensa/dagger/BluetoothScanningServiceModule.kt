@@ -5,9 +5,12 @@ import android.content.BroadcastReceiver
 import android.content.IntentFilter
 import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.BluetoothScanningServiceReceiver
+import com.aconno.acnsensa.data.mqtt.AconnoCumulocityPublisher
 import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.device.storage.FileStorageImpl
+import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
+import com.aconno.acnsensa.domain.interactor.SyncReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
@@ -61,5 +64,19 @@ class BluetoothScanningServiceModule(
     @BluetoothScanningServiceScope
     fun provideLogReadingsUseCase(): LogReadingUseCase {
         return LogReadingUseCase(FileStorageImpl(bluetoothScanningService))
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun providePublisher(): Publisher {
+        val username = ""
+        val password = ""
+        return AconnoCumulocityPublisher(bluetoothScanningService, username, password)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideSyncReadingsUseCase(publisher: Publisher): SyncReadingsUseCase {
+        return SyncReadingsUseCase(publisher)
     }
 }

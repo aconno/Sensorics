@@ -12,9 +12,9 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.dagger.BluetoothScanningServiceComponent
 import com.aconno.acnsensa.dagger.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.DaggerBluetoothScanningServiceComponent
-import com.aconno.acnsensa.data.startMqtt
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
+import com.aconno.acnsensa.domain.interactor.SyncReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import io.reactivex.Flowable
@@ -39,6 +39,9 @@ class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var logReadingsUseCase: LogReadingUseCase
+
+    @Inject
+    lateinit var syncReadingsUseCase: SyncReadingsUseCase
 
     @Inject
     lateinit var receiver: BroadcastReceiver
@@ -74,10 +77,15 @@ class BluetoothScanningService : Service() {
         startForeground(1, notification)
 
         bluetooth.startScanning()
-        startMqtt(applicationContext)
         startRecording()
         startLogging()
+        startSyncing()
         return START_STICKY
+    }
+
+    private fun startSyncing() {
+        sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
+            .subscribe { syncReadingsUseCase.execute(it) }
     }
 
     fun stopScanning() {

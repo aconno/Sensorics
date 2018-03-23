@@ -8,12 +8,14 @@ import io.reactivex.Completable
 /**
  * @aconno
  */
-class SyncReadingUseCase(
+class SyncReadingsUseCase(
     private val publisher: Publisher
-) : CompletableUseCaseWithParameter<Reading> {
+) : CompletableUseCaseWithParameter<List<Reading>> {
 
-    override fun execute(parameter: Reading): Completable {
-        publisher.publish(parameter)
+    override fun execute(parameter: List<Reading>): Completable {
+        for (reading in parameter) {
+            publisher.publish(reading)
+        }
         return Completable.complete()
     }
 }

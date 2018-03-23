@@ -66,7 +66,7 @@ class AconnoCumulocityPublisher(context: Context, val username: String, val pass
         return options
     }
 
-    fun publish(message: String) {
+    private fun publish(message: String) {
         if (mqttAndroidClient.isConnected) {
             publishMessage(message)
         } else {
@@ -92,7 +92,7 @@ class AconnoCumulocityPublisher(context: Context, val username: String, val pass
 
     override fun publish(reading: Reading) {
         val messages = mapReadingToMessage(reading)
-        for(message in messages) {
+        for (message in messages) {
             publish(message)
         }
     }
