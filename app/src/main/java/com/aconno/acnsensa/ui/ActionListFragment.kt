@@ -49,8 +49,12 @@ class ActionListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         actionListComponent.inject(this)
-        getAllActionsUseCase.execute().subscribe { actions -> initializeActionList(actions) }
         add_action_button.setOnClickListener { startAddActionActivity() }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getAllActionsUseCase.execute().subscribe { actions -> initializeActionList(actions) }
     }
 
     private fun initializeActionList(actions: List<Action>) {
