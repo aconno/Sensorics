@@ -1,7 +1,6 @@
 package com.aconno.acnsensa.dagger
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.ActionsRespository
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
 import com.aconno.acnsensa.ui.ActionViewModel
@@ -9,7 +8,6 @@ import com.aconno.acnsensa.ui.ActionViewModelFactory
 import com.aconno.acnsensa.ui.AddActionActivity
 import dagger.Module
 import dagger.Provides
-import io.reactivex.Single
 
 /**
  * @author aconno
@@ -35,24 +33,5 @@ class AddActionModule(private val addActionActivity: AddActionActivity) {
         return AddActionUseCase(actionsRepository)
     }
 
-    @Provides
-    @AddActionActivityScope
-    fun provideActionsRepository(): ActionsRespository {
-        return object : ActionsRespository {
-            override fun addAction(action: Action) {
-                val time = System.currentTimeMillis()
-                if (time % 2L == 0L) {
-                    throw Exception("Mock exception")
-                }
-            }
 
-            override fun deleteAction(action: Action) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getAllActions(): Single<List<Action>> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        }
-    }
 }

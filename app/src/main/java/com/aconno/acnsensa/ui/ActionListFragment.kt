@@ -11,14 +11,33 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.dagger.ActionListComponent
+import com.aconno.acnsensa.dagger.ActionListModule
+import com.aconno.acnsensa.dagger.DaggerActionListComponent
 import com.aconno.acnsensa.domain.ifttt.Action
+import com.aconno.acnsensa.domain.ifttt.GetAllActionsUseCase
 import kotlinx.android.synthetic.main.fragment_action_list.*
+import javax.inject.Inject
 
 /**
  * @author aconno
  */
 class ActionListFragment : Fragment() {
+
+    @Inject
+    lateinit var getAllActionsUseCase: GetAllActionsUseCase
+
+    private val actionListComponent: ActionListComponent by lazy {
+        val acnSensaApplication: AcnSensaApplication? =
+            context?.applicationContext as? AcnSensaApplication
+
+        DaggerActionListComponent.builder()
+            .appComponent(acnSensaApplication?.appComponent)
+            .actionListModule(ActionListModule(this))
+            .build()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,10 +48,16 @@ class ActionListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        actionListComponent.inject(this)
+        getAllActionsUseCase.execute().subscribe { actions -> initializeActionList(actions) }
+        add_action_button.setOnClickListener { startAddActionActivity() }
+    }
+
+    private fun initializeActionList(actions: List<Action>) {
         actions_list.layoutManager = LinearLayoutManager(activity)
         val decoration = DividerItemDecoration(activity?.applicationContext, VERTICAL)
         actions_list.addItemDecoration(decoration)
-        add_action_button.setOnClickListener { startAddActionActivity() }
+        actions_list.adapter = ActionAdapter(actions.toMutableList())
     }
 
     private fun startAddActionActivity() {

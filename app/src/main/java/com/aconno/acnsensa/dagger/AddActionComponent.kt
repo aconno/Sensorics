@@ -6,7 +6,7 @@ import dagger.Component
 /**
  * @author aconno
  */
-@Component(modules = [AddActionModule::class])
+@Component(dependencies = [AppComponent::class], modules = [AddActionModule::class])
 @AddActionActivityScope
 interface AddActionComponent {
     //Exposed dependencies for child components.

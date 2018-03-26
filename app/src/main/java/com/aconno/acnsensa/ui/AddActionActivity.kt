@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
+import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.AddActionComponent
 import com.aconno.acnsensa.dagger.AddActionModule
@@ -29,7 +30,10 @@ class AddActionActivity : AppCompatActivity() {
     lateinit var actionViewModel: ActionViewModel
 
     private val addActionComponent: AddActionComponent by lazy {
-        DaggerAddActionComponent.builder().addActionModule(AddActionModule(this)).build()
+        val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
+        DaggerAddActionComponent.builder()
+            .appComponent(acnSensaApplication?.appComponent)
+            .addActionModule(AddActionModule(this)).build()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

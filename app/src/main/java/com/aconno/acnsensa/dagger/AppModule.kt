@@ -8,6 +8,8 @@ import com.aconno.acnsensa.device.bluetooth.BluetoothPermission
 import com.aconno.acnsensa.device.bluetooth.BluetoothPermissionImpl
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
+import com.aconno.acnsensa.domain.ifttt.Action
+import com.aconno.acnsensa.domain.ifttt.ActionsRespository
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.model.ScanResult
@@ -15,6 +17,7 @@ import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
+import io.reactivex.Single
 import javax.inject.Singleton
 
 /**
@@ -72,4 +75,23 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
     @Provides
     @Singleton
     fun provideInMemoryRepository(): InMemoryRepository = InMemoryRepositoryImpl()
+
+    @Provides
+    @Singleton
+    fun provideActionsRepository(): ActionsRespository {
+        return object : ActionsRespository {
+            private val actionList = mutableListOf<Action>()
+            override fun addAction(action: Action) {
+                actionList.add(action)
+            }
+
+            override fun deleteAction(action: Action) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun getAllActions(): Single<List<Action>> {
+                return Single.just(actionList)
+            }
+        }
+    }
 }

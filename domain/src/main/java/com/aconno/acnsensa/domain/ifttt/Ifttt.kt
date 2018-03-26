@@ -1,6 +1,7 @@
 package com.aconno.acnsensa.domain.ifttt
 
 import com.aconno.acnsensa.domain.interactor.type.CompletableUseCaseWithParameter
+import com.aconno.acnsensa.domain.interactor.type.SingleUseCase
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -88,6 +89,14 @@ class AddActionUseCase(
     override fun execute(parameter: Action): Completable {
         actionsRespository.addAction(parameter)
         return Completable.complete()
+    }
+}
+
+class GetAllActionsUseCase(
+    private val actionsRespository: ActionsRespository
+) : SingleUseCase<List<Action>> {
+    override fun execute(): Single<List<Action>> {
+        return actionsRespository.getAllActions()
     }
 }
 
