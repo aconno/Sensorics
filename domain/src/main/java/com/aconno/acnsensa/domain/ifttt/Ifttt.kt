@@ -47,9 +47,9 @@ interface Outcome {
     fun execute()
 }
 
-class NotificationOutcome : Outcome {
+class NotificationOutcome(private val message: String) : Outcome {
     override fun execute() {
-        println("Notification was issued")
+        println(message)
     }
 }
 

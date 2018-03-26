@@ -52,4 +52,14 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- AddActionActivity -->
+    <string name="action_name">Action Name</string>
+    <string name="condition_name">Condition</string>
+    <string name="sensor_label">Sensor</string>
+    <string name="type_label">Type</string>
+    <string name="value_label">Value</string>
+    <string name="outcome_name">Outcome</string>
+    <string name="notification_label">Notification</string>
+    <string name="add_action">Add Action</string>
 </resources>
