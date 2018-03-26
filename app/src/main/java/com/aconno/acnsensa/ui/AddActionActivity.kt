@@ -4,6 +4,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.ArrayAdapter
@@ -66,6 +68,13 @@ class AddActionActivity : AppCompatActivity() {
         when (success) {
             true -> finish()
             else -> Toast.makeText(this, "Failed to create Action", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    companion object {
+        fun start(context: Context) {
+            val intent = Intent(context, AddActionActivity::class.java)
+            context.startActivity(intent)
         }
     }
 }

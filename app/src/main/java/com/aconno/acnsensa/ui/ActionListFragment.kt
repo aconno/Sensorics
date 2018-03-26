@@ -36,6 +36,7 @@ class ActionListFragment : Fragment() {
     }
 
     private fun startAddActionActivity() {
+        context?.let { AddActionActivity.start(it) }
     }
 
     companion object {

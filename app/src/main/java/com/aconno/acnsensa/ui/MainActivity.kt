@@ -125,9 +125,14 @@ class MainActivity : AppCompatActivity() {
         val id: Int? = item?.itemId
         when (id) {
             R.id.action_toggle_scan -> toggleScan(item)
+            R.id.action_start_actions_activity -> startActionListActivity()
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun startActionListActivity() {
+        ActionListActivity.start(this)
     }
 
     private fun toggleScan(item: MenuItem?) {

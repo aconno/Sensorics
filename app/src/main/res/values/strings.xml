@@ -3,6 +3,7 @@
     <string name="app_name">AcnSensaDroid</string>
     <string name="scan">Scan</string>
     <string name="stop_scanning">Stop scanning</string>
+    <string name="actions">Actions</string>
 
     <!-- SensorListFragment -->
     <string name="temperature">Temperature</string>

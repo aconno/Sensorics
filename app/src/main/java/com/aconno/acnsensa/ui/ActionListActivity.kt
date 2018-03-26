@@ -1,5 +1,7 @@
 package com.aconno.acnsensa.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -18,6 +20,13 @@ class ActionListActivity : AppCompatActivity() {
                 fragment = ActionListFragment.newInstance()
                 fm.beginTransaction().add(R.id.action_list_container, fragment).commit()
             }
+        }
+    }
+
+    companion object {
+        fun start(context: Context) {
+            val intent = Intent(context, ActionListActivity::class.java)
+            context.startActivity(intent)
         }
     }
 }

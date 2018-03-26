@@ -4,12 +4,12 @@
 
     <item
         android:id="@+id/action_toggle_scan"
-        android:title="Scan"
+        android:title="@string/scan"
         android:checkable="true"
         android:checked="false"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_settings"
-        android:title="Settings"
+        android:id="@+id/action_start_actions_activity"
+        android:title="@string/actions"
         app:showAsAction="never" />
 </menu>
