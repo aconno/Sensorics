@@ -5,7 +5,7 @@ import com.aconno.acnsensa.domain.ifttt.ActionsRespository
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
 import com.aconno.acnsensa.ui.AddActionActivity
 import com.aconno.acnsensa.viewmodel.ActionViewModel
-import com.aconno.acnsensa.viewmodel.ActionViewModelFactory
+import com.aconno.acnsensa.viewmodel.factory.ActionViewModelFactory
 import dagger.Module
 import dagger.Provides
 

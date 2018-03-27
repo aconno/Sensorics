@@ -1,23 +1,18 @@
-package com.aconno.acnsensa.viewmodel
+package com.aconno.acnsensa.viewmodel.factory
 
 import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
+import com.aconno.acnsensa.viewmodel.ActionViewModel
 
 /**
  * @author aconno
  */
 class ActionViewModelFactory(
     private val addActionUseCase: AddActionUseCase
-) : ViewModelProvider.Factory {
+) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = ActionViewModel(addActionUseCase)
-        val result = listOf(viewModel).filterIsInstance(modelClass)
-        if (result.size == 1) {
-            return result[0]
-        } else {
-            throw IllegalArgumentException()
-        }
+        return getViewModel(viewModel, modelClass)
     }
 }

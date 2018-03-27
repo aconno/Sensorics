@@ -5,7 +5,7 @@ import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.ui.LiveGraphActivity
 import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
-import com.aconno.acnsensa.viewmodel.LiveGraphViewModelFactory
+import com.aconno.acnsensa.viewmodel.factory.LiveGraphViewModelFactory
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
@@ -22,7 +22,10 @@ class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
         sensorValues: Flowable<Map<String, Number>>,
         getReadingsUseCase: GetReadingsUseCase
     ) =
-        LiveGraphViewModelFactory(sensorValues, getReadingsUseCase)
+        LiveGraphViewModelFactory(
+            sensorValues,
+            getReadingsUseCase
+        )
 
     @Provides
     @LiveGraphScope

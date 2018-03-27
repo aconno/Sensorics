@@ -1,8 +1,8 @@
-package com.aconno.acnsensa.viewmodel
+package com.aconno.acnsensa.viewmodel.factory
 
 import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
+import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
 import io.reactivex.Flowable
 
 /**
@@ -11,14 +11,11 @@ import io.reactivex.Flowable
 class LiveGraphViewModelFactory(
     private val sensorValues: Flowable<Map<String, Number>>,
     private val getReadingsUseCase: GetReadingsUseCase
-) : ViewModelProvider.Factory {
+) : BaseViewModelFactory() {
 
     @SuppressWarnings("UNCHECKED_CAST") //Safe to suppress since as? casting is being used.
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val viewModel: T? =
-            LiveGraphViewModel(sensorValues, getReadingsUseCase) as? T
-        viewModel?.let { return viewModel }
-
-        throw IllegalArgumentException("Illegal cast for LiveGraphViewModelFactory")
+        val viewModel = LiveGraphViewModel(sensorValues, getReadingsUseCase)
+        return getViewModel(viewModel, modelClass)
     }
 }

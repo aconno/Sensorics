@@ -5,9 +5,9 @@ import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.ui.MainActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
-import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModelFactory
 import com.aconno.acnsensa.viewmodel.SensorListViewModel
-import com.aconno.acnsensa.viewmodel.SensorListViewModelFactory
+import com.aconno.acnsensa.viewmodel.factory.BluetoothScanningViewModelFactory
+import com.aconno.acnsensa.viewmodel.factory.SensorListViewModelFactory
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
