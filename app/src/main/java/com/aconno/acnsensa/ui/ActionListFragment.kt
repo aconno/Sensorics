@@ -4,15 +4,13 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.VERTICAL
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.adapter.ActionAdapter
 import com.aconno.acnsensa.dagger.actionlist.ActionListComponent
 import com.aconno.acnsensa.dagger.actionlist.ActionListModule
 import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
@@ -73,44 +71,4 @@ class ActionListFragment : Fragment() {
             return ActionListFragment()
         }
     }
-
-    private inner class ActionHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-        private val actionName: TextView = itemView.findViewById(R.id.action_name)
-
-        init {
-            itemView.setOnClickListener {
-                Toast.makeText(
-                    itemView.context,
-                    "Clicked",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        fun bind(action: Action) {
-            actionName.text = action.name
-        }
-
-
-    }
-
-    private inner class ActionAdapter(private val actions: MutableList<Action>) :
-        RecyclerView.Adapter<ActionHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActionHolder {
-            val view =
-                LayoutInflater.from(parent.context).inflate(R.layout.view_action, parent, false)
-            return ActionHolder(view)
-        }
-
-        override fun getItemCount(): Int {
-            return actions.size
-        }
-
-        override fun onBindViewHolder(holder: ActionHolder, position: Int) {
-            holder.bind(actions[position])
-        }
-    }
-
-
 }
