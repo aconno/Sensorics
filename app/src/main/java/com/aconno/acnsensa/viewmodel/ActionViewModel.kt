@@ -1,7 +1,11 @@
 package com.aconno.acnsensa.viewmodel
 
+import android.app.Application
+import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import com.aconno.acnsensa.IntentProviderImpl
+import com.aconno.acnsensa.device.notification.NotificationDisplayImpl
+import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
 import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
@@ -10,7 +14,8 @@ import com.aconno.acnsensa.domain.ifttt.NotificationOutcome
 /**
  * @author aconno
  */
-class ActionViewModel(private val addActionUseCase: AddActionUseCase) : ViewModel() {
+class ActionViewModel(private val addActionUseCase: AddActionUseCase, application: Application) :
+    AndroidViewModel(application) {
 
     val addActionResults: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -28,7 +33,11 @@ class ActionViewModel(private val addActionUseCase: AddActionUseCase) : ViewMode
                 else -> throw IllegalArgumentException("Got invalid sensor type: $conditionType")
             }
             val condition = LimitCondition(sensorType, value.toFloat(), type)
-            val outcome = NotificationOutcome(outcomeMessage)
+            val outcome = NotificationOutcome(
+                outcomeMessage, NotificationDisplayImpl(
+                    NotificationFactory(), IntentProviderImpl(), getApplication()
+                )
+            )
             val action = GeneralAction(name, condition, outcome)
             addActionUseCase.execute(action)
                 .subscribe({ onAddActionSuccess() }, { onAddActionFail() })

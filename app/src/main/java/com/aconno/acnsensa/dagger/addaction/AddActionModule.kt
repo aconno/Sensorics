@@ -25,7 +25,7 @@ class AddActionModule(private val addActionActivity: AddActionActivity) {
     @Provides
     @AddActionActivityScope
     fun provideActionViewModelFactory(addActionUseCase: AddActionUseCase) =
-        ActionViewModelFactory(addActionUseCase)
+        ActionViewModelFactory(addActionUseCase, addActionActivity.application)
 
     @Provides
     @AddActionActivityScope

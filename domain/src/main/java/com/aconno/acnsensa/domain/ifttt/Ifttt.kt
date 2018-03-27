@@ -52,12 +52,17 @@ interface Outcome {
     fun execute()
 }
 
-class NotificationOutcome(private val message: String) : Outcome {
+class NotificationOutcome(
+    private val message: String,
+    private val notificationDisplay: NotificationDisplay
+) : Outcome {
     override fun execute() {
-        println("------------------------------------------------------")
-        println(message)
-        println("------------------------------------------------------")
+        notificationDisplay.displayAlertNotification(message)
     }
+}
+
+interface NotificationDisplay {
+    fun displayAlertNotification(message: String)
 }
 
 interface Action {
