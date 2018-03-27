@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.dagger
+package com.aconno.acnsensa.dagger.application
 
 import android.bluetooth.BluetoothAdapter
 import com.aconno.acnsensa.AcnSensaApplication

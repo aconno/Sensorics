@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.dagger
+package com.aconno.acnsensa.dagger.actionlist
 
 import javax.inject.Scope
 
@@ -7,4 +7,4 @@ import javax.inject.Scope
  */
 @Scope
 @Retention(AnnotationRetention.RUNTIME)
-annotation class BluetoothScanningServiceScope
+annotation class ActionListScope

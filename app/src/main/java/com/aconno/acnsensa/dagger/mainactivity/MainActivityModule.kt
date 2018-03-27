@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.dagger
+package com.aconno.acnsensa.dagger.mainactivity
 
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.AcnSensaApplication

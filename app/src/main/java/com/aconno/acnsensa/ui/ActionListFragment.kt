@@ -13,9 +13,9 @@ import android.widget.TextView
 import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.dagger.ActionListComponent
-import com.aconno.acnsensa.dagger.ActionListModule
-import com.aconno.acnsensa.dagger.DaggerActionListComponent
+import com.aconno.acnsensa.dagger.actionlist.ActionListComponent
+import com.aconno.acnsensa.dagger.actionlist.ActionListModule
+import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.GetAllActionsUseCase
 import kotlinx.android.synthetic.main.fragment_action_list.*
@@ -35,7 +35,7 @@ class ActionListFragment : Fragment() {
 
         DaggerActionListComponent.builder()
             .appComponent(acnSensaApplication?.appComponent)
-            .actionListModule(ActionListModule(this))
+            .actionListModule(ActionListModule())
             .build()
     }
 

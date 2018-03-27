@@ -1,9 +1,9 @@
 package com.aconno.acnsensa
 
 import android.app.Application
-import com.aconno.acnsensa.dagger.AppComponent
-import com.aconno.acnsensa.dagger.AppModule
-import com.aconno.acnsensa.dagger.DaggerAppComponent
+import com.aconno.acnsensa.dagger.application.AppComponent
+import com.aconno.acnsensa.dagger.application.AppModule
+import com.aconno.acnsensa.dagger.application.DaggerAppComponent
 import timber.log.Timber
 
 /**

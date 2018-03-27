@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.dagger
+package com.aconno.acnsensa.dagger.livegraph
 
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase

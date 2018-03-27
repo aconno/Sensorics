@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.dagger
+package com.aconno.acnsensa.dagger.bluetoothscanning
 
 import android.app.Notification
 import android.content.BroadcastReceiver

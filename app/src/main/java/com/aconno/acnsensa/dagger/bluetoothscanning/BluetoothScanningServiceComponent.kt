@@ -1,6 +1,7 @@
-package com.aconno.acnsensa.dagger
+package com.aconno.acnsensa.dagger.bluetoothscanning
 
 import com.aconno.acnsensa.BluetoothScanningService
+import com.aconno.acnsensa.dagger.application.AppComponent
 import dagger.Component
 import io.reactivex.Flowable
 

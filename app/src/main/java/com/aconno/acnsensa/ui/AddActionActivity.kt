@@ -13,9 +13,9 @@ import android.widget.Spinner
 import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.dagger.AddActionComponent
-import com.aconno.acnsensa.dagger.AddActionModule
-import com.aconno.acnsensa.dagger.DaggerAddActionComponent
+import com.aconno.acnsensa.dagger.addaction.AddActionComponent
+import com.aconno.acnsensa.dagger.addaction.AddActionModule
+import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
 import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition

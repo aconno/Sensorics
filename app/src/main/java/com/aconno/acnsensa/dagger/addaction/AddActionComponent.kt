@@ -1,5 +1,6 @@
-package com.aconno.acnsensa.dagger
+package com.aconno.acnsensa.dagger.addaction
 
+import com.aconno.acnsensa.dagger.application.AppComponent
 import com.aconno.acnsensa.ui.AddActionActivity
 import dagger.Component
 

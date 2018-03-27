@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.dagger
+package com.aconno.acnsensa.dagger.application
 
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.domain.Bluetooth
