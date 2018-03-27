@@ -1,9 +1,6 @@
 package com.aconno.acnsensa.ui
 
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -16,10 +13,7 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.addaction.AddActionComponent
 import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
-import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
-import com.aconno.acnsensa.domain.ifttt.GeneralAction
-import com.aconno.acnsensa.domain.ifttt.LimitCondition
-import com.aconno.acnsensa.domain.ifttt.NotificationOutcome
+import com.aconno.acnsensa.viewmodel.ActionViewModel
 import kotlinx.android.synthetic.main.activity_add_action.*
 import javax.inject.Inject
 
@@ -82,96 +76,3 @@ class AddActionActivity : AppCompatActivity() {
         }
     }
 }
-
-
-class ActionViewModelFactory(
-    private val addActionUseCase: AddActionUseCase
-) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val viewModel = ActionViewModel(addActionUseCase)
-        val result = listOf(viewModel).filterIsInstance(modelClass)
-        if (result.size == 1) {
-            return result[0]
-        } else {
-            throw IllegalArgumentException()
-        }
-    }
-}
-
-class ActionViewModel(private val addActionUseCase: AddActionUseCase) : ViewModel() {
-
-    val addActionResults: MutableLiveData<Boolean> = MutableLiveData()
-
-    fun addAction(
-        name: String,
-        sensorType: Int,
-        conditionType: String,
-        value: String,
-        outcomeMessage: String
-    ) {
-        try {
-            val type = when (conditionType) {
-                "Max" -> 1
-                "Min" -> 0
-                else -> throw IllegalArgumentException("Got invalid sensor type: $conditionType")
-            }
-            val condition = LimitCondition(sensorType, value.toFloat(), type)
-            val outcome = NotificationOutcome(outcomeMessage)
-            val action = GeneralAction(name, condition, outcome)
-            addActionUseCase.execute(action)
-                .subscribe({ onAddActionSuccess() }, { onAddActionFail() })
-        } catch (e: Exception) {
-            onAddActionFail()
-        }
-    }
-
-    fun getSensorTypes(): List<String> {
-        return listOf(
-            TEMPERATURE,
-            LIGHT,
-            HUMIDITY,
-            PRESSURE,
-            MAGNETOMETER_X,
-            MAGNETOMETER_Y,
-            MAGNETOMETER_Z,
-            ACCELEROMETER_X,
-            ACCELEROMETER_Y,
-            ACCELEROMETER_Z,
-            GYROSCOPE_X,
-            GYROSCOPE_Y,
-            GYROSCOPE_Z,
-            BATTERY_LEVEL
-        )
-    }
-
-    fun onAddActionSuccess() {
-        addActionResults.value = true
-    }
-
-    fun onAddActionFail() {
-        addActionResults.value = false
-    }
-
-    fun getConditionTypes(): List<String> {
-        return listOf("Max", "Min")
-    }
-
-    companion object {
-        const val TEMPERATURE = "Temperature"
-        const val LIGHT = "Light"
-        const val HUMIDITY = "Humidity"
-        const val PRESSURE = "Pressure"
-        const val MAGNETOMETER_X = "Magnetometer X"
-        const val MAGNETOMETER_Y = "Magnetometer Y"
-        const val MAGNETOMETER_Z = "Magnetometer Z"
-        const val ACCELEROMETER_X = "Accelerometer X"
-        const val ACCELEROMETER_Y = "Accelerometer Y"
-        const val ACCELEROMETER_Z = "Accelerometer Z"
-        const val GYROSCOPE_X = "Gyroscope X"
-        const val GYROSCOPE_Y = "Gyroscope Y"
-        const val GYROSCOPE_Z = "Gyroscope Z"
-        const val BATTERY_LEVEL = "Battery Level"
-    }
-}
-

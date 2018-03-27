@@ -3,9 +3,9 @@ package com.aconno.acnsensa.dagger.addaction
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.domain.ifttt.ActionsRespository
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
-import com.aconno.acnsensa.ui.ActionViewModel
-import com.aconno.acnsensa.ui.ActionViewModelFactory
 import com.aconno.acnsensa.ui.AddActionActivity
+import com.aconno.acnsensa.viewmodel.ActionViewModel
+import com.aconno.acnsensa.viewmodel.ActionViewModelFactory
 import dagger.Module
 import dagger.Provides
 
