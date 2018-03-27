@@ -9,9 +9,9 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
-import com.aconno.acnsensa.dagger.BluetoothScanningServiceComponent
-import com.aconno.acnsensa.dagger.BluetoothScanningServiceModule
-import com.aconno.acnsensa.dagger.DaggerBluetoothScanningServiceComponent
+import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceComponent
+import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceModule
+import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.ifttt.HandleInputUseCase
 import com.aconno.acnsensa.domain.ifttt.ReadingToInputUseCase
@@ -60,7 +60,11 @@ class BluetoothScanningService : Service() {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
         DaggerBluetoothScanningServiceComponent.builder()
             .appComponent(acnSensaApplication?.appComponent)
-            .bluetoothScanningServiceModule(BluetoothScanningServiceModule(this))
+            .bluetoothScanningServiceModule(
+                BluetoothScanningServiceModule(
+                    this
+                )
+            )
             .build()
     }
 

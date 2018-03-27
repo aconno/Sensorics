@@ -5,10 +5,9 @@ import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
 import com.aconno.acnsensa.domain.model.SensorType
 import com.aconno.acnsensa.domain.model.readings.*
-import com.github.mikephil.charting.components.Description
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
+import com.aconno.acnsensa.ui.graph.BleDataSeries
+import com.aconno.acnsensa.ui.graph.BleGraph
+import com.aconno.acnsensa.ui.graph.GraphType
 import io.reactivex.Flowable
 
 /**
@@ -205,59 +204,4 @@ class LiveGraphViewModel(
         val dataPoints = batteryReadings.map { Pair(it.timestamp, it.batteryLevel) }
         batteryLevelSeries.updateDataSet(dataPoints)
     }
-}
-
-
-class BleDataSeries(val title: String) {
-    private val entries: MutableList<Entry> = mutableListOf(Entry(0f, 0f))
-
-    val lineDataSet = LineDataSet(entries, title)
-
-    init {
-        //lineDataSet.color = ContextCompat.getColor()
-    }
-
-    fun updateDataSet(newEntries: List<Pair<Long, Number>>) {
-
-        entries.clear()
-
-        if (!newEntries.isEmpty()) {
-            val timeZero = newEntries[0].first
-            newEntries.forEach { (timestamp, value) ->
-                val entry = Entry((timestamp - timeZero).toFloat(), value.toFloat())
-                lineDataSet.addEntry(entry)
-            }
-        } else {
-            lineDataSet.addEntry(Entry(0f, 0f))
-        }
-        lineDataSet.notifyDataSetChanged()
-    }
-}
-
-class BleGraph(val title: String, private val description: String, series: List<BleDataSeries>) {
-
-
-    val lineData = LineData(series.map { it.lineDataSet })
-
-
-    init {
-        //lineDataSet.color = ContextCompat.getColor()
-    }
-
-    fun getDescription(): Description {
-        val description = Description()
-        description.text = this.description
-        return description
-    }
-}
-
-object GraphType {
-    const val TEMPERATURE: Int = 1
-    const val LIGHT: Int = 2
-    const val HUMIDITY: Int = 3
-    const val PRESSURE: Int = 4
-    const val MAGNETOMETER: Int = 5
-    const val ACCELEROMETER: Int = 6
-    const val GYROSCOPE: Int = 7
-    const val BATTERY_LEVEL: Int = 8
 }
