@@ -13,7 +13,6 @@ class LiveGraphViewModelFactory(
     private val getReadingsUseCase: GetReadingsUseCase
 ) : BaseViewModelFactory() {
 
-    @SuppressWarnings("UNCHECKED_CAST") //Safe to suppress since as? casting is being used.
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = LiveGraphViewModel(sensorValues, getReadingsUseCase)
         return getViewModel(viewModel, modelClass)
