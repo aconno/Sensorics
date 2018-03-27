@@ -13,6 +13,8 @@ import com.aconno.acnsensa.dagger.BluetoothScanningServiceComponent
 import com.aconno.acnsensa.dagger.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.DaggerBluetoothScanningServiceComponent
 import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.ifttt.HandleInputUseCase
+import com.aconno.acnsensa.domain.ifttt.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
@@ -38,6 +40,12 @@ class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var logReadingsUseCase: LogReadingUseCase
+
+    @Inject
+    lateinit var readingToInputUseCase: ReadingToInputUseCase
+
+    @Inject
+    lateinit var handleInputUseCase: HandleInputUseCase
 
     @Inject
     lateinit var receiver: BroadcastReceiver
@@ -75,7 +83,16 @@ class BluetoothScanningService : Service() {
         bluetooth.startScanning()
         startRecording()
         startLogging()
+        handleInputsForActions()
         return START_STICKY
+    }
+
+    private fun handleInputsForActions() {
+        sensorValues
+            .concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
+            .concatMap { readingToInputUseCase.execute(it).toFlowable() }
+            .flatMapIterable { it }
+            .subscribe { handleInputUseCase.execute(it) }
     }
 
     fun stopScanning() {

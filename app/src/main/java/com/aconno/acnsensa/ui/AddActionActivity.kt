@@ -60,12 +60,12 @@ class AddActionActivity : AppCompatActivity() {
 
     private fun addAction() {
         val name = action_name.text.toString()
-        val sensorType = sensor_spinner.selectedItem.toString()
+        val sensorType = sensor_spinner.selectedItemPosition
         val conditionType = condition_type_spinner.selectedItem.toString()
         val value = condition_value.text.toString()
         val outcome = outcome_notification_text.toString()
 
-        actionViewModel.addAction(name, sensorType, conditionType, value, outcome)
+        actionViewModel.addAction(name, sensorType, conditionType, value, "Got $value")
     }
 
     private fun onAddActionResult(success: Boolean?) {
@@ -105,18 +105,18 @@ class ActionViewModel(private val addActionUseCase: AddActionUseCase) : ViewMode
 
     fun addAction(
         name: String,
-        sensorType: String,
+        sensorType: Int,
         conditionType: String,
         value: String,
         outcomeMessage: String
     ) {
         try {
             val type = when (conditionType) {
-                "Max" -> 0
-                "Min" -> 1
+                "Max" -> 1
+                "Min" -> 0
                 else -> throw IllegalArgumentException("Got invalid sensor type: $conditionType")
             }
-            val condition = LimitCondition(value.toFloat(), type)
+            val condition = LimitCondition(sensorType, value.toFloat(), type)
             val outcome = NotificationOutcome(outcomeMessage)
             val action = GeneralAction(name, condition, outcome)
             addActionUseCase.execute(action)
@@ -129,19 +129,19 @@ class ActionViewModel(private val addActionUseCase: AddActionUseCase) : ViewMode
     fun getSensorTypes(): List<String> {
         return listOf(
             TEMPERATURE,
+            LIGHT,
             HUMIDITY,
             PRESSURE,
-            LIGHT,
-            BATTERY_LEVEL,
-            GYROSCOPE_X,
-            GYROSCOPE_Y,
-            GYROSCOPE_Z,
+            MAGNETOMETER_X,
+            MAGNETOMETER_Y,
+            MAGNETOMETER_Z,
             ACCELEROMETER_X,
             ACCELEROMETER_Y,
             ACCELEROMETER_Z,
-            MAGNETOMETER_X,
-            MAGNETOMETER_Y,
-            MAGNETOMETER_Z
+            GYROSCOPE_X,
+            GYROSCOPE_Y,
+            GYROSCOPE_Z,
+            BATTERY_LEVEL
         )
     }
 
@@ -159,22 +159,19 @@ class ActionViewModel(private val addActionUseCase: AddActionUseCase) : ViewMode
 
     companion object {
         const val TEMPERATURE = "Temperature"
+        const val LIGHT = "Light"
         const val HUMIDITY = "Humidity"
         const val PRESSURE = "Pressure"
-        const val LIGHT = "Light"
-        const val BATTERY_LEVEL = "Battery Level"
-
-        const val GYROSCOPE_X = "Gyroscope X"
-        const val GYROSCOPE_Y = "Gyroscope Y"
-        const val GYROSCOPE_Z = "Gyroscope Z"
-
-        const val ACCELEROMETER_X = "Accelerometer X"
-        const val ACCELEROMETER_Y = "Accelerometer Y"
-        const val ACCELEROMETER_Z = "Accelerometer Z"
-
         const val MAGNETOMETER_X = "Magnetometer X"
         const val MAGNETOMETER_Y = "Magnetometer Y"
         const val MAGNETOMETER_Z = "Magnetometer Z"
+        const val ACCELEROMETER_X = "Accelerometer X"
+        const val ACCELEROMETER_Y = "Accelerometer Y"
+        const val ACCELEROMETER_Z = "Accelerometer Z"
+        const val GYROSCOPE_X = "Gyroscope X"
+        const val GYROSCOPE_Y = "Gyroscope Y"
+        const val GYROSCOPE_Z = "Gyroscope Z"
+        const val BATTERY_LEVEL = "Battery Level"
     }
 }
 
