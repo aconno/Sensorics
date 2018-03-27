@@ -10,7 +10,7 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.livegraph.DaggerLiveGraphComponent
 import com.aconno.acnsensa.dagger.livegraph.LiveGraphComponent
 import com.aconno.acnsensa.dagger.livegraph.LiveGraphModule
-import com.aconno.acnsensa.viewmodel.BleGraph
+import com.aconno.acnsensa.ui.graph.BleGraph
 import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
 import kotlinx.android.synthetic.main.activity_graph.*
 import javax.inject.Inject
