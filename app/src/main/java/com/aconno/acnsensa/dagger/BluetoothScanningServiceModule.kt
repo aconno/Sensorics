@@ -7,6 +7,9 @@ import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.BluetoothScanningServiceReceiver
 import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.device.storage.FileStorageImpl
+import com.aconno.acnsensa.domain.ifttt.ActionsRespository
+import com.aconno.acnsensa.domain.ifttt.HandleInputUseCase
+import com.aconno.acnsensa.domain.ifttt.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
@@ -61,5 +64,17 @@ class BluetoothScanningServiceModule(
     @BluetoothScanningServiceScope
     fun provideLogReadingsUseCase(): LogReadingUseCase {
         return LogReadingUseCase(FileStorageImpl(bluetoothScanningService))
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideReadingToInputUseCase(): ReadingToInputUseCase {
+        return ReadingToInputUseCase()
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideHandleInputUseCase(actionsRespository: ActionsRespository): HandleInputUseCase {
+        return HandleInputUseCase(actionsRespository)
     }
 }

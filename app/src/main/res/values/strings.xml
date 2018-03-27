@@ -3,6 +3,7 @@
     <string name="app_name">AcnSensaDroid</string>
     <string name="scan">Scan</string>
     <string name="stop_scanning">Stop scanning</string>
+    <string name="actions">Actions</string>
 
     <!-- SensorListFragment -->
     <string name="temperature">Temperature</string>
@@ -49,4 +50,17 @@
     <string name="grant_permissions">Please grant required permissions.</string>
     <string name="bt_disabled">Bluetooth is disabled</string>
     <string name="enable">Enable</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- AddActionActivity -->
+    <string name="action_name">Action Name</string>
+    <string name="condition_name">Condition</string>
+    <string name="sensor_label">Sensor</string>
+    <string name="type_label">Type</string>
+    <string name="value_label">Value</string>
+    <string name="outcome_name">Outcome</string>
+    <string name="notification_label">Notification</string>
+    <string name="add_action">Add Action</string>
 </resources>
