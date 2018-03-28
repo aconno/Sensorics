@@ -1,11 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.aconno.acnsensa.device">
-
-    <application>
-        <service
-            android:name="com.aconno.acnsensa.BluetoothScanningService"
-            android:exported="false" />
-    </application>
-
-</manifest>
+<manifest package="com.aconno.acnsensa.device" />

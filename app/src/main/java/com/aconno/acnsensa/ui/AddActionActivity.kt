@@ -57,9 +57,9 @@ class AddActionActivity : AppCompatActivity() {
         val sensorType = sensor_spinner.selectedItemPosition
         val conditionType = condition_type_spinner.selectedItem.toString()
         val value = condition_value.text.toString()
-        val outcome = outcome_notification_text.toString()
+        val outcome = outcome_notification_text.text.toString()
 
-        actionViewModel.addAction(name, sensorType, conditionType, value, "Got $value")
+        actionViewModel.addAction(name, sensorType, conditionType, value, outcome)
     }
 
     private fun onAddActionResult(success: Boolean?) {
