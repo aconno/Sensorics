@@ -85,6 +85,7 @@ class BluetoothScanningService : Service() {
         startForeground(1, notification)
 
         bluetooth.startScanning()
+        running = true
         startRecording()
         startLogging()
         handleInputsForActions()
@@ -101,14 +102,15 @@ class BluetoothScanningService : Service() {
 
     fun stopScanning() {
         bluetooth.stopScanning()
+        running = false
         stopSelf()
     }
 
     private fun startRecording() {
         sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
             .subscribe {
-            recordUseCase.execute(it)
-        }
+                recordUseCase.execute(it)
+            }
     }
 
     private fun startLogging() {
@@ -128,6 +130,12 @@ class BluetoothScanningService : Service() {
             } else {
                 context.startService(intent)
             }
+        }
+
+        private var running = false
+
+        fun isRunning(): Boolean {
+            return running
         }
     }
 }

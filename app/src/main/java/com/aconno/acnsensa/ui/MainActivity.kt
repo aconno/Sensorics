@@ -13,6 +13,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
+import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
         bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
 
         if (!hasPermissions()) {
@@ -91,7 +93,7 @@ class MainActivity : AppCompatActivity() {
             val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
             menuItem?.let {
                 it.isChecked = true
-                it.setTitle(getString(R.string.stop_scanning))
+                it.setTitle(getString(R.string.stop_scan))
             }
         }
     }
@@ -101,7 +103,7 @@ class MainActivity : AppCompatActivity() {
             val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
             menuItem?.let {
                 it.isChecked = false
-                it.setTitle(getString(R.string.scan))
+                it.setTitle(getString(R.string.start_scan))
             }
         }
     }
@@ -117,7 +119,10 @@ class MainActivity : AppCompatActivity() {
         mainMenu?.clear()
         menuInflater.inflate(R.menu.main_menu, menu)
 
-        handleScanEvent(bluetoothScanningViewModel.getResult().value)
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
+            setScanMenuLabel(it)
+        }
+
         return true
     }
 
@@ -142,6 +147,14 @@ class MainActivity : AppCompatActivity() {
             } else {
                 bluetoothScanningViewModel.startScanning()
             }
+        }
+    }
+
+    private fun setScanMenuLabel(menuItem: MenuItem) {
+        if (BluetoothScanningService.isRunning()) {
+            menuItem.title = getString(R.string.stop_scan)
+        } else {
+            menuItem.title = getString(R.string.start_scan)
         }
     }
 
