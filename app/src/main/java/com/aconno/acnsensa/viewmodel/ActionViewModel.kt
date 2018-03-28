@@ -28,8 +28,8 @@ class ActionViewModel(private val addActionUseCase: AddActionUseCase, applicatio
     ) {
         try {
             val type = when (conditionType) {
-                "Max" -> 1
-                "Min" -> 0
+                ">" -> 1
+                "<" -> 0
                 else -> throw IllegalArgumentException("Got invalid sensor type: $conditionType")
             }
             val condition = LimitCondition(sensorType, value.toFloat(), type)
@@ -74,7 +74,7 @@ class ActionViewModel(private val addActionUseCase: AddActionUseCase, applicatio
     }
 
     fun getConditionTypes(): List<String> {
-        return listOf("Max", "Min")
+        return listOf(">", "<")
     }
 
     companion object {
