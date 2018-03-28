@@ -1,15 +1,21 @@
 package com.aconno.acnsensa.dagger.application
 
+import android.arch.persistence.room.Room
 import android.bluetooth.BluetoothAdapter
 import com.aconno.acnsensa.AcnSensaApplication
+import com.aconno.acnsensa.IntentProviderImpl
+import com.aconno.acnsensa.data.repository.AcnSensaDatabase
+import com.aconno.acnsensa.data.repository.ActionsRepositoryImpl
 import com.aconno.acnsensa.data.repository.InMemoryRepositoryImpl
 import com.aconno.acnsensa.device.bluetooth.BluetoothImpl
 import com.aconno.acnsensa.device.bluetooth.BluetoothPermission
 import com.aconno.acnsensa.device.bluetooth.BluetoothPermissionImpl
+import com.aconno.acnsensa.device.notification.NotificationDisplayImpl
+import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
-import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
+import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.model.ScanResult
@@ -17,7 +23,6 @@ import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
-import io.reactivex.Single
 import javax.inject.Singleton
 
 /**
@@ -78,20 +83,28 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
     @Provides
     @Singleton
-    fun provideActionsRepository(): ActionsRepository {
-        return object : ActionsRepository {
-            private val actionList = mutableListOf<Action>()
-            override fun addAction(action: Action) {
-                actionList.add(action)
-            }
+    fun provideActionsRepository(
+        acnSensaDatabase: AcnSensaDatabase,
+        notificationDisplay: NotificationDisplay
+    ): ActionsRepository {
+        return ActionsRepositoryImpl(acnSensaDatabase.actionDao(), notificationDisplay)
+    }
 
-            override fun deleteAction(action: Action) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+    @Provides
+    @Singleton
+    fun provideAcnSensaDatabase(): AcnSensaDatabase {
+        return Room.databaseBuilder(acnSensaApplication, AcnSensaDatabase::class.java, "AcnSensa")
+            .fallbackToDestructiveMigration()
+            .build()
 
-            override fun getAllActions(): Single<List<Action>> {
-                return Single.just(actionList)
-            }
-        }
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationDisplay(): NotificationDisplay {
+        return NotificationDisplayImpl(
+            NotificationFactory(), IntentProviderImpl(), acnSensaApplication
+        )
+
     }
 }

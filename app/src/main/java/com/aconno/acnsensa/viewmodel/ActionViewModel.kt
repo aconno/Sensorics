@@ -3,18 +3,19 @@ package com.aconno.acnsensa.viewmodel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import com.aconno.acnsensa.IntentProviderImpl
-import com.aconno.acnsensa.device.notification.NotificationDisplayImpl
-import com.aconno.acnsensa.device.notification.NotificationFactory
-import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
-import com.aconno.acnsensa.domain.ifttt.GeneralAction
-import com.aconno.acnsensa.domain.ifttt.LimitCondition
-import com.aconno.acnsensa.domain.ifttt.NotificationOutcome
+import com.aconno.acnsensa.domain.ifttt.*
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 /**
  * @author aconno
  */
-class ActionViewModel(private val addActionUseCase: AddActionUseCase, application: Application) :
+class ActionViewModel(
+    private val addActionUseCase: AddActionUseCase,
+    private val notificationDisplay: NotificationDisplay,
+    application: Application
+) :
     AndroidViewModel(application) {
 
     val addActionResults: MutableLiveData<Boolean> = MutableLiveData()
@@ -34,14 +35,17 @@ class ActionViewModel(private val addActionUseCase: AddActionUseCase, applicatio
             }
             val condition = LimitCondition(sensorType, value.toFloat(), type)
             val outcome = NotificationOutcome(
-                outcomeMessage, NotificationDisplayImpl(
-                    NotificationFactory(), IntentProviderImpl(), getApplication()
-                )
+                outcomeMessage, notificationDisplay
             )
             val action = GeneralAction(name, condition, outcome)
+
             addActionUseCase.execute(action)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onAddActionSuccess() }, { onAddActionFail() })
+
         } catch (e: Exception) {
+            Timber.e(e)
             onAddActionFail()
         }
     }

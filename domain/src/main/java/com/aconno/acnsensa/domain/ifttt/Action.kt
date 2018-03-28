@@ -5,5 +5,7 @@ package com.aconno.acnsensa.domain.ifttt
  */
 interface Action {
     val name: String
+    val condition: Condition
+    val outcome: Outcome
     fun processInput(input: Input)
 }
