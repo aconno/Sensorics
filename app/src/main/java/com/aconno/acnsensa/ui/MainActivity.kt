@@ -1,13 +1,9 @@
 package com.aconno.acnsensa.ui
 
-import android.Manifest
 import android.arch.lifecycle.Observer
 import android.bluetooth.BluetoothAdapter
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -18,6 +14,7 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
+import com.aconno.acnsensa.device.permissons.ScanningPermissionManager
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -59,8 +56,8 @@ class MainActivity : AppCompatActivity() {
 
         bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
 
-        if (!hasPermissions()) {
-            requestPermissions()
+        if (!ScanningPermissionManager.hasPermissions(this)) {
+            ScanningPermissionManager.requestPermissions(this)
         } else if (!isBtEnabled()) {
             Timber.e("BT enabled")
             Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
@@ -160,37 +157,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Checks if all the permissions are granted
-     *
-     * @return true if all the permissions are granted
-     */
-    private fun hasPermissions(): Boolean {
-        val result = PERMISSIONS.sumBy { ContextCompat.checkSelfPermission(this, it) }
-        return result == PackageManager.PERMISSION_GRANTED
-    }
-
-    /**
-     * Requests all the permissions needed
-     */
-    private fun requestPermissions() {
-        ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSIONS)
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode == REQUEST_PERMISSIONS) {
-            val result = grantResults.sum()
-
-            if (result != PackageManager.PERMISSION_GRANTED) {
-
-                Toast.makeText(this, R.string.grant_permissions, Toast.LENGTH_LONG)
-                    .show()
-                finish()
-            }
+        val requestPermissionResult =
+            ScanningPermissionManager.getRequestPermissionsResult(requestCode, grantResults)
+        if (!requestPermissionResult) {
+            Toast.makeText(this, R.string.grant_permissions, Toast.LENGTH_LONG).show()
+            finish()
         }
     }
 
@@ -202,17 +178,6 @@ class MainActivity : AppCompatActivity() {
     private fun enableBt() {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         bluetoothAdapter.enable()
-    }
-
-    companion object {
-
-        const val REQUEST_PERMISSIONS = 0x0001
-
-        val PERMISSIONS = arrayOf(
-            Manifest.permission.BLUETOOTH,
-            Manifest.permission.BLUETOOTH_ADMIN,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
     }
 }
 
