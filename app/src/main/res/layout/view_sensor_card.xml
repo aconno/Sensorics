@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:contentDescription="@string/sensor_card_image_content_description"
             tools:src="@drawable/ic_pressure" />
 
         <TextView

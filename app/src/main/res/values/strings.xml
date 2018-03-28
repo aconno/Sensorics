@@ -63,4 +63,6 @@
     <string name="outcome_name">Outcome</string>
     <string name="notification_label">Notification</string>
     <string name="add_action">Add Action</string>
+
+    <string name="message">Message</string>
 </resources>
