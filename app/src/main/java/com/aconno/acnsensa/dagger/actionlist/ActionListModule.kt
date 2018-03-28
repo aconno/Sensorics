@@ -1,6 +1,6 @@
 package com.aconno.acnsensa.dagger.actionlist
 
-import com.aconno.acnsensa.domain.ifttt.ActionsRespository
+import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.GetAllActionsUseCase
 import dagger.Module
 import dagger.Provides
@@ -13,7 +13,7 @@ class ActionListModule {
 
     @Provides
     @ActionListScope
-    fun provideGetAllActionsUseCase(actionsRepository: ActionsRespository): GetAllActionsUseCase {
+    fun provideGetAllActionsUseCase(actionsRepository: ActionsRepository): GetAllActionsUseCase {
         return GetAllActionsUseCase(actionsRepository)
     }
 
