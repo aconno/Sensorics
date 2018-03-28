@@ -153,8 +153,10 @@ class MainActivity : AppCompatActivity() {
     private fun setScanMenuLabel(menuItem: MenuItem) {
         if (BluetoothScanningService.isRunning()) {
             menuItem.title = getString(R.string.stop_scan)
+            menuItem.isChecked = true
         } else {
             menuItem.title = getString(R.string.start_scan)
+            menuItem.isChecked = false
         }
     }
 
