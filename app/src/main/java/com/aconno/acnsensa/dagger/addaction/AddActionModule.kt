@@ -3,6 +3,7 @@ package com.aconno.acnsensa.dagger.addaction
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
+import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.ui.AddActionActivity
 import com.aconno.acnsensa.viewmodel.ActionViewModel
 import com.aconno.acnsensa.viewmodel.factory.ActionViewModelFactory
@@ -24,8 +25,11 @@ class AddActionModule(private val addActionActivity: AddActionActivity) {
 
     @Provides
     @AddActionActivityScope
-    fun provideActionViewModelFactory(addActionUseCase: AddActionUseCase) =
-        ActionViewModelFactory(addActionUseCase, addActionActivity.application)
+    fun provideActionViewModelFactory(
+        addActionUseCase: AddActionUseCase,
+        notificationDisplay: NotificationDisplay
+    ) =
+        ActionViewModelFactory(addActionUseCase, notificationDisplay, addActionActivity.application)
 
     @Provides
     @AddActionActivityScope

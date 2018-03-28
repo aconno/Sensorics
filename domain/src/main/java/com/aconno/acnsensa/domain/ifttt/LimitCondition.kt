@@ -1,6 +1,10 @@
 package com.aconno.acnsensa.domain.ifttt
 
-class LimitCondition(private val sensorType: Int, private val limit: Float, private val type: Int) :
+class LimitCondition(
+    override val sensorType: Int,
+    override val limit: Float,
+    override val type: Int
+) :
     Condition {
 
     override fun isSatisfied(input: Input): Boolean {

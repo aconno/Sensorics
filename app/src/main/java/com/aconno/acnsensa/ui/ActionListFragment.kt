@@ -16,6 +16,8 @@ import com.aconno.acnsensa.dagger.actionlist.ActionListModule
 import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.GetAllActionsUseCase
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_action_list.*
 import javax.inject.Inject
 
@@ -52,7 +54,10 @@ class ActionListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        getAllActionsUseCase.execute().subscribe { actions -> initializeActionList(actions) }
+        getAllActionsUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { actions -> initializeActionList(actions) }
     }
 
     private fun initializeActionList(actions: List<Action>) {

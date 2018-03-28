@@ -3,6 +3,7 @@ package com.aconno.acnsensa.dagger.application
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
+import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Component
 import io.reactivex.Flowable
@@ -24,6 +25,8 @@ interface AppComponent {
     fun sensorValues(): Flowable<Map<String, Number>>
 
     fun actionsRepository(): ActionsRepository
+
+    fun notificationDisplay(): NotificationDisplay
 
     //Classes which can accept injected dependencies.
 }

@@ -5,8 +5,8 @@ package com.aconno.acnsensa.domain.ifttt
  */
 class GeneralAction(
     override val name: String,
-    private val condition: Condition,
-    private val outcome: Outcome
+    override val condition: Condition,
+    override val outcome: Outcome
 ) : Action {
 
     override fun processInput(input: Input) {
