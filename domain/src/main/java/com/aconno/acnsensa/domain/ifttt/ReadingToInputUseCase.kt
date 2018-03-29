@@ -32,7 +32,6 @@ class ReadingToInputUseCase : SingleUseCaseWithParameter<List<Input>, List<Readi
     }
 
     private fun getLightInput(reading: LightReading): Input {
-        println("Light value is ${reading.light}")
         return GeneralInput(reading.light.toFloat(), INPUT_LIGHT, reading.timestamp)
     }
 

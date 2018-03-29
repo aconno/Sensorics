@@ -19,6 +19,8 @@ import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 /**
@@ -97,7 +99,12 @@ class BluetoothScanningService : Service() {
             .concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
             .concatMap { readingToInputUseCase.execute(it).toFlowable() }
             .flatMapIterable { it }
-            .subscribe { handleInputUseCase.execute(it) }
+            .subscribe {
+                handleInputUseCase.execute(it)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe()
+            }
     }
 
     fun stopScanning() {

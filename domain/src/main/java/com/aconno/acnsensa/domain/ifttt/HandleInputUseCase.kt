@@ -12,7 +12,9 @@ class HandleInputUseCase(
     override fun execute(parameter: Input): Completable {
         return Completable.fromAction {
             actionsRepository.getAllActions()
-                .subscribe { actions -> actions.forEach { it.processInput(parameter) } }
+                .subscribe { actions ->
+                    actions.forEach { it.processInput(parameter) }
+                }
         }
     }
 }
