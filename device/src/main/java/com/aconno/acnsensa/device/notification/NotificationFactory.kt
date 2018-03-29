@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.support.v4.app.NotificationCompat
 import com.aconno.acnsensa.device.R
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
@@ -16,10 +15,10 @@ import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
  */
 class NotificationFactory {
     fun makeForegroundServiceNotification(context: Context): Notification {
-        createNotificationsChannel(context)
+        createNotificationsChannel(context, NotificationChannelFactory.SERVICE_CHANNEL)
         return NotificationCompat.Builder(
             context,
-            AcnSensaNotificationChannel.CHANNEL_ID
+            NotificationChannelFactory.CHANNEL_ID
         )
             .setContentTitle("AcnSensa scanning")
             .setContentText("AcnSensa is scanning")
@@ -27,13 +26,18 @@ class NotificationFactory {
             .build()
     }
 
-    private fun createNotificationsChannel(application: Context) {
+    private fun createNotificationsChannel(application: Context, channelType: Int) {
         val notificationManager =
             application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val statsNotificationChannel = AcnSensaNotificationChannel(notificationManager)
+        val statsNotificationChannel = NotificationChannelFactory(notificationManager)
 
-        statsNotificationChannel.create()
+        when (channelType) {
+            NotificationChannelFactory.ALERTS_CHANNEL ->
+                statsNotificationChannel.makeAlertsChannel()
+            NotificationChannelFactory.SERVICE_CHANNEL ->
+                statsNotificationChannel.makeServiceNotificationChannel()
+        }
     }
 
     //TODO: This method needs to get a configuration object which contains all the settings.
@@ -43,16 +47,14 @@ class NotificationFactory {
         deleteIntent: PendingIntent,
         contentIntent: PendingIntent
     ): Notification {
-        createNotificationsChannel(context)
-        val vibratePattern = longArrayOf(500L, 500L, 500L, 1000L, 1000L, 1000L, 500L, 500L, 500L)
-        return NotificationCompat.Builder(context, AcnSensaNotificationChannel.CHANNEL_ID)
+        createNotificationsChannel(context, NotificationChannelFactory.ALERTS_CHANNEL)
+        return NotificationCompat.Builder(context, NotificationChannelFactory.ALERTS_CHANNEL_ID)
             .setContentTitle("Sensor Alert")
             .setContentText(message)
             .setSmallIcon(R.drawable.notification_icon_background)
             .setAutoCancel(true)
             .setDeleteIntent(deleteIntent)
-            .setContentIntent(contentIntent).setVibrate(vibratePattern)
-            .setLights(Color.RED, 3000, 3000)
+            .setContentIntent(contentIntent)
             .build()
     }
 

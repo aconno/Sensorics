@@ -65,7 +65,11 @@ class AddActionActivity : AppCompatActivity() {
     private fun onAddActionResult(success: Boolean?) {
         when (success) {
             true -> finish()
-            else -> Toast.makeText(this, "Failed to create Action", Toast.LENGTH_LONG).show()
+            else -> Toast.makeText(
+                this,
+                "Failed to makeServiceNotificationChannel Action",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
