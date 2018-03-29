@@ -54,7 +54,7 @@ class LiveGraphActivity : AppCompatActivity() {
     }
 
     private fun updateGraph(long: Long?) {
-        line_chart.data.notifyDataChanged()
+        line_chart.data?.notifyDataChanged()
         line_chart.notifyDataSetChanged()
         line_chart.invalidate()
     }
