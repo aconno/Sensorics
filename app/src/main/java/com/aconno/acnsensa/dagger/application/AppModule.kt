@@ -7,12 +7,16 @@ import com.aconno.acnsensa.IntentProviderImpl
 import com.aconno.acnsensa.data.repository.AcnSensaDatabase
 import com.aconno.acnsensa.data.repository.ActionsRepositoryImpl
 import com.aconno.acnsensa.data.repository.InMemoryRepositoryImpl
+import com.aconno.acnsensa.device.SmsSenderImpl
+import com.aconno.acnsensa.device.VibratorImpl
 import com.aconno.acnsensa.device.bluetooth.BluetoothImpl
 import com.aconno.acnsensa.device.bluetooth.BluetoothPermission
 import com.aconno.acnsensa.device.bluetooth.BluetoothPermissionImpl
 import com.aconno.acnsensa.device.notification.NotificationDisplayImpl
 import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.SmsSender
+import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
@@ -83,11 +87,30 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
     @Provides
     @Singleton
+    fun provideVibrator(): Vibrator {
+        return VibratorImpl(acnSensaApplication.applicationContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSmsSender(): SmsSender {
+        return SmsSenderImpl()
+    }
+
+    @Provides
+    @Singleton
     fun provideActionsRepository(
         acnSensaDatabase: AcnSensaDatabase,
-        notificationDisplay: NotificationDisplay
+        notificationDisplay: NotificationDisplay,
+        vibrator: Vibrator,
+        smsSender: SmsSender
     ): ActionsRepository {
-        return ActionsRepositoryImpl(acnSensaDatabase.actionDao(), notificationDisplay)
+        return ActionsRepositoryImpl(
+            acnSensaDatabase.actionDao(),
+            notificationDisplay,
+            vibrator,
+            smsSender
+        )
     }
 
     @Provides

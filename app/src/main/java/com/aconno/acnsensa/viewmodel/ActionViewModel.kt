@@ -3,6 +3,8 @@ package com.aconno.acnsensa.viewmodel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
+import com.aconno.acnsensa.domain.SmsSender
+import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -14,6 +16,8 @@ import timber.log.Timber
 class ActionViewModel(
     private val addActionUseCase: AddActionUseCase,
     private val notificationDisplay: NotificationDisplay,
+    private val vibrator: Vibrator,
+    private val smsSender: SmsSender,
     application: Application
 ) :
     AndroidViewModel(application) {
@@ -25,7 +29,9 @@ class ActionViewModel(
         sensorType: Int,
         conditionType: String,
         value: String,
-        outcomeMessage: String
+        outcomeMessage: String,
+        vibrate: Boolean,
+        smsDestination: String
     ) {
         try {
             val type = when (conditionType) {
@@ -34,15 +40,31 @@ class ActionViewModel(
                 else -> throw IllegalArgumentException("Got invalid sensor type: $conditionType")
             }
             val condition = LimitCondition(sensorType, value.toFloat(), type)
-            val outcome = NotificationOutcome(
-                outcomeMessage, notificationDisplay
-            )
-            val action = GeneralAction(name, condition, outcome)
 
-            addActionUseCase.execute(action)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onAddActionSuccess() }, { onAddActionFail() })
+            val actions = mutableListOf<Action>()
+            if (outcomeMessage.isNotEmpty()) {
+                val outcome = NotificationOutcome(
+                    outcomeMessage, notificationDisplay
+                )
+                actions.add(GeneralAction(name, condition, outcome))
+            }
+
+            if (vibrate) {
+                val outcome = VibrationOutcome(vibrator)
+                actions.add(GeneralAction(name, condition, outcome))
+            }
+
+            if (smsDestination.isNotEmpty()) {
+                val outcome = SmsOutcome(smsSender, smsDestination, outcomeMessage)
+                actions.add(GeneralAction(name, condition, outcome))
+            }
+
+            actions.forEach {
+                addActionUseCase.execute(it)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ onAddActionSuccess() }, { onAddActionFail() })
+            }
 
         } catch (e: Exception) {
             Timber.e(e)

@@ -58,8 +58,18 @@ class AddActionActivity : AppCompatActivity() {
         val conditionType = condition_type_spinner.selectedItem.toString()
         val value = condition_value.text.toString()
         val outcome = outcome_notification_text.text.toString()
+        val smsDestination = "+491724301597"
+        val vibration = true
 
-        actionViewModel.addAction(name, sensorType, conditionType, value, outcome)
+        actionViewModel.addAction(
+            name,
+            sensorType,
+            conditionType,
+            value,
+            outcome,
+            vibration,
+            smsDestination
+        )
     }
 
     private fun onAddActionResult(success: Boolean?) {
