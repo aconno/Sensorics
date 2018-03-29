@@ -20,8 +20,8 @@ class NotificationFactory {
             context,
             AcnSensaNotificationChannel.CHANNEL_ID
         )
-            .setContentTitle("Title")
-            .setContentText("Text")
+            .setContentTitle("AcnSensa scanning")
+            .setContentText("AcnSensa is scanning")
             .setAutoCancel(true)
             .build()
     }
