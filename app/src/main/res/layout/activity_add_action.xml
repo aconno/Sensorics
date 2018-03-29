@@ -86,6 +86,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/condition_container" />
 
+    <EditText
+        android:id="@+id/phone_number"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+        android:layout_marginTop="@dimen/item_vertical_spacing"
+        android:hint="@string/phone_number"
+        android:inputType="phone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/outcome_notification_text" />
+
+    <EditText
+        android:id="@+id/sms_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+        android:layout_marginTop="@dimen/item_vertical_spacing"
+        android:hint="@string/sms_message_hint"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/phone_number" />
+
+    <CheckBox
+        android:id="@+id/vibrate_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+        android:layout_marginTop="@dimen/item_vertical_spacing"
+        android:text="@string/vibrate_checkbox_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sms_message" />
+    
     <Button
         android:id="@+id/add_action_button"
         android:layout_width="0dp"
