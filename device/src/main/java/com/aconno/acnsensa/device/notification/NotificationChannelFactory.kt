@@ -30,14 +30,11 @@ class NotificationChannelFactory(private val notificationManager: NotificationMa
                 NotificationChannel(
                     ALERTS_CHANNEL_ID,
                     ALERTS_CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_HIGH
+                    NotificationManager.IMPORTANCE_LOW
                 )
             } else {
                 TODO("VERSION.SDK_INT < O")
             }
-            notificationChannel.enableVibration(true)
-            val vibratePattern = longArrayOf(2000L)
-            notificationChannel.vibrationPattern = vibratePattern
             notificationManager.createNotificationChannel(notificationChannel)
         }
     }
