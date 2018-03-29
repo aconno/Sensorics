@@ -8,8 +8,7 @@ class SmsSenderImpl : SmsSender {
     override fun sendSms(phoneNumber: String, message: String) {
         try {
             val smsManager = SmsManager.getDefault()
-            Timber.e("message is $message")
-            smsManager.sendTextMessage(phoneNumber, null, "AcnSensa Alert", null, null)
+            smsManager.sendTextMessage(phoneNumber, null, message, null, null)
         } catch (e: Exception) {
             Timber.e(e)
         }

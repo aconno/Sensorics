@@ -5,7 +5,7 @@ import com.aconno.acnsensa.domain.SmsSender
 class SmsOutcome(
     private val smsSender: SmsSender,
     val phoneNumber: String,
-    private val message: String
+    val message: String
 ) : Outcome {
     override fun execute() {
         if (!running) {

@@ -30,13 +30,19 @@ class ActionsRepositoryImpl(
         val value = action.condition.limit
 
         var type = 0
+        var message = ""
         when (action.outcome) {
-            is NotificationOutcome -> type = 1
+            is NotificationOutcome -> {
+                type = 1
+                message = (action.outcome as? NotificationOutcome)?.message ?: "null"
+            }
             is VibrationOutcome -> type = 2
-            is SmsOutcome -> type = 3
+            is SmsOutcome -> {
+                type = 3
+                message = (action.outcome as? SmsOutcome)?.message ?: ""
+            }
         }
-        val outcome = action.outcome as? NotificationOutcome
-        val message = outcome?.message ?: ""
+
         val number = (action.outcome as? SmsOutcome)?.phoneNumber ?: ""
         return ActionEntity(
             name = name,
