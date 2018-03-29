@@ -31,7 +31,8 @@ class ActionViewModel(
         value: String,
         outcomeMessage: String,
         vibrate: Boolean,
-        smsDestination: String
+        smsDestination: String,
+        smsMessage: String
     ) {
         try {
             val type = when (conditionType) {
@@ -54,8 +55,8 @@ class ActionViewModel(
                 actions.add(GeneralAction(name, condition, outcome))
             }
 
-            if (smsDestination.isNotEmpty()) {
-                val outcome = SmsOutcome(smsSender, smsDestination, outcomeMessage)
+            if (smsDestination.isNotEmpty() && smsMessage.isNotEmpty()) {
+                val outcome = SmsOutcome(smsSender, smsDestination, smsMessage)
                 actions.add(GeneralAction(name, condition, outcome))
             }
 

@@ -58,8 +58,9 @@ class AddActionActivity : AppCompatActivity() {
         val conditionType = condition_type_spinner.selectedItem.toString()
         val value = condition_value.text.toString()
         val outcome = outcome_notification_text.text.toString()
-        val smsDestination = "+491724301597"
-        val vibration = true
+        val smsDestination = phone_number.text.toString()
+        val vibration = vibrate_checkbox.isChecked
+        val smsMessage = sms_message.text.toString()
 
         actionViewModel.addAction(
             name,
@@ -68,7 +69,8 @@ class AddActionActivity : AppCompatActivity() {
             value,
             outcome,
             vibration,
-            smsDestination
+            smsDestination,
+            smsMessage
         )
     }
 
