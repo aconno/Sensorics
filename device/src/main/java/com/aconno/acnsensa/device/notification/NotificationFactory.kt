@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.support.v4.app.NotificationCompat
 import com.aconno.acnsensa.device.R
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
@@ -35,6 +36,7 @@ class NotificationFactory {
         statsNotificationChannel.create()
     }
 
+    //TODO: This method needs to get a configuration object which contains all the settings.
     fun makeAlertNotification(
         context: Context,
         message: String,
@@ -42,13 +44,15 @@ class NotificationFactory {
         contentIntent: PendingIntent
     ): Notification {
         createNotificationsChannel(context)
+        val vibratePattern = longArrayOf(500L, 500L, 500L, 1000L, 1000L, 1000L, 500L, 500L, 500L)
         return NotificationCompat.Builder(context, AcnSensaNotificationChannel.CHANNEL_ID)
             .setContentTitle("Sensor Alert")
             .setContentText(message)
             .setSmallIcon(R.drawable.notification_icon_background)
             .setAutoCancel(true)
             .setDeleteIntent(deleteIntent)
-            .setContentIntent(contentIntent)
+            .setContentIntent(contentIntent).setVibrate(vibratePattern)
+            .setLights(Color.RED, 3000, 3000)
             .build()
     }
 
@@ -77,7 +81,7 @@ class NotificationDisplayImpl(
         )
     }
 
-    fun display(context: Context, notification: Notification, notificationId: Int) {
+    private fun display(context: Context, notification: Notification, notificationId: Int) {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
         notificationManager?.notify(notificationId, notification)
