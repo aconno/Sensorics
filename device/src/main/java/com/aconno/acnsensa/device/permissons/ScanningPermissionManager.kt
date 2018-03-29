@@ -14,7 +14,8 @@ object ScanningPermissionManager {
     private val PERMISSIONS = arrayOf(
         Manifest.permission.BLUETOOTH,
         Manifest.permission.BLUETOOTH_ADMIN,
-        Manifest.permission.ACCESS_FINE_LOCATION
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.SEND_SMS
     )
 
     fun hasPermissions(context: Context): Boolean {
