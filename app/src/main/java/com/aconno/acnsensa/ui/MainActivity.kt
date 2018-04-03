@@ -61,8 +61,6 @@ class MainActivity : AppCompatActivity(), PermissionPresenter.PermissionCallback
 
         bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
 
-        permissionPresenter.requestAccessFineLocation()
-
         if (!isBtEnabled()) {
             Timber.e("BT enabled")
             Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
@@ -147,7 +145,7 @@ class MainActivity : AppCompatActivity(), PermissionPresenter.PermissionCallback
             if (item.isChecked) {
                 bluetoothScanningViewModel.stopScanning()
             } else {
-                bluetoothScanningViewModel.startScanning()
+                permissionPresenter.requestAccessFineLocation()
             }
         }
     }
@@ -181,12 +179,12 @@ class MainActivity : AppCompatActivity(), PermissionPresenter.PermissionCallback
     }
 
     override fun permissionAccepted(actionCode: Int) {
+        bluetoothScanningViewModel.startScanning()
         //TODO: Permission accepted
     }
 
     override fun permissionDenied(actionCode: Int) {
         //TODO: Permission denied
-        finish()
     }
 
     override fun showRationale(actionCode: Int) {
