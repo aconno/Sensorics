@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.R
@@ -15,7 +14,6 @@ import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
-import com.aconno.acnsensa.device.permissons.ScanningPermissionManager
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.presenters.PermissionPresenter
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
