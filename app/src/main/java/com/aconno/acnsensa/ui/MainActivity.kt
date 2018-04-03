@@ -14,19 +14,23 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
+import com.aconno.acnsensa.device.permissons.PermissionActionFactory
 import com.aconno.acnsensa.device.permissons.ScanningPermissionManager
 import com.aconno.acnsensa.domain.model.ScanEvent
+import com.aconno.acnsensa.presenters.PermissionPresenter
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), PermissionPresenter.PermissionCallbacks {
 
     @Inject
     lateinit var bluetoothScanningViewModel: BluetoothScanningViewModel
 
     private var mainMenu: Menu? = null
+
+    private lateinit var permissionPresenter: PermissionPresenter
 
     val mainActivityComponent: MainActivityComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -39,6 +43,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val permissionAction = PermissionActionFactory.getPermissionAction(this)
+        permissionPresenter = PermissionPresenter(permissionAction, this)
 
         mainActivityComponent.inject(this)
         custom_toolbar.title = getString(R.string.app_name)
@@ -56,9 +63,9 @@ class MainActivity : AppCompatActivity() {
 
         bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
 
-        if (!ScanningPermissionManager.hasPermissions(this)) {
-            ScanningPermissionManager.requestPermissions(this)
-        } else if (!isBtEnabled()) {
+        permissionPresenter.requestAccessFineLocation()
+
+        if (!isBtEnabled()) {
             Timber.e("BT enabled")
             Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.enable) { enableBt() }
@@ -162,12 +169,7 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        val requestPermissionResult =
-            ScanningPermissionManager.getRequestPermissionsResult(requestCode, grantResults)
-        if (!requestPermissionResult) {
-            Toast.makeText(this, R.string.grant_permissions, Toast.LENGTH_LONG).show()
-            finish()
-        }
+        permissionPresenter.checkGrantedPermission(grantResults, requestCode)
     }
 
     private fun isBtEnabled(): Boolean {
@@ -178,6 +180,19 @@ class MainActivity : AppCompatActivity() {
     private fun enableBt() {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         bluetoothAdapter.enable()
+    }
+
+    override fun permissionAccepted(actionCode: Int) {
+        //TODO: Permission accepted
+    }
+
+    override fun permissionDenied(actionCode: Int) {
+        //TODO: Permission denied
+        finish()
+    }
+
+    override fun showRationale(actionCode: Int) {
+        //TODO: Show rationale
     }
 }
 

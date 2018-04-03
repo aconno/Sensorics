@@ -12,8 +12,6 @@ object ScanningPermissionManager {
     private const val REQUEST_CODE = 0x0001
 
     private val PERMISSIONS = arrayOf(
-        Manifest.permission.BLUETOOTH,
-        Manifest.permission.BLUETOOTH_ADMIN,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
