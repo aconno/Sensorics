@@ -62,10 +62,10 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
         bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
 
-        if (!isBtEnabled()) {
+        if (!isBluetoothEnabled()) {
             Timber.e("BT enabled")
             Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.enable) { enableBt() }
+                .setAction(R.string.enable) { enableBluetooth() }
                 .show()
         }
     }
@@ -169,12 +169,12 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         permissionViewModel.checkGrantedPermission(grantResults, requestCode)
     }
 
-    private fun isBtEnabled(): Boolean {
+    private fun isBluetoothEnabled(): Boolean {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         return bluetoothAdapter?.isEnabled ?: false
     }
 
-    private fun enableBt() {
+    private fun enableBluetooth() {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         bluetoothAdapter.enable()
     }
