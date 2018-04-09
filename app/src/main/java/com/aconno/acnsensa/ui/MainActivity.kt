@@ -15,20 +15,20 @@ import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
 import com.aconno.acnsensa.domain.model.ScanEvent
-import com.aconno.acnsensa.presenters.PermissionPresenter
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
+import com.aconno.acnsensa.viewmodel.PermissionViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), PermissionPresenter.PermissionCallbacks {
+class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks {
 
     @Inject
     lateinit var bluetoothScanningViewModel: BluetoothScanningViewModel
 
     private var mainMenu: Menu? = null
 
-    private lateinit var permissionPresenter: PermissionPresenter
+    private lateinit var permissionViewModel: PermissionViewModel
 
     val mainActivityComponent: MainActivityComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -43,7 +43,8 @@ class MainActivity : AppCompatActivity(), PermissionPresenter.PermissionCallback
         setContentView(R.layout.activity_main)
 
         val permissionAction = PermissionActionFactory.getPermissionAction(this)
-        permissionPresenter = PermissionPresenter(permissionAction, this)
+        permissionViewModel =
+                PermissionViewModel(permissionAction, this)
 
         mainActivityComponent.inject(this)
         custom_toolbar.title = getString(R.string.app_name)
@@ -145,7 +146,7 @@ class MainActivity : AppCompatActivity(), PermissionPresenter.PermissionCallback
             if (item.isChecked) {
                 bluetoothScanningViewModel.stopScanning()
             } else {
-                permissionPresenter.requestAccessFineLocation()
+                permissionViewModel.requestAccessFineLocation()
             }
         }
     }
@@ -165,7 +166,7 @@ class MainActivity : AppCompatActivity(), PermissionPresenter.PermissionCallback
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        permissionPresenter.checkGrantedPermission(grantResults, requestCode)
+        permissionViewModel.checkGrantedPermission(grantResults, requestCode)
     }
 
     private fun isBtEnabled(): Boolean {

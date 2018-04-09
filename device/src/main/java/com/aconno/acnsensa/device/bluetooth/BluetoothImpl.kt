@@ -1,6 +1,5 @@
 package com.aconno.acnsensa.device.bluetooth
 
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanSettings
@@ -12,7 +11,6 @@ import io.reactivex.Flowable
 import io.reactivex.subjects.PublishSubject
 
 //TODO: This needs refactoring.
-@SuppressLint("MissingPermission")
 class BluetoothImpl(
     val bluetoothAdapter: BluetoothAdapter,
     val bluetoothPermission: BluetoothPermission

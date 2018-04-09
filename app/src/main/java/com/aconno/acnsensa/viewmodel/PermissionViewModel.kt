@@ -1,23 +1,26 @@
-package com.aconno.acnsensa.presenters
+package com.aconno.acnsensa.viewmodel
 
 import android.content.pm.PackageManager
 import com.aconno.acnsensa.device.permissons.PermissionAction
-import com.aconno.acnsensa.model.Action
+import com.aconno.acnsensa.model.AcnSensaPermission
 
-class PermissionPresenter(
+class PermissionViewModel(
     private val permissionAction: PermissionAction,
     private val permissionCallbacks: PermissionCallbacks
 ) {
 
     fun requestAccessFineLocation() {
-        checkAndRequestPermission(Action.ACCESS_FINE_LOCATION)
+        checkAndRequestPermission(AcnSensaPermission.ACCESS_FINE_LOCATION)
     }
 
-    private fun checkAndRequestPermission(action: Action) {
-        if (permissionAction.hasSelfPermission(action.permission)) {
-            permissionCallbacks.permissionAccepted(action.code)
+    private fun checkAndRequestPermission(acnSensaPermission: AcnSensaPermission) {
+        if (permissionAction.hasSelfPermission(acnSensaPermission.permission)) {
+            permissionCallbacks.permissionAccepted(acnSensaPermission.code)
         } else {
-            permissionAction.requestPermission(action.permission, action.code)
+            permissionAction.requestPermission(
+                acnSensaPermission.permission,
+                acnSensaPermission.code
+            )
         }
     }
 
