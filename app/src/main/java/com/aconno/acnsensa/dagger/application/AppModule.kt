@@ -2,7 +2,9 @@ package com.aconno.acnsensa.dagger.application
 
 import android.arch.persistence.room.Room
 import android.bluetooth.BluetoothAdapter
+import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
+import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.IntentProviderImpl
 import com.aconno.acnsensa.data.repository.AcnSensaDatabase
 import com.aconno.acnsensa.data.repository.ActionsRepositoryImpl
@@ -10,6 +12,7 @@ import com.aconno.acnsensa.data.repository.InMemoryRepositoryImpl
 import com.aconno.acnsensa.device.bluetooth.BluetoothImpl
 import com.aconno.acnsensa.device.bluetooth.BluetoothPermission
 import com.aconno.acnsensa.device.bluetooth.BluetoothPermissionImpl
+import com.aconno.acnsensa.device.bluetooth.BluetoothStateListener
 import com.aconno.acnsensa.device.notification.NotificationDisplayImpl
 import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.domain.Bluetooth
@@ -33,10 +36,25 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
     @Provides
     @Singleton
+    fun provideLocalBroadcastManager() =
+        LocalBroadcastManager.getInstance(acnSensaApplication.applicationContext)
+
+    @Provides
+    @Singleton
+    fun provideBluetoothStateReceiver(bluetoothStateListener: BluetoothStateListener) =
+        BluetoothStateReceiver(bluetoothStateListener)
+
+    @Provides
+    @Singleton
+    fun provideBluetoothStateListener() = BluetoothStateListener()
+
+    @Provides
+    @Singleton
     fun provideBluetooth(
         bluetoothAdapter: BluetoothAdapter,
-        bluetoothPermission: BluetoothPermission
-    ): Bluetooth = BluetoothImpl(bluetoothAdapter, bluetoothPermission)
+        bluetoothPermission: BluetoothPermission,
+        bluetoothStateListener: BluetoothStateListener
+    ): Bluetooth = BluetoothImpl(bluetoothAdapter, bluetoothPermission, bluetoothStateListener)
 
     @Provides
     @Singleton

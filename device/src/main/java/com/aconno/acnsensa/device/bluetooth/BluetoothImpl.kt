@@ -4,21 +4,24 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanSettings
 import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
 //TODO: This needs refactoring.
 class BluetoothImpl(
-    val bluetoothAdapter: BluetoothAdapter,
-    val bluetoothPermission: BluetoothPermission
+    private val bluetoothAdapter: BluetoothAdapter,
+    private val bluetoothPermission: BluetoothPermission,
+    private val bluetoothStateListener: BluetoothStateListener
 ) : Bluetooth {
 
-    val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
-    val scanEvents: PublishSubject<ScanEvent> = PublishSubject.create()
-    val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvents)
+    private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
+    private val scanEvents: PublishSubject<ScanEvent> = PublishSubject.create()
+    private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvents)
 
     override fun enable() {
         if (bluetoothPermission.isGranted) {
@@ -66,5 +69,18 @@ class BluetoothImpl(
 
     override fun getScanEvents(): Flowable<ScanEvent> {
         return scanEvents.toFlowable(BackpressureStrategy.BUFFER)
+    }
+
+    override fun getStateEvents(): Flowable<BluetoothState> {
+        val currentState = Observable.just(bluetoothAdapter.state).map {
+            when (it) {
+                BluetoothAdapter.STATE_ON -> BluetoothState(BluetoothState.BLUETOOTH_ON)
+                BluetoothAdapter.STATE_OFF -> BluetoothState(BluetoothState.BLUETOOTH_OFF)
+                else -> BluetoothState(BluetoothState.BLUETOOTH_OFF)
+            }
+        }
+
+        return currentState.mergeWith(bluetoothStateListener.getBluetoothStates())
+            .toFlowable(BackpressureStrategy.LATEST)
     }
 }

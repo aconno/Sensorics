@@ -1,7 +1,6 @@
 package com.aconno.acnsensa.ui
 
 import android.arch.lifecycle.Observer
-import android.bluetooth.BluetoothAdapter
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -13,9 +12,10 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
-import com.aconno.acnsensa.device.permissons.PermissionActionFactory
+import com.aconno.acnsensa.domain.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
+import com.aconno.acnsensa.viewmodel.BluetoothViewModel
 import com.aconno.acnsensa.viewmodel.PermissionViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
@@ -24,11 +24,15 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks {
 
     @Inject
+    lateinit var bluetoothViewModel: BluetoothViewModel
+
+    @Inject
     lateinit var bluetoothScanningViewModel: BluetoothScanningViewModel
 
-    private var mainMenu: Menu? = null
+    @Inject
+    lateinit var permissionViewModel: PermissionViewModel
 
-    private lateinit var permissionViewModel: PermissionViewModel
+    private var mainMenu: Menu? = null
 
     val mainActivityComponent: MainActivityComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -41,10 +45,6 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val permissionAction = PermissionActionFactory.getPermissionAction(this)
-        permissionViewModel =
-                PermissionViewModel(permissionAction, this)
 
         mainActivityComponent.inject(this)
         custom_toolbar.title = getString(R.string.app_name)
@@ -61,13 +61,31 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         super.onResume()
 
         bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
+        bluetoothViewModel.observeBluetoothState()
+        bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
 
-        if (!isBluetoothEnabled()) {
-            Timber.e("BT enabled")
-            Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.enable) { enableBluetooth() }
-                .show()
+        Timber.e("Main activity was resumed")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        bluetoothViewModel.stopObservingBluetoothState()
+
+        Timber.e("Main activity was paused")
+    }
+
+    private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
+        Timber.e("Main activity got bluetooth change.")
+        when (bluetoothState?.state) {
+            BluetoothState.BLUETOOTH_OFF -> onBluetoothOff()
         }
+    }
+
+    private fun onBluetoothOff() {
+        Timber.e("BT enabled")
+        Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
+            .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
+            .show()
     }
 
     private fun handleScanEvent(scanEvent: ScanEvent?) {
@@ -167,16 +185,6 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         grantResults: IntArray
     ) {
         permissionViewModel.checkGrantedPermission(grantResults, requestCode)
-    }
-
-    private fun isBluetoothEnabled(): Boolean {
-        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        return bluetoothAdapter?.isEnabled ?: false
-    }
-
-    private fun enableBluetooth() {
-        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        bluetoothAdapter.enable()
     }
 
     override fun permissionAccepted(actionCode: Int) {
