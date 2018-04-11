@@ -15,6 +15,9 @@ abstract class ActionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insert(action: ActionEntity)
 
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    abstract fun update(action: ActionEntity)
+
     @Delete
     abstract fun delete(action: ActionEntity)
 }

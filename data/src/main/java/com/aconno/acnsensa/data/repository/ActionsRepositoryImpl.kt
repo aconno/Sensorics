@@ -15,6 +15,10 @@ class ActionsRepositoryImpl(
         actionDao.insert(toEntity(action))
     }
 
+    override fun updateAction(action: Action) {
+        actionDao.update(toEntity(action))
+    }
+
     override fun deleteAction(action: Action) {
         actionDao.delete(toEntity(action))
     }
