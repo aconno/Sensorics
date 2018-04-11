@@ -1,6 +1,8 @@
 package com.aconno.acnsensa.dagger.application
 
+import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
+import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
@@ -27,6 +29,10 @@ interface AppComponent {
     fun actionsRepository(): ActionsRepository
 
     fun notificationDisplay(): NotificationDisplay
+
+    fun bluetoothStateReceiver(): BluetoothStateReceiver
+
+    fun localBroadcastManager(): LocalBroadcastManager
 
     //Classes which can accept injected dependencies.
 }

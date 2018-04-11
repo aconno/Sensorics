@@ -56,6 +56,9 @@ class BluetoothScanningService : Service() {
     @Inject
     lateinit var notification: Notification
 
+    @Inject
+    lateinit var localBroadcastManager: LocalBroadcastManager
+
     private val bluetoothScanningServiceComponent: BluetoothScanningServiceComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
         DaggerBluetoothScanningServiceComponent.builder()
@@ -79,7 +82,6 @@ class BluetoothScanningService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        val localBroadcastManager = LocalBroadcastManager.getInstance(this)
         localBroadcastManager.registerReceiver(receiver, filter)
 
         startForeground(1, notification)

@@ -1,32 +1,39 @@
 package com.aconno.acnsensa.ui
 
 import android.arch.lifecycle.Observer
-import android.bluetooth.BluetoothAdapter
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
-import com.aconno.acnsensa.device.permissons.ScanningPermissionManager
+import com.aconno.acnsensa.domain.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
+import com.aconno.acnsensa.viewmodel.BluetoothViewModel
+import com.aconno.acnsensa.viewmodel.PermissionViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks {
+
+    @Inject
+    lateinit var bluetoothViewModel: BluetoothViewModel
 
     @Inject
     lateinit var bluetoothScanningViewModel: BluetoothScanningViewModel
 
+    @Inject
+    lateinit var permissionViewModel: PermissionViewModel
+
     private var mainMenu: Menu? = null
+
+    private var snackbar: Snackbar? = null
 
     val mainActivityComponent: MainActivityComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -41,6 +48,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         mainActivityComponent.inject(this)
+
+        snackbar =
+                Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
+
         custom_toolbar.title = getString(R.string.app_name)
         setSupportActionBar(custom_toolbar)
 
@@ -55,19 +67,32 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
+        bluetoothViewModel.observeBluetoothState()
+        bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
 
-        if (!ScanningPermissionManager.hasPermissions(this)) {
-            ScanningPermissionManager.requestPermissions(this)
-        } else if (!isBtEnabled()) {
-            Timber.e("BT enabled")
-            Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.enable) { enableBt() }
-                .show()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        bluetoothViewModel.stopObservingBluetoothState()
+    }
+
+    private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
+        when (bluetoothState?.state) {
+            BluetoothState.BLUETOOTH_OFF -> onBluetoothOff()
+            BluetoothState.BLUETOOTH_ON -> onBluetoothOn()
         }
     }
 
+    private fun onBluetoothOff() {
+        snackbar?.show()
+    }
+
+    private fun onBluetoothOn() {
+        snackbar?.dismiss()
+    }
+
     private fun handleScanEvent(scanEvent: ScanEvent?) {
-        Timber.d("Handle scan event ${scanEvent?.message}")
         val eventType: Int? = scanEvent?.type
         when (eventType) {
             ScanEvent.SCAN_FAILED_ALREADY_STARTED -> onScanFailedAlreadyStarted()
@@ -142,7 +167,7 @@ class MainActivity : AppCompatActivity() {
             if (item.isChecked) {
                 bluetoothScanningViewModel.stopScanning()
             } else {
-                bluetoothScanningViewModel.startScanning()
+                permissionViewModel.requestAccessFineLocation()
             }
         }
     }
@@ -162,22 +187,19 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        val requestPermissionResult =
-            ScanningPermissionManager.getRequestPermissionsResult(requestCode, grantResults)
-        if (!requestPermissionResult) {
-            Toast.makeText(this, R.string.grant_permissions, Toast.LENGTH_LONG).show()
-            finish()
-        }
+        permissionViewModel.checkGrantedPermission(grantResults, requestCode)
     }
 
-    private fun isBtEnabled(): Boolean {
-        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        return bluetoothAdapter?.isEnabled ?: false
+    override fun permissionAccepted(actionCode: Int) {
+        bluetoothScanningViewModel.startScanning()
+        //TODO: Permission accepted
     }
 
-    private fun enableBt() {
-        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        bluetoothAdapter.enable()
+    override fun permissionDenied(actionCode: Int) {
+        //TODO: Permission denied
+    }
+
+    override fun showRationale(actionCode: Int) {
+        //TODO: Show rationale
     }
 }
-
