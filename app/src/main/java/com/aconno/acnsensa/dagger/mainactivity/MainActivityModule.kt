@@ -1,7 +1,6 @@
 package com.aconno.acnsensa.dagger.mainactivity
 
 import android.arch.lifecycle.ViewModelProviders
-import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
@@ -68,10 +67,9 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     @MainActivityScope
     fun provideBluetoothViewModelFactory(
         bluetooth: Bluetooth,
-        bluetoothStateReceiver: BluetoothStateReceiver,
-        localBroadcastManager: LocalBroadcastManager
+        bluetoothStateReceiver: BluetoothStateReceiver
     ) =
-        BluetoothViewModelFactory(bluetooth, bluetoothStateReceiver, localBroadcastManager)
+        BluetoothViewModelFactory(bluetooth, bluetoothStateReceiver, mainActivity.application)
 
     @Provides
     @MainActivityScope

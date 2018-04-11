@@ -18,7 +18,6 @@ import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import com.aconno.acnsensa.viewmodel.BluetoothViewModel
 import com.aconno.acnsensa.viewmodel.PermissionViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks {
@@ -34,6 +33,8 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     private var mainMenu: Menu? = null
 
+    private var snackbar: Snackbar? = null
+
     val mainActivityComponent: MainActivityComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
         DaggerMainActivityComponent.builder()
@@ -47,6 +48,11 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         setContentView(R.layout.activity_main)
 
         mainActivityComponent.inject(this)
+
+        snackbar =
+                Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
+
         custom_toolbar.title = getString(R.string.app_name)
         setSupportActionBar(custom_toolbar)
 
@@ -64,32 +70,29 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         bluetoothViewModel.observeBluetoothState()
         bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
 
-        Timber.e("Main activity was resumed")
     }
 
     override fun onPause() {
         super.onPause()
         bluetoothViewModel.stopObservingBluetoothState()
-
-        Timber.e("Main activity was paused")
     }
 
     private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
-        Timber.e("Main activity got bluetooth change.")
         when (bluetoothState?.state) {
             BluetoothState.BLUETOOTH_OFF -> onBluetoothOff()
+            BluetoothState.BLUETOOTH_ON -> onBluetoothOn()
         }
     }
 
     private fun onBluetoothOff() {
-        Timber.e("BT enabled")
-        Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
-            .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
-            .show()
+        snackbar?.show()
+    }
+
+    private fun onBluetoothOn() {
+        snackbar?.dismiss()
     }
 
     private fun handleScanEvent(scanEvent: ScanEvent?) {
-        Timber.d("Handle scan event ${scanEvent?.message}")
         val eventType: Int? = scanEvent?.type
         when (eventType) {
             ScanEvent.SCAN_FAILED_ALREADY_STARTED -> onScanFailedAlreadyStarted()
@@ -200,4 +203,3 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         //TODO: Show rationale
     }
 }
-

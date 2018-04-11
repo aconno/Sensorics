@@ -1,11 +1,12 @@
 package com.aconno.acnsensa.viewmodel
 
+import android.app.Application
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.bluetooth.BluetoothAdapter
 import android.content.IntentFilter
-import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.BluetoothStateReceiver
+import com.aconno.acnsensa.SingleLiveEvent
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.BluetoothState
 import io.reactivex.disposables.Disposable
@@ -13,10 +14,10 @@ import io.reactivex.disposables.Disposable
 class BluetoothViewModel(
     private val bluetooth: Bluetooth,
     private val bluetoothStateReceiver: BluetoothStateReceiver,
-    private val localBroadcastManager: LocalBroadcastManager
+    private val application: Application
 ) : ViewModel() {
 
-    val bluetoothState: MutableLiveData<BluetoothState> = MutableLiveData()
+    val bluetoothState: MutableLiveData<BluetoothState> = SingleLiveEvent()
 
     private var bluetoothStatesSubscription: Disposable? = null
 
@@ -26,7 +27,7 @@ class BluetoothViewModel(
     }
 
     fun observeBluetoothState() {
-        localBroadcastManager.registerReceiver(
+        application.applicationContext.registerReceiver(
             bluetoothStateReceiver,
             IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         )
@@ -35,7 +36,7 @@ class BluetoothViewModel(
     }
 
     fun stopObservingBluetoothState() {
-        localBroadcastManager.unregisterReceiver(bluetoothStateReceiver)
+        application.applicationContext.unregisterReceiver(bluetoothStateReceiver)
         bluetoothStatesSubscription?.dispose()
     }
 }
