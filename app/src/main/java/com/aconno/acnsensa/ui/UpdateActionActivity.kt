@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import com.aconno.acnsensa.AcnSensaApplication
@@ -22,6 +23,7 @@ import com.aconno.acnsensa.domain.ifttt.VibrationOutcome
 import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.ExistingActionViewModel
 import kotlinx.android.synthetic.main.activity_update_action.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class UpdateActionActivity : AppCompatActivity() {
@@ -59,6 +61,21 @@ class UpdateActionActivity : AppCompatActivity() {
         initSpinner(sensor_spinner, actionOptionsViewModel.getSensorTypes())
         initSpinner(condition_type_spinner, actionOptionsViewModel.getConditionTypes())
         initSpinner(outcome_type_spinner, actionOptionsViewModel.getOuputTypes())
+
+        outcome_type_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                Timber.e("Nothing selected.")
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                showOutcomeOptions()
+            }
+        }
 
         existingActionViewModel.action.observe(this, Observer { updateFields(it) })
         existingActionViewModel.getActionById(actionId)
@@ -120,7 +137,6 @@ class UpdateActionActivity : AppCompatActivity() {
                 }
                 is VibrationOutcome -> {
                     outcome_type_spinner.setSelection(2)
-                    vibrate_checkbox.visibility = View.VISIBLE
                 }
             }
 
@@ -128,6 +144,23 @@ class UpdateActionActivity : AppCompatActivity() {
         }
     }
 
+    private fun showOutcomeOptions() {
+        val selected = outcome_type_spinner.selectedItemId
+        when (selected) {
+            0L -> {
+                message.visibility = View.VISIBLE
+                phone_number.visibility = View.GONE
+            }
+            1L -> {
+                message.visibility = View.VISIBLE
+                phone_number.visibility = View.VISIBLE
+            }
+            2L -> {
+                message.visibility = View.GONE
+                phone_number.visibility = View.GONE
+            }
+        }
+    }
 
     companion object {
         private const val EXTRA_ACTION_ID = "com.aconno.acnsensa.EXTRA_ACTION_ID"

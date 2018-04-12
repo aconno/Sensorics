@@ -106,22 +106,11 @@
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
         android:layout_marginTop="@dimen/item_vertical_spacing"
-        android:hint="@string/sms_message_hint"
+        android:hint="@string/message_hint"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/phone_number" />
-
-    <CheckBox
-        android:id="@+id/vibrate_checkbox"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
-        android:layout_marginTop="@dimen/item_vertical_spacing"
-        android:text="@string/vibrate_checkbox_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/message" />
 
     <Button
         android:id="@+id/update_action_button"
