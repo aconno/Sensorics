@@ -2,10 +2,9 @@ package com.aconno.acnsensa.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.aconno.acnsensa.domain.ifttt.Action
-import com.aconno.acnsensa.domain.ifttt.DeleteActionUseCase
-import com.aconno.acnsensa.domain.ifttt.GetActionByIdUseCase
-import com.aconno.acnsensa.domain.ifttt.UpdateActionUseCase
+import com.aconno.acnsensa.domain.SmsSender
+import com.aconno.acnsensa.domain.Vibrator
+import com.aconno.acnsensa.domain.ifttt.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -13,7 +12,10 @@ import timber.log.Timber
 class ExistingActionViewModel(
     private val updateActionUseCase: UpdateActionUseCase,
     private val getActionByIdUseCase: GetActionByIdUseCase,
-    private val deleteActionUseCase: DeleteActionUseCase
+    private val deleteActionUseCase: DeleteActionUseCase,
+    private val notificationDisplay: NotificationDisplay,
+    private val vibrator: Vibrator,
+    private val smsSender: SmsSender
 ) : ViewModel() {
 
     val action: MutableLiveData<Action> = MutableLiveData()
@@ -30,8 +32,47 @@ class ExistingActionViewModel(
         this.action.value = action
     }
 
-    fun updateAction() {
-        action.value?.let {
+    fun updateAction(
+        name: String,
+        sensorType: Int,
+        conditionType: String,
+        value: String,
+        outcomeType: String,
+        smsDestination: String,
+        content: String
+    ) {
+        var updatedAction: Action? = null
+
+        try {
+            val type = when (conditionType) {
+                ">" -> 1
+                "<" -> 0
+                else -> throw IllegalArgumentException("Got invalid sensor type: $conditionType")
+            }
+            val condition = LimitCondition(sensorType, value.toFloat(), type)
+
+
+            val loadedId = action.value?.id ?: 0
+
+            when (outcomeType) {
+                "Phone Notification" -> {
+                    val outcome = NotificationOutcome(content, notificationDisplay)
+                    updatedAction = GeneralAction(loadedId, name, condition, outcome)
+                }
+                "SMS Message" -> {
+                    val outcome = SmsOutcome(smsSender, smsDestination, content)
+                    updatedAction = GeneralAction(loadedId, name, condition, outcome)
+                }
+                "Vibration" -> {
+                    val outcome = VibrationOutcome(vibrator)
+                    updatedAction = GeneralAction(loadedId, name, condition, outcome)
+                }
+            }
+
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+        updatedAction?.let {
             updateActionUseCase.execute(it)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

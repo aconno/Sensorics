@@ -5,12 +5,21 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.dagger.actionlist.ActionListModule
+import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.dagger.updateaction.DaggerUpdateActionComponent
 import com.aconno.acnsensa.dagger.updateaction.UpdateActionComponent
 import com.aconno.acnsensa.dagger.updateaction.UpdateActionModule
 import com.aconno.acnsensa.domain.ifttt.Action
+import com.aconno.acnsensa.domain.ifttt.NotificationOutcome
+import com.aconno.acnsensa.domain.ifttt.SmsOutcome
+import com.aconno.acnsensa.domain.ifttt.VibrationOutcome
+import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.ExistingActionViewModel
 import kotlinx.android.synthetic.main.activity_update_action.*
 import javax.inject.Inject
@@ -20,10 +29,20 @@ class UpdateActionActivity : AppCompatActivity() {
     @Inject
     lateinit var existingActionViewModel: ExistingActionViewModel
 
+    @Inject
+    lateinit var actionOptionsViewModel: ActionOptionsViewModel
+
     private val updateActionComponent: UpdateActionComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
+
+        val actionListComponent =
+            DaggerActionListComponent.builder().appComponent(acnSensaApplication?.appComponent)
+                .actionListModule(
+                    ActionListModule(this)
+                ).build()
+
         DaggerUpdateActionComponent.builder()
-            .appComponent(acnSensaApplication?.appComponent)
+            .actionListComponent(actionListComponent)
             .updateActionModule(UpdateActionModule(this)).build()
     }
 
@@ -37,12 +56,39 @@ class UpdateActionActivity : AppCompatActivity() {
         update_action_button.setOnClickListener { updateAction() }
         delete_action_button.setOnClickListener { deleteAction() }
 
+        initSpinner(sensor_spinner, actionOptionsViewModel.getSensorTypes())
+        initSpinner(condition_type_spinner, actionOptionsViewModel.getConditionTypes())
+        initSpinner(outcome_type_spinner, actionOptionsViewModel.getOuputTypes())
+
         existingActionViewModel.action.observe(this, Observer { updateFields(it) })
         existingActionViewModel.getActionById(actionId)
     }
 
+    //TODO: InitSpinner is duplicate code from AddActionActivity
+    private fun initSpinner(spinner: Spinner, contents: List<String>) {
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, contents)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+    }
+
     private fun updateAction() {
-        existingActionViewModel.updateAction()
+        val name = action_name.text.toString()
+        val sensorType = sensor_spinner.selectedItemPosition
+        val conditionType = condition_type_spinner.selectedItem.toString()
+        val value = condition_value.text.toString()
+        val outcome = outcome_type_spinner.selectedItem.toString()
+        val smsDestination = phone_number.text.toString()
+        val content = message.text.toString()
+
+        existingActionViewModel.updateAction(
+            name,
+            sensorType,
+            conditionType,
+            value,
+            outcome,
+            smsDestination,
+            content
+        )
         finish()
     }
 
@@ -54,6 +100,31 @@ class UpdateActionActivity : AppCompatActivity() {
     private fun updateFields(action: Action?) {
         action?.let {
             action_name.setText(action.name)
+            sensor_spinner.setSelection(action.condition.sensorType)
+            condition_type_spinner.setSelection(action.condition.type)
+            condition_value.setText(action.condition.limit.toString())
+
+            val outcome = action.outcome
+            when (outcome) {
+                is NotificationOutcome -> {
+                    outcome_type_spinner.setSelection(0)
+                    message.visibility = View.VISIBLE
+                    message.setText(outcome.message)
+                }
+                is SmsOutcome -> {
+                    outcome_type_spinner.setSelection(1)
+                    message.visibility = View.VISIBLE
+                    message.setText(outcome.message)
+                    phone_number.visibility = View.VISIBLE
+                    phone_number.setText(outcome.phoneNumber)
+                }
+                is VibrationOutcome -> {
+                    outcome_type_spinner.setSelection(2)
+                    vibrate_checkbox.visibility = View.VISIBLE
+                }
+            }
+
+
         }
     }
 

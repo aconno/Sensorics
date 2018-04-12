@@ -100,7 +100,7 @@
         app:layout_constraintTop_toBottomOf="@id/outcome_notification_text" />
 
     <EditText
-        android:id="@+id/sms_message"
+        android:id="@+id/message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
@@ -120,8 +120,8 @@
         android:layout_marginTop="@dimen/item_vertical_spacing"
         android:text="@string/vibrate_checkbox_label"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sms_message" />
-    
+        app:layout_constraintTop_toBottomOf="@id/message" />
+
     <Button
         android:id="@+id/add_action_button"
         android:layout_width="0dp"

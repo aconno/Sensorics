@@ -10,9 +10,12 @@ import android.widget.Spinner
 import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.dagger.actionlist.ActionListModule
+import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.dagger.addaction.AddActionComponent
 import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
+import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import kotlinx.android.synthetic.main.activity_add_action.*
 import javax.inject.Inject
@@ -23,10 +26,19 @@ class AddActionActivity : AppCompatActivity() {
     @Inject
     lateinit var newActionViewModel: NewActionViewModel
 
+    @Inject
+    lateinit var actionOptionsViewModel: ActionOptionsViewModel
+
     private val addActionComponent: AddActionComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
-        DaggerAddActionComponent.builder()
-            .appComponent(acnSensaApplication?.appComponent)
+
+        val actionListComponent =
+            DaggerActionListComponent.builder().appComponent(acnSensaApplication?.appComponent)
+                .actionListModule(
+                    ActionListModule(this)
+                ).build()
+
+        DaggerAddActionComponent.builder().actionListComponent(actionListComponent)
             .addActionModule(AddActionModule(this)).build()
     }
 
@@ -35,8 +47,8 @@ class AddActionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_action)
         addActionComponent.inject(this)
 
-        initSpinner(sensor_spinner, newActionViewModel.getSensorTypes())
-        initSpinner(condition_type_spinner, newActionViewModel.getConditionTypes())
+        initSpinner(sensor_spinner, actionOptionsViewModel.getSensorTypes())
+        initSpinner(condition_type_spinner, actionOptionsViewModel.getConditionTypes())
 
         add_action_button.setOnClickListener { this.addAction() }
     }
@@ -60,7 +72,7 @@ class AddActionActivity : AppCompatActivity() {
         val outcome = outcome_notification_text.text.toString()
         val smsDestination = phone_number.text.toString()
         val vibration = vibrate_checkbox.isChecked
-        val smsMessage = sms_message.text.toString()
+        val smsMessage = message.text.toString()
 
         newActionViewModel.addAction(
             name,

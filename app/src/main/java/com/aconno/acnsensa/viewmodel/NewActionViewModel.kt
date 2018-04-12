@@ -36,8 +36,8 @@ class NewActionViewModel(
     ) {
         try {
             val type = when (conditionType) {
-                ">" -> 1
-                "<" -> 0
+                ">" -> 0
+                "<" -> 1
                 else -> throw IllegalArgumentException("Got invalid sensor type: $conditionType")
             }
             val condition = LimitCondition(sensorType, value.toFloat(), type)
@@ -73,24 +73,6 @@ class NewActionViewModel(
         }
     }
 
-    fun getSensorTypes(): List<String> {
-        return listOf(
-            TEMPERATURE,
-            LIGHT,
-            HUMIDITY,
-            PRESSURE,
-            MAGNETOMETER_X,
-            MAGNETOMETER_Y,
-            MAGNETOMETER_Z,
-            ACCELEROMETER_X,
-            ACCELEROMETER_Y,
-            ACCELEROMETER_Z,
-            GYROSCOPE_X,
-            GYROSCOPE_Y,
-            GYROSCOPE_Z,
-            BATTERY_LEVEL
-        )
-    }
 
     fun onAddActionSuccess() {
         addActionResults.value = true
@@ -98,26 +80,5 @@ class NewActionViewModel(
 
     fun onAddActionFail() {
         addActionResults.value = false
-    }
-
-    fun getConditionTypes(): List<String> {
-        return listOf(">", "<")
-    }
-
-    companion object {
-        const val TEMPERATURE = "Temperature"
-        const val LIGHT = "Light"
-        const val HUMIDITY = "Humidity"
-        const val PRESSURE = "Pressure"
-        const val MAGNETOMETER_X = "Magnetometer X"
-        const val MAGNETOMETER_Y = "Magnetometer Y"
-        const val MAGNETOMETER_Z = "Magnetometer Z"
-        const val ACCELEROMETER_X = "Accelerometer X"
-        const val ACCELEROMETER_Y = "Accelerometer Y"
-        const val ACCELEROMETER_Z = "Accelerometer Z"
-        const val GYROSCOPE_X = "Gyroscope X"
-        const val GYROSCOPE_Y = "Gyroscope Y"
-        const val GYROSCOPE_Z = "Gyroscope Z"
-        const val BATTERY_LEVEL = "Battery Level"
     }
 }

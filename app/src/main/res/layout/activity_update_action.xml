@@ -73,21 +73,20 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <EditText
-        android:id="@+id/outcome_notification_text"
+    <Spinner
+        android:id="@+id/outcome_type_spinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
         android:layout_marginTop="@dimen/item_vertical_spacing"
-        android:hint="@string/notification_message"
-        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/condition_container" />
 
     <EditText
         android:id="@+id/phone_number"
+        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
@@ -97,10 +96,11 @@
         android:inputType="phone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/outcome_notification_text" />
+        app:layout_constraintTop_toBottomOf="@id/outcome_type_spinner" />
 
     <EditText
-        android:id="@+id/sms_message"
+        android:id="@+id/message"
+        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
@@ -114,13 +114,14 @@
 
     <CheckBox
         android:id="@+id/vibrate_checkbox"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
         android:layout_marginTop="@dimen/item_vertical_spacing"
         android:text="@string/vibrate_checkbox_label"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sms_message" />
+        app:layout_constraintTop_toBottomOf="@id/message" />
 
     <Button
         android:id="@+id/update_action_button"

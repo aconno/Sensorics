@@ -36,7 +36,7 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
 
         DaggerActionListComponent.builder()
             .appComponent(acnSensaApplication?.appComponent)
-            .actionListModule(ActionListModule())
+            .actionListModule(ActionListModule((this.activity as? ActionListActivity)!!))
             .build()
     }
 
