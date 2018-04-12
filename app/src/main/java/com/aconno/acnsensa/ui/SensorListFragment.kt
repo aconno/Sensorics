@@ -7,11 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.viewmodel.GraphType
+import com.aconno.acnsensa.ui.graph.GraphType
 import com.aconno.acnsensa.viewmodel.SensorListViewModel
 import kotlinx.android.synthetic.main.fragment_sensor_list.*
 import kotlinx.android.synthetic.main.view_sensor_card.view.*
-import timber.log.Timber
 import javax.inject.Inject
 
 class SensorListFragment : Fragment() {
@@ -156,7 +155,6 @@ class SensorListFragment : Fragment() {
     }
 
     private fun displaySensorValues(values: Map<String, Number>?) {
-        Timber.d(values.toString())
         values?.let {
             val temperatureLabel = getString(R.string.temperature)
             val lightLabel = getString(R.string.light)

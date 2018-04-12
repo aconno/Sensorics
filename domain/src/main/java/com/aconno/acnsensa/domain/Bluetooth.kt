@@ -17,4 +17,6 @@ interface Bluetooth {
     fun getScanResults(): Flowable<ScanResult>
 
     fun getScanEvents(): Flowable<ScanEvent>
+
+    fun getStateEvents(): Flowable<BluetoothState>
 }

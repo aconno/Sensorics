@@ -7,10 +7,10 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.dagger.DaggerLiveGraphComponent
-import com.aconno.acnsensa.dagger.LiveGraphComponent
-import com.aconno.acnsensa.dagger.LiveGraphModule
-import com.aconno.acnsensa.viewmodel.BleGraph
+import com.aconno.acnsensa.dagger.livegraph.DaggerLiveGraphComponent
+import com.aconno.acnsensa.dagger.livegraph.LiveGraphComponent
+import com.aconno.acnsensa.dagger.livegraph.LiveGraphModule
+import com.aconno.acnsensa.ui.graph.BleGraph
 import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
 import kotlinx.android.synthetic.main.activity_graph.*
 import javax.inject.Inject
@@ -54,7 +54,7 @@ class LiveGraphActivity : AppCompatActivity() {
     }
 
     private fun updateGraph(long: Long?) {
-        line_chart.data.notifyDataChanged()
+        line_chart.data?.notifyDataChanged()
         line_chart.notifyDataSetChanged()
         line_chart.invalidate()
     }

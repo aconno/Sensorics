@@ -22,6 +22,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.LiveGraphActivity" />
+        <activity android:name=".ui.ActionListActivity" />
+        <activity android:name=".ui.AddActionActivity" />
+
+        <service
+            android:name=".BluetoothScanningService"
+            android:exported="false" />
+
+        <activity android:name=".ui.UpdateActionActivity"></activity>
     </application>
 
 </manifest>
