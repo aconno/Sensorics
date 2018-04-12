@@ -13,7 +13,7 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.addaction.AddActionComponent
 import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
-import com.aconno.acnsensa.viewmodel.ActionViewModel
+import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import kotlinx.android.synthetic.main.activity_add_action.*
 import javax.inject.Inject
 
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class AddActionActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var actionViewModel: ActionViewModel
+    lateinit var newActionViewModel: NewActionViewModel
 
     private val addActionComponent: AddActionComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -35,15 +35,15 @@ class AddActionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_action)
         addActionComponent.inject(this)
 
-        initSpinner(sensor_spinner, actionViewModel.getSensorTypes())
-        initSpinner(condition_type_spinner, actionViewModel.getConditionTypes())
+        initSpinner(sensor_spinner, newActionViewModel.getSensorTypes())
+        initSpinner(condition_type_spinner, newActionViewModel.getConditionTypes())
 
         add_action_button.setOnClickListener { this.addAction() }
     }
 
     override fun onResume() {
         super.onResume()
-        actionViewModel.addActionResults.observe(this, Observer { onAddActionResult(it) })
+        newActionViewModel.addActionResults.observe(this, Observer { onAddActionResult(it) })
     }
 
     private fun initSpinner(spinner: Spinner, contents: List<String>) {
@@ -62,7 +62,7 @@ class AddActionActivity : AppCompatActivity() {
         val vibration = vibrate_checkbox.isChecked
         val smsMessage = sms_message.text.toString()
 
-        actionViewModel.addAction(
+        newActionViewModel.addAction(
             name,
             sensorType,
             conditionType,

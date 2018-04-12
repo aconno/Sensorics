@@ -73,7 +73,7 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
     }
 
     override fun onItemClick(item: Action) {
-        startAddActionActivity()
+        context?.let { UpdateActionActivity.start(it, item.id) }
     }
 
     companion object {
