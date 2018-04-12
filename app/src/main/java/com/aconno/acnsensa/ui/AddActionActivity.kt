@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
@@ -18,6 +20,7 @@ import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
 import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import kotlinx.android.synthetic.main.activity_add_action.*
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -49,8 +52,24 @@ class AddActionActivity : AppCompatActivity() {
 
         initSpinner(sensor_spinner, actionOptionsViewModel.getSensorTypes())
         initSpinner(condition_type_spinner, actionOptionsViewModel.getConditionTypes())
+        initSpinner(outcome_type_spinner, actionOptionsViewModel.getOuputTypes())
 
         add_action_button.setOnClickListener { this.addAction() }
+
+        outcome_type_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                Timber.e("Nothing selected.")
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                showOutcomeOptions()
+            }
+        }
     }
 
     override fun onResume() {
@@ -69,10 +88,9 @@ class AddActionActivity : AppCompatActivity() {
         val sensorType = sensor_spinner.selectedItemPosition
         val conditionType = condition_type_spinner.selectedItem.toString()
         val value = condition_value.text.toString()
-        val outcome = outcome_notification_text.text.toString()
+        val outcome = outcome_type_spinner.selectedItem.toString()
         val smsDestination = phone_number.text.toString()
-        val vibration = vibrate_checkbox.isChecked
-        val smsMessage = message.text.toString()
+        val content = message.text.toString()
 
         newActionViewModel.addAction(
             name,
@@ -80,9 +98,8 @@ class AddActionActivity : AppCompatActivity() {
             conditionType,
             value,
             outcome,
-            vibration,
             smsDestination,
-            smsMessage
+            content
         )
     }
 
@@ -94,6 +111,25 @@ class AddActionActivity : AppCompatActivity() {
                 "Failed to makeServiceNotificationChannel Action",
                 Toast.LENGTH_LONG
             ).show()
+        }
+    }
+
+    //TODO: Duplicate code with UpdateActionActivity.
+    private fun showOutcomeOptions() {
+        val selected = outcome_type_spinner.selectedItemId
+        when (selected) {
+            0L -> {
+                message.visibility = View.VISIBLE
+                phone_number.visibility = View.GONE
+            }
+            1L -> {
+                message.visibility = View.VISIBLE
+                phone_number.visibility = View.VISIBLE
+            }
+            2L -> {
+                message.visibility = View.GONE
+                phone_number.visibility = View.GONE
+            }
         }
     }
 

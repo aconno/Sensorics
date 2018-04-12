@@ -29,38 +29,38 @@ class NewActionViewModel(
         sensorType: Int,
         conditionType: String,
         value: String,
-        outcomeMessage: String,
-        vibrate: Boolean,
+        outcomeType: String,
         smsDestination: String,
-        smsMessage: String
+        content: String
     ) {
+        var newAction: Action? = null
         try {
             val type = when (conditionType) {
-                ">" -> 0
-                "<" -> 1
+                ">" -> 1
+                "<" -> 0
                 else -> throw IllegalArgumentException("Got invalid sensor type: $conditionType")
             }
             val condition = LimitCondition(sensorType, value.toFloat(), type)
 
-            val actions = mutableListOf<Action>()
-            if (outcomeMessage.isNotEmpty()) {
-                val outcome = NotificationOutcome(
-                    outcomeMessage, notificationDisplay
-                )
-                actions.add(GeneralAction(0, name, condition, outcome))
+
+            val newId = 0L
+
+            when (outcomeType) {
+                "Phone Notification" -> {
+                    val outcome = NotificationOutcome(content, notificationDisplay)
+                    newAction = GeneralAction(newId, name, condition, outcome)
+                }
+                "SMS Message" -> {
+                    val outcome = SmsOutcome(smsSender, smsDestination, content)
+                    newAction = GeneralAction(newId, name, condition, outcome)
+                }
+                "Vibration" -> {
+                    val outcome = VibrationOutcome(vibrator)
+                    newAction = GeneralAction(newId, name, condition, outcome)
+                }
             }
 
-            if (vibrate) {
-                val outcome = VibrationOutcome(vibrator)
-                actions.add(GeneralAction(0, name, condition, outcome))
-            }
-
-            if (smsDestination.isNotEmpty() && smsMessage.isNotEmpty()) {
-                val outcome = SmsOutcome(smsSender, smsDestination, smsMessage)
-                actions.add(GeneralAction(0, name, condition, outcome))
-            }
-
-            actions.forEach {
+            newAction?.let {
                 addActionUseCase.execute(it)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -69,7 +69,6 @@ class NewActionViewModel(
 
         } catch (e: Exception) {
             Timber.e(e)
-            onAddActionFail()
         }
     }
 
