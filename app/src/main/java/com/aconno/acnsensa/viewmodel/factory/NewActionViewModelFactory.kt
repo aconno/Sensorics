@@ -6,12 +6,12 @@ import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
-import com.aconno.acnsensa.viewmodel.ActionViewModel
+import com.aconno.acnsensa.viewmodel.NewActionViewModel
 
 /**
  * @author aconno
  */
-class ActionViewModelFactory(
+class NewActionViewModelFactory(
     private val addActionUseCase: AddActionUseCase,
     private val notificationDisplay: NotificationDisplay,
     private val vibrator: Vibrator,
@@ -21,7 +21,13 @@ class ActionViewModelFactory(
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel =
-            ActionViewModel(addActionUseCase, notificationDisplay, vibrator, smsSender, application)
+            NewActionViewModel(
+                addActionUseCase,
+                notificationDisplay,
+                vibrator,
+                smsSender,
+                application
+            )
         return getViewModel(viewModel, modelClass)
     }
 }

@@ -7,8 +7,8 @@ import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.ui.AddActionActivity
-import com.aconno.acnsensa.viewmodel.ActionViewModel
-import com.aconno.acnsensa.viewmodel.factory.ActionViewModelFactory
+import com.aconno.acnsensa.viewmodel.NewActionViewModel
+import com.aconno.acnsensa.viewmodel.factory.NewActionViewModelFactory
 import dagger.Module
 import dagger.Provides
 
@@ -21,9 +21,9 @@ class AddActionModule(private val addActionActivity: AddActionActivity) {
     @Provides
     @AddActionActivityScope
     fun provideActionViewModel(
-        actionViewModelFactory: ActionViewModelFactory
-    ) = ViewModelProviders.of(addActionActivity, actionViewModelFactory)
-        .get(ActionViewModel::class.java)
+        newActionViewModelFactory: NewActionViewModelFactory
+    ) = ViewModelProviders.of(addActionActivity, newActionViewModelFactory)
+        .get(NewActionViewModel::class.java)
 
     @Provides
     @AddActionActivityScope
@@ -33,7 +33,7 @@ class AddActionModule(private val addActionActivity: AddActionActivity) {
         vibrator: Vibrator,
         smsSender: SmsSender
     ) =
-        ActionViewModelFactory(
+        NewActionViewModelFactory(
             addActionUseCase,
             notificationDisplay,
             vibrator,
@@ -46,6 +46,4 @@ class AddActionModule(private val addActionActivity: AddActionActivity) {
     fun provideAddActionUseCase(actionsRepository: ActionsRepository): AddActionUseCase {
         return AddActionUseCase(actionsRepository)
     }
-
-
 }

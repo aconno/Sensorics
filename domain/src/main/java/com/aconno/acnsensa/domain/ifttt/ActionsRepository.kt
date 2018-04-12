@@ -10,4 +10,5 @@ interface ActionsRepository {
     fun updateAction(action: Action)
     fun deleteAction(action: Action)
     fun getAllActions(): Single<List<Action>>
+    fun getActionById(actionId: Long): Single<Action>
 }

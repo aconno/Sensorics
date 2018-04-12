@@ -27,7 +27,12 @@ class ActionsRepositoryImpl(
         return actionDao.all.map { actionEntities -> actionEntities.map { toAction(it) } }
     }
 
+    override fun getActionById(actionId: Long): Single<Action> {
+        return actionDao.getActionById(actionId).map { actionEntity -> toAction(actionEntity) }
+    }
+
     private fun toEntity(action: Action): ActionEntity {
+        val id = action.id
         val name = action.name
         val sensorType = action.condition.sensorType
         val conditionType = action.condition.type
@@ -49,6 +54,7 @@ class ActionsRepositoryImpl(
 
         val number = (action.outcome as? SmsOutcome)?.phoneNumber ?: ""
         return ActionEntity(
+            id = id,
             name = name,
             sensorType = sensorType,
             conditionType = conditionType,
@@ -60,6 +66,7 @@ class ActionsRepositoryImpl(
     }
 
     private fun toAction(actionEntity: ActionEntity): Action {
+        val id = actionEntity.id
         val name = actionEntity.name
         val condition =
             LimitCondition(actionEntity.sensorType, actionEntity.value, actionEntity.conditionType)
@@ -75,6 +82,6 @@ class ActionsRepositoryImpl(
             else -> throw Exception("Persistence exception")
         }
 
-        return GeneralAction(name, condition, outcome)
+        return GeneralAction(id, name, condition, outcome)
     }
 }

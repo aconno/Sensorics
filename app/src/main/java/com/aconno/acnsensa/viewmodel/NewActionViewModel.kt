@@ -13,7 +13,7 @@ import timber.log.Timber
 /**
  * @author aconno
  */
-class ActionViewModel(
+class NewActionViewModel(
     private val addActionUseCase: AddActionUseCase,
     private val notificationDisplay: NotificationDisplay,
     private val vibrator: Vibrator,
@@ -47,17 +47,17 @@ class ActionViewModel(
                 val outcome = NotificationOutcome(
                     outcomeMessage, notificationDisplay
                 )
-                actions.add(GeneralAction(name, condition, outcome))
+                actions.add(GeneralAction(0, name, condition, outcome))
             }
 
             if (vibrate) {
                 val outcome = VibrationOutcome(vibrator)
-                actions.add(GeneralAction(name, condition, outcome))
+                actions.add(GeneralAction(0, name, condition, outcome))
             }
 
             if (smsDestination.isNotEmpty() && smsMessage.isNotEmpty()) {
                 val outcome = SmsOutcome(smsSender, smsDestination, smsMessage)
-                actions.add(GeneralAction(name, condition, outcome))
+                actions.add(GeneralAction(0, name, condition, outcome))
             }
 
             actions.forEach {
