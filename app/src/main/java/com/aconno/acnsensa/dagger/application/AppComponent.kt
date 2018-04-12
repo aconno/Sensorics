@@ -4,6 +4,8 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.SmsSender
+import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
@@ -29,6 +31,10 @@ interface AppComponent {
     fun actionsRepository(): ActionsRepository
 
     fun notificationDisplay(): NotificationDisplay
+
+    fun vibrator(): Vibrator
+
+    fun smsSender(): SmsSender
 
     fun bluetoothStateReceiver(): BluetoothStateReceiver
 

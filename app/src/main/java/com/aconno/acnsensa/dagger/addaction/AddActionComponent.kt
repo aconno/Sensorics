@@ -1,13 +1,13 @@
 package com.aconno.acnsensa.dagger.addaction
 
-import com.aconno.acnsensa.dagger.application.AppComponent
+import com.aconno.acnsensa.dagger.actionlist.ActionListComponent
 import com.aconno.acnsensa.ui.AddActionActivity
 import dagger.Component
 
 /**
  * @author aconno
  */
-@Component(dependencies = [AppComponent::class], modules = [AddActionModule::class])
+@Component(dependencies = [ActionListComponent::class], modules = [AddActionModule::class])
 @AddActionActivityScope
 interface AddActionComponent {
     //Exposed dependencies for child components.

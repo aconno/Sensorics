@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.adapter.ActionAdapter
+import com.aconno.acnsensa.adapter.ItemClickListener
 import com.aconno.acnsensa.dagger.actionlist.ActionListComponent
 import com.aconno.acnsensa.dagger.actionlist.ActionListModule
 import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
@@ -24,7 +25,7 @@ import javax.inject.Inject
 /**
  * @author aconno
  */
-class ActionListFragment : Fragment() {
+class ActionListFragment : Fragment(), ItemClickListener<Action> {
 
     @Inject
     lateinit var getAllActionsUseCase: GetAllActionsUseCase
@@ -35,7 +36,7 @@ class ActionListFragment : Fragment() {
 
         DaggerActionListComponent.builder()
             .appComponent(acnSensaApplication?.appComponent)
-            .actionListModule(ActionListModule())
+            .actionListModule(ActionListModule((this.activity as? ActionListActivity)!!))
             .build()
     }
 
@@ -64,11 +65,15 @@ class ActionListFragment : Fragment() {
         actions_list.layoutManager = LinearLayoutManager(activity)
         val decoration = DividerItemDecoration(activity?.applicationContext, VERTICAL)
         actions_list.addItemDecoration(decoration)
-        actions_list.adapter = ActionAdapter(actions.toMutableList())
+        actions_list.adapter = ActionAdapter(actions.toMutableList(), this)
     }
 
     private fun startAddActionActivity() {
         context?.let { AddActionActivity.start(it) }
+    }
+
+    override fun onItemClick(item: Action) {
+        context?.let { UpdateActionActivity.start(it, item.id) }
     }
 
     companion object {

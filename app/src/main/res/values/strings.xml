@@ -65,5 +65,11 @@
     <string name="notification_label">Notification</string>
     <string name="add">Add</string>
     <string name="notification_message">Notification message</string>
+    <string name="phone_number">Phone number</string>
+    <string name="message_hint">Message</string>
+    <string name="vibrate_checkbox_label">Vibrate</string>
+    <string name="update">Update Action</string>
+    <string name="update_new_action_title">Update Action</string>
+    <string name="delete">Delete Action</string>
 
 </resources>

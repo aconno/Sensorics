@@ -9,30 +9,32 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.actionlist.ActionListModule
 import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
-import com.aconno.acnsensa.dagger.addaction.AddActionComponent
-import com.aconno.acnsensa.dagger.addaction.AddActionModule
-import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
+import com.aconno.acnsensa.dagger.updateaction.DaggerUpdateActionComponent
+import com.aconno.acnsensa.dagger.updateaction.UpdateActionComponent
+import com.aconno.acnsensa.dagger.updateaction.UpdateActionModule
+import com.aconno.acnsensa.domain.ifttt.Action
+import com.aconno.acnsensa.domain.ifttt.NotificationOutcome
+import com.aconno.acnsensa.domain.ifttt.SmsOutcome
+import com.aconno.acnsensa.domain.ifttt.VibrationOutcome
 import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
-import com.aconno.acnsensa.viewmodel.NewActionViewModel
-import kotlinx.android.synthetic.main.activity_add_action.*
+import com.aconno.acnsensa.viewmodel.ExistingActionViewModel
+import kotlinx.android.synthetic.main.activity_update_action.*
 import timber.log.Timber
 import javax.inject.Inject
 
-
-class AddActionActivity : AppCompatActivity() {
+class UpdateActionActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var newActionViewModel: NewActionViewModel
+    lateinit var existingActionViewModel: ExistingActionViewModel
 
     @Inject
     lateinit var actionOptionsViewModel: ActionOptionsViewModel
 
-    private val addActionComponent: AddActionComponent by lazy {
+    private val updateActionComponent: UpdateActionComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
 
         val actionListComponent =
@@ -41,20 +43,24 @@ class AddActionActivity : AppCompatActivity() {
                     ActionListModule(this)
                 ).build()
 
-        DaggerAddActionComponent.builder().actionListComponent(actionListComponent)
-            .addActionModule(AddActionModule(this)).build()
+        DaggerUpdateActionComponent.builder()
+            .actionListComponent(actionListComponent)
+            .updateActionModule(UpdateActionModule(this)).build()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_action)
-        addActionComponent.inject(this)
+        setContentView(R.layout.activity_update_action)
+        updateActionComponent.inject(this)
+
+        val actionId = intent.getLongExtra(EXTRA_ACTION_ID, -1)
+
+        update_action_button.setOnClickListener { updateAction() }
+        delete_action_button.setOnClickListener { deleteAction() }
 
         initSpinner(sensor_spinner, actionOptionsViewModel.getSensorTypes())
         initSpinner(condition_type_spinner, actionOptionsViewModel.getConditionTypes())
         initSpinner(outcome_type_spinner, actionOptionsViewModel.getOuputTypes())
-
-        add_action_button.setOnClickListener { this.addAction() }
 
         outcome_type_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -70,20 +76,19 @@ class AddActionActivity : AppCompatActivity() {
                 showOutcomeOptions()
             }
         }
+
+        existingActionViewModel.action.observe(this, Observer { updateFields(it) })
+        existingActionViewModel.getActionById(actionId)
     }
 
-    override fun onResume() {
-        super.onResume()
-        newActionViewModel.addActionResults.observe(this, Observer { onAddActionResult(it) })
-    }
-
+    //TODO: InitSpinner is duplicate code from AddActionActivity
     private fun initSpinner(spinner: Spinner, contents: List<String>) {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, contents)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
     }
 
-    private fun addAction() {
+    private fun updateAction() {
         val name = action_name.text.toString()
         val sensorType = sensor_spinner.selectedItemPosition
         val conditionType = condition_type_spinner.selectedItem.toString()
@@ -92,7 +97,7 @@ class AddActionActivity : AppCompatActivity() {
         val smsDestination = phone_number.text.toString()
         val content = message.text.toString()
 
-        newActionViewModel.addAction(
+        existingActionViewModel.updateAction(
             name,
             sensorType,
             conditionType,
@@ -101,20 +106,44 @@ class AddActionActivity : AppCompatActivity() {
             smsDestination,
             content
         )
+        finish()
     }
 
-    private fun onAddActionResult(success: Boolean?) {
-        when (success) {
-            true -> finish()
-            else -> Toast.makeText(
-                this,
-                "Failed to makeServiceNotificationChannel Action",
-                Toast.LENGTH_LONG
-            ).show()
+    private fun deleteAction() {
+        existingActionViewModel.deleteAction()
+        finish()
+    }
+
+    private fun updateFields(action: Action?) {
+        action?.let {
+            action_name.setText(action.name)
+            sensor_spinner.setSelection(action.condition.sensorType)
+            condition_type_spinner.setSelection(action.condition.type)
+            condition_value.setText(action.condition.limit.toString())
+
+            val outcome = action.outcome
+            when (outcome) {
+                is NotificationOutcome -> {
+                    outcome_type_spinner.setSelection(0)
+                    message.visibility = View.VISIBLE
+                    message.setText(outcome.message)
+                }
+                is SmsOutcome -> {
+                    outcome_type_spinner.setSelection(1)
+                    message.visibility = View.VISIBLE
+                    message.setText(outcome.message)
+                    phone_number.visibility = View.VISIBLE
+                    phone_number.setText(outcome.phoneNumber)
+                }
+                is VibrationOutcome -> {
+                    outcome_type_spinner.setSelection(2)
+                }
+            }
+
+
         }
     }
 
-    //TODO: Duplicate code with UpdateActionActivity.
     private fun showOutcomeOptions() {
         val selected = outcome_type_spinner.selectedItemId
         when (selected) {
@@ -134,8 +163,11 @@ class AddActionActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun start(context: Context) {
-            val intent = Intent(context, AddActionActivity::class.java)
+        private const val EXTRA_ACTION_ID = "com.aconno.acnsensa.EXTRA_ACTION_ID"
+
+        fun start(context: Context, actionId: Long) {
+            val intent = Intent(context, UpdateActionActivity::class.java)
+            intent.putExtra(EXTRA_ACTION_ID, actionId)
             context.startActivity(intent)
         }
     }

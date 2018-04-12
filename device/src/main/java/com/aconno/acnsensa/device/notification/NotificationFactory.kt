@@ -15,34 +15,40 @@ import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
  */
 class NotificationFactory {
     fun makeForegroundServiceNotification(context: Context): Notification {
-        createNotificationsChannel(context)
+        createNotificationsChannel(context, NotificationChannelFactory.SERVICE_CHANNEL)
         return NotificationCompat.Builder(
             context,
-            AcnSensaNotificationChannel.CHANNEL_ID
+            NotificationChannelFactory.CHANNEL_ID
         )
-            .setContentTitle("Title")
-            .setContentText("Text")
+            .setContentTitle("AcnSensa scanning")
+            .setContentText("AcnSensa is scanning")
             .setAutoCancel(true)
             .build()
     }
 
-    private fun createNotificationsChannel(application: Context) {
+    private fun createNotificationsChannel(application: Context, channelType: Int) {
         val notificationManager =
             application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val statsNotificationChannel = AcnSensaNotificationChannel(notificationManager)
+        val statsNotificationChannel = NotificationChannelFactory(notificationManager)
 
-        statsNotificationChannel.create()
+        when (channelType) {
+            NotificationChannelFactory.ALERTS_CHANNEL ->
+                statsNotificationChannel.makeAlertsChannel()
+            NotificationChannelFactory.SERVICE_CHANNEL ->
+                statsNotificationChannel.makeServiceNotificationChannel()
+        }
     }
 
+    //TODO: This method needs to get a configuration object which contains all the settings.
     fun makeAlertNotification(
         context: Context,
         message: String,
         deleteIntent: PendingIntent,
         contentIntent: PendingIntent
     ): Notification {
-        createNotificationsChannel(context)
-        return NotificationCompat.Builder(context, AcnSensaNotificationChannel.CHANNEL_ID)
+        createNotificationsChannel(context, NotificationChannelFactory.ALERTS_CHANNEL)
+        return NotificationCompat.Builder(context, NotificationChannelFactory.ALERTS_CHANNEL_ID)
             .setContentTitle("Sensor Alert")
             .setContentText(message)
             .setSmallIcon(R.drawable.notification_icon_background)
@@ -77,7 +83,7 @@ class NotificationDisplayImpl(
         )
     }
 
-    fun display(context: Context, notification: Notification, notificationId: Int) {
+    private fun display(context: Context, notification: Notification, notificationId: Int) {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
         notificationManager?.notify(notificationId, notification)

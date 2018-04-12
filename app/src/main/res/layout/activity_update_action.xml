@@ -4,20 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.aconno.acnsensa.ui.AddActionActivity">
+    tools:context="com.aconno.acnsensa.ui.UpdateActionActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/primaryColor"
+        android:background="@color/colorPrimary"
         android:elevation="@dimen/toolbar_elevation"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="@string/add_new_action_title" />
+        app:title="@string/update_new_action_title" />
 
     <EditText
         android:id="@+id/action_name"
@@ -113,11 +113,21 @@
         app:layout_constraintTop_toBottomOf="@id/phone_number" />
 
     <Button
-        android:id="@+id/add_action_button"
+        android:id="@+id/update_action_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/add"
+        android:text="@string/update"
+        app:layout_constraintBottom_toTopOf="@+id/delete_action_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/delete_action_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 </android.support.constraint.ConstraintLayout>
