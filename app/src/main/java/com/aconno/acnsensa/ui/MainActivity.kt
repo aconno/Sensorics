@@ -87,10 +87,18 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     private fun onBluetoothOff() {
+        mainMenu?.let {
+            val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
+            menuItem?.setVisible(false)
+        }
         snackbar?.show()
     }
 
     private fun onBluetoothOn() {
+        mainMenu?.let {
+            val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
+            menuItem?.setVisible(true)
+        }
         snackbar?.dismiss()
     }
 
@@ -145,6 +153,11 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
         mainMenu?.findItem(R.id.action_toggle_scan)?.let {
             setScanMenuLabel(it)
+            val state = bluetoothViewModel.bluetoothState.value
+            when (state?.state) {
+                BluetoothState.BLUETOOTH_ON -> it.setVisible(true)
+                else -> it.setVisible(false)
+            }
         }
 
         return true
