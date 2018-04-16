@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MainActivity -->
+    <string name="app_name">AcnSensaDroid</string>
+    <string name="start_scan">Scan starten</string>
+    <string name="stop_scan">Scan stoppen</string>
+    <string name="actions">Aktionen</string>
+
+    <!-- SensorListFragment -->
+    <string name="temperature">Temperatur</string>
+    <string name="default_temperature">0°C</string>
+
+    <string name="light">Licht</string>
+    <string name="default_light">0.00%</string>
+
+    <string name="humidity">Luftfeuchte</string>
+    <string name="default_humidity">0.00%</string>
+
+    <string name="pressure">Druck</string>
+    <string name="default_pressure">0000.00hPa</string>
+
+    <string name="magnetometer_x">Magnetometer X</string>
+    <string name="default_magnetometer_x">0.00µT</string>
+
+    <string name="magnetometer_y">Magnetometer Y</string>
+    <string name="default_magnetometer_y">0.00µT</string>
+
+    <string name="magnetometer_z">Magnetometer Z</string>
+    <string name="default_magnetometer_z">0.00µT</string>
+
+    <string name="accelerometer_x">B-Messer X</string>
+    <string name="default_accelerometer_x">0.00mg</string>
+
+    <string name="accelerometer_y">B-Messer Y</string>
+    <string name="default_accelerometer_y">0.00mg</string>
+
+    <string name="accelerometer_z">B-Messer Z</string>
+    <string name="default_accelerometer_z">0.00mg</string>
+
+    <string name="gyro_x">Gyroskop X</string>
+    <string name="default_gyro_x">0.00dps</string>
+
+    <string name="gyro_y">Gyroskop Y</string>
+    <string name="default_gyro_y">0.00dps</string>
+
+    <string name="gyro_z">Gyroskop Z</string>
+    <string name="default_gyro_z">0.00dps</string>
+
+    <string name="battery_level">Akku</string>
+    <string name="default_battery_level">0%</string>
+    <string name="grant_permissions">Gewähren Sie bitte die erforderlichen Berechtigungen.</string>
+    <string name="bt_disabled">Bluetooth ist deaktiviert</string>
+    <string name="enable">Aktivieren</string>
+
+    <!-- Add new action screen -->
+    <string name="add_new_action_title">Neue Aktion hinzufügen</string>
+    <string name="action_name">Aktionsname</string>
+    <string name="condition_name">Bedingung</string>
+    <string name="sensor_label">Sensor</string>
+    <string name="type_label">Typ</string>
+    <string name="value_label">Wert</string>
+    <string name="outcome_name">Ergebnis</string>
+    <string name="notification_label">Benachrichtigung</string>
+    <string name="add">Hinzufügen</string>
+    <string name="notification_message">Benachrichtigungsnachricht</string>
+    <string name="phone_number">Telefonnummer</string>
+    <string name="message_hint">Nachricht</string>
+    <string name="vibrate_checkbox_label">Vibrieren</string>
+    <string name="update">Aktion aktualisieren</string>
+    <string name="update_new_action_title">Aktion aktualisieren</string>
+    <string name="delete">Aktion löschen</string>
+</resources>
