@@ -186,28 +186,95 @@ class SensorListFragment : Fragment() {
             val gyroscopeZ = values["Gyroscope Z"]
             val batteryLevel = values["Battery Level"]
 
-            temperature?.let { sensor_temperature.update(temperatureLabel, "$temperature°C") }
-            light?.let { sensor_light.update(lightLabel, "$light%") }
-            humidity?.let { sensor_humidity.update(humidityLabel, "$humidity%") }
-            pressure?.let { sensor_pressure.update(pressureLabel, "${pressure}hPa") }
+            temperature?.let {
+                sensor_temperature.update(
+                    temperatureLabel,
+                    "${String.format("%.2f", temperature)}°C"
+                )
+            }
 
-            magnetometerX?.let { sensor_magnetometer_x.update(magnetoXLabel, "${magnetometerX}µT") }
-            magnetometerY?.let { sensor_magnetometer_y.update(magnetoYLabel, "${magnetometerY}µT") }
-            magnetometerZ?.let { sensor_magnetometer_z.update(magnetoZLabel, "${magnetometerZ}µT") }
+            light?.let {
+                sensor_light.update(
+                    lightLabel,
+                    "${String.format("%.2f", light)}%"
+                )
+            }
+
+            humidity?.let {
+                sensor_humidity.update(
+                    humidityLabel,
+                    "${String.format("%.2f", humidity)}%"
+                )
+            }
+
+            pressure?.let {
+                sensor_pressure.update(
+                    pressureLabel,
+                    "${String.format("%.2f", pressure)}hPa"
+                )
+            }
+
+            magnetometerX?.let {
+                sensor_magnetometer_x.update(
+                    magnetoXLabel,
+                    "${String.format("%.2f", magnetometerX)}µT"
+                )
+            }
+            magnetometerY?.let {
+                sensor_magnetometer_y.update(
+                    magnetoYLabel,
+                    "${String.format("%.2f", magnetometerY)}µT"
+                )
+            }
+            magnetometerZ?.let {
+                sensor_magnetometer_z.update(
+                    magnetoZLabel,
+                    "${String.format("%.2f", magnetometerZ)}µT"
+                )
+            }
 
             accelerometerX
-                ?.let { sensor_accelerometer_x.update(accelerometerXLabel, "${accelerometerX}mg") }
+                ?.let {
+                    sensor_accelerometer_x.update(
+                        accelerometerXLabel,
+                        "${String.format("%.2f", accelerometerX)}mg"
+                    )
+                }
             accelerometerY
-                ?.let { sensor_accelerometer_y.update(accelerometerYLabel, "${accelerometerY}mg") }
+                ?.let {
+                    sensor_accelerometer_y.update(
+                        accelerometerYLabel,
+                        "${String.format("%.2f", accelerometerY)}mg"
+                    )
+                }
             accelerometerZ
-                ?.let { sensor_accelerometer_z.update(accelerometerZLabel, "${accelerometerZ}mg") }
+                ?.let {
+                    sensor_accelerometer_z.update(
+                        accelerometerZLabel,
+                        "${String.format("%.2f", accelerometerZ)}mg"
+                    )
+                }
 
-            gyroscopeX?.let { sensor_gyroscope_x.update(gyroXLabel, "${gyroscopeX}dps") }
-            gyroscopeY?.let { sensor_gyroscope_y.update(gyroYLabel, "${gyroscopeY}dps") }
-            gyroscopeZ?.let { sensor_gyroscope_z.update(gyroZLabel, "${gyroscopeZ}dps") }
+            gyroscopeX?.let {
+                sensor_gyroscope_x.update(
+                    gyroXLabel,
+                    "${String.format("%.2f", gyroscopeX)}dps"
+                )
+            }
+            gyroscopeY?.let {
+                sensor_gyroscope_y.update(
+                    gyroYLabel,
+                    "${String.format("%.2f", gyroscopeY)}dps"
+                )
+            }
+            gyroscopeZ?.let {
+                sensor_gyroscope_z.update(
+                    gyroZLabel,
+                    "${String.format("%.2f", gyroscopeZ)}dps"
+                )
+            }
 
             batteryLevel?.let { sensor_battery_level.update(batteryLabel, "$batteryLevel%") }
         }
     }
 }
-
