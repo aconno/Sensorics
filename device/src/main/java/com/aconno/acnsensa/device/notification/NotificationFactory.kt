@@ -20,6 +20,7 @@ class NotificationFactory {
             context,
             NotificationChannelFactory.CHANNEL_ID
         )
+            .setSmallIcon(R.drawable.ic_droid)
             .setContentTitle("AcnSensa scanning")
             .setContentText("AcnSensa is scanning")
             .setAutoCancel(true)
@@ -51,7 +52,7 @@ class NotificationFactory {
         return NotificationCompat.Builder(context, NotificationChannelFactory.ALERTS_CHANNEL_ID)
             .setContentTitle("Sensor Alert")
             .setContentText(message)
-            .setSmallIcon(R.drawable.notification_icon_background)
+            .setSmallIcon(R.drawable.ic_droid)
             .setAutoCancel(true)
             .setDeleteIntent(deleteIntent)
             .setContentIntent(contentIntent)
