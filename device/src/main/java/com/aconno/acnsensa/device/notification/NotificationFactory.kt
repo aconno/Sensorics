@@ -14,7 +14,7 @@ import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
  * @aconno
  */
 class NotificationFactory {
-    fun makeForegroundServiceNotification(context: Context): Notification {
+    fun makeForegroundServiceNotification(context: Context, contentIntent: PendingIntent): Notification {
         createNotificationsChannel(context, NotificationChannelFactory.SERVICE_CHANNEL)
         return NotificationCompat.Builder(
             context,
@@ -23,6 +23,7 @@ class NotificationFactory {
             .setSmallIcon(R.drawable.ic_droid)
             .setContentTitle("AcnSensa scanning")
             .setContentText("AcnSensa is scanning")
+            .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .build()
     }
@@ -114,7 +115,11 @@ class AlertNotificationReceiver : BroadcastReceiver() {
 }
 
 interface IntentProvider {
+
+    fun getAcnSensaContentIntent(context: Context): PendingIntent
+
     fun getAlertNotificationContentIntent(context: Context): PendingIntent
+
     fun getAlertNotificationDeleteIntent(context: Context): PendingIntent
 }
 

@@ -3,8 +3,10 @@ package com.aconno.acnsensa.dagger.bluetoothscanning
 import android.app.Notification
 import android.content.BroadcastReceiver
 import android.content.IntentFilter
+import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.BluetoothScanningServiceReceiver
+import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.device.storage.FileStorageImpl
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
@@ -31,9 +33,15 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideNotification(): Notification {
+    fun provideNotification(
+        acnSensaApplication: AcnSensaApplication,
+        intentProvider: IntentProvider
+    ): Notification {
         val notificationFactory = NotificationFactory()
-        return notificationFactory.makeForegroundServiceNotification(bluetoothScanningService)
+        return notificationFactory.makeForegroundServiceNotification(
+            bluetoothScanningService,
+            intentProvider.getAcnSensaContentIntent(acnSensaApplication)
+        )
     }
 
     @Provides

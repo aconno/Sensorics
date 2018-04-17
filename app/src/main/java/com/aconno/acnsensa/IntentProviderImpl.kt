@@ -9,6 +9,18 @@ import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.ui.MainActivity
 
 class IntentProviderImpl : IntentProvider {
+
+    override fun getAcnSensaContentIntent(context: Context): PendingIntent {
+        val contentIntent = Intent(context, MainActivity::class.java)
+        contentIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        return PendingIntent.getActivity(
+            context,
+            0,
+            contentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
+
     override fun getAlertNotificationContentIntent(context: Context): PendingIntent {
         val contentIntent = Intent(context, MainActivity::class.java)
         contentIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

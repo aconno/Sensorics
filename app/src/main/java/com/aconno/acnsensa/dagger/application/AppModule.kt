@@ -15,6 +15,7 @@ import com.aconno.acnsensa.device.bluetooth.BluetoothImpl
 import com.aconno.acnsensa.device.bluetooth.BluetoothPermission
 import com.aconno.acnsensa.device.bluetooth.BluetoothPermissionImpl
 import com.aconno.acnsensa.device.bluetooth.BluetoothStateListener
+import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.device.notification.NotificationDisplayImpl
 import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.domain.Bluetooth
@@ -142,10 +143,16 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
     @Provides
     @Singleton
-    fun provideNotificationDisplay(): NotificationDisplay {
+    fun provideNotificationDisplay(intentProvider: IntentProvider): NotificationDisplay {
         return NotificationDisplayImpl(
-            NotificationFactory(), IntentProviderImpl(), acnSensaApplication
+            NotificationFactory(), intentProvider, acnSensaApplication
         )
 
+    }
+
+    @Provides
+    @Singleton
+    fun provideIntentProvider(): IntentProvider {
+        return IntentProviderImpl()
     }
 }
