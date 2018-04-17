@@ -50,8 +50,7 @@ class AddActionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_action)
         addActionComponent.inject(this)
 
-        initSpinner(sensor_spinner, actionOptionsViewModel.getSensorTypes())
-        initSpinner(condition_type_spinner, actionOptionsViewModel.getConditionTypes())
+        initConditionChips()
         initSpinner(outcome_type_spinner, actionOptionsViewModel.getOuputTypes())
 
         add_action_button.setOnClickListener { this.addAction() }
@@ -72,6 +71,27 @@ class AddActionActivity : AppCompatActivity() {
         }
     }
 
+    private fun initConditionChips() {
+        initConditionChipTitles()
+    }
+
+    private fun initConditionChipTitles() {
+        temperature.text = getString(R.string.temperature)
+        light.text = getString(R.string.light)
+        humidity.text = getString(R.string.humidity)
+        pressure.text = getString(R.string.pressure)
+        magnetometer_x.text = getString(R.string.magnetometer_x)
+        magnetometer_y.text = getString(R.string.magnetometer_y)
+        magnetometer_z.text = getString(R.string.magnetometer_z)
+        accelerometer_x.text = getString(R.string.accelerometer_x)
+        accelerometer_y.text = getString(R.string.accelerometer_y)
+        accelerometer_z.text = getString(R.string.accelerometer_z)
+        gyroscope_x.text = getString(R.string.gyro_x)
+        gyroscope_y.text = getString(R.string.gyro_y)
+        gyroscope_z.text = getString(R.string.gyro_z)
+        battery_level.text = getString(R.string.battery_level)
+    }
+
     override fun onResume() {
         super.onResume()
         newActionViewModel.addActionResults.observe(this, Observer { onAddActionResult(it) })
@@ -84,23 +104,23 @@ class AddActionActivity : AppCompatActivity() {
     }
 
     private fun addAction() {
-        val name = action_name.text.toString()
-        val sensorType = sensor_spinner.selectedItemPosition
-        val conditionType = condition_type_spinner.selectedItem.toString()
-        val value = condition_value.text.toString()
-        val outcome = outcome_type_spinner.selectedItem.toString()
-        val smsDestination = phone_number.text.toString()
-        val content = message.text.toString()
-
-        newActionViewModel.addAction(
-            name,
-            sensorType,
-            conditionType,
-            value,
-            outcome,
-            smsDestination,
-            content
-        )
+//        val name = action_name.text.toString()
+//        val sensorType = sensor_spinner.selectedItemPosition
+//        val conditionType = condition_type_spinner.selectedItem.toString()
+//        val value = condition_value.text.toString()
+//        val outcome = outcome_type_spinner.selectedItem.toString()
+//        val smsDestination = phone_number.text.toString()
+//        val content = message.text.toString()
+//
+//        newActionViewModel.addAction(
+//            name,
+//            sensorType,
+//            conditionType,
+//            value,
+//            outcome,
+//            smsDestination,
+//            content
+//        )
     }
 
     private fun onAddActionResult(success: Boolean?) {
