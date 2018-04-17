@@ -86,7 +86,6 @@
 
     <EditText
         android:id="@+id/phone_number"
-        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
@@ -94,13 +93,13 @@
         android:layout_marginTop="@dimen/item_vertical_spacing"
         android:hint="@string/phone_number"
         android:inputType="phone"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/outcome_type_spinner" />
 
     <EditText
         android:id="@+id/message"
-        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
@@ -108,6 +107,7 @@
         android:layout_marginTop="@dimen/item_vertical_spacing"
         android:hint="@string/message_hint"
         android:inputType="text"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/phone_number" />
@@ -120,4 +120,111 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+        app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
+        app:dividerDrawableVertical="@drawable/chip_divider_vertical"
+        app:flexWrap="wrap"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/message"
+        app:showDivider="middle">
+
+        <TextView
+            android:id="@+id/temperature"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Temperature" />
+
+        <TextView
+            android:id="@+id/light"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Light" />
+
+        <TextView
+            android:id="@+id/humidity"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Humidity" />
+
+        <TextView
+            android:id="@+id/pressure"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Pressure" />
+
+        <TextView
+            android:id="@+id/magnetometer_x"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Magnetometer X" />
+
+        <TextView
+            android:id="@+id/magnetometer_y"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Magnetometer Y" />
+
+        <TextView
+            android:id="@+id/magnetometer_z"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Magnetometer Z" />
+
+        <TextView
+            android:id="@+id/accelerometer_x"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Accelerometer X" />
+
+        <TextView
+            android:id="@+id/accelerometer_y"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Accelerometer Y" />
+
+        <TextView
+            android:id="@+id/accelerometer_z"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Accelerometer Z" />
+
+        <TextView
+            android:id="@+id/gyroscope_x"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Gyroscope X" />
+
+        <TextView
+            android:id="@+id/gyroscope_y"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Gyroscope Y" />
+
+        <TextView
+            android:id="@+id/gyroscope_z"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Gyroscope Z" />
+
+    </com.google.android.flexbox.FlexboxLayout>
+
 </android.support.constraint.ConstraintLayout>

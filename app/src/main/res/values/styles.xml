@@ -9,4 +9,10 @@
         <item name="android:fontFamily">@font/rubik</item>
     </style>
 
+    <style name="ChipView">
+        <item name="android:background">@drawable/chip_shape</item>
+        <item name="android:backgroundTint">@color/chip_background</item>
+        <item name="android:textColor">@color/chip_text</item>
+    </style>
+
 </resources>
