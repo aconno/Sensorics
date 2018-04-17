@@ -73,6 +73,7 @@ class AddActionActivity : AppCompatActivity() {
 
     private fun initConditionChips() {
         initConditionChipTitles()
+        setConditionChipOnClickListeners()
     }
 
     private fun initConditionChipTitles() {
@@ -90,6 +91,29 @@ class AddActionActivity : AppCompatActivity() {
         gyroscope_y.text = getString(R.string.gyro_y)
         gyroscope_z.text = getString(R.string.gyro_z)
         battery_level.text = getString(R.string.battery_level)
+    }
+
+    private fun setConditionChipOnClickListeners() {
+        temperature.setOnClickListener { temperature.isChecked = !temperature.isChecked }
+        light.setOnClickListener { light.isChecked = !light.isChecked }
+        humidity.setOnClickListener { humidity.isChecked = !humidity.isChecked }
+        pressure.setOnClickListener { pressure.isChecked = !pressure.isChecked }
+        magnetometer_x.setOnClickListener { magnetometer_x.isChecked = !magnetometer_x.isChecked }
+        magnetometer_y.setOnClickListener { magnetometer_y.isChecked = !magnetometer_y.isChecked }
+        magnetometer_z.setOnClickListener { magnetometer_z.isChecked = !magnetometer_z.isChecked }
+        accelerometer_x.setOnClickListener {
+            accelerometer_x.isChecked = !accelerometer_x.isChecked
+        }
+        accelerometer_y.setOnClickListener {
+            accelerometer_y.isChecked = !accelerometer_y.isChecked
+        }
+        accelerometer_z.setOnClickListener {
+            accelerometer_z.isChecked = !accelerometer_z.isChecked
+        }
+        gyroscope_x.setOnClickListener { gyroscope_x.isChecked = !gyroscope_x.isChecked }
+        gyroscope_y.setOnClickListener { gyroscope_y.isChecked = !gyroscope_y.isChecked }
+        gyroscope_z.setOnClickListener { gyroscope_z.isChecked = !gyroscope_z.isChecked }
+        battery_level.setOnClickListener { battery_level.isChecked = !battery_level.isChecked }
     }
 
     override fun onResume() {
