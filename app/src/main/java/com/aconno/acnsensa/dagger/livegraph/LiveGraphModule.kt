@@ -24,7 +24,8 @@ class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
     ) =
         LiveGraphViewModelFactory(
             sensorValues,
-            getReadingsUseCase
+            getReadingsUseCase,
+            liveGraphActivity.application
         )
 
     @Provides
