@@ -73,4 +73,17 @@
     <string name="phone_notification">Telefonbenachrichtigung</string>
     <string name="sms_message">SMS Nachricht</string>
     <string name="vibration">Vibration</string>
+
+    <string name="magnetometer">Magnetometer</string>
+    <string name="accelerometer">B-Messer</string>
+    <string name="gyro">Gyroskop</string>
+
+    <string name="temperature_graph_label">Temperaturdiagramm</string>
+    <string name="light_graph_label">Lichtdiagramm</string>
+    <string name="humidity_graph_label">Luftfeuchtediagramm</string>
+    <string name="pressure_graph_label">Druckdiagramm</string>
+    <string name="magnetometer_graph_label">Magnetometerdiagramm</string>
+    <string name="accelerometer_graph_label">B-Messerdiagramm</string>
+    <string name="gyro_graph_label">Gyroskopdiagramm</string>
+    <string name="battery_level_graph_label">Akkudiagramm</string>
 </resources>

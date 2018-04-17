@@ -1,7 +1,9 @@
 package com.aconno.acnsensa.viewmodel
 
+import android.app.Application
+import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
 import com.aconno.acnsensa.domain.model.SensorType
 import com.aconno.acnsensa.domain.model.readings.*
@@ -15,8 +17,9 @@ import io.reactivex.Flowable
  */
 class LiveGraphViewModel(
     private val sensorValues: Flowable<Map<String, Number>>,
-    private val getReadingsUseCase: GetReadingsUseCase
-) : ViewModel() {
+    private val getReadingsUseCase: GetReadingsUseCase,
+    application: Application
+) : AndroidViewModel(application) {
     private val refreshTimestamp: MutableLiveData<Long> = MutableLiveData()
 
     fun getUpdates(): MutableLiveData<Long> {
@@ -26,44 +29,91 @@ class LiveGraphViewModel(
     //TODO Custom setter to check if graph type is valid.
     var graphType: Int = -1
 
-    private val temperatureSeries = BleDataSeries("Temperature")
-    private val lightSeries = BleDataSeries("Light")
-    private val humiditySeries = BleDataSeries("Humidity")
-    private val pressureSeries = BleDataSeries("Pressure")
-    private val xMagnetometerSeries = BleDataSeries("Magnetometer X")
-    private val yMagnetometerSeries = BleDataSeries("Magnetometer Y")
-    private val zMagnetometerSeries = BleDataSeries("Magnetometer Z")
-    private val xAccelerometerSeries = BleDataSeries("Accelerometer X")
-    private val yAccelerometerSeries = BleDataSeries("Accelerometer Y")
-    private val zAccelerometerSeries = BleDataSeries("Accelerometer Z")
-    private val xGyroscopeSeries = BleDataSeries("Gyroscope X")
-    private val yGyroscopeSeries = BleDataSeries("Gyroscope Y")
-    private val zGyroscopeSeries = BleDataSeries("Gyroscope Z")
-    private val batteryLevelSeries = BleDataSeries("Battery Level")
+    private val temperatureSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.temperature))
+
+    private val lightSeries = BleDataSeries(getApplication<Application>().getString(R.string.light))
+
+    private val humiditySeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.humidity))
+
+    private val pressureSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.pressure))
+
+    private val xMagnetometerSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.magnetometer_x))
+
+    private val yMagnetometerSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.magnetometer_y))
+
+    private val zMagnetometerSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.magnetometer_z))
+
+    private val xAccelerometerSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.accelerometer_x))
+
+    private val yAccelerometerSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.accelerometer_y))
+
+    private val zAccelerometerSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.accelerometer_z))
+
+    private val xGyroscopeSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.gyro_x))
+
+    private val yGyroscopeSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.gyro_y))
+
+    private val zGyroscopeSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.gyro_z))
+
+    private val batteryLevelSeries =
+        BleDataSeries(getApplication<Application>().getString(R.string.battery_level))
 
     private val temperatureGraph =
-        BleGraph("Temperature", "Temperature Graph", listOf(temperatureSeries))
-    private val lightGraph = BleGraph("Light", "Light Graph", listOf(lightSeries))
-    private val humidityGraph = BleGraph("Humidity", "Humidity Graph", listOf(humiditySeries))
-    private val pressureGraph = BleGraph("Pressure", "Pressure Graph", listOf(pressureSeries))
+        BleGraph(
+            getApplication<Application>().getString(R.string.temperature),
+            getApplication<Application>().getString(R.string.temperature_graph_label),
+            listOf(temperatureSeries)
+        )
+
+    private val lightGraph = BleGraph(
+        getApplication<Application>().getString(R.string.light),
+        getApplication<Application>().getString(R.string.light_graph_label),
+        listOf(lightSeries)
+    )
+    private val humidityGraph = BleGraph(
+        getApplication<Application>().getString(R.string.humidity),
+        getApplication<Application>().getString(R.string.humidity_graph_label),
+        listOf(humiditySeries)
+    )
+    private val pressureGraph = BleGraph(
+        getApplication<Application>().getString(R.string.pressure),
+        getApplication<Application>().getString(R.string.pressure_graph_label),
+        listOf(pressureSeries)
+    )
     private val magnetometerGraph = BleGraph(
-        "Magnetometer",
-        "Magnetometer Graph",
+        getApplication<Application>().getString(R.string.magnetometer),
+        getApplication<Application>().getString(R.string.magnetometer_graph_label),
         listOf(xMagnetometerSeries, yMagnetometerSeries, zMagnetometerSeries)
     )
     private val accelerometerGraph = BleGraph(
-        "Accelerometer",
-        "Accelerometer Graph",
+        getApplication<Application>().getString(R.string.accelerometer),
+        getApplication<Application>().getString(R.string.accelerometer_graph_label),
         listOf(xAccelerometerSeries, yAccelerometerSeries, zAccelerometerSeries)
     )
     private val gyroscopeGraph = BleGraph(
-        "Gyroscope",
-        "Gyroscope Graph",
+        getApplication<Application>().getString(R.string.gyro),
+        getApplication<Application>().getString(R.string.gyro_graph_label),
         listOf(xGyroscopeSeries, yGyroscopeSeries, zGyroscopeSeries)
     )
 
     private val batteryLevelGraph =
-        BleGraph("Battery Level", "Battery Level Graph", listOf(batteryLevelSeries))
+        BleGraph(
+            getApplication<Application>().getString(R.string.battery_level),
+            getApplication<Application>().getString(R.string.battery_level_graph_label),
+            listOf(batteryLevelSeries)
+        )
 
     fun getGraph(type: Int): BleGraph {
         return when (type) {
