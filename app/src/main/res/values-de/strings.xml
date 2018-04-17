@@ -88,4 +88,6 @@
     <string name="battery_level_graph_label">Akkudiagramm</string>
 
     <string name="sensor_card_image_content_description">Bild der Sensorkarte</string>
+    <string name="service_notification_title">AcnSensa</string>
+    <string name="service_notification_content">AcnSensa scannt</string>
 </resources>

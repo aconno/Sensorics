@@ -91,4 +91,7 @@
     <string name="battery_level_graph_label">Battery Level Graph</string>
 
     <string name="sensor_card_image_content_description">Sensor card image</string>
+
+    <string name="service_notification_title">AcnSensa</string>
+    <string name="service_notification_content">AcnSensa is scanning</string>
 </resources>

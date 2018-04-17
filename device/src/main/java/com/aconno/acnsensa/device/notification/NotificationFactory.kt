@@ -14,15 +14,20 @@ import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
  * @aconno
  */
 class NotificationFactory {
-    fun makeForegroundServiceNotification(context: Context, contentIntent: PendingIntent): Notification {
+    fun makeForegroundServiceNotification(
+        context: Context,
+        contentIntent: PendingIntent,
+        title: String,
+        contentText: String
+    ): Notification {
         createNotificationsChannel(context, NotificationChannelFactory.SERVICE_CHANNEL)
         return NotificationCompat.Builder(
             context,
             NotificationChannelFactory.CHANNEL_ID
         )
             .setSmallIcon(R.drawable.ic_droid)
-            .setContentTitle("AcnSensa scanning")
-            .setContentText("AcnSensa is scanning")
+            .setContentTitle(title)
+            .setContentText(contentText)
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .build()
@@ -51,7 +56,7 @@ class NotificationFactory {
     ): Notification {
         createNotificationsChannel(context, NotificationChannelFactory.ALERTS_CHANNEL)
         return NotificationCompat.Builder(context, NotificationChannelFactory.ALERTS_CHANNEL_ID)
-            .setContentTitle("Sensor Alert")
+            .setContentTitle("AcnSensa")
             .setContentText(message)
             .setSmallIcon(R.drawable.ic_droid)
             .setAutoCancel(true)
