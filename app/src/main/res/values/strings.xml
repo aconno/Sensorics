@@ -72,4 +72,7 @@
     <string name="update_new_action_title">Update Action</string>
     <string name="delete">Delete Action</string>
 
+    <string name="phone_notification">Phone Notification</string>
+    <string name="sms_message">SMS Message</string>
+    <string name="vibration">Vibration</string>
 </resources>

@@ -69,4 +69,8 @@
     <string name="update">Aktion aktualisieren</string>
     <string name="update_new_action_title">Aktion aktualisieren</string>
     <string name="delete">Aktion löschen</string>
+
+    <string name="phone_notification">Telefonbenachrichtigung</string>
+    <string name="sms_message">SMS Nachricht</string>
+    <string name="vibration">Vibration</string>
 </resources>
