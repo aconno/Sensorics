@@ -89,4 +89,6 @@
     <string name="accelerometer_graph_label">Accelerometer Graph</string>
     <string name="gyro_graph_label">Gyroscope Graph</string>
     <string name="battery_level_graph_label">Battery Level Graph</string>
+
+    <string name="sensor_card_image_content_description">Sensor card image</string>
 </resources>

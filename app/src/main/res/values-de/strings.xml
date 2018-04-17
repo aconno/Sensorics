@@ -86,4 +86,6 @@
     <string name="accelerometer_graph_label">B-Messerdiagramm</string>
     <string name="gyro_graph_label">Gyroskopdiagramm</string>
     <string name="battery_level_graph_label">Akkudiagramm</string>
+
+    <string name="sensor_card_image_content_description">Bild der Sensorkarte</string>
 </resources>
