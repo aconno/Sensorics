@@ -12,7 +12,7 @@
         android:padding="@dimen/dialog_padding">
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/view_title"
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -22,37 +22,37 @@
             tools:text="Title" />
 
         <CheckedTextView
-            android:id="@+id/less"
+            android:id="@+id/view_less"
             style="@style/ChipView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dialog_padding_title_body"
             android:text="@string/condition_less"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            app:layout_constraintTop_toBottomOf="@id/view_title" />
 
         <CheckedTextView
-            android:id="@+id/equal"
+            android:id="@+id/view_equal"
             style="@style/ChipView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dialog_padding_conditions"
             android:text="@string/condition_equal"
-            app:layout_constraintBaseline_toBaselineOf="@id/less"
-            app:layout_constraintStart_toEndOf="@id/less" />
+            app:layout_constraintBaseline_toBaselineOf="@id/view_less"
+            app:layout_constraintStart_toEndOf="@id/view_less" />
 
         <CheckedTextView
-            android:id="@+id/more"
+            android:id="@+id/view_more"
             style="@style/ChipView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dialog_padding_conditions"
             android:text="@string/condition_more"
-            app:layout_constraintBaseline_toBaselineOf="@id/less"
-            app:layout_constraintStart_toEndOf="@id/equal" />
+            app:layout_constraintBaseline_toBaselineOf="@id/view_less"
+            app:layout_constraintStart_toEndOf="@id/view_equal" />
 
         <EditText
-            android:id="@+id/value"
+            android:id="@+id/view_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dialog_padding_content"
@@ -60,7 +60,7 @@
             android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/less" />
+            app:layout_constraintTop_toBottomOf="@id/view_less" />
 
     </android.support.constraint.ConstraintLayout>
 
