@@ -17,6 +17,10 @@ import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.dagger.addaction.AddActionComponent
 import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
+import com.aconno.acnsensa.domain.model.SensorTypeSingle
+import com.aconno.acnsensa.model.toStringResource
+import com.aconno.acnsensa.ui.actions.ConditionDialog
+import com.aconno.acnsensa.ui.actions.ConditionDialogListener
 import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import kotlinx.android.synthetic.main.activity_add_action.*
@@ -24,7 +28,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-class AddActionActivity : AppCompatActivity() {
+class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
     @Inject
     lateinit var newActionViewModel: NewActionViewModel
@@ -77,43 +81,42 @@ class AddActionActivity : AppCompatActivity() {
     }
 
     private fun initConditionChipTitles() {
-        temperature.text = getString(R.string.temperature)
-        light.text = getString(R.string.light)
-        humidity.text = getString(R.string.humidity)
-        pressure.text = getString(R.string.pressure)
-        magnetometer_x.text = getString(R.string.magnetometer_x)
-        magnetometer_y.text = getString(R.string.magnetometer_y)
-        magnetometer_z.text = getString(R.string.magnetometer_z)
-        accelerometer_x.text = getString(R.string.accelerometer_x)
-        accelerometer_y.text = getString(R.string.accelerometer_y)
-        accelerometer_z.text = getString(R.string.accelerometer_z)
-        gyroscope_x.text = getString(R.string.gyro_x)
-        gyroscope_y.text = getString(R.string.gyro_y)
-        gyroscope_z.text = getString(R.string.gyro_z)
-        battery_level.text = getString(R.string.battery_level)
+        temperature.text = SensorTypeSingle.TEMPERATURE.toStringResource(this)
+        light.text = SensorTypeSingle.LIGHT.toStringResource(this)
+        humidity.text = SensorTypeSingle.HUMIDITY.toStringResource(this)
+        pressure.text = SensorTypeSingle.PRESSURE.toStringResource(this)
+        magnetometer_x.text = SensorTypeSingle.MAGNETOMETER_X.toStringResource(this)
+        magnetometer_y.text = SensorTypeSingle.MAGNETOMETER_Y.toStringResource(this)
+        magnetometer_z.text = SensorTypeSingle.MAGNETOMETER_Z.toStringResource(this)
+        accelerometer_x.text = SensorTypeSingle.ACCELEROMETER_X.toStringResource(this)
+        accelerometer_y.text = SensorTypeSingle.ACCELEROMETER_Y.toStringResource(this)
+        accelerometer_z.text = SensorTypeSingle.ACCELEROMETER_Z.toStringResource(this)
+        gyroscope_x.text = SensorTypeSingle.GYROSCOPE_X.toStringResource(this)
+        gyroscope_y.text = SensorTypeSingle.GYROSCOPE_Y.toStringResource(this)
+        gyroscope_z.text = SensorTypeSingle.GYROSCOPE_Z.toStringResource(this)
+        battery_level.text = SensorTypeSingle.BATTERY_LEVEL.toStringResource(this)
     }
 
     private fun setConditionChipOnClickListeners() {
-        temperature.setOnClickListener { temperature.isChecked = !temperature.isChecked }
-        light.setOnClickListener { light.isChecked = !light.isChecked }
-        humidity.setOnClickListener { humidity.isChecked = !humidity.isChecked }
-        pressure.setOnClickListener { pressure.isChecked = !pressure.isChecked }
-        magnetometer_x.setOnClickListener { magnetometer_x.isChecked = !magnetometer_x.isChecked }
-        magnetometer_y.setOnClickListener { magnetometer_y.isChecked = !magnetometer_y.isChecked }
-        magnetometer_z.setOnClickListener { magnetometer_z.isChecked = !magnetometer_z.isChecked }
-        accelerometer_x.setOnClickListener {
-            accelerometer_x.isChecked = !accelerometer_x.isChecked
-        }
-        accelerometer_y.setOnClickListener {
-            accelerometer_y.isChecked = !accelerometer_y.isChecked
-        }
-        accelerometer_z.setOnClickListener {
-            accelerometer_z.isChecked = !accelerometer_z.isChecked
-        }
-        gyroscope_x.setOnClickListener { gyroscope_x.isChecked = !gyroscope_x.isChecked }
-        gyroscope_y.setOnClickListener { gyroscope_y.isChecked = !gyroscope_y.isChecked }
-        gyroscope_z.setOnClickListener { gyroscope_z.isChecked = !gyroscope_z.isChecked }
-        battery_level.setOnClickListener { battery_level.isChecked = !battery_level.isChecked }
+        temperature.setOnClickListener { openConditionDialog(SensorTypeSingle.TEMPERATURE) }
+        light.setOnClickListener { openConditionDialog(SensorTypeSingle.LIGHT) }
+        humidity.setOnClickListener { openConditionDialog(SensorTypeSingle.HUMIDITY) }
+        pressure.setOnClickListener { openConditionDialog(SensorTypeSingle.PRESSURE) }
+        magnetometer_x.setOnClickListener { openConditionDialog(SensorTypeSingle.MAGNETOMETER_X) }
+        magnetometer_y.setOnClickListener { openConditionDialog(SensorTypeSingle.MAGNETOMETER_Y) }
+        magnetometer_z.setOnClickListener { openConditionDialog(SensorTypeSingle.MAGNETOMETER_Z) }
+        accelerometer_x.setOnClickListener { openConditionDialog(SensorTypeSingle.ACCELEROMETER_X) }
+        accelerometer_y.setOnClickListener { openConditionDialog(SensorTypeSingle.ACCELEROMETER_Y) }
+        accelerometer_z.setOnClickListener { openConditionDialog(SensorTypeSingle.ACCELEROMETER_Z) }
+        gyroscope_x.setOnClickListener { openConditionDialog(SensorTypeSingle.GYROSCOPE_X) }
+        gyroscope_y.setOnClickListener { openConditionDialog(SensorTypeSingle.GYROSCOPE_Y) }
+        gyroscope_z.setOnClickListener { openConditionDialog(SensorTypeSingle.GYROSCOPE_Z) }
+        battery_level.setOnClickListener { openConditionDialog(SensorTypeSingle.BATTERY_LEVEL) }
+    }
+
+    private fun openConditionDialog(sensorType: SensorTypeSingle) {
+        val dialog = ConditionDialog.newInstance(sensorType)
+        dialog.show(supportFragmentManager, "condition_dialog_fragment")
     }
 
     override fun onResume() {
@@ -175,6 +178,10 @@ class AddActionActivity : AppCompatActivity() {
                 phone_number.visibility = View.GONE
             }
         }
+    }
+
+    override fun onSetClicked(sensorType: SensorTypeSingle, condition: String, value: String) {
+        //TODO("not implemented")
     }
 
     companion object {

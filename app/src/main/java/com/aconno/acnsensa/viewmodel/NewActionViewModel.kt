@@ -39,6 +39,7 @@ class NewActionViewModel(
             val type = when (conditionType) {
                 ">" -> 1
                 "<" -> 0
+                "=" -> 0 //TODO: This is quick fix for having an equal condition
                 else -> throw IllegalArgumentException("Got invalid sensor type: $conditionType")
             }
             val condition = LimitCondition(sensorType, value.toFloat(), type)
