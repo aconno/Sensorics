@@ -33,18 +33,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
+    <TextView
+        android:id="@+id/view_conditions_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+        android:layout_marginTop="@dimen/item_vertical_spacing"
+        android:text="@string/conditions"
+        android:textColor="@color/primaryTextColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/action_name" />
+
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/condition_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+        android:layout_marginTop="@dimen/title_padding"
         app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
         app:dividerDrawableVertical="@drawable/chip_divider_vertical"
         app:flexWrap="wrap"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/action_name"
+        app:layout_constraintTop_toBottomOf="@id/view_conditions_label"
         app:showDivider="middle">
 
         <CheckedTextView
