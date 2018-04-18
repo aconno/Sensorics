@@ -1,24 +1,30 @@
 package com.aconno.acnsensa.viewmodel
 
-import android.arch.lifecycle.ViewModel
+import android.app.Application
+import android.arch.lifecycle.AndroidViewModel
+import com.aconno.acnsensa.R
 
-class ActionOptionsViewModel : ViewModel() {
+class ActionOptionsViewModel(
+    application: Application
+) : AndroidViewModel(application) {
     fun getSensorTypes(): List<String> {
+        val application: Application = getApplication()
+
         return listOf(
-            TEMPERATURE,
-            LIGHT,
-            HUMIDITY,
-            PRESSURE,
-            MAGNETOMETER_X,
-            MAGNETOMETER_Y,
-            MAGNETOMETER_Z,
-            ACCELEROMETER_X,
-            ACCELEROMETER_Y,
-            ACCELEROMETER_Z,
-            GYROSCOPE_X,
-            GYROSCOPE_Y,
-            GYROSCOPE_Z,
-            BATTERY_LEVEL
+            application.getString(R.string.temperature),
+            application.getString(R.string.light),
+            application.getString(R.string.humidity),
+            application.getString(R.string.pressure),
+            application.getString(R.string.magnetometer_x),
+            application.getString(R.string.magnetometer_y),
+            application.getString(R.string.magnetometer_z),
+            application.getString(R.string.accelerometer_x),
+            application.getString(R.string.accelerometer_y),
+            application.getString(R.string.accelerometer_z),
+            application.getString(R.string.gyro_x),
+            application.getString(R.string.gyro_y),
+            application.getString(R.string.gyro_z),
+            application.getString(R.string.battery_level)
         )
     }
 
@@ -27,27 +33,12 @@ class ActionOptionsViewModel : ViewModel() {
     }
 
     fun getOuputTypes(): List<String> {
-        return listOf(
-            "Phone Notification",
-            "SMS Message",
-            "Vibration"
-        )
-    }
+        val application: Application = getApplication()
 
-    companion object {
-        const val TEMPERATURE = "Temperature"
-        const val LIGHT = "Light"
-        const val HUMIDITY = "Humidity"
-        const val PRESSURE = "Pressure"
-        const val MAGNETOMETER_X = "Magnetometer X"
-        const val MAGNETOMETER_Y = "Magnetometer Y"
-        const val MAGNETOMETER_Z = "Magnetometer Z"
-        const val ACCELEROMETER_X = "Accelerometer X"
-        const val ACCELEROMETER_Y = "Accelerometer Y"
-        const val ACCELEROMETER_Z = "Accelerometer Z"
-        const val GYROSCOPE_X = "Gyroscope X"
-        const val GYROSCOPE_Y = "Gyroscope Y"
-        const val GYROSCOPE_Z = "Gyroscope Z"
-        const val BATTERY_LEVEL = "Battery Level"
+        return listOf(
+            application.getString(R.string.phone_notification),
+            application.getString(R.string.sms_message),
+            application.getString(R.string.vibration)
+        )
     }
 }
