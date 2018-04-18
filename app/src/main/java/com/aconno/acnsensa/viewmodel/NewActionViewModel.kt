@@ -3,6 +3,7 @@ package com.aconno.acnsensa.viewmodel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
+import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
@@ -46,15 +47,15 @@ class NewActionViewModel(
             val newId = 0L
 
             when (outcomeType) {
-                "Phone Notification" -> {
+                getApplication<Application>().getString(R.string.phone_notification) -> {
                     val outcome = NotificationOutcome(content, notificationDisplay)
                     newAction = GeneralAction(newId, name, condition, outcome)
                 }
-                "SMS Message" -> {
+                getApplication<Application>().getString(R.string.sms_message) -> {
                     val outcome = SmsOutcome(smsSender, smsDestination, content)
                     newAction = GeneralAction(newId, name, condition, outcome)
                 }
-                "Vibration" -> {
+                getApplication<Application>().getString(R.string.vibration) -> {
                     val outcome = VibrationOutcome(vibrator)
                     newAction = GeneralAction(newId, name, condition, outcome)
                 }
