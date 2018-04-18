@@ -7,6 +7,8 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
+import com.aconno.acnsensa.domain.model.SensorTypeSingle
+import com.aconno.acnsensa.model.toInt
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -25,50 +27,59 @@ class NewActionViewModel(
 
     val addActionResults: MutableLiveData<Boolean> = MutableLiveData()
 
+    private var condition: Condition? = null
+
+    fun setCondition(sensorType: SensorTypeSingle, constraint: String, constraintValue: String) {
+        when (constraint) {
+            "<" -> condition = LimitCondition(
+                sensorType.toInt(),
+                constraintValue.toFloat(),
+                LimitCondition.LOWER_LIMIT
+            )
+            ">" -> condition = LimitCondition(
+                sensorType.toInt(),
+                constraintValue.toFloat(),
+                LimitCondition.UPPER_LIMIT
+            )
+        }
+    }
+
     fun addAction(
         name: String,
-        sensorType: Int,
-        conditionType: String,
-        value: String,
         outcomeType: String,
         smsDestination: String,
         content: String
     ) {
         var newAction: Action? = null
         try {
-            val type = when (conditionType) {
-                ">" -> 1
-                "<" -> 0
-                "=" -> 0 //TODO: This is quick fix for having an equal condition
-                else -> throw IllegalArgumentException("Got invalid sensor type: $conditionType")
-            }
-            val condition = LimitCondition(sensorType, value.toFloat(), type)
-
-
             val newId = 0L
+            val condition = this.condition
 
-            when (outcomeType) {
-                getApplication<Application>().getString(R.string.phone_notification) -> {
-                    val outcome = NotificationOutcome(content, notificationDisplay)
-                    newAction = GeneralAction(newId, name, condition, outcome)
+            if (condition == null) {
+                Timber.d("Condition is null. Cannot save action.")
+            } else {
+                when (outcomeType) {
+                    getApplication<Application>().getString(R.string.phone_notification) -> {
+                        val outcome = NotificationOutcome(content, notificationDisplay)
+                        newAction = GeneralAction(newId, name, condition, outcome)
+                    }
+                    getApplication<Application>().getString(R.string.sms_message) -> {
+                        val outcome = SmsOutcome(smsSender, smsDestination, content)
+                        newAction = GeneralAction(newId, name, condition, outcome)
+                    }
+                    getApplication<Application>().getString(R.string.vibration) -> {
+                        val outcome = VibrationOutcome(vibrator)
+                        newAction = GeneralAction(newId, name, condition, outcome)
+                    }
                 }
-                getApplication<Application>().getString(R.string.sms_message) -> {
-                    val outcome = SmsOutcome(smsSender, smsDestination, content)
-                    newAction = GeneralAction(newId, name, condition, outcome)
-                }
-                getApplication<Application>().getString(R.string.vibration) -> {
-                    val outcome = VibrationOutcome(vibrator)
-                    newAction = GeneralAction(newId, name, condition, outcome)
+
+                newAction?.let {
+                    addActionUseCase.execute(it)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ onAddActionSuccess() }, { onAddActionFail() })
                 }
             }
-
-            newAction?.let {
-                addActionUseCase.execute(it)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ onAddActionSuccess() }, { onAddActionFail() })
-            }
-
         } catch (e: Exception) {
             Timber.e(e)
         }

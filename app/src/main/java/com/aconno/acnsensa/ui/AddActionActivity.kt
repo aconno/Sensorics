@@ -18,7 +18,6 @@ import com.aconno.acnsensa.dagger.addaction.AddActionComponent
 import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
-import com.aconno.acnsensa.model.toInt
 import com.aconno.acnsensa.model.toStringResource
 import com.aconno.acnsensa.ui.actions.ConditionDialog
 import com.aconno.acnsensa.ui.actions.ConditionDialogListener
@@ -36,10 +35,6 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
     @Inject
     lateinit var actionOptionsViewModel: ActionOptionsViewModel
-
-    private var sensorType: Int = -1
-    private var constraint: String = ""
-    private var value: String = ""
 
     private val addActionComponent: AddActionComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -143,9 +138,6 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
         newActionViewModel.addAction(
             name,
-            sensorType,
-            constraint,
-            value,
             outcome,
             smsDestination,
             content
@@ -183,9 +175,7 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
     }
 
     override fun onSetClicked(sensorType: SensorTypeSingle, constraint: String, value: String) {
-        this.sensorType = sensorType.toInt()
-        this.constraint = constraint
-        this.value = value
+        newActionViewModel.setCondition(sensorType, constraint, value)
         when (sensorType) {
             SensorTypeSingle.TEMPERATURE -> temperature.isChecked = true
             SensorTypeSingle.LIGHT -> light.isChecked = true
