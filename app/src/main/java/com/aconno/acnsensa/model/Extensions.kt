@@ -22,3 +22,22 @@ fun SensorTypeSingle.toStringResource(context: Context): String {
         SensorTypeSingle.BATTERY_LEVEL -> context.getString(R.string.battery_level)
     }
 }
+
+fun SensorTypeSingle.toInt(): Int {
+    return when (this) {
+        SensorTypeSingle.TEMPERATURE -> 0
+        SensorTypeSingle.LIGHT -> 1
+        SensorTypeSingle.HUMIDITY -> 2
+        SensorTypeSingle.PRESSURE -> 3
+        SensorTypeSingle.MAGNETOMETER_X -> 4
+        SensorTypeSingle.MAGNETOMETER_Y -> 5
+        SensorTypeSingle.MAGNETOMETER_Z -> 6
+        SensorTypeSingle.ACCELEROMETER_X -> 7
+        SensorTypeSingle.ACCELEROMETER_Y -> 8
+        SensorTypeSingle.ACCELEROMETER_Z -> 9
+        SensorTypeSingle.GYROSCOPE_X -> 10
+        SensorTypeSingle.GYROSCOPE_Y -> 11
+        SensorTypeSingle.GYROSCOPE_Z -> 12
+        SensorTypeSingle.BATTERY_LEVEL -> 13
+    }
+}

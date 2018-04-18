@@ -4,5 +4,5 @@ import com.aconno.acnsensa.domain.model.SensorTypeSingle
 
 interface ConditionDialogListener {
 
-    fun onSetClicked(sensorType: SensorTypeSingle, condition: String, value: String)
+    fun onSetClicked(sensorType: SensorTypeSingle, constraint: String, value: String)
 }

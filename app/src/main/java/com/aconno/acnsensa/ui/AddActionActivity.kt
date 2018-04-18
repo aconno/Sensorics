@@ -18,6 +18,7 @@ import com.aconno.acnsensa.dagger.addaction.AddActionComponent
 import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
+import com.aconno.acnsensa.model.toInt
 import com.aconno.acnsensa.model.toStringResource
 import com.aconno.acnsensa.ui.actions.ConditionDialog
 import com.aconno.acnsensa.ui.actions.ConditionDialogListener
@@ -35,6 +36,10 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
     @Inject
     lateinit var actionOptionsViewModel: ActionOptionsViewModel
+
+    private var sensorType: Int = -1
+    private var constraint: String = ""
+    private var value: String = ""
 
     private val addActionComponent: AddActionComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -131,23 +136,20 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
     }
 
     private fun addAction() {
-//        val name = action_name.text.toString()
-//        val sensorType = sensor_spinner.selectedItemPosition
-//        val conditionType = condition_type_spinner.selectedItem.toString()
-//        val value = condition_value.text.toString()
-//        val outcome = outcome_type_spinner.selectedItem.toString()
-//        val smsDestination = phone_number.text.toString()
-//        val content = message.text.toString()
-//
-//        newActionViewModel.addAction(
-//            name,
-//            sensorType,
-//            conditionType,
-//            value,
-//            outcome,
-//            smsDestination,
-//            content
-//        )
+        val name = action_name.text.toString()
+        val outcome = outcome_type_spinner.selectedItem.toString()
+        val smsDestination = phone_number.text.toString()
+        val content = message.text.toString()
+
+        newActionViewModel.addAction(
+            name,
+            sensorType,
+            constraint,
+            value,
+            outcome,
+            smsDestination,
+            content
+        )
     }
 
     private fun onAddActionResult(success: Boolean?) {
@@ -180,8 +182,26 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
         }
     }
 
-    override fun onSetClicked(sensorType: SensorTypeSingle, condition: String, value: String) {
-        //TODO("not implemented")
+    override fun onSetClicked(sensorType: SensorTypeSingle, constraint: String, value: String) {
+        this.sensorType = sensorType.toInt()
+        this.constraint = constraint
+        this.value = value
+        when (sensorType) {
+            SensorTypeSingle.TEMPERATURE -> temperature.isChecked = true
+            SensorTypeSingle.LIGHT -> light.isChecked = true
+            SensorTypeSingle.HUMIDITY -> humidity.isChecked = true
+            SensorTypeSingle.PRESSURE -> pressure.isChecked = true
+            SensorTypeSingle.MAGNETOMETER_X -> magnetometer_x.isChecked = true
+            SensorTypeSingle.MAGNETOMETER_Y -> magnetometer_y.isChecked = true
+            SensorTypeSingle.MAGNETOMETER_Z -> magnetometer_z.isChecked = true
+            SensorTypeSingle.ACCELEROMETER_X -> accelerometer_x.isChecked = true
+            SensorTypeSingle.ACCELEROMETER_Y -> accelerometer_y.isChecked = true
+            SensorTypeSingle.ACCELEROMETER_Z -> accelerometer_z.isChecked = true
+            SensorTypeSingle.GYROSCOPE_X -> gyroscope_x.isChecked = true
+            SensorTypeSingle.GYROSCOPE_Y -> gyroscope_y.isChecked = true
+            SensorTypeSingle.GYROSCOPE_Z -> gyroscope_z.isChecked = true
+            SensorTypeSingle.BATTERY_LEVEL -> battery_level.isChecked = true
+        }
     }
 
     companion object {
