@@ -1,7 +1,9 @@
 package com.aconno.acnsensa.viewmodel
 
+import android.app.Application
+import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
@@ -15,8 +17,9 @@ class ExistingActionViewModel(
     private val deleteActionUseCase: DeleteActionUseCase,
     private val notificationDisplay: NotificationDisplay,
     private val vibrator: Vibrator,
-    private val smsSender: SmsSender
-) : ViewModel() {
+    private val smsSender: SmsSender,
+    application: Application
+) : AndroidViewModel(application) {
 
     val action: MutableLiveData<Action> = MutableLiveData()
 
@@ -55,15 +58,15 @@ class ExistingActionViewModel(
             val loadedId = action.value?.id ?: 0
 
             when (outcomeType) {
-                "Phone Notification" -> {
+                getApplication<Application>().getString(R.string.phone_notification) -> {
                     val outcome = NotificationOutcome(content, notificationDisplay)
                     updatedAction = GeneralAction(loadedId, name, condition, outcome)
                 }
-                "SMS Message" -> {
+                getApplication<Application>().getString(R.string.sms_message) -> {
                     val outcome = SmsOutcome(smsSender, smsDestination, content)
                     updatedAction = GeneralAction(loadedId, name, condition, outcome)
                 }
-                "Vibration" -> {
+                getApplication<Application>().getString(R.string.vibration) -> {
                     val outcome = VibrationOutcome(vibrator)
                     updatedAction = GeneralAction(loadedId, name, condition, outcome)
                 }
