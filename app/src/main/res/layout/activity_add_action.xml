@@ -159,6 +159,17 @@
 
     </com.google.android.flexbox.FlexboxLayout>
 
+    <TextView
+        android:id="@+id/view_outcomes_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+        android:layout_marginTop="@dimen/item_vertical_spacing"
+        android:text="@string/outcomes"
+        android:textColor="@color/primaryTextColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/condition_container" />
+
     <Spinner
         android:id="@+id/outcome_type_spinner"
         android:layout_width="0dp"
@@ -168,7 +179,7 @@
         android:layout_marginTop="@dimen/item_vertical_spacing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/condition_container" />
+        app:layout_constraintTop_toBottomOf="@id/view_outcomes_label" />
 
     <EditText
         android:id="@+id/phone_number"
@@ -176,7 +187,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
-        android:layout_marginTop="@dimen/item_vertical_spacing"
+        android:layout_marginTop="@dimen/title_padding"
         android:hint="@string/phone_number"
         android:inputType="phone"
         android:visibility="gone"

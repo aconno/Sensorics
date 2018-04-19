@@ -102,4 +102,5 @@
     <string name="service_notification_title">AcnSensa</string>
     <string name="service_notification_content">AcnSensa is scanning</string>
     <string name="conditions">Conditions</string>
+    <string name="outcomes">Outcomes</string>
 </resources>
