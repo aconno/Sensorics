@@ -23,7 +23,7 @@ import com.aconno.acnsensa.ui.actions.ConditionDialog
 import com.aconno.acnsensa.ui.actions.ConditionDialogListener
 import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
-import kotlinx.android.synthetic.main.activity_add_action.*
+import kotlinx.android.synthetic.main.activity_action_add.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -51,7 +51,7 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_action)
+        setContentView(R.layout.activity_action_add)
         addActionComponent.inject(this)
 
         setConditionChipOnClickListeners()
