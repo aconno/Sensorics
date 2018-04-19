@@ -17,6 +17,12 @@ class ActionAdapter(
     private val clickListener: ItemClickListener<Action>
 ) : RecyclerView.Adapter<ActionAdapter.ViewHolder>() {
 
+    fun setActions(actions: List<Action>) {
+        this.actions.clear()
+        this.actions.addAll(actions)
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.item_action, parent, false)

@@ -24,6 +24,8 @@ import javax.inject.Inject
  */
 class ActionListFragment : Fragment(), ItemClickListener<Action> {
 
+    private lateinit var actionAdapter: ActionAdapter
+
     @Inject
     lateinit var getAllActionsUseCase: GetAllActionsUseCase
 
@@ -47,6 +49,8 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         actionListComponent.inject(this)
+        actionAdapter = ActionAdapter(mutableListOf(), this)
+        action_list.adapter = actionAdapter
         add_action_button.setOnClickListener { startAddActionActivity() }
     }
 
@@ -63,7 +67,12 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
     }
 
     private fun initActionList(actions: List<Action>) {
-        actions_list.adapter = ActionAdapter(actions.toMutableList(), this)
+        actionAdapter.setActions(actions)
+        if (actions.isEmpty()) {
+            action_list_empty_view.visibility = View.VISIBLE
+        } else {
+            action_list_empty_view.visibility = View.INVISIBLE
+        }
     }
 
     override fun onItemClick(item: Action) {
@@ -71,7 +80,7 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
     }
 
     companion object {
-        
+
         fun newInstance(): ActionListFragment {
             return ActionListFragment()
         }
