@@ -6,7 +6,7 @@ import android.arch.lifecycle.MutableLiveData
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
 import com.aconno.acnsensa.domain.model.SensorType
-import com.aconno.acnsensa.domain.model.readings.*
+import com.aconno.acnsensa.domain.model.readings.Reading
 import com.aconno.acnsensa.ui.graph.BleDataSeries
 import com.aconno.acnsensa.ui.graph.BleGraph
 import com.aconno.acnsensa.ui.graph.GraphType
@@ -178,47 +178,41 @@ class LiveGraphViewModel(
 
     }
 
-    private fun <T> getList(readings: List<Reading>, targetClass: Class<T>): List<T> {
-        val typedReadings: List<T> = readings.filterIsInstance(targetClass)
-        if (typedReadings.size == readings.size) {
-            return typedReadings
-        } else {
-            throw IllegalStateException("List contains readings of different types.")
-        }
-    }
-
     private fun updateTemperatureValues(readings: List<Reading>) {
-        val temperatureReadings: List<TemperatureReading> =
-            getList(readings, TemperatureReading::class.java)
+        val temperatureReadings: List<Reading> =
+            readings.filter { reading -> reading.sensorType == SensorType.TEMPERATURE }
 
-        val dataPoints = temperatureReadings.map { Pair(it.timestamp, it.temperature) }
+        val dataPoints = temperatureReadings.map { Pair(it.timestamp, it.values[0]) }
         temperatureSeries.updateDataSet(dataPoints)
     }
 
     private fun updateLightValues(readings: List<Reading>) {
-        val lightReadings: List<LightReading> = getList(readings, LightReading::class.java)
-        val dataPoints = lightReadings.map { Pair(it.timestamp, it.light) }
+        val lightReadings: List<Reading> =
+            readings.filter { reading -> reading.sensorType == SensorType.LIGHT }
+        val dataPoints = lightReadings.map { Pair(it.timestamp, it.values[0]) }
         lightSeries.updateDataSet(dataPoints)
     }
 
     private fun updateHumidityValues(readings: List<Reading>) {
-        val humidityReadings: List<HumidityReading> = getList(readings, HumidityReading::class.java)
-        val dataPoints = humidityReadings.map { Pair(it.timestamp, it.humidity) }
+        val humidityReadings: List<Reading> =
+            readings.filter { reading -> reading.sensorType == SensorType.HUMIDITY }
+        val dataPoints = humidityReadings.map { Pair(it.timestamp, it.values[0]) }
         humiditySeries.updateDataSet(dataPoints)
     }
 
     private fun updatePressureValues(readings: List<Reading>) {
-        val pressureValues: List<PressureReading> = getList(readings, PressureReading::class.java)
-        val dataPoints = pressureValues.map { Pair(it.timestamp, it.pressure) }
+        val pressureValues: List<Reading> =
+            readings.filter { reading -> reading.sensorType == SensorType.PRESSURE }
+        val dataPoints = pressureValues.map { Pair(it.timestamp, it.values[0]) }
         pressureSeries.updateDataSet(dataPoints)
     }
 
     private fun updateMagnetometerValues(readings: List<Reading>) {
-        val magnetometerValues: List<MagnetometerReading> =
-            getList(readings, MagnetometerReading::class.java)
-        val xDataPoints = magnetometerValues.map { Pair(it.timestamp, it.magnetometerX) }
-        val yDataPoints = magnetometerValues.map { Pair(it.timestamp, it.magnetometerY) }
-        val zDataPoints = magnetometerValues.map { Pair(it.timestamp, it.magnetometerZ) }
+        val magnetometerValues: List<Reading> =
+            readings.filter { reading -> reading.sensorType == SensorType.MAGNETOMETER }
+        val xDataPoints = magnetometerValues.map { Pair(it.timestamp, it.values[0]) }
+        val yDataPoints = magnetometerValues.map { Pair(it.timestamp, it.values[1]) }
+        val zDataPoints = magnetometerValues.map { Pair(it.timestamp, it.values[2]) }
 
         xMagnetometerSeries.updateDataSet(xDataPoints)
         yMagnetometerSeries.updateDataSet(yDataPoints)
@@ -226,11 +220,11 @@ class LiveGraphViewModel(
     }
 
     private fun updateAccelerometerValues(readings: List<Reading>) {
-        val accelerometerValues: List<AccelerometerReading> =
-            getList(readings, AccelerometerReading::class.java)
-        val xDataPoints = accelerometerValues.map { Pair(it.timestamp, it.accelerometerX) }
-        val yDataPoints = accelerometerValues.map { Pair(it.timestamp, it.accelerometerY) }
-        val zDataPoints = accelerometerValues.map { Pair(it.timestamp, it.accelerometerZ) }
+        val accelerometerValues: List<Reading> =
+            readings.filter { reading -> reading.sensorType == SensorType.ACCELEROMETER }
+        val xDataPoints = accelerometerValues.map { Pair(it.timestamp, it.values[0]) }
+        val yDataPoints = accelerometerValues.map { Pair(it.timestamp, it.values[1]) }
+        val zDataPoints = accelerometerValues.map { Pair(it.timestamp, it.values[2]) }
 
         xAccelerometerSeries.updateDataSet(xDataPoints)
         yAccelerometerSeries.updateDataSet(yDataPoints)
@@ -238,11 +232,11 @@ class LiveGraphViewModel(
     }
 
     private fun updateGyroscopeValues(readings: List<Reading>) {
-        val gyroscopeValues: List<GyroscopeReading> =
-            getList(readings, GyroscopeReading::class.java)
-        val xDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.gyroscopeX) }
-        val yDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.gyroscopeY) }
-        val zDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.gyroscopeZ) }
+        val gyroscopeValues: List<Reading> =
+            readings.filter { reading -> reading.sensorType == SensorType.GYROSCOPE }
+        val xDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.values[0]) }
+        val yDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.values[1]) }
+        val zDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.values[2]) }
 
         xGyroscopeSeries.updateDataSet(xDataPoints)
         yGyroscopeSeries.updateDataSet(yDataPoints)
@@ -250,8 +244,9 @@ class LiveGraphViewModel(
     }
 
     private fun updateBatteryLevelValues(readings: List<Reading>) {
-        val batteryReadings: List<BatteryReading> = getList(readings, BatteryReading::class.java)
-        val dataPoints = batteryReadings.map { Pair(it.timestamp, it.batteryLevel) }
+        val batteryReadings: List<Reading> =
+            readings.filter { reading -> reading.sensorType == SensorType.BATTERY_LEVEL }
+        val dataPoints = batteryReadings.map { Pair(it.timestamp, it.values[0]) }
         batteryLevelSeries.updateDataSet(dataPoints)
     }
 }

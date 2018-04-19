@@ -2,7 +2,8 @@ package com.aconno.acnsensa.domain.interactor
 
 import com.aconno.acnsensa.domain.FileStorage
 import com.aconno.acnsensa.domain.interactor.type.CompletableUseCaseWithParameter
-import com.aconno.acnsensa.domain.model.readings.*
+import com.aconno.acnsensa.domain.model.SensorType
+import com.aconno.acnsensa.domain.model.readings.Reading
 import io.reactivex.Completable
 
 /**
@@ -18,15 +19,15 @@ class LogReadingUseCase(private val fileStorage: FileStorage) :
     }
 
     private fun logReading(reading: Reading) {
-        when (reading) {
-            is TemperatureReading -> fileStorage.storeReading(reading, "temperature.csv")
-            is LightReading -> fileStorage.storeReading(reading, "light.csv")
-            is HumidityReading -> fileStorage.storeReading(reading, "humidity.csv")
-            is PressureReading -> fileStorage.storeReading(reading, "pressure.csv")
-            is MagnetometerReading -> fileStorage.storeReading(reading, "magnetometer.csv")
-            is AccelerometerReading -> fileStorage.storeReading(reading, "accelerometer.csv")
-            is GyroscopeReading -> fileStorage.storeReading(reading, "gyroscope.csv")
-            is BatteryReading -> fileStorage.storeReading(reading, "battery.csv")
+        when (reading.sensorType) {
+            SensorType.TEMPERATURE -> fileStorage.storeReading(reading, "temperature.csv")
+            SensorType.LIGHT -> fileStorage.storeReading(reading, "light.csv")
+            SensorType.HUMIDITY -> fileStorage.storeReading(reading, "humidity.csv")
+            SensorType.PRESSURE -> fileStorage.storeReading(reading, "pressure.csv")
+            SensorType.MAGNETOMETER -> fileStorage.storeReading(reading, "magnetometer.csv")
+            SensorType.ACCELEROMETER -> fileStorage.storeReading(reading, "accelerometer.csv")
+            SensorType.GYROSCOPE -> fileStorage.storeReading(reading, "gyroscope.csv")
+            SensorType.BATTERY_LEVEL -> fileStorage.storeReading(reading, "battery.csv")
         }
     }
 }
