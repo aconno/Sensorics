@@ -147,6 +147,7 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
     override fun onSetClicked(sensorType: SensorTypeSingle, constraint: String, value: String) {
         initConditionViews()
+        //TODO: Prevent passing an empty string value
         newActionViewModel.setCondition(sensorType, constraint, value)
         val condition = newActionViewModel.getCondition()
         condition?.let {

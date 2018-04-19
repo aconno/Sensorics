@@ -30,17 +30,22 @@ class NewActionViewModel(
     private var condition: Condition? = null
 
     fun setCondition(sensorType: SensorTypeSingle, constraint: String, constraintValue: String) {
-        when (constraint) {
-            "<" -> condition = LimitCondition(
-                sensorType.toInt(),
-                constraintValue.toFloat(),
-                LimitCondition.LOWER_LIMIT
-            )
-            ">" -> condition = LimitCondition(
-                sensorType.toInt(),
-                constraintValue.toFloat(),
-                LimitCondition.UPPER_LIMIT
-            )
+        //TODO: Fix this try catch, it catches the exception when constraintValue is empty string
+        try {
+            when (constraint) {
+                "<" -> condition = LimitCondition(
+                    sensorType.toInt(),
+                    constraintValue.toFloat(),
+                    LimitCondition.LOWER_LIMIT
+                )
+                ">" -> condition = LimitCondition(
+                    sensorType.toInt(),
+                    constraintValue.toFloat(),
+                    LimitCondition.UPPER_LIMIT
+                )
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
         }
     }
 
