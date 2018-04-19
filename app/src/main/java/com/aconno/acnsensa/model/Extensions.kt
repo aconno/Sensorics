@@ -63,3 +63,15 @@ fun Int.toSensorType(): SensorTypeSingle {
         else -> throw IllegalArgumentException("Int value is not valid SensorType identifier")
     }
 }
+
+fun Condition.toString(context: Context): String {
+    val sensor = sensorType.toSensorType().toStringResource(context)
+    //TODO: Refactor constraint type
+    val constraint = when (type) {
+        LimitCondition.UPPER_LIMIT -> ">"
+        LimitCondition.LOWER_LIMIT -> "<"
+        else -> throw IllegalArgumentException("Int is not valid constraint identifier: $type")
+    }
+    val value = limit.toString()
+    return "$sensor $constraint $value"
+}

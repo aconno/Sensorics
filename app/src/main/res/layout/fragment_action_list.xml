@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:itemCount="5"
-        tools:listitem="@layout/view_action">
+        tools:listitem="@layout/item_action">
 
     </android.support.v7.widget.RecyclerView>
 

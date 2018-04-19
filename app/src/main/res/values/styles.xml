@@ -15,4 +15,14 @@
         <item name="android:textColor">@color/chip_text</item>
     </style>
 
+    <style name="ListItemText">
+        <item name="android:textColor">@color/secondaryColor</item>
+        <item name="android:textSize">@dimen/list_item_text_size</item>
+    </style>
+
+    <style name="ListItemSecondaryText">
+        <item name="android:textColor">@color/secondaryLightColor</item>
+        <item name="android:textSize">@dimen/list_item_secondary_text_size</item>
+    </style>
+
 </resources>
