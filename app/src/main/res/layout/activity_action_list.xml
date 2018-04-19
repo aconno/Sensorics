@@ -7,8 +7,17 @@
     android:orientation="vertical"
     tools:context="com.aconno.acnsensa.ui.ActionListActivity">
 
-    <FrameLayout
+    <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/action_list_container" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primaryColor"
+        android:elevation="@dimen/toolbar_elevation"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="@string/actions" />
+
+    <FrameLayout
+        android:id="@+id/action_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>
