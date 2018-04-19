@@ -15,23 +15,23 @@ import kotlinx.android.synthetic.main.item_action.view.*
 class ActionAdapter(
     private val actions: MutableList<Action>,
     private val clickListener: ItemClickListener<Action>
-) :
-    RecyclerView.Adapter<ActionAdapter.ActionHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActionHolder {
+) : RecyclerView.Adapter<ActionAdapter.ViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.item_action, parent, false)
-        return ActionHolder(view)
+        return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
         return actions.size
     }
 
-    override fun onBindViewHolder(holder: ActionHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(actions[position])
     }
 
-    inner class ActionHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(action: Action) {
             view.action_name.text = action.name
