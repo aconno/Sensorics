@@ -2,6 +2,8 @@ package com.aconno.acnsensa.model
 
 import android.content.Context
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.domain.ifttt.Condition
+import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
 
 fun SensorTypeSingle.toStringResource(context: Context): String {
@@ -39,5 +41,25 @@ fun SensorTypeSingle.toInt(): Int {
         SensorTypeSingle.GYROSCOPE_Y -> 11
         SensorTypeSingle.GYROSCOPE_Z -> 12
         SensorTypeSingle.BATTERY_LEVEL -> 13
+    }
+}
+
+fun Int.toSensorType(): SensorTypeSingle {
+    return when (this) {
+        0 -> SensorTypeSingle.TEMPERATURE
+        1 -> SensorTypeSingle.LIGHT
+        2 -> SensorTypeSingle.HUMIDITY
+        3 -> SensorTypeSingle.PRESSURE
+        4 -> SensorTypeSingle.MAGNETOMETER_X
+        5 -> SensorTypeSingle.MAGNETOMETER_Y
+        6 -> SensorTypeSingle.MAGNETOMETER_Z
+        7 -> SensorTypeSingle.ACCELEROMETER_X
+        8 -> SensorTypeSingle.ACCELEROMETER_Y
+        9 -> SensorTypeSingle.ACCELEROMETER_Z
+        10 -> SensorTypeSingle.GYROSCOPE_X
+        11 -> SensorTypeSingle.GYROSCOPE_Y
+        12 -> SensorTypeSingle.GYROSCOPE_Z
+        13 -> SensorTypeSingle.BATTERY_LEVEL
+        else -> throw IllegalArgumentException("Int value is not valid SensorType identifier")
     }
 }

@@ -6,10 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.actionlist.ActionListModule
@@ -17,7 +14,10 @@ import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.dagger.addaction.AddActionComponent
 import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
+import com.aconno.acnsensa.domain.ifttt.Condition
+import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
+import com.aconno.acnsensa.model.toSensorType
 import com.aconno.acnsensa.model.toStringResource
 import com.aconno.acnsensa.ui.actions.ConditionDialog
 import com.aconno.acnsensa.ui.actions.ConditionDialogListener
@@ -54,7 +54,9 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
         setContentView(R.layout.activity_add_action)
         addActionComponent.inject(this)
 
-        initConditionChips()
+        setConditionChipOnClickListeners()
+        initConditionViews()
+
         initSpinner(outcome_type_spinner, actionOptionsViewModel.getOuputTypes())
 
         add_action_button.setOnClickListener { this.addAction() }
@@ -75,43 +77,12 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
         }
     }
 
-    private fun initConditionChips() {
-        initConditionChipTitles()
-        setConditionChipOnClickListeners()
-    }
-
-    private fun initConditionChipTitles() {
-        temperature.text = SensorTypeSingle.TEMPERATURE.toStringResource(this)
-        light.text = SensorTypeSingle.LIGHT.toStringResource(this)
-        humidity.text = SensorTypeSingle.HUMIDITY.toStringResource(this)
-        pressure.text = SensorTypeSingle.PRESSURE.toStringResource(this)
-        magnetometer_x.text = SensorTypeSingle.MAGNETOMETER_X.toStringResource(this)
-        magnetometer_y.text = SensorTypeSingle.MAGNETOMETER_Y.toStringResource(this)
-        magnetometer_z.text = SensorTypeSingle.MAGNETOMETER_Z.toStringResource(this)
-        accelerometer_x.text = SensorTypeSingle.ACCELEROMETER_X.toStringResource(this)
-        accelerometer_y.text = SensorTypeSingle.ACCELEROMETER_Y.toStringResource(this)
-        accelerometer_z.text = SensorTypeSingle.ACCELEROMETER_Z.toStringResource(this)
-        gyroscope_x.text = SensorTypeSingle.GYROSCOPE_X.toStringResource(this)
-        gyroscope_y.text = SensorTypeSingle.GYROSCOPE_Y.toStringResource(this)
-        gyroscope_z.text = SensorTypeSingle.GYROSCOPE_Z.toStringResource(this)
-        battery_level.text = SensorTypeSingle.BATTERY_LEVEL.toStringResource(this)
-    }
-
     private fun setConditionChipOnClickListeners() {
-        temperature.setOnClickListener { openConditionDialog(SensorTypeSingle.TEMPERATURE) }
-        light.setOnClickListener { openConditionDialog(SensorTypeSingle.LIGHT) }
-        humidity.setOnClickListener { openConditionDialog(SensorTypeSingle.HUMIDITY) }
-        pressure.setOnClickListener { openConditionDialog(SensorTypeSingle.PRESSURE) }
-        magnetometer_x.setOnClickListener { openConditionDialog(SensorTypeSingle.MAGNETOMETER_X) }
-        magnetometer_y.setOnClickListener { openConditionDialog(SensorTypeSingle.MAGNETOMETER_Y) }
-        magnetometer_z.setOnClickListener { openConditionDialog(SensorTypeSingle.MAGNETOMETER_Z) }
-        accelerometer_x.setOnClickListener { openConditionDialog(SensorTypeSingle.ACCELEROMETER_X) }
-        accelerometer_y.setOnClickListener { openConditionDialog(SensorTypeSingle.ACCELEROMETER_Y) }
-        accelerometer_z.setOnClickListener { openConditionDialog(SensorTypeSingle.ACCELEROMETER_Z) }
-        gyroscope_x.setOnClickListener { openConditionDialog(SensorTypeSingle.GYROSCOPE_X) }
-        gyroscope_y.setOnClickListener { openConditionDialog(SensorTypeSingle.GYROSCOPE_Y) }
-        gyroscope_z.setOnClickListener { openConditionDialog(SensorTypeSingle.GYROSCOPE_Z) }
-        battery_level.setOnClickListener { openConditionDialog(SensorTypeSingle.BATTERY_LEVEL) }
+        SensorTypeSingle.values().forEach { sensorType ->
+            getConditionView(sensorType).setOnClickListener {
+                openConditionDialog(sensorType)
+            }
+        }
     }
 
     private fun openConditionDialog(sensorType: SensorTypeSingle) {
@@ -175,22 +146,63 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
     }
 
     override fun onSetClicked(sensorType: SensorTypeSingle, constraint: String, value: String) {
+        initConditionViews()
         newActionViewModel.setCondition(sensorType, constraint, value)
-        when (sensorType) {
-            SensorTypeSingle.TEMPERATURE -> temperature.isChecked = true
-            SensorTypeSingle.LIGHT -> light.isChecked = true
-            SensorTypeSingle.HUMIDITY -> humidity.isChecked = true
-            SensorTypeSingle.PRESSURE -> pressure.isChecked = true
-            SensorTypeSingle.MAGNETOMETER_X -> magnetometer_x.isChecked = true
-            SensorTypeSingle.MAGNETOMETER_Y -> magnetometer_y.isChecked = true
-            SensorTypeSingle.MAGNETOMETER_Z -> magnetometer_z.isChecked = true
-            SensorTypeSingle.ACCELEROMETER_X -> accelerometer_x.isChecked = true
-            SensorTypeSingle.ACCELEROMETER_Y -> accelerometer_y.isChecked = true
-            SensorTypeSingle.ACCELEROMETER_Z -> accelerometer_z.isChecked = true
-            SensorTypeSingle.GYROSCOPE_X -> gyroscope_x.isChecked = true
-            SensorTypeSingle.GYROSCOPE_Y -> gyroscope_y.isChecked = true
-            SensorTypeSingle.GYROSCOPE_Z -> gyroscope_z.isChecked = true
-            SensorTypeSingle.BATTERY_LEVEL -> battery_level.isChecked = true
+        val condition = newActionViewModel.getCondition()
+        condition?.let {
+            setSelectedCondition(condition)
+        }
+    }
+
+
+    private fun initConditionViews() {
+        initConditionTexts()
+        initConditionStates()
+    }
+
+    private fun initConditionTexts() {
+        SensorTypeSingle.values().forEach {
+            getConditionView(it).text = it.toStringResource(this)
+        }
+    }
+
+    private fun initConditionStates() {
+        SensorTypeSingle.values().forEach {
+            getConditionView(it).isChecked = false
+        }
+    }
+
+    private fun setSelectedCondition(condition: Condition) {
+        val conditionView = getConditionView(condition.sensorType.toSensorType())
+        conditionView.isChecked = true
+        appendConditionString(conditionView, condition)
+    }
+
+    private fun appendConditionString(textView: TextView, condition: Condition) {
+        val constraint = when (condition.type) {
+            LimitCondition.LOWER_LIMIT -> "<"
+            LimitCondition.UPPER_LIMIT -> ">"
+            else -> throw IllegalArgumentException("Invalid constraint identifier ${condition.type}")
+        }
+        textView.text = "${textView.text} $constraint ${condition.limit}"
+    }
+
+    private fun getConditionView(sensorType: SensorTypeSingle): CheckedTextView {
+        return when (sensorType) {
+            SensorTypeSingle.TEMPERATURE -> temperature
+            SensorTypeSingle.LIGHT -> light
+            SensorTypeSingle.HUMIDITY -> humidity
+            SensorTypeSingle.PRESSURE -> pressure
+            SensorTypeSingle.MAGNETOMETER_X -> magnetometer_x
+            SensorTypeSingle.MAGNETOMETER_Y -> magnetometer_y
+            SensorTypeSingle.MAGNETOMETER_Z -> magnetometer_z
+            SensorTypeSingle.ACCELEROMETER_X -> accelerometer_x
+            SensorTypeSingle.ACCELEROMETER_Y -> accelerometer_y
+            SensorTypeSingle.ACCELEROMETER_Z -> accelerometer_z
+            SensorTypeSingle.GYROSCOPE_X -> gyroscope_x
+            SensorTypeSingle.GYROSCOPE_Y -> gyroscope_y
+            SensorTypeSingle.GYROSCOPE_Z -> gyroscope_z
+            SensorTypeSingle.BATTERY_LEVEL -> battery_level
         }
     }
 

@@ -44,6 +44,14 @@ class NewActionViewModel(
         }
     }
 
+    fun clearCondition() {
+        condition = null
+    }
+
+    fun getCondition(): Condition? {
+        return condition
+    }
+
     fun addAction(
         name: String,
         outcomeType: String,
