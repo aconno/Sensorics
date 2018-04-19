@@ -1,7 +1,8 @@
 package com.aconno.acnsensa.domain.ifttt
 
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
-import com.aconno.acnsensa.domain.model.readings.*
+import com.aconno.acnsensa.domain.model.SensorType
+import com.aconno.acnsensa.domain.model.readings.Reading
 import io.reactivex.Single
 
 /**
@@ -14,67 +15,35 @@ class ReadingToInputUseCase : SingleUseCaseWithParameter<List<Input>, List<Readi
     }
 
     private fun getInputs(reading: Reading): List<Input> {
-        return when (reading) {
-            is TemperatureReading -> listOf(getTemperatureInput(reading))
-            is LightReading -> listOf(getLightInput(reading))
-            is HumidityReading -> listOf(getHumidityInput(reading))
-            is PressureReading -> listOf(getPressureInput(reading))
-            is MagnetometerReading -> getMagnetometerInputs(reading)
-            is AccelerometerReading -> getAccelerometerInputs(reading)
-            is GyroscopeReading -> getGyroscopeInputs(reading)
-            is BatteryReading -> listOf(getBatteryInput(reading))
-            else -> throw IllegalArgumentException("Got invalid reading for input.")
+        return when (reading.sensorType) {
+            SensorType.TEMPERATURE -> getInput(reading, listOf(INPUT_TEMPERATURE))
+            SensorType.LIGHT -> getInput(reading, listOf(INPUT_LIGHT))
+            SensorType.HUMIDITY -> getInput(reading, listOf(INPUT_HUMIDITY))
+            SensorType.PRESSURE -> getInput(reading, listOf(INPUT_PRESSURE))
+            SensorType.MAGNETOMETER -> getInput(
+                reading,
+                listOf(INPUT_MAGNETOMETER_X, INPUT_MAGNETOMETER_Y, INPUT_MAGNETOMETER_Z)
+            )
+            SensorType.ACCELEROMETER -> getInput(
+                reading,
+                listOf(INPUT_ACCELEROMETER_X, INPUT_ACCELEROMETER_Y, INPUT_ACCELEROMETER_Z)
+            )
+            SensorType.GYROSCOPE -> getInput(
+                reading,
+                listOf(INPUT_GYROSCOPE_X, INPUT_GYROSCOPE_Y, INPUT_GYROSCOPE_Z)
+            )
+            SensorType.BATTERY_LEVEL -> getInput(reading, listOf(INPUT_BATTERY_LEVEL))
         }
     }
 
-    private fun getTemperatureInput(reading: TemperatureReading): Input {
-        return GeneralInput(reading.temperature.toFloat(), INPUT_TEMPERATURE, reading.timestamp)
-    }
-
-    private fun getLightInput(reading: LightReading): Input {
-        return GeneralInput(reading.light.toFloat(), INPUT_LIGHT, reading.timestamp)
-    }
-
-    private fun getHumidityInput(reading: HumidityReading): Input {
-        return GeneralInput(reading.humidity.toFloat(), INPUT_HUMIDITY, reading.timestamp)
-    }
-
-    private fun getPressureInput(reading: PressureReading): Input {
-        return GeneralInput(reading.pressure.toFloat(), INPUT_PRESSURE, reading.timestamp)
-    }
-
-    private fun getMagnetometerInputs(reading: MagnetometerReading): List<Input> {
-        val x =
-            GeneralInput(reading.magnetometerX.toFloat(), INPUT_MAGNETOMETER_X, reading.timestamp)
-        val y =
-            GeneralInput(reading.magnetometerY.toFloat(), INPUT_MAGNETOMETER_Y, reading.timestamp)
-        val z =
-            GeneralInput(reading.magnetometerZ.toFloat(), INPUT_MAGNETOMETER_Z, reading.timestamp)
-
-        return listOf(x, y, z)
-    }
-
-    private fun getAccelerometerInputs(reading: AccelerometerReading): List<Input> {
-        val x =
-            GeneralInput(reading.accelerometerX.toFloat(), INPUT_ACCELEROMETER_X, reading.timestamp)
-        val y =
-            GeneralInput(reading.accelerometerY.toFloat(), INPUT_ACCELEROMETER_Y, reading.timestamp)
-        val z =
-            GeneralInput(reading.accelerometerZ.toFloat(), INPUT_ACCELEROMETER_Z, reading.timestamp)
-
-        return listOf(x, y, z)
-    }
-
-    private fun getGyroscopeInputs(reading: GyroscopeReading): List<Input> {
-        val x = GeneralInput(reading.gyroscopeX.toFloat(), INPUT_GYROSCOPE_X, reading.timestamp)
-        val y = GeneralInput(reading.gyroscopeY.toFloat(), INPUT_GYROSCOPE_Y, reading.timestamp)
-        val z = GeneralInput(reading.gyroscopeZ.toFloat(), INPUT_GYROSCOPE_Z, reading.timestamp)
-
-        return listOf(x, y, z)
-    }
-
-    private fun getBatteryInput(reading: BatteryReading): Input {
-        return GeneralInput(reading.batteryLevel.toFloat(), INPUT_BATTERY_LEVEL, reading.timestamp)
+    private fun getInput(reading: Reading, inputTypes: List<Int>): List<Input> {
+        return if (reading.values.size == inputTypes.size) {
+            inputTypes.mapIndexed { index, inputType ->
+                GeneralInput(reading.values[index].toFloat(), inputType, reading.timestamp)
+            }
+        } else {
+            listOf()
+        }
     }
 
     companion object {
