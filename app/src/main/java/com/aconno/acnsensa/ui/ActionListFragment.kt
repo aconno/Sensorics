@@ -2,9 +2,6 @@ package com.aconno.acnsensa.ui
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView.VERTICAL
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,23 +50,20 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
         add_action_button.setOnClickListener { startAddActionActivity() }
     }
 
+    private fun startAddActionActivity() {
+        context?.let { AddActionActivity.start(it) }
+    }
+
     override fun onResume() {
         super.onResume()
         getAllActionsUseCase.execute()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { actions -> initializeActionList(actions) }
+            .subscribe { actions -> initActionList(actions) }
     }
 
-    private fun initializeActionList(actions: List<Action>) {
-        actions_list.layoutManager = LinearLayoutManager(activity)
-        val decoration = DividerItemDecoration(activity?.applicationContext, VERTICAL)
-        actions_list.addItemDecoration(decoration)
+    private fun initActionList(actions: List<Action>) {
         actions_list.adapter = ActionAdapter(actions.toMutableList(), this)
-    }
-
-    private fun startAddActionActivity() {
-        context?.let { AddActionActivity.start(it) }
     }
 
     override fun onItemClick(item: Action) {
@@ -77,6 +71,7 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
     }
 
     companion object {
+        
         fun newInstance(): ActionListFragment {
             return ActionListFragment()
         }
