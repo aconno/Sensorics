@@ -70,6 +70,13 @@
     <string name="update_new_action_title">Aktion aktualisieren</string>
     <string name="delete">Aktion löschen</string>
 
+    <string name="condition_less">Kleiner</string>
+    <string name="condition_equal">Gleich</string>
+    <string name="condition_more">Größer</string>
+    <string name="condition_value_hint">Wert</string>
+    <string name="condition_dialog_set">Festlegen</string>
+    <string name="condition_dialog_cancel">Abbrechen</string>
+
     <string name="phone_notification">Telefonbenachrichtigung</string>
     <string name="sms_message">SMS Nachricht</string>
     <string name="vibration">Vibration</string>
@@ -90,4 +97,8 @@
     <string name="sensor_card_image_content_description">Bild der Sensorkarte</string>
     <string name="service_notification_title">AcnSensa</string>
     <string name="service_notification_content">AcnSensa scannt</string>
+
+    <string name="conditions">Bedingungen</string>
+    <string name="outcomes">Ergebnisse</string>
+    <string name="set_action_hint">Um eine Aktion festzulegen, drücken Sie die + Taste.</string>
 </resources>
