@@ -3,10 +3,12 @@ package com.aconno.acnsensa.viewmodel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
+import android.support.v4.content.ContextCompat
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
 import com.aconno.acnsensa.domain.model.SensorType
 import com.aconno.acnsensa.domain.model.readings.Reading
+import com.aconno.acnsensa.model.DataSeriesSettings
 import com.aconno.acnsensa.ui.graph.BleDataSeries
 import com.aconno.acnsensa.ui.graph.BleGraph
 import com.aconno.acnsensa.ui.graph.GraphType
@@ -29,46 +31,79 @@ class LiveGraphViewModel(
     //TODO Custom setter to check if graph type is valid.
     var graphType: Int = -1
 
-    private val temperatureSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.temperature))
+    private val graphSettingsX = DataSeriesSettings(
+        ContextCompat.getColor(application, R.color.graph_x),
+        application.resources.getDimension(R.dimen.graph_line_width),
+        application.resources.getDimension(R.dimen.graph_circle_radius)
+    )
 
-    private val lightSeries = BleDataSeries(getApplication<Application>().getString(R.string.light))
+    private val graphSettingsY = DataSeriesSettings(
+        ContextCompat.getColor(application, R.color.graph_y),
+        application.resources.getDimension(R.dimen.graph_line_width),
+        application.resources.getDimension(R.dimen.graph_circle_radius)
+    )
 
-    private val humiditySeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.humidity))
+    private val graphSettingsZ = DataSeriesSettings(
+        ContextCompat.getColor(application, R.color.graph_z),
+        application.resources.getDimension(R.dimen.graph_line_width),
+        application.resources.getDimension(R.dimen.graph_circle_radius)
+    )
 
-    private val pressureSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.pressure))
+    private val temperatureSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.temperature), graphSettingsX
+    )
 
-    private val xMagnetometerSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.magnetometer_x))
+    private val lightSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.light), graphSettingsX
+    )
 
-    private val yMagnetometerSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.magnetometer_y))
+    private val humiditySeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.humidity), graphSettingsX
+    )
 
-    private val zMagnetometerSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.magnetometer_z))
+    private val pressureSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.pressure), graphSettingsX
+    )
 
-    private val xAccelerometerSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.accelerometer_x))
+    private val xMagnetometerSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.magnetometer_x), graphSettingsX
+    )
 
-    private val yAccelerometerSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.accelerometer_y))
+    private val yMagnetometerSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.magnetometer_y), graphSettingsY
+    )
 
-    private val zAccelerometerSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.accelerometer_z))
+    private val zMagnetometerSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.magnetometer_z), graphSettingsZ
+    )
 
-    private val xGyroscopeSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.gyro_x))
+    private val xAccelerometerSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.accelerometer_x), graphSettingsX
+    )
 
-    private val yGyroscopeSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.gyro_y))
+    private val yAccelerometerSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.accelerometer_y), graphSettingsY
+    )
 
-    private val zGyroscopeSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.gyro_z))
+    private val zAccelerometerSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.accelerometer_z), graphSettingsZ
+    )
 
-    private val batteryLevelSeries =
-        BleDataSeries(getApplication<Application>().getString(R.string.battery_level))
+    private val xGyroscopeSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.gyro_x), graphSettingsX
+    )
+
+    private val yGyroscopeSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.gyro_y), graphSettingsY
+    )
+
+    private val zGyroscopeSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.gyro_z), graphSettingsZ
+    )
+
+    private val batteryLevelSeries = BleDataSeries(
+        getApplication<Application>().getString(R.string.battery_level), graphSettingsX
+    )
 
     private val temperatureGraph =
         BleGraph(

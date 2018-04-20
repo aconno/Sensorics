@@ -1,18 +1,21 @@
 package com.aconno.acnsensa.ui.graph
 
+import com.aconno.acnsensa.model.DataSeriesSettings
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet
 
 /**
  * @author aconno
  */
-class BleDataSeries(val title: String) {
+class BleDataSeries(val title: String, settings: DataSeriesSettings) {
     private val entries: MutableList<Entry> = mutableListOf(Entry(0f, 0f))
 
     val lineDataSet = LineDataSet(entries, title)
 
     init {
-        //lineDataSet.color = ContextCompat.getColor()
+        lineDataSet.color = settings.color
+        lineDataSet.lineWidth = settings.lineWidth
+        lineDataSet.circleRadius = settings.circleRadius
     }
 
     fun updateDataSet(newEntries: List<Pair<Long, Number>>) {
