@@ -9,7 +9,8 @@ class ActionsRepositoryImpl(
     private val actionDao: ActionDao,
     private val notificationDisplay: NotificationDisplay,
     private val vibrator: Vibrator,
-    private val smsSender: SmsSender
+    private val smsSender: SmsSender,
+    private val textToSpeechPlayer: TextToSpeechPlayer
 ) : ActionsRepository {
     override fun addAction(action: Action) {
         actionDao.insert(toEntity(action))
@@ -50,6 +51,10 @@ class ActionsRepositoryImpl(
                 type = 3
                 message = (action.outcome as? SmsOutcome)?.message ?: ""
             }
+            is TextToSpeechOutcome -> {
+                type = 4
+                message = (action.outcome as? TextToSpeechOutcome)?.text ?: ""
+            }
         }
 
         val number = (action.outcome as? SmsOutcome)?.phoneNumber ?: ""
@@ -79,6 +84,7 @@ class ActionsRepositoryImpl(
             )
             2 -> VibrationOutcome(vibrator)
             3 -> SmsOutcome(smsSender, actionEntity.destination, actionEntity.outcomeMessage)
+            4 -> TextToSpeechOutcome(actionEntity.outcomeMessage, textToSpeechPlayer)
             else -> throw Exception("Persistence exception")
         }
 

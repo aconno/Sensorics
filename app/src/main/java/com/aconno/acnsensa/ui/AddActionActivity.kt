@@ -142,6 +142,10 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
                 message.visibility = View.GONE
                 phone_number.visibility = View.GONE
             }
+            3L -> {
+                message.visibility = View.VISIBLE
+                phone_number.visibility = View.GONE
+            }
         }
     }
 

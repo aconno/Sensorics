@@ -9,6 +9,7 @@ import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
+import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Component
 import io.reactivex.Flowable
@@ -36,6 +37,8 @@ interface AppComponent {
     fun vibrator(): Vibrator
 
     fun smsSender(): SmsSender
+
+    fun textToSpeechPlayer(): TextToSpeechPlayer
 
     fun bluetoothStateReceiver(): BluetoothStateReceiver
 

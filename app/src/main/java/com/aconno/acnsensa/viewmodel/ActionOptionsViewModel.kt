@@ -38,7 +38,8 @@ class ActionOptionsViewModel(
         return listOf(
             application.getString(R.string.phone_notification),
             application.getString(R.string.sms_message),
-            application.getString(R.string.vibration)
+            application.getString(R.string.vibration),
+            application.getString(R.string.text_to_speech)
         )
     }
 }
