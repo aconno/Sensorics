@@ -7,9 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
-
+        versionCode rootProject.ext.acnSensaVersionCode
+        versionName rootProject.ext.acnSensaVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -41,7 +40,7 @@ dependencies {
 
     implementation "io.reactivex.rxjava2:rxkotlin:2.2.0"
 
-    implementation 'com.jakewharton.timber:timber:4.6.1'
+    implementation 'com.jakewharton.timber:timber:4.7.0'
 }
 
 apply plugin: 'kotlin-android-extensions'

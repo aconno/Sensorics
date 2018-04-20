@@ -9,8 +9,8 @@ android {
         applicationId "com.aconno.acnsensa"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 7
-        versionName "2.1.2"
+        versionCode rootProject.ext.acnSensaVersionCode
+        versionName rootProject.ext.acnSensaVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

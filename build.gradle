@@ -31,4 +31,6 @@ ext {
 
     daggerVersion = '2.14.1'
     timberVersion = '4.7.0'
+    acnSensaVersionCode = 8
+    acnSensaVersionName = "2.1.4"
 }
