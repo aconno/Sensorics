@@ -17,7 +17,7 @@ class InMemoryRepositoryImpl : InMemoryRepository {
 
 
     override fun addReading(reading: Reading) {
-        when (reading.getSensorType()) {
+        when (reading.sensorType) {
             SensorType.TEMPERATURE -> addToBuffer(reading, temperatureReadings)
             SensorType.LIGHT -> addToBuffer(reading, lightReadings)
             SensorType.HUMIDITY -> addToBuffer(reading, humidityReadings)

@@ -9,4 +9,32 @@
         <item name="android:fontFamily">@font/rubik</item>
     </style>
 
+    <style name="Toolbar">
+        <item name="android:background">@color/primaryColor</item>
+        <item name="android:elevation">@dimen/toolbar_elevation</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <style name="ChipView">
+        <item name="android:background">@drawable/chip_shape</item>
+        <item name="android:backgroundTint">@color/chip_background</item>
+        <item name="android:textColor">@color/chip_text</item>
+    </style>
+
+    <style name="ListItemText">
+        <item name="android:textColor">@color/secondaryColor</item>
+        <item name="android:textSize">@dimen/list_item_text_size</item>
+    </style>
+
+    <style name="ListItemSecondaryText">
+        <item name="android:textColor">@color/secondaryLightColor</item>
+        <item name="android:textSize">@dimen/list_item_secondary_text_size</item>
+    </style>
+
+    <style name="MessageText">
+        <item name="android:textColor">@color/secondaryColor</item>
+        <item name="android:textSize">@dimen/message_text_size</item>
+    </style>
+
 </resources>

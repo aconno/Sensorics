@@ -1,5 +1,6 @@
 package com.aconno.acnsensa.viewmodel.factory
 
+import android.app.Application
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
@@ -18,7 +19,8 @@ class ExistingActionViewModelFactory(
     private val deleteActionUseCase: DeleteActionUseCase,
     private val notificationDisplay: NotificationDisplay,
     private val vibrator: Vibrator,
-    private val smsSender: SmsSender
+    private val smsSender: SmsSender,
+    private val application: Application
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -29,7 +31,8 @@ class ExistingActionViewModelFactory(
                 deleteActionUseCase,
                 notificationDisplay,
                 vibrator,
-                smsSender
+                smsSender,
+                application
             )
         return getViewModel(viewModel, modelClass)
     }

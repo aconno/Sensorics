@@ -7,7 +7,9 @@
     <color name="secondaryLightColor">#5c5c5c</color>
     <color name="secondaryDarkColor">#0c0c0c</color>
     <color name="primaryTextColor">#000000</color>
+    <color name="primaryIconColor">#000000</color>
     <color name="secondaryTextColor">#ffffff</color>
+    <color name="secondaryIconColor">#ffffff</color>
 
     <color name="graph_x">#FF0000</color>
     <color name="graph_y">#00FF00</color>

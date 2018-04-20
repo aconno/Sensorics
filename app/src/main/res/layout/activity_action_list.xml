@@ -7,8 +7,14 @@
     android:orientation="vertical"
     tools:context="com.aconno.acnsensa.ui.ActionListActivity">
 
-    <FrameLayout
+    <android.support.v7.widget.Toolbar
+        style="@style/Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/action_list_container" />
+        android:layout_height="?attr/actionBarSize"
+        app:title="@string/actions" />
+
+    <FrameLayout
+        android:id="@+id/action_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

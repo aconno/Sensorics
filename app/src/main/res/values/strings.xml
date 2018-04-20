@@ -47,6 +47,7 @@
 
     <string name="battery_level">Battery Level</string>
     <string name="default_battery_level">0%</string>
+
     <string name="grant_permissions">Please grant required permissions.</string>
     <string name="bt_disabled">Bluetooth is disabled</string>
     <string name="enable">Enable</string>
@@ -72,4 +73,35 @@
     <string name="update_new_action_title">Update Action</string>
     <string name="delete">Delete Action</string>
 
+    <string name="condition_less">Less</string>
+    <string name="condition_equal">Equal</string>
+    <string name="condition_more">More</string>
+    <string name="condition_value_hint">Value</string>
+    <string name="condition_dialog_set">Set</string>
+    <string name="condition_dialog_cancel">Cancel</string>
+
+    <string name="phone_notification">Phone Notification</string>
+    <string name="sms_message">SMS Message</string>
+    <string name="vibration">Vibration</string>
+
+    <string name="magnetometer">Magnetometer</string>
+    <string name="accelerometer">Accelerometer</string>
+    <string name="gyro">Gyroscope</string>
+
+    <string name="temperature_graph_label">Temperature Graph</string>
+    <string name="light_graph_label">Light Graph</string>
+    <string name="humidity_graph_label">Humidity Graph</string>
+    <string name="pressure_graph_label">Pressure Graph</string>
+    <string name="magnetometer_graph_label">Magnetometer Graph</string>
+    <string name="accelerometer_graph_label">Accelerometer Graph</string>
+    <string name="gyro_graph_label">Gyroscope Graph</string>
+    <string name="battery_level_graph_label">Battery Level Graph</string>
+
+    <string name="sensor_card_image_content_description">Sensor card image</string>
+
+    <string name="service_notification_title">AcnSensa</string>
+    <string name="service_notification_content">AcnSensa is scanning</string>
+    <string name="conditions">Conditions</string>
+    <string name="outcomes">Outcomes</string>
+    <string name="set_action_hint">To set an action click on + button.</string>
 </resources>

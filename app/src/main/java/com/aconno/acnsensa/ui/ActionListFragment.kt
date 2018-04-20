@@ -2,9 +2,6 @@ package com.aconno.acnsensa.ui
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView.VERTICAL
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +23,8 @@ import javax.inject.Inject
  * @author aconno
  */
 class ActionListFragment : Fragment(), ItemClickListener<Action> {
+
+    private lateinit var actionAdapter: ActionAdapter
 
     @Inject
     lateinit var getAllActionsUseCase: GetAllActionsUseCase
@@ -50,7 +49,13 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         actionListComponent.inject(this)
+        actionAdapter = ActionAdapter(mutableListOf(), this)
+        action_list.adapter = actionAdapter
         add_action_button.setOnClickListener { startAddActionActivity() }
+    }
+
+    private fun startAddActionActivity() {
+        context?.let { AddActionActivity.start(it) }
     }
 
     override fun onResume() {
@@ -58,18 +63,16 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
         getAllActionsUseCase.execute()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { actions -> initializeActionList(actions) }
+            .subscribe { actions -> initActionList(actions) }
     }
 
-    private fun initializeActionList(actions: List<Action>) {
-        actions_list.layoutManager = LinearLayoutManager(activity)
-        val decoration = DividerItemDecoration(activity?.applicationContext, VERTICAL)
-        actions_list.addItemDecoration(decoration)
-        actions_list.adapter = ActionAdapter(actions.toMutableList(), this)
-    }
-
-    private fun startAddActionActivity() {
-        context?.let { AddActionActivity.start(it) }
+    private fun initActionList(actions: List<Action>) {
+        actionAdapter.setActions(actions)
+        if (actions.isEmpty()) {
+            action_list_empty_view.visibility = View.VISIBLE
+        } else {
+            action_list_empty_view.visibility = View.INVISIBLE
+        }
     }
 
     override fun onItemClick(item: Action) {
@@ -77,6 +80,7 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
     }
 
     companion object {
+
         fun newInstance(): ActionListFragment {
             return ActionListFragment()
         }

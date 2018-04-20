@@ -14,14 +14,21 @@ import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
  * @aconno
  */
 class NotificationFactory {
-    fun makeForegroundServiceNotification(context: Context): Notification {
+    fun makeForegroundServiceNotification(
+        context: Context,
+        contentIntent: PendingIntent,
+        title: String,
+        contentText: String
+    ): Notification {
         createNotificationsChannel(context, NotificationChannelFactory.SERVICE_CHANNEL)
         return NotificationCompat.Builder(
             context,
             NotificationChannelFactory.CHANNEL_ID
         )
-            .setContentTitle("AcnSensa scanning")
-            .setContentText("AcnSensa is scanning")
+            .setSmallIcon(R.drawable.ic_droid)
+            .setContentTitle(title)
+            .setContentText(contentText)
+            .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .build()
     }
@@ -49,9 +56,9 @@ class NotificationFactory {
     ): Notification {
         createNotificationsChannel(context, NotificationChannelFactory.ALERTS_CHANNEL)
         return NotificationCompat.Builder(context, NotificationChannelFactory.ALERTS_CHANNEL_ID)
-            .setContentTitle("Sensor Alert")
+            .setContentTitle("AcnSensa")
             .setContentText(message)
-            .setSmallIcon(R.drawable.notification_icon_background)
+            .setSmallIcon(R.drawable.ic_droid)
             .setAutoCancel(true)
             .setDeleteIntent(deleteIntent)
             .setContentIntent(contentIntent)
@@ -113,7 +120,11 @@ class AlertNotificationReceiver : BroadcastReceiver() {
 }
 
 interface IntentProvider {
+
+    fun getAcnSensaContentIntent(context: Context): PendingIntent
+
     fun getAlertNotificationContentIntent(context: Context): PendingIntent
+
     fun getAlertNotificationDeleteIntent(context: Context): PendingIntent
 }
 

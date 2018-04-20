@@ -2,10 +2,13 @@ package com.aconno.acnsensa.domain.model.readings
 
 import com.aconno.acnsensa.domain.model.SensorType
 
-abstract class Reading(
-    val timestamp: Long
+data class Reading(
+    val values: List<Number>,
+    val timestamp: Long,
+    val sensorType: SensorType
 ) {
-    abstract fun getSensorType(): SensorType
-
-    abstract fun getCsvString(): String
+    fun getCsvString(): String {
+        val stringValues = values.joinToString(separator = ", ")
+        return "$timestamp, $stringValues"
+    }
 }

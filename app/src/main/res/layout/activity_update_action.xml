@@ -8,15 +8,12 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
+        style="@style/Toolbar"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/primaryColor"
-        android:elevation="@dimen/toolbar_elevation"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="@string/update_new_action_title" />
 
     <EditText
@@ -86,7 +83,6 @@
 
     <EditText
         android:id="@+id/phone_number"
-        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
@@ -94,13 +90,13 @@
         android:layout_marginTop="@dimen/item_vertical_spacing"
         android:hint="@string/phone_number"
         android:inputType="phone"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/outcome_type_spinner" />
 
     <EditText
         android:id="@+id/message"
-        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
@@ -108,6 +104,7 @@
         android:layout_marginTop="@dimen/item_vertical_spacing"
         android:hint="@string/message_hint"
         android:inputType="text"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/phone_number" />

@@ -42,7 +42,11 @@ class UpdateActionModule(private val updateActionActivity: UpdateActionActivity)
     ) = ExistingActionViewModelFactory(
         updateActionUseCase,
         getActionByIdUseCase,
-        deleteActionUseCase, notificationDisplay, vibrator, smsSender
+        deleteActionUseCase,
+        notificationDisplay,
+        vibrator,
+        smsSender,
+        updateActionActivity.application
     )
 
     @Provides

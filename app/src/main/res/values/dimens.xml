@@ -5,6 +5,12 @@
 
     <!-- List item -->
     <dimen name="list_item_height">72dp</dimen>
+    <dimen name="list_item_text_size">15sp</dimen>
+    <dimen name="list_item_secondary_text_size">13sp</dimen>
+    <dimen name="list_item_text_padding">4dp</dimen>
+
+    <!-- Message -->
+    <dimen name="message_text_size">15sp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
@@ -18,4 +24,13 @@
     <!-- Add new action screen -->
     <dimen name="item_vertical_spacing">8dp</dimen>
 
+    <!-- Dialog -->
+    <dimen name="dialog_padding">24dp</dimen>
+    <dimen name="dialog_padding_title_body">20dp</dimen>
+    <dimen name="dialog_padding_conditions">4dp</dimen>
+    <dimen name="dialog_padding_content">8dp</dimen>
+    <dimen name="dialog_button_margin">8dp</dimen>
+    <dimen name="dialog_button_height">36dp</dimen>
+    <dimen name="dialog_action_area_height">52dp</dimen>
+    <dimen name="dialog_elevation">24dp</dimen>
 </resources>
