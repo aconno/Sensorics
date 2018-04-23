@@ -16,10 +16,7 @@ import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.dagger.updateaction.DaggerUpdateActionComponent
 import com.aconno.acnsensa.dagger.updateaction.UpdateActionComponent
 import com.aconno.acnsensa.dagger.updateaction.UpdateActionModule
-import com.aconno.acnsensa.domain.ifttt.Action
-import com.aconno.acnsensa.domain.ifttt.NotificationOutcome
-import com.aconno.acnsensa.domain.ifttt.SmsOutcome
-import com.aconno.acnsensa.domain.ifttt.VibrationOutcome
+import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.ExistingActionViewModel
 import kotlinx.android.synthetic.main.activity_update_action.*
@@ -138,9 +135,12 @@ class UpdateActionActivity : AppCompatActivity() {
                 is VibrationOutcome -> {
                     outcome_type_spinner.setSelection(2)
                 }
+                is TextToSpeechOutcome -> {
+                    outcome_type_spinner.setSelection(3)
+                    message.visibility = View.VISIBLE
+                    message.setText(outcome.text)
+                }
             }
-
-
         }
     }
 
@@ -157,6 +157,10 @@ class UpdateActionActivity : AppCompatActivity() {
             }
             2L -> {
                 message.visibility = View.GONE
+                phone_number.visibility = View.GONE
+            }
+            3L -> {
+                message.visibility = View.VISIBLE
                 phone_number.visibility = View.GONE
             }
         }

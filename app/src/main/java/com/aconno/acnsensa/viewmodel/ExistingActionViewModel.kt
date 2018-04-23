@@ -18,6 +18,7 @@ class ExistingActionViewModel(
     private val notificationDisplay: NotificationDisplay,
     private val vibrator: Vibrator,
     private val smsSender: SmsSender,
+    private val textToSpeechPlayer: TextToSpeechPlayer,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -68,6 +69,10 @@ class ExistingActionViewModel(
                 }
                 getApplication<Application>().getString(R.string.vibration) -> {
                     val outcome = VibrationOutcome(vibrator)
+                    updatedAction = GeneralAction(loadedId, name, condition, outcome)
+                }
+                getApplication<Application>().getString(R.string.text_to_speech)->{
+                    val outcome = TextToSpeechOutcome(content, textToSpeechPlayer)
                     updatedAction = GeneralAction(loadedId, name, condition, outcome)
                 }
             }

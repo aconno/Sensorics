@@ -38,7 +38,8 @@ class UpdateActionModule(private val updateActionActivity: UpdateActionActivity)
         deleteActionUseCase: DeleteActionUseCase,
         notificationDisplay: NotificationDisplay,
         vibrator: Vibrator,
-        smsSender: SmsSender
+        smsSender: SmsSender,
+        textToSpeechPlayer: TextToSpeechPlayer
     ) = ExistingActionViewModelFactory(
         updateActionUseCase,
         getActionByIdUseCase,
@@ -46,6 +47,7 @@ class UpdateActionModule(private val updateActionActivity: UpdateActionActivity)
         notificationDisplay,
         vibrator,
         smsSender,
+        textToSpeechPlayer,
         updateActionActivity.application
     )
 

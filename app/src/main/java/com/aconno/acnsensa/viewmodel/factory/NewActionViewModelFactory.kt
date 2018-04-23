@@ -6,6 +6,7 @@ import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
+import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 
 /**
@@ -16,6 +17,7 @@ class NewActionViewModelFactory(
     private val notificationDisplay: NotificationDisplay,
     private val vibrator: Vibrator,
     private val smsSender: SmsSender,
+    private val textToSpeechPlayer: TextToSpeechPlayer,
     private val application: Application
 ) : BaseViewModelFactory() {
 
@@ -26,6 +28,7 @@ class NewActionViewModelFactory(
                 notificationDisplay,
                 vibrator,
                 smsSender,
+                textToSpeechPlayer,
                 application
             )
         return getViewModel(viewModel, modelClass)

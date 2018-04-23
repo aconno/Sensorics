@@ -21,6 +21,7 @@ class NewActionViewModel(
     private val notificationDisplay: NotificationDisplay,
     private val vibrator: Vibrator,
     private val smsSender: SmsSender,
+    private val textToSpeechPlayer: TextToSpeechPlayer,
     application: Application
 ) :
     AndroidViewModel(application) {
@@ -47,10 +48,6 @@ class NewActionViewModel(
         } catch (e: Exception) {
             Timber.e(e)
         }
-    }
-
-    fun clearCondition() {
-        condition = null
     }
 
     fun getCondition(): Condition? {
@@ -82,6 +79,10 @@ class NewActionViewModel(
                     }
                     getApplication<Application>().getString(R.string.vibration) -> {
                         val outcome = VibrationOutcome(vibrator)
+                        newAction = GeneralAction(newId, name, condition, outcome)
+                    }
+                    getApplication<Application>().getString(R.string.text_to_speech) -> {
+                        val outcome = TextToSpeechOutcome(content, textToSpeechPlayer)
                         newAction = GeneralAction(newId, name, condition, outcome)
                     }
                 }

@@ -6,6 +6,7 @@ import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
+import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.ui.AddActionActivity
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import com.aconno.acnsensa.viewmodel.factory.NewActionViewModelFactory
@@ -31,13 +32,15 @@ class AddActionModule(private val addActionActivity: AddActionActivity) {
         addActionUseCase: AddActionUseCase,
         notificationDisplay: NotificationDisplay,
         vibrator: Vibrator,
-        smsSender: SmsSender
+        smsSender: SmsSender,
+        textToSpeechPlayer: TextToSpeechPlayer
     ) =
         NewActionViewModelFactory(
             addActionUseCase,
             notificationDisplay,
             vibrator,
             smsSender,
+            textToSpeechPlayer,
             addActionActivity.application
         )
 

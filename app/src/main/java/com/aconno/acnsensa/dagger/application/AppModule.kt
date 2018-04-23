@@ -10,6 +10,7 @@ import com.aconno.acnsensa.data.repository.AcnSensaDatabase
 import com.aconno.acnsensa.data.repository.ActionsRepositoryImpl
 import com.aconno.acnsensa.data.repository.InMemoryRepositoryImpl
 import com.aconno.acnsensa.device.SmsSenderImpl
+import com.aconno.acnsensa.device.TextToSpeechPlayerImpl
 import com.aconno.acnsensa.device.VibratorImpl
 import com.aconno.acnsensa.device.bluetooth.BluetoothImpl
 import com.aconno.acnsensa.device.bluetooth.BluetoothPermission
@@ -24,6 +25,7 @@ import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
+import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.model.ScanResult
@@ -118,17 +120,25 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
     @Provides
     @Singleton
+    fun provideTextToSpeechPlayer(): TextToSpeechPlayer {
+        return TextToSpeechPlayerImpl(acnSensaApplication)
+    }
+
+    @Provides
+    @Singleton
     fun provideActionsRepository(
         acnSensaDatabase: AcnSensaDatabase,
         notificationDisplay: NotificationDisplay,
         vibrator: Vibrator,
-        smsSender: SmsSender
+        smsSender: SmsSender,
+        textToSpeechPlayer: TextToSpeechPlayer
     ): ActionsRepository {
         return ActionsRepositoryImpl(
             acnSensaDatabase.actionDao(),
             notificationDisplay,
             vibrator,
-            smsSender
+            smsSender,
+            textToSpeechPlayer
         )
     }
 
