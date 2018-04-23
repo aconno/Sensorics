@@ -17,6 +17,6 @@ class TextToSpeechPlayerImpl(private val context: Context) :
 
     override fun onInit(status: Int) {
         textToSpeech.speak(text, TextToSpeech.QUEUE_ADD, null, "speak")
-        textToSpeech.shutdown()
+        //textToSpeech.shutdown()
     }
 }
