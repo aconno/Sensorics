@@ -24,12 +24,21 @@ class InputToOutcomesUseCase(
         return Single.fromObservable(observable)
     }
 
+    private val previousConditions: MutableMap<Long, MutableMap<Int, Boolean>> = mutableMapOf()
+
     private fun actionsToOutcomes(actions: List<Action>, input: Input): List<Outcome> {
         val result = mutableListOf<Outcome>()
+
         for (action in actions) {
-            if (action.condition.isSatisfied(input)) {
-                result.add(action.outcome)
+            val actionPreviousConditions = previousConditions[action.id] ?: mutableMapOf()
+            val previousCondition = actionPreviousConditions[input.type]
+            previousCondition?.let {
+                if (action.condition.isSatisfied(input) && !it) {
+                    result.add(action.outcome)
+                }
             }
+            actionPreviousConditions[input.type] = action.condition.isSatisfied(input)
+            previousConditions[action.id] = actionPreviousConditions
         }
 
         return result
