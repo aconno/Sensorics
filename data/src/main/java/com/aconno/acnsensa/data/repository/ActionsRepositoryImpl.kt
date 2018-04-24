@@ -1,16 +1,14 @@
 package com.aconno.acnsensa.data.repository
 
-import com.aconno.acnsensa.domain.SmsSender
-import com.aconno.acnsensa.domain.Vibrator
-import com.aconno.acnsensa.domain.ifttt.*
+import com.aconno.acnsensa.domain.ifttt.Action
+import com.aconno.acnsensa.domain.ifttt.ActionsRepository
+import com.aconno.acnsensa.domain.ifttt.GeneralAction
+import com.aconno.acnsensa.domain.ifttt.LimitCondition
+import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
 import io.reactivex.Single
 
 class ActionsRepositoryImpl(
-    private val actionDao: ActionDao,
-    private val notificationDisplay: NotificationDisplay,
-    private val vibrator: Vibrator,
-    private val smsSender: SmsSender,
-    private val textToSpeechPlayer: TextToSpeechPlayer
+    private val actionDao: ActionDao
 ) : ActionsRepository {
     override fun addAction(action: Action) {
         actionDao.insert(toEntity(action))
@@ -39,34 +37,19 @@ class ActionsRepositoryImpl(
         val conditionType = action.condition.type
         val value = action.condition.limit
 
-        var type = 0
-        var message = ""
-        when (action.outcome) {
-            is NotificationOutcome -> {
-                type = 1
-                message = (action.outcome as? NotificationOutcome)?.message ?: "null"
-            }
-            is VibrationOutcome -> type = 2
-            is SmsOutcome -> {
-                type = 3
-                message = (action.outcome as? SmsOutcome)?.message ?: ""
-            }
-            is TextToSpeechOutcome -> {
-                type = 4
-                message = (action.outcome as? TextToSpeechOutcome)?.text ?: ""
-            }
-        }
+        val type = action.outcome.type
+        val message = action.outcome.parameters[Outcome.TEXT_MESSAGE] ?: "null"
+        val number = action.outcome.parameters[Outcome.PHONE_NUMBER] ?: ""
 
-        val number = (action.outcome as? SmsOutcome)?.phoneNumber ?: ""
         return ActionEntity(
             id = id,
             name = name,
             sensorType = sensorType,
             conditionType = conditionType,
             value = value,
-            outcomeMessage = message,
+            textMessage = message,
             outcomeType = type,
-            destination = number
+            phoneNumber = number
         )
     }
 
@@ -76,17 +59,12 @@ class ActionsRepositoryImpl(
         val condition =
             LimitCondition(actionEntity.sensorType, actionEntity.value, actionEntity.conditionType)
 
-        val type = actionEntity.outcomeType
+        val parameters = mapOf(
+            Pair(Outcome.TEXT_MESSAGE, actionEntity.textMessage),
+            Pair(Outcome.PHONE_NUMBER, actionEntity.phoneNumber)
+        )
 
-        val outcome = when (type) {
-            1 -> NotificationOutcome(
-                actionEntity.outcomeMessage, notificationDisplay
-            )
-            2 -> VibrationOutcome(vibrator)
-            3 -> SmsOutcome(smsSender, actionEntity.destination, actionEntity.outcomeMessage)
-            4 -> TextToSpeechOutcome(actionEntity.outcomeMessage, textToSpeechPlayer)
-            else -> throw Exception("Persistence exception")
-        }
+        val outcome = Outcome(parameters, actionEntity.outcomeType)
 
         return GeneralAction(id, name, condition, outcome)
     }

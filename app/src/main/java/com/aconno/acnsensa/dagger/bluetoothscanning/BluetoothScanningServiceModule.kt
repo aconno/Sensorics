@@ -10,10 +10,15 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.device.storage.FileStorageImpl
+import com.aconno.acnsensa.domain.SmsSender
+import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
-import com.aconno.acnsensa.domain.ifttt.HandleInputUseCase
-import com.aconno.acnsensa.domain.ifttt.ReadingToInputUseCase
+import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
+import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
+import com.aconno.acnsensa.domain.ifttt.outcome.*
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
@@ -87,7 +92,29 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideHandleInputUseCase(actionsRepository: ActionsRepository): HandleInputUseCase {
-        return HandleInputUseCase(actionsRepository)
+    fun provideHandleInputUseCase(actionsRepository: ActionsRepository): InputToOutcomesUseCase {
+        return InputToOutcomesUseCase(actionsRepository)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideRunOutcomeUseCase(
+        notificationDisplay: NotificationDisplay,
+        smsSender: SmsSender,
+        textToSpeechPlayer: TextToSpeechPlayer,
+        vibrator: Vibrator
+    ): RunOutcomeUseCase {
+        val notificationOutcomeExecutor = NotificationOutcomeExecutor(notificationDisplay)
+        val smsOutcomeExecutor = SmsOutcomeExecutor(smsSender)
+        val textToSpeechOutcomeExecutor = TextToSpeechOutcomeExecutor(textToSpeechPlayer)
+        val vibrationOutcomeExecutor = VibrationOutcomeExecutor(vibrator)
+        val outcomeExecutorSelector = OutcomeExecutorSelector(
+            notificationOutcomeExecutor,
+            smsOutcomeExecutor,
+            textToSpeechOutcomeExecutor,
+            vibrationOutcomeExecutor
+        )
+
+        return RunOutcomeUseCase(outcomeExecutorSelector)
     }
 }

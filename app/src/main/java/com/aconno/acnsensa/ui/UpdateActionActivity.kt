@@ -16,7 +16,8 @@ import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.dagger.updateaction.DaggerUpdateActionComponent
 import com.aconno.acnsensa.dagger.updateaction.UpdateActionComponent
 import com.aconno.acnsensa.dagger.updateaction.UpdateActionModule
-import com.aconno.acnsensa.domain.ifttt.*
+import com.aconno.acnsensa.domain.ifttt.Action
+import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
 import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.ExistingActionViewModel
 import kotlinx.android.synthetic.main.activity_update_action.*
@@ -119,26 +120,27 @@ class UpdateActionActivity : AppCompatActivity() {
             condition_value.setText(action.condition.limit.toString())
 
             val outcome = action.outcome
-            when (outcome) {
-                is NotificationOutcome -> {
+
+            when (outcome.type) {
+                Outcome.OUTCOME_TYPE_NOTIFICATION -> {
                     outcome_type_spinner.setSelection(0)
                     message.visibility = View.VISIBLE
-                    message.setText(outcome.message)
+                    message.setText(outcome.parameters[Outcome.TEXT_MESSAGE])
                 }
-                is SmsOutcome -> {
+                Outcome.OUTCOME_TYPE_SMS -> {
                     outcome_type_spinner.setSelection(1)
                     message.visibility = View.VISIBLE
-                    message.setText(outcome.message)
+                    message.setText(outcome.parameters[Outcome.TEXT_MESSAGE])
                     phone_number.visibility = View.VISIBLE
-                    phone_number.setText(outcome.phoneNumber)
+                    phone_number.setText(outcome.parameters[Outcome.PHONE_NUMBER])
                 }
-                is VibrationOutcome -> {
+                Outcome.OUTCOME_TYPE_VIBRATION -> {
                     outcome_type_spinner.setSelection(2)
                 }
-                is TextToSpeechOutcome -> {
+                Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH -> {
                     outcome_type_spinner.setSelection(3)
                     message.visibility = View.VISIBLE
-                    message.setText(outcome.text)
+                    message.setText(outcome.parameters[Outcome.TEXT_MESSAGE])
                 }
             }
         }

@@ -1,5 +1,7 @@
-package com.aconno.acnsensa.domain.ifttt
+package com.aconno.acnsensa.domain.interactor.ifttt
 
+import com.aconno.acnsensa.domain.ifttt.Action
+import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCase
 import io.reactivex.Single
 

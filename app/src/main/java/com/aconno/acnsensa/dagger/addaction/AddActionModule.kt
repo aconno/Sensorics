@@ -1,12 +1,8 @@
 package com.aconno.acnsensa.dagger.addaction
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.acnsensa.domain.SmsSender
-import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
-import com.aconno.acnsensa.domain.ifttt.AddActionUseCase
-import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
-import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
+import com.aconno.acnsensa.domain.interactor.ifttt.AddActionUseCase
 import com.aconno.acnsensa.ui.AddActionActivity
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import com.aconno.acnsensa.viewmodel.factory.NewActionViewModelFactory
@@ -29,18 +25,10 @@ class AddActionModule(private val addActionActivity: AddActionActivity) {
     @Provides
     @AddActionActivityScope
     fun provideActionViewModelFactory(
-        addActionUseCase: AddActionUseCase,
-        notificationDisplay: NotificationDisplay,
-        vibrator: Vibrator,
-        smsSender: SmsSender,
-        textToSpeechPlayer: TextToSpeechPlayer
+        addActionUseCase: AddActionUseCase
     ) =
         NewActionViewModelFactory(
             addActionUseCase,
-            notificationDisplay,
-            vibrator,
-            smsSender,
-            textToSpeechPlayer,
             addActionActivity.application
         )
 
