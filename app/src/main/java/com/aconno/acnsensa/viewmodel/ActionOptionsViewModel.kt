@@ -29,7 +29,7 @@ class ActionOptionsViewModel(
     }
 
     fun getConditionTypes(): List<String> {
-        return listOf(">", "<")
+        return listOf("<", ">")
     }
 
     fun getOuputTypes(): List<String> {

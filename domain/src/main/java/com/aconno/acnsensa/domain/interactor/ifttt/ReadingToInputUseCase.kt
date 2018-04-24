@@ -1,5 +1,7 @@
-package com.aconno.acnsensa.domain.ifttt
+package com.aconno.acnsensa.domain.interactor.ifttt
 
+import com.aconno.acnsensa.domain.ifttt.GeneralInput
+import com.aconno.acnsensa.domain.ifttt.Input
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.acnsensa.domain.model.SensorType
 import com.aconno.acnsensa.domain.model.readings.Reading
@@ -22,15 +24,27 @@ class ReadingToInputUseCase : SingleUseCaseWithParameter<List<Input>, List<Readi
             SensorType.PRESSURE -> getInput(reading, listOf(INPUT_PRESSURE))
             SensorType.MAGNETOMETER -> getInput(
                 reading,
-                listOf(INPUT_MAGNETOMETER_X, INPUT_MAGNETOMETER_Y, INPUT_MAGNETOMETER_Z)
+                listOf(
+                    INPUT_MAGNETOMETER_X,
+                    INPUT_MAGNETOMETER_Y,
+                    INPUT_MAGNETOMETER_Z
+                )
             )
             SensorType.ACCELEROMETER -> getInput(
                 reading,
-                listOf(INPUT_ACCELEROMETER_X, INPUT_ACCELEROMETER_Y, INPUT_ACCELEROMETER_Z)
+                listOf(
+                    INPUT_ACCELEROMETER_X,
+                    INPUT_ACCELEROMETER_Y,
+                    INPUT_ACCELEROMETER_Z
+                )
             )
             SensorType.GYROSCOPE -> getInput(
                 reading,
-                listOf(INPUT_GYROSCOPE_X, INPUT_GYROSCOPE_Y, INPUT_GYROSCOPE_Z)
+                listOf(
+                    INPUT_GYROSCOPE_X,
+                    INPUT_GYROSCOPE_Y,
+                    INPUT_GYROSCOPE_Z
+                )
             )
             SensorType.BATTERY_LEVEL -> getInput(reading, listOf(INPUT_BATTERY_LEVEL))
         }
@@ -39,7 +53,11 @@ class ReadingToInputUseCase : SingleUseCaseWithParameter<List<Input>, List<Readi
     private fun getInput(reading: Reading, inputTypes: List<Int>): List<Input> {
         return if (reading.values.size == inputTypes.size) {
             inputTypes.mapIndexed { index, inputType ->
-                GeneralInput(reading.values[index].toFloat(), inputType, reading.timestamp)
+                GeneralInput(
+                    reading.values[index].toFloat(),
+                    inputType,
+                    reading.timestamp
+                )
             }
         } else {
             listOf()

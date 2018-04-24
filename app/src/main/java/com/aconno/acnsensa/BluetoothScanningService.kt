@@ -13,9 +13,10 @@ import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceComp
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
 import com.aconno.acnsensa.domain.Bluetooth
-import com.aconno.acnsensa.domain.ifttt.HandleInputUseCase
-import com.aconno.acnsensa.domain.ifttt.ReadingToInputUseCase
+import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import io.reactivex.Flowable
@@ -47,7 +48,10 @@ class BluetoothScanningService : Service() {
     lateinit var readingToInputUseCase: ReadingToInputUseCase
 
     @Inject
-    lateinit var handleInputUseCase: HandleInputUseCase
+    lateinit var inputToOutcomesUseCase: InputToOutcomesUseCase
+
+    @Inject
+    lateinit var runOutcomeUseCase: RunOutcomeUseCase
 
     @Inject
     lateinit var receiver: BroadcastReceiver
@@ -101,8 +105,15 @@ class BluetoothScanningService : Service() {
             .concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
             .concatMap { readingToInputUseCase.execute(it).toFlowable() }
             .flatMapIterable { it }
+            .concatMap {
+                inputToOutcomesUseCase.execute(it)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .toFlowable()
+            }
+            .flatMapIterable { it }
             .subscribe {
-                handleInputUseCase.execute(it)
+                runOutcomeUseCase.execute(it)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe()

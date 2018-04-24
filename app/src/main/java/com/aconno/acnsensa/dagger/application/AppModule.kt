@@ -127,19 +127,9 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
     @Provides
     @Singleton
     fun provideActionsRepository(
-        acnSensaDatabase: AcnSensaDatabase,
-        notificationDisplay: NotificationDisplay,
-        vibrator: Vibrator,
-        smsSender: SmsSender,
-        textToSpeechPlayer: TextToSpeechPlayer
+        acnSensaDatabase: AcnSensaDatabase
     ): ActionsRepository {
-        return ActionsRepositoryImpl(
-            acnSensaDatabase.actionDao(),
-            notificationDisplay,
-            vibrator,
-            smsSender,
-            textToSpeechPlayer
-        )
+        return ActionsRepositoryImpl(acnSensaDatabase.actionDao())
     }
 
     @Provides

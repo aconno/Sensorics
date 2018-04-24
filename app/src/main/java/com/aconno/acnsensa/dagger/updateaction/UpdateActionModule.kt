@@ -1,9 +1,10 @@
 package com.aconno.acnsensa.dagger.updateaction
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.acnsensa.domain.SmsSender
-import com.aconno.acnsensa.domain.Vibrator
-import com.aconno.acnsensa.domain.ifttt.*
+import com.aconno.acnsensa.domain.ifttt.ActionsRepository
+import com.aconno.acnsensa.domain.interactor.ifttt.DeleteActionUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.GetActionByIdUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.UpdateActionUseCase
 import com.aconno.acnsensa.ui.UpdateActionActivity
 import com.aconno.acnsensa.viewmodel.ExistingActionViewModel
 import com.aconno.acnsensa.viewmodel.factory.ExistingActionViewModelFactory
@@ -35,19 +36,11 @@ class UpdateActionModule(private val updateActionActivity: UpdateActionActivity)
     fun provideExistingActionViewModelFactory(
         updateActionUseCase: UpdateActionUseCase,
         getActionByIdUseCase: GetActionByIdUseCase,
-        deleteActionUseCase: DeleteActionUseCase,
-        notificationDisplay: NotificationDisplay,
-        vibrator: Vibrator,
-        smsSender: SmsSender,
-        textToSpeechPlayer: TextToSpeechPlayer
+        deleteActionUseCase: DeleteActionUseCase
     ) = ExistingActionViewModelFactory(
         updateActionUseCase,
         getActionByIdUseCase,
         deleteActionUseCase,
-        notificationDisplay,
-        vibrator,
-        smsSender,
-        textToSpeechPlayer,
         updateActionActivity.application
     )
 

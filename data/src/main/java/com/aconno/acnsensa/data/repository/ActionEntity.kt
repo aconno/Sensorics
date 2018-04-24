@@ -10,7 +10,7 @@ data class ActionEntity(
     var sensorType: Int,
     var conditionType: Int,
     var value: Float,
-    var outcomeMessage: String,
+    var textMessage: String,
     var outcomeType: Int,
-    var destination: String
+    var phoneNumber: String
 )
