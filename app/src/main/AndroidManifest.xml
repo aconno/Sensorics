@@ -23,7 +23,7 @@
         </activity>
         <activity android:name=".ui.LiveGraphActivity" />
         <activity android:name=".ui.ActionListActivity" />
-        <activity android:name=".ui.AddActionActivity" />
+        <activity android:name=".ui.actions.AddActionActivity" />
 
         <service
             android:name=".BluetoothScanningService"

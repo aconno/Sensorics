@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui
+package com.aconno.acnsensa.ui.actions
 
 import android.arch.lifecycle.Observer
 import android.content.Context
@@ -21,8 +21,6 @@ import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.model.toSensorType
 import com.aconno.acnsensa.model.toStringResource
-import com.aconno.acnsensa.ui.actions.ConditionDialog
-import com.aconno.acnsensa.ui.actions.ConditionDialogListener
 import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import kotlinx.android.synthetic.main.activity_action_add.*
