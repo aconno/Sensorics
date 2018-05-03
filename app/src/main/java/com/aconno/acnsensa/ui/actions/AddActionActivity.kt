@@ -32,9 +32,6 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
     @Inject
     lateinit var newActionViewModel: NewActionViewModel
 
-    @Inject
-    lateinit var actionOptionsViewModel: ActionOptionsViewModel
-
     private val addActionComponent: AddActionComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
 
