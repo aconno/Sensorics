@@ -175,7 +175,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                 android:layout_marginStart="@dimen/screen_edge_left_right_margin"
-                android:layout_marginTop="@dimen/item_vertical_spacing"
+                android:layout_marginTop="@dimen/title_padding"
                 app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
                 app:dividerDrawableVertical="@drawable/chip_divider_vertical"
                 app:flexWrap="wrap"
