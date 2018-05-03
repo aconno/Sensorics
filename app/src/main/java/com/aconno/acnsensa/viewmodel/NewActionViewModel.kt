@@ -35,12 +35,12 @@ class NewActionViewModel(
                 "<" -> condition = LimitCondition(
                     sensorType.toInt(),
                     constraintValue.toFloat(),
-                    LimitCondition.LOWER_LIMIT
+                    LimitCondition.LESS_THAN
                 )
                 ">" -> condition = LimitCondition(
                     sensorType.toInt(),
                     constraintValue.toFloat(),
-                    LimitCondition.UPPER_LIMIT
+                    LimitCondition.MORE_THAN
                 )
             }
         } catch (e: Exception) {

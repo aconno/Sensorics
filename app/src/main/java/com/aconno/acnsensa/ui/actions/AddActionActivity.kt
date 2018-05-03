@@ -21,7 +21,6 @@ import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.model.toSensorType
 import com.aconno.acnsensa.model.toStringResource
-import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import kotlinx.android.synthetic.main.activity_action_add.*
 import javax.inject.Inject
@@ -207,8 +206,8 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
     private fun appendConditionString(textView: TextView, condition: Condition) {
         val constraint = when (condition.type) {
-            LimitCondition.LOWER_LIMIT -> "<"
-            LimitCondition.UPPER_LIMIT -> ">"
+            LimitCondition.LESS_THAN -> "<"
+            LimitCondition.MORE_THAN -> ">"
             else -> throw IllegalArgumentException("Invalid constraint identifier ${condition.type}")
         }
         textView.text = "${textView.text} $constraint ${condition.limit}"

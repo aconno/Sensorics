@@ -68,8 +68,8 @@ fun Condition.toString(context: Context): String {
     val sensor = sensorType.toSensorType().toStringResource(context)
     //TODO: Refactor constraint type
     val constraint = when (type) {
-        LimitCondition.UPPER_LIMIT -> ">"
-        LimitCondition.LOWER_LIMIT -> "<"
+        LimitCondition.MORE_THAN -> ">"
+        LimitCondition.LESS_THAN -> "<"
         else -> throw IllegalArgumentException("Int is not valid constraint identifier: $type")
     }
     val value = limit.toString()

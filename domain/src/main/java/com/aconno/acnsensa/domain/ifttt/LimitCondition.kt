@@ -11,8 +11,8 @@ class LimitCondition(
         println("Condition Type: $type Value: ${input.value} Limit: $limit")
         return if (input.type == sensorType) {
             when (type) {
-                LOWER_LIMIT -> input.value <= limit
-                UPPER_LIMIT -> input.value >= limit
+                LESS_THAN -> input.value <= limit
+                MORE_THAN -> input.value >= limit
                 else -> false
             }
         } else {
@@ -21,7 +21,7 @@ class LimitCondition(
     }
 
     companion object {
-        const val LOWER_LIMIT = 0
-        const val UPPER_LIMIT = 1
+        const val LESS_THAN = 0
+        const val MORE_THAN = 1
     }
 }
