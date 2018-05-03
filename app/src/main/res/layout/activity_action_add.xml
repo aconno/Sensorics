@@ -167,16 +167,51 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/condition_container" />
 
-    <Spinner
-        android:id="@+id/outcome_type_spinner"
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/outcome_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
         android:layout_marginTop="@dimen/item_vertical_spacing"
+        app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
+        app:dividerDrawableVertical="@drawable/chip_divider_vertical"
+        app:flexWrap="wrap"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view_outcomes_label" />
+        app:layout_constraintTop_toBottomOf="@id/view_outcomes_label"
+        app:showDivider="middle">
+
+        <CheckedTextView
+            android:id="@+id/outcome_notification"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/notification" />
+
+
+        <CheckedTextView
+            android:id="@+id/outcome_sms"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sms" />
+
+        <CheckedTextView
+            android:id="@+id/outcome_vibration"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/vibration" />
+
+        <CheckedTextView
+            android:id="@+id/outcome_text_to_speech"
+            style="@style/ChipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_to_speech" />
+
+    </com.google.android.flexbox.FlexboxLayout>
 
     <EditText
         android:id="@+id/phone_number"
@@ -190,7 +225,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/outcome_type_spinner" />
+        app:layout_constraintTop_toBottomOf="@id/outcome_container" />
 
     <EditText
         android:id="@+id/message"

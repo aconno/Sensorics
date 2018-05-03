@@ -6,7 +6,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.*
+import android.widget.CheckedTextView
+import android.widget.TextView
+import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.actionlist.ActionListModule
@@ -24,7 +26,6 @@ import com.aconno.acnsensa.ui.actions.ConditionDialogListener
 import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import kotlinx.android.synthetic.main.activity_action_add.*
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -57,23 +58,39 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
         setConditionChipOnClickListeners()
         initConditionViews()
 
-        initSpinner(outcome_type_spinner, actionOptionsViewModel.getOuputTypes())
-
         add_action_button.setOnClickListener { this.addAction() }
 
-        outcome_type_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                Timber.e("Nothing selected.")
-            }
+        setOutcomeChipOnClickListeners()
+    }
 
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                showOutcomeOptions()
-            }
+    private fun setOutcomeChipOnClickListeners() {
+        outcome_notification.setOnClickListener {
+            outcome_notification.isChecked = true
+            outcome_sms.isChecked = false
+            outcome_vibration.isChecked = false
+            outcome_text_to_speech.isChecked = false
+            showOutcomeOptions()
+        }
+        outcome_sms.setOnClickListener {
+            outcome_notification.isChecked = false
+            outcome_sms.isChecked = true
+            outcome_vibration.isChecked = false
+            outcome_text_to_speech.isChecked = false
+            showOutcomeOptions()
+        }
+        outcome_vibration.setOnClickListener {
+            outcome_notification.isChecked = false
+            outcome_sms.isChecked = false
+            outcome_vibration.isChecked = true
+            outcome_text_to_speech.isChecked = false
+            showOutcomeOptions()
+        }
+        outcome_text_to_speech.setOnClickListener {
+            outcome_notification.isChecked = false
+            outcome_sms.isChecked = false
+            outcome_vibration.isChecked = false
+            outcome_text_to_speech.isChecked = true
+            showOutcomeOptions()
         }
     }
 
@@ -95,15 +112,9 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
         newActionViewModel.addActionResults.observe(this, Observer { onAddActionResult(it) })
     }
 
-    private fun initSpinner(spinner: Spinner, contents: List<String>) {
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, contents)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-    }
-
     private fun addAction() {
         val name = action_name.text.toString()
-        val outcome = outcome_type_spinner.selectedItem.toString()
+        val outcome = getOutcome()
         val smsDestination = phone_number.text.toString()
         val content = message.text.toString()
 
@@ -113,6 +124,22 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
             smsDestination,
             content
         )
+    }
+
+    private fun getOutcome(): String {
+        if (outcome_notification.isChecked) {
+            return "Phone Notification"
+        }
+        if (outcome_sms.isChecked) {
+            return "SMS Message"
+        }
+        if (outcome_vibration.isChecked) {
+            return "Vibration"
+        }
+        if (outcome_text_to_speech.isChecked) {
+            return "Text to Speech"
+        }
+        return ""
     }
 
     private fun onAddActionResult(success: Boolean?) {
@@ -128,21 +155,21 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
     //TODO: Duplicate code with UpdateActionActivity.
     private fun showOutcomeOptions() {
-        val selected = outcome_type_spinner.selectedItemId
+        val selected = getOutcome()
         when (selected) {
-            0L -> {
+            "Phone Notification" -> {
                 message.visibility = View.VISIBLE
                 phone_number.visibility = View.GONE
             }
-            1L -> {
+            "SMS Message" -> {
                 message.visibility = View.VISIBLE
                 phone_number.visibility = View.VISIBLE
             }
-            2L -> {
+            "Vibration" -> {
                 message.visibility = View.GONE
                 phone_number.visibility = View.GONE
             }
-            3L -> {
+            "Text to Speech" -> {
                 message.visibility = View.VISIBLE
                 phone_number.visibility = View.GONE
             }

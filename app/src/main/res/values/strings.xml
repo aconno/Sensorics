@@ -105,4 +105,6 @@
     <string name="outcomes">Outcomes</string>
     <string name="set_action_hint">To set an action click on + button.</string>
     <string name="text_to_speech">Text to Speech</string>
+    <string name="notification">Notification</string>
+    <string name="sms">SMS</string>
 </resources>
