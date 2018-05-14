@@ -52,9 +52,6 @@
     <string name="bt_disabled">Bluetooth is disabled</string>
     <string name="enable">Enable</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <!-- Add new action screen -->
     <string name="add_new_action_title">Add New Action</string>
     <string name="action_name">Action Name</string>

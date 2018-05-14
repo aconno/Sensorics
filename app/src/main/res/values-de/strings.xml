@@ -102,4 +102,6 @@
     <string name="outcomes">Ergebnisse</string>
     <string name="set_action_hint">Um eine Aktion festzulegen, drücken Sie die + Taste.</string>
     <string name="text_to_speech">Text zu Sprache</string>
+    <string name="notification">Benachrichtigung</string>
+    <string name="sms">SMS</string>
 </resources>
