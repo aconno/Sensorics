@@ -29,7 +29,7 @@
             android:name=".BluetoothScanningService"
             android:exported="false" />
 
-        <activity android:name=".ui.UpdateActionActivity"></activity>
+        <activity android:name=".ui.UpdateActionActivity" />
     </application>
 
 </manifest>

@@ -58,7 +58,7 @@ class UpdateActionActivity : AppCompatActivity() {
 
         initSpinner(sensor_spinner, actionOptionsViewModel.getSensorTypes())
         initSpinner(condition_type_spinner, actionOptionsViewModel.getConditionTypes())
-        initSpinner(outcome_type_spinner, actionOptionsViewModel.getOuputTypes())
+        initSpinner(outcome_type_spinner, actionOptionsViewModel.getOutputTypes())
 
         outcome_type_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {

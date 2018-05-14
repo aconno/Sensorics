@@ -32,7 +32,7 @@ class ActionOptionsViewModel(
         return listOf("<", ">")
     }
 
-    fun getOuputTypes(): List<String> {
+    fun getOutputTypes(): List<String> {
         val application: Application = getApplication()
 
         return listOf(
