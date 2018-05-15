@@ -68,7 +68,7 @@
     <string name="vibrate_checkbox_label">Vibrate</string>
     <string name="update">Update Action</string>
     <string name="update_new_action_title">Update Action</string>
-    <string name="delete">Delete Action</string>
+    <string name="delete">Delete</string>
 
     <string name="condition_less">Less</string>
     <string name="condition_equal">Equal</string>
@@ -104,4 +104,6 @@
     <string name="text_to_speech">Text to Speech</string>
     <string name="notification">Notification</string>
     <string name="sms">SMS</string>
+    <string name="edit_action">Edit action</string>
+    <string name="save">Save</string>
 </resources>
