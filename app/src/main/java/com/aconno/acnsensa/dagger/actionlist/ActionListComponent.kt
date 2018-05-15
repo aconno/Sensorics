@@ -7,7 +7,6 @@ import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.ui.ActionListFragment
-import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
 import dagger.Component
 
 /**
@@ -26,8 +25,6 @@ interface ActionListComponent {
     fun smsSender(): SmsSender
 
     fun textToSpeechPlayer(): TextToSpeechPlayer
-
-    fun actionOptionsViewModel(): ActionOptionsViewModel
 
     //Classes which can accept injected dependencies.
     fun inject(actionsListFragment: ActionListFragment)

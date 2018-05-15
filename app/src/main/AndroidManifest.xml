@@ -29,7 +29,6 @@
             android:name=".BluetoothScanningService"
             android:exported="false" />
 
-        <activity android:name=".ui.UpdateActionActivity" />
         <activity android:name=".ui.actions.EditActionActivity" />
     </application>
 
