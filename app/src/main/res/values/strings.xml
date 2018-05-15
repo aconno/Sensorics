@@ -48,26 +48,15 @@
     <string name="battery_level">Battery Level</string>
     <string name="default_battery_level">0%</string>
 
-    <string name="grant_permissions">Please grant required permissions.</string>
     <string name="bt_disabled">Bluetooth is disabled</string>
     <string name="enable">Enable</string>
 
     <!-- Add new action screen -->
     <string name="add_new_action_title">Add New Action</string>
     <string name="action_name">Action Name</string>
-    <string name="condition_name">Condition</string>
-    <string name="sensor_label">Sensor</string>
-    <string name="type_label">Type</string>
-    <string name="value_label">Value</string>
-    <string name="outcome_name">Outcome</string>
-    <string name="notification_label">Notification</string>
     <string name="add">Add</string>
-    <string name="notification_message">Notification message</string>
     <string name="phone_number">Phone number</string>
     <string name="message_hint">Message</string>
-    <string name="vibrate_checkbox_label">Vibrate</string>
-    <string name="update">Update Action</string>
-    <string name="update_new_action_title">Update Action</string>
     <string name="delete">Delete</string>
 
     <string name="condition_less">Less</string>

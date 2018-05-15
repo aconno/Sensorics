@@ -37,9 +37,8 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
         val actionListComponent =
             DaggerActionListComponent.builder().appComponent(acnSensaApplication?.appComponent)
-                .actionListModule(
-                    ActionListModule(this)
-                ).build()
+                .actionListModule(ActionListModule())
+                .build()
 
         DaggerAddActionComponent.builder().actionListComponent(actionListComponent)
             .addActionModule(AddActionModule(this)).build()

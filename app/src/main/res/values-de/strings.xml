@@ -48,26 +48,15 @@
 
     <string name="battery_level">Akku</string>
     <string name="default_battery_level">0%</string>
-    <string name="grant_permissions">Gewähren Sie bitte die erforderlichen Berechtigungen.</string>
     <string name="bt_disabled">Bluetooth ist deaktiviert</string>
     <string name="enable">Aktivieren</string>
 
     <!-- Add new action screen -->
     <string name="add_new_action_title">Neue Aktion hinzufügen</string>
     <string name="action_name">Aktionsname</string>
-    <string name="condition_name">Bedingung</string>
-    <string name="sensor_label">Sensor</string>
-    <string name="type_label">Typ</string>
-    <string name="value_label">Wert</string>
-    <string name="outcome_name">Ergebnis</string>
-    <string name="notification_label">Benachrichtigung</string>
     <string name="add">Hinzufügen</string>
-    <string name="notification_message">Benachrichtigungsnachricht</string>
     <string name="phone_number">Telefonnummer</string>
     <string name="message_hint">Nachricht</string>
-    <string name="vibrate_checkbox_label">Vibrieren</string>
-    <string name="update">Aktion aktualisieren</string>
-    <string name="update_new_action_title">Aktion aktualisieren</string>
     <string name="delete">Aktion löschen</string>
 
     <string name="condition_less">Kleiner</string>
@@ -104,4 +93,6 @@
     <string name="text_to_speech">Text zu Sprache</string>
     <string name="notification">Benachrichtigung</string>
     <string name="sms">SMS</string>
+    <string name="edit_action">Aktion Bearbeiten</string>
+    <string name="save">Sparen</string>
 </resources>

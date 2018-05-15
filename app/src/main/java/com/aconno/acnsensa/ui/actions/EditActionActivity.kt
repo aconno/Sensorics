@@ -34,7 +34,7 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener {
         val acnSensaApplication = application as? AcnSensaApplication
         val actionListComponent =
             DaggerActionListComponent.builder().appComponent(acnSensaApplication?.appComponent)
-                .actionListModule(ActionListModule(this))
+                .actionListModule(ActionListModule())
                 .build()
         DaggerEditActionComponent.builder().actionListComponent(actionListComponent)
             .editActionModule(EditActionModule(this))

@@ -1,7 +1,5 @@
 package com.aconno.acnsensa.dagger.actionlist
 
-import android.arch.lifecycle.ViewModelProviders
-import android.support.v7.app.AppCompatActivity
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.interactor.ifttt.GetAllActionsUseCase
 import dagger.Module
@@ -11,7 +9,7 @@ import dagger.Provides
  * @author aconno
  */
 @Module
-class ActionListModule(private val activity: AppCompatActivity) {
+class ActionListModule {
 
     @Provides
     @ActionListScope
