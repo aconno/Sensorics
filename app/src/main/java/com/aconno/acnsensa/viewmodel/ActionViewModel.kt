@@ -3,7 +3,6 @@ package com.aconno.acnsensa.viewmodel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.GeneralAction
@@ -26,9 +25,9 @@ class ActionViewModel(
 ) : AndroidViewModel(application) {
 
     private var id = 0L
-    private val nameLiveData = MutableLiveData<String>()
-    private val conditionLiveData = MutableLiveData<Condition>()
-    private val outcomeLiveData = MutableLiveData<Outcome>()
+    val nameLiveData = MutableLiveData<String>()
+    val conditionLiveData = MutableLiveData<Condition>()
+    val outcomeLiveData = MutableLiveData<Outcome>()
 
     fun getAction(id: Long) {
         getActionByIdUseCase.execute(id)
@@ -42,10 +41,6 @@ class ActionViewModel(
         nameLiveData.value = action.name
         conditionLiveData.value = action.condition
         outcomeLiveData.value = action.outcome
-    }
-
-    fun setName(name: String) {
-        nameLiveData.value = name
     }
 
     fun setCondition(
@@ -67,27 +62,12 @@ class ActionViewModel(
         }
     }
 
-    fun setOutcome(outcomeType: String, message: String, phoneNumber: String) {
+    fun save(name: String, outcomeType: Int, message: String, phoneNumber: String) {
+        val condition = conditionLiveData.value
         val parameters =
             mapOf(Pair(Outcome.TEXT_MESSAGE, message), Pair(Outcome.PHONE_NUMBER, phoneNumber))
-        when (outcomeType) {
-            getApplication<Application>().getString(R.string.phone_notification) -> outcomeLiveData.value =
-                    Outcome(parameters, Outcome.OUTCOME_TYPE_NOTIFICATION)
-            getApplication<Application>().getString(R.string.sms_message) -> outcomeLiveData.value =
-                    Outcome(parameters, Outcome.OUTCOME_TYPE_SMS)
-            getApplication<Application>().getString(R.string.vibration) -> outcomeLiveData.value =
-                    Outcome(parameters, Outcome.OUTCOME_TYPE_VIBRATION)
-            getApplication<Application>().getString(R.string.text_to_speech) -> outcomeLiveData.value =
-                    Outcome(parameters, Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH)
-            else -> Timber.d("Outcome type is not valid: $outcomeType")
-        }
-    }
-
-    fun save() {
-        val name = nameLiveData.value
-        val condition = conditionLiveData.value
-        val outcome = outcomeLiveData.value
-        if (name != null && condition != null && outcome != null) {
+        val outcome = Outcome(parameters, outcomeType)
+        if (condition != null) {
             val action = GeneralAction(id, name, condition, outcome)
             updateActionUseCase.execute(action)
                 .subscribeOn(Schedulers.io())
