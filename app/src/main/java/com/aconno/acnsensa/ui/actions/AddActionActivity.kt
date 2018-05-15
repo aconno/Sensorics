@@ -23,6 +23,7 @@ import com.aconno.acnsensa.model.toSensorType
 import com.aconno.acnsensa.model.toStringResource
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import kotlinx.android.synthetic.main.activity_action_add.*
+import kotlinx.android.synthetic.main.content_action_detail.*
 import javax.inject.Inject
 
 
