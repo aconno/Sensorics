@@ -29,8 +29,6 @@
     <dimen name="dialog_padding_content">8dp</dimen>
     <dimen name="dialog_button_margin">8dp</dimen>
     <dimen name="dialog_button_height">36dp</dimen>
-    <dimen name="dialog_action_area_height">52dp</dimen>
-    <dimen name="dialog_elevation">24dp</dimen>
 
     <!-- Graph -->
     <dimen name="graph_line_width">1dp</dimen>

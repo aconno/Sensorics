@@ -5,26 +5,22 @@ import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.ifttt.DeleteActionUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.GetActionByIdUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateActionUseCase
-import com.aconno.acnsensa.viewmodel.ExistingActionViewModel
+import com.aconno.acnsensa.viewmodel.ActionViewModel
 
-/**
- * @author aconno
- */
-class ExistingActionViewModelFactory(
-    private val updateActionUseCase: UpdateActionUseCase,
+class ActionViewModelFactory(
+    private val application: Application,
     private val getActionByIdUseCase: GetActionByIdUseCase,
-    private val deleteActionUseCase: DeleteActionUseCase,
-    private val application: Application
+    private val updateActionUseCase: UpdateActionUseCase,
+    private val deleteActionUseCase: DeleteActionUseCase
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val viewModel =
-            ExistingActionViewModel(
-                updateActionUseCase,
-                getActionByIdUseCase,
-                deleteActionUseCase,
-                application
-            )
+        val viewModel = ActionViewModel(
+            application,
+            getActionByIdUseCase,
+            updateActionUseCase,
+            deleteActionUseCase
+        )
         return getViewModel(viewModel, modelClass)
     }
 }

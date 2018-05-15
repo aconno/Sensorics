@@ -65,7 +65,7 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
     @Provides
     @Singleton
-    fun provideBluetoothAdapter() = BluetoothAdapter.getDefaultAdapter()
+    fun provideBluetoothAdapter(): BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     @Provides
     @Singleton

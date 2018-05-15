@@ -15,6 +15,7 @@ import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.interactor.ifttt.GetAllActionsUseCase
 import com.aconno.acnsensa.ui.actions.AddActionActivity
+import com.aconno.acnsensa.ui.actions.EditActionActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_action_list.*
@@ -36,7 +37,7 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
 
         DaggerActionListComponent.builder()
             .appComponent(acnSensaApplication?.appComponent)
-            .actionListModule(ActionListModule((this.activity as? ActionListActivity)!!))
+            .actionListModule(ActionListModule())
             .build()
     }
 
@@ -77,7 +78,7 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
     }
 
     override fun onItemClick(item: Action) {
-        context?.let { UpdateActionActivity.start(it, item.id) }
+        context?.let { EditActionActivity.start(it, item.id) }
     }
 
     companion object {
