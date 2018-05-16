@@ -2,19 +2,27 @@ package com.aconno.acnsensa.data.mqtt
 
 import android.content.Context
 import com.aconno.acnsensa.domain.Publisher
-import com.aconno.acnsensa.domain.model.readings.*
+import com.aconno.acnsensa.domain.model.readings.Reading
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import timber.log.Timber
+import java.io.IOException
 import java.nio.charset.Charset
+import java.security.KeyFactory
+import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
 
-class AconnoCumulocityPublisher(context: Context, val username: String, val password: String) :
-    Publisher {
+class GoogleCloudPublisher(context: Context) : Publisher {
+
+    //TODO: Refactor
 
     private val mqttAndroidClient: MqttAndroidClient
 
     private val messagesQueue: Queue<String> = LinkedList<String>()
+
+    private val privateKeyByteArray = loadData("rsa_private_pkcs8", context)
 
     init {
         mqttAndroidClient = MqttAndroidClient(context, SERVER_URI, CLIENT_ID)
@@ -39,7 +47,7 @@ class AconnoCumulocityPublisher(context: Context, val username: String, val pass
     }
 
     override fun publish(reading: Reading) {
-        val messages = AconnoCumulocityDataConverter.convert(reading)
+        val messages = GoogleCloudDataConverter.convert(reading)
         for (message in messages) {
             publish(message)
         }
@@ -56,7 +64,7 @@ class AconnoCumulocityPublisher(context: Context, val username: String, val pass
 
     private fun publishMessage(message: String) {
         mqttAndroidClient.publish(
-            CUMULOSITY_SUBSCRIBTION_TOPIC,
+            GOOGLE_SUBSCRIPTION_TOPIC,
             message.toByteArray(Charset.defaultCharset()),
             QUALITY_OF_SERVICE,
             RETENTION_POLICY
@@ -86,9 +94,48 @@ class AconnoCumulocityPublisher(context: Context, val username: String, val pass
         val options = MqttConnectOptions()
         options.isAutomaticReconnect = true
         options.isCleanSession = false
-        options.userName = username
-        options.password = password.toCharArray()
+        options.mqttVersion = MqttConnectOptions.MQTT_VERSION_3_1_1
+
+        val sslProperties = Properties()
+        sslProperties.setProperty("com.ibm.ssl.protocol", "TLSv1.2")
+        options.sslProperties = sslProperties
+
+        options.userName = "unused"
+        options.password = createJwtRsa("loyal-rookery-204211").toCharArray()
+
         return options
+    }
+
+    @Throws(Exception::class)
+    private fun createJwtRsa(projectId: String): String {
+        // Create a JWT to authenticate this device. The device will be disconnected after the token
+        // expires, and will have to reconnect with a new token. The audience field should always be set
+        // to the GCP project id.
+        val jwtBuilder = Jwts.builder()
+            .setIssuedAt(Date(System.currentTimeMillis()))
+            .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 20))
+            .setAudience(projectId)
+
+        val keyBytes = privateKeyByteArray
+        val spec = PKCS8EncodedKeySpec(keyBytes)
+        val kf = KeyFactory.getInstance("RSA")
+
+        return jwtBuilder.signWith(SignatureAlgorithm.RS256, kf.generatePrivate(spec)).compact()
+    }
+
+    private fun loadData(fileName: String, context: Context): ByteArray? {
+        try {
+            val stream = context.assets.open(fileName)
+            val size = stream.available()
+            val buffer = ByteArray(size)
+            stream.read(buffer)
+            stream.close()
+            return buffer
+        } catch (e: IOException) {
+            // Handle exceptions here
+        }
+
+        return null
     }
 
     private fun publishMessagesFromQueue() {
@@ -97,13 +144,22 @@ class AconnoCumulocityPublisher(context: Context, val username: String, val pass
         }
     }
 
+    override fun closeConnection() {
+        mqttAndroidClient.unregisterResources()
+        mqttAndroidClient.close()
+    }
+
     companion object {
 
-        private const val SERVER_URI = "tcp://aconno.cumulocity.com:1883"
+        private const val SERVER_URI = "ssl://mqtt.googleapis.com:8883"
 
-        private const val CLIENT_ID = "AcnSensaClient"
+        //TODO: Simplify this
+        private const val CLIENT_ID =
+            "projects/loyal-rookery-204211/locations/europe-west1/registries/DeviceRegistry_01/devices/Device_01"
 
         private const val CUMULOSITY_SUBSCRIBTION_TOPIC = "s/us"
+        private const val GOOGLE_SUBSCRIPTION_TOPIC = "/devices/Device_01/events"
+
         private const val QUALITY_OF_SERVICE = 0
         private const val RETENTION_POLICY = false
 

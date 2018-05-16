@@ -15,9 +15,10 @@ import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServi
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
-import com.aconno.acnsensa.domain.interactor.SyncReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.ReadingToInputUseCase
+import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
+import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import io.reactivex.Flowable
@@ -46,7 +47,10 @@ class BluetoothScanningService : Service() {
     lateinit var logReadingsUseCase: LogReadingUseCase
 
     @Inject
-    lateinit var syncReadingsUseCase: SyncReadingsUseCase
+    lateinit var publishReadingsUseCase: PublishReadingsUseCase
+
+    @Inject
+    lateinit var closeConnectionUseCase: CloseConnectionUseCase
 
     @Inject
     lateinit var readingToInputUseCase: ReadingToInputUseCase
@@ -107,7 +111,7 @@ class BluetoothScanningService : Service() {
 
     private fun startSyncing() {
         sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-            .subscribe { syncReadingsUseCase.execute(it) }
+            .subscribe { publishReadingsUseCase.execute(it) }
     }
 
     private fun handleInputsForActions() {
@@ -131,6 +135,7 @@ class BluetoothScanningService : Service() {
     }
 
     fun stopScanning() {
+        closeConnectionUseCase.execute()
         bluetooth.stopScanning()
         running = false
         stopSelf()

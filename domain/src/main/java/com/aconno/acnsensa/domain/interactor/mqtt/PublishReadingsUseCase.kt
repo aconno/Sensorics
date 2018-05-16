@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.domain.interactor
+package com.aconno.acnsensa.domain.interactor.mqtt
 
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.interactor.type.CompletableUseCaseWithParameter
@@ -8,7 +8,7 @@ import io.reactivex.Completable
 /**
  * @aconno
  */
-class SyncReadingsUseCase(
+class PublishReadingsUseCase(
     private val publisher: Publisher
 ) : CompletableUseCaseWithParameter<List<Reading>> {
 

@@ -7,7 +7,7 @@ import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.BluetoothScanningServiceReceiver
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.data.mqtt.AconnoCumulocityPublisher
+import com.aconno.acnsensa.data.mqtt.GoogleCloudPublisher
 import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.device.storage.FileStorageImpl
@@ -19,9 +19,10 @@ import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.domain.ifttt.outcome.*
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
-import com.aconno.acnsensa.domain.interactor.SyncReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.ReadingToInputUseCase
+import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
+import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
@@ -124,15 +125,18 @@ class BluetoothScanningServiceModule(
     @Provides
     @BluetoothScanningServiceScope
     fun providePublisher(): Publisher {
-        //TODO: Do not hardcode user name and password
-        val username = ""
-        val password = ""
-        return AconnoCumulocityPublisher(bluetoothScanningService, username, password)
+        return GoogleCloudPublisher(bluetoothScanningService)
     }
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideSyncReadingsUseCase(publisher: Publisher): SyncReadingsUseCase {
-        return SyncReadingsUseCase(publisher)
+    fun providePublishReadingsUseCase(publisher: Publisher): PublishReadingsUseCase {
+        return PublishReadingsUseCase(publisher)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideCloseConnectionUseCase(publisher: Publisher): CloseConnectionUseCase {
+        return CloseConnectionUseCase(publisher)
     }
 }
