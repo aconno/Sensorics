@@ -11,11 +11,16 @@ import java.io.PrintWriter
  * @aconno
  */
 class FileStorageImpl(private val context: Context) : FileStorage {
+
     override fun storeReading(reading: Reading, fileName: String) {
         val file = File(context.getExternalFilesDir(null), fileName)
         val fileOutputStream = FileOutputStream(file, true)
         val printWriter = PrintWriter(fileOutputStream)
 
-        printWriter.use { out -> out.appendln(reading.getCsvString()) }
+        fileOutputStream.use {
+            printWriter.use { out ->
+                out.appendln(reading.getCsvString())
+            }
+        }
     }
 }

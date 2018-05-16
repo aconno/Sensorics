@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="colorText">#404041</color>
+    <color name="primaryColor">#e5b83d</color>
+    <color name="primaryLightColor">#ffea6e</color>
+    <color name="primaryDarkColor">#af8800</color>
+    <color name="secondaryColor">#333333</color>
+    <color name="secondaryLightColor">#5c5c5c</color>
+    <color name="secondaryDarkColor">#0c0c0c</color>
+    <color name="primaryTextColor">#000000</color>
+    <color name="primaryIconColor">#000000</color>
+    <color name="secondaryTextColor">#ffffff</color>
+    <color name="secondaryIconColor">#ffffff</color>
+
     <color name="graph_x">#FF0000</color>
     <color name="graph_y">#00FF00</color>
     <color name="graph_z">#0000FF</color>

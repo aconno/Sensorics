@@ -1,0 +1,37 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/action_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        tools:itemCount="5"
+        tools:listitem="@layout/item_action" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/screen_edge_left_right_margin"
+        android:src="@drawable/ic_add"
+        android:tint="@color/secondaryIconColor"
+        app:fabSize="normal" />
+
+    <TextView
+        android:id="@+id/action_list_empty_view"
+        style="@style/MessageText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+        android:gravity="center"
+        android:text="@string/set_action_hint" />
+
+</android.support.design.widget.CoordinatorLayout>

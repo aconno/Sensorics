@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 27
@@ -7,9 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
-
+        versionCode rootProject.ext.acnSensaVersionCode
+        versionName rootProject.ext.acnSensaVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -48,4 +48,9 @@ dependencies {
         exclude module: 'support-v4'
     }
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
+
+    // Room + RxJava support
+    implementation "android.arch.persistence.room:runtime:1.0.0"
+    kapt "android.arch.persistence.room:compiler:1.0.0"
+    implementation "android.arch.persistence.room:rxjava2:1.0.0"
 }

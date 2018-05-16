@@ -7,11 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.viewmodel.GraphType
+import com.aconno.acnsensa.ui.graph.GraphType
 import com.aconno.acnsensa.viewmodel.SensorListViewModel
 import kotlinx.android.synthetic.main.fragment_sensor_list.*
 import kotlinx.android.synthetic.main.view_sensor_card.view.*
-import timber.log.Timber
 import javax.inject.Inject
 
 class SensorListFragment : Fragment() {
@@ -156,7 +155,6 @@ class SensorListFragment : Fragment() {
     }
 
     private fun displaySensorValues(values: Map<String, Number>?) {
-        Timber.d(values.toString())
         values?.let {
             val temperatureLabel = getString(R.string.temperature)
             val lightLabel = getString(R.string.light)
@@ -188,28 +186,95 @@ class SensorListFragment : Fragment() {
             val gyroscopeZ = values["Gyroscope Z"]
             val batteryLevel = values["Battery Level"]
 
-            temperature?.let { sensor_temperature.update(temperatureLabel, "$temperature°C") }
-            light?.let { sensor_light.update(lightLabel, "$light%") }
-            humidity?.let { sensor_humidity.update(humidityLabel, "$humidity%") }
-            pressure?.let { sensor_pressure.update(pressureLabel, "${pressure}hPa") }
+            temperature?.let {
+                sensor_temperature.update(
+                    temperatureLabel,
+                    "${String.format("%.2f", temperature)}°C"
+                )
+            }
 
-            magnetometerX?.let { sensor_magnetometer_x.update(magnetoXLabel, "${magnetometerX}µT") }
-            magnetometerY?.let { sensor_magnetometer_y.update(magnetoYLabel, "${magnetometerY}µT") }
-            magnetometerZ?.let { sensor_magnetometer_z.update(magnetoZLabel, "${magnetometerZ}µT") }
+            light?.let {
+                sensor_light.update(
+                    lightLabel,
+                    "${String.format("%.2f", light)}%"
+                )
+            }
+
+            humidity?.let {
+                sensor_humidity.update(
+                    humidityLabel,
+                    "${String.format("%.2f", humidity)}%"
+                )
+            }
+
+            pressure?.let {
+                sensor_pressure.update(
+                    pressureLabel,
+                    "${String.format("%.2f", pressure)}hPa"
+                )
+            }
+
+            magnetometerX?.let {
+                sensor_magnetometer_x.update(
+                    magnetoXLabel,
+                    "${String.format("%.2f", magnetometerX)}µT"
+                )
+            }
+            magnetometerY?.let {
+                sensor_magnetometer_y.update(
+                    magnetoYLabel,
+                    "${String.format("%.2f", magnetometerY)}µT"
+                )
+            }
+            magnetometerZ?.let {
+                sensor_magnetometer_z.update(
+                    magnetoZLabel,
+                    "${String.format("%.2f", magnetometerZ)}µT"
+                )
+            }
 
             accelerometerX
-                ?.let { sensor_accelerometer_x.update(accelerometerXLabel, "${accelerometerX}mg") }
+                ?.let {
+                    sensor_accelerometer_x.update(
+                        accelerometerXLabel,
+                        "${String.format("%.2f", accelerometerX)}mg"
+                    )
+                }
             accelerometerY
-                ?.let { sensor_accelerometer_y.update(accelerometerYLabel, "${accelerometerY}mg") }
+                ?.let {
+                    sensor_accelerometer_y.update(
+                        accelerometerYLabel,
+                        "${String.format("%.2f", accelerometerY)}mg"
+                    )
+                }
             accelerometerZ
-                ?.let { sensor_accelerometer_z.update(accelerometerZLabel, "${accelerometerZ}mg") }
+                ?.let {
+                    sensor_accelerometer_z.update(
+                        accelerometerZLabel,
+                        "${String.format("%.2f", accelerometerZ)}mg"
+                    )
+                }
 
-            gyroscopeX?.let { sensor_gyroscope_x.update(gyroXLabel, "${gyroscopeX}dps") }
-            gyroscopeY?.let { sensor_gyroscope_y.update(gyroYLabel, "${gyroscopeY}dps") }
-            gyroscopeZ?.let { sensor_gyroscope_z.update(gyroZLabel, "${gyroscopeZ}dps") }
+            gyroscopeX?.let {
+                sensor_gyroscope_x.update(
+                    gyroXLabel,
+                    "${String.format("%.2f", gyroscopeX)}dps"
+                )
+            }
+            gyroscopeY?.let {
+                sensor_gyroscope_y.update(
+                    gyroYLabel,
+                    "${String.format("%.2f", gyroscopeY)}dps"
+                )
+            }
+            gyroscopeZ?.let {
+                sensor_gyroscope_z.update(
+                    gyroZLabel,
+                    "${String.format("%.2f", gyroscopeZ)}dps"
+                )
+            }
 
             batteryLevel?.let { sensor_battery_level.update(batteryLabel, "$batteryLevel%") }
         }
     }
 }
-

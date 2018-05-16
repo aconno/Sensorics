@@ -4,8 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_columnWeight="1"
-    android:layout_gravity="fill"
-    android:layout_margin="@dimen/card_margin">
+    android:layout_gravity="fill">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:contentDescription="@string/sensor_card_image_content_description"
             tools:src="@drawable/ic_pressure" />
 
         <TextView
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textAlignment="center"
-            android:textColor="@color/colorText"
+            android:textColor="@color/primaryTextColor"
             android:textSize="@dimen/sensor_text_size"
             tools:text="Sensor" />
 
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textAlignment="center"
-            android:textColor="@color/colorText"
+            android:textColor="@color/primaryTextColor"
             android:textSize="@dimen/sensor_value_text_size"
             tools:text="Value" />
     </LinearLayout>
