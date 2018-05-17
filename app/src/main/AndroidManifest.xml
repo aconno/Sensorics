@@ -24,6 +24,9 @@
         <activity android:name=".ui.LiveGraphActivity" />
         <activity android:name=".ui.ActionListActivity" />
         <activity android:name=".ui.actions.AddActionActivity" />
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:theme="@style/SettingsTheme" />
 
         <service
             android:name=".BluetoothScanningService"

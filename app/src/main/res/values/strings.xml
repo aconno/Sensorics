@@ -95,4 +95,20 @@
     <string name="sms">SMS</string>
     <string name="edit_action">Edit action</string>
     <string name="save">Save</string>
+
+
+    <!--Settings-->
+    <string name="preferences_title">Settings</string>
+    <string name="preferences_gcloud">Google Cloud</string>
+    <string name="preference_dialog_region">Preference Dialog Region</string>
+    <string name="preference_summary_region">Preference Summary Region</string>
+    <string name="preference_title_region">Region</string>
+    <string name="preference_dialog_deviceregisitry">Preference Dialog DeviceRegistry</string>
+    <string name="preference_title_deviceregistry">Device Registry</string>
+    <string name="preference_title_device">Device</string>
+    <string name="preference_dialog_device">Preference Dialog Device</string>
+    <string name="preference_summary_device">Preference Summary Device</string>
+    <string name="preference_title_privatekey">Private Key (PKCS8)</string>
+    <string name="settings">Settings</string>
+    <string name="preference_summary_privatekey">Preference Summary Private Key</string>
 </resources>
