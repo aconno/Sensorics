@@ -155,10 +155,10 @@ class GoogleCloudPublisher(context: Context) : Publisher {
 
         //TODO: Simplify this
         private const val CLIENT_ID =
-            "projects/loyal-rookery-204211/locations/europe-west1/registries/DeviceRegistry_01/devices/Device_01"
+            "projects/loyal-rookery-204211/locations/us-central1/registries/ACNSensaRegistry/devices/ACNSensaDemo_01"
 
         private const val CUMULOSITY_SUBSCRIBTION_TOPIC = "s/us"
-        private const val GOOGLE_SUBSCRIPTION_TOPIC = "/devices/Device_01/events"
+        private const val GOOGLE_SUBSCRIPTION_TOPIC = "/devices/ACNSensaDemo_01/events"
 
         private const val QUALITY_OF_SERVICE = 0
         private const val RETENTION_POLICY = false

@@ -1,9 +1,18 @@
 package com.aconno.acnsensa.data.mqtt
 
 import com.aconno.acnsensa.domain.model.SensorType
-import com.aconno.acnsensa.domain.model.readings.*
+import com.aconno.acnsensa.domain.model.readings.Reading
+import java.text.SimpleDateFormat
+import java.util.*
 
 object GoogleCloudDataConverter {
+
+    val date = Date()
+    val timeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+
+    init {
+        timeFormat.timeZone = TimeZone.getTimeZone("UTC")
+    }
 
     fun convert(reading: Reading): List<String> {
         return when (reading.sensorType) {
@@ -64,10 +73,11 @@ object GoogleCloudDataConverter {
         return listOf(getJsonString("Battery level", reading.timestamp, reading.values[0]))
     }
 
-    private fun getJsonString(sensorType: String, timestamp: Long, value: Number): String{
+    private fun getJsonString(sensorType: String, timestamp: Long, value: Number): String {
+        date.time = timestamp
         return "{\n" +
                 "  \"type\": \"$sensorType\",\n" +
-                "  \"timestamp\": $timestamp,\n" +
+                "  \"timestamp\": \"${timeFormat.format(date)}\",\n" +
                 "  \"value\": $value\n" +
                 "}"
     }
