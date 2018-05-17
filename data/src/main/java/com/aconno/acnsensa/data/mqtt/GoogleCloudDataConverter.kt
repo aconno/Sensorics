@@ -14,53 +14,61 @@ object GoogleCloudDataConverter {
             SensorType.MAGNETOMETER -> convertMagnetometer(reading)
             SensorType.ACCELEROMETER -> convertAccelerometer(reading)
             SensorType.GYROSCOPE -> generateGyroscopeMessages(reading)
-            SensorType.BATTERY_LEVEL -> generateBatteryMesssage(reading)
+            SensorType.BATTERY_LEVEL -> generateBatteryMessage(reading)
 
             else -> throw IllegalArgumentException("Got invalid reading type.")
         }
     }
 
     private fun convertTemperature(reading: Reading): List<String> {
-        return listOf("Temperature,${reading.values[0]},${reading.timestamp}")
+        return listOf(getJsonString("Temperature", reading.timestamp, reading.values[0]))
     }
 
     private fun convertLight(reading: Reading): List<String> {
-        return listOf("Light,${reading.values[0]},${reading.timestamp}")
+        return listOf(getJsonString("Light", reading.timestamp, reading.values[0]))
     }
 
     private fun convertHumidity(reading: Reading): List<String> {
-        return listOf("Humidity,${reading.values[0]},${reading.timestamp}")
+        return listOf(getJsonString("Humidity", reading.timestamp, reading.values[0]))
     }
 
     private fun convertPressure(reading: Reading): List<String> {
-        return listOf("Pressure,${reading.values[0]},${reading.timestamp}")
+        return listOf(getJsonString("Pressure", reading.timestamp, reading.values[0]))
     }
 
     private fun convertMagnetometer(reading: Reading): List<String> {
         return listOf(
-            "Magnetometer X,${reading.values[0]},${reading.timestamp}",
-            "Magnetometer Y,${reading.values[1]},${reading.timestamp}",
-            "Magnetometer Z,${reading.values[2]},${reading.timestamp}"
+            getJsonString("Magnetometer X", reading.timestamp, reading.values[0]),
+            getJsonString("Magnetometer Y", reading.timestamp, reading.values[1]),
+            getJsonString("Magnetometer Z", reading.timestamp, reading.values[2])
         )
     }
 
     private fun convertAccelerometer(reading: Reading): List<String> {
         return listOf(
-            "Accelerometer X,${reading.values[0]},${reading.timestamp}",
-            "Accelerometer Y,${reading.values[1]},${reading.timestamp}",
-            "Accelerometer Z,${reading.values[2]},${reading.timestamp}"
+            getJsonString("Accelerometer X", reading.timestamp, reading.values[0]),
+            getJsonString("Accelerometer Y", reading.timestamp, reading.values[1]),
+            getJsonString("Accelerometer Z", reading.timestamp, reading.values[2])
         )
     }
 
     private fun generateGyroscopeMessages(reading: Reading): List<String> {
         return listOf(
-            "Gyroscope X,${reading.values[0]},${reading.timestamp}",
-            "Gyroscope Y,${reading.values[1]},${reading.timestamp}",
-            "Gyroscope Z,${reading.values[2]},${reading.timestamp}"
+            getJsonString("Gyroscope X", reading.timestamp, reading.values[0]),
+            getJsonString("Gyroscope Y", reading.timestamp, reading.values[1]),
+            getJsonString("Gyroscope Z", reading.timestamp, reading.values[2])
         )
     }
 
-    private fun generateBatteryMesssage(reading: Reading): List<String> {
-        return listOf("Battery Level,${reading.values[0]},${reading.timestamp}")
+    private fun generateBatteryMessage(reading: Reading): List<String> {
+        return listOf(getJsonString("Battery level", reading.timestamp, reading.values[0]))
+    }
+
+    private fun getJsonString(sensorType: String, timestamp: Long, value: Number): String{
+        return "{\n" +
+                "  \"type\": \"$sensorType\",\n" +
+                "  \"timestamp\": $timestamp,\n" +
+                "  \"value\": $value\n" +
+                "}"
     }
 }
