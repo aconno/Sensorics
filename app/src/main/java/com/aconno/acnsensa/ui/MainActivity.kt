@@ -14,6 +14,7 @@ import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
 import com.aconno.acnsensa.domain.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
+import com.aconno.acnsensa.model.AcnSensaPermission
 import com.aconno.acnsensa.ui.settings.SettingsActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import com.aconno.acnsensa.viewmodel.BluetoothViewModel
@@ -212,8 +213,13 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     override fun permissionAccepted(actionCode: Int) {
-        bluetoothScanningViewModel.startScanning()
         //TODO: Permission accepted
+        if (actionCode == AcnSensaPermission.ACCESS_FINE_LOCATION.code) {
+            //TODO This workaround will be fixed
+            permissionViewModel.requestAccessToReadExternalStorage()
+        } else {
+            bluetoothScanningViewModel.startScanning()
+        }
     }
 
     override fun permissionDenied(actionCode: Int) {

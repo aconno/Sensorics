@@ -4,13 +4,20 @@ import android.content.pm.PackageManager
 import com.aconno.acnsensa.device.permissons.PermissionAction
 import com.aconno.acnsensa.model.AcnSensaPermission
 
+/**
+ * TODO Refactor // This class has to take multiple permissions at the same time.//
+ */
 class PermissionViewModel(
-    private val permissionAction: PermissionAction,
-    private val permissionCallbacks: PermissionCallbacks
+        private val permissionAction: PermissionAction,
+        private val permissionCallbacks: PermissionCallbacks
 ) {
 
     fun requestAccessFineLocation() {
         checkAndRequestPermission(AcnSensaPermission.ACCESS_FINE_LOCATION)
+    }
+
+    fun requestAccessToReadExternalStorage() {
+        checkAndRequestPermission(AcnSensaPermission.READ_EXTERNAL_STORAGE)
     }
 
     private fun checkAndRequestPermission(acnSensaPermission: AcnSensaPermission) {
@@ -18,8 +25,8 @@ class PermissionViewModel(
             permissionCallbacks.permissionAccepted(acnSensaPermission.code)
         } else {
             permissionAction.requestPermission(
-                acnSensaPermission.permission,
-                acnSensaPermission.code
+                    acnSensaPermission.permission,
+                    acnSensaPermission.code
             )
         }
     }

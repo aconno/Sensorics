@@ -1,6 +1,8 @@
 package com.aconno.acnsensa.data.mqtt
 
 import android.content.Context
+import android.net.Uri
+import android.preference.PreferenceManager
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.model.readings.Reading
 import io.jsonwebtoken.Jwts
@@ -8,7 +10,8 @@ import io.jsonwebtoken.SignatureAlgorithm
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import timber.log.Timber
-import java.io.IOException
+import java.io.File
+import java.io.FileInputStream
 import java.nio.charset.Charset
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
@@ -22,10 +25,44 @@ class GoogleCloudPublisher(context: Context) : Publisher {
 
     private val messagesQueue: Queue<String> = LinkedList<String>()
 
-    private val privateKeyByteArray = loadData("rsa_private_pkcs8", context)
+    private lateinit var regionPreference: String
+
+    private lateinit var deviceregistryPreference: String
+
+    private lateinit var devicePreference: String
+
+    private lateinit var privatekeyPreference: String
+
+    private lateinit var projectidPreference: String
 
     init {
-        mqttAndroidClient = MqttAndroidClient(context, SERVER_URI, CLIENT_ID)
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+        preferences?.let {
+
+            if (preferences.contains("region_preference")
+                    && preferences.contains("deviceregistry_preference")
+                    && preferences.contains("device_preference")
+                    && preferences.contains("privatekey_preference")) {
+
+                projectidPreference = preferences.getString("projectid_preference", "")
+                regionPreference = preferences.getString("region_preference", "")
+                deviceregistryPreference = preferences.getString("deviceregistry_preference", "")
+                devicePreference = preferences.getString("device_preference", "")
+                privatekeyPreference = preferences.getString("privatekey_preference", "")
+
+                if (projectidPreference.isEmpty()
+                        || regionPreference.isEmpty()
+                        || deviceregistryPreference.isEmpty()
+                        || devicePreference.isEmpty()
+                        || privatekeyPreference.isEmpty()) {
+                    showError("Please provide data..")
+                }
+            } else {
+                showError("Please provide data..")
+            }
+        }
+
+        mqttAndroidClient = MqttAndroidClient(context, SERVER_URI, getClientID())
         mqttAndroidClient.setCallback(object : MqttCallbackExtended {
 
             override fun connectComplete(reconnect: Boolean, serverURI: String?) {
@@ -46,6 +83,31 @@ class GoogleCloudPublisher(context: Context) : Publisher {
         })
     }
 
+    private fun showError(s: String) {
+        TODO("Please provide an error mechanism")
+    }
+
+    private fun getSubscriptionTopic(): String {
+        return "/devices/${devicePreference}/events"
+    }
+
+    private fun getClientID(): String {
+        return "projects/${projectidPreference}/locations/${regionPreference}/registries/${deviceregistryPreference}/devices/${devicePreference}"
+    }
+
+    private fun getPrivateKeyData(): ByteArray {
+        val uri = Uri.parse(privatekeyPreference)
+        val file = File(uri.path)
+
+        val stream = FileInputStream(file)
+        val size = stream.available()
+        val buffer = ByteArray(size)
+        stream.read(buffer)
+        stream.close()
+        return buffer
+    }
+
+
     override fun publish(reading: Reading) {
         val messages = GoogleCloudDataConverter.convert(reading)
         for (message in messages) {
@@ -64,10 +126,10 @@ class GoogleCloudPublisher(context: Context) : Publisher {
 
     private fun publishMessage(message: String) {
         mqttAndroidClient.publish(
-            GOOGLE_SUBSCRIPTION_TOPIC,
-            message.toByteArray(Charset.defaultCharset()),
-            QUALITY_OF_SERVICE,
-            RETENTION_POLICY
+                getSubscriptionTopic(),
+                message.toByteArray(Charset.defaultCharset()),
+                QUALITY_OF_SERVICE,
+                RETENTION_POLICY
         )
     }
 
@@ -101,7 +163,7 @@ class GoogleCloudPublisher(context: Context) : Publisher {
         options.sslProperties = sslProperties
 
         options.userName = "unused"
-        options.password = createJwtRsa("loyal-rookery-204211").toCharArray()
+        options.password = createJwtRsa(projectidPreference).toCharArray()
 
         return options
     }
@@ -112,30 +174,15 @@ class GoogleCloudPublisher(context: Context) : Publisher {
         // expires, and will have to reconnect with a new token. The audience field should always be set
         // to the GCP project id.
         val jwtBuilder = Jwts.builder()
-            .setIssuedAt(Date(System.currentTimeMillis()))
-            .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 20))
-            .setAudience(projectId)
+                .setIssuedAt(Date(System.currentTimeMillis()))
+                .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 20))
+                .setAudience(projectId)
 
-        val keyBytes = privateKeyByteArray
+        val keyBytes = getPrivateKeyData()
         val spec = PKCS8EncodedKeySpec(keyBytes)
         val kf = KeyFactory.getInstance("RSA")
 
         return jwtBuilder.signWith(SignatureAlgorithm.RS256, kf.generatePrivate(spec)).compact()
-    }
-
-    private fun loadData(fileName: String, context: Context): ByteArray? {
-        try {
-            val stream = context.assets.open(fileName)
-            val size = stream.available()
-            val buffer = ByteArray(size)
-            stream.read(buffer)
-            stream.close()
-            return buffer
-        } catch (e: IOException) {
-            // Handle exceptions here
-        }
-
-        return null
     }
 
     private fun publishMessagesFromQueue() {
@@ -150,18 +197,11 @@ class GoogleCloudPublisher(context: Context) : Publisher {
     }
 
     companion object {
-
         private const val SERVER_URI = "ssl://mqtt.googleapis.com:8883"
 
-        //TODO: Simplify this
-        private const val CLIENT_ID =
-            "projects/loyal-rookery-204211/locations/us-central1/registries/ACNSensaRegistry/devices/ACNSensaDemo_01"
-
         private const val CUMULOSITY_SUBSCRIBTION_TOPIC = "s/us"
-        private const val GOOGLE_SUBSCRIPTION_TOPIC = "/devices/ACNSensaDemo_01/events"
 
         private const val QUALITY_OF_SERVICE = 0
         private const val RETENTION_POLICY = false
-
     }
 }

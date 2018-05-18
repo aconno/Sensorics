@@ -71,7 +71,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
     /**
      * This class is used to launch Google Cloud settings from Google Cloud Header
      */
-    class PreferencesGoogleCloud : PreferenceFragment() {
+    class PreferencesGoogleCloud : PreferenceFragment(), Preference.OnPreferenceChangeListener {
 
         companion object {
             //This is used for the file selector intent
@@ -101,6 +101,35 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                     filePicker.summary = privateKeyPath
                 }
             }
+
+            //Set Preference Change Listeners.
+            val projectIDPreference = findPreference("projectid_preference") as Preference
+            projectIDPreference.summary = defaultSharedPreferences.getString("projectid_preference", "")
+            projectIDPreference.onPreferenceChangeListener = this
+
+            val regionPreference = findPreference("region_preference") as Preference
+            regionPreference.summary = defaultSharedPreferences.getString("region_preference", "")
+            regionPreference.onPreferenceChangeListener = this
+
+            val deviceRegistryPreference = findPreference("deviceregistry_preference") as Preference
+            deviceRegistryPreference.summary = defaultSharedPreferences.getString("deviceregistry_preference", "")
+            deviceRegistryPreference.onPreferenceChangeListener = this
+
+            val devicePreference = findPreference("device_preference") as Preference
+            devicePreference.summary = defaultSharedPreferences.getString("device_preference", "")
+            devicePreference.onPreferenceChangeListener = this
+        }
+
+        override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+            if (preference != null) {
+                when (preference.key) {
+                    "projectid_preference" -> preference.summary = newValue.toString()
+                    "region_preference" -> preference.summary = newValue.toString()
+                    "deviceregistry_preference" -> preference.summary = newValue.toString()
+                    "device_preference" -> preference.summary = newValue.toString()
+                }
+            }
+            return true
         }
 
         /**
@@ -109,7 +138,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             if (resultCode == Activity.RESULT_OK && requestCode == PICKFILE_REQUEST_CODE) {
                 data?.let {
-                    val path = it.dataString
+                    val path = it.data.path
                     val editor = PreferenceManager.getDefaultSharedPreferences(activity.applicationContext).edit()
                     editor.putString("privatekey_preference", path)
                     editor.apply()

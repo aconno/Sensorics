@@ -3,25 +3,40 @@
 
     <PreferenceCategory android:title="@string/preferences_gcloud">
 
+        <SwitchPreference
+            android:key="gcloud_switch_preference"
+            android:title="@string/preference_gcloud_title" />
+
         <EditTextPreference
+            android:dependency="gcloud_switch_preference"
+            android:dialogTitle="@string/preference_dialog_projectid"
+            android:key="projectid_preference"
+            android:summary="@string/preference_summary_projectid"
+            android:title="@string/preference_title_projectid" />
+
+        <EditTextPreference
+            android:dependency="gcloud_switch_preference"
             android:dialogTitle="@string/preference_dialog_region"
             android:key="region_preference"
             android:summary="@string/preference_summary_region"
             android:title="@string/preference_title_region" />
 
         <EditTextPreference
+            android:dependency="gcloud_switch_preference"
             android:dialogTitle="@string/preference_dialog_deviceregisitry"
             android:key="deviceregistry_preference"
             android:summary="@string/preference_summary_region"
             android:title="@string/preference_title_deviceregistry" />
 
         <EditTextPreference
+            android:dependency="gcloud_switch_preference"
             android:dialogTitle="@string/preference_dialog_device"
             android:key="device_preference"
             android:summary="@string/preference_summary_device"
             android:title="@string/preference_title_device" />
 
         <Preference
+            android:dependency="gcloud_switch_preference"
             android:key="privatekey_preference"
             android:summary="@string/preference_summary_privatekey"
             android:title="@string/preference_title_privatekey" />

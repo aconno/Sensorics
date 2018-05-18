@@ -8,12 +8,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import android.preference.PreferenceManager
 import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceComponent
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
+import com.aconno.acnsensa.domain.ifttt.outcome.VibrationOutcomeExecutor.Companion.running
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.ReadingToInputUseCase
@@ -76,13 +78,13 @@ class BluetoothScanningService : Service() {
     private val bluetoothScanningServiceComponent: BluetoothScanningServiceComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
         DaggerBluetoothScanningServiceComponent.builder()
-            .appComponent(acnSensaApplication?.appComponent)
-            .bluetoothScanningServiceModule(
-                BluetoothScanningServiceModule(
-                    this
+                .appComponent(acnSensaApplication?.appComponent)
+                .bluetoothScanningServiceModule(
+                        BluetoothScanningServiceModule(
+                                this
+                        )
                 )
-            )
-            .build()
+                .build()
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -111,27 +113,44 @@ class BluetoothScanningService : Service() {
 
     private fun startSyncing() {
         sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-            .subscribe { publishReadingsUseCase.execute(it) }
+                .subscribe {
+                    //Publish when Google Cloud Integration Enabled
+                    if (isGoogleCloudIntegrationEnabled()) {
+                        publishReadingsUseCase.execute(it)
+                    }
+                }
+    }
+
+    /**
+     * Look Settings
+     */
+    private fun isGoogleCloudIntegrationEnabled(): Boolean {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs?.let {
+            return it.contains("gcloud_switch_preference") && it.getBoolean("gcloud_switch_preference", false)
+        }
+
+        return false
     }
 
     private fun handleInputsForActions() {
         sensorValues
-            .concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-            .concatMap { readingToInputUseCase.execute(it).toFlowable() }
-            .flatMapIterable { it }
-            .concatMap {
-                inputToOutcomesUseCase.execute(it)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .toFlowable()
-            }
-            .flatMapIterable { it }
-            .subscribe {
-                runOutcomeUseCase.execute(it)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe()
-            }
+                .concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
+                .concatMap { readingToInputUseCase.execute(it).toFlowable() }
+                .flatMapIterable { it }
+                .concatMap {
+                    inputToOutcomesUseCase.execute(it)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .toFlowable()
+                }
+                .flatMapIterable { it }
+                .subscribe {
+                    runOutcomeUseCase.execute(it)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe()
+                }
     }
 
     fun stopScanning() {
@@ -143,16 +162,16 @@ class BluetoothScanningService : Service() {
 
     private fun startRecording() {
         sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-            .subscribe {
-                recordUseCase.execute(it)
-            }
+                .subscribe {
+                    recordUseCase.execute(it)
+                }
     }
 
     private fun startLogging() {
         sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-            .subscribe {
-                logReadingsUseCase.execute(it)
-            }
+                .subscribe {
+                    logReadingsUseCase.execute(it)
+                }
     }
 
     companion object {
