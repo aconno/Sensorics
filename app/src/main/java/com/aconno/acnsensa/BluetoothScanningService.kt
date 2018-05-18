@@ -78,13 +78,13 @@ class BluetoothScanningService : Service() {
     private val bluetoothScanningServiceComponent: BluetoothScanningServiceComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
         DaggerBluetoothScanningServiceComponent.builder()
-                .appComponent(acnSensaApplication?.appComponent)
-                .bluetoothScanningServiceModule(
-                        BluetoothScanningServiceModule(
-                                this
-                        )
+            .appComponent(acnSensaApplication?.appComponent)
+            .bluetoothScanningServiceModule(
+                BluetoothScanningServiceModule(
+                    this
                 )
-                .build()
+            )
+            .build()
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -113,12 +113,47 @@ class BluetoothScanningService : Service() {
 
     private fun startSyncing() {
         sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-                .subscribe {
-                    //Publish when Google Cloud Integration Enabled
-                    if (isGoogleCloudIntegrationEnabled()) {
-                        publishReadingsUseCase.execute(it)
-                    }
+            .subscribe {
+                //Publish when Google Cloud Integration Enabled
+                if (isGoogleCloudIntegrationEnabled() && isAllDataProvidedByUser()) {
+                    publishReadingsUseCase.execute(it)
                 }
+            }
+    }
+
+    private fun isAllDataProvidedByUser(): Boolean {
+        //TODO Can be inject by Dagger
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        if (preferences != null) {
+            if (preferences.contains("region_preference")
+                && preferences.contains("deviceregistry_preference")
+                && preferences.contains("device_preference")
+                && preferences.contains("privatekey_preference")
+            ) {
+                val projectidPreference = preferences.getString("projectid_preference", "")
+                val regionPreference = preferences.getString("region_preference", "")
+                val deviceregistryPreference =
+                    preferences.getString("deviceregistry_preference", "")
+                val devicePreference = preferences.getString("device_preference", "")
+                val privatekeyPreference = preferences.getString("privatekey_preference", "")
+
+                if (projectidPreference.isEmpty()
+                    || regionPreference.isEmpty()
+                    || deviceregistryPreference.isEmpty()
+                    || devicePreference.isEmpty()
+                    || privatekeyPreference.isEmpty()
+                ) {
+                    return false
+                }
+            } else {
+                return false
+            }
+        } else {
+            throw NullPointerException("SharedPreferences is null")
+        }
+
+        return true
     }
 
     /**
@@ -127,7 +162,10 @@ class BluetoothScanningService : Service() {
     private fun isGoogleCloudIntegrationEnabled(): Boolean {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs?.let {
-            return it.contains("gcloud_switch_preference") && it.getBoolean("gcloud_switch_preference", false)
+            return it.contains("gcloud_switch_preference") && it.getBoolean(
+                "gcloud_switch_preference",
+                false
+            )
         }
 
         return false
@@ -135,22 +173,22 @@ class BluetoothScanningService : Service() {
 
     private fun handleInputsForActions() {
         sensorValues
-                .concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-                .concatMap { readingToInputUseCase.execute(it).toFlowable() }
-                .flatMapIterable { it }
-                .concatMap {
-                    inputToOutcomesUseCase.execute(it)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .toFlowable()
-                }
-                .flatMapIterable { it }
-                .subscribe {
-                    runOutcomeUseCase.execute(it)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe()
-                }
+            .concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
+            .concatMap { readingToInputUseCase.execute(it).toFlowable() }
+            .flatMapIterable { it }
+            .concatMap {
+                inputToOutcomesUseCase.execute(it)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .toFlowable()
+            }
+            .flatMapIterable { it }
+            .subscribe {
+                runOutcomeUseCase.execute(it)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe()
+            }
     }
 
     fun stopScanning() {
@@ -162,16 +200,16 @@ class BluetoothScanningService : Service() {
 
     private fun startRecording() {
         sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-                .subscribe {
-                    recordUseCase.execute(it)
-                }
+            .subscribe {
+                recordUseCase.execute(it)
+            }
     }
 
     private fun startLogging() {
         sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-                .subscribe {
-                    logReadingsUseCase.execute(it)
-                }
+            .subscribe {
+                logReadingsUseCase.execute(it)
+            }
     }
 
     companion object {

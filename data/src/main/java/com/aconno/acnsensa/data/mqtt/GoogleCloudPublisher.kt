@@ -38,49 +38,33 @@ class GoogleCloudPublisher(context: Context) : Publisher {
     init {
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences?.let {
-
-            if (preferences.contains("region_preference")
-                    && preferences.contains("deviceregistry_preference")
-                    && preferences.contains("device_preference")
-                    && preferences.contains("privatekey_preference")) {
-
-                projectidPreference = preferences.getString("projectid_preference", "")
-                regionPreference = preferences.getString("region_preference", "")
-                deviceregistryPreference = preferences.getString("deviceregistry_preference", "")
-                devicePreference = preferences.getString("device_preference", "")
-                privatekeyPreference = preferences.getString("privatekey_preference", "")
-
-                if (projectidPreference.isEmpty()
-                        || regionPreference.isEmpty()
-                        || deviceregistryPreference.isEmpty()
-                        || devicePreference.isEmpty()
-                        || privatekeyPreference.isEmpty()) {
-                    showError("Please provide data..")
-                }
-            } else {
-                showError("Please provide data..")
-            }
+            projectidPreference = preferences.getString("projectid_preference", "")
+            regionPreference = preferences.getString("region_preference", "")
+            deviceregistryPreference = preferences.getString("deviceregistry_preference", "")
+            devicePreference = preferences.getString("device_preference", "")
+            privatekeyPreference = preferences.getString("privatekey_preference", "")
         }
 
         mqttAndroidClient = MqttAndroidClient(context, SERVER_URI, getClientID())
-        mqttAndroidClient.setCallback(object : MqttCallbackExtended {
+        mqttAndroidClient.setCallback(
+            object : MqttCallbackExtended {
 
-            override fun connectComplete(reconnect: Boolean, serverURI: String?) {
-                Timber.d("Connection complete to server: %s", serverURI)
-            }
+                override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+                    Timber.d("Connection complete to server: %s", serverURI)
+                }
 
-            override fun messageArrived(topic: String?, message: MqttMessage?) {
-                Timber.d("Message arrived, topic: %s, message: %s", topic, message)
-            }
+                override fun messageArrived(topic: String?, message: MqttMessage?) {
+                    Timber.d("Message arrived, topic: %s, message: %s", topic, message)
+                }
 
-            override fun connectionLost(cause: Throwable?) {
-                Timber.d(cause, "Connection lost")
-            }
+                override fun connectionLost(cause: Throwable?) {
+                    Timber.d(cause, "Connection lost")
+                }
 
-            override fun deliveryComplete(token: IMqttDeliveryToken?) {
-                Timber.d("Delivery complete, token: %s", token)
-            }
-        })
+                override fun deliveryComplete(token: IMqttDeliveryToken?) {
+                    Timber.d("Delivery complete, token: %s", token)
+                }
+            })
     }
 
     private fun showError(s: String) {
@@ -126,10 +110,10 @@ class GoogleCloudPublisher(context: Context) : Publisher {
 
     private fun publishMessage(message: String) {
         mqttAndroidClient.publish(
-                getSubscriptionTopic(),
-                message.toByteArray(Charset.defaultCharset()),
-                QUALITY_OF_SERVICE,
-                RETENTION_POLICY
+            getSubscriptionTopic(),
+            message.toByteArray(Charset.defaultCharset()),
+            QUALITY_OF_SERVICE,
+            RETENTION_POLICY
         )
     }
 
@@ -174,9 +158,9 @@ class GoogleCloudPublisher(context: Context) : Publisher {
         // expires, and will have to reconnect with a new token. The audience field should always be set
         // to the GCP project id.
         val jwtBuilder = Jwts.builder()
-                .setIssuedAt(Date(System.currentTimeMillis()))
-                .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 20))
-                .setAudience(projectId)
+            .setIssuedAt(Date(System.currentTimeMillis()))
+            .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 20))
+            .setAudience(projectId)
 
         val keyBytes = getPrivateKeyData()
         val spec = PKCS8EncodedKeySpec(keyBytes)
