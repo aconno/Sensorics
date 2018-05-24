@@ -15,7 +15,7 @@ import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
 import com.aconno.acnsensa.domain.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.model.AcnSensaPermission
-import com.aconno.acnsensa.ui.settings.SettingsActivity
+import com.aconno.acnsensa.ui.settings.PublishListActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import com.aconno.acnsensa.viewmodel.BluetoothViewModel
 import com.aconno.acnsensa.viewmodel.PermissionViewModel
@@ -40,9 +40,9 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     val mainActivityComponent: MainActivityComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
         DaggerMainActivityComponent.builder()
-                .appComponent(acnSensaApplication?.appComponent)
-                .mainActivityModule(MainActivityModule(this))
-                .build()
+            .appComponent(acnSensaApplication?.appComponent)
+            .mainActivityModule(MainActivityModule(this))
+            .build()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
         snackbar =
                 Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
+                    .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
 
         snackbar?.setActionTextColor(resources.getColor(R.color.primaryColor))
 
@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     private fun startSettingsActivity() {
-        SettingsActivity.start(this)
+        PublishListActivity.start(this)
     }
 
     private fun toggleScan(item: MenuItem?) {
@@ -205,9 +205,9 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         permissionViewModel.checkGrantedPermission(grantResults, requestCode)
     }

@@ -1,5 +1,6 @@
 package com.aconno.acnsensa.data.repository
 
+import android.os.Parcelable
 import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.GeneralAction

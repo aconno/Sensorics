@@ -9,13 +9,15 @@ import io.reactivex.Completable
  * @aconno
  */
 class PublishReadingsUseCase(
-    private val publisher: Publisher
+    private val publisher: List<Publisher>
 ) : CompletableUseCaseWithParameter<List<Reading>> {
 
     override fun execute(parameter: List<Reading>): Completable {
-        for (reading in parameter) {
-            publisher.publish(reading)
-        }
+        //TODO Need to check other Publishers other than Google Cloud
+        publisher.forEach({
+            parameter.forEach { at -> it.publish(at) }
+        })
+
         return Completable.complete()
     }
 }

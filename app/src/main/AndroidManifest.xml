@@ -25,15 +25,17 @@
         <activity android:name=".ui.LiveGraphActivity" />
         <activity android:name=".ui.ActionListActivity" />
         <activity android:name=".ui.actions.AddActionActivity" />
-        <activity
-            android:name=".ui.settings.SettingsActivity"
-            android:theme="@style/SettingsTheme" />
 
         <service
             android:name=".BluetoothScanningService"
             android:exported="false" />
 
         <activity android:name=".ui.actions.EditActionActivity" />
+        <activity
+            android:name=".ui.settings.PublishListActivity"
+            android:label="@string/title_publish_list"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".ui.settings.AddPublishActivity" />
     </application>
 
 </manifest>

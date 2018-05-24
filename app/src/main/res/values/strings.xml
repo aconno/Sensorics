@@ -115,4 +115,25 @@
     <string name="preference_summary_projectid">Project ID Summary</string>
     <string name="preference_title_projectid">Project ID</string>
     <string name="preference_gcloud_title">Google Cloud On/Off</string>
+    <string name="title_publish_list">Publishes</string>
+    <string name="title_publish_detail">Publish Detail</string>
+
+
+    <!--Publish Default Spinner Values-->
+    <string name="google_iot_cloud">Google IOT Cloud</string>
+    <string name="other_backend">Other Backend</string>
+    <string-array name="PublishTypes">
+        <item>@string/google_iot_cloud</item>
+        <item>@string/other_backend</item>
+    </string-array>
+
+    <!-- AddPublishActivity -->
+    <string name="name">Name</string>
+    <string name="project_id">ProjectId</string>
+    <string name="region">Region</string>
+    <string name="device_registry">Device Registry</string>
+    <string name="device">Device</string>
+    <string name="private_key">Private Key</string>
+    <string name="private_key_click">Touch to choose</string>
+
 </resources>

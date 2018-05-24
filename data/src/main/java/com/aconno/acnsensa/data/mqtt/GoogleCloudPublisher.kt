@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.preference.PreferenceManager
 import com.aconno.acnsensa.domain.Publisher
+import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.model.readings.Reading
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -17,7 +18,7 @@ import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
 
-class GoogleCloudPublisher(context: Context) : Publisher {
+class GoogleCloudPublisher(context: Context, val googlePublish: GooglePublish) : Publisher {
 
     //TODO: Refactor
 
@@ -25,26 +26,7 @@ class GoogleCloudPublisher(context: Context) : Publisher {
 
     private val messagesQueue: Queue<String> = LinkedList<String>()
 
-    private lateinit var regionPreference: String
-
-    private lateinit var deviceregistryPreference: String
-
-    private lateinit var devicePreference: String
-
-    private lateinit var privatekeyPreference: String
-
-    private lateinit var projectidPreference: String
-
     init {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-        preferences?.let {
-            projectidPreference = preferences.getString("projectid_preference", "")
-            regionPreference = preferences.getString("region_preference", "")
-            deviceregistryPreference = preferences.getString("deviceregistry_preference", "")
-            devicePreference = preferences.getString("device_preference", "")
-            privatekeyPreference = preferences.getString("privatekey_preference", "")
-        }
-
         mqttAndroidClient = MqttAndroidClient(context, SERVER_URI, getClientID())
         mqttAndroidClient.setCallback(
             object : MqttCallbackExtended {
@@ -72,15 +54,15 @@ class GoogleCloudPublisher(context: Context) : Publisher {
     }
 
     private fun getSubscriptionTopic(): String {
-        return "/devices/${devicePreference}/events"
+        return "/devices/${googlePublish.device}/events"
     }
 
     private fun getClientID(): String {
-        return "projects/${projectidPreference}/locations/${regionPreference}/registries/${deviceregistryPreference}/devices/${devicePreference}"
+        return "projects/${googlePublish.projectId}/locations/${googlePublish.region}/registries/${googlePublish.deviceRegistry}/devices/${googlePublish.device}"
     }
 
     private fun getPrivateKeyData(): ByteArray {
-        val uri = Uri.parse(privatekeyPreference)
+        val uri = Uri.parse(googlePublish.privateKey)
         val file = File(uri.path)
 
         val stream = FileInputStream(file)
@@ -147,7 +129,7 @@ class GoogleCloudPublisher(context: Context) : Publisher {
         options.sslProperties = sslProperties
 
         options.userName = "unused"
-        options.password = createJwtRsa(projectidPreference).toCharArray()
+        options.password = createJwtRsa(googlePublish.projectId).toCharArray()
 
         return options
     }

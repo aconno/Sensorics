@@ -15,10 +15,12 @@ import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
+import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.domain.ifttt.outcome.*
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.GetAllEnabledGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
@@ -124,19 +126,7 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun providePublisher(): Publisher {
-        return GoogleCloudPublisher(bluetoothScanningService)
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun providePublishReadingsUseCase(publisher: Publisher): PublishReadingsUseCase {
-        return PublishReadingsUseCase(publisher)
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideCloseConnectionUseCase(publisher: Publisher): CloseConnectionUseCase {
-        return CloseConnectionUseCase(publisher)
+    fun provideGetAllEnabledGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): GetAllEnabledGooglePublishUseCase {
+        return GetAllEnabledGooglePublishUseCase(googlePublishRepository)
     }
 }

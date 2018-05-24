@@ -5,11 +5,11 @@ import com.aconno.acnsensa.domain.interactor.type.CompletableUseCase
 import io.reactivex.Completable
 
 class CloseConnectionUseCase(
-    private val publisher: Publisher
+    private val publisher: List<Publisher>
 ) : CompletableUseCase {
 
     override fun execute(): Completable {
-        publisher.closeConnection()
+        publisher.forEach { it.closeConnection() }
         return Completable.complete()
     }
 }
