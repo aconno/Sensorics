@@ -2,6 +2,7 @@ package com.aconno.acnsensa
 
 import android.app.Notification
 import android.app.Service
+import android.arch.lifecycle.Transformations.map
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,17 +11,23 @@ import android.os.Build
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.content.LocalBroadcastManager
+import com.aconno.acnsensa.R.string.notification
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceComponent
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
+import com.aconno.acnsensa.data.http.EmptyPublisher
+import com.aconno.acnsensa.data.http.HttpPublisher
 import com.aconno.acnsensa.data.mqtt.GoogleCloudPublisher
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
+import com.aconno.acnsensa.domain.ifttt.GooglePublish
+import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.acnsensa.domain.ifttt.outcome.VibrationOutcomeExecutor.Companion.running
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.GetAllEnabledGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.GetAllEnabledRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
@@ -33,6 +40,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import java.util.stream.Collectors.toList
 import javax.inject.Inject
 
 /**
@@ -63,6 +71,9 @@ class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var getAllEnabledGooglePublishUseCase: GetAllEnabledGooglePublishUseCase
+
+    @Inject
+    lateinit var getAllEnabledRESTPublishUseCase: GetAllEnabledRESTPublishUseCase
 
     @Inject
     lateinit var runOutcomeUseCase: RunOutcomeUseCase
@@ -102,14 +113,31 @@ class BluetoothScanningService : Service() {
     override fun onCreate() {
         super.onCreate()
         bluetoothScanningServiceComponent.inject(this)
-        getAllEnabledGooglePublishUseCase.execute()
+
+        Single.merge(
+            getAllEnabledGooglePublishUseCase.execute(),
+            getAllEnabledRESTPublishUseCase.execute()
+        )
             .subscribeOn(Schedulers.io())
-            .flattenAsObservable { it }
-            .map { it -> GoogleCloudPublisher(this, it) }
+            .flatMapIterable { it -> it }
+            .map { it ->
+                when (it) {
+                    is GooglePublish -> GoogleCloudPublisher(this, it)
+                    is RESTPublish -> HttpPublisher(this, it)
+                    else -> {
+                        EmptyPublisher()
+                    }
+                }
+            }
+            .filter { it -> it !is EmptyPublisher }
             .toList()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { it ->
-                publishers = if (it.size > 0) it else null
+                publishers = if (it.size < 0) {
+                    null
+                } else {
+                    it
+                }
 
                 if (publishers != null) {
                     publishReadingsUseCase = PublishReadingsUseCase(publishers!!)

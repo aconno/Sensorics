@@ -19,6 +19,7 @@ import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
+import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import kotlinx.android.synthetic.main.activity_add_publish.*
 import java.security.KeyFactory
@@ -49,11 +50,11 @@ class AddPublishActivity : AppCompatActivity() {
         setSupportActionBar(custom_toolbar)
 
         when {
-            temp is GooglePublish -> {
+            temp is BasePublish -> {
                 basePublish = temp
                 setTextsWithTemp()
             }
-            temp != null -> throw IllegalArgumentException("Only GooglePublish can be sent")
+            temp != null -> throw IllegalArgumentException("Only classes that extend from BasePublish can be sent")
         }
 
         initViews()
@@ -83,8 +84,14 @@ class AddPublishActivity : AppCompatActivity() {
                 id: Long
             ) {
                 when (position) {
-                    0 -> layout_google.visibility = View.VISIBLE
-                    else -> layout_google.visibility = View.GONE
+                    0 -> {
+                        layout_google.visibility = View.VISIBLE
+                        layout_rest.visibility = View.GONE
+                    }
+                    1 -> {
+                        layout_rest.visibility = View.VISIBLE
+                        layout_google.visibility = View.GONE
+                    }
                 }
             }
         }
@@ -117,6 +124,7 @@ class AddPublishActivity : AppCompatActivity() {
         edit_name.setText(basePublish?.name)
 
         if (basePublish is GooglePublish) {
+            spinner.setSelection(0)
             layout_google.visibility = View.VISIBLE
 
             val googlePublish = basePublish as GooglePublish
@@ -126,8 +134,15 @@ class AddPublishActivity : AppCompatActivity() {
             edit_deviceregistry.setText(googlePublish.deviceRegistry)
             edit_device.setText(googlePublish.device)
             edit_privatekey.setText(googlePublish.privateKey)
-        } else {
-            //TODO
+        } else if (basePublish is RESTPublish) {
+            spinner.setSelection(1)
+            layout_google.visibility = View.VISIBLE
+
+            val restPublish = basePublish as RESTPublish
+
+            edit_url.setText(restPublish.url)
+            val selection = if (restPublish.method == "GET") 0 else 1
+            spinner.setSelection(selection)
         }
     }
 
@@ -148,7 +163,6 @@ class AddPublishActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id: Int? = item?.itemId
         when (id) {
-        //TODO Add startActivityForResult
             R.id.action_publish_done -> addOrUpdate()
         }
 
@@ -160,7 +174,7 @@ class AddPublishActivity : AppCompatActivity() {
 
         when (selectedItem) {
             0 -> googleAddOrUpdate()
-            1 -> otherAddOrUpdate()
+            1 -> restAddOrUpdate()
             else -> throw IllegalArgumentException("Please use registered types.")
         }
 
@@ -168,8 +182,43 @@ class AddPublishActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun otherAddOrUpdate() {
-        Toast.makeText(this, "Under Construction.. Not Implemented Yet.", Toast.LENGTH_SHORT).show()
+    private fun restAddOrUpdate() {
+        val name = edit_name.text.toString().trim()
+        val url = edit_url.text.toString().trim()
+        val method = spinner_methods.selectedItem.toString()
+
+        if (
+            name.isBlank() ||
+            url.isBlank() ||
+            method.isBlank()
+        ) {
+            //TODO Error
+            Toast.makeText(this, "Please fill the blanks", Toast.LENGTH_SHORT).show()
+        } else {
+            val toastText: String
+
+            if (basePublish != null) {
+                val id = basePublish!!.id
+
+                toastText = "Updated"
+                publishViewModel.updateREST(
+                    id,
+                    name,
+                    url,
+                    method
+                )
+
+            } else {
+                toastText = "Created"
+                publishViewModel.saveREST(
+                    name,
+                    url,
+                    method
+                )
+            }
+
+            Toast.makeText(this, "$toastText $name", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun googleAddOrUpdate() {

@@ -2,14 +2,12 @@ package com.aconno.acnsensa.viewmodel
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
-import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublish
-import com.aconno.acnsensa.domain.ifttt.GeneralRESTPublish
-import com.aconno.acnsensa.domain.ifttt.GooglePublish
-import com.aconno.acnsensa.domain.ifttt.RESTPublish
+import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.ifttt.GetAllGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.GetAllRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateRESTPublishUserCase
+import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -65,12 +63,10 @@ class PublishListViewModel(
                 { Timber.e("Failed to update REST Publish Data with id: ${generalRESTPublish.id}") })
     }
 
-    fun getAllGooglePublish(): Single<List<GooglePublish>> {
-        return getAllGooglePublishUseCase.execute()
+    fun getAllPublish(): Flowable<List<BasePublish>> {
+        return Single.merge(
+            getAllGooglePublishUseCase.execute(),
+            getAllRESTPublishUseCase.execute()
+        )
     }
-
-    fun getAllRESTPublish(): Single<List<RESTPublish>> {
-        return getAllRESTPublishUseCase.execute()
-    }
-
 }

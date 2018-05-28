@@ -17,11 +17,11 @@ class RESTPublishRepositoryImpl(private val restPublishDao: RESTPublishDao) :
         restPublishDao.delete(toEntity(restPublish))
     }
 
-    override fun getAllRESTPublish(): Single<List<RESTPublish>> {
+    override fun getAllRESTPublish(): Single<List<BasePublish>> {
         return restPublishDao.all.map { actionEntities -> actionEntities.map { toRESTPublish(it) } }
     }
 
-    override fun getAllEnabledRESTPublish(): Single<List<RESTPublish>> {
+    override fun getAllEnabledRESTPublish(): Single<List<BasePublish>> {
         return restPublishDao.getEnabledRESTPublish()
             .map { actionEntities -> actionEntities.map { toRESTPublish(it) } }
     }

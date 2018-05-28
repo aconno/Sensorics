@@ -6,7 +6,7 @@ interface GooglePublishRepository {
     fun addGooglePublish(googlePublish: GooglePublish)
     fun updateGooglePublish(googlePublish: GooglePublish)
     fun deleteGooglePublish(googlePublish: GooglePublish)
-    fun getAllGooglePublish(): Single<List<GooglePublish>>
-    fun getAllEnabledGooglePublish(): Single<List<GooglePublish>>
+    fun getAllGooglePublish(): Single<List<BasePublish>>
+    fun getAllEnabledGooglePublish(): Single<List<BasePublish>>
     fun getGooglePublishById(googlePublishId: Long): Single<GooglePublish>
 }

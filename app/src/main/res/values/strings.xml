@@ -143,5 +143,6 @@
     <string name="not_valid_file_pkcs8">Selected File is not valid PKCS8 FIle.</string>
     <string name="rest_method_post">POST</string>
     <string name="rest_method_get">GET</string>
+    <string name="url">URL</string>
 
 </resources>

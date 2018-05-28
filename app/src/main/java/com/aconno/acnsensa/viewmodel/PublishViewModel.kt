@@ -89,11 +89,10 @@ class PublishViewModel(
         id: Long,
         name: String,
         url: String,
-        method: String,
-        enabled: Boolean
+        method: String
     ) {
         val generalRESTPublish = GeneralRESTPublish(
-            id, name, url, method, enabled
+            id, name, url, method, false
         )
 
         updateRESTPublishUserCase.execute(generalRESTPublish)

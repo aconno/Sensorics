@@ -14,13 +14,11 @@ import com.aconno.acnsensa.device.storage.FileStorageImpl
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
-import com.aconno.acnsensa.domain.ifttt.ActionsRepository
-import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
-import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
-import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
+import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.ifttt.outcome.*
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.GetAllEnabledGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.GetAllEnabledRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
@@ -128,5 +126,11 @@ class BluetoothScanningServiceModule(
     @BluetoothScanningServiceScope
     fun provideGetAllEnabledGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): GetAllEnabledGooglePublishUseCase {
         return GetAllEnabledGooglePublishUseCase(googlePublishRepository)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideGetAllEnabledRESTPublishUseCase(restPublishRepository: RESTPublishRepository): GetAllEnabledRESTPublishUseCase {
+        return GetAllEnabledRESTPublishUseCase(restPublishRepository)
     }
 }

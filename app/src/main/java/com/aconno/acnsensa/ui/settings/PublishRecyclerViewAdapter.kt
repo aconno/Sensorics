@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
+import com.aconno.acnsensa.domain.ifttt.RESTPublish
 
 
 import com.aconno.acnsensa.ui.settings.PublishFragment.OnListFragmentInteractionListener
@@ -50,6 +51,8 @@ class PublishRecyclerViewAdapter(
 
         if (item is GooglePublish) {
             holder.mImageView.setImageResource(R.drawable.google_logo)
+        } else if (item is RESTPublish) {
+            holder.mImageView.setImageResource(R.drawable.uplaod_cloud)
         }
 
         with(holder.mView) {
