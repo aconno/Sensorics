@@ -12,4 +12,9 @@
         android:id="@+id/action_start_actions_activity"
         android:title="@string/actions"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_start_settings_activity"
+        android:title="@string/settings"
+        app:showAsAction="never" />
 </menu>

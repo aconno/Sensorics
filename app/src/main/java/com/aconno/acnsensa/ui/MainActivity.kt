@@ -14,6 +14,8 @@ import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
 import com.aconno.acnsensa.domain.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
+import com.aconno.acnsensa.model.AcnSensaPermission
+import com.aconno.acnsensa.ui.settings.PublishListActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import com.aconno.acnsensa.viewmodel.BluetoothViewModel
 import com.aconno.acnsensa.viewmodel.PermissionViewModel
@@ -168,6 +170,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         when (id) {
             R.id.action_toggle_scan -> toggleScan(item)
             R.id.action_start_actions_activity -> startActionListActivity()
+            R.id.action_start_settings_activity -> startSettingsActivity()
         }
 
         return super.onOptionsItemSelected(item)
@@ -175,6 +178,10 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     private fun startActionListActivity() {
         ActionListActivity.start(this)
+    }
+
+    private fun startSettingsActivity() {
+        PublishListActivity.start(this)
     }
 
     private fun toggleScan(item: MenuItem?) {
@@ -206,8 +213,13 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     override fun permissionAccepted(actionCode: Int) {
-        bluetoothScanningViewModel.startScanning()
         //TODO: Permission accepted
+        if (actionCode == AcnSensaPermission.ACCESS_FINE_LOCATION.code) {
+            //TODO This workaround will be fixed
+            permissionViewModel.requestAccessToReadExternalStorage()
+        } else {
+            bluetoothScanningViewModel.startScanning()
+        }
     }
 
     override fun permissionDenied(actionCode: Int) {

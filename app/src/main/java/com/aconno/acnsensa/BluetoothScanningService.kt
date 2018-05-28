@@ -8,19 +8,30 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import android.preference.PreferenceManager
 import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceComponent
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
+import com.aconno.acnsensa.data.mqtt.GoogleCloudPublisher
 import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.Publisher
+import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
+import com.aconno.acnsensa.domain.ifttt.outcome.VibrationOutcomeExecutor.Companion.running
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.GetAllEnabledGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.ReadingToInputUseCase
+import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
+import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import io.reactivex.Flowable
+import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
@@ -51,6 +62,9 @@ class BluetoothScanningService : Service() {
     lateinit var inputToOutcomesUseCase: InputToOutcomesUseCase
 
     @Inject
+    lateinit var getAllEnabledGooglePublishUseCase: GetAllEnabledGooglePublishUseCase
+
+    @Inject
     lateinit var runOutcomeUseCase: RunOutcomeUseCase
 
     @Inject
@@ -64,6 +78,10 @@ class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var localBroadcastManager: LocalBroadcastManager
+
+    private var closeConnectionUseCase: CloseConnectionUseCase? = null
+    private var publishReadingsUseCase: PublishReadingsUseCase? = null
+    private var publishers: List<Publisher>? = null
 
     private val bluetoothScanningServiceComponent: BluetoothScanningServiceComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -84,6 +102,20 @@ class BluetoothScanningService : Service() {
     override fun onCreate() {
         super.onCreate()
         bluetoothScanningServiceComponent.inject(this)
+        getAllEnabledGooglePublishUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .flattenAsObservable { it }
+            .map { it -> GoogleCloudPublisher(this, it) }
+            .toList()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { it ->
+                publishers = if (it.size > 0) it else null
+
+                if (publishers != null) {
+                    publishReadingsUseCase = PublishReadingsUseCase(publishers!!)
+                    closeConnectionUseCase = CloseConnectionUseCase(publishers!!)
+                }
+            }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -96,8 +128,17 @@ class BluetoothScanningService : Service() {
         running = true
         startRecording()
         startLogging()
+        startSyncing()
         handleInputsForActions()
         return START_STICKY
+    }
+
+    private fun startSyncing() {
+        sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
+            .subscribe {
+                //Publish when Google Cloud Integration Enabled
+                publishReadingsUseCase?.execute(it)
+            }
     }
 
     private fun handleInputsForActions() {
@@ -121,6 +162,7 @@ class BluetoothScanningService : Service() {
     }
 
     fun stopScanning() {
+        closeConnectionUseCase?.execute()
         bluetooth.stopScanning()
         running = false
         stopSelf()

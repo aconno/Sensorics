@@ -8,6 +8,7 @@ import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.IntentProviderImpl
 import com.aconno.acnsensa.data.repository.AcnSensaDatabase
 import com.aconno.acnsensa.data.repository.ActionsRepositoryImpl
+import com.aconno.acnsensa.data.repository.GooglePublishRepositoryImpl
 import com.aconno.acnsensa.data.repository.InMemoryRepositoryImpl
 import com.aconno.acnsensa.device.SmsSenderImpl
 import com.aconno.acnsensa.device.TextToSpeechPlayerImpl
@@ -24,6 +25,7 @@ import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
+import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
@@ -130,6 +132,14 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
         acnSensaDatabase: AcnSensaDatabase
     ): ActionsRepository {
         return ActionsRepositoryImpl(acnSensaDatabase.actionDao())
+    }
+
+    @Provides
+    @Singleton
+    fun provideGooglePublishRepository(
+        acnSensaDatabase: AcnSensaDatabase
+    ): GooglePublishRepository {
+        return GooglePublishRepositoryImpl(acnSensaDatabase.googlePublishDao())
     }
 
     @Provides

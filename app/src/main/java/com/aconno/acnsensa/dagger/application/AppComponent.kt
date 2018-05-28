@@ -8,6 +8,7 @@ import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
+import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
@@ -29,6 +30,8 @@ interface AppComponent {
     fun inMemoryRepository(): InMemoryRepository
 
     fun sensorValues(): Flowable<Map<String, Number>>
+
+    fun googlePublishRepository(): GooglePublishRepository
 
     fun actionsRepository(): ActionsRepository
 

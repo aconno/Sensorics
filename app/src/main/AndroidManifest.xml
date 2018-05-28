@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".AcnSensaApplication"
@@ -30,6 +31,11 @@
             android:exported="false" />
 
         <activity android:name=".ui.actions.EditActionActivity" />
+        <activity
+            android:name=".ui.settings.PublishListActivity"
+            android:label="@string/title_publish_list"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".ui.settings.AddPublishActivity" />
     </application>
 
 </manifest>

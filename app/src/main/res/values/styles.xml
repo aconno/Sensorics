@@ -9,6 +9,15 @@
         <item name="android:fontFamily">@font/rubik</item>
     </style>
 
+    <!-- Settings application theme with ActionBar. -->
+    <style name="SettingsTheme" parent="Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/secondaryColor</item>
+        <item name="android:fontFamily">@font/rubik</item>
+    </style>
+
     <style name="Toolbar">
         <item name="android:background">@color/primaryColor</item>
         <item name="android:elevation">@dimen/toolbar_elevation</item>
@@ -36,5 +45,9 @@
         <item name="android:textColor">@color/secondaryColor</item>
         <item name="android:textSize">@dimen/message_text_size</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>
