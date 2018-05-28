@@ -127,6 +127,11 @@
         <item>@string/other_backend</item>
     </string-array>
 
+    <string-array name="RESTMethods">
+        <item>@string/rest_method_get</item>
+        <item>@string/rest_method_post</item>
+    </string-array>
+
     <!-- AddPublishActivity -->
     <string name="name">Name</string>
     <string name="project_id">ProjectId</string>
@@ -136,5 +141,7 @@
     <string name="private_key">Private Key</string>
     <string name="private_key_click">Touch to choose</string>
     <string name="not_valid_file_pkcs8">Selected File is not valid PKCS8 FIle.</string>
+    <string name="rest_method_post">POST</string>
+    <string name="rest_method_get">GET</string>
 
 </resources>
