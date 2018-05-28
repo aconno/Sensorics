@@ -198,7 +198,7 @@ class AddPublishActivity : AppCompatActivity() {
                 val id = basePublish!!.id
 
                 toastText = "Updated"
-                publishViewModel.update(
+                publishViewModel.updateGoogle(
                     id,
                     name,
                     projectId,
@@ -210,7 +210,7 @@ class AddPublishActivity : AppCompatActivity() {
 
             } else {
                 toastText = "Created"
-                publishViewModel.save(
+                publishViewModel.saveGoogle(
                     name,
                     projectId,
                     region,

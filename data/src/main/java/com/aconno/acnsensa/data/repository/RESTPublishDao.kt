@@ -6,13 +6,13 @@ import io.reactivex.Single
 @Dao
 abstract class RESTPublishDao {
 
-    @get:Query("SELECT * FROM google_publish")
+    @get:Query("SELECT * FROM rest_publish")
     abstract val all: Single<List<RESTPublishEntity>>
 
-    @Query("SELECT * FROM google_publish WHERE id = :restPublishId")
+    @Query("SELECT * FROM rest_publish WHERE id = :restPublishId")
     abstract fun getRESTPublishById(restPublishId: Long): Single<RESTPublishEntity>
 
-    @Query("SELECT * FROM google_publish WHERE enabled = 1")
+    @Query("SELECT * FROM rest_publish WHERE enabled = 1")
     abstract fun getEnabledRESTPublish(): Single<List<RESTPublishEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

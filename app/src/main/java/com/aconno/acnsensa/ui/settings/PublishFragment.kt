@@ -53,7 +53,7 @@ class PublishFragment : Fragment() {
             item.enabled = checked
 
             if (item is GooglePublish) {
-                publishListViewModel.update(
+                publishListViewModel.updateGoogle(
                     item.id,
                     item.name,
                     item.projectId,
@@ -103,7 +103,7 @@ class PublishFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        publishListViewModel.getAllPublish()
+        publishListViewModel.getAllGooglePublish()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { actions -> initGooglePublishList(actions) }
