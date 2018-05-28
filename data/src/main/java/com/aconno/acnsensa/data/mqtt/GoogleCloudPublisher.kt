@@ -2,7 +2,6 @@ package com.aconno.acnsensa.data.mqtt
 
 import android.content.Context
 import android.net.Uri
-import android.preference.PreferenceManager
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.model.readings.Reading
@@ -11,22 +10,22 @@ import io.jsonwebtoken.SignatureAlgorithm
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import timber.log.Timber
-import java.io.File
-import java.io.FileInputStream
 import java.nio.charset.Charset
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
 
-class GoogleCloudPublisher(context: Context, val googlePublish: GooglePublish) : Publisher {
+class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePublish) : Publisher {
 
     //TODO: Refactor
-
     private val mqttAndroidClient: MqttAndroidClient
+
+    private val jwtByteArray: ByteArray
 
     private val messagesQueue: Queue<String> = LinkedList<String>()
 
     init {
+        jwtByteArray = getPrivateKeyData(context)
         mqttAndroidClient = MqttAndroidClient(context, SERVER_URI, getClientID())
         mqttAndroidClient.setCallback(
             object : MqttCallbackExtended {
@@ -61,11 +60,10 @@ class GoogleCloudPublisher(context: Context, val googlePublish: GooglePublish) :
         return "projects/${googlePublish.projectId}/locations/${googlePublish.region}/registries/${googlePublish.deviceRegistry}/devices/${googlePublish.device}"
     }
 
-    private fun getPrivateKeyData(): ByteArray {
+    private fun getPrivateKeyData(context: Context): ByteArray {
         val uri = Uri.parse(googlePublish.privateKey)
-        val file = File(uri.path)
+        val stream = context.contentResolver.openInputStream(uri)
 
-        val stream = FileInputStream(file)
         val size = stream.available()
         val buffer = ByteArray(size)
         stream.read(buffer)
@@ -144,7 +142,7 @@ class GoogleCloudPublisher(context: Context, val googlePublish: GooglePublish) :
             .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 20))
             .setAudience(projectId)
 
-        val keyBytes = getPrivateKeyData()
+        val keyBytes = jwtByteArray
         val spec = PKCS8EncodedKeySpec(keyBytes)
         val kf = KeyFactory.getInstance("RSA")
 
@@ -164,9 +162,6 @@ class GoogleCloudPublisher(context: Context, val googlePublish: GooglePublish) :
 
     companion object {
         private const val SERVER_URI = "ssl://mqtt.googleapis.com:8883"
-
-        private const val CUMULOSITY_SUBSCRIBTION_TOPIC = "s/us"
-
         private const val QUALITY_OF_SERVICE = 0
         private const val RETENTION_POLICY = false
     }

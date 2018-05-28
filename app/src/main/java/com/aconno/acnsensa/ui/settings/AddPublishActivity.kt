@@ -3,6 +3,7 @@ package com.aconno.acnsensa.ui.settings
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -20,6 +21,8 @@ import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import kotlinx.android.synthetic.main.activity_add_publish.*
+import java.security.KeyFactory
+import java.security.spec.PKCS8EncodedKeySpec
 import javax.inject.Inject
 
 class AddPublishActivity : AppCompatActivity() {
@@ -57,10 +60,9 @@ class AddPublishActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-
         edit_privatekey.setOnClickListener {
 
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.type = "*/*"
             startActivityForResult(
                 intent,
@@ -94,8 +96,17 @@ class AddPublishActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == PICKFILE_REQUEST_CODE) {
             data?.let {
-                val path = it.data.path
-                edit_privatekey.setText(path)
+                val path = it.data.toString()
+
+                if (isFileValidPKCS8(getPrivateKeyData(it.data.toString()))) {
+                    edit_privatekey.text = path
+                } else {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.not_valid_file_pkcs8),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
 
@@ -158,7 +169,7 @@ class AddPublishActivity : AppCompatActivity() {
     }
 
     private fun otherAddOrUpdate() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Toast.makeText(this, "Under Construction.. Not Implemented Yet.", Toast.LENGTH_SHORT).show()
     }
 
     private fun googleAddOrUpdate() {
@@ -211,6 +222,29 @@ class AddPublishActivity : AppCompatActivity() {
 
             Toast.makeText(this, "$toastText $name", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun isFileValidPKCS8(byteArray: ByteArray): Boolean {
+        val spec = PKCS8EncodedKeySpec(byteArray)
+        val kf = KeyFactory.getInstance("RSA")
+
+        try {
+            kf.generatePrivate(spec)
+        } catch (e: Exception) {
+            return false
+        }
+        return true
+    }
+
+    private fun getPrivateKeyData(privateKey: String): ByteArray {
+        val uri = Uri.parse(privateKey)
+        val stream = contentResolver.openInputStream(uri)
+
+        val size = stream.available()
+        val buffer = ByteArray(size)
+        stream.read(buffer)
+        stream.close()
+        return buffer
     }
 
     companion object {

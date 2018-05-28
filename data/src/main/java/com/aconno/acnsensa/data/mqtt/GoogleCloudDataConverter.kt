@@ -8,7 +8,7 @@ import java.util.*
 object GoogleCloudDataConverter {
 
     val date = Date()
-    val timeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+    private val timeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault())
 
     init {
         timeFormat.timeZone = TimeZone.getTimeZone("UTC")
