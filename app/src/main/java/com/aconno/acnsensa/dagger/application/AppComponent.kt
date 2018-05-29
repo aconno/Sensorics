@@ -11,6 +11,7 @@ import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Component
 import io.reactivex.Flowable
@@ -30,6 +31,8 @@ interface AppComponent {
     fun inMemoryRepository(): InMemoryRepository
 
     fun sensorValues(): Flowable<Map<String, Number>>
+
+    fun beacons(): Flowable<Device>
 
     fun googlePublishRepository(): GooglePublishRepository
 

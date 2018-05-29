@@ -36,6 +36,7 @@ import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
+import timber.log.Timber
 import javax.inject.Singleton
 
 /**

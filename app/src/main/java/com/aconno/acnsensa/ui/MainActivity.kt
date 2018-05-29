@@ -15,6 +15,7 @@ import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
 import com.aconno.acnsensa.domain.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.model.AcnSensaPermission
+import com.aconno.acnsensa.ui.beacons.BeaconListFragment
 import com.aconno.acnsensa.ui.settings.PublishListActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import com.aconno.acnsensa.viewmodel.BluetoothViewModel
@@ -63,7 +64,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         invalidateOptionsMenu()
 
         if (savedInstanceState == null) {
-            addFragment()
+            addSelectBeaconFragment()
         }
     }
 
@@ -146,6 +147,12 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         val transaction = supportFragmentManager.beginTransaction()
         transaction.add(activity_container.id, SensorListFragment())
         transaction.commit()
+    }
+
+    private fun addSelectBeaconFragment() {
+        supportFragmentManager.beginTransaction()
+            .add(activity_container.id, BeaconListFragment())
+            .commit()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {

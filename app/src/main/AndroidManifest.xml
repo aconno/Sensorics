@@ -36,8 +36,6 @@
             android:label="@string/title_publish_list"
             android:theme="@style/AppTheme" />
         <activity android:name=".ui.settings.AddPublishActivity" />
-
-        <activity android:name=".ui.beacons.SelectBeaconActivity" />
     </application>
 
 </manifest>

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.model.Device
 import kotlinx.android.synthetic.main.item_beacon.view.*
+import timber.log.Timber
 
 class BeaconAdapter(
     private val beacons: MutableList<Device>,
@@ -15,6 +16,12 @@ class BeaconAdapter(
 
     fun addBeacon(beacon: Device) {
         beacons.add(beacon)
+        notifyDataSetChanged()
+    }
+
+    fun setBeacons(beacons: List<Device>) {
+        this.beacons.clear()
+        this.beacons.addAll(beacons)
         notifyDataSetChanged()
     }
 
