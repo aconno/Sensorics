@@ -11,7 +11,11 @@ import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
+import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
 import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Component
 import io.reactivex.Flowable
@@ -33,6 +37,14 @@ interface AppComponent {
     fun sensorValues(): Flowable<Map<String, Number>>
 
     fun beacons(): Flowable<Device>
+
+    fun scanResults(): Flowable<ScanResult>
+
+    fun filterAdvertisementUseCase(): FilterAdvertisementsUseCase
+
+    fun filterByMacAddressUseCase(): FilterByMacAddressUseCase
+
+    fun deserializeScanResultUseCase(): DeserializeScanResultUseCase
 
     fun googlePublishRepository(): GooglePublishRepository
 

@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     fun showSensorValues(macAddress: String) {
         supportFragmentManager.beginTransaction()
-            .add(content_container.id, SensorListFragment())
+            .add(content_container.id, SensorListFragment.newInstance(macAddress))
             .addToBackStack(null)
             .commit()
     }

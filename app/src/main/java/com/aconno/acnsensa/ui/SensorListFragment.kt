@@ -23,6 +23,11 @@ class SensorListFragment : Fragment() {
 
         val mainActivity: MainActivity? = activity as MainActivity
         mainActivity?.mainActivityComponent?.inject(this)
+
+        arguments?.let {
+            val macAddress = it.getString(MAC_ADDRESS_EXTRA)
+            sensorListViewModel.setMacAddress(macAddress)
+        }
     }
 
     override fun onResume() {
@@ -275,6 +280,19 @@ class SensorListFragment : Fragment() {
             }
 
             batteryLevel?.let { sensor_battery_level.update(batteryLabel, "$batteryLevel%") }
+        }
+    }
+
+    companion object {
+
+        private const val MAC_ADDRESS_EXTRA = "mac_address"
+
+        fun newInstance(macAddress: String): SensorListFragment {
+            val bundle = Bundle()
+            bundle.putString(MAC_ADDRESS_EXTRA, macAddress)
+            val fragment = SensorListFragment()
+            fragment.arguments = bundle
+            return fragment
         }
     }
 }
