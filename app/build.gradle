@@ -66,6 +66,9 @@ dependencies {
 
     // Flexbox
     implementation 'com.google.android:flexbox:0.3.2'
+
+    //OkHttp
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 }
 
 repositories {
