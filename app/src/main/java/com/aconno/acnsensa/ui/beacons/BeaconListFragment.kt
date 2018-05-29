@@ -64,7 +64,10 @@ class BeaconListFragment : Fragment(), ItemClickListener<Device> {
     }
 
     override fun onItemClick(item: Device) {
-        //TODO: Open main activity with scanning filter by device
+        activity?.let {
+            val mainActivity = it as MainActivity
+            mainActivity.showSensorValues(item.macAddress)
+        }
     }
 
     companion object {

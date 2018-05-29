@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         invalidateOptionsMenu()
 
         if (savedInstanceState == null) {
-            addSelectBeaconFragment()
+            showBeaconsFragment()
         }
     }
 
@@ -143,15 +143,15 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         }
     }
 
-    private fun addFragment() {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.add(activity_container.id, SensorListFragment())
-        transaction.commit()
+    fun showSensorValues(macAddress: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(activity_container.id, SensorListFragment())
+            .commit()
     }
 
-    private fun addSelectBeaconFragment() {
+    private fun showBeaconsFragment() {
         supportFragmentManager.beginTransaction()
-            .add(activity_container.id, BeaconListFragment())
+            .replace(activity_container.id, BeaconListFragment.newInstance())
             .commit()
     }
 
