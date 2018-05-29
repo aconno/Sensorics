@@ -30,6 +30,7 @@ import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
 import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Module
@@ -102,6 +103,18 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
         return observable
             .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
             .concatMap { sensorValuesUseCase.execute(it).toFlowable() }
+    }
+
+    @Provides
+    @Singleton
+    fun provideBeaconsFlowable(
+        bluetooth: Bluetooth,
+        filterAdvertisementsUseCase: FilterAdvertisementsUseCase
+    ): Flowable<Device> {
+        val observable: Flowable<ScanResult> = bluetooth.getScanResults()
+        return observable
+            .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
+            .map { it.device }
     }
 
     @Provides
