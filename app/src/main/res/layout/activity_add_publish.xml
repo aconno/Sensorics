@@ -75,6 +75,43 @@
                     </android.support.design.widget.TextInputLayout>
 
                     <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/edit_interval_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:gravity="center"
+                            android:hint="@string/name"
+                            android:inputType="numberDecimal"
+                            tools:text="123" />
+
+                        <Spinner
+                            android:id="@+id/spinner_interval_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:entries="@array/PublishIntervals" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/text_lastdatasent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:textAppearance="?android:attr/textAppearanceMediumInverse"
+                        android:textColor="?attr/editTextColor"
+                        tools:text="Last data sent time : " />
+
+                    <LinearLayout
                         android:id="@+id/layout_google"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -181,7 +218,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:visibility="visible">
+                        android:visibility="gone">
 
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"

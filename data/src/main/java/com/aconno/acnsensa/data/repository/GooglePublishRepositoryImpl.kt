@@ -43,7 +43,10 @@ class GooglePublishRepositoryImpl(private val googlePublishDao: GooglePublishDao
             googlePublish.deviceRegistry,
             googlePublish.device,
             googlePublish.privateKey,
-            googlePublish.enabled
+            googlePublish.enabled,
+            googlePublish.timeType,
+            googlePublish.timeMillis,
+            googlePublish.lastTimeMillis
         )
     }
 
@@ -56,7 +59,10 @@ class GooglePublishRepositoryImpl(private val googlePublishDao: GooglePublishDao
             googlePublishEntity.deviceRegistry,
             googlePublishEntity.device,
             googlePublishEntity.privateKey,
-            googlePublishEntity.enabled
+            googlePublishEntity.enabled,
+            googlePublishEntity.timeType,
+            googlePublishEntity.timeMillis,
+            googlePublishEntity.lastTimeMillis
         )
     }
 }

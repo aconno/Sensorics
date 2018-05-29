@@ -29,10 +29,23 @@ class PublishViewModel(
         region: String,
         deviceRegistry: String,
         device: String,
-        privateKey: String
+        privateKey: String,
+        timeType: String,
+        timeMillis: Long
+
     ): GeneralGooglePublish {
         val googlePublish = GeneralGooglePublish(
-            id, name, projectId, region, deviceRegistry, device, privateKey, false
+            id,
+            name,
+            projectId,
+            region,
+            deviceRegistry,
+            device,
+            privateKey,
+            false,
+            timeType,
+            timeMillis,
+            0L
         )
 
         addGooglePublishUseCase.execute(googlePublish)
@@ -48,10 +61,12 @@ class PublishViewModel(
     fun saveREST(
         name: String,
         url: String,
-        method: String
+        method: String,
+        timeType: String,
+        timeMillis: Long
     ): GeneralRESTPublish {
         val generalRESTPublish = GeneralRESTPublish(
-            id, name, url, method, false
+            id, name, url, method, false, timeType, timeMillis, 0L
         )
 
         addRESTPublishUseCase.execute(generalRESTPublish)
@@ -71,10 +86,23 @@ class PublishViewModel(
         region: String,
         deviceRegistry: String,
         device: String,
-        privateKey: String
+        privateKey: String,
+        timeType: String,
+        timeMillis: Long,
+        lastTimeMillis: Long
     ) {
         val googlePublish = GeneralGooglePublish(
-            id, name, projectId, region, deviceRegistry, device, privateKey, false
+            id,
+            name,
+            projectId,
+            region,
+            deviceRegistry,
+            device,
+            privateKey,
+            false,
+            timeType,
+            timeMillis,
+            lastTimeMillis
         )
 
         updateGooglePublishUseCase.execute(googlePublish)
@@ -89,10 +117,13 @@ class PublishViewModel(
         id: Long,
         name: String,
         url: String,
-        method: String
+        method: String,
+        timeType: String,
+        timeMillis: Long,
+        lastTimeMillis: Long
     ) {
         val generalRESTPublish = GeneralRESTPublish(
-            id, name, url, method, false
+            id, name, url, method, false, timeType, timeMillis, lastTimeMillis
         )
 
         updateRESTPublishUserCase.execute(generalRESTPublish)

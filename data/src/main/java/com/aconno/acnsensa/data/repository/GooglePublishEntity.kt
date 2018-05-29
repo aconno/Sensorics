@@ -12,5 +12,8 @@ data class GooglePublishEntity(
     var deviceRegistry: String,
     var device: String,
     var privateKey: String,
-    var enabled: Boolean
+    var enabled: Boolean,
+    var timeType: String,
+    var timeMillis: Long,
+    var lastTimeMillis: Long
 )

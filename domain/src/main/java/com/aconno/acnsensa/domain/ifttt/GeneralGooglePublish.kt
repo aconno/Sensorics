@@ -10,5 +10,8 @@ class GeneralGooglePublish(
     override val deviceRegistry: String,
     override val device: String,
     override val privateKey: String,
-    override var enabled: Boolean
+    override var enabled: Boolean,
+    override var timeType: String,
+    override var timeMillis: Long,
+    override var lastTimeMillis: Long
 ) : GooglePublish, Serializable

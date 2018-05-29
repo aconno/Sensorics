@@ -16,14 +16,14 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
 import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
-import com.aconno.acnsensa.domain.ifttt.BasePublish
-import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublish
-import com.aconno.acnsensa.domain.ifttt.GooglePublish
-import com.aconno.acnsensa.domain.ifttt.RESTPublish
+import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import kotlinx.android.synthetic.main.activity_add_publish.*
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AddPublishActivity : AppCompatActivity() {
@@ -122,6 +122,24 @@ class AddPublishActivity : AppCompatActivity() {
 
     private fun setTextsWithTemp() {
         edit_name.setText(basePublish?.name)
+        spinner_interval_time.setSelection(
+            resources.getStringArray(R.array.PublishIntervals).indexOf(
+                basePublish?.timeType
+            )
+        )
+
+        edit_interval_count.setText(
+            calculateCountFromMillis(
+                basePublish!!.timeMillis,
+                basePublish!!.timeType
+            )
+        )
+
+        val str = getString(R.string.last_data_sent) + " " +
+                millisToFormattedDateString(
+                    basePublish!!.lastTimeMillis
+                )
+        text_lastdatasent.text = str
 
         if (basePublish is GooglePublish) {
             spinner.setSelection(0)
@@ -136,13 +154,13 @@ class AddPublishActivity : AppCompatActivity() {
             edit_privatekey.setText(googlePublish.privateKey)
         } else if (basePublish is RESTPublish) {
             spinner.setSelection(1)
-            layout_google.visibility = View.VISIBLE
+            layout_rest.visibility = View.VISIBLE
 
             val restPublish = basePublish as RESTPublish
 
             edit_url.setText(restPublish.url)
             val selection = if (restPublish.method == "GET") 0 else 1
-            spinner.setSelection(selection)
+            spinner_methods.setSelection(selection)
         }
     }
 
@@ -182,15 +200,27 @@ class AddPublishActivity : AppCompatActivity() {
         finish()
     }
 
+    private fun millisToFormattedDateString(millis: Long): String {
+
+        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss,SSS", Locale.US)
+        val date = Date(millis)
+
+        return sdf.format(date)
+    }
+
     private fun restAddOrUpdate() {
         val name = edit_name.text.toString().trim()
         val url = edit_url.text.toString().trim()
         val method = spinner_methods.selectedItem.toString()
+        val timeType = spinner_interval_time.selectedItem.toString()
+        val timeCount = edit_interval_count.text.toString()
 
         if (
             name.isBlank() ||
             url.isBlank() ||
-            method.isBlank()
+            method.isBlank() ||
+            timeType.isBlank() ||
+            timeCount.isBlank()
         ) {
             //TODO Error
             Toast.makeText(this, "Please fill the blanks", Toast.LENGTH_SHORT).show()
@@ -205,7 +235,10 @@ class AddPublishActivity : AppCompatActivity() {
                     id,
                     name,
                     url,
-                    method
+                    method,
+                    timeType,
+                    calculateMillis(timeCount, timeType),
+                    basePublish!!.lastTimeMillis
                 )
 
             } else {
@@ -213,11 +246,33 @@ class AddPublishActivity : AppCompatActivity() {
                 publishViewModel.saveREST(
                     name,
                     url,
-                    method
+                    method,
+                    timeType,
+                    calculateMillis(timeCount, timeType)
                 )
             }
 
             Toast.makeText(this, "$toastText $name", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun calculateMillis(timeCount: String, timeType: String): Long {
+        return when (timeType) {
+            getString(R.string.publish_sec) -> TimeUnit.SECONDS.toMillis(timeCount.toLong())
+            getString(R.string.publish_min) -> TimeUnit.MINUTES.toMillis(timeCount.toLong())
+            getString(R.string.publish_hour) -> TimeUnit.HOURS.toMillis(timeCount.toLong())
+            getString(R.string.publish_day) -> TimeUnit.DAYS.toMillis(timeCount.toLong())
+            else -> throw IllegalArgumentException("Illegal Publish Time Type Provided.")
+        }
+    }
+
+    private fun calculateCountFromMillis(timeMillis: Long, timeType: String): String {
+        return when (timeType) {
+            getString(R.string.publish_sec) -> TimeUnit.MILLISECONDS.toSeconds(timeMillis).toString()
+            getString(R.string.publish_min) -> TimeUnit.MILLISECONDS.toMinutes(timeMillis).toString()
+            getString(R.string.publish_hour) -> TimeUnit.MILLISECONDS.toHours(timeMillis).toString()
+            getString(R.string.publish_day) -> TimeUnit.MILLISECONDS.toDays(timeMillis).toString()
+            else -> throw IllegalArgumentException("Illegal Publish Time Type Provided.")
         }
     }
 
@@ -228,6 +283,8 @@ class AddPublishActivity : AppCompatActivity() {
         val deviceRegistry = edit_deviceregistry.text.toString().trim()
         val device = edit_device.text.toString().trim()
         val privateKey = edit_privatekey.text.toString().trim()
+        val timeType = spinner_interval_time.selectedItem.toString()
+        val timeCount = edit_interval_count.text.toString()
 
         if (
             name.isBlank() ||
@@ -235,7 +292,9 @@ class AddPublishActivity : AppCompatActivity() {
             region.isBlank() ||
             deviceRegistry.isBlank() ||
             device.isBlank() ||
-            privateKey.isBlank()
+            privateKey.isBlank() ||
+            timeType.isBlank() ||
+            timeCount.isBlank()
         ) {
             //TODO Error
             Toast.makeText(this, "Please fill the blanks", Toast.LENGTH_SHORT).show()
@@ -254,7 +313,10 @@ class AddPublishActivity : AppCompatActivity() {
                     region,
                     deviceRegistry,
                     device,
-                    privateKey
+                    privateKey,
+                    timeType,
+                    calculateMillis(timeCount, timeType),
+                    basePublish!!.lastTimeMillis
                 )
 
             } else {
@@ -265,7 +327,9 @@ class AddPublishActivity : AppCompatActivity() {
                     region,
                     deviceRegistry,
                     device,
-                    privateKey
+                    privateKey,
+                    timeType,
+                    calculateMillis(timeCount, timeType)
                 )
             }
 
@@ -305,8 +369,13 @@ class AddPublishActivity : AppCompatActivity() {
             val intent = Intent(context, AddPublishActivity::class.java)
 
             basePublish?.let {
-                if (basePublish is GeneralGooglePublish) {
-                    intent.putExtra(ADD_PUBLISH_ACTIVITY_KEY, basePublish)
+                when (basePublish) {
+                    is GeneralGooglePublish -> intent.putExtra(
+                        ADD_PUBLISH_ACTIVITY_KEY,
+                        basePublish
+                    )
+                    is GeneralRESTPublish -> intent.putExtra(ADD_PUBLISH_ACTIVITY_KEY, basePublish)
+                    else -> throw IllegalArgumentException("Illegal Publish type provided")
                 }
             }
 

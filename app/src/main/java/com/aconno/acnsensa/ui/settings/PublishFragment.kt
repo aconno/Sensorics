@@ -62,7 +62,10 @@ class PublishFragment : Fragment() {
                     item.deviceRegistry,
                     item.device,
                     item.privateKey,
-                    item.enabled
+                    item.enabled,
+                    item.timeType,
+                    item.timeMillis,
+                    item.lastTimeMillis
                 )
             } else if (item is RESTPublish) {
                 publishListViewModel.updateREST(
@@ -70,7 +73,10 @@ class PublishFragment : Fragment() {
                     item.name,
                     item.url,
                     item.method,
-                    item.enabled
+                    item.enabled,
+                    item.timeType,
+                    item.timeMillis,
+                    item.lastTimeMillis
                 )
             }
         }

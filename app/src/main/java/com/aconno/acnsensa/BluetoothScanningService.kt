@@ -13,7 +13,7 @@ import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceComp
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
 import com.aconno.acnsensa.data.http.EmptyPublisher
-import com.aconno.acnsensa.data.http.HttpPublisher
+import com.aconno.acnsensa.data.http.RESTPublisher
 import com.aconno.acnsensa.data.mqtt.GoogleCloudPublisher
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.Publisher
@@ -21,10 +21,7 @@ import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.GetAllEnabledGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.GetAllEnabledRESTPublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.ReadingToInputUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
@@ -68,6 +65,12 @@ class BluetoothScanningService : Service() {
     lateinit var getAllEnabledRESTPublishUseCase: GetAllEnabledRESTPublishUseCase
 
     @Inject
+    lateinit var updateRESTPublishUserCase: UpdateRESTPublishUserCase
+
+    @Inject
+    lateinit var updateGooglePublishUseCase: UpdateGooglePublishUseCase
+
+    @Inject
     lateinit var runOutcomeUseCase: RunOutcomeUseCase
 
     @Inject
@@ -106,43 +109,14 @@ class BluetoothScanningService : Service() {
         super.onCreate()
         bluetoothScanningServiceComponent.inject(this)
 
-        Single.merge(
-            getAllEnabledGooglePublishUseCase.execute(),
-            getAllEnabledRESTPublishUseCase.execute()
-        )
-            .subscribeOn(Schedulers.io())
-            .flatMapIterable { it -> it }
-            .map { it ->
-                when (it) {
-                    is GooglePublish -> GoogleCloudPublisher(this, it)
-                    is RESTPublish -> HttpPublisher(it)
-                    else -> {
-                        EmptyPublisher()
-                    }
-                }
-            }//This line is used to eliminate unregistered types or nulls.
-            .filter { it -> it !is EmptyPublisher }
-            .toList()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { it ->
-                publishers = if (it.size < 0) {
-                    null
-                } else {
-                    it
-                }
-
-                if (publishers != null) {
-                    publishReadingsUseCase = PublishReadingsUseCase(publishers!!)
-                    closeConnectionUseCase = CloseConnectionUseCase(publishers!!)
-                }
-            }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         localBroadcastManager.registerReceiver(receiver, filter)
 
         startForeground(1, notification)
+
+        initPublishers()
 
         bluetooth.startScanning()
         running = true
@@ -156,8 +130,31 @@ class BluetoothScanningService : Service() {
     private fun startSyncing() {
         sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
             .subscribe {
+
                 //Publish when Google Cloud Integration Enabled
                 publishReadingsUseCase?.execute(it)
+                    ?.subscribeOn(Schedulers.io())
+                    ?.flatMapIterable { it }
+                    ?.map {
+                        val data = it.getPublishData()
+                        data.lastTimeMillis = System.currentTimeMillis()
+
+                        when (data) {
+                            is GooglePublish -> {
+                                updateGooglePublishUseCase.execute(data)
+                            }
+
+                            is RESTPublish -> {
+                                updateRESTPublishUserCase.execute(data)
+                            }
+                            else -> {
+                                throw IllegalArgumentException("Illegal data provided.")
+                            }
+                        }
+                    }
+                    ?.subscribe {
+                        it.subscribeOn(Schedulers.io()).subscribe()
+                    }
             }
     }
 
@@ -199,6 +196,39 @@ class BluetoothScanningService : Service() {
         sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
             .subscribe {
                 logReadingsUseCase.execute(it)
+            }
+    }
+
+    private fun initPublishers() {
+        Single.merge(
+            getAllEnabledGooglePublishUseCase.execute(),
+            getAllEnabledRESTPublishUseCase.execute()
+        )
+            .subscribeOn(Schedulers.io())
+            .flatMapIterable { it -> it }
+            .map { it ->
+                when (it) {
+                    is GooglePublish -> GoogleCloudPublisher(this, it)
+                    is RESTPublish -> RESTPublisher(it)
+                    else -> {
+                        EmptyPublisher()
+                    }
+                }
+            }//This line is used to eliminate unregistered types or nulls.
+            .filter { it -> it !is EmptyPublisher }
+            .toList()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { it ->
+                publishers = if (it.size < 1) {
+                    null
+                } else {
+                    it
+                }
+
+                if (publishers != null) {
+                    publishReadingsUseCase = PublishReadingsUseCase(publishers!!)
+                    closeConnectionUseCase = CloseConnectionUseCase(publishers!!)
+                }
             }
     }
 

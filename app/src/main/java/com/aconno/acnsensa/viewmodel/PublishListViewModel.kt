@@ -30,10 +30,23 @@ class PublishListViewModel(
         deviceRegistry: String,
         device: String,
         privateKey: String,
-        enabled: Boolean
+        enabled: Boolean,
+        timeType: String,
+        timeMillis: Long,
+        lastTimeMillis: Long
     ) {
         val googlePublish = GeneralGooglePublish(
-            id, name, projectId, region, deviceRegistry, device, privateKey, enabled
+            id,
+            name,
+            projectId,
+            region,
+            deviceRegistry,
+            device,
+            privateKey,
+            enabled,
+            timeType,
+            timeMillis,
+            lastTimeMillis
         )
 
         updateGooglePublishUseCase.execute(googlePublish)
@@ -49,10 +62,13 @@ class PublishListViewModel(
         name: String,
         url: String,
         method: String,
-        enabled: Boolean
+        enabled: Boolean,
+        timeType: String,
+        timeMillis: Long,
+        lastTimeMillis: Long
     ) {
         val generalRESTPublish = GeneralRESTPublish(
-            id, name, url, method, enabled
+            id, name, url, method, enabled, timeType, timeMillis, lastTimeMillis
         )
 
         updateRESTPublishUserCase.execute(generalRESTPublish)

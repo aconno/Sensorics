@@ -37,7 +37,10 @@ class RESTPublishRepositoryImpl(private val restPublishDao: RESTPublishDao) :
             restPublish.name,
             restPublish.url,
             restPublish.method,
-            restPublish.enabled
+            restPublish.enabled,
+            restPublish.timeType,
+            restPublish.timeMillis,
+            restPublish.lastTimeMillis
         )
     }
 
@@ -47,7 +50,10 @@ class RESTPublishRepositoryImpl(private val restPublishDao: RESTPublishDao) :
             restPublishEntity.name,
             restPublishEntity.url,
             restPublishEntity.method,
-            restPublishEntity.enabled
+            restPublishEntity.enabled,
+            restPublishEntity.timeType,
+            restPublishEntity.timeMillis,
+            restPublishEntity.lastTimeMillis
         )
     }
 }
