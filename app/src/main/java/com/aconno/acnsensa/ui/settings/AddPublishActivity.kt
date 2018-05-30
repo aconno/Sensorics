@@ -16,13 +16,14 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
 import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
-import com.aconno.acnsensa.domain.ifttt.BasePublish
-import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublish
-import com.aconno.acnsensa.domain.ifttt.GooglePublish
+import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import kotlinx.android.synthetic.main.activity_add_publish.*
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AddPublishActivity : AppCompatActivity() {
@@ -49,11 +50,11 @@ class AddPublishActivity : AppCompatActivity() {
         setSupportActionBar(custom_toolbar)
 
         when {
-            temp is GooglePublish -> {
+            temp is BasePublish -> {
                 basePublish = temp
                 setTextsWithTemp()
             }
-            temp != null -> throw IllegalArgumentException("Only GooglePublish can be sent")
+            temp != null -> throw IllegalArgumentException("Only classes that extend from BasePublish can be sent")
         }
 
         initViews()
@@ -83,8 +84,14 @@ class AddPublishActivity : AppCompatActivity() {
                 id: Long
             ) {
                 when (position) {
-                    0 -> layout_google.visibility = View.VISIBLE
-                    else -> layout_google.visibility = View.GONE
+                    0 -> {
+                        layout_google.visibility = View.VISIBLE
+                        layout_rest.visibility = View.GONE
+                    }
+                    1 -> {
+                        layout_rest.visibility = View.VISIBLE
+                        layout_google.visibility = View.GONE
+                    }
                 }
             }
         }
@@ -115,8 +122,27 @@ class AddPublishActivity : AppCompatActivity() {
 
     private fun setTextsWithTemp() {
         edit_name.setText(basePublish?.name)
+        spinner_interval_time.setSelection(
+            resources.getStringArray(R.array.PublishIntervals).indexOf(
+                basePublish?.timeType
+            )
+        )
+
+        edit_interval_count.setText(
+            calculateCountFromMillis(
+                basePublish!!.timeMillis,
+                basePublish!!.timeType
+            )
+        )
+
+        val str = getString(R.string.last_data_sent) + " " +
+                millisToFormattedDateString(
+                    basePublish!!.lastTimeMillis
+                )
+        text_lastdatasent.text = str
 
         if (basePublish is GooglePublish) {
+            spinner.setSelection(0)
             layout_google.visibility = View.VISIBLE
 
             val googlePublish = basePublish as GooglePublish
@@ -126,8 +152,15 @@ class AddPublishActivity : AppCompatActivity() {
             edit_deviceregistry.setText(googlePublish.deviceRegistry)
             edit_device.setText(googlePublish.device)
             edit_privatekey.setText(googlePublish.privateKey)
-        } else {
-            //TODO
+        } else if (basePublish is RESTPublish) {
+            spinner.setSelection(1)
+            layout_rest.visibility = View.VISIBLE
+
+            val restPublish = basePublish as RESTPublish
+
+            edit_url.setText(restPublish.url)
+            val selection = if (restPublish.method == "GET") 0 else 1
+            spinner_methods.setSelection(selection)
         }
     }
 
@@ -148,7 +181,6 @@ class AddPublishActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id: Int? = item?.itemId
         when (id) {
-        //TODO Add startActivityForResult
             R.id.action_publish_done -> addOrUpdate()
         }
 
@@ -160,7 +192,7 @@ class AddPublishActivity : AppCompatActivity() {
 
         when (selectedItem) {
             0 -> googleAddOrUpdate()
-            1 -> otherAddOrUpdate()
+            1 -> restAddOrUpdate()
             else -> throw IllegalArgumentException("Please use registered types.")
         }
 
@@ -168,8 +200,80 @@ class AddPublishActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun otherAddOrUpdate() {
-        Toast.makeText(this, "Under Construction.. Not Implemented Yet.", Toast.LENGTH_SHORT).show()
+    private fun millisToFormattedDateString(millis: Long): String {
+
+        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss,SSS", Locale.US)
+        val date = Date(millis)
+
+        return sdf.format(date)
+    }
+
+    private fun restAddOrUpdate() {
+        val name = edit_name.text.toString().trim()
+        val url = edit_url.text.toString().trim()
+        val method = spinner_methods.selectedItem.toString()
+        val timeType = spinner_interval_time.selectedItem.toString()
+        val timeCount = edit_interval_count.text.toString()
+
+        if (
+            name.isBlank() ||
+            url.isBlank() ||
+            method.isBlank() ||
+            timeType.isBlank() ||
+            timeCount.isBlank()
+        ) {
+            //TODO Error
+            Toast.makeText(this, "Please fill the blanks", Toast.LENGTH_SHORT).show()
+        } else {
+            val toastText: String
+
+            if (basePublish != null) {
+                val id = basePublish!!.id
+
+                toastText = "Updated"
+                publishViewModel.updateREST(
+                    id,
+                    name,
+                    url,
+                    method,
+                    timeType,
+                    calculateMillis(timeCount, timeType),
+                    basePublish!!.lastTimeMillis
+                )
+
+            } else {
+                toastText = "Created"
+                publishViewModel.saveREST(
+                    name,
+                    url,
+                    method,
+                    timeType,
+                    calculateMillis(timeCount, timeType)
+                )
+            }
+
+            Toast.makeText(this, "$toastText $name", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun calculateMillis(timeCount: String, timeType: String): Long {
+        return when (timeType) {
+            getString(R.string.publish_sec) -> TimeUnit.SECONDS.toMillis(timeCount.toLong())
+            getString(R.string.publish_min) -> TimeUnit.MINUTES.toMillis(timeCount.toLong())
+            getString(R.string.publish_hour) -> TimeUnit.HOURS.toMillis(timeCount.toLong())
+            getString(R.string.publish_day) -> TimeUnit.DAYS.toMillis(timeCount.toLong())
+            else -> throw IllegalArgumentException("Illegal Publish Time Type Provided.")
+        }
+    }
+
+    private fun calculateCountFromMillis(timeMillis: Long, timeType: String): String {
+        return when (timeType) {
+            getString(R.string.publish_sec) -> TimeUnit.MILLISECONDS.toSeconds(timeMillis).toString()
+            getString(R.string.publish_min) -> TimeUnit.MILLISECONDS.toMinutes(timeMillis).toString()
+            getString(R.string.publish_hour) -> TimeUnit.MILLISECONDS.toHours(timeMillis).toString()
+            getString(R.string.publish_day) -> TimeUnit.MILLISECONDS.toDays(timeMillis).toString()
+            else -> throw IllegalArgumentException("Illegal Publish Time Type Provided.")
+        }
     }
 
     private fun googleAddOrUpdate() {
@@ -179,6 +283,8 @@ class AddPublishActivity : AppCompatActivity() {
         val deviceRegistry = edit_deviceregistry.text.toString().trim()
         val device = edit_device.text.toString().trim()
         val privateKey = edit_privatekey.text.toString().trim()
+        val timeType = spinner_interval_time.selectedItem.toString()
+        val timeCount = edit_interval_count.text.toString()
 
         if (
             name.isBlank() ||
@@ -186,7 +292,9 @@ class AddPublishActivity : AppCompatActivity() {
             region.isBlank() ||
             deviceRegistry.isBlank() ||
             device.isBlank() ||
-            privateKey.isBlank()
+            privateKey.isBlank() ||
+            timeType.isBlank() ||
+            timeCount.isBlank()
         ) {
             //TODO Error
             Toast.makeText(this, "Please fill the blanks", Toast.LENGTH_SHORT).show()
@@ -198,25 +306,30 @@ class AddPublishActivity : AppCompatActivity() {
                 val id = basePublish!!.id
 
                 toastText = "Updated"
-                publishViewModel.update(
+                publishViewModel.updateGoogle(
                     id,
                     name,
                     projectId,
                     region,
                     deviceRegistry,
                     device,
-                    privateKey
+                    privateKey,
+                    timeType,
+                    calculateMillis(timeCount, timeType),
+                    basePublish!!.lastTimeMillis
                 )
 
             } else {
                 toastText = "Created"
-                publishViewModel.save(
+                publishViewModel.saveGoogle(
                     name,
                     projectId,
                     region,
                     deviceRegistry,
                     device,
-                    privateKey
+                    privateKey,
+                    timeType,
+                    calculateMillis(timeCount, timeType)
                 )
             }
 
@@ -256,8 +369,13 @@ class AddPublishActivity : AppCompatActivity() {
             val intent = Intent(context, AddPublishActivity::class.java)
 
             basePublish?.let {
-                if (basePublish is GeneralGooglePublish) {
-                    intent.putExtra(ADD_PUBLISH_ACTIVITY_KEY, basePublish)
+                when (basePublish) {
+                    is GeneralGooglePublish -> intent.putExtra(
+                        ADD_PUBLISH_ACTIVITY_KEY,
+                        basePublish
+                    )
+                    is GeneralRESTPublish -> intent.putExtra(ADD_PUBLISH_ACTIVITY_KEY, basePublish)
+                    else -> throw IllegalArgumentException("Illegal Publish type provided")
                 }
             }
 

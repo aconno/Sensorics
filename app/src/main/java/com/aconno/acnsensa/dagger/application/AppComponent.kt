@@ -7,15 +7,12 @@ import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
-import com.aconno.acnsensa.domain.ifttt.ActionsRepository
-import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
-import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
-import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
+import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Component
 import io.reactivex.Flowable
@@ -47,6 +44,8 @@ interface AppComponent {
     fun deserializeScanResultUseCase(): DeserializeScanResultUseCase
 
     fun googlePublishRepository(): GooglePublishRepository
+
+    fun restPublishRepository(): RESTPublishRepository
 
     fun actionsRepository(): ActionsRepository
 

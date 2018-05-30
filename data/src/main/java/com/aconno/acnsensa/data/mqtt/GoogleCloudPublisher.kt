@@ -3,6 +3,7 @@ package com.aconno.acnsensa.data.mqtt
 import android.content.Context
 import android.net.Uri
 import com.aconno.acnsensa.domain.Publisher
+import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.model.readings.Reading
 import io.jsonwebtoken.Jwts
@@ -71,6 +72,13 @@ class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePu
         return buffer
     }
 
+    override fun getPublishData(): BasePublish {
+        return googlePublish
+    }
+
+    override fun isPublishable(): Boolean {
+        return System.currentTimeMillis() > (googlePublish.lastTimeMillis + googlePublish.timeMillis)
+    }
 
     override fun publish(reading: Reading) {
         val messages = GoogleCloudDataConverter.convert(reading)

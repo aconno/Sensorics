@@ -2,16 +2,13 @@ package com.aconno.acnsensa.domain.ifttt
 
 import java.io.Serializable
 
-class GeneralGooglePublish(
+class GeneralRESTPublish(
     override val id: Long,
     override val name: String,
-    override val projectId: String,
-    override val region: String,
-    override val deviceRegistry: String,
-    override val device: String,
-    override val privateKey: String,
+    override val url: String,
+    override val method: String,
     override var enabled: Boolean,
     override var timeType: String,
     override var timeMillis: Long,
     override var lastTimeMillis: Long
-) : GooglePublish, Serializable
+) : RESTPublish, Serializable

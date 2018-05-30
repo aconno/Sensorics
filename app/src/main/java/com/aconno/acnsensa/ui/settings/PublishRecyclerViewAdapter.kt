@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
+import com.aconno.acnsensa.domain.ifttt.RESTPublish
 
 
 import com.aconno.acnsensa.ui.settings.PublishFragment.OnListFragmentInteractionListener
@@ -30,7 +31,7 @@ class PublishRecyclerViewAdapter(
 
     init {
         mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as GooglePublish
+            val item = v.tag as BasePublish
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
             mListener?.onListFragmentInteraction(item)
@@ -50,6 +51,8 @@ class PublishRecyclerViewAdapter(
 
         if (item is GooglePublish) {
             holder.mImageView.setImageResource(R.drawable.google_logo)
+        } else if (item is RESTPublish) {
+            holder.mImageView.setImageResource(R.drawable.uplaod_cloud)
         }
 
         with(holder.mView) {
