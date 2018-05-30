@@ -160,5 +160,7 @@
     <string name="publish_sec">Secs</string>
     <string name="last_data_sent">Last data sent at : </string>
     <string name="snackbar_stop_scanning">Please stop scanning first</string>
+    <string name="snackbar_permission_message">You can always set permissions</string>
+    <string name="snackbar_settings">Settings</string>
 
 </resources>

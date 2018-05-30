@@ -8,27 +8,42 @@ import com.aconno.acnsensa.model.AcnSensaPermission
  * TODO Refactor // This class has to take multiple permissions at the same time.//
  */
 class PermissionViewModel(
-        private val permissionAction: PermissionAction,
-        private val permissionCallbacks: PermissionCallbacks
+    private val permissionAction: PermissionAction,
+    private val permissionCallbacks: PermissionCallbacks
 ) {
 
     fun requestAccessFineLocation() {
         checkAndRequestPermission(AcnSensaPermission.ACCESS_FINE_LOCATION)
     }
 
+    fun requestAccessFineLocationAfterRationale() {
+        requestPermission(AcnSensaPermission.ACCESS_FINE_LOCATION)
+    }
+
     fun requestAccessToReadExternalStorage() {
         checkAndRequestPermission(AcnSensaPermission.READ_EXTERNAL_STORAGE)
+    }
+
+    fun requestAccessToReadExternalStorageAfterRationale() {
+        requestPermission(AcnSensaPermission.READ_EXTERNAL_STORAGE)
     }
 
     private fun checkAndRequestPermission(acnSensaPermission: AcnSensaPermission) {
         if (permissionAction.hasSelfPermission(acnSensaPermission.permission)) {
             permissionCallbacks.permissionAccepted(acnSensaPermission.code)
         } else {
-            permissionAction.requestPermission(
-                    acnSensaPermission.permission,
-                    acnSensaPermission.code
-            )
+            if (permissionAction.shouldShowRequestPermissionRationale(acnSensaPermission.permission)) {
+                //TODO: Rationale not implemented yet
+                //permissionCallbacks.showRationale(acnSensaPermission.code)
+                requestPermission(acnSensaPermission)
+            } else {
+                requestPermission(acnSensaPermission)
+            }
         }
+    }
+
+    private fun requestPermission(acnSensaPermission: AcnSensaPermission) {
+        permissionAction.requestPermission(acnSensaPermission.permission, acnSensaPermission.code)
     }
 
     fun checkGrantedPermission(grantResults: IntArray, requestCode: Int) {

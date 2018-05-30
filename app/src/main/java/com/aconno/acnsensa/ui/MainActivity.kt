@@ -1,14 +1,17 @@
 package com.aconno.acnsensa.ui
 
 import android.arch.lifecycle.Observer
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothScanningService
+import com.aconno.acnsensa.BuildConfig
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
@@ -231,9 +234,8 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     override fun permissionAccepted(actionCode: Int) {
-        //TODO: Permission accepted
         if (actionCode == AcnSensaPermission.ACCESS_FINE_LOCATION.code) {
-            //TODO This workaround will be fixed
+            // TODO: Why do we need READ_EXTERNAL_STORAGE for scanning??? @Sergio
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
             bluetoothScanningViewModel.startScanning()
@@ -241,7 +243,17 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     override fun permissionDenied(actionCode: Int) {
-        //TODO: Permission denied
+        //TODO: Make this nice...
+        Snackbar.make(
+            content_container,
+            getString(R.string.snackbar_permission_message),
+            Snackbar.LENGTH_LONG
+        ).setAction(getString(R.string.snackbar_settings)) {
+            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+            startActivity(intent)
+        }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+            .show()
     }
 
     override fun showRationale(actionCode: Int) {
