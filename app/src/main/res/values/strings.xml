@@ -127,6 +127,9 @@
         <item>@string/other_backend</item>
     </string-array>
 
+    <!-- Beacon list screen -->
+    <string name="no_beacons_label">There are no beacons nearby</string>
+
     <!-- AddPublishActivity -->
     <string name="name">Name</string>
     <string name="project_id">ProjectId</string>
@@ -136,7 +139,5 @@
     <string name="private_key">Private Key</string>
     <string name="private_key_click">Touch to choose</string>
     <string name="not_valid_file_pkcs8">Selected File is not valid PKCS8 FIle.</string>
-    <string name="no_beacons_label">There are no beacons nearby</string>
-    <string name="select_beacon">Select Beacon</string>
 
 </resources>
