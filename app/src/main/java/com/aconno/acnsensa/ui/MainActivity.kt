@@ -16,6 +16,7 @@ import com.aconno.acnsensa.domain.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.model.AcnSensaPermission
 import com.aconno.acnsensa.ui.beacons.BeaconListFragment
+import com.aconno.acnsensa.ui.sensors.SensorListFragment
 import com.aconno.acnsensa.ui.settings.PublishListActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import com.aconno.acnsensa.viewmodel.BluetoothViewModel
