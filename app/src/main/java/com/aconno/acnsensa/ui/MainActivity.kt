@@ -147,14 +147,14 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     fun showSensorValues(macAddress: String) {
         supportFragmentManager.beginTransaction()
-            .add(content_container.id, SensorListFragment.newInstance(macAddress))
+            .replace(content_container.id, SensorListFragment.newInstance(macAddress))
             .addToBackStack(null)
             .commit()
     }
 
     private fun showBeaconsFragment() {
         supportFragmentManager.beginTransaction()
-            .add(content_container.id, BeaconListFragment.newInstance())
+            .replace(content_container.id, BeaconListFragment.newInstance())
             .commit()
     }
 
