@@ -24,6 +24,8 @@ import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Module
@@ -82,6 +84,10 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
     @Provides
     @Singleton
+    fun provideFilterByMacAddressUseCase() = FilterByMacAddressUseCase()
+
+    @Provides
+    @Singleton
     fun provideSensorValuesUseCase(advertisementMatcher: AdvertisementMatcher) =
         DeserializeScanResultUseCase(advertisementMatcher)
 
@@ -96,6 +102,26 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
         return observable
             .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
             .concatMap { sensorValuesUseCase.execute(it).toFlowable() }
+    }
+
+    @Provides
+    @Singleton
+    fun provideScanResultsFlowable(
+        bluetooth: Bluetooth
+    ): Flowable<ScanResult> {
+        return bluetooth.getScanResults()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBeaconsFlowable(
+        bluetooth: Bluetooth,
+        filterAdvertisementsUseCase: FilterAdvertisementsUseCase
+    ): Flowable<Device> {
+        val observable: Flowable<ScanResult> = bluetooth.getScanResults()
+        return observable
+            .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
+            .map { it.device }
     }
 
     @Provides

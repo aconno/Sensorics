@@ -7,6 +7,11 @@ import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
+import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
+import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Component
@@ -27,6 +32,16 @@ interface AppComponent {
     fun inMemoryRepository(): InMemoryRepository
 
     fun sensorValues(): Flowable<Map<String, Number>>
+
+    fun beacons(): Flowable<Device>
+
+    fun scanResults(): Flowable<ScanResult>
+
+    fun filterAdvertisementUseCase(): FilterAdvertisementsUseCase
+
+    fun filterByMacAddressUseCase(): FilterByMacAddressUseCase
+
+    fun deserializeScanResultUseCase(): DeserializeScanResultUseCase
 
     fun googlePublishRepository(): GooglePublishRepository
 

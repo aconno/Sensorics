@@ -16,11 +16,13 @@ import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
 import com.aconno.acnsensa.domain.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.model.AcnSensaPermission
+import com.aconno.acnsensa.ui.beacons.BeaconListFragment
+import com.aconno.acnsensa.ui.sensors.SensorListFragment
 import com.aconno.acnsensa.ui.settings.PublishListActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import com.aconno.acnsensa.viewmodel.BluetoothViewModel
 import com.aconno.acnsensa.viewmodel.PermissionViewModel
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_toolbar.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks {
@@ -48,23 +50,23 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_toolbar)
 
         mainActivityComponent.inject(this)
 
         snackbar =
-                Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(content_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
 
         snackbar?.setActionTextColor(resources.getColor(R.color.primaryColor))
 
-        custom_toolbar.title = getString(R.string.app_name)
-        setSupportActionBar(custom_toolbar)
+        toolbar.title = getString(R.string.app_name)
+        setSupportActionBar(toolbar)
 
         invalidateOptionsMenu()
 
         if (savedInstanceState == null) {
-            addFragment()
+            showBeaconsFragment()
         }
     }
 
@@ -143,10 +145,17 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         }
     }
 
-    private fun addFragment() {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.add(activity_container.id, SensorListFragment())
-        transaction.commit()
+    fun showSensorValues(macAddress: String) {
+        supportFragmentManager.beginTransaction()
+            .add(content_container.id, SensorListFragment.newInstance(macAddress))
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun showBeaconsFragment() {
+        supportFragmentManager.beginTransaction()
+            .add(content_container.id, BeaconListFragment.newInstance())
+            .commit()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {

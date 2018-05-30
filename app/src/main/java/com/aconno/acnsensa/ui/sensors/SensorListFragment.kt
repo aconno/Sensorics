@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui
+package com.aconno.acnsensa.ui.sensors
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.ui.LiveGraphActivity
+import com.aconno.acnsensa.ui.MainActivity
 import com.aconno.acnsensa.ui.graph.GraphType
 import com.aconno.acnsensa.viewmodel.SensorListViewModel
 import kotlinx.android.synthetic.main.fragment_sensor_list.*
@@ -23,6 +25,11 @@ class SensorListFragment : Fragment() {
 
         val mainActivity: MainActivity? = activity as MainActivity
         mainActivity?.mainActivityComponent?.inject(this)
+
+        arguments?.let {
+            val macAddress = it.getString(MAC_ADDRESS_EXTRA)
+            sensorListViewModel.setMacAddress(macAddress)
+        }
     }
 
     override fun onResume() {
@@ -48,50 +55,89 @@ class SensorListFragment : Fragment() {
     private fun setClickListeners() {
         context?.let { context ->
             sensor_temperature.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.TEMPERATURE)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.TEMPERATURE
+                )
             }
             sensor_light.setOnClickListener {
                 LiveGraphActivity.start(context, GraphType.LIGHT)
             }
             sensor_humidity.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.HUMIDITY)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.HUMIDITY
+                )
             }
             sensor_pressure.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.PRESSURE)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.PRESSURE
+                )
             }
 
             sensor_magnetometer_x.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.MAGNETOMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.MAGNETOMETER
+                )
             }
             sensor_magnetometer_y.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.MAGNETOMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.MAGNETOMETER
+                )
             }
             sensor_magnetometer_z.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.MAGNETOMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.MAGNETOMETER
+                )
             }
 
             sensor_accelerometer_x.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.ACCELEROMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.ACCELEROMETER
+                )
             }
             sensor_accelerometer_y.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.ACCELEROMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.ACCELEROMETER
+                )
             }
             sensor_accelerometer_z.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.ACCELEROMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.ACCELEROMETER
+                )
             }
 
             sensor_gyroscope_x.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.GYROSCOPE)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.GYROSCOPE
+                )
             }
             sensor_gyroscope_y.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.GYROSCOPE)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.GYROSCOPE
+                )
             }
             sensor_gyroscope_z.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.GYROSCOPE)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.GYROSCOPE
+                )
             }
 
             sensor_battery_level.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.BATTERY_LEVEL)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.BATTERY_LEVEL
+                )
             }
         }
     }
@@ -275,6 +321,19 @@ class SensorListFragment : Fragment() {
             }
 
             batteryLevel?.let { sensor_battery_level.update(batteryLabel, "$batteryLevel%") }
+        }
+    }
+
+    companion object {
+
+        private const val MAC_ADDRESS_EXTRA = "mac_address"
+
+        fun newInstance(macAddress: String): SensorListFragment {
+            val bundle = Bundle()
+            bundle.putString(MAC_ADDRESS_EXTRA, macAddress)
+            val fragment = SensorListFragment()
+            fragment.arguments = bundle
+            return fragment
         }
     }
 }

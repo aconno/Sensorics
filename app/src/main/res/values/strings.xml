@@ -127,6 +127,9 @@
         <item>@string/other_backend</item>
     </string-array>
 
+    <!-- Beacon list screen -->
+    <string name="no_beacons_label">There are no beacons nearby</string>
+
     <string-array name="RESTMethods">
         <item>@string/rest_method_get</item>
         <item>@string/rest_method_post</item>

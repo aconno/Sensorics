@@ -5,11 +5,14 @@ import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
 import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
+import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.ui.MainActivity
-import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
-import com.aconno.acnsensa.viewmodel.BluetoothViewModel
-import com.aconno.acnsensa.viewmodel.PermissionViewModel
-import com.aconno.acnsensa.viewmodel.SensorListViewModel
+import com.aconno.acnsensa.viewmodel.*
+import com.aconno.acnsensa.viewmodel.factory.BeaconListViewModelFactory
 import com.aconno.acnsensa.viewmodel.factory.BluetoothScanningViewModelFactory
 import com.aconno.acnsensa.viewmodel.factory.BluetoothViewModelFactory
 import com.aconno.acnsensa.viewmodel.factory.SensorListViewModelFactory
@@ -32,8 +35,16 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     @Provides
     @MainActivityScope
     fun provideSensorListViewModelFactory(
-        sensorValues: Flowable<Map<String, Number>>
-    ) = SensorListViewModelFactory(sensorValues)
+        scanResults: Flowable<ScanResult>,
+        filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
+        filterByMacAddressUseCase: FilterByMacAddressUseCase,
+        deserializeScanResultUseCase: DeserializeScanResultUseCase
+    ) = SensorListViewModelFactory(
+        scanResults,
+        filterAdvertisementsUseCase,
+        filterByMacAddressUseCase,
+        deserializeScanResultUseCase
+    )
 
     @Provides
     @MainActivityScope
@@ -78,4 +89,18 @@ class MainActivityModule(private val mainActivity: MainActivity) {
             mainActivity,
             bluetoothViewModelFactory
         ).get(BluetoothViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideBeaconListViewModel(
+        beaconListViewModelFactory: BeaconListViewModelFactory
+    ) = ViewModelProviders.of(mainActivity, beaconListViewModelFactory)
+        .get(BeaconListViewModel::class.java)
+
+
+    @Provides
+    @MainActivityScope
+    fun provideBeaconListViewModelFactory(
+        beacons: Flowable<Device>
+    ) = BeaconListViewModelFactory(beacons)
 }
