@@ -75,6 +75,43 @@
                     </android.support.design.widget.TextInputLayout>
 
                     <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/edit_interval_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:gravity="center"
+                            android:hint="@string/name"
+                            android:inputType="numberDecimal"
+                            tools:text="123" />
+
+                        <Spinner
+                            android:id="@+id/spinner_interval_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:entries="@array/PublishIntervals" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/text_lastdatasent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:textAppearance="?android:attr/textAppearanceMediumInverse"
+                        android:textColor="?attr/editTextColor"
+                        tools:text="Last data sent time : " />
+
+                    <LinearLayout
                         android:id="@+id/layout_google"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -174,6 +211,41 @@
                             android:textAppearance="?android:attr/textAppearanceMediumInverse"
                             android:textColor="?attr/editTextColor"
                             tools:text="Your text" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layout_rest"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="12dp">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/edit_url"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:ems="10"
+                                android:hint="@string/url"
+                                android:inputType="textPersonName"
+                                tools:text="123" />
+                        </android.support.design.widget.TextInputLayout>
+
+                        <Spinner
+                            android:id="@+id/spinner_methods"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginBottom="32dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="12dp"
+                            android:entries="@array/RESTMethods" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>

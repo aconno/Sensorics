@@ -127,6 +127,18 @@
         <item>@string/other_backend</item>
     </string-array>
 
+    <string-array name="RESTMethods">
+        <item>@string/rest_method_get</item>
+        <item>@string/rest_method_post</item>
+    </string-array>
+
+    <string-array name="PublishIntervals">
+        <item>@string/publish_sec</item>
+        <item>@string/publish_min</item>
+        <item>@string/publish_hour</item>
+        <item>@string/publish_day</item>
+    </string-array>
+
     <!-- AddPublishActivity -->
     <string name="name">Name</string>
     <string name="project_id">ProjectId</string>
@@ -136,5 +148,14 @@
     <string name="private_key">Private Key</string>
     <string name="private_key_click">Touch to choose</string>
     <string name="not_valid_file_pkcs8">Selected File is not valid PKCS8 FIle.</string>
+    <string name="rest_method_post">POST</string>
+    <string name="rest_method_get">GET</string>
+    <string name="url">URL</string>
+    <string name="publish_day">Days</string>
+    <string name="publish_hour">Hours</string>
+    <string name="publish_min">Mins</string>
+    <string name="publish_sec">Secs</string>
+    <string name="last_data_sent">Last data sent at : </string>
+    <string name="snackbar_stop_scanning">Please stop scanning first</string>
 
 </resources>

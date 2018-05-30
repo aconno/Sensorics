@@ -15,6 +15,7 @@ import com.aconno.acnsensa.dagger.publish.PublishListComponent
 import com.aconno.acnsensa.dagger.publish.PublishListModule
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
+import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -53,7 +54,7 @@ class PublishFragment : Fragment() {
             item.enabled = checked
 
             if (item is GooglePublish) {
-                publishListViewModel.update(
+                publishListViewModel.updateGoogle(
                     item.id,
                     item.name,
                     item.projectId,
@@ -61,7 +62,21 @@ class PublishFragment : Fragment() {
                     item.deviceRegistry,
                     item.device,
                     item.privateKey,
-                    item.enabled
+                    item.enabled,
+                    item.timeType,
+                    item.timeMillis,
+                    item.lastTimeMillis
+                )
+            } else if (item is RESTPublish) {
+                publishListViewModel.updateREST(
+                    item.id,
+                    item.name,
+                    item.url,
+                    item.method,
+                    item.enabled,
+                    item.timeType,
+                    item.timeMillis,
+                    item.lastTimeMillis
                 )
             }
         }
@@ -106,7 +121,7 @@ class PublishFragment : Fragment() {
         publishListViewModel.getAllPublish()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { actions -> initGooglePublishList(actions) }
+            .subscribe { actions -> initPublishList(actions) }
     }
 
     override fun onPause() {
@@ -115,7 +130,7 @@ class PublishFragment : Fragment() {
         super.onPause()
     }
 
-    private fun initGooglePublishList(actions: List<GooglePublish>?) {
+    private fun initPublishList(actions: List<BasePublish>?) {
         if (actions != null) {
             listBasePublish.addAll(actions)
             rvAdapter.notifyDataSetChanged()

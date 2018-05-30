@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothScanningService
 import com.aconno.acnsensa.R
@@ -181,7 +182,15 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     private fun startSettingsActivity() {
-        PublishListActivity.start(this)
+        if (BluetoothScanningService.isRunning()) {
+            Snackbar.make(
+                findViewById(android.R.id.content),
+                getString(R.string.snackbar_stop_scanning),
+                Snackbar.LENGTH_SHORT
+            ).show()
+        } else {
+            PublishListActivity.start(this)
+        }
     }
 
     private fun toggleScan(item: MenuItem?) {

@@ -1,5 +1,6 @@
 package com.aconno.acnsensa.data.repository
 
+import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
@@ -19,7 +20,7 @@ class GooglePublishRepositoryImpl(private val googlePublishDao: GooglePublishDao
         googlePublishDao.delete(toEntity(googlePublish))
     }
 
-    override fun getAllGooglePublish(): Single<List<GooglePublish>> {
+    override fun getAllGooglePublish(): Single<List<BasePublish>> {
         return googlePublishDao.all.map { actionEntities -> actionEntities.map { toGooglePublish(it) } }
     }
 
@@ -28,7 +29,7 @@ class GooglePublishRepositoryImpl(private val googlePublishDao: GooglePublishDao
             .map { actionEntity -> toGooglePublish(actionEntity) }
     }
 
-    override fun getAllEnabledGooglePublish(): Single<List<GooglePublish>> {
+    override fun getAllEnabledGooglePublish(): Single<List<BasePublish>> {
         return googlePublishDao.getEnabledGooglePublish()
             .map { actionEntities -> actionEntities.map { toGooglePublish(it) } }
     }
@@ -42,7 +43,10 @@ class GooglePublishRepositoryImpl(private val googlePublishDao: GooglePublishDao
             googlePublish.deviceRegistry,
             googlePublish.device,
             googlePublish.privateKey,
-            googlePublish.enabled
+            googlePublish.enabled,
+            googlePublish.timeType,
+            googlePublish.timeMillis,
+            googlePublish.lastTimeMillis
         )
     }
 
@@ -55,7 +59,10 @@ class GooglePublishRepositoryImpl(private val googlePublishDao: GooglePublishDao
             googlePublishEntity.deviceRegistry,
             googlePublishEntity.device,
             googlePublishEntity.privateKey,
-            googlePublishEntity.enabled
+            googlePublishEntity.enabled,
+            googlePublishEntity.timeType,
+            googlePublishEntity.timeMillis,
+            googlePublishEntity.lastTimeMillis
         )
     }
 }
