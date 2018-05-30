@@ -8,6 +8,10 @@ import com.aconno.acnsensa.domain.interactor.ifttt.GetAllGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.GetAllRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateRESTPublishUserCase
+import com.aconno.acnsensa.model.mapper.GooglePublishDataMapper
+import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.RESTPublishDataMapper
+import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.ui.settings.PublishFragment
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import com.aconno.acnsensa.viewmodel.factory.PublishListViewModelFactory
@@ -57,13 +61,21 @@ class PublishListModule(private val publishFragment: PublishFragment) {
         getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
         getAllRESTPublishUseCase: GetAllRESTPublishUseCase,
         updateGooglePublishUseCase: UpdateGooglePublishUseCase,
-        updateRESTPublishUserCase: UpdateRESTPublishUserCase
+        updateRESTPublishUserCase: UpdateRESTPublishUserCase,
+        googlePublishDataMapper: GooglePublishDataMapper,
+        googlePublishModelDataMapper: GooglePublishModelDataMapper,
+        restPublishDataMapper: RESTPublishDataMapper,
+        restPublishModelDataMapper: RESTPublishModelDataMapper
     ) =
         PublishListViewModelFactory(
             publishFragment.activity?.application as Application,
             getAllGooglePublishUseCase,
             getAllRESTPublishUseCase,
             updateGooglePublishUseCase,
-            updateRESTPublishUserCase
+            updateRESTPublishUserCase,
+            googlePublishDataMapper,
+            googlePublishModelDataMapper,
+            restPublishDataMapper,
+            restPublishModelDataMapper
         )
 }

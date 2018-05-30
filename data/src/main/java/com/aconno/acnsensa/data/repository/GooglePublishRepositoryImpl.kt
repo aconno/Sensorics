@@ -1,68 +1,43 @@
 package com.aconno.acnsensa.data.repository
 
+import com.aconno.acnsensa.data.mapper.GooglePublishDataMapper
+import com.aconno.acnsensa.data.mapper.GooglePublishEntityDataMapper
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
+import io.reactivex.Maybe
 import io.reactivex.Single
 
-class GooglePublishRepositoryImpl(private val googlePublishDao: GooglePublishDao) :
+class GooglePublishRepositoryImpl(
+    private val googlePublishDao: GooglePublishDao,
+    private val googlePublishEntityDataMapper: GooglePublishEntityDataMapper,
+    private val googlePublishDataMapper: GooglePublishDataMapper
+) :
     GooglePublishRepository {
     override fun addGooglePublish(googlePublish: GooglePublish) {
-        googlePublishDao.insert(toEntity(googlePublish))
+        googlePublishDao.insert(googlePublishDataMapper.transform(googlePublish))
     }
 
     override fun updateGooglePublish(googlePublish: GooglePublish) {
-        googlePublishDao.update(toEntity(googlePublish))
+        googlePublishDao.update(googlePublishDataMapper.transform(googlePublish))
     }
 
     override fun deleteGooglePublish(googlePublish: GooglePublish) {
-        googlePublishDao.delete(toEntity(googlePublish))
+        googlePublishDao.delete(googlePublishDataMapper.transform(googlePublish))
     }
 
     override fun getAllGooglePublish(): Single<List<BasePublish>> {
-        return googlePublishDao.all.map { actionEntities -> actionEntities.map { toGooglePublish(it) } }
+        return googlePublishDao.all.map(googlePublishEntityDataMapper::transform)
     }
 
-    override fun getGooglePublishById(googlePublishId: Long): Single<GooglePublish> {
+    override fun getGooglePublishById(googlePublishId: Long): Maybe<GooglePublish> {
         return googlePublishDao.getGooglePublishById(googlePublishId)
-            .map { actionEntity -> toGooglePublish(actionEntity) }
+            .map(googlePublishEntityDataMapper::transform)
     }
 
     override fun getAllEnabledGooglePublish(): Single<List<BasePublish>> {
         return googlePublishDao.getEnabledGooglePublish()
-            .map { actionEntities -> actionEntities.map { toGooglePublish(it) } }
-    }
-
-    private fun toEntity(googlePublish: GooglePublish): GooglePublishEntity {
-        return GooglePublishEntity(
-            googlePublish.id,
-            googlePublish.name,
-            googlePublish.projectId,
-            googlePublish.region,
-            googlePublish.deviceRegistry,
-            googlePublish.device,
-            googlePublish.privateKey,
-            googlePublish.enabled,
-            googlePublish.timeType,
-            googlePublish.timeMillis,
-            googlePublish.lastTimeMillis
-        )
-    }
-
-    private fun toGooglePublish(googlePublishEntity: GooglePublishEntity): GooglePublish {
-        return GeneralGooglePublish(
-            googlePublishEntity.id,
-            googlePublishEntity.name,
-            googlePublishEntity.projectId,
-            googlePublishEntity.region,
-            googlePublishEntity.deviceRegistry,
-            googlePublishEntity.device,
-            googlePublishEntity.privateKey,
-            googlePublishEntity.enabled,
-            googlePublishEntity.timeType,
-            googlePublishEntity.timeMillis,
-            googlePublishEntity.lastTimeMillis
-        )
+            .map(googlePublishEntityDataMapper::transform)
     }
 }

@@ -1,5 +1,6 @@
 package com.aconno.acnsensa.domain.ifttt
 
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 interface RESTPublishRepository {
@@ -8,5 +9,5 @@ interface RESTPublishRepository {
     fun deleteRESTPublish(restPublish: RESTPublish)
     fun getAllRESTPublish(): Single<List<BasePublish>>
     fun getAllEnabledRESTPublish(): Single<List<BasePublish>>
-    fun getRESTPublishById(RESTPublishId: Long): Single<RESTPublish>
+    fun getRESTPublishById(RESTPublishId: Long): Maybe<RESTPublish>
 }

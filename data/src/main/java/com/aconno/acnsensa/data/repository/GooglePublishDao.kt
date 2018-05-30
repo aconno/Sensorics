@@ -1,6 +1,7 @@
 package com.aconno.acnsensa.data.repository
 
 import android.arch.persistence.room.*
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 @Dao
@@ -10,7 +11,7 @@ abstract class GooglePublishDao {
     abstract val all: Single<List<GooglePublishEntity>>
 
     @Query("SELECT * FROM google_publish WHERE id = :googlePublishId")
-    abstract fun getGooglePublishById(googlePublishId: Long): Single<GooglePublishEntity>
+    abstract fun getGooglePublishById(googlePublishId: Long): Maybe<GooglePublishEntity>
 
     @Query("SELECT * FROM google_publish WHERE enabled = 1")
     abstract fun getEnabledGooglePublish(): Single<List<GooglePublishEntity>>

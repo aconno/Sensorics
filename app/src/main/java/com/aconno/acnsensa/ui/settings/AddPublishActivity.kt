@@ -13,10 +13,16 @@ import android.widget.AdapterView
 import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.R.id.*
+import com.aconno.acnsensa.R.string.device
+import com.aconno.acnsensa.R.string.region
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
 import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
 import com.aconno.acnsensa.domain.ifttt.*
+import com.aconno.acnsensa.model.BasePublishModel
+import com.aconno.acnsensa.model.GooglePublishModel
+import com.aconno.acnsensa.model.RESTPublishModel
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import kotlinx.android.synthetic.main.activity_add_publish.*
 import java.security.KeyFactory
@@ -32,7 +38,7 @@ class AddPublishActivity : AppCompatActivity() {
     @Inject
     lateinit var publishViewModel: PublishViewModel
 
-    private var basePublish: BasePublish? = null
+    private var basePublish: BasePublishModel? = null
 
     private val addPublishComponent: AddPublishComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -45,12 +51,11 @@ class AddPublishActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_publish)
         addPublishComponent.inject(this)
-        val temp = intent.getSerializableExtra(ADD_PUBLISH_ACTIVITY_KEY)
-
+        val temp = intent.getParcelableExtra<BasePublishModel>(ADD_PUBLISH_ACTIVITY_KEY)
         setSupportActionBar(custom_toolbar)
 
         when {
-            temp is BasePublish -> {
+            temp is BasePublishModel -> {
                 basePublish = temp
                 setTextsWithTemp()
             }
@@ -141,7 +146,7 @@ class AddPublishActivity : AppCompatActivity() {
                 )
         text_lastdatasent.text = str
 
-        if (basePublish is GooglePublish) {
+        if (basePublish is GooglePublishModel) {
             spinner.setSelection(0)
             layout_google.visibility = View.VISIBLE
 
@@ -151,8 +156,8 @@ class AddPublishActivity : AppCompatActivity() {
             edit_region.setText(googlePublish.region)
             edit_deviceregistry.setText(googlePublish.deviceRegistry)
             edit_device.setText(googlePublish.device)
-            edit_privatekey.setText(googlePublish.privateKey)
-        } else if (basePublish is RESTPublish) {
+            edit_privatekey.text = googlePublish.privateKey
+        } else if (basePublish is RESTPublishModel) {
             spinner.setSelection(1)
             layout_rest.visibility = View.VISIBLE
 
@@ -209,52 +214,57 @@ class AddPublishActivity : AppCompatActivity() {
     }
 
     private fun restAddOrUpdate() {
+        val toastText: String
+
+        val restPublishModel = toRESTPublishModel()
+        if (restPublishModel != null) {
+
+            if (basePublish != null) {
+                toastText = "Updated"
+                publishViewModel.update(restPublishModel)
+            } else {
+                toastText = "Created"
+                publishViewModel.save(restPublishModel)
+            }
+
+            Toast.makeText(this, "$toastText $name", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun toRESTPublishModel(): RESTPublishModel? {
         val name = edit_name.text.toString().trim()
         val url = edit_url.text.toString().trim()
         val method = spinner_methods.selectedItem.toString()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
 
-        if (
-            name.isBlank() ||
-            url.isBlank() ||
-            method.isBlank() ||
-            timeType.isBlank() ||
-            timeCount.isBlank()
+        if (publishViewModel.checkFieldsAreEmpty(
+                name,
+                url,
+                method,
+                timeType,
+                timeCount
+            )
         ) {
-            //TODO Error
             Toast.makeText(this, "Please fill the blanks", Toast.LENGTH_SHORT).show()
-        } else {
-            val toastText: String
-
-            if (basePublish != null) {
-                val id = basePublish!!.id
-
-                toastText = "Updated"
-                publishViewModel.updateREST(
-                    id,
-                    name,
-                    url,
-                    method,
-                    timeType,
-                    calculateMillis(timeCount, timeType),
-                    basePublish!!.lastTimeMillis
-                )
-
-            } else {
-                toastText = "Created"
-                publishViewModel.saveREST(
-                    name,
-                    url,
-                    method,
-                    timeType,
-                    calculateMillis(timeCount, timeType)
-                )
-            }
-
-            Toast.makeText(this, "$toastText $name", Toast.LENGTH_SHORT).show()
+            return null
         }
+
+        val id = if (basePublish == null) 0 else basePublish!!.id
+        val timeMillis = if (basePublish == null) 0 else calculateMillis(timeCount, timeType)
+        val lastTimeMillis = if (basePublish == null) 0 else basePublish!!.lastTimeMillis
+        return RESTPublishModel(
+            id,
+            name,
+            url,
+            method,
+            false,
+            timeType,
+            timeMillis,
+            lastTimeMillis
+        )
     }
+
 
     private fun calculateMillis(timeCount: String, timeType: String): Long {
         return when (timeType) {
@@ -277,6 +287,24 @@ class AddPublishActivity : AppCompatActivity() {
     }
 
     private fun googleAddOrUpdate() {
+        val toastText: String
+
+        val googlePublishModel = toGooglePublishModel()
+        if (googlePublishModel != null) {
+
+            if (basePublish != null) {
+                toastText = "Updated"
+                publishViewModel.update(googlePublishModel)
+            } else {
+                toastText = "Created"
+                publishViewModel.update(googlePublishModel)
+            }
+
+            Toast.makeText(this, "$toastText $name", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun toGooglePublishModel(): GooglePublishModel? {
         val name = edit_name.text.toString().trim()
         val projectId = edit_projectid.text.toString().trim()
         val region = edit_region.text.toString().trim()
@@ -286,56 +314,39 @@ class AddPublishActivity : AppCompatActivity() {
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
 
-        if (
-            name.isBlank() ||
-            projectId.isBlank() ||
-            region.isBlank() ||
-            deviceRegistry.isBlank() ||
-            device.isBlank() ||
-            privateKey.isBlank() ||
-            timeType.isBlank() ||
-            timeCount.isBlank()
+        if (publishViewModel.checkFieldsAreEmpty(
+                name,
+                projectId,
+                region,
+                deviceRegistry,
+                device,
+                privateKey,
+                timeType,
+                timeCount
+            )
         ) {
-            //TODO Error
             Toast.makeText(this, "Please fill the blanks", Toast.LENGTH_SHORT).show()
-        } else {
-
-            val toastText: String
-
-            if (basePublish != null) {
-                val id = basePublish!!.id
-
-                toastText = "Updated"
-                publishViewModel.updateGoogle(
-                    id,
-                    name,
-                    projectId,
-                    region,
-                    deviceRegistry,
-                    device,
-                    privateKey,
-                    timeType,
-                    calculateMillis(timeCount, timeType),
-                    basePublish!!.lastTimeMillis
-                )
-
-            } else {
-                toastText = "Created"
-                publishViewModel.saveGoogle(
-                    name,
-                    projectId,
-                    region,
-                    deviceRegistry,
-                    device,
-                    privateKey,
-                    timeType,
-                    calculateMillis(timeCount, timeType)
-                )
-            }
-
-            Toast.makeText(this, "$toastText $name", Toast.LENGTH_SHORT).show()
+            return null
         }
+
+        val id = if (basePublish == null) 0 else basePublish!!.id
+        val timeMillis = if (basePublish == null) 0 else calculateMillis(timeCount, timeType)
+        val lastTimeMillis = if (basePublish == null) 0 else basePublish!!.lastTimeMillis
+        return GooglePublishModel(
+            id,
+            name,
+            projectId,
+            region,
+            deviceRegistry,
+            device,
+            privateKey,
+            false,
+            timeType,
+            timeMillis,
+            lastTimeMillis
+        )
     }
+
 
     private fun isFileValidPKCS8(byteArray: ByteArray): Boolean {
         val spec = PKCS8EncodedKeySpec(byteArray)
@@ -365,18 +376,23 @@ class AddPublishActivity : AppCompatActivity() {
         const val PICKFILE_REQUEST_CODE: Int = 10213
         const val ADD_PUBLISH_ACTIVITY_KEY = "ADD_PUBLISH_ACTIVITY_KEY"
 
-        fun start(context: Context, basePublish: BasePublish? = null) {
+        fun start(context: Context, basePublish: BasePublishModel? = null) {
             val intent = Intent(context, AddPublishActivity::class.java)
 
             basePublish?.let {
-                when (basePublish) {
-                    is GeneralGooglePublish -> intent.putExtra(
-                        ADD_PUBLISH_ACTIVITY_KEY,
-                        basePublish
-                    )
-                    is GeneralRESTPublish -> intent.putExtra(ADD_PUBLISH_ACTIVITY_KEY, basePublish)
-                    else -> throw IllegalArgumentException("Illegal Publish type provided")
-                }
+                intent.putExtra(
+                    ADD_PUBLISH_ACTIVITY_KEY,
+                    basePublish
+                )
+
+//                when (basePublish) {
+//                    is GooglePublishModel -> intent.putExtra(
+//                        ADD_PUBLISH_ACTIVITY_KEY,
+//                        basePublish
+//                    )
+//                    is RESTPublishModel -> intent.putExtra(ADD_PUBLISH_ACTIVITY_KEY, basePublish)
+//                    else -> throw IllegalArgumentException("Illegal Publish type provided")
+//                }
             }
 
             context.startActivity(intent)

@@ -59,4 +59,9 @@ dependencies {
     //OkHttp
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
+
+    //javax inject
+    implementation 'javax.inject:javax.inject:1'
+    compileOnly 'javax.annotation:jsr250-api:1.0'
+
 }

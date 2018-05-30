@@ -7,6 +7,8 @@ import com.aconno.acnsensa.domain.interactor.ifttt.AddGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.AddRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateRESTPublishUserCase
+import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.ui.settings.AddPublishActivity
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import com.aconno.acnsensa.viewmodel.factory.PublishViewModelFactory
@@ -32,14 +34,18 @@ class AddPublishModule(private val addPublishActivity: AddPublishActivity) {
         addGooglePublishUseCase: AddGooglePublishUseCase,
         addRESTPublishUseCase: AddRESTPublishUseCase,
         updateGooglePublishUseCase: UpdateGooglePublishUseCase,
-        updateRESTPublishUserCase: UpdateRESTPublishUserCase
+        updateRESTPublishUserCase: UpdateRESTPublishUserCase,
+        googlePublishModelDataMapper: GooglePublishModelDataMapper,
+        restPublishModelDataMapper: RESTPublishModelDataMapper
     ) =
         PublishViewModelFactory(
             addPublishActivity.application,
             addGooglePublishUseCase,
             addRESTPublishUseCase,
             updateGooglePublishUseCase,
-            updateRESTPublishUserCase
+            updateRESTPublishUserCase,
+            googlePublishModelDataMapper,
+            restPublishModelDataMapper
         )
 
     @Provides

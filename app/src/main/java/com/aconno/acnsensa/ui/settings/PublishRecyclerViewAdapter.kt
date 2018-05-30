@@ -11,6 +11,9 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
+import com.aconno.acnsensa.model.BasePublishModel
+import com.aconno.acnsensa.model.GooglePublishModel
+import com.aconno.acnsensa.model.RESTPublishModel
 
 
 import com.aconno.acnsensa.ui.settings.PublishFragment.OnListFragmentInteractionListener
@@ -22,7 +25,7 @@ import kotlinx.android.synthetic.main.item_publish.view.*
  * specified [OnListFragmentInteractionListener].
  */
 class PublishRecyclerViewAdapter(
-    private val mValues: List<BasePublish>,
+    private val mValues: List<BasePublishModel>,
     private val mListener: OnListFragmentInteractionListener?,
     private val mCheckedChangeListener: OnCheckedChangeListener?
 ) : RecyclerView.Adapter<PublishRecyclerViewAdapter.ViewHolder>() {
@@ -31,7 +34,7 @@ class PublishRecyclerViewAdapter(
 
     init {
         mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as BasePublish
+            val item = v.tag as BasePublishModel
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
             mListener?.onListFragmentInteraction(item)
@@ -49,9 +52,9 @@ class PublishRecyclerViewAdapter(
         holder.mNameView.text = item.name
         holder.mEnableView.isChecked = item.enabled
 
-        if (item is GooglePublish) {
+        if (item is GooglePublishModel) {
             holder.mImageView.setImageResource(R.drawable.google_logo)
-        } else if (item is RESTPublish) {
+        } else if (item is RESTPublishModel) {
             holder.mImageView.setImageResource(R.drawable.uplaod_cloud)
         }
 
