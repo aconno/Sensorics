@@ -7,6 +7,7 @@ import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCa
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
 import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.Flowable
+import io.reactivex.disposables.Disposable
 
 /**
  * @author aconno
@@ -20,8 +21,11 @@ class SensorListViewModel(
 
     private val sensorValuesLiveData: MutableLiveData<Map<String, Number>> = MutableLiveData()
 
+    private var disposable: Disposable? = null
+
     fun setMacAddress(macAddress: String) {
-        scanResults.concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
+        disposable?.dispose()
+        disposable = scanResults.concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
             .concatMap { filterByMacAddressUseCase.execute(it, macAddress).toFlowable() }
             .concatMap { deserializeScanResultUseCase.execute(it).toFlowable() }
             .subscribe { processSensorValues(it) }
