@@ -68,7 +68,6 @@ class PublishListModule(private val publishFragment: PublishFragment) {
         restPublishModelDataMapper: RESTPublishModelDataMapper
     ) =
         PublishListViewModelFactory(
-            publishFragment.activity?.application as Application,
             getAllGooglePublishUseCase,
             getAllRESTPublishUseCase,
             updateGooglePublishUseCase,

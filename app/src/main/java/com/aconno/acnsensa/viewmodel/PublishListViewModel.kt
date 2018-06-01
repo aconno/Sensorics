@@ -2,6 +2,7 @@ package com.aconno.acnsensa.viewmodel
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.interactor.ifttt.GetAllGooglePublishUseCase
@@ -22,7 +23,6 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 class PublishListViewModel(
-    application: Application,
     private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
     private val getAllRESTPublishUseCase: GetAllRESTPublishUseCase,
     private val updateGooglePublishUseCase: UpdateGooglePublishUseCase,
@@ -32,7 +32,7 @@ class PublishListViewModel(
     private val restPublishDataMapper: RESTPublishDataMapper,
     private val restPublishModelDataMapper: RESTPublishModelDataMapper
 
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     fun update(googlePublishModel: GooglePublishModel) {
         val googlePublish = googlePublishModelDataMapper.transform(googlePublishModel)

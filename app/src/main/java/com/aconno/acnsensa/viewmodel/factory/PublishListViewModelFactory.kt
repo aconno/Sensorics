@@ -13,7 +13,6 @@ import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 
 class PublishListViewModelFactory(
-    private val application: Application,
     private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
     private val getAllRESTPublishUseCase: GetAllRESTPublishUseCase,
     private val updateGooglePublishUseCase: UpdateGooglePublishUseCase,
@@ -26,7 +25,6 @@ class PublishListViewModelFactory(
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = PublishListViewModel(
-            application,
             getAllGooglePublishUseCase,
             getAllRESTPublishUseCase,
             updateGooglePublishUseCase,
