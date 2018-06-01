@@ -9,12 +9,11 @@ import io.reactivex.Flowable
 
 class LiveGraphViewModelFactory(
     private val sensorReadings: Flowable<List<SensorReading>>,
-    private val getReadingsUseCase: GetReadingsUseCase,
     private val application: Application
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val viewModel = LiveGraphViewModel(sensorReadings, getReadingsUseCase, application)
+        val viewModel = LiveGraphViewModel(sensorReadings, application)
         return getViewModel(viewModel, modelClass)
     }
 }

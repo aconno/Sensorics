@@ -17,12 +17,10 @@ class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
     @Provides
     @LiveGraphScope
     fun provideLiveGraphViewModelFactory(
-        sensorReadings: Flowable<List<SensorReading>>,
-        getReadingsUseCase: GetReadingsUseCase
+        sensorReadings: Flowable<List<SensorReading>>
     ) =
         LiveGraphViewModelFactory(
             sensorReadings,
-            getReadingsUseCase,
             liveGraphActivity.application
         )
 
