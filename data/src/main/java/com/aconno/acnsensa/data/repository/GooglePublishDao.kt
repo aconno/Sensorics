@@ -17,7 +17,7 @@ abstract class GooglePublishDao {
     abstract fun getEnabledGooglePublish(): Single<List<GooglePublishEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(googlePublishEntity: GooglePublishEntity)
+    abstract fun insert(googlePublishEntity: GooglePublishEntity): Long
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract fun update(googlePublishEntity: GooglePublishEntity)

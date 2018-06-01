@@ -17,7 +17,7 @@ abstract class RESTPublishDao {
     abstract fun getEnabledRESTPublish(): Single<List<RESTPublishEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(restPublishEntity: RESTPublishEntity)
+    abstract fun insert(restPublishEntity: RESTPublishEntity): Long
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     abstract fun update(restPublishEntity: RESTPublishEntity)
