@@ -13,13 +13,10 @@ import android.widget.AdapterView
 import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.R.id.*
-import com.aconno.acnsensa.R.string.device
-import com.aconno.acnsensa.R.string.region
+import com.aconno.acnsensa.R.id.name
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
 import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
-import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
@@ -59,7 +56,7 @@ class AddPublishActivity : AppCompatActivity() {
                 basePublish = temp
                 setTextsWithTemp()
             }
-            temp != null -> throw IllegalArgumentException("Only classes that extend from BasePublish can be sent")
+            temp != null -> throw IllegalArgumentException("Only classes that extend from BasePublishModel can be sent")
         }
 
         initViews()
@@ -150,7 +147,7 @@ class AddPublishActivity : AppCompatActivity() {
             spinner.setSelection(0)
             layout_google.visibility = View.VISIBLE
 
-            val googlePublish = basePublish as GooglePublish
+            val googlePublish = basePublish as GooglePublishModel
 
             edit_projectid.setText(googlePublish.projectId)
             edit_region.setText(googlePublish.region)
@@ -161,7 +158,7 @@ class AddPublishActivity : AppCompatActivity() {
             spinner.setSelection(1)
             layout_rest.visibility = View.VISIBLE
 
-            val restPublish = basePublish as RESTPublish
+            val restPublish = basePublish as RESTPublishModel
 
             edit_url.setText(restPublish.url)
             val selection = if (restPublish.method == "GET") 0 else 1
@@ -297,7 +294,7 @@ class AddPublishActivity : AppCompatActivity() {
                 publishViewModel.update(googlePublishModel)
             } else {
                 toastText = "Created"
-                publishViewModel.update(googlePublishModel)
+                publishViewModel.save(googlePublishModel)
             }
 
             Toast.makeText(this, "$toastText $name", Toast.LENGTH_SHORT).show()
@@ -384,15 +381,6 @@ class AddPublishActivity : AppCompatActivity() {
                     ADD_PUBLISH_ACTIVITY_KEY,
                     basePublish
                 )
-
-//                when (basePublish) {
-//                    is GooglePublishModel -> intent.putExtra(
-//                        ADD_PUBLISH_ACTIVITY_KEY,
-//                        basePublish
-//                    )
-//                    is RESTPublishModel -> intent.putExtra(ADD_PUBLISH_ACTIVITY_KEY, basePublish)
-//                    else -> throw IllegalArgumentException("Illegal Publish type provided")
-//                }
             }
 
             context.startActivity(intent)
