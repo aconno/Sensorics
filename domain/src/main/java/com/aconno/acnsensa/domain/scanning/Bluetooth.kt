@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.domain
+package com.aconno.acnsensa.domain.scanning
 
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.domain.model.ScanResult

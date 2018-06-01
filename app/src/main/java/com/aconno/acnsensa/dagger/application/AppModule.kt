@@ -17,7 +17,7 @@ import com.aconno.acnsensa.device.bluetooth.BluetoothStateListener
 import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.device.notification.NotificationDisplayImpl
 import com.aconno.acnsensa.device.notification.NotificationFactory
-import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher

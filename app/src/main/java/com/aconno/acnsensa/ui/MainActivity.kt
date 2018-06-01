@@ -16,7 +16,7 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
-import com.aconno.acnsensa.domain.BluetoothState
+import com.aconno.acnsensa.domain.scanning.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.model.AcnSensaPermission
 import com.aconno.acnsensa.ui.beacons.BeaconListFragment

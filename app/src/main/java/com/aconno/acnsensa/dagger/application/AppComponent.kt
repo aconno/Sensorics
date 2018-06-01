@@ -4,7 +4,7 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.notification.IntentProvider
-import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase

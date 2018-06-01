@@ -3,8 +3,8 @@ package com.aconno.acnsensa.device.bluetooth
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanSettings
-import com.aconno.acnsensa.domain.Bluetooth
-import com.aconno.acnsensa.domain.BluetoothState
+import com.aconno.acnsensa.domain.scanning.Bluetooth
+import com.aconno.acnsensa.domain.scanning.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.BackpressureStrategy
