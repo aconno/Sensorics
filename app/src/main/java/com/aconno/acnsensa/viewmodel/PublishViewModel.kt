@@ -1,10 +1,6 @@
 package com.aconno.acnsensa.viewmodel
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import com.aconno.acnsensa.R.string.*
-import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublish
-import com.aconno.acnsensa.domain.ifttt.GeneralRESTPublish
+import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.ifttt.AddGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.AddRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateGooglePublishUseCase
@@ -18,14 +14,13 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 class PublishViewModel(
-    application: Application,
     private val addGooglePublishUseCase: AddGooglePublishUseCase,
     private val addRESTPublishUseCase: AddRESTPublishUseCase,
     private val updateGooglePublishUseCase: UpdateGooglePublishUseCase,
     private val updateRESTPublishUserCase: UpdateRESTPublishUserCase,
     private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
     private val restPublishModelDataMapper: RESTPublishModelDataMapper
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     fun save(
         googlePublishModel: GooglePublishModel

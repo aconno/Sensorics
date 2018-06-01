@@ -39,7 +39,6 @@ class AddPublishModule(private val addPublishActivity: AddPublishActivity) {
         restPublishModelDataMapper: RESTPublishModelDataMapper
     ) =
         PublishViewModelFactory(
-            addPublishActivity.application,
             addGooglePublishUseCase,
             addRESTPublishUseCase,
             updateGooglePublishUseCase,
