@@ -6,20 +6,16 @@ import android.arch.lifecycle.MutableLiveData
 import android.support.v4.content.ContextCompat
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
-import com.aconno.acnsensa.domain.model.SensorType
-import com.aconno.acnsensa.domain.model.readings.Reading
+import com.aconno.acnsensa.domain.model.SensorReading
+import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.model.DataSeriesSettings
 import com.aconno.acnsensa.ui.graph.BleDataSeries
 import com.aconno.acnsensa.ui.graph.BleGraph
 import com.aconno.acnsensa.ui.graph.GraphType
 import io.reactivex.Flowable
 
-/**
- * @aconno
- */
 class LiveGraphViewModel(
-    private val sensorValues: Flowable<Map<String, Number>>,
-    private val getReadingsUseCase: GetReadingsUseCase,
+    private val sensorReadings: Flowable<List<SensorReading>>,
     application: Application
 ) : AndroidViewModel(application) {
     private val refreshTimestamp: MutableLiveData<Long> = MutableLiveData()
@@ -169,119 +165,54 @@ class LiveGraphViewModel(
     }
 
     private fun subscribe() {
-        sensorValues.subscribe { processSensorValues() }
+        sensorReadings.subscribe { processSensorValues(it) }
     }
 
-    private fun processSensorValues() {
+    private fun processSensorValues(sensorReadings: List<SensorReading>) {
         when (graphType) {
             GraphType.TEMPERATURE ->
-                getReadingsUseCase
-                    .execute(SensorType.TEMPERATURE)
-                    .subscribe { readings -> updateTemperatureValues(readings) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.TEMPERATURE }
+                    .map { temperatureSeries.updateDataSet(it.timestamp, it.value) }
             GraphType.LIGHT ->
-                getReadingsUseCase
-                    .execute(SensorType.LIGHT)
-                    .subscribe { readings -> updateLightValues(readings) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.LIGHT }
+                    .map { lightSeries.updateDataSet(it.timestamp, it.value) }
             GraphType.HUMIDITY ->
-                getReadingsUseCase
-                    .execute(SensorType.HUMIDITY)
-                    .subscribe { readings -> updateHumidityValues(readings) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.HUMIDITY }
+                    .map { humiditySeries.updateDataSet(it.timestamp, it.value) }
             GraphType.PRESSURE ->
-                getReadingsUseCase
-                    .execute(SensorType.PRESSURE)
-                    .subscribe { readings -> updatePressureValues(readings) }
-            GraphType.MAGNETOMETER ->
-                getReadingsUseCase
-                    .execute(SensorType.MAGNETOMETER)
-                    .subscribe { readings -> updateMagnetometerValues(readings) }
-            GraphType.ACCELEROMETER ->
-                getReadingsUseCase
-                    .execute(SensorType.ACCELEROMETER)
-                    .subscribe { readings -> updateAccelerometerValues(readings) }
-            GraphType.GYROSCOPE ->
-                getReadingsUseCase
-                    .execute(SensorType.GYROSCOPE)
-                    .subscribe { readings -> updateGyroscopeValues(readings) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.PRESSURE }
+                    .map { pressureSeries.updateDataSet(it.timestamp, it.value) }
+            GraphType.MAGNETOMETER -> {
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.MAGNETOMETER_X }
+                    .map { xMagnetometerSeries.updateDataSet(it.timestamp, it.value) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.MAGNETOMETER_Y }
+                    .map { yMagnetometerSeries.updateDataSet(it.timestamp, it.value) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.MAGNETOMETER_Z }
+                    .map { zMagnetometerSeries.updateDataSet(it.timestamp, it.value) }
+            }
+            GraphType.ACCELEROMETER -> {
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.ACCELEROMETER_X }
+                    .map { xAccelerometerSeries.updateDataSet(it.timestamp, it.value) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.ACCELEROMETER_Y }
+                    .map { yAccelerometerSeries.updateDataSet(it.timestamp, it.value) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.ACCELEROMETER_Z }
+                    .map { zAccelerometerSeries.updateDataSet(it.timestamp, it.value) }
+            }
+            GraphType.GYROSCOPE -> {
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.GYROSCOPE_X }
+                    .map { xGyroscopeSeries.updateDataSet(it.timestamp, it.value) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.GYROSCOPE_Y }
+                    .map { yGyroscopeSeries.updateDataSet(it.timestamp, it.value) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.GYROSCOPE_Z }
+                    .map { zGyroscopeSeries.updateDataSet(it.timestamp, it.value) }
+            }
             GraphType.BATTERY_LEVEL ->
-                getReadingsUseCase
-                    .execute(SensorType.BATTERY_LEVEL)
-                    .subscribe { readings -> updateBatteryLevelValues(readings) }
+                sensorReadings.filter { it.sensorType == SensorTypeSingle.BATTERY_LEVEL }
+                    .map { batteryLevelSeries.updateDataSet(it.timestamp, it.value) }
             else -> throw IllegalArgumentException()
         }
 
         refreshTimestamp.value = System.currentTimeMillis()
 
-    }
-
-    private fun updateTemperatureValues(readings: List<Reading>) {
-        val temperatureReadings: List<Reading> =
-            readings.filter { reading -> reading.sensorType == SensorType.TEMPERATURE }
-
-        val dataPoints = temperatureReadings.map { Pair(it.timestamp, it.values[0]) }
-        temperatureSeries.updateDataSet(dataPoints)
-    }
-
-    private fun updateLightValues(readings: List<Reading>) {
-        val lightReadings: List<Reading> =
-            readings.filter { reading -> reading.sensorType == SensorType.LIGHT }
-        val dataPoints = lightReadings.map { Pair(it.timestamp, it.values[0]) }
-        lightSeries.updateDataSet(dataPoints)
-    }
-
-    private fun updateHumidityValues(readings: List<Reading>) {
-        val humidityReadings: List<Reading> =
-            readings.filter { reading -> reading.sensorType == SensorType.HUMIDITY }
-        val dataPoints = humidityReadings.map { Pair(it.timestamp, it.values[0]) }
-        humiditySeries.updateDataSet(dataPoints)
-    }
-
-    private fun updatePressureValues(readings: List<Reading>) {
-        val pressureValues: List<Reading> =
-            readings.filter { reading -> reading.sensorType == SensorType.PRESSURE }
-        val dataPoints = pressureValues.map { Pair(it.timestamp, it.values[0]) }
-        pressureSeries.updateDataSet(dataPoints)
-    }
-
-    private fun updateMagnetometerValues(readings: List<Reading>) {
-        val magnetometerValues: List<Reading> =
-            readings.filter { reading -> reading.sensorType == SensorType.MAGNETOMETER }
-        val xDataPoints = magnetometerValues.map { Pair(it.timestamp, it.values[0]) }
-        val yDataPoints = magnetometerValues.map { Pair(it.timestamp, it.values[1]) }
-        val zDataPoints = magnetometerValues.map { Pair(it.timestamp, it.values[2]) }
-
-        xMagnetometerSeries.updateDataSet(xDataPoints)
-        yMagnetometerSeries.updateDataSet(yDataPoints)
-        zMagnetometerSeries.updateDataSet(zDataPoints)
-    }
-
-    private fun updateAccelerometerValues(readings: List<Reading>) {
-        val accelerometerValues: List<Reading> =
-            readings.filter { reading -> reading.sensorType == SensorType.ACCELEROMETER }
-        val xDataPoints = accelerometerValues.map { Pair(it.timestamp, it.values[0]) }
-        val yDataPoints = accelerometerValues.map { Pair(it.timestamp, it.values[1]) }
-        val zDataPoints = accelerometerValues.map { Pair(it.timestamp, it.values[2]) }
-
-        xAccelerometerSeries.updateDataSet(xDataPoints)
-        yAccelerometerSeries.updateDataSet(yDataPoints)
-        zAccelerometerSeries.updateDataSet(zDataPoints)
-    }
-
-    private fun updateGyroscopeValues(readings: List<Reading>) {
-        val gyroscopeValues: List<Reading> =
-            readings.filter { reading -> reading.sensorType == SensorType.GYROSCOPE }
-        val xDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.values[0]) }
-        val yDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.values[1]) }
-        val zDataPoints = gyroscopeValues.map { Pair(it.timestamp, it.values[2]) }
-
-        xGyroscopeSeries.updateDataSet(xDataPoints)
-        yGyroscopeSeries.updateDataSet(yDataPoints)
-        zGyroscopeSeries.updateDataSet(zDataPoints)
-    }
-
-    private fun updateBatteryLevelValues(readings: List<Reading>) {
-        val batteryReadings: List<Reading> =
-            readings.filter { reading -> reading.sensorType == SensorType.BATTERY_LEVEL }
-        val dataPoints = batteryReadings.map { Pair(it.timestamp, it.values[0]) }
-        batteryLevelSeries.updateDataSet(dataPoints)
     }
 }

@@ -17,7 +17,6 @@ import com.aconno.acnsensa.device.bluetooth.BluetoothStateListener
 import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.device.notification.NotificationDisplayImpl
 import com.aconno.acnsensa.device.notification.NotificationFactory
-import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
@@ -25,17 +24,17 @@ import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
+import com.aconno.acnsensa.domain.interactor.convert.ScanResultToSensorReadingsUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
+import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
+import com.aconno.acnsensa.domain.scanning.Bluetooth
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
 import javax.inject.Singleton
 
-/**
- * @author aconno
- */
 @Module
 class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
@@ -88,6 +87,11 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
     @Provides
     @Singleton
+    fun provideScanResultToSensorReadingsUseCase(advertisementMatcher: AdvertisementMatcher) =
+        ScanResultToSensorReadingsUseCase(advertisementMatcher)
+
+    @Provides
+    @Singleton
     fun provideSensorValuesUseCase(advertisementMatcher: AdvertisementMatcher) =
         DeserializeScanResultUseCase(advertisementMatcher)
 
@@ -122,6 +126,18 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
         return observable
             .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
             .map { it.device }
+    }
+
+    @Provides
+    @Singleton
+    fun provideSensorReadingsFlowable(
+        bluetooth: Bluetooth,
+        filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
+        scanResultToSensorReadingsUseCase: ScanResultToSensorReadingsUseCase
+    ): Flowable<List<SensorReading>> {
+        return bluetooth.getScanResults()
+            .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
+            .concatMap { scanResultToSensorReadingsUseCase.execute(it).toFlowable() }
     }
 
     @Provides
