@@ -36,6 +36,7 @@ class SensorListFragment : Fragment() {
         super.onResume()
         sensorListViewModel.getSensorValuesLiveData()
             .observe(this, Observer { displaySensorValues(it) })
+        initValues()
     }
 
     override fun onCreateView(
@@ -145,58 +146,63 @@ class SensorListFragment : Fragment() {
     private fun initView() {
         sensor_temperature.icon.setImageResource(R.drawable.ic_temperature)
         sensor_temperature.name.text = getString(R.string.temperature)
-        sensor_temperature.value.text = getString(R.string.default_temperature)
 
         sensor_light.icon.setImageResource(R.drawable.ic_light)
         sensor_light.name.text = getString(R.string.light)
-        sensor_light.value.text = getString(R.string.default_light)
 
         sensor_humidity.icon.setImageResource(R.drawable.ic_humidity)
         sensor_humidity.name.text = getString(R.string.humidity)
-        sensor_humidity.value.text = getString(R.string.default_humidity)
 
         sensor_pressure.icon.setImageResource(R.drawable.ic_pressure)
         sensor_pressure.name.text = getString(R.string.pressure)
-        sensor_pressure.value.text = getString(R.string.default_pressure)
 
         sensor_magnetometer_x.icon.setImageResource(R.drawable.ic_compass)
         sensor_magnetometer_x.name.text = getString(R.string.magnetometer_x)
-        sensor_magnetometer_x.value.text = getString(R.string.default_magnetometer_x)
 
         sensor_magnetometer_y.icon.setImageResource(R.drawable.ic_compass)
         sensor_magnetometer_y.name.text = getString(R.string.magnetometer_y)
-        sensor_magnetometer_y.value.text = getString(R.string.default_magnetometer_y)
 
         sensor_magnetometer_z.icon.setImageResource(R.drawable.ic_compass)
         sensor_magnetometer_z.name.text = getString(R.string.magnetometer_z)
-        sensor_magnetometer_z.value.text = getString(R.string.default_magnetometer_z)
 
         sensor_accelerometer_x.icon.setImageResource(R.drawable.ic_acc)
         sensor_accelerometer_x.name.text = getString(R.string.accelerometer_x)
-        sensor_accelerometer_x.value.text = getString(R.string.default_accelerometer_x)
 
         sensor_accelerometer_y.icon.setImageResource(R.drawable.ic_acc)
         sensor_accelerometer_y.name.text = getString(R.string.accelerometer_y)
-        sensor_accelerometer_y.value.text = getString(R.string.default_accelerometer_y)
 
         sensor_accelerometer_z.icon.setImageResource(R.drawable.ic_acc)
         sensor_accelerometer_z.name.text = getString(R.string.accelerometer_z)
-        sensor_accelerometer_z.value.text = getString(R.string.default_accelerometer_z)
 
         sensor_gyroscope_x.icon.setImageResource(R.drawable.ic_gyro)
         sensor_gyroscope_x.name.text = getString(R.string.gyro_x)
-        sensor_gyroscope_x.value.text = getString(R.string.default_gyro_x)
 
         sensor_gyroscope_y.icon.setImageResource(R.drawable.ic_gyro)
         sensor_gyroscope_y.name.text = getString(R.string.gyro_y)
-        sensor_gyroscope_y.value.text = getString(R.string.default_gyro_y)
 
         sensor_gyroscope_z.icon.setImageResource(R.drawable.ic_gyro)
         sensor_gyroscope_z.name.text = getString(R.string.gyro_z)
-        sensor_gyroscope_z.value.text = getString(R.string.default_gyro_z)
 
         sensor_battery_level.icon.setImageResource(R.drawable.ic_pressure)
         sensor_battery_level.name.text = getString(R.string.battery_level)
+
+        initValues()
+    }
+
+    private fun initValues() {
+        sensor_temperature.value.text = getString(R.string.default_temperature)
+        sensor_light.value.text = getString(R.string.default_light)
+        sensor_humidity.value.text = getString(R.string.default_humidity)
+        sensor_pressure.value.text = getString(R.string.default_pressure)
+        sensor_magnetometer_x.value.text = getString(R.string.default_magnetometer_x)
+        sensor_magnetometer_y.value.text = getString(R.string.default_magnetometer_y)
+        sensor_magnetometer_z.value.text = getString(R.string.default_magnetometer_z)
+        sensor_accelerometer_x.value.text = getString(R.string.default_accelerometer_x)
+        sensor_accelerometer_y.value.text = getString(R.string.default_accelerometer_y)
+        sensor_accelerometer_z.value.text = getString(R.string.default_accelerometer_z)
+        sensor_gyroscope_x.value.text = getString(R.string.default_gyro_x)
+        sensor_gyroscope_y.value.text = getString(R.string.default_gyro_y)
+        sensor_gyroscope_z.value.text = getString(R.string.default_gyro_z)
         sensor_battery_level.value.text = getString(R.string.default_battery_level)
     }
 
