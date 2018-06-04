@@ -6,8 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.model.Device
-import kotlinx.android.synthetic.main.item_beacon.view.*
-import timber.log.Timber
+import kotlinx.android.synthetic.main.item_device.view.*
 
 class BeaconAdapter(
     private val beacons: MutableList<Device>,
@@ -31,7 +30,7 @@ class BeaconAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_beacon, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_device, parent, false)
         return ViewHolder(view)
     }
 

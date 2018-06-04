@@ -13,7 +13,7 @@ import com.aconno.acnsensa.adapter.ItemClickListener
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.ui.MainActivity
 import com.aconno.acnsensa.viewmodel.BeaconListViewModel
-import kotlinx.android.synthetic.main.fragment_beacon_list.*
+import kotlinx.android.synthetic.main.fragment_device_list.*
 import javax.inject.Inject
 
 class BeaconListFragment : Fragment(), ItemClickListener<Device> {
@@ -34,7 +34,7 @@ class BeaconListFragment : Fragment(), ItemClickListener<Device> {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_beacon_list, container, false)
+        return inflater.inflate(R.layout.fragment_device_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
