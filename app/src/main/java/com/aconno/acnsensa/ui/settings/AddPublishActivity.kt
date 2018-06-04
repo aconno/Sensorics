@@ -17,6 +17,7 @@ import com.aconno.acnsensa.R.id.name
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
 import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
+import com.aconno.acnsensa.data.converter.PublisherIntervalConverter
 import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
 import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
@@ -31,7 +32,6 @@ import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback {
@@ -184,7 +184,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
         )
 
         edit_interval_count.setText(
-            calculateCountFromMillis(
+            PublisherIntervalConverter.calculateCountFromMillis(
                 basePublish!!.timeMillis,
                 basePublish!!.timeType
             )
@@ -318,7 +318,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
         }
 
         val id = if (basePublish == null) 0 else basePublish!!.id
-        val timeMillis = if (basePublish == null) 0 else calculateMillis(timeCount, timeType)
+        val timeMillis = PublisherIntervalConverter.calculateMillis(timeCount, timeType)
         val lastTimeMillis = if (basePublish == null) 0 else basePublish!!.lastTimeMillis
         return RESTPublishModel(
             id,
@@ -330,27 +330,6 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
             timeMillis,
             lastTimeMillis
         )
-    }
-
-
-    private fun calculateMillis(timeCount: String, timeType: String): Long {
-        return when (timeType) {
-            getString(R.string.publish_sec) -> TimeUnit.SECONDS.toMillis(timeCount.toLong())
-            getString(R.string.publish_min) -> TimeUnit.MINUTES.toMillis(timeCount.toLong())
-            getString(R.string.publish_hour) -> TimeUnit.HOURS.toMillis(timeCount.toLong())
-            getString(R.string.publish_day) -> TimeUnit.DAYS.toMillis(timeCount.toLong())
-            else -> throw IllegalArgumentException("Illegal Publish Time Type Provided.")
-        }
-    }
-
-    private fun calculateCountFromMillis(timeMillis: Long, timeType: String): String {
-        return when (timeType) {
-            getString(R.string.publish_sec) -> TimeUnit.MILLISECONDS.toSeconds(timeMillis).toString()
-            getString(R.string.publish_min) -> TimeUnit.MILLISECONDS.toMinutes(timeMillis).toString()
-            getString(R.string.publish_hour) -> TimeUnit.MILLISECONDS.toHours(timeMillis).toString()
-            getString(R.string.publish_day) -> TimeUnit.MILLISECONDS.toDays(timeMillis).toString()
-            else -> throw IllegalArgumentException("Illegal Publish Time Type Provided.")
-        }
     }
 
     private fun googleAddOrUpdate() {
@@ -397,7 +376,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
         }
 
         val id = if (basePublish == null) 0 else basePublish!!.id
-        val timeMillis = calculateMillis(timeCount, timeType)
+        val timeMillis = PublisherIntervalConverter.calculateMillis(timeCount, timeType)
         val lastTimeMillis = if (basePublish == null) 0 else basePublish!!.lastTimeMillis
         return GooglePublishModel(
             id,
