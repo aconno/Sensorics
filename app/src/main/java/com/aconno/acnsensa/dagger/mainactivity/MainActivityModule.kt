@@ -4,12 +4,14 @@ import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
-import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetAllDevicesUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
+import com.aconno.acnsensa.domain.repository.DeviceRepository
+import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.ui.MainActivity
 import com.aconno.acnsensa.viewmodel.*
 import com.aconno.acnsensa.viewmodel.factory.BeaconListViewModelFactory
@@ -20,9 +22,6 @@ import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
 
-/**
- * @author aconno
- */
 @Module
 class MainActivityModule(private val mainActivity: MainActivity) {
 
@@ -103,4 +102,12 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     fun provideBeaconListViewModelFactory(
         beacons: Flowable<Device>
     ) = BeaconListViewModelFactory(beacons)
+
+    @Provides
+    @MainActivityScope
+    fun provideGetAllDevicesUseCase(
+        deviceRepository: DeviceRepository
+    ): GetAllDevicesUseCase {
+        return GetAllDevicesUseCase(deviceRepository)
+    }
 }

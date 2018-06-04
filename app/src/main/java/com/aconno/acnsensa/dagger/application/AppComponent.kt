@@ -13,6 +13,7 @@ import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.SensorReading
+import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
 import dagger.Component
@@ -22,7 +23,7 @@ import javax.inject.Singleton
 @Component(modules = [AppModule::class])
 @Singleton
 interface AppComponent {
-    //Exposed dependencies for child components.
+
     fun acnSensaApplication(): AcnSensaApplication
 
     fun bluetooth(): Bluetooth
@@ -63,5 +64,5 @@ interface AppComponent {
 
     fun intentProvider(): IntentProvider
 
-    //Classes which can accept injected dependencies.
+    fun deviceRepository(): DeviceRepository
 }
