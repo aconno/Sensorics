@@ -39,9 +39,9 @@ class BeaconListFragment : Fragment(), ItemClickListener<Device> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        beacon_list.layoutManager = LinearLayoutManager(context)
+        list_devices.layoutManager = LinearLayoutManager(context)
         beaconAdapter = BeaconAdapter(mutableListOf(), this)
-        beacon_list.adapter = beaconAdapter
+        list_devices.adapter = beaconAdapter
     }
 
     override fun onResume() {

@@ -128,7 +128,7 @@
     </string-array>
 
     <!-- Beacon list screen -->
-    <string name="no_beacons_label">There are no beacons nearby</string>
+    <string name="no_devices_label">There are no devices</string>
 
     <string-array name="RESTMethods">
         <item>@string/rest_method_get</item>
