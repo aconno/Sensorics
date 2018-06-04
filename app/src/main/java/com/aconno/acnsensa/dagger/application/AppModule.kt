@@ -6,6 +6,10 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.IntentProviderImpl
+import com.aconno.acnsensa.data.mapper.GooglePublishDataMapper
+import com.aconno.acnsensa.data.mapper.GooglePublishEntityDataMapper
+import com.aconno.acnsensa.data.mapper.RESTPublishDataMapper
+import com.aconno.acnsensa.data.mapper.RESTPublishEntityDataMapper
 import com.aconno.acnsensa.data.repository.*
 import com.aconno.acnsensa.device.SmsSenderImpl
 import com.aconno.acnsensa.device.TextToSpeechPlayerImpl
@@ -30,6 +34,8 @@ import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
+import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
@@ -173,17 +179,29 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
     @Provides
     @Singleton
     fun provideGooglePublishRepository(
-        acnSensaDatabase: AcnSensaDatabase
+        acnSensaDatabase: AcnSensaDatabase,
+        googlePublishEntityDataMapper: GooglePublishEntityDataMapper,
+        googlePublishDataMapper: GooglePublishDataMapper
     ): GooglePublishRepository {
-        return GooglePublishRepositoryImpl(acnSensaDatabase.googlePublishDao())
+        return GooglePublishRepositoryImpl(
+            acnSensaDatabase.googlePublishDao(),
+            googlePublishEntityDataMapper,
+            googlePublishDataMapper
+        )
     }
 
     @Provides
     @Singleton
     fun provideRESTPublishRepository(
-        acnSensaDatabase: AcnSensaDatabase
+        acnSensaDatabase: AcnSensaDatabase,
+        restPublishEntityDataMapper: RESTPublishEntityDataMapper,
+        restPublishDataMapper: RESTPublishDataMapper
     ): RESTPublishRepository {
-        return RESTPublishRepositoryImpl(acnSensaDatabase.restPublishDao())
+        return RESTPublishRepositoryImpl(
+            acnSensaDatabase.restPublishDao(),
+            restPublishEntityDataMapper,
+            restPublishDataMapper
+        )
     }
 
     @Provides

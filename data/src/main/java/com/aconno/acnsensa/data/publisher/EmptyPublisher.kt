@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.data.http
+package com.aconno.acnsensa.data.publisher
 
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
@@ -18,6 +18,10 @@ class EmptyPublisher : Publisher {
     }
 
     override fun closeConnection() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

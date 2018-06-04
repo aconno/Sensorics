@@ -1,7 +1,5 @@
 package com.aconno.acnsensa.domain.ifttt
 
-import java.io.Serializable
-
 class GeneralGooglePublish(
     override val id: Long,
     override val name: String,
@@ -14,4 +12,4 @@ class GeneralGooglePublish(
     override var timeType: String,
     override var timeMillis: Long,
     override var lastTimeMillis: Long
-) : GooglePublish, Serializable
+) : GooglePublish

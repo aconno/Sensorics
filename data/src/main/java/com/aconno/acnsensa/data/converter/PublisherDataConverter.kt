@@ -1,11 +1,11 @@
-package com.aconno.acnsensa.data.mqtt
+package com.aconno.acnsensa.data.converter
 
 import com.aconno.acnsensa.domain.model.SensorType
 import com.aconno.acnsensa.domain.model.readings.Reading
 import java.text.SimpleDateFormat
 import java.util.*
 
-object GoogleCloudDataConverter {
+object PublisherDataConverter {
 
     val date = Date()
     private val timeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault())

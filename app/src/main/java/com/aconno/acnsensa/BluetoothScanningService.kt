@@ -12,9 +12,9 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceComponent
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
-import com.aconno.acnsensa.data.http.EmptyPublisher
-import com.aconno.acnsensa.data.http.RESTPublisher
-import com.aconno.acnsensa.data.mqtt.GoogleCloudPublisher
+import com.aconno.acnsensa.data.publisher.EmptyPublisher
+import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
+import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
@@ -183,6 +183,9 @@ class BluetoothScanningService : Service() {
         bluetooth.stopScanning()
         running = false
         stopSelf()
+        publishReadingsUseCase = null
+        closeConnectionUseCase = null
+        publishers = null
     }
 
     private fun startRecording() {
