@@ -183,6 +183,9 @@ class BluetoothScanningService : Service() {
         bluetooth.stopScanning()
         running = false
         stopSelf()
+        publishReadingsUseCase = null
+        closeConnectionUseCase = null
+        publishers = null
     }
 
     private fun startRecording() {

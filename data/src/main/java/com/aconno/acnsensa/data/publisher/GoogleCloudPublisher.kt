@@ -30,8 +30,10 @@ class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePu
 
     init {
         jwtByteArray = getPrivateKeyData(context)
-        mqttAndroidClient = MqttAndroidClient(context,
-            SERVER_URI, getClientID())
+        mqttAndroidClient = MqttAndroidClient(
+            context,
+            SERVER_URI, getClientID()
+        )
         mqttAndroidClient.setCallback(
             object : MqttCallbackExtended {
 
@@ -122,7 +124,12 @@ class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePu
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
                     Timber.d("Successful connect to server, token: %s", asyncActionToken)
                     publishMessagesFromQueue()
-                    testConnectionCallback?.onSuccess()
+
+                    if (testConnectionCallback != null) {
+                        testConnectionCallback?.onSuccess()
+                        mqttAndroidClient.close()
+                        mqttAndroidClient.disconnect()
+                    }
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {

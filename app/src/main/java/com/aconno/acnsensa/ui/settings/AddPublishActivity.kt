@@ -41,6 +41,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
     lateinit var publishViewModel: PublishViewModel
 
     private var basePublish: BasePublishModel? = null
+    private var isTestingAlreadyRunning: Boolean = false
 
     private val addPublishComponent: AddPublishComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -145,10 +146,12 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
 
 
     override fun onSuccess() {
+        isTestingAlreadyRunning = false
         Toast.makeText(this, getString(R.string.test_succeeded), Toast.LENGTH_SHORT).show()
     }
 
     override fun onFail() {
+        isTestingAlreadyRunning = false
         Toast.makeText(this, getString(R.string.test_failed), Toast.LENGTH_SHORT).show()
     }
 
@@ -249,13 +252,17 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
     }
 
     private fun test() {
-        Toast.makeText(this, getString(R.string.testings_started), Toast.LENGTH_SHORT).show()
-        if (spinner.selectedItemPosition == 0) {
-            val toGooglePublishModel = toGooglePublishModel()
-            testGoogleConnection(toGooglePublishModel)
-        } else if (spinner.selectedItemPosition == 1) {
-            val toRESTPublishModel = toRESTPublishModel()
-            testRESTConnection(toRESTPublishModel)
+        if (!isTestingAlreadyRunning) {
+            isTestingAlreadyRunning = true
+
+            Toast.makeText(this, getString(R.string.testings_started), Toast.LENGTH_SHORT).show()
+            if (spinner.selectedItemPosition == 0) {
+                val toGooglePublishModel = toGooglePublishModel()
+                testGoogleConnection(toGooglePublishModel)
+            } else if (spinner.selectedItemPosition == 1) {
+                val toRESTPublishModel = toRESTPublishModel()
+                testRESTConnection(toRESTPublishModel)
+            }
         }
     }
 
