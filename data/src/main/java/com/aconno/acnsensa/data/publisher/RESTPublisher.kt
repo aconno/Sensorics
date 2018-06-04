@@ -17,7 +17,6 @@ import timber.log.Timber
 class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
 
     private val httpClient: OkHttpClient
-    private var testConnectionCallback: Publisher.TestConnectionCallback? = null
 
     init {
         val logging = HttpLoggingInterceptor()
@@ -44,7 +43,6 @@ class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
     }
 
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
-        this.testConnectionCallback = testConnectionCallback
 
         val convertList = PublisherDataConverter.convert(
             Reading(
@@ -59,9 +57,9 @@ class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 if (it.isSuccessful) {
-                    this.testConnectionCallback?.onSuccess()
+                    testConnectionCallback.onSuccess()
                 } else {
-                    this.testConnectionCallback?.onFail()
+                    testConnectionCallback.onFail()
                 }
             }
     }
