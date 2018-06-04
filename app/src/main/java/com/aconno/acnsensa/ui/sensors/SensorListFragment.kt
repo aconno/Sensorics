@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui
+package com.aconno.acnsensa.ui.sensors
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.ui.LiveGraphActivity
+import com.aconno.acnsensa.ui.MainActivity
 import com.aconno.acnsensa.ui.graph.GraphType
 import com.aconno.acnsensa.viewmodel.SensorListViewModel
 import kotlinx.android.synthetic.main.fragment_sensor_list.*
@@ -23,12 +25,18 @@ class SensorListFragment : Fragment() {
 
         val mainActivity: MainActivity? = activity as MainActivity
         mainActivity?.mainActivityComponent?.inject(this)
+
+        arguments?.let {
+            val macAddress = it.getString(MAC_ADDRESS_EXTRA)
+            sensorListViewModel.setMacAddress(macAddress)
+        }
     }
 
     override fun onResume() {
         super.onResume()
         sensorListViewModel.getSensorValuesLiveData()
             .observe(this, Observer { displaySensorValues(it) })
+        initValues()
     }
 
     override fun onCreateView(
@@ -48,50 +56,89 @@ class SensorListFragment : Fragment() {
     private fun setClickListeners() {
         context?.let { context ->
             sensor_temperature.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.TEMPERATURE)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.TEMPERATURE
+                )
             }
             sensor_light.setOnClickListener {
                 LiveGraphActivity.start(context, GraphType.LIGHT)
             }
             sensor_humidity.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.HUMIDITY)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.HUMIDITY
+                )
             }
             sensor_pressure.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.PRESSURE)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.PRESSURE
+                )
             }
 
             sensor_magnetometer_x.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.MAGNETOMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.MAGNETOMETER
+                )
             }
             sensor_magnetometer_y.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.MAGNETOMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.MAGNETOMETER
+                )
             }
             sensor_magnetometer_z.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.MAGNETOMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.MAGNETOMETER
+                )
             }
 
             sensor_accelerometer_x.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.ACCELEROMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.ACCELEROMETER
+                )
             }
             sensor_accelerometer_y.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.ACCELEROMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.ACCELEROMETER
+                )
             }
             sensor_accelerometer_z.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.ACCELEROMETER)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.ACCELEROMETER
+                )
             }
 
             sensor_gyroscope_x.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.GYROSCOPE)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.GYROSCOPE
+                )
             }
             sensor_gyroscope_y.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.GYROSCOPE)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.GYROSCOPE
+                )
             }
             sensor_gyroscope_z.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.GYROSCOPE)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.GYROSCOPE
+                )
             }
 
             sensor_battery_level.setOnClickListener {
-                LiveGraphActivity.start(context, GraphType.BATTERY_LEVEL)
+                LiveGraphActivity.start(
+                    context,
+                    GraphType.BATTERY_LEVEL
+                )
             }
         }
     }
@@ -99,58 +146,63 @@ class SensorListFragment : Fragment() {
     private fun initView() {
         sensor_temperature.icon.setImageResource(R.drawable.ic_temperature)
         sensor_temperature.name.text = getString(R.string.temperature)
-        sensor_temperature.value.text = getString(R.string.default_temperature)
 
         sensor_light.icon.setImageResource(R.drawable.ic_light)
         sensor_light.name.text = getString(R.string.light)
-        sensor_light.value.text = getString(R.string.default_light)
 
         sensor_humidity.icon.setImageResource(R.drawable.ic_humidity)
         sensor_humidity.name.text = getString(R.string.humidity)
-        sensor_humidity.value.text = getString(R.string.default_humidity)
 
         sensor_pressure.icon.setImageResource(R.drawable.ic_pressure)
         sensor_pressure.name.text = getString(R.string.pressure)
-        sensor_pressure.value.text = getString(R.string.default_pressure)
 
         sensor_magnetometer_x.icon.setImageResource(R.drawable.ic_compass)
         sensor_magnetometer_x.name.text = getString(R.string.magnetometer_x)
-        sensor_magnetometer_x.value.text = getString(R.string.default_magnetometer_x)
 
         sensor_magnetometer_y.icon.setImageResource(R.drawable.ic_compass)
         sensor_magnetometer_y.name.text = getString(R.string.magnetometer_y)
-        sensor_magnetometer_y.value.text = getString(R.string.default_magnetometer_y)
 
         sensor_magnetometer_z.icon.setImageResource(R.drawable.ic_compass)
         sensor_magnetometer_z.name.text = getString(R.string.magnetometer_z)
-        sensor_magnetometer_z.value.text = getString(R.string.default_magnetometer_z)
 
         sensor_accelerometer_x.icon.setImageResource(R.drawable.ic_acc)
         sensor_accelerometer_x.name.text = getString(R.string.accelerometer_x)
-        sensor_accelerometer_x.value.text = getString(R.string.default_accelerometer_x)
 
         sensor_accelerometer_y.icon.setImageResource(R.drawable.ic_acc)
         sensor_accelerometer_y.name.text = getString(R.string.accelerometer_y)
-        sensor_accelerometer_y.value.text = getString(R.string.default_accelerometer_y)
 
         sensor_accelerometer_z.icon.setImageResource(R.drawable.ic_acc)
         sensor_accelerometer_z.name.text = getString(R.string.accelerometer_z)
-        sensor_accelerometer_z.value.text = getString(R.string.default_accelerometer_z)
 
         sensor_gyroscope_x.icon.setImageResource(R.drawable.ic_gyro)
         sensor_gyroscope_x.name.text = getString(R.string.gyro_x)
-        sensor_gyroscope_x.value.text = getString(R.string.default_gyro_x)
 
         sensor_gyroscope_y.icon.setImageResource(R.drawable.ic_gyro)
         sensor_gyroscope_y.name.text = getString(R.string.gyro_y)
-        sensor_gyroscope_y.value.text = getString(R.string.default_gyro_y)
 
         sensor_gyroscope_z.icon.setImageResource(R.drawable.ic_gyro)
         sensor_gyroscope_z.name.text = getString(R.string.gyro_z)
-        sensor_gyroscope_z.value.text = getString(R.string.default_gyro_z)
 
         sensor_battery_level.icon.setImageResource(R.drawable.ic_pressure)
         sensor_battery_level.name.text = getString(R.string.battery_level)
+
+        initValues()
+    }
+
+    private fun initValues() {
+        sensor_temperature.value.text = getString(R.string.default_temperature)
+        sensor_light.value.text = getString(R.string.default_light)
+        sensor_humidity.value.text = getString(R.string.default_humidity)
+        sensor_pressure.value.text = getString(R.string.default_pressure)
+        sensor_magnetometer_x.value.text = getString(R.string.default_magnetometer_x)
+        sensor_magnetometer_y.value.text = getString(R.string.default_magnetometer_y)
+        sensor_magnetometer_z.value.text = getString(R.string.default_magnetometer_z)
+        sensor_accelerometer_x.value.text = getString(R.string.default_accelerometer_x)
+        sensor_accelerometer_y.value.text = getString(R.string.default_accelerometer_y)
+        sensor_accelerometer_z.value.text = getString(R.string.default_accelerometer_z)
+        sensor_gyroscope_x.value.text = getString(R.string.default_gyro_x)
+        sensor_gyroscope_y.value.text = getString(R.string.default_gyro_y)
+        sensor_gyroscope_z.value.text = getString(R.string.default_gyro_z)
         sensor_battery_level.value.text = getString(R.string.default_battery_level)
     }
 
@@ -275,6 +327,19 @@ class SensorListFragment : Fragment() {
             }
 
             batteryLevel?.let { sensor_battery_level.update(batteryLabel, "$batteryLevel%") }
+        }
+    }
+
+    companion object {
+
+        private const val MAC_ADDRESS_EXTRA = "mac_address"
+
+        fun newInstance(macAddress: String): SensorListFragment {
+            val bundle = Bundle()
+            bundle.putString(MAC_ADDRESS_EXTRA, macAddress)
+            val fragment = SensorListFragment()
+            fragment.arguments = bundle
+            return fragment
         }
     }
 }
