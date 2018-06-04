@@ -16,7 +16,7 @@ import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.ifttt.outcome.*
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.*
-import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
+import com.aconno.acnsensa.domain.interactor.repository.SaveSensorReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Module
@@ -64,8 +64,8 @@ class BluetoothScanningServiceModule(
     @BluetoothScanningServiceScope
     fun provideRecordSensorValuesUseCase(
         inMemoryRepository: InMemoryRepository
-    ): RecordSensorValuesUseCase {
-        return RecordSensorValuesUseCase(inMemoryRepository)
+    ): SaveSensorReadingsUseCase {
+        return SaveSensorReadingsUseCase(inMemoryRepository)
     }
 
     @Provides

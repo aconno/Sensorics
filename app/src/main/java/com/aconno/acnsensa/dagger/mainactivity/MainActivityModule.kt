@@ -4,7 +4,7 @@ import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
-import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase

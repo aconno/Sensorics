@@ -35,11 +35,14 @@ class LiveGraphActivity : AppCompatActivity() {
         setContentView(R.layout.activity_graph)
 
         liveGraphComponent.inject(this)
+
+        val macAddress = intent.getStringExtra(MAC_ADDRESS_EXTRA)
+        liveGraphViewModel.setMacAddress(macAddress)
     }
 
     override fun onResume() {
         super.onResume()
-        val type: Int = intent.getIntExtra(EXTRA_GRAPH_TYPE, -1)
+        val type: Int = intent.getIntExtra(GRAPH_TYPE_EXTRA, -1)
         liveGraphViewModel.graphType = type
         liveGraphViewModel.getUpdates().observe(this, Observer { updateGraph(it) })
         loadGraph(type)
@@ -60,10 +63,14 @@ class LiveGraphActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val EXTRA_GRAPH_TYPE = "com.aconno.acnsensa.EXTRA_GRAPH_TYPE"
-        fun start(context: Context, type: Int) {
+
+        private const val MAC_ADDRESS_EXTRA = "mac_address"
+        private const val GRAPH_TYPE_EXTRA = "graph_type"
+
+        fun start(context: Context, macAddress: String, type: Int) {
             val intent = Intent(context, LiveGraphActivity::class.java)
-            intent.putExtra(EXTRA_GRAPH_TYPE, type)
+            intent.putExtra(MAC_ADDRESS_EXTRA, macAddress)
+            intent.putExtra(GRAPH_TYPE_EXTRA, type)
             context.startActivity(intent)
         }
     }

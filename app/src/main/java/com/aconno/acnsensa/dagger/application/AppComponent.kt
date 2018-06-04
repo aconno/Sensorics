@@ -4,23 +4,21 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.notification.IntentProvider
-import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
+import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
-import com.aconno.acnsensa.domain.ifttt.*
+import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
+import com.aconno.acnsensa.domain.scanning.Bluetooth
 import dagger.Component
 import io.reactivex.Flowable
 import javax.inject.Singleton
 
-/**
- * @author aconno
- */
 @Component(modules = [AppModule::class])
 @Singleton
 interface AppComponent {
@@ -32,6 +30,8 @@ interface AppComponent {
     fun inMemoryRepository(): InMemoryRepository
 
     fun sensorValues(): Flowable<Map<String, Number>>
+
+    fun sensorReadings(): Flowable<List<SensorReading>>
 
     fun beacons(): Flowable<Device>
 

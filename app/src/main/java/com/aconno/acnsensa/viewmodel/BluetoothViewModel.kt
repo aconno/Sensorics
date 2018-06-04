@@ -7,8 +7,8 @@ import android.bluetooth.BluetoothAdapter
 import android.content.IntentFilter
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.SingleLiveEvent
-import com.aconno.acnsensa.domain.Bluetooth
-import com.aconno.acnsensa.domain.BluetoothState
+import com.aconno.acnsensa.domain.scanning.Bluetooth
+import com.aconno.acnsensa.domain.scanning.BluetoothState
 import io.reactivex.disposables.Disposable
 
 class BluetoothViewModel(

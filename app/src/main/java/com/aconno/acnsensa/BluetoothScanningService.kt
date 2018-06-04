@@ -13,9 +13,8 @@ import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceComp
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
 import com.aconno.acnsensa.data.publisher.EmptyPublisher
-import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
-import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
@@ -24,8 +23,10 @@ import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
-import com.aconno.acnsensa.domain.interactor.repository.RecordSensorValuesUseCase
+import com.aconno.acnsensa.domain.interactor.repository.SaveSensorReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
+import com.aconno.acnsensa.domain.model.SensorReading
+import com.aconno.acnsensa.domain.scanning.Bluetooth
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -41,10 +42,13 @@ class BluetoothScanningService : Service() {
     lateinit var bluetooth: Bluetooth
 
     @Inject
+    lateinit var sensorReadings: Flowable<List<SensorReading>>
+
+    @Inject
     lateinit var sensorValues: Flowable<Map<String, Number>>
 
     @Inject
-    lateinit var recordUseCase: RecordSensorValuesUseCase
+    lateinit var saveSensorReadingsUseCase: SaveSensorReadingsUseCase
 
     @Inject
     lateinit var sensorValuesToReadingsUseCase: SensorValuesToReadingsUseCase
@@ -93,11 +97,7 @@ class BluetoothScanningService : Service() {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
         DaggerBluetoothScanningServiceComponent.builder()
             .appComponent(acnSensaApplication?.appComponent)
-            .bluetoothScanningServiceModule(
-                BluetoothScanningServiceModule(
-                    this
-                )
-            )
+            .bluetoothScanningServiceModule(BluetoothScanningServiceModule(this))
             .build()
     }
 
@@ -189,10 +189,9 @@ class BluetoothScanningService : Service() {
     }
 
     private fun startRecording() {
-        sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-            .subscribe {
-                recordUseCase.execute(it)
-            }
+        sensorReadings.subscribe {
+            saveSensorReadingsUseCase.execute(it)
+        }
     }
 
     private fun startLogging() {

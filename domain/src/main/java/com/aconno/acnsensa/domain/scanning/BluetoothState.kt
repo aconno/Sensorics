@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.domain
+package com.aconno.acnsensa.domain.scanning
 
 data class BluetoothState(val state: Int) {
     companion object {

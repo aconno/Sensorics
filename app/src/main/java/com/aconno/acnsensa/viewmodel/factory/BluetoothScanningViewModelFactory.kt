@@ -2,7 +2,7 @@ package com.aconno.acnsensa.viewmodel.factory
 
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.AcnSensaApplication
-import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 
 /**

@@ -1,7 +1,9 @@
 package com.aconno.acnsensa.dagger.livegraph
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.filter.FilterReadingsByMacAddressUseCase
+import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.ui.LiveGraphActivity
 import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
@@ -10,21 +12,20 @@ import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
 
-/**
- * @author aconno
- */
 @Module
 class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
 
     @Provides
     @LiveGraphScope
     fun provideLiveGraphViewModelFactory(
-        sensorValues: Flowable<Map<String, Number>>,
-        getReadingsUseCase: GetReadingsUseCase
+        sensorReadings: Flowable<List<SensorReading>>,
+        filterReadingsByMacAddressUseCase: FilterReadingsByMacAddressUseCase,
+        getSensorReadingsUseCase: GetSensorReadingsUseCase
     ) =
         LiveGraphViewModelFactory(
-            sensorValues,
-            getReadingsUseCase,
+            sensorReadings,
+            filterReadingsByMacAddressUseCase,
+            getSensorReadingsUseCase,
             liveGraphActivity.application
         )
 
@@ -38,7 +39,11 @@ class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
 
     @Provides
     @LiveGraphScope
-    fun provideGetSensorValuesUseCase(
+    fun provideGetSensorReadingsUseCase(
         inMemoryRepository: InMemoryRepository
-    ) = GetReadingsUseCase(inMemoryRepository)
+    ) = GetSensorReadingsUseCase(inMemoryRepository)
+
+    @Provides
+    @LiveGraphScope
+    fun provideFilterReadingsByMacAddress() = FilterReadingsByMacAddressUseCase()
 }

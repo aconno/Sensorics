@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.aconno.acnsensa.device.bluetooth.BluetoothStateListener
-import com.aconno.acnsensa.domain.BluetoothState
+import com.aconno.acnsensa.domain.scanning.BluetoothState
 
 /**
  * @author aconno
