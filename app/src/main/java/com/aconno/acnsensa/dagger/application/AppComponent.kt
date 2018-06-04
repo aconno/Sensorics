@@ -3,7 +3,6 @@ package com.aconno.acnsensa.dagger.application
 import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
-import com.aconno.acnsensa.model.mapper.GooglePublishDataMapper
 import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.SmsSender
@@ -15,9 +14,6 @@ import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
-import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
-import com.aconno.acnsensa.model.mapper.RESTPublishDataMapper
-import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import dagger.Component
 import io.reactivex.Flowable
 import javax.inject.Singleton

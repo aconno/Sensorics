@@ -8,41 +8,38 @@ import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 
-class TestViewModelFactory {
+object TestViewModelFactory {
 
-    companion object {
+    fun getPublishViewModel(acnSensaDatabase: AcnSensaDatabase): PublishViewModel {
 
-        fun getPublishViewModel(acnSensaDatabase: AcnSensaDatabase): PublishViewModel {
+        val googlePublishRepository =
+            TestObjectFactory.getGooglePublishRepository(acnSensaDatabase)
+        val restPublishRepository = TestObjectFactory.getRESTPublishRepository(acnSensaDatabase)
 
-            val googlePublishRepository =
-                TestObjectFactory.getGooglePublishRepository(acnSensaDatabase)
-            val restPublishRepository = TestObjectFactory.getRESTPublishRepository(acnSensaDatabase)
+        return PublishViewModel(
+            TestObjectFactory.getAddGooglePublishUseCase(googlePublishRepository),
+            TestObjectFactory.getAddRESTPublishUseCase(restPublishRepository),
+            TestObjectFactory.getUpdateGooglePublishUseCase(googlePublishRepository),
+            TestObjectFactory.getUpdateRESTPublishUseCase(restPublishRepository),
+            GooglePublishModelDataMapper(),
+            RESTPublishModelDataMapper()
+        )
+    }
 
-            return PublishViewModel(
-                TestObjectFactory.getAddGooglePublishUseCase(googlePublishRepository),
-                TestObjectFactory.getAddRESTPublishUseCase(restPublishRepository),
-                TestObjectFactory.getUpdateGooglePublishUseCase(googlePublishRepository),
-                TestObjectFactory.getUpdateRESTPublishUseCase(restPublishRepository),
-                GooglePublishModelDataMapper(),
-                RESTPublishModelDataMapper()
-            )
-        }
+    fun getPublishListViewModel(acnSensaDatabase: AcnSensaDatabase): PublishListViewModel {
+        val googlePublishRepository =
+            TestObjectFactory.getGooglePublishRepository(acnSensaDatabase)
+        val restPublishRepository = TestObjectFactory.getRESTPublishRepository(acnSensaDatabase)
 
-        fun getPublishListViewModel(acnSensaDatabase: AcnSensaDatabase): PublishListViewModel {
-            val googlePublishRepository =
-                TestObjectFactory.getGooglePublishRepository(acnSensaDatabase)
-            val restPublishRepository = TestObjectFactory.getRESTPublishRepository(acnSensaDatabase)
-
-            return PublishListViewModel(
-                TestObjectFactory.getAllGooglePublishUseCase(googlePublishRepository),
-                TestObjectFactory.getAllRESTPublishUseCase(restPublishRepository),
-                TestObjectFactory.getUpdateGooglePublishUseCase(googlePublishRepository),
-                TestObjectFactory.getUpdateRESTPublishUseCase(restPublishRepository),
-                GooglePublishDataMapper(),
-                GooglePublishModelDataMapper(),
-                RESTPublishDataMapper(),
-                RESTPublishModelDataMapper()
-            )
-        }
+        return PublishListViewModel(
+            TestObjectFactory.getAllGooglePublishUseCase(googlePublishRepository),
+            TestObjectFactory.getAllRESTPublishUseCase(restPublishRepository),
+            TestObjectFactory.getUpdateGooglePublishUseCase(googlePublishRepository),
+            TestObjectFactory.getUpdateRESTPublishUseCase(restPublishRepository),
+            GooglePublishDataMapper(),
+            GooglePublishModelDataMapper(),
+            RESTPublishDataMapper(),
+            RESTPublishModelDataMapper()
+        )
     }
 }
