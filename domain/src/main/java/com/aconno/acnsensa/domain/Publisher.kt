@@ -13,4 +13,11 @@ interface Publisher {
 
     //Maybe Id
     fun getPublishData(): BasePublish
+
+    fun test(testConnectionCallback: TestConnectionCallback)
+
+    interface TestConnectionCallback {
+        fun onSuccess()
+        fun onFail()
+    }
 }

@@ -1,7 +1,5 @@
 package com.aconno.acnsensa.domain.ifttt
 
-import java.io.Serializable
-
 class GeneralRESTPublish(
     override val id: Long,
     override val name: String,
@@ -11,4 +9,4 @@ class GeneralRESTPublish(
     override var timeType: String,
     override var timeMillis: Long,
     override var lastTimeMillis: Long
-) : RESTPublish, Serializable
+) : RESTPublish

@@ -1,7 +1,8 @@
-package com.aconno.acnsensa.data.mqtt
+package com.aconno.acnsensa.data.publisher
 
 import android.content.Context
 import android.net.Uri
+import com.aconno.acnsensa.data.converter.PublisherDataConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
@@ -25,9 +26,14 @@ class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePu
 
     private val messagesQueue: Queue<String> = LinkedList<String>()
 
+    private var testConnectionCallback: Publisher.TestConnectionCallback? = null
+
     init {
         jwtByteArray = getPrivateKeyData(context)
-        mqttAndroidClient = MqttAndroidClient(context, SERVER_URI, getClientID())
+        mqttAndroidClient = MqttAndroidClient(
+            context,
+            SERVER_URI, getClientID()
+        )
         mqttAndroidClient.setCallback(
             object : MqttCallbackExtended {
 
@@ -47,6 +53,11 @@ class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePu
                     Timber.d("Delivery complete, token: %s", token)
                 }
             })
+    }
+
+    override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
+        this.testConnectionCallback = testConnectionCallback
+        connect()
     }
 
     private fun showError(s: String) {
@@ -81,7 +92,7 @@ class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePu
     }
 
     override fun publish(reading: Reading) {
-        val messages = GoogleCloudDataConverter.convert(reading)
+        val messages = PublisherDataConverter.convert(reading)
         for (message in messages) {
             publish(message)
         }
@@ -113,10 +124,17 @@ class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePu
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
                     Timber.d("Successful connect to server, token: %s", asyncActionToken)
                     publishMessagesFromQueue()
+
+                    if (testConnectionCallback != null) {
+                        testConnectionCallback?.onSuccess()
+                        mqttAndroidClient.close()
+                        mqttAndroidClient.disconnect()
+                    }
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
                     Timber.e(exception, "Failed to connect to server")
+                    testConnectionCallback?.onFail()
                 }
             })
         } catch (e: MqttException) {

@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.ifttt.BasePublish
+import com.aconno.acnsensa.model.BasePublishModel
 import kotlinx.android.synthetic.main.activity_add_publish.*
 
 
@@ -35,8 +36,7 @@ class PublishListActivity : AppCompatActivity(),
         setSupportActionBar(custom_toolbar)
     }
 
-    override fun onListFragmentInteraction(item: BasePublish?) {
-        //TODO SendData
+    override fun onListFragmentInteraction(item: BasePublishModel?) {
         AddPublishActivity.start(this, item)
     }
 

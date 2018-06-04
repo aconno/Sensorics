@@ -1,136 +1,92 @@
 package com.aconno.acnsensa.viewmodel
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublish
-import com.aconno.acnsensa.domain.ifttt.GeneralRESTPublish
+import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.ifttt.AddGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.AddRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateRESTPublishUserCase
+import com.aconno.acnsensa.model.GooglePublishModel
+import com.aconno.acnsensa.model.RESTPublishModel
+import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 class PublishViewModel(
-    application: Application,
     private val addGooglePublishUseCase: AddGooglePublishUseCase,
     private val addRESTPublishUseCase: AddRESTPublishUseCase,
     private val updateGooglePublishUseCase: UpdateGooglePublishUseCase,
-    private val updateRESTPublishUserCase: UpdateRESTPublishUserCase
-) : AndroidViewModel(application) {
+    private val updateRESTPublishUserCase: UpdateRESTPublishUserCase,
+    private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
+    private val restPublishModelDataMapper: RESTPublishModelDataMapper
+) : ViewModel() {
 
-    private var id = 0L
-
-
-    fun saveGoogle(
-        name: String,
-        projectId: String,
-        region: String,
-        deviceRegistry: String,
-        device: String,
-        privateKey: String,
-        timeType: String,
-        timeMillis: Long
-
-    ): GeneralGooglePublish {
-        val googlePublish = GeneralGooglePublish(
-            id,
-            name,
-            projectId,
-            region,
-            deviceRegistry,
-            device,
-            privateKey,
-            false,
-            timeType,
-            timeMillis,
-            0L
-        )
-
-        addGooglePublishUseCase.execute(googlePublish)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { Timber.d("Save succeeded, action id: ${googlePublish.id}") },
-                { Timber.e("Failed to add Google Publish Data with id: ${googlePublish.id}") })
-
-        return googlePublish
-    }
-
-    fun saveREST(
-        name: String,
-        url: String,
-        method: String,
-        timeType: String,
-        timeMillis: Long
-    ): GeneralRESTPublish {
-        val generalRESTPublish = GeneralRESTPublish(
-            id, name, url, method, false, timeType, timeMillis, 0L
-        )
-
-        addRESTPublishUseCase.execute(generalRESTPublish)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { Timber.d("Save succeeded, action id: ${generalRESTPublish.id}") },
-                { Timber.e("Failed to add REST Publish Data with id: ${generalRESTPublish.id}") })
-
-        return generalRESTPublish
-    }
-
-    fun updateGoogle(
-        id: Long,
-        name: String,
-        projectId: String,
-        region: String,
-        deviceRegistry: String,
-        device: String,
-        privateKey: String,
-        timeType: String,
-        timeMillis: Long,
-        lastTimeMillis: Long
+    fun save(
+        googlePublishModel: GooglePublishModel
     ) {
-        val googlePublish = GeneralGooglePublish(
-            id,
-            name,
-            projectId,
-            region,
-            deviceRegistry,
-            device,
-            privateKey,
-            false,
-            timeType,
-            timeMillis,
-            lastTimeMillis
-        )
 
-        updateGooglePublishUseCase.execute(googlePublish)
+        val transform = googlePublishModelDataMapper.transform(googlePublishModel)
+        addGooglePublishUseCase.execute(transform)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { Timber.d("Save succeeded, action id: ${googlePublish.id}") },
-                { Timber.e("Failed to update Google Publish Data with id: ${googlePublish.id}") })
+                { Timber.d("Save succeeded, action id: ${transform.id}") },
+                { Timber.e("Failed to add Google Publish Data with id: ${transform.id}") })
     }
 
-    fun updateREST(
-        id: Long,
-        name: String,
-        url: String,
-        method: String,
-        timeType: String,
-        timeMillis: Long,
-        lastTimeMillis: Long
+    fun save(
+        restPublishModel: RESTPublishModel
     ) {
-        val generalRESTPublish = GeneralRESTPublish(
-            id, name, url, method, false, timeType, timeMillis, lastTimeMillis
-        )
 
-        updateRESTPublishUserCase.execute(generalRESTPublish)
+        val transform = restPublishModelDataMapper.transform(restPublishModel)
+
+
+        addRESTPublishUseCase.execute(transform)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { Timber.d("Save succeeded, action id: ${generalRESTPublish.id}") },
-                { Timber.e("Failed to update REST Publish Data with id: ${generalRESTPublish.id}") })
+                { Timber.d("Save succeeded, action id: ${transform.id}") },
+                { Timber.e("Failed to add REST Publish Data with id: ${transform.id}") })
     }
+
+    fun update(
+        googlePublishModel: GooglePublishModel
+    ) {
+        val transform = googlePublishModelDataMapper.transform(googlePublishModel)
+        updateGooglePublishUseCase.execute(transform)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { Timber.d("Save succeeded, action id: ${transform.id}") },
+                { Timber.e("Failed to update Google Publish Data with id: ${transform.id}") })
+    }
+
+    fun update(
+        restPublishModel: RESTPublishModel
+    ) {
+        val transform = restPublishModelDataMapper.transform(restPublishModel)
+
+        updateRESTPublishUserCase.execute(transform)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { Timber.d("Save succeeded, action id: ${transform.id}") },
+                { Timber.e("Failed to update REST Publish Data with id: ${transform.id}") })
+    }
+
+
+    fun checkFieldsAreEmpty(
+        vararg strings: String
+    ): Boolean {
+
+        strings.forEach {
+            if (it.isBlank()) {
+                return true
+            }
+        }
+
+        return false
+    }
+
 }

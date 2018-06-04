@@ -1,5 +1,6 @@
 package com.aconno.acnsensa.domain.ifttt
 
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 interface GooglePublishRepository {
@@ -8,5 +9,5 @@ interface GooglePublishRepository {
     fun deleteGooglePublish(googlePublish: GooglePublish)
     fun getAllGooglePublish(): Single<List<BasePublish>>
     fun getAllEnabledGooglePublish(): Single<List<BasePublish>>
-    fun getGooglePublishById(googlePublishId: Long): Single<GooglePublish>
+    fun getGooglePublishById(googlePublishId: Long): Maybe<GooglePublish>
 }
