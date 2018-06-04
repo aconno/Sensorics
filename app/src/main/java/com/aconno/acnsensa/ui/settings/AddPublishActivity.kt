@@ -145,11 +145,11 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
 
 
     override fun onSuccess() {
-        Toast.makeText(this, "Test Succeeded", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.test_succeeded), Toast.LENGTH_SHORT).show()
     }
 
     override fun onFail() {
-        Toast.makeText(this, "Test Failed", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.test_failed), Toast.LENGTH_SHORT).show()
     }
 
     /**
@@ -231,7 +231,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
         if (menu != null) {
             val item = menu.findItem(R.id.action_publish_done)
             if (basePublish != null) {
-                item.title = "Update"
+                item.title = getString(R.string.update)
             }
         }
 
@@ -249,7 +249,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
     }
 
     private fun test() {
-        Toast.makeText(this, "Testing Started", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.testings_started), Toast.LENGTH_SHORT).show()
         if (spinner.selectedItemPosition == 0) {
             val toGooglePublishModel = toGooglePublishModel()
             testGoogleConnection(toGooglePublishModel)
@@ -287,10 +287,10 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
         if (restPublishModel != null) {
 
             if (basePublish != null) {
-                toastText = "Updated"
+                toastText = getString(R.string.updated)
                 publishViewModel.update(restPublishModel)
             } else {
-                toastText = "Created"
+                toastText = getString(R.string.created)
                 publishViewModel.save(restPublishModel)
             }
 
@@ -313,7 +313,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
                 timeCount
             )
         ) {
-            Toast.makeText(this, "Please fill the blanks", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
             return null
         }
 
@@ -339,10 +339,10 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
         if (googlePublishModel != null) {
 
             if (basePublish != null) {
-                toastText = "Updated"
+                toastText = getString(R.string.updated)
                 publishViewModel.update(googlePublishModel)
             } else {
-                toastText = "Created"
+                toastText = getString(R.string.created)
                 publishViewModel.save(googlePublishModel)
             }
 
@@ -371,7 +371,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
                 timeCount
             )
         ) {
-            Toast.makeText(this, "Please fill the blanks", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
             return null
         }
 
