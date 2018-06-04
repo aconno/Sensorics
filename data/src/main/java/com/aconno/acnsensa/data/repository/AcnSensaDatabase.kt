@@ -2,16 +2,20 @@ package com.aconno.acnsensa.data.repository
 
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
+import com.aconno.acnsensa.data.repository.devices.DeviceDao
+import com.aconno.acnsensa.data.repository.devices.DeviceEntity
 
-/**
- * @author aconno
- */
 @Database(
-    entities = [ActionEntity::class, GooglePublishEntity::class, RESTPublishEntity::class],
+    entities = [ActionEntity::class, DeviceEntity::class, GooglePublishEntity::class, RESTPublishEntity::class],
     version = 1
 )
 abstract class AcnSensaDatabase : RoomDatabase() {
+
+    abstract fun deviceDao(): DeviceDao
+
     abstract fun actionDao(): ActionDao
+
     abstract fun googlePublishDao(): GooglePublishDao
+
     abstract fun restPublishDao(): RESTPublishDao
 }

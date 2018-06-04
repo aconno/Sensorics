@@ -11,6 +11,8 @@ import com.aconno.acnsensa.data.mapper.GooglePublishEntityDataMapper
 import com.aconno.acnsensa.data.mapper.RESTPublishDataMapper
 import com.aconno.acnsensa.data.mapper.RESTPublishEntityDataMapper
 import com.aconno.acnsensa.data.repository.*
+import com.aconno.acnsensa.data.repository.devices.DeviceMapper
+import com.aconno.acnsensa.data.repository.devices.DeviceRepositoryImpl
 import com.aconno.acnsensa.device.SmsSenderImpl
 import com.aconno.acnsensa.device.TextToSpeechPlayerImpl
 import com.aconno.acnsensa.device.VibratorImpl
@@ -32,10 +34,9 @@ import com.aconno.acnsensa.domain.interactor.convert.ScanResultToSensorReadingsU
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.SensorReading
+import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
-import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
-import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
@@ -225,5 +226,14 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
     @Singleton
     fun provideIntentProvider(): IntentProvider {
         return IntentProviderImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeviceRepository(
+        acnSensaDatabase: AcnSensaDatabase,
+        deviceMapper: DeviceMapper
+    ): DeviceRepository {
+        return DeviceRepositoryImpl(acnSensaDatabase.deviceDao(), deviceMapper)
     }
 }
