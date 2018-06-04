@@ -1,6 +1,6 @@
-package com.aconno.acnsensa.data.http
+package com.aconno.acnsensa.data.publisher
 
-import com.aconno.acnsensa.data.mqtt.GoogleCloudDataConverter
+import com.aconno.acnsensa.data.converter.PublisherDataConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
@@ -10,9 +10,8 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.*
-import timber.log.Timber
-import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import timber.log.Timber
 
 
 class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
@@ -34,7 +33,7 @@ class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
     }
 
     override fun publish(reading: Reading) {
-        val messages = GoogleCloudDataConverter.convert(reading)
+        val messages = PublisherDataConverter.convert(reading)
 
         Observable.fromIterable(messages)
             .subscribeOn(Schedulers.io())
@@ -47,7 +46,7 @@ class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
         this.testConnectionCallback = testConnectionCallback
 
-        val convertList = GoogleCloudDataConverter.convert(
+        val convertList = PublisherDataConverter.convert(
             Reading(
                 listOf(10, 15, 20),
                 System.currentTimeMillis(),

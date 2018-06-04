@@ -1,7 +1,8 @@
-package com.aconno.acnsensa.data.mqtt
+package com.aconno.acnsensa.data.publisher
 
 import android.content.Context
 import android.net.Uri
+import com.aconno.acnsensa.data.converter.PublisherDataConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
@@ -29,7 +30,8 @@ class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePu
 
     init {
         jwtByteArray = getPrivateKeyData(context)
-        mqttAndroidClient = MqttAndroidClient(context, SERVER_URI, getClientID())
+        mqttAndroidClient = MqttAndroidClient(context,
+            SERVER_URI, getClientID())
         mqttAndroidClient.setCallback(
             object : MqttCallbackExtended {
 
@@ -88,7 +90,7 @@ class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePu
     }
 
     override fun publish(reading: Reading) {
-        val messages = GoogleCloudDataConverter.convert(reading)
+        val messages = PublisherDataConverter.convert(reading)
         for (message in messages) {
             publish(message)
         }

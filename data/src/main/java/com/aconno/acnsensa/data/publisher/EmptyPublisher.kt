@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.data.http
+package com.aconno.acnsensa.data.publisher
 
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish

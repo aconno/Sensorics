@@ -17,8 +17,8 @@ import com.aconno.acnsensa.R.id.name
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
 import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
-import com.aconno.acnsensa.data.http.RESTPublisher
-import com.aconno.acnsensa.data.mqtt.GoogleCloudPublisher
+import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
+import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
@@ -59,7 +59,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
         when {
             temp is BasePublishModel -> {
                 basePublish = temp
-                setTextsWithTemp()
+                setTextsWithPublishData()
             }
             temp != null -> throw IllegalArgumentException("Only classes that extend from BasePublishModel can be sent")
         }
@@ -175,7 +175,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun setTextsWithTemp() {
+    private fun setTextsWithPublishData() {
         edit_name.setText(basePublish?.name)
         spinner_interval_time.setSelection(
             resources.getStringArray(R.array.PublishIntervals).indexOf(
