@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.support.v4.content.ContextCompat
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.filter.FilterReadingsByMacAddressUseCase
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.model.DataSeriesSettings
@@ -13,12 +13,23 @@ import com.aconno.acnsensa.ui.graph.BleDataSeries
 import com.aconno.acnsensa.ui.graph.BleGraph
 import com.aconno.acnsensa.ui.graph.GraphType
 import io.reactivex.Flowable
+import io.reactivex.disposables.Disposable
 
 class LiveGraphViewModel(
     private val sensorReadings: Flowable<List<SensorReading>>,
+    private val filterReadingsByMacAddressUseCase: FilterReadingsByMacAddressUseCase,
     application: Application
 ) : AndroidViewModel(application) {
     private val refreshTimestamp: MutableLiveData<Long> = MutableLiveData()
+
+    private var disposable: Disposable? = null
+
+    fun setMacAddress(macAddress: String) {
+        disposable?.dispose()
+        disposable = sensorReadings.concatMap {
+            filterReadingsByMacAddressUseCase.execute(it, macAddress).toFlowable()
+        }.subscribe { processSensorValues(it) }
+    }
 
     fun getUpdates(): MutableLiveData<Long> {
         return refreshTimestamp
@@ -158,14 +169,6 @@ class LiveGraphViewModel(
             GraphType.BATTERY_LEVEL -> batteryLevelGraph
             else -> throw IllegalArgumentException()
         }
-    }
-
-    init {
-        subscribe()
-    }
-
-    private fun subscribe() {
-        sensorReadings.subscribe { processSensorValues(it) }
     }
 
     private fun processSensorValues(sensorReadings: List<SensorReading>) {
