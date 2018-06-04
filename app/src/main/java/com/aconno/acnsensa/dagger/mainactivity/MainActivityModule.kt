@@ -14,10 +14,7 @@ import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.ui.MainActivity
 import com.aconno.acnsensa.viewmodel.*
-import com.aconno.acnsensa.viewmodel.factory.BeaconListViewModelFactory
-import com.aconno.acnsensa.viewmodel.factory.BluetoothScanningViewModelFactory
-import com.aconno.acnsensa.viewmodel.factory.BluetoothViewModelFactory
-import com.aconno.acnsensa.viewmodel.factory.SensorListViewModelFactory
+import com.aconno.acnsensa.viewmodel.factory.*
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
@@ -109,5 +106,22 @@ class MainActivityModule(private val mainActivity: MainActivity) {
         deviceRepository: DeviceRepository
     ): GetAllDevicesUseCase {
         return GetAllDevicesUseCase(deviceRepository)
+    }
+
+    @Provides
+    @MainActivityScope
+    fun provideDeviceListViewModelFactory(
+        getAllDevicesUseCase: GetAllDevicesUseCase
+    ): DeviceListViewModelFactory {
+        return DeviceListViewModelFactory(getAllDevicesUseCase)
+    }
+
+    @Provides
+    @MainActivityScope
+    fun provideDeviceListViewModel(
+        deviceListViewModelFactory: DeviceListViewModelFactory
+    ): DeviceListViewModel {
+        return ViewModelProviders.of(mainActivity, deviceListViewModelFactory)
+            .get(DeviceListViewModel::class.java)
     }
 }
