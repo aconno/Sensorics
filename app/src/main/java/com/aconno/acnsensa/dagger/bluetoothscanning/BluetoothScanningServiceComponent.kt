@@ -11,7 +11,9 @@ import io.reactivex.Flowable
 @Component(dependencies = [AppComponent::class], modules = [BluetoothScanningServiceModule::class])
 @BluetoothScanningServiceScope
 interface BluetoothScanningServiceComponent {
+
     fun sensorValues(): Flowable<Map<String, Number>>
+
     fun inject(bluetoothScanningService: BluetoothScanningService)
 }
 

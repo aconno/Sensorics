@@ -201,7 +201,6 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
         return NotificationDisplayImpl(
             NotificationFactory(), intentProvider, acnSensaApplication
         )
-
     }
 
     @Provides

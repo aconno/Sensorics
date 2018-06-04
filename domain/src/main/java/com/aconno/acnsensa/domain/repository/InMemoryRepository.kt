@@ -1,11 +1,13 @@
 package com.aconno.acnsensa.domain.repository
 
-import com.aconno.acnsensa.domain.model.SensorType
-import com.aconno.acnsensa.domain.model.readings.Reading
+import com.aconno.acnsensa.domain.model.SensorReading
+import com.aconno.acnsensa.domain.model.SensorTypeSingle
 
 interface InMemoryRepository {
 
-    fun addReading(reading: Reading)
+    fun addSensorReading(sensorReading: SensorReading)
 
-    fun getReadingsFor(sensorType: SensorType): List<Reading>
+    fun getSensorReadingsFor(sensorType: SensorTypeSingle): List<SensorReading>
+
+    fun deleteAllSensorReadings()
 }

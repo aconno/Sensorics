@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.support.v4.content.ContextCompat
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterReadingsByMacAddressUseCase
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
@@ -18,13 +19,17 @@ import io.reactivex.disposables.Disposable
 class LiveGraphViewModel(
     private val sensorReadings: Flowable<List<SensorReading>>,
     private val filterReadingsByMacAddressUseCase: FilterReadingsByMacAddressUseCase,
+    private val getSensorReadingsUseCase: GetSensorReadingsUseCase,
     application: Application
 ) : AndroidViewModel(application) {
     private val refreshTimestamp: MutableLiveData<Long> = MutableLiveData()
 
     private var disposable: Disposable? = null
 
+    private lateinit var macAddress: String
+
     fun setMacAddress(macAddress: String) {
+        this.macAddress = macAddress
         disposable?.dispose()
         disposable = sensorReadings.concatMap {
             filterReadingsByMacAddressUseCase.execute(it, macAddress).toFlowable()
@@ -174,48 +179,117 @@ class LiveGraphViewModel(
     private fun processSensorValues(sensorReadings: List<SensorReading>) {
         when (graphType) {
             GraphType.TEMPERATURE ->
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.TEMPERATURE }
-                    .map { temperatureSeries.updateDataSet(it.timestamp, it.value) }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.TEMPERATURE)
+                    .subscribe { temperatureReadings ->
+                        val filtered = temperatureReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        temperatureSeries.updateDataSet(filtered)
+                    }
             GraphType.LIGHT ->
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.LIGHT }
-                    .map { lightSeries.updateDataSet(it.timestamp, it.value) }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.LIGHT)
+                    .subscribe { lightReadings ->
+                        val filtered = lightReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        lightSeries.updateDataSet(filtered)
+                    }
             GraphType.HUMIDITY ->
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.HUMIDITY }
-                    .map { humiditySeries.updateDataSet(it.timestamp, it.value) }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.HUMIDITY)
+                    .subscribe { humidityReadings ->
+                        val filtered = humidityReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        humiditySeries.updateDataSet(filtered)
+                    }
             GraphType.PRESSURE ->
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.PRESSURE }
-                    .map { pressureSeries.updateDataSet(it.timestamp, it.value) }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.PRESSURE)
+                    .subscribe { pressureReadings ->
+                        val filtered = pressureReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        pressureSeries.updateDataSet(filtered)
+                    }
             GraphType.MAGNETOMETER -> {
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.MAGNETOMETER_X }
-                    .map { xMagnetometerSeries.updateDataSet(it.timestamp, it.value) }
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.MAGNETOMETER_Y }
-                    .map { yMagnetometerSeries.updateDataSet(it.timestamp, it.value) }
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.MAGNETOMETER_Z }
-                    .map { zMagnetometerSeries.updateDataSet(it.timestamp, it.value) }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.MAGNETOMETER_X)
+                    .subscribe { magnetometerXReadings ->
+                        val filtered = magnetometerXReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        xMagnetometerSeries.updateDataSet(filtered)
+                    }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.MAGNETOMETER_Y)
+                    .subscribe { magnetometerYReadings ->
+                        val filtered = magnetometerYReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        yMagnetometerSeries.updateDataSet(filtered)
+                    }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.MAGNETOMETER_Z)
+                    .subscribe { magnetometerZReadings ->
+                        val filtered = magnetometerZReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        zMagnetometerSeries.updateDataSet(filtered)
+                    }
             }
             GraphType.ACCELEROMETER -> {
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.ACCELEROMETER_X }
-                    .map { xAccelerometerSeries.updateDataSet(it.timestamp, it.value) }
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.ACCELEROMETER_Y }
-                    .map { yAccelerometerSeries.updateDataSet(it.timestamp, it.value) }
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.ACCELEROMETER_Z }
-                    .map { zAccelerometerSeries.updateDataSet(it.timestamp, it.value) }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.ACCELEROMETER_X)
+                    .subscribe { accelerometerXReadings ->
+                        val filtered = accelerometerXReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        xAccelerometerSeries.updateDataSet(filtered)
+                    }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.ACCELEROMETER_Y)
+                    .subscribe { accelerometerYReadings ->
+                        val filtered = accelerometerYReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        yAccelerometerSeries.updateDataSet(filtered)
+                    }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.ACCELEROMETER_Z)
+                    .subscribe { accelerometerZReadings ->
+                        val filtered = accelerometerZReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        zAccelerometerSeries.updateDataSet(filtered)
+                    }
             }
             GraphType.GYROSCOPE -> {
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.GYROSCOPE_X }
-                    .map { xGyroscopeSeries.updateDataSet(it.timestamp, it.value) }
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.GYROSCOPE_Y }
-                    .map { yGyroscopeSeries.updateDataSet(it.timestamp, it.value) }
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.GYROSCOPE_Z }
-                    .map { zGyroscopeSeries.updateDataSet(it.timestamp, it.value) }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.GYROSCOPE_X)
+                    .subscribe { gyroscopeXReadings ->
+                        val filtered = gyroscopeXReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        xGyroscopeSeries.updateDataSet(filtered)
+                    }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.GYROSCOPE_Y)
+                    .subscribe { gyroscopeYReadings ->
+                        val filtered = gyroscopeYReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        yGyroscopeSeries.updateDataSet(filtered)
+                    }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.GYROSCOPE_Z)
+                    .subscribe { gyroscopeZReadings ->
+                        val filtered = gyroscopeZReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        zGyroscopeSeries.updateDataSet(filtered)
+                    }
             }
             GraphType.BATTERY_LEVEL ->
-                sensorReadings.filter { it.sensorType == SensorTypeSingle.BATTERY_LEVEL }
-                    .map { batteryLevelSeries.updateDataSet(it.timestamp, it.value) }
+                getSensorReadingsUseCase.execute(SensorTypeSingle.BATTERY_LEVEL)
+                    .subscribe { batteryLevelReadings ->
+                        val filtered = batteryLevelReadings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        batteryLevelSeries.updateDataSet(filtered)
+                    }
             else -> throw IllegalArgumentException()
         }
 
         refreshTimestamp.value = System.currentTimeMillis()
-
     }
 }
