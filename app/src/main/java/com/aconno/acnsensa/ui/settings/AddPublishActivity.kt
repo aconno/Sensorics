@@ -17,9 +17,14 @@ import com.aconno.acnsensa.R.id.name
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
 import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
+import com.aconno.acnsensa.data.http.RESTPublisher
+import com.aconno.acnsensa.data.mqtt.GoogleCloudPublisher
+import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
+import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import kotlinx.android.synthetic.main.activity_add_publish.*
 import java.security.KeyFactory
@@ -29,7 +34,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class AddPublishActivity : AppCompatActivity() {
+class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback {
 
 
     @Inject
@@ -97,6 +102,54 @@ class AddPublishActivity : AppCompatActivity() {
                 }
             }
         }
+
+        spinner_methods.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                when (position) {
+                    0 -> {
+                        text_http_get.visibility = View.VISIBLE
+                    }
+                    1 -> {
+                        text_http_get.visibility = View.GONE
+                    }
+                }
+            }
+        }
+    }
+
+    private fun testRESTConnection(toRESTPublishModel: RESTPublishModel?) {
+        val publisher = RESTPublisher(
+            RESTPublishModelDataMapper().transform(toRESTPublishModel!!)
+        )
+
+        publisher.test(this)
+    }
+
+    private fun testGoogleConnection(toGooglePublishModel: GooglePublishModel?) {
+        val publisher = GoogleCloudPublisher(
+            applicationContext,
+            GooglePublishModelDataMapper().transform(toGooglePublishModel!!)
+        )
+
+        publisher.test(this)
+    }
+
+
+    override fun onSuccess() {
+        Toast.makeText(this, "Test Succeeded", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onFail() {
+        Toast.makeText(this, "Test Failed", Toast.LENGTH_SHORT).show()
     }
 
     /**
@@ -137,11 +190,16 @@ class AddPublishActivity : AppCompatActivity() {
             )
         )
 
-        val str = getString(R.string.last_data_sent) + " " +
-                millisToFormattedDateString(
-                    basePublish!!.lastTimeMillis
-                )
-        text_lastdatasent.text = str
+        if (basePublish!!.lastTimeMillis == 0L) {
+            text_lastdatasent.visibility = View.GONE
+        } else {
+            text_lastdatasent.visibility = View.VISIBLE
+            val str = getString(R.string.last_data_sent) + " " +
+                    millisToFormattedDateString(
+                        basePublish!!.lastTimeMillis
+                    )
+            text_lastdatasent.text = str
+        }
 
         if (basePublish is GooglePublishModel) {
             spinner.setSelection(0)
@@ -184,9 +242,21 @@ class AddPublishActivity : AppCompatActivity() {
         val id: Int? = item?.itemId
         when (id) {
             R.id.action_publish_done -> addOrUpdate()
+            R.id.action_publish_test -> test()
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun test() {
+        Toast.makeText(this, "Testing Started", Toast.LENGTH_SHORT).show()
+        if (spinner.selectedItemPosition == 0) {
+            val toGooglePublishModel = toGooglePublishModel()
+            testGoogleConnection(toGooglePublishModel)
+        } else if (spinner.selectedItemPosition == 1) {
+            val toRESTPublishModel = toRESTPublishModel()
+            testRESTConnection(toRESTPublishModel)
+        }
     }
 
     private fun addOrUpdate() {
@@ -327,7 +397,7 @@ class AddPublishActivity : AppCompatActivity() {
         }
 
         val id = if (basePublish == null) 0 else basePublish!!.id
-        val timeMillis = if (basePublish == null) 0 else calculateMillis(timeCount, timeType)
+        val timeMillis = calculateMillis(timeCount, timeType)
         val lastTimeMillis = if (basePublish == null) 0 else basePublish!!.lastTimeMillis
         return GooglePublishModel(
             id,
