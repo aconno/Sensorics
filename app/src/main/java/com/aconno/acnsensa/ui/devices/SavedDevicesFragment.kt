@@ -13,7 +13,7 @@ import com.aconno.acnsensa.adapter.ItemClickListener
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.ui.MainActivity
 import com.aconno.acnsensa.viewmodel.DeviceViewModel
-import kotlinx.android.synthetic.main.fragment_device_list.*
+import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -35,7 +35,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_device_list, container, false)
+        return inflater.inflate(R.layout.fragment_saved_devices, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
