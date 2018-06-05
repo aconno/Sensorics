@@ -8,6 +8,7 @@ import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseC
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
+import com.aconno.acnsensa.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.repository.DeviceRepository
@@ -110,10 +111,19 @@ class MainActivityModule(private val mainActivity: MainActivity) {
 
     @Provides
     @MainActivityScope
+    fun provideSaveDeviceUseCase(
+        deviceRepository: DeviceRepository
+    ): SaveDeviceUseCase {
+        return SaveDeviceUseCase(deviceRepository)
+    }
+
+    @Provides
+    @MainActivityScope
     fun provideDeviceListViewModelFactory(
-        getSavedDevicesUseCase: GetSavedDevicesUseCase
+        getSavedDevicesUseCase: GetSavedDevicesUseCase,
+        saveDeviceUseCase: SaveDeviceUseCase
     ): DeviceListViewModelFactory {
-        return DeviceListViewModelFactory(getSavedDevicesUseCase)
+        return DeviceListViewModelFactory(getSavedDevicesUseCase, saveDeviceUseCase)
     }
 
     @Provides
