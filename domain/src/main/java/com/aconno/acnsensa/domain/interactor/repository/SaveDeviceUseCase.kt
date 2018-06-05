@@ -10,8 +10,6 @@ class SaveDeviceUseCase(
 ) : CompletableUseCaseWithParameter<Device> {
 
     override fun execute(parameter: Device): Completable {
-        return Completable.fromAction {
-            deviceRepository.insertDevice(parameter)
-        }
+        return deviceRepository.insertDevice(parameter)
     }
 }

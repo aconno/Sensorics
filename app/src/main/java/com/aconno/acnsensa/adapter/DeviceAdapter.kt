@@ -13,6 +13,13 @@ class DeviceAdapter(
     private val itemClickListener: ItemClickListener<Device>
 ) : RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
 
+    fun addDevice(device: Device) {
+        if (!devices.contains(device)) {
+            devices.add(device)
+            notifyDataSetChanged()
+        }
+    }
+
     fun setDevices(devices: List<Device>) {
         this.devices.clear()
         this.devices.addAll(devices)

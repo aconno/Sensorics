@@ -33,6 +33,8 @@ class DeviceViewModel(
     }
 
     fun saveDevice(device: Device) {
-        saveDeviceUseCase.execute(device).subscribeOn(Schedulers.io())
+        saveDeviceUseCase.execute(device)
+            .subscribeOn(Schedulers.io())
+            .subscribe()
     }
 }

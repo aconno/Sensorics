@@ -20,6 +20,7 @@ import com.aconno.acnsensa.domain.scanning.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.model.AcnSensaPermission
 import com.aconno.acnsensa.ui.devices.SavedDevicesFragment
+import com.aconno.acnsensa.ui.devices.ScannedDevicesFragment
 import com.aconno.acnsensa.ui.sensors.SensorListFragment
 import com.aconno.acnsensa.ui.settings.PublishListActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
@@ -69,7 +70,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         invalidateOptionsMenu()
 
         if (savedInstanceState == null) {
-            showBeaconsFragment()
+            showSavedDevicesFragment()
         }
     }
 
@@ -155,9 +156,16 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
             .commit()
     }
 
-    private fun showBeaconsFragment() {
+    private fun showSavedDevicesFragment() {
         supportFragmentManager.beginTransaction()
             .replace(content_container.id, SavedDevicesFragment.newInstance())
+            .commit()
+    }
+
+    fun showScannedDevicesFragment(){
+        supportFragmentManager.beginTransaction()
+            .replace(content_container.id, ScannedDevicesFragment.newInstance())
+            .addToBackStack(null)
             .commit()
     }
 

@@ -127,8 +127,9 @@
         <item>@string/other_backend</item>
     </string-array>
 
-    <!-- Beacon list screen -->
+    <!-- Device list screen -->
     <string name="no_devices_label">There are no devices</string>
+    <string name="no_scanned_devices_label">There are no scanned devices.\nStart scanning…</string>
 
     <string-array name="RESTMethods">
         <item>@string/rest_method_get</item>

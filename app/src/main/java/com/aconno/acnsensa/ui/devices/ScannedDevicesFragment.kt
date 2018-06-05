@@ -1,6 +1,5 @@
 package com.aconno.acnsensa.ui.devices
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -13,14 +12,18 @@ import com.aconno.acnsensa.adapter.ItemClickListener
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.ui.MainActivity
 import com.aconno.acnsensa.viewmodel.DeviceViewModel
-import kotlinx.android.synthetic.main.fragment_saved_devices.*
+import io.reactivex.Flowable
+import kotlinx.android.synthetic.main.fragment_scanned_devices.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
+class ScannedDevicesFragment : Fragment(), ItemClickListener<Device> {
 
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
+
+    @Inject
+    lateinit var devices: Flowable<Device>
 
     private lateinit var deviceAdapter: DeviceAdapter
 
@@ -35,7 +38,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_saved_devices, container, false)
+        return inflater.inflate(R.layout.fragment_scanned_devices, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,40 +48,24 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
         deviceAdapter = DeviceAdapter(mutableListOf(), this)
         list_devices.adapter = deviceAdapter
 
-        deviceViewModel.getSavedDevicesLiveData().observe(this, Observer {
-            displayPreferredDevices(it)
-        })
-
-        button_add_device.setOnClickListener {
-            Timber.d("Button add device clicked")
-            val mainActivity: MainActivity? = activity as MainActivity
-            mainActivity?.showScannedDevicesFragment()
-        }
-    }
-
-    private fun displayPreferredDevices(preferredDevices: List<Device>?) {
-        preferredDevices?.let {
-            if (preferredDevices.isEmpty()) {
-                empty_view.visibility = View.VISIBLE
-                deviceAdapter.clearDevices()
-            } else {
-                empty_view.visibility = View.INVISIBLE
-                deviceAdapter.setDevices(preferredDevices)
-            }
+        devices.subscribe {
+            empty_view?.visibility = View.INVISIBLE
+            deviceAdapter.addDevice(it)
         }
     }
 
     override fun onItemClick(item: Device) {
         activity?.let {
-            val mainActivity = it as MainActivity
-            mainActivity.showSensorValues(item.macAddress)
+            Timber.d("On item click, name: ${item.name}, mac: ${item.macAddress}")
+            deviceViewModel.saveDevice(item)
+            it.supportFragmentManager.popBackStack()
         }
     }
 
     companion object {
 
-        fun newInstance(): SavedDevicesFragment {
-            return SavedDevicesFragment()
+        fun newInstance(): ScannedDevicesFragment {
+            return ScannedDevicesFragment()
         }
     }
 }
