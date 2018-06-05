@@ -5,7 +5,7 @@ import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import io.reactivex.Single
 
-class GetAllDevicesUseCase(
+class GetSavedDevicesUseCase(
     private val deviceRepository: DeviceRepository
 ) : SingleUseCase<List<Device>> {
 

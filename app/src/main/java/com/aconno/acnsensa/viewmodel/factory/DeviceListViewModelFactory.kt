@@ -1,15 +1,15 @@
 package com.aconno.acnsensa.viewmodel.factory
 
 import android.arch.lifecycle.ViewModel
-import com.aconno.acnsensa.domain.interactor.repository.GetAllDevicesUseCase
-import com.aconno.acnsensa.viewmodel.DeviceListViewModel
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
+import com.aconno.acnsensa.viewmodel.DeviceViewModel
 
 class DeviceListViewModelFactory(
-    private val getAllDevicesUseCase: GetAllDevicesUseCase
+    private val getSavedDevicesUseCase: GetSavedDevicesUseCase
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val viewModel = DeviceListViewModel(getAllDevicesUseCase)
+        val viewModel = DeviceViewModel(getSavedDevicesUseCase)
         return getViewModel(viewModel, modelClass)
     }
 }

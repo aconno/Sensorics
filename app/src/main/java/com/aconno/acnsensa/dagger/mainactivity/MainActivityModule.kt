@@ -7,7 +7,7 @@ import com.aconno.acnsensa.device.permissons.PermissionActionFactory
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
-import com.aconno.acnsensa.domain.interactor.repository.GetAllDevicesUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.repository.DeviceRepository
@@ -104,24 +104,24 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     @MainActivityScope
     fun provideGetAllDevicesUseCase(
         deviceRepository: DeviceRepository
-    ): GetAllDevicesUseCase {
-        return GetAllDevicesUseCase(deviceRepository)
+    ): GetSavedDevicesUseCase {
+        return GetSavedDevicesUseCase(deviceRepository)
     }
 
     @Provides
     @MainActivityScope
     fun provideDeviceListViewModelFactory(
-        getAllDevicesUseCase: GetAllDevicesUseCase
+        getSavedDevicesUseCase: GetSavedDevicesUseCase
     ): DeviceListViewModelFactory {
-        return DeviceListViewModelFactory(getAllDevicesUseCase)
+        return DeviceListViewModelFactory(getSavedDevicesUseCase)
     }
 
     @Provides
     @MainActivityScope
     fun provideDeviceListViewModel(
         deviceListViewModelFactory: DeviceListViewModelFactory
-    ): DeviceListViewModel {
+    ): DeviceViewModel {
         return ViewModelProviders.of(mainActivity, deviceListViewModelFactory)
-            .get(DeviceListViewModel::class.java)
+            .get(DeviceViewModel::class.java)
     }
 }

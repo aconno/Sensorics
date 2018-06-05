@@ -12,7 +12,7 @@ import com.aconno.acnsensa.adapter.DeviceAdapter
 import com.aconno.acnsensa.adapter.ItemClickListener
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.ui.MainActivity
-import com.aconno.acnsensa.viewmodel.DeviceListViewModel
+import com.aconno.acnsensa.viewmodel.DeviceViewModel
 import kotlinx.android.synthetic.main.fragment_device_list.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
 
     @Inject
-    lateinit var deviceListViewModel: DeviceListViewModel
+    lateinit var deviceViewModel: DeviceViewModel
 
     private lateinit var deviceAdapter: DeviceAdapter
 
@@ -45,7 +45,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
         deviceAdapter = DeviceAdapter(mutableListOf(), this)
         list_devices.adapter = deviceAdapter
 
-        deviceListViewModel.getPreferredDevicesLiveData().observe(this, Observer {
+        deviceViewModel.getSavedDevicesLiveData().observe(this, Observer {
             displayPreferredDevices(it)
         })
 
