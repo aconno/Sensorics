@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui.beacons
+package com.aconno.acnsensa.ui.devices
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
