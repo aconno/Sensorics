@@ -16,7 +16,7 @@ import com.aconno.acnsensa.viewmodel.BeaconListViewModel
 import kotlinx.android.synthetic.main.fragment_device_list.*
 import javax.inject.Inject
 
-class BeaconListFragment : Fragment(), ItemClickListener<Device> {
+class DeviceListFragment : Fragment(), ItemClickListener<Device> {
 
     @Inject
     lateinit var beaconListViewModel: BeaconListViewModel
@@ -72,8 +72,8 @@ class BeaconListFragment : Fragment(), ItemClickListener<Device> {
 
     companion object {
 
-        fun newInstance(): BeaconListFragment {
-            return BeaconListFragment()
+        fun newInstance(): DeviceListFragment {
+            return DeviceListFragment()
         }
     }
 }
