@@ -19,7 +19,7 @@ import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
 import com.aconno.acnsensa.domain.scanning.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.model.AcnSensaPermission
-import com.aconno.acnsensa.ui.devices.DeviceListFragment
+import com.aconno.acnsensa.ui.devices.SavedDevicesFragment
 import com.aconno.acnsensa.ui.sensors.SensorListFragment
 import com.aconno.acnsensa.ui.settings.PublishListActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
@@ -157,7 +157,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     private fun showBeaconsFragment() {
         supportFragmentManager.beginTransaction()
-            .replace(content_container.id, DeviceListFragment.newInstance())
+            .replace(content_container.id, SavedDevicesFragment.newInstance())
             .commit()
     }
 

@@ -3,7 +3,7 @@ package com.aconno.acnsensa.dagger.mainactivity
 import com.aconno.acnsensa.dagger.application.AppComponent
 import com.aconno.acnsensa.ui.MainActivity
 import com.aconno.acnsensa.ui.sensors.SensorListFragment
-import com.aconno.acnsensa.ui.devices.DeviceListFragment
+import com.aconno.acnsensa.ui.devices.SavedDevicesFragment
 import dagger.Component
 
 /**
@@ -14,5 +14,5 @@ import dagger.Component
 interface MainActivityComponent {
     fun inject(mainActivity: MainActivity)
     fun inject(sensorListFragment: SensorListFragment)
-    fun inject(deviceListFragment: DeviceListFragment)
+    fun inject(savedDevicesFragment: SavedDevicesFragment)
 }

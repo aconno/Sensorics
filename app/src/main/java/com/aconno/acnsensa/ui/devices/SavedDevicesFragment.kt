@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_device_list.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class DeviceListFragment : Fragment(), ItemClickListener<Device> {
+class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
 
     @Inject
     lateinit var deviceListViewModel: DeviceListViewModel
@@ -75,8 +75,8 @@ class DeviceListFragment : Fragment(), ItemClickListener<Device> {
 
     companion object {
 
-        fun newInstance(): DeviceListFragment {
-            return DeviceListFragment()
+        fun newInstance(): SavedDevicesFragment {
+            return SavedDevicesFragment()
         }
     }
 }
