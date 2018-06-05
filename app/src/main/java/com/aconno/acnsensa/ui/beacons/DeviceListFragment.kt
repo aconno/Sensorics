@@ -12,14 +12,15 @@ import com.aconno.acnsensa.adapter.BeaconAdapter
 import com.aconno.acnsensa.adapter.ItemClickListener
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.ui.MainActivity
-import com.aconno.acnsensa.viewmodel.BeaconListViewModel
+import com.aconno.acnsensa.viewmodel.DeviceListViewModel
 import kotlinx.android.synthetic.main.fragment_device_list.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class DeviceListFragment : Fragment(), ItemClickListener<Device> {
 
     @Inject
-    lateinit var beaconListViewModel: BeaconListViewModel
+    lateinit var deviceListViewModel: DeviceListViewModel
 
     private lateinit var beaconAdapter: BeaconAdapter
 
@@ -39,26 +40,28 @@ class DeviceListFragment : Fragment(), ItemClickListener<Device> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         list_devices.layoutManager = LinearLayoutManager(context)
         beaconAdapter = BeaconAdapter(mutableListOf(), this)
         list_devices.adapter = beaconAdapter
-    }
 
-    override fun onResume() {
-        super.onResume()
-        beaconListViewModel.getBeaconsLiveData().observe(this, Observer {
-            displayBeacons(it)
+        deviceListViewModel.getPreferredDevicesLiveData().observe(this, Observer {
+            displayPreferredDevices(it)
         })
+
+        button_add_device.setOnClickListener {
+            Timber.d("Button add device clicked")
+        }
     }
 
-    private fun displayBeacons(beacons: MutableList<Device>?) {
-        beacons?.let {
-            if (beacons.isNotEmpty()) {
-                empty_view.visibility = View.INVISIBLE
-                beaconAdapter.setBeacons(it)
-            } else {
+    private fun displayPreferredDevices(preferredDevices: List<Device>?) {
+        preferredDevices?.let {
+            if (preferredDevices.isEmpty()) {
                 empty_view.visibility = View.VISIBLE
                 beaconAdapter.clearBeacons()
+            } else {
+                empty_view.visibility = View.INVISIBLE
+                beaconAdapter.setBeacons(preferredDevices)
             }
         }
     }

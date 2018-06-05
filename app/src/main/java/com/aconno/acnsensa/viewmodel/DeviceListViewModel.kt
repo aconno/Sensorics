@@ -4,6 +4,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.repository.GetAllDevicesUseCase
 import com.aconno.acnsensa.domain.model.Device
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class DeviceListViewModel(
     private val getAllDevicesUseCase: GetAllDevicesUseCase
@@ -15,9 +17,16 @@ class DeviceListViewModel(
         loadDevices()
     }
 
-    fun loadDevices() {
-        getAllDevicesUseCase.execute().subscribe { devices ->
-            preferredDevicesLiveData.value = devices
-        }
+    private fun loadDevices() {
+        getAllDevicesUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { devices ->
+                preferredDevicesLiveData.value = devices
+            }
+    }
+
+    fun getPreferredDevicesLiveData(): MutableLiveData<List<Device>> {
+        return preferredDevicesLiveData
     }
 }
