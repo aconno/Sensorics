@@ -8,24 +8,19 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.model.Device
 import kotlinx.android.synthetic.main.item_device.view.*
 
-class BeaconAdapter(
-    private val beacons: MutableList<Device>,
+class DeviceAdapter(
+    private val devices: MutableList<Device>,
     private val itemClickListener: ItemClickListener<Device>
-) : RecyclerView.Adapter<BeaconAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
 
-    fun addBeacon(beacon: Device) {
-        beacons.add(beacon)
+    fun setDevices(devices: List<Device>) {
+        this.devices.clear()
+        this.devices.addAll(devices)
         notifyDataSetChanged()
     }
 
-    fun setBeacons(beacons: List<Device>) {
-        this.beacons.clear()
-        this.beacons.addAll(beacons)
-        notifyDataSetChanged()
-    }
-
-    fun clearBeacons() {
-        beacons.clear()
+    fun clearDevices() {
+        devices.clear()
         notifyDataSetChanged()
     }
 
@@ -35,19 +30,19 @@ class BeaconAdapter(
     }
 
     override fun getItemCount(): Int {
-        return beacons.size
+        return devices.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(beacons[position])
+        holder.bind(devices[position])
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        fun bind(beacon: Device) {
-            view.name.text = beacon.name
-            view.mac_address.text = beacon.macAddress
-            view.setOnClickListener { itemClickListener.onItemClick(beacon) }
+        fun bind(device: Device) {
+            view.name.text = device.name
+            view.mac_address.text = device.macAddress
+            view.setOnClickListener { itemClickListener.onItemClick(device) }
         }
     }
 }

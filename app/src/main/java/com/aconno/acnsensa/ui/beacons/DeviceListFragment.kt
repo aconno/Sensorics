@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.adapter.BeaconAdapter
+import com.aconno.acnsensa.adapter.DeviceAdapter
 import com.aconno.acnsensa.adapter.ItemClickListener
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.ui.MainActivity
@@ -22,7 +22,7 @@ class DeviceListFragment : Fragment(), ItemClickListener<Device> {
     @Inject
     lateinit var deviceListViewModel: DeviceListViewModel
 
-    private lateinit var beaconAdapter: BeaconAdapter
+    private lateinit var deviceAdapter: DeviceAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +42,8 @@ class DeviceListFragment : Fragment(), ItemClickListener<Device> {
         super.onViewCreated(view, savedInstanceState)
 
         list_devices.layoutManager = LinearLayoutManager(context)
-        beaconAdapter = BeaconAdapter(mutableListOf(), this)
-        list_devices.adapter = beaconAdapter
+        deviceAdapter = DeviceAdapter(mutableListOf(), this)
+        list_devices.adapter = deviceAdapter
 
         deviceListViewModel.getPreferredDevicesLiveData().observe(this, Observer {
             displayPreferredDevices(it)
@@ -58,10 +58,10 @@ class DeviceListFragment : Fragment(), ItemClickListener<Device> {
         preferredDevices?.let {
             if (preferredDevices.isEmpty()) {
                 empty_view.visibility = View.VISIBLE
-                beaconAdapter.clearBeacons()
+                deviceAdapter.clearDevices()
             } else {
                 empty_view.visibility = View.INVISIBLE
-                beaconAdapter.setBeacons(preferredDevices)
+                deviceAdapter.setDevices(preferredDevices)
             }
         }
     }
