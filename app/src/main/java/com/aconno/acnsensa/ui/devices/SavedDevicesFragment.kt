@@ -68,6 +68,12 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val mainActivity: MainActivity? = context as MainActivity
+        mainActivity?.supportActionBar?.title = "Devices"
+    }
+
     override fun onItemClick(item: Device) {
         activity?.let {
             val mainActivity = it as MainActivity

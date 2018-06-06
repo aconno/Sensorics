@@ -39,6 +39,9 @@ class SensorListFragment : Fragment() {
         sensorListViewModel.getSensorValuesLiveData()
             .observe(this, Observer { displaySensorValues(it) })
         initValues()
+
+        val mainActivity: MainActivity? = context as MainActivity
+        mainActivity?.supportActionBar?.title = macAddress
     }
 
     override fun onCreateView(

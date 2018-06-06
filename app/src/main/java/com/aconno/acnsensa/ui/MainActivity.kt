@@ -154,14 +154,12 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
             .replace(content_container.id, SensorListFragment.newInstance(macAddress))
             .addToBackStack(null)
             .commit()
-        supportActionBar?.title = macAddress
     }
 
     private fun showSavedDevicesFragment() {
         supportFragmentManager.beginTransaction()
             .replace(content_container.id, SavedDevicesFragment.newInstance())
             .commit()
-        supportActionBar?.title = "Devices"
     }
 
     fun showScannedDevicesFragment() {
@@ -169,12 +167,6 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
             .replace(content_container.id, ScannedDevicesFragment.newInstance())
             .addToBackStack(null)
             .commit()
-        supportActionBar?.title = "Add device"
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        supportActionBar?.title = "Devices"
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
