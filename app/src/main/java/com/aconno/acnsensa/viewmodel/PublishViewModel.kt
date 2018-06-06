@@ -139,7 +139,8 @@ class PublishViewModel(
                 googleId,
                 deviceId
             )
-        )
+        ).subscribeOn(Schedulers.io())
+            .subscribe()
     }
 
     fun deleteRelationRest(
@@ -151,7 +152,8 @@ class PublishViewModel(
                 restId,
                 deviceId
             )
-        )
+        ).subscribeOn(Schedulers.io())
+            .subscribe()
     }
 
     fun checkFieldsAreEmpty(

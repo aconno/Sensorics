@@ -1,10 +1,8 @@
 package com.aconno.acnsensa
 
 import com.aconno.acnsensa.data.repository.AcnSensaDatabase
-import com.aconno.acnsensa.model.mapper.GooglePublishDataMapper
-import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
-import com.aconno.acnsensa.model.mapper.RESTPublishDataMapper
-import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
+import com.aconno.acnsensa.domain.interactor.repository.*
+import com.aconno.acnsensa.model.mapper.*
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 
@@ -14,7 +12,12 @@ object TestViewModelFactory {
 
         val googlePublishRepository =
             TestObjectFactory.getGooglePublishRepository(acnSensaDatabase)
-        val restPublishRepository = TestObjectFactory.getRESTPublishRepository(acnSensaDatabase)
+        val restPublishRepository =
+            TestObjectFactory.getRESTPublishRepository(acnSensaDatabase)
+        val deviceRepository =
+            TestObjectFactory.getDeviceRepository(acnSensaDatabase)
+        val publishDeviceJoinRepository =
+            TestObjectFactory.getPublishDeviceJoinRepository(acnSensaDatabase)
 
         return PublishViewModel(
             TestObjectFactory.getAddGooglePublishUseCase(googlePublishRepository),
@@ -22,7 +25,13 @@ object TestViewModelFactory {
             TestObjectFactory.getUpdateGooglePublishUseCase(googlePublishRepository),
             TestObjectFactory.getUpdateRESTPublishUseCase(restPublishRepository),
             GooglePublishModelDataMapper(),
-            RESTPublishModelDataMapper()
+            RESTPublishModelDataMapper(),
+            SavePublishDeviceJoinUseCase(publishDeviceJoinRepository),
+            DeletePublishDeviceJoinUseCase(publishDeviceJoinRepository),
+            GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository),
+            GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository),
+            GetSavedDevicesMaybeUseCase(deviceRepository),
+            DeviceRelationModelMapper()
         )
     }
 

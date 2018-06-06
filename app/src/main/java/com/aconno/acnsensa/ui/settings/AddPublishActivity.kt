@@ -23,6 +23,7 @@ import com.aconno.acnsensa.data.converter.PublisherIntervalConverter
 import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
 import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.DeviceRelationModel
 import com.aconno.acnsensa.model.GooglePublishModel
@@ -189,7 +190,8 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
 
     private fun testRESTConnection(toRESTPublishModel: RESTPublishModel?) {
         val publisher = RESTPublisher(
-            RESTPublishModelDataMapper().transform(toRESTPublishModel!!)
+            RESTPublishModelDataMapper().transform(toRESTPublishModel!!),
+            listOf(Device("TestDevice", "Mac"))
         )
 
         publisher.test(this)
@@ -198,7 +200,8 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
     private fun testGoogleConnection(toGooglePublishModel: GooglePublishModel?) {
         val publisher = GoogleCloudPublisher(
             applicationContext,
-            GooglePublishModelDataMapper().transform(toGooglePublishModel!!)
+            GooglePublishModelDataMapper().transform(toGooglePublishModel!!),
+            listOf(Device("TestDevice", "Mac"))
         )
 
         publisher.test(this)
@@ -290,8 +293,8 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
     private fun updateDeviceList(list: MutableList<DeviceRelationModel>) {
         if (list.size == 0) return
 
-        deviceList.forEach {
-            list.forEachIndexed { index, related ->
+        deviceList.forEachIndexed { index, it ->
+            list.forEach { related ->
                 if (it.macAddress == related.macAddress) {
                     it.related = true
                     updateDeviceViewAt(index)

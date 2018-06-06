@@ -7,12 +7,12 @@ import io.reactivex.Maybe
 @Dao
 abstract class PublishDeviceJoinDao {
     @Query(
-        "SELECT * FROM devices WHERE macAddress IN (SELECT macAddress FROM google_publish_device_join WHERE gId = :googlePublishId)"
+        "SELECT * FROM devices WHERE macAddress IN (SELECT dId FROM google_publish_device_join WHERE gId = :googlePublishId)"
     )
     abstract fun getDevicesThatConnectedWithGooglePublish(googlePublishId: Long): Maybe<List<DeviceEntity>>
 
     @Query(
-        "SELECT * FROM devices WHERE macAddress IN (SELECT macAddress FROM rest_publish_device_join WHERE rId = :restPublishId)"
+        "SELECT * FROM devices WHERE macAddress IN (SELECT dId FROM rest_publish_device_join WHERE rId = :restPublishId)"
     )
     abstract fun getDevicesThatConnectedWithRestPublish(restPublishId: Long): Maybe<List<DeviceEntity>>
 
@@ -28,3 +28,4 @@ abstract class PublishDeviceJoinDao {
     @Delete
     abstract fun delete(restPublishDeviceJoinEntity: RestPublishDeviceJoinEntity)
 }
+

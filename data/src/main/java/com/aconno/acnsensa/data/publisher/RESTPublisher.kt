@@ -4,8 +4,9 @@ import com.aconno.acnsensa.data.converter.PublisherDataConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
-import com.aconno.acnsensa.domain.model.SensorType
-import com.aconno.acnsensa.domain.model.readings.Reading
+import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.SensorReading
+import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -14,7 +15,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
 
 
-class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
+class RESTPublisher(
+    private val restPublish: RESTPublish,
+    private val listDevices: List<Device>
+) : Publisher {
 
     private val httpClient: OkHttpClient
 
@@ -28,15 +32,19 @@ class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
 
     companion object {
         private val JSON = MediaType.parse("application/json; charset=utf-8")
-        private const val GET_PARAMETERNAME = "ACNSensa"
+        private const val GET_PARAMETER_NAME = "ACNSensa"
     }
 
-    override fun publish(reading: Reading) {
+    override fun publish(reading: SensorReading) {
         val messages = PublisherDataConverter.convert(reading)
 
         Observable.fromIterable(messages)
             .subscribeOn(Schedulers.io())
-            .concatMap { it -> getRequestObservable(it) }
+            .concatMap { it ->
+                Timber.tag("Publisher HTTP")
+                    .d("${restPublish.name} publishes from ${reading.device}")
+                getRequestObservable(it)
+            }
             .subscribe {
                 Timber.d(it.body().toString())
             }
@@ -45,10 +53,11 @@ class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
 
         val convertList = PublisherDataConverter.convert(
-            Reading(
-                listOf(10, 15, 20),
+            SensorReading(
                 System.currentTimeMillis(),
-                SensorType.LIGHT
+                Device("TestDevice", "MA:CA:DD:RE:SS:11"),
+                20,
+                SensorTypeSingle.LIGHT
             )
         )
 
@@ -69,7 +78,7 @@ class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
             when {
                 restPublish.method == "GET" -> {
                     val httpBuilder = HttpUrl.parse(restPublish.url)!!.newBuilder()
-                    httpBuilder.addQueryParameter(GET_PARAMETERNAME, message)
+                    httpBuilder.addQueryParameter(GET_PARAMETER_NAME, message)
 
                     httpClient.newCall(Request.Builder().url(httpBuilder.build()).build()).execute()
                 }
@@ -92,8 +101,9 @@ class RESTPublisher(private val restPublish: RESTPublish) : Publisher {
         return restPublish
     }
 
-    override fun isPublishable(): Boolean {
+    override fun isPublishable(device: Device): Boolean {
         return System.currentTimeMillis() > (restPublish.lastTimeMillis + restPublish.timeMillis)
+                && listDevices.contains(device)
     }
 
     override fun closeConnection() {
