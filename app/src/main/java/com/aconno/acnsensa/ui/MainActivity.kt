@@ -16,8 +16,8 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
-import com.aconno.acnsensa.domain.scanning.BluetoothState
 import com.aconno.acnsensa.domain.model.ScanEvent
+import com.aconno.acnsensa.domain.scanning.BluetoothState
 import com.aconno.acnsensa.model.AcnSensaPermission
 import com.aconno.acnsensa.ui.devices.SavedDevicesFragment
 import com.aconno.acnsensa.ui.devices.ScannedDevicesFragment
@@ -154,19 +154,27 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
             .replace(content_container.id, SensorListFragment.newInstance(macAddress))
             .addToBackStack(null)
             .commit()
+        supportActionBar?.title = macAddress
     }
 
     private fun showSavedDevicesFragment() {
         supportFragmentManager.beginTransaction()
             .replace(content_container.id, SavedDevicesFragment.newInstance())
             .commit()
+        supportActionBar?.title = "Devices"
     }
 
-    fun showScannedDevicesFragment(){
+    fun showScannedDevicesFragment() {
         supportFragmentManager.beginTransaction()
             .replace(content_container.id, ScannedDevicesFragment.newInstance())
             .addToBackStack(null)
             .commit()
+        supportActionBar?.title = "Add device"
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        supportActionBar?.title = "Devices"
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
