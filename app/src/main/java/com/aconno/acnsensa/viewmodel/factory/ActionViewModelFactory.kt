@@ -5,13 +5,15 @@ import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.ifttt.DeleteActionUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.GetActionByIdUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateActionUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.viewmodel.ActionViewModel
 
 class ActionViewModelFactory(
     private val application: Application,
     private val getActionByIdUseCase: GetActionByIdUseCase,
     private val updateActionUseCase: UpdateActionUseCase,
-    private val deleteActionUseCase: DeleteActionUseCase
+    private val deleteActionUseCase: DeleteActionUseCase,
+    private val getSavedDevicesUseCase: GetSavedDevicesUseCase
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -19,7 +21,8 @@ class ActionViewModelFactory(
             application,
             getActionByIdUseCase,
             updateActionUseCase,
-            deleteActionUseCase
+            deleteActionUseCase,
+            getSavedDevicesUseCase
         )
         return getViewModel(viewModel, modelClass)
     }

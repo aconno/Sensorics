@@ -11,6 +11,7 @@ import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
 import com.aconno.acnsensa.domain.interactor.ifttt.DeleteActionUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.GetActionByIdUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateActionUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.model.toInt
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -21,7 +22,8 @@ class ActionViewModel(
     application: Application,
     private val getActionByIdUseCase: GetActionByIdUseCase,
     private val updateActionUseCase: UpdateActionUseCase,
-    private val deleteActionUseCase: DeleteActionUseCase
+    private val deleteActionUseCase: DeleteActionUseCase,
+    private val getSavedDevicesUseCase: GetSavedDevicesUseCase
 ) : AndroidViewModel(application) {
 
     private var id = 0L
