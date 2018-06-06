@@ -6,10 +6,12 @@ import com.aconno.acnsensa.data.repository.devices.DeviceDao
 import com.aconno.acnsensa.data.repository.devices.DeviceEntity
 
 @Database(
-    entities = [ActionEntity::class, DeviceEntity::class, GooglePublishEntity::class, RESTPublishEntity::class],
+    entities = [ActionEntity::class, DeviceEntity::class, GooglePublishEntity::class, RESTPublishEntity::class, GooglePublishDeviceJoinEntity::class, RestPublishDeviceJoinEntity::class],
     version = 1
 )
 abstract class AcnSensaDatabase : RoomDatabase() {
+
+    abstract fun publishDeviceJoinDao(): PublishDeviceJoinDao
 
     abstract fun deviceDao(): DeviceDao
 

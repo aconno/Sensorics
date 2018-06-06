@@ -15,8 +15,8 @@ class GooglePublishRepositoryImpl(
     private val googlePublishDataMapper: GooglePublishDataMapper
 ) :
     GooglePublishRepository {
-    override fun addGooglePublish(googlePublish: GooglePublish) {
-        googlePublishDao.insert(googlePublishDataMapper.transform(googlePublish))
+    override fun addGooglePublish(googlePublish: GooglePublish): Long {
+        return googlePublishDao.insert(googlePublishDataMapper.transform(googlePublish))
     }
 
     override fun updateGooglePublish(googlePublish: GooglePublish) {

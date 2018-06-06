@@ -6,10 +6,7 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.IntentProviderImpl
-import com.aconno.acnsensa.data.mapper.GooglePublishDataMapper
-import com.aconno.acnsensa.data.mapper.GooglePublishEntityDataMapper
-import com.aconno.acnsensa.data.mapper.RESTPublishDataMapper
-import com.aconno.acnsensa.data.mapper.RESTPublishEntityDataMapper
+import com.aconno.acnsensa.data.mapper.*
 import com.aconno.acnsensa.data.repository.*
 import com.aconno.acnsensa.data.repository.devices.DeviceMapper
 import com.aconno.acnsensa.data.repository.devices.DeviceRepositoryImpl
@@ -235,5 +232,19 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
         deviceMapper: DeviceMapper
     ): DeviceRepository {
         return DeviceRepositoryImpl(acnSensaDatabase.deviceDao(), deviceMapper)
+    }
+
+    @Provides
+    @Singleton
+    fun providePublishDeviceJoinRepository(
+        acnSensaDatabase: AcnSensaDatabase,
+        deviceMapper: DeviceMapper,
+        publishDeviceJoinJoinMapper: PublishPublishDeviceJoinJoinMapper
+    ): PublishDeviceJoinRepository {
+        return PublishDeviceJoinRepositoryImpl(
+            acnSensaDatabase.publishDeviceJoinDao(),
+            deviceMapper,
+            publishDeviceJoinJoinMapper
+        )
     }
 }

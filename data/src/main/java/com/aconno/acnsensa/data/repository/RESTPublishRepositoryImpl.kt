@@ -12,8 +12,8 @@ class RESTPublishRepositoryImpl(
     private val restPublishDataMapper: RESTPublishDataMapper
 ) :
     RESTPublishRepository {
-    override fun addRESTPublish(restPublish: RESTPublish) {
-        restPublishDao.insert(restPublishDataMapper.transform(restPublish))
+    override fun addRESTPublish(restPublish: RESTPublish): Long {
+        return restPublishDao.insert(restPublishDataMapper.transform(restPublish))
     }
 
     override fun updateRESTPublish(restPublish: RESTPublish) {

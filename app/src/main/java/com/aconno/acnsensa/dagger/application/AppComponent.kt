@@ -65,4 +65,6 @@ interface AppComponent {
     fun intentProvider(): IntentProvider
 
     fun deviceRepository(): DeviceRepository
+
+    fun publishDeviceJoinRepository(): PublishDeviceJoinRepository
 }
