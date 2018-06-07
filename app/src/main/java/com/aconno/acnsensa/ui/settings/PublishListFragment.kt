@@ -1,6 +1,9 @@
 package com.aconno.acnsensa.ui.settings
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
+import android.hardware.SensorManager.getOrientation
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -13,9 +16,6 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.publish.DaggerPublishListComponent
 import com.aconno.acnsensa.dagger.publish.PublishListComponent
 import com.aconno.acnsensa.dagger.publish.PublishListModule
-import com.aconno.acnsensa.domain.ifttt.BasePublish
-import com.aconno.acnsensa.domain.ifttt.GooglePublish
-import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
@@ -23,14 +23,15 @@ import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
+import android.support.v7.widget.DividerItemDecoration
 
 
 /**
  * A fragment representing a list of Items.
  * Activities containing this fragment MUST implement the
- * [PublishFragment.OnListFragmentInteractionListener] interface.
+ * [PublishListFragment.OnListFragmentInteractionListener] interface.
  */
-class PublishFragment : Fragment() {
+class PublishListFragment : Fragment(), PublishOnLongClickListener {
 
     @Inject
     lateinit var publishListViewModel: PublishListViewModel
@@ -39,6 +40,42 @@ class PublishFragment : Fragment() {
 
     private var listener: OnListFragmentInteractionListener? = null
     private var listBasePublish: MutableList<BasePublishModel> = mutableListOf()
+    private var selectedItem: BasePublishModel? = null
+
+    var dialogClickListener: DialogInterface.OnClickListener =
+        DialogInterface.OnClickListener { dialog, which ->
+            when (which) {
+                DialogInterface.BUTTON_POSITIVE -> {
+                    deleteSelectedItem()
+                    dialog.dismiss()
+                }
+
+                DialogInterface.BUTTON_NEGATIVE -> {
+                    dialog.dismiss()
+                }
+            }
+        }
+
+    private fun deleteSelectedItem() {
+        selectedItem?.let {
+            when (selectedItem) {
+                is GooglePublishModel -> {
+                    publishListViewModel.delete(selectedItem as GooglePublishModel)
+                }
+                is RESTPublishModel -> {
+                    publishListViewModel.delete(selectedItem as RESTPublishModel)
+                }
+                else -> throw IllegalArgumentException("Illegal argument provided.")
+            }
+
+            val index = listBasePublish.indexOf(selectedItem!!)
+            listBasePublish.remove(selectedItem!!)
+            rvAdapter.notifyItemRemoved(index)
+
+            //Let GC collect removed instance
+            selectedItem = null
+        }
+    }
 
     private val publishListComponent: PublishListComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? =
@@ -78,11 +115,18 @@ class PublishFragment : Fragment() {
         rvAdapter = PublishRecyclerViewAdapter(
             listBasePublish,
             listener,
-            checkedChangeListener
+            checkedChangeListener,
+            this
         )
         with(recyclerView) {
             layoutManager = LinearLayoutManager(context)
             adapter = rvAdapter
+
+            val dividerItemDecoration = DividerItemDecoration(
+                recyclerView.context,
+                (layoutManager as LinearLayoutManager).getOrientation()
+            )
+            this.addItemDecoration(dividerItemDecoration)
         }
 
         return view
@@ -123,6 +167,17 @@ class PublishFragment : Fragment() {
         }
     }
 
+
+    override fun onLongClick(basePublishModel: BasePublishModel) {
+        selectedItem = basePublishModel
+        val builder = AlertDialog.Builder(context)
+
+        builder.setMessage(getString(R.string.are_you_sure))
+            .setPositiveButton(getString(R.string.yes), dialogClickListener)
+            .setNegativeButton(getString(R.string.no), dialogClickListener)
+            .show()
+    }
+
     override fun onDetach() {
         super.onDetach()
         listener = null
@@ -140,6 +195,6 @@ class PublishFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = PublishFragment()
+        fun newInstance() = PublishListFragment()
     }
 }

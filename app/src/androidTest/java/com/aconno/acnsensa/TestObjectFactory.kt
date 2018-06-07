@@ -1,15 +1,17 @@
 package com.aconno.acnsensa
 
-import com.aconno.acnsensa.data.mapper.GooglePublishDataMapper
-import com.aconno.acnsensa.data.mapper.GooglePublishEntityDataMapper
-import com.aconno.acnsensa.data.mapper.RESTPublishDataMapper
-import com.aconno.acnsensa.data.mapper.RESTPublishEntityDataMapper
+import com.aconno.acnsensa.data.mapper.*
 import com.aconno.acnsensa.data.repository.AcnSensaDatabase
 import com.aconno.acnsensa.data.repository.GooglePublishRepositoryImpl
+import com.aconno.acnsensa.data.repository.PublishDeviceJoinRepositoryImpl
 import com.aconno.acnsensa.data.repository.RESTPublishRepositoryImpl
+import com.aconno.acnsensa.data.repository.devices.DeviceMapper
+import com.aconno.acnsensa.data.repository.devices.DeviceRepositoryImpl
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
+import com.aconno.acnsensa.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository
 import com.aconno.acnsensa.domain.interactor.ifttt.*
+import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
 
@@ -77,6 +79,21 @@ object TestObjectFactory {
             acnSensaDatabase.restPublishDao(),
             RESTPublishEntityDataMapper(),
             RESTPublishDataMapper()
+        )
+    }
+
+    fun getDeviceRepository(acnSensaDatabase: AcnSensaDatabase): DeviceRepository {
+        return DeviceRepositoryImpl(
+            acnSensaDatabase.deviceDao(),
+            DeviceMapper()
+        )
+    }
+
+    fun getPublishDeviceJoinRepository(acnSensaDatabase: AcnSensaDatabase): PublishDeviceJoinRepository {
+        return PublishDeviceJoinRepositoryImpl(
+            acnSensaDatabase.publishDeviceJoinDao(),
+            DeviceMapper(),
+            PublishPublishDeviceJoinJoinMapper()
         )
     }
 

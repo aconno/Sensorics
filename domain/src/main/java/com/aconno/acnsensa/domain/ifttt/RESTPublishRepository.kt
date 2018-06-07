@@ -4,7 +4,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 
 interface RESTPublishRepository {
-    fun addRESTPublish(restPublish: RESTPublish)
+    fun addRESTPublish(restPublish: RESTPublish): Long
     fun updateRESTPublish(restPublish: RESTPublish)
     fun deleteRESTPublish(restPublish: RESTPublish)
     fun getAllRESTPublish(): Single<List<BasePublish>>

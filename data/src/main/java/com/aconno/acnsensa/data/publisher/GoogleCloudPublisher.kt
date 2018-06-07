@@ -6,7 +6,8 @@ import com.aconno.acnsensa.data.converter.PublisherDataConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
-import com.aconno.acnsensa.domain.model.readings.Reading
+import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.SensorReading
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -17,7 +18,11 @@ import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
 
-class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePublish) : Publisher {
+class GoogleCloudPublisher(
+    context: Context,
+    private val googlePublish: GooglePublish,
+    private val listDevices: List<Device>
+) : Publisher {
 
     //TODO: Refactor
     private val mqttAndroidClient: MqttAndroidClient
@@ -87,13 +92,16 @@ class GoogleCloudPublisher(context: Context, private val googlePublish: GooglePu
         return googlePublish
     }
 
-    override fun isPublishable(): Boolean {
+    override fun isPublishable(device: Device): Boolean {
         return System.currentTimeMillis() > (googlePublish.lastTimeMillis + googlePublish.timeMillis)
+                && listDevices.contains(device)
     }
 
-    override fun publish(reading: Reading) {
+    override fun publish(reading: SensorReading) {
         val messages = PublisherDataConverter.convert(reading)
         for (message in messages) {
+            Timber.tag("Publisher Google")
+                .d("${googlePublish.name} publishes from ${reading.device}")
             publish(message)
         }
     }
