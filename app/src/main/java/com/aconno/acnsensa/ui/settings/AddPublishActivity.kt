@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -30,6 +29,7 @@ import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
 import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
+import com.aconno.acnsensa.ui.base.BaseActivity
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
@@ -43,7 +43,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback {
+class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
 
 
     @Inject
@@ -136,7 +136,7 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
             }
         }
 
-        publishViewModel.getAllDevices()
+        val subscribe = publishViewModel.getAllDevices()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(Consumer {
@@ -145,22 +145,27 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
 
                 if (basePublish != null) {
                     if (basePublish is GooglePublishModel) {
-                        publishViewModel.getDevicesThatConnectedWithGooglePublish((basePublish as GooglePublishModel).id)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(Consumer {
-                                updateDeviceList(it)
-                            })
+                        addDisposable(
+                            publishViewModel.getDevicesThatConnectedWithGooglePublish((basePublish as GooglePublishModel).id)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(Consumer {
+                                    updateDeviceList(it)
+                                })
+                        )
                     } else if (basePublish is RESTPublishModel) {
-                        publishViewModel.getDevicesThatConnectedWithRESTPublish((basePublish as RESTPublishModel).id)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(Consumer {
-                                updateDeviceList(it)
-                            })
+                        addDisposable(
+                            publishViewModel.getDevicesThatConnectedWithRESTPublish((basePublish as RESTPublishModel).id)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(Consumer {
+                                    updateDeviceList(it)
+                                })
+                        )
                     }
                 }
             })
+        addDisposable(subscribe)
     }
 
     private fun addDevices(deviceList: List<DeviceRelationModel>) {
@@ -177,13 +182,13 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
 
         val nameView = inflatedView.findViewById<TextView>(R.id.name)
         val macAddressView = inflatedView.findViewById<TextView>(R.id.mac_address)
-        val switchView = inflatedView.findViewById<TextView>(R.id.switch_device)
+        val switchView = inflatedView.findViewById<Switch>(R.id.switch_device)
 
         nameView.text = it.name
         macAddressView.text = it.macAddress
 
         //TODO : Check if device is active for this publish
-        switchView.isSelected = it.related
+        switchView.isChecked = it.related
 
         return inflatedView
     }
@@ -225,6 +230,11 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
         if (resultCode == Activity.RESULT_OK && requestCode == PICKFILE_REQUEST_CODE) {
             data?.let {
                 val path = it.data.toString()
+
+                applicationContext.contentResolver.takePersistableUriPermission(
+                    data.data,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
 
                 if (isFileValidPKCS8(getPrivateKeyData(it.data.toString()))) {
                     edit_privatekey.text = path
@@ -377,10 +387,12 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
     private fun restAddOrUpdate() {
         val restPublishModel = toRESTPublishModel()
         if (restPublishModel != null) {
-            publishViewModel.save(restPublishModel)
-                .subscribe(Consumer {
-                    addRelationsToREST(it)
-                })
+            addDisposable(
+                publishViewModel.save(restPublishModel)
+                    .subscribe(Consumer {
+                        addRelationsToREST(it)
+                    })
+            )
         }
     }
 
@@ -394,14 +406,18 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
                 layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
 
             if (isChecked) {
-                publishViewModel.addOrUpdateRestRelation(
-                    deviceId = deviceRelationModel.macAddress,
-                    restId = rId
+                addDisposable(
+                    publishViewModel.addOrUpdateRestRelation(
+                        deviceId = deviceRelationModel.macAddress,
+                        restId = rId
+                    )
                 )
             } else {
-                publishViewModel.deleteRelationRest(
-                    deviceId = deviceRelationModel.macAddress,
-                    restId = rId
+                addDisposable(
+                    publishViewModel.deleteRelationRest(
+                        deviceId = deviceRelationModel.macAddress,
+                        restId = rId
+                    )
                 )
             }
         }
@@ -444,10 +460,12 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
     private fun googleAddOrUpdate() {
         val googlePublishModel = toGooglePublishModel()
         if (googlePublishModel != null) {
-            publishViewModel.save(googlePublishModel)
-                .subscribe(Consumer {
-                    addRelationsToGoogle(it)
-                })
+            addDisposable(
+                publishViewModel.save(googlePublishModel)
+                    .subscribe(Consumer {
+                        addRelationsToGoogle(it)
+                    })
+            )
         }
     }
 
@@ -461,14 +479,18 @@ class AddPublishActivity : AppCompatActivity(), Publisher.TestConnectionCallback
                 layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
 
             if (isChecked) {
-                publishViewModel.addOrUpdateGoogleRelation(
-                    deviceId = deviceRelationModel.macAddress,
-                    googleId = gId
+                addDisposable(
+                    publishViewModel.addOrUpdateGoogleRelation(
+                        deviceId = deviceRelationModel.macAddress,
+                        googleId = gId
+                    )
                 )
             } else {
-                publishViewModel.deleteRelationGoogle(
-                    deviceId = deviceRelationModel.macAddress,
-                    googleId = gId
+                addDisposable(
+                    publishViewModel.deleteRelationGoogle(
+                        deviceId = deviceRelationModel.macAddress,
+                        googleId = gId
+                    )
                 )
             }
         }

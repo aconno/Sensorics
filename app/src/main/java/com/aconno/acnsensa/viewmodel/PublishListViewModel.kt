@@ -14,8 +14,8 @@ import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 
 class PublishListViewModel(
     private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
@@ -30,26 +30,22 @@ class PublishListViewModel(
     private val deleteRestPublishUseCase: DeleteRestPublishUseCase
 ) : ViewModel() {
 
-    fun update(googlePublishModel: GooglePublishModel) {
+    fun update(googlePublishModel: GooglePublishModel): Disposable {
         val googlePublish = googlePublishModelDataMapper.transform(googlePublishModel)
 
-        updateGooglePublishUseCase.execute(googlePublish)
+        return updateGooglePublishUseCase.execute(googlePublish)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { Timber.d("Save succeeded, action id: ${googlePublish.id}") },
-                { Timber.e("Failed to update Google Publish Data with id: ${googlePublish.id}") })
+            .subscribe()
     }
 
-    fun update(restPublish: RESTPublishModel) {
+    fun update(restPublish: RESTPublishModel): Disposable {
         val generalRESTPublish = restPublishModelDataMapper.transform(restPublish)
 
-        updateRESTPublishUserCase.execute(generalRESTPublish)
+        return updateRESTPublishUserCase.execute(generalRESTPublish)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { Timber.d("Save succeeded, action id: ${generalRESTPublish.id}") },
-                { Timber.e("Failed to update REST Publish Data with id: ${generalRESTPublish.id}") })
+            .subscribe()
     }
 
     fun getAllPublish(): Flowable<List<BasePublishModel>> {
@@ -73,18 +69,18 @@ class PublishListViewModel(
             .toFlowable()
     }
 
-    fun delete(googlePublishModel: GooglePublishModel) {
+    fun delete(googlePublishModel: GooglePublishModel): Disposable {
         val googlePublish = googlePublishModelDataMapper.transform(googlePublishModel)
 
-        deleteGooglePublishUseCase.execute(googlePublish)
+        return deleteGooglePublishUseCase.execute(googlePublish)
             .subscribeOn(Schedulers.io())
             .subscribe()
     }
 
-    fun delete(restPublishModel: RESTPublishModel) {
+    fun delete(restPublishModel: RESTPublishModel): Disposable {
         val restPublish = restPublishModelDataMapper.transform(restPublishModel)
 
-        deleteRestPublishUseCase.execute(restPublish)
+        return deleteRestPublishUseCase.execute(restPublish)
             .subscribeOn(Schedulers.io())
             .subscribe()
     }

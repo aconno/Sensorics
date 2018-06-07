@@ -1,6 +1,5 @@
 package com.aconno.acnsensa.viewmodel.factory
 
-import android.app.Application
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.model.mapper.GooglePublishDataMapper
