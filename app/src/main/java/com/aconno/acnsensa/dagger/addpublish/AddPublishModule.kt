@@ -6,8 +6,6 @@ import com.aconno.acnsensa.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository
 import com.aconno.acnsensa.domain.interactor.ifttt.AddGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.AddRESTPublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateRESTPublishUserCase
 import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.model.mapper.DeviceRelationModelMapper
@@ -37,8 +35,6 @@ class AddPublishModule(private val addPublishActivity: AddPublishActivity) {
     fun providePublishViewModelFactory(
         addGooglePublishUseCase: AddGooglePublishUseCase,
         addRESTPublishUseCase: AddRESTPublishUseCase,
-        updateGooglePublishUseCase: UpdateGooglePublishUseCase,
-        updateRESTPublishUserCase: UpdateRESTPublishUserCase,
         googlePublishModelDataMapper: GooglePublishModelDataMapper,
         restPublishModelDataMapper: RESTPublishModelDataMapper,
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
@@ -51,8 +47,6 @@ class AddPublishModule(private val addPublishActivity: AddPublishActivity) {
         PublishViewModelFactory(
             addGooglePublishUseCase,
             addRESTPublishUseCase,
-            updateGooglePublishUseCase,
-            updateRESTPublishUserCase,
             googlePublishModelDataMapper,
             restPublishModelDataMapper,
             savePublishDeviceJoinUseCase,
@@ -73,18 +67,6 @@ class AddPublishModule(private val addPublishActivity: AddPublishActivity) {
     @AddPublishActivityScope
     fun provideAddRESTPublishUseCase(restPublishRepository: RESTPublishRepository): AddRESTPublishUseCase {
         return AddRESTPublishUseCase(restPublishRepository)
-    }
-
-    @Provides
-    @AddPublishActivityScope
-    fun provideUpdateGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): UpdateGooglePublishUseCase {
-        return UpdateGooglePublishUseCase(googlePublishRepository)
-    }
-
-    @Provides
-    @AddPublishActivityScope
-    fun provideUpdateRESTPublishUseCase(restPublishRepository: RESTPublishRepository): UpdateRESTPublishUserCase {
-        return UpdateRESTPublishUserCase(restPublishRepository)
     }
 
     @Provides

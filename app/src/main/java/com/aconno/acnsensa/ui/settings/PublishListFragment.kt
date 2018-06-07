@@ -3,9 +3,8 @@ package com.aconno.acnsensa.ui.settings
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
-import android.hardware.SensorManager.getOrientation
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -19,11 +18,11 @@ import com.aconno.acnsensa.dagger.publish.PublishListModule
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
+import com.aconno.acnsensa.ui.base.BaseFragment
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
-import android.support.v7.widget.DividerItemDecoration
 
 
 /**
@@ -31,7 +30,7 @@ import android.support.v7.widget.DividerItemDecoration
  * Activities containing this fragment MUST implement the
  * [PublishListFragment.OnListFragmentInteractionListener] interface.
  */
-class PublishListFragment : Fragment(), PublishOnLongClickListener {
+class PublishListFragment : BaseFragment(), PublishOnLongClickListener {
 
     @Inject
     lateinit var publishListViewModel: PublishListViewModel
@@ -56,27 +55,6 @@ class PublishListFragment : Fragment(), PublishOnLongClickListener {
             }
         }
 
-    private fun deleteSelectedItem() {
-        selectedItem?.let {
-            when (selectedItem) {
-                is GooglePublishModel -> {
-                    publishListViewModel.delete(selectedItem as GooglePublishModel)
-                }
-                is RESTPublishModel -> {
-                    publishListViewModel.delete(selectedItem as RESTPublishModel)
-                }
-                else -> throw IllegalArgumentException("Illegal argument provided.")
-            }
-
-            val index = listBasePublish.indexOf(selectedItem!!)
-            listBasePublish.remove(selectedItem!!)
-            rvAdapter.notifyItemRemoved(index)
-
-            //Let GC collect removed instance
-            selectedItem = null
-        }
-    }
-
     private val publishListComponent: PublishListComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? =
             context?.applicationContext as? AcnSensaApplication
@@ -94,13 +72,9 @@ class PublishListFragment : Fragment(), PublishOnLongClickListener {
             item.enabled = checked
 
             if (item is GooglePublishModel) {
-                publishListViewModel.update(
-                    item
-                )
+                addDisposable(publishListViewModel.update(item))
             } else if (item is RESTPublishModel) {
-                publishListViewModel.update(
-                    item
-                )
+                addDisposable(publishListViewModel.update(item))
             }
         }
     }
@@ -148,11 +122,14 @@ class PublishListFragment : Fragment(), PublishOnLongClickListener {
 
     override fun onResume() {
         super.onResume()
-        publishListViewModel.getAllPublish()
+        val subscribe = publishListViewModel.getAllPublish()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { actions -> initPublishList(actions) }
+
+        addDisposable(subscribe)
     }
+
 
     override fun onPause() {
         listBasePublish.clear()
@@ -167,6 +144,30 @@ class PublishListFragment : Fragment(), PublishOnLongClickListener {
         }
     }
 
+    private fun deleteSelectedItem() {
+        selectedItem?.let {
+            when (selectedItem) {
+                is GooglePublishModel -> {
+                    addDisposable(
+                        publishListViewModel.delete(selectedItem as GooglePublishModel)
+                    )
+                }
+                is RESTPublishModel -> {
+                    addDisposable(
+                        publishListViewModel.delete(selectedItem as RESTPublishModel)
+                    )
+                }
+                else -> throw IllegalArgumentException("Illegal argument provided.")
+            }
+
+            val index = listBasePublish.indexOf(selectedItem!!)
+            listBasePublish.remove(selectedItem!!)
+            rvAdapter.notifyItemRemoved(index)
+
+            //Let GC collect removed instance
+            selectedItem = null
+        }
+    }
 
     override fun onLongClick(basePublishModel: BasePublishModel) {
         selectedItem = basePublishModel
