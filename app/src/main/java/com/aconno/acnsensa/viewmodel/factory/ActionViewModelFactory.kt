@@ -12,8 +12,7 @@ class ActionViewModelFactory(
     private val application: Application,
     private val getActionByIdUseCase: GetActionByIdUseCase,
     private val updateActionUseCase: UpdateActionUseCase,
-    private val deleteActionUseCase: DeleteActionUseCase,
-    private val getSavedDevicesUseCase: GetSavedDevicesUseCase
+    private val deleteActionUseCase: DeleteActionUseCase
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -21,8 +20,7 @@ class ActionViewModelFactory(
             application,
             getActionByIdUseCase,
             updateActionUseCase,
-            deleteActionUseCase,
-            getSavedDevicesUseCase
+            deleteActionUseCase
         )
         return getViewModel(viewModel, modelClass)
     }

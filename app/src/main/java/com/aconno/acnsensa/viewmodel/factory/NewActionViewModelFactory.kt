@@ -6,12 +6,8 @@ import com.aconno.acnsensa.domain.interactor.ifttt.AddActionUseCase
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 
-/**
- * @author aconno
- */
 class NewActionViewModelFactory(
     private val addActionUseCase: AddActionUseCase,
-    private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
     private val application: Application
 ) : BaseViewModelFactory() {
 
@@ -19,7 +15,6 @@ class NewActionViewModelFactory(
         val viewModel =
             NewActionViewModel(
                 addActionUseCase,
-                getSavedDevicesUseCase,
                 application
             )
         return getViewModel(viewModel, modelClass)

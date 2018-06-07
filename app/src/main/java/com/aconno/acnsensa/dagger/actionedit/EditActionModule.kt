@@ -5,7 +5,6 @@ import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.interactor.ifttt.DeleteActionUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.GetActionByIdUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateActionUseCase
-import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.ui.actions.EditActionActivity
 import com.aconno.acnsensa.viewmodel.ActionViewModel
 import com.aconno.acnsensa.viewmodel.factory.ActionViewModelFactory
@@ -27,15 +26,13 @@ class EditActionModule(private val editActionActivity: EditActionActivity) {
     fun provideActionViewModelFactory(
         getActionByIdUseCase: GetActionByIdUseCase,
         updateActionUseCase: UpdateActionUseCase,
-        deleteActionUseCase: DeleteActionUseCase,
-        getSavedDevicesUseCase: GetSavedDevicesUseCase
+        deleteActionUseCase: DeleteActionUseCase
     ): ActionViewModelFactory {
         return ActionViewModelFactory(
             editActionActivity.application,
             getActionByIdUseCase,
             updateActionUseCase,
-            deleteActionUseCase,
-            getSavedDevicesUseCase
+            deleteActionUseCase
         )
     }
 

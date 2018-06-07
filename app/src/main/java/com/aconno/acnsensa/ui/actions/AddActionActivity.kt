@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.CheckedTextView
 import android.widget.TextView
 import android.widget.Toast
@@ -19,16 +18,19 @@ import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
 import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.model.toSensorType
 import com.aconno.acnsensa.model.toStringResource
+import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialog
+import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialogListener
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import kotlinx.android.synthetic.main.activity_action_add.*
 import kotlinx.android.synthetic.main.content_action_detail.*
 import javax.inject.Inject
 
 
-class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
+class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDevicesDialogListener {
 
     @Inject
     lateinit var newActionViewModel: NewActionViewModel
@@ -57,13 +59,8 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
         setOutcomeChipOnClickListeners()
 
-        newActionViewModel.devicesLiveData.observe(this, Observer { updateDeviceSpinner(it) })
-    }
-
-    private fun updateDeviceSpinner(devices: List<String>?) {
-        devices?.let {
-            val adapter = ArrayAdapter<String>(this, R.layout.item_mac_address, it)
-            spinner_devices.adapter = adapter
+        button_device.setOnClickListener {
+            SavedDevicesDialog().show(supportFragmentManager, "saved_devices_dialog")
         }
     }
 
@@ -106,6 +103,10 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
         }
     }
 
+    override fun onSavedDevicesDialogItemClick(item: Device) {
+        text_mac_address.text = item.macAddress
+    }
+
     private fun openConditionDialog(sensorType: SensorTypeSingle) {
         val dialog = ConditionDialog.newInstance(sensorType)
         dialog.show(supportFragmentManager, "condition_dialog_fragment")
@@ -118,12 +119,14 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener {
 
     private fun addAction() {
         val name = action_name.text.toString()
+        val deviceMacAddress = text_mac_address.text.toString()
         val outcome = getOutcome()
         val smsDestination = phone_number.text.toString()
         val content = message.text.toString()
 
         newActionViewModel.addAction(
             name,
+            deviceMacAddress,
             outcome,
             smsDestination,
             content

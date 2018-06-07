@@ -10,9 +10,6 @@ import com.aconno.acnsensa.viewmodel.factory.NewActionViewModelFactory
 import dagger.Module
 import dagger.Provides
 
-/**
- * @author aconno
- */
 @Module
 class AddActionModule(private val addActionActivity: AddActionActivity) {
 
@@ -26,12 +23,10 @@ class AddActionModule(private val addActionActivity: AddActionActivity) {
     @Provides
     @AddActionActivityScope
     fun provideActionViewModelFactory(
-        addActionUseCase: AddActionUseCase,
-        getSavedDevicesUseCase: GetSavedDevicesUseCase
+        addActionUseCase: AddActionUseCase
     ) =
         NewActionViewModelFactory(
             addActionUseCase,
-            getSavedDevicesUseCase,
             addActionActivity.application
         )
 

@@ -7,6 +7,7 @@ import android.arch.persistence.room.PrimaryKey
 data class ActionEntity(
     @PrimaryKey(autoGenerate = true) var id: Long,
     var name: String,
+    var deviceMacAddress: String,
     var sensorType: Int,
     var conditionType: Int,
     var value: Float,

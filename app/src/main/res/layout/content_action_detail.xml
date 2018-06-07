@@ -20,20 +20,30 @@
             android:hint="@string/action_name"
             android:inputType="textPersonName" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
-            android:layout_marginTop="@dimen/item_vertical_spacing"
-            android:text="@string/device"
-            android:textColor="@color/primaryTextColor" />
-
-        <Spinner
-            android:id="@+id/spinner_devices"
+        <LinearLayout
+            android:id="@+id/button_device"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
-            android:layout_marginStart="@dimen/screen_edge_left_right_margin" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                android:layout_marginTop="@dimen/item_vertical_spacing"
+                android:text="@string/device"
+                android:textColor="@color/primaryTextColor" />
+
+            <TextView
+                android:id="@+id/text_mac_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+                android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                android:textSize="@dimen/list_item_text_size"
+                tools:text="Mac address" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/view_conditions_label"
