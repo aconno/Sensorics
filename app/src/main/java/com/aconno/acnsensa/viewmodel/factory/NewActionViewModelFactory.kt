@@ -3,6 +3,7 @@ package com.aconno.acnsensa.viewmodel.factory
 import android.app.Application
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.ifttt.AddActionUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 
 /**
@@ -10,6 +11,7 @@ import com.aconno.acnsensa.viewmodel.NewActionViewModel
  */
 class NewActionViewModelFactory(
     private val addActionUseCase: AddActionUseCase,
+    private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
     private val application: Application
 ) : BaseViewModelFactory() {
 
@@ -17,6 +19,7 @@ class NewActionViewModelFactory(
         val viewModel =
             NewActionViewModel(
                 addActionUseCase,
+                getSavedDevicesUseCase,
                 application
             )
         return getViewModel(viewModel, modelClass)

@@ -9,6 +9,7 @@ import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
 import com.aconno.acnsensa.domain.interactor.ifttt.AddActionUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.model.toInt
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,13 +21,26 @@ import timber.log.Timber
  */
 class NewActionViewModel(
     private val addActionUseCase: AddActionUseCase,
+    private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
     application: Application
 ) :
     AndroidViewModel(application) {
 
     val addActionResults: MutableLiveData<Boolean> = MutableLiveData()
 
+    val devicesLiveData = MutableLiveData<List<String>>()
+
     private var condition: Condition? = null
+
+    init {
+        getSavedDevicesUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .first(listOf())
+            .subscribe { devices ->
+                devicesLiveData.value = devices.map { it.macAddress }
+            }
+    }
 
     fun setCondition(sensorType: SensorTypeSingle, constraint: String, constraintValue: String) {
         //TODO: Fix this try catch, it catches the exception when constraintValue is empty string

@@ -28,8 +28,20 @@ class ActionViewModel(
 
     private var id = 0L
     val nameLiveData = MutableLiveData<String>()
+    val selectedDevice = MutableLiveData<String>()
+    val devicesLiveData = MutableLiveData<List<String>>()
     val conditionLiveData = MutableLiveData<Condition>()
     val outcomeLiveData = MutableLiveData<Outcome>()
+
+    init {
+        getSavedDevicesUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .first(listOf())
+            .subscribe { devices ->
+                devicesLiveData.value = devices.map { it.macAddress }
+            }
+    }
 
     fun getAction(id: Long) {
         getActionByIdUseCase.execute(id)

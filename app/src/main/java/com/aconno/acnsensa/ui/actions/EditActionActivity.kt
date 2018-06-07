@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.CheckedTextView
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
@@ -49,6 +50,7 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener {
         initUi()
 
         actionViewModel.nameLiveData.observe(this, Observer { updateName(it) })
+        actionViewModel.devicesLiveData.observe(this, Observer { updateDeviceSpinner(it) })
         actionViewModel.conditionLiveData.observe(this, Observer { updateConditions(it) })
         actionViewModel.outcomeLiveData.observe(this, Observer { updateOutcome(it) })
 
@@ -168,6 +170,13 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener {
 
     private fun updateName(name: String?) {
         action_name.setText(name)
+    }
+
+    private fun updateDeviceSpinner(devices: List<String>?) {
+        devices?.let {
+            val adapter = ArrayAdapter<String>(this, R.layout.item_mac_address, it)
+            spinner_devices.adapter = adapter
+        }
     }
 
     private fun updateConditions(condition: Condition?) {
