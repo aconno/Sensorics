@@ -14,10 +14,8 @@ class DeviceAdapter(
 ) : RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
 
     fun addDevice(device: Device) {
-        if (!devices.contains(device)) {
-            devices.add(device)
-            notifyDataSetChanged()
-        }
+        devices.add(device)
+        notifyDataSetChanged()
     }
 
     fun setDevices(devices: List<Device>) {

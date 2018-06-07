@@ -12,15 +12,22 @@ import com.aconno.acnsensa.adapter.DeviceAdapter
 import com.aconno.acnsensa.adapter.ItemClickListener
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.ui.MainActivity
+import com.aconno.acnsensa.ui.dialogs.DevicesDialog
+import com.aconno.acnsensa.ui.dialogs.DevicesDialogListener
 import com.aconno.acnsensa.viewmodel.DeviceViewModel
+import io.reactivex.Flowable
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
+class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, DevicesDialogListener {
 
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
+
+    // TODO: Put this in a view model
+    @Inject
+    lateinit var devices: Flowable<Device>
 
     private lateinit var deviceAdapter: DeviceAdapter
 
@@ -51,8 +58,8 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
 
         button_add_device.setOnClickListener {
             Timber.d("Button add device clicked")
-            val mainActivity: MainActivity? = activity as MainActivity
-            mainActivity?.showScannedDevicesFragment()
+            DevicesDialog.newInstance(devices, this)
+                .show(activity?.supportFragmentManager, "devices_dialog")
         }
     }
 
@@ -72,6 +79,10 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device> {
         super.onResume()
         val mainActivity: MainActivity? = context as MainActivity
         mainActivity?.supportActionBar?.title = "Devices"
+    }
+
+    override fun onDevicesDialogItemClick(item: Device) {
+        deviceViewModel.saveDevice(item)
     }
 
     override fun onItemClick(item: Device) {
