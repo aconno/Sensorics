@@ -12,22 +12,17 @@ import com.aconno.acnsensa.adapter.DeviceAdapter
 import com.aconno.acnsensa.adapter.ItemClickListener
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.ui.MainActivity
-import com.aconno.acnsensa.ui.dialogs.DevicesDialog
-import com.aconno.acnsensa.ui.dialogs.DevicesDialogListener
+import com.aconno.acnsensa.ui.dialogs.ScannedDevicesDialog
+import com.aconno.acnsensa.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.acnsensa.viewmodel.DeviceViewModel
-import io.reactivex.Flowable
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, DevicesDialogListener {
+class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevicesDialogListener {
 
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
-
-    // TODO: Put this in a view model
-    @Inject
-    lateinit var devices: Flowable<Device>
 
     private lateinit var deviceAdapter: DeviceAdapter
 
@@ -58,8 +53,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, DevicesDialo
 
         button_add_device.setOnClickListener {
             Timber.d("Button add device clicked")
-            DevicesDialog.newInstance(devices, this)
-                .show(activity?.supportFragmentManager, "devices_dialog")
+            ScannedDevicesDialog().show(activity?.supportFragmentManager, "devices_dialog")
         }
     }
 
@@ -89,13 +83,6 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, DevicesDialo
         activity?.let {
             val mainActivity = it as MainActivity
             mainActivity.showSensorValues(item.macAddress)
-        }
-    }
-
-    companion object {
-
-        fun newInstance(): SavedDevicesFragment {
-            return SavedDevicesFragment()
         }
     }
 }

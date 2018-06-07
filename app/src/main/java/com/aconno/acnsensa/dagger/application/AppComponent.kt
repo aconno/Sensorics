@@ -16,6 +16,7 @@ import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
+import com.aconno.acnsensa.ui.dialogs.ScannedDevicesDialog
 import dagger.Component
 import io.reactivex.Flowable
 import javax.inject.Singleton
@@ -34,7 +35,7 @@ interface AppComponent {
 
     fun sensorReadings(): Flowable<List<SensorReading>>
 
-    fun beacons(): Flowable<Device>
+    fun scannedDevices(): Flowable<Device>
 
     fun scanResults(): Flowable<ScanResult>
 
@@ -65,4 +66,6 @@ interface AppComponent {
     fun intentProvider(): IntentProvider
 
     fun deviceRepository(): DeviceRepository
+
+    fun inject(scannedDevicesDialog: ScannedDevicesDialog)
 }

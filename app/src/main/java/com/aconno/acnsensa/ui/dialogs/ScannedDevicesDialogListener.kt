@@ -2,7 +2,7 @@ package com.aconno.acnsensa.ui.dialogs
 
 import com.aconno.acnsensa.domain.model.Device
 
-interface DevicesDialogListener {
+interface ScannedDevicesDialogListener {
 
     fun onDevicesDialogItemClick(item: Device)
 }
