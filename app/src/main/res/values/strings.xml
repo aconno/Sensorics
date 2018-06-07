@@ -173,4 +173,7 @@
     <string name="snackbar_permission_message">You can always set permissions</string>
     <string name="snackbar_settings">Settings</string>
     <string name="devices">Devices</string>
+    <string name="are_you_sure">Are you sure you want to delete?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

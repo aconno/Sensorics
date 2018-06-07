@@ -3,10 +3,7 @@ package com.aconno.acnsensa.dagger.publish
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository
-import com.aconno.acnsensa.domain.interactor.ifttt.GetAllGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.GetAllRESTPublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateRESTPublishUserCase
+import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.model.mapper.GooglePublishDataMapper
 import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishDataMapper
@@ -49,6 +46,18 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
+    fun provideDeleteGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): DeleteGooglePublishUseCase {
+        return DeleteGooglePublishUseCase(googlePublishRepository)
+    }
+
+    @Provides
+    @PublishListScope
+    fun provideDeleteRESTPublishUseCase(restPublishRepository: RESTPublishRepository): DeleteRestPublishUseCase {
+        return DeleteRestPublishUseCase(restPublishRepository)
+    }
+
+    @Provides
+    @PublishListScope
     fun providePublishListViewModel(
         publishViewModelFactory: PublishListViewModelFactory
     ) = ViewModelProviders.of(publishListFragment, publishViewModelFactory)
@@ -64,7 +73,9 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
         googlePublishDataMapper: GooglePublishDataMapper,
         googlePublishModelDataMapper: GooglePublishModelDataMapper,
         restPublishDataMapper: RESTPublishDataMapper,
-        restPublishModelDataMapper: RESTPublishModelDataMapper
+        restPublishModelDataMapper: RESTPublishModelDataMapper,
+        deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
+        deleteRestPublishUseCase: DeleteRestPublishUseCase
     ) =
         PublishListViewModelFactory(
             getAllGooglePublishUseCase,
@@ -74,6 +85,8 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
             googlePublishDataMapper,
             googlePublishModelDataMapper,
             restPublishDataMapper,
-            restPublishModelDataMapper
+            restPublishModelDataMapper,
+            deleteGooglePublishUseCase,
+            deleteRestPublishUseCase
         )
 }

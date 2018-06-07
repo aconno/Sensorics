@@ -3,10 +3,7 @@ package com.aconno.acnsensa.viewmodel
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
-import com.aconno.acnsensa.domain.interactor.ifttt.GetAllGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.GetAllRESTPublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateRESTPublishUserCase
+import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
@@ -28,8 +25,9 @@ class PublishListViewModel(
     private val googlePublishDataMapper: GooglePublishDataMapper,
     private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
     private val restPublishDataMapper: RESTPublishDataMapper,
-    private val restPublishModelDataMapper: RESTPublishModelDataMapper
-
+    private val restPublishModelDataMapper: RESTPublishModelDataMapper,
+    private val deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
+    private val deleteRestPublishUseCase: DeleteRestPublishUseCase
 ) : ViewModel() {
 
     fun update(googlePublishModel: GooglePublishModel) {
@@ -74,4 +72,21 @@ class PublishListViewModel(
             }.toList()
             .toFlowable()
     }
+
+    fun delete(googlePublishModel: GooglePublishModel) {
+        val googlePublish = googlePublishModelDataMapper.transform(googlePublishModel)
+
+        deleteGooglePublishUseCase.execute(googlePublish)
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
+    fun delete(restPublishModel: RESTPublishModel) {
+        val restPublish = restPublishModelDataMapper.transform(restPublishModel)
+
+        deleteRestPublishUseCase.execute(restPublish)
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
 }
