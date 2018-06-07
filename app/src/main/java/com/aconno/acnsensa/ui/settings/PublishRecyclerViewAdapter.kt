@@ -8,15 +8,13 @@ import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
-import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
 
 
-import com.aconno.acnsensa.ui.settings.PublishFragment.OnListFragmentInteractionListener
+import com.aconno.acnsensa.ui.settings.PublishListFragment.OnListFragmentInteractionListener
 
 import kotlinx.android.synthetic.main.item_publish.view.*
 

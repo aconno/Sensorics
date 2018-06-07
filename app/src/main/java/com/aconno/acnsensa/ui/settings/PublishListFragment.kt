@@ -13,9 +13,6 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.publish.DaggerPublishListComponent
 import com.aconno.acnsensa.dagger.publish.PublishListComponent
 import com.aconno.acnsensa.dagger.publish.PublishListModule
-import com.aconno.acnsensa.domain.ifttt.BasePublish
-import com.aconno.acnsensa.domain.ifttt.GooglePublish
-import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
@@ -28,9 +25,9 @@ import javax.inject.Inject
 /**
  * A fragment representing a list of Items.
  * Activities containing this fragment MUST implement the
- * [PublishFragment.OnListFragmentInteractionListener] interface.
+ * [PublishListFragment.OnListFragmentInteractionListener] interface.
  */
-class PublishFragment : Fragment() {
+class PublishListFragment : Fragment() {
 
     @Inject
     lateinit var publishListViewModel: PublishListViewModel
@@ -140,6 +137,6 @@ class PublishFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = PublishFragment()
+        fun newInstance() = PublishListFragment()
     }
 }
