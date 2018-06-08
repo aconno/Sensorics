@@ -83,12 +83,6 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideReadingToInputUseCase(): ReadingToInputUseCase {
-        return ReadingToInputUseCase()
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
     fun provideHandleInputUseCase(actionsRepository: ActionsRepository): InputToOutcomesUseCase {
         return InputToOutcomesUseCase(actionsRepository)
     }

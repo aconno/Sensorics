@@ -1,7 +1,9 @@
 package com.aconno.acnsensa.domain.ifttt
 
+import com.aconno.acnsensa.domain.model.SensorTypeSingle
+
 class LimitCondition(
-    override val sensorType: Int,
+    override val sensorType: SensorTypeSingle,
     override val limit: Float,
     override val type: Int
 ) :

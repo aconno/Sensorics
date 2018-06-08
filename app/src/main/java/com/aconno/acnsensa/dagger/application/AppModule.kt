@@ -31,6 +31,7 @@ import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseC
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
 import com.aconno.acnsensa.domain.interactor.convert.ScanResultToSensorReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
@@ -245,4 +246,8 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
     ): Flowable<List<Device>> {
         return GetSavedDevicesUseCase(deviceRepository).execute()
     }
+
+    @Provides
+    @Singleton
+    fun provideSensorReadingToInputUseCase() = SensorReadingToInputUseCase()
 }

@@ -5,12 +5,10 @@ import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.Input
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
+import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import io.reactivex.Observable
 import io.reactivex.Single
 
-/**
- * @author aconno
- */
 class InputToOutcomesUseCase(
     private val actionsRepository: ActionsRepository
 ) : SingleUseCaseWithParameter<List<Outcome>, Input> {
@@ -20,26 +18,27 @@ class InputToOutcomesUseCase(
             .concatMap { actions ->
                 Observable.just(actionsToOutcomes(actions, parameter))
             }
-
         return Single.fromObservable(observable)
     }
 
-    private val previousConditions: MutableMap<Long, MutableMap<Int, Boolean>> = mutableMapOf()
+    private val previousConditions: MutableMap<Long, MutableMap<SensorTypeSingle, Boolean>> =
+        mutableMapOf()
 
     private fun actionsToOutcomes(actions: List<Action>, input: Input): List<Outcome> {
         val result = mutableListOf<Outcome>()
 
-        for (action in actions) {
-            val actionPreviousConditions = previousConditions[action.id] ?: mutableMapOf()
-            val previousCondition = actionPreviousConditions[input.type]
-            previousCondition?.let {
-                if (action.condition.isSatisfied(input) && !it) {
-                    result.add(action.outcome)
+        actions.filter { it.deviceMacAddress == input.macAddress }
+            .forEach { action ->
+                val actionPreviousConditions = previousConditions[action.id] ?: mutableMapOf()
+                val previousCondition = actionPreviousConditions[input.type]
+                previousCondition?.let {
+                    if (action.condition.isSatisfied(input) && !it) {
+                        result.add(action.outcome)
+                    }
                 }
+                actionPreviousConditions[input.type] = action.condition.isSatisfied(input)
+                previousConditions[action.id] = actionPreviousConditions
             }
-            actionPreviousConditions[input.type] = action.condition.isSatisfied(input)
-            previousConditions[action.id] = actionPreviousConditions
-        }
 
         return result
     }

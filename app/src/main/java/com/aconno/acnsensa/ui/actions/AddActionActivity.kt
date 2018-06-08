@@ -212,7 +212,7 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
     }
 
     private fun setSelectedCondition(condition: Condition) {
-        val conditionView = getConditionView(condition.sensorType.toSensorType())
+        val conditionView = getConditionView(condition.sensorType)
         conditionView.isChecked = true
         appendConditionString(conditionView, condition)
     }

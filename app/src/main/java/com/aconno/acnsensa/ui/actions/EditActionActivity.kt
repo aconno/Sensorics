@@ -193,7 +193,7 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener,
     private fun updateConditions(condition: Condition?) {
         initConditions()
         if (condition != null) {
-            val conditionView = getConditionView(condition.sensorType.toSensorType())
+            val conditionView = getConditionView(condition.sensorType)
             conditionView.isChecked = true
             val constraintType = when (condition.type) {
                 LimitCondition.LESS_THAN -> "<"

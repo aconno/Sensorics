@@ -56,9 +56,9 @@ class ActionViewModel(
         } else {
             when (constraintType) {
                 "<" -> conditionLiveData.value =
-                        LimitCondition(sensorType.toInt(), valueFloat, LimitCondition.LESS_THAN)
+                        LimitCondition(sensorType, valueFloat, LimitCondition.LESS_THAN)
                 ">" -> conditionLiveData.value =
-                        LimitCondition(sensorType.toInt(), valueFloat, LimitCondition.MORE_THAN)
+                        LimitCondition(sensorType, valueFloat, LimitCondition.MORE_THAN)
                 else -> Timber.d("Constraint type is not valid constraint type: $constraintType")
             }
         }

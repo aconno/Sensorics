@@ -10,6 +10,7 @@ import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
+import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.SensorReading
@@ -69,6 +70,8 @@ interface AppComponent {
     fun intentProvider(): IntentProvider
 
     fun deviceRepository(): DeviceRepository
+
+    fun sensorReadingToInputUseCase() : SensorReadingToInputUseCase
 
     fun inject(scannedDevicesDialog: ScannedDevicesDialog)
 

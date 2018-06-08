@@ -20,6 +20,7 @@ import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
+import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
@@ -57,9 +58,6 @@ class BluetoothScanningService : Service() {
     lateinit var logReadingsUseCase: LogReadingUseCase
 
     @Inject
-    lateinit var readingToInputUseCase: ReadingToInputUseCase
-
-    @Inject
     lateinit var inputToOutcomesUseCase: InputToOutcomesUseCase
 
     @Inject
@@ -88,6 +86,9 @@ class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var localBroadcastManager: LocalBroadcastManager
+
+    @Inject
+    lateinit var sensorReadingToInputUseCase: SensorReadingToInputUseCase
 
     private var closeConnectionUseCase: CloseConnectionUseCase? = null
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
@@ -159,9 +160,8 @@ class BluetoothScanningService : Service() {
     }
 
     private fun handleInputsForActions() {
-        sensorValues
-            .concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-            .concatMap { readingToInputUseCase.execute(it).toFlowable() }
+        sensorReadings
+            .concatMap { sensorReadingToInputUseCase.execute(it).toFlowable() }
             .flatMapIterable { it }
             .concatMap {
                 inputToOutcomesUseCase.execute(it)
