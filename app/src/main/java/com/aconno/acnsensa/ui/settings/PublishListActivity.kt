@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.model.BasePublishModel
 import kotlinx.android.synthetic.main.activity_add_publish.*
 
@@ -17,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_add_publish.*
  * @author aconno
  */
 class PublishListActivity : AppCompatActivity(),
-    PublishFragment.OnListFragmentInteractionListener {
+    PublishListFragment.OnListFragmentInteractionListener {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +27,7 @@ class PublishListActivity : AppCompatActivity(),
         if (fm != null) {
             var fragment: Fragment? = fm.findFragmentById(R.id.publish_list_container)
             if (fragment == null) {
-                fragment = PublishFragment.newInstance()
+                fragment = PublishListFragment.newInstance()
                 fm.beginTransaction().add(R.id.publish_list_container, fragment).commit()
             }
         }

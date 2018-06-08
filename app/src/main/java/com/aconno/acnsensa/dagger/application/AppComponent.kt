@@ -76,4 +76,6 @@ interface AppComponent {
     fun inject(scannedDevicesDialog: ScannedDevicesDialog)
 
     fun inject(savedDevicesDialog: SavedDevicesDialog)
+
+    fun publishDeviceJoinRepository(): PublishDeviceJoinRepository
 }

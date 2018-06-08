@@ -16,6 +16,8 @@ import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.ifttt.outcome.*
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.*
+import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SaveSensorReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
@@ -131,5 +133,17 @@ class BluetoothScanningServiceModule(
     @BluetoothScanningServiceScope
     fun provideUpdateGooglePublishUseCase(restPublishRepository: GooglePublishRepository): UpdateGooglePublishUseCase {
         return UpdateGooglePublishUseCase(restPublishRepository)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideGetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithGooglePublishUseCase {
+        return GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideGetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithRESTPublishUseCase {
+        return GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository)
     }
 }

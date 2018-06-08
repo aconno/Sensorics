@@ -14,6 +14,14 @@ class DeviceMapper @Inject constructor() {
         )
     }
 
+    fun toDeviceList(deviceEntityList: Collection<DeviceEntity>): List<Device> {
+        val list = mutableListOf<Device>()
+        deviceEntityList.forEach {
+            list.add(toDevice(it))
+        }
+        return list
+    }
+
     fun toDeviceEntity(device: Device): DeviceEntity {
         return DeviceEntity(
             device.name,

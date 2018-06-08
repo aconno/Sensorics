@@ -16,6 +16,7 @@ import com.aconno.acnsensa.data.publisher.EmptyPublisher
 import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
 import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
+import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
@@ -24,13 +25,17 @@ import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SaveSensorReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.scanning.Bluetooth
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
@@ -71,6 +76,12 @@ class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var updateGooglePublishUseCase: UpdateGooglePublishUseCase
+
+    @Inject
+    lateinit var getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase
+
+    @Inject
+    lateinit var getDevicesThatConnectedWithRESTPublishUseCase: GetDevicesThatConnectedWithRESTPublishUseCase
 
     @Inject
     lateinit var runOutcomeUseCase: RunOutcomeUseCase
@@ -129,34 +140,32 @@ class BluetoothScanningService : Service() {
     }
 
     private fun startSyncing() {
-        sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-            .subscribe {
+        sensorReadings.subscribe {
+            //Publish when Google Cloud Integration Enabled
+            publishReadingsUseCase?.execute(it)
+                ?.subscribeOn(Schedulers.io())
+                ?.flatMapIterable { it }
+                ?.map {
+                    val data = it.getPublishData()
+                    data.lastTimeMillis = System.currentTimeMillis()
 
-                //Publish when Google Cloud Integration Enabled
-                publishReadingsUseCase?.execute(it)
-                    ?.subscribeOn(Schedulers.io())
-                    ?.flatMapIterable { it }
-                    ?.map {
-                        val data = it.getPublishData()
-                        data.lastTimeMillis = System.currentTimeMillis()
+                    when (data) {
+                        is GooglePublish -> {
+                            updateGooglePublishUseCase.execute(data)
+                        }
 
-                        when (data) {
-                            is GooglePublish -> {
-                                updateGooglePublishUseCase.execute(data)
-                            }
-
-                            is RESTPublish -> {
-                                updateRESTPublishUserCase.execute(data)
-                            }
-                            else -> {
-                                throw IllegalArgumentException("Illegal data provided.")
-                            }
+                        is RESTPublish -> {
+                            updateRESTPublishUserCase.execute(data)
+                        }
+                        else -> {
+                            throw IllegalArgumentException("Illegal data provided.")
                         }
                     }
-                    ?.subscribe {
-                        it.subscribeOn(Schedulers.io()).subscribe()
-                    }
-            }
+                }
+                ?.subscribe {
+                    it.subscribeOn(Schedulers.io()).subscribe()
+                }
+        }
     }
 
     private fun handleInputsForActions() {
@@ -207,17 +216,41 @@ class BluetoothScanningService : Service() {
             getAllEnabledRESTPublishUseCase.execute()
         )
             .subscribeOn(Schedulers.io())
-            .flatMapIterable { it -> it }
-            .map { it ->
+            .flatMapIterable { it }
+            .flatMap<Pair<BasePublish, List<Device>>>({
                 when (it) {
-                    is GooglePublish -> GoogleCloudPublisher(this, it)
-                    is RESTPublish -> RESTPublisher(it)
-                    else -> {
-                        EmptyPublisher()
+                    is GooglePublish -> Flowable.just(it).zipWith(
+                        getDevicesThatConnectedWithGooglePublishUseCase.execute(it.id)
+                            .toFlowable()
+                    )
+                    is RESTPublish -> Flowable.just(it).zipWith(
+                        getDevicesThatConnectedWithRESTPublishUseCase.execute(it.id)
+                            .toFlowable()
+                    )
+                    else -> throw IllegalArgumentException("Illegal argument passed")
+                }
+            })
+            .map {
+                if (it.second.isNotEmpty()) {
+                    when (it.first) {
+                        is GooglePublish -> GoogleCloudPublisher(
+                            this,
+                            it.first as GooglePublish,
+                            it.second
+                        )
+                        is RESTPublish -> RESTPublisher(
+                            it.first as RESTPublish,
+                            it.second
+                        )
+                        else -> {
+                            EmptyPublisher()
+                        }
                     }
+                } else {
+                    EmptyPublisher()
                 }
             }//This line is used to eliminate unregistered types or nulls.
-            .filter { it -> it !is EmptyPublisher }
+            .filter { it !is EmptyPublisher }
             .toList()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { it ->

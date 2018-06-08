@@ -8,29 +8,29 @@ import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
-import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
 
 
-import com.aconno.acnsensa.ui.settings.PublishFragment.OnListFragmentInteractionListener
+import com.aconno.acnsensa.ui.settings.PublishListFragment.OnListFragmentInteractionListener
 
 import kotlinx.android.synthetic.main.item_publish.view.*
 
 /**
- * [RecyclerView.Adapter] that can display a [GooglePublish] and makes a call to the
+ * [RecyclerView.Adapter] that can display a [BasePublishModel] and makes a call to the
  * specified [OnListFragmentInteractionListener].
  */
 class PublishRecyclerViewAdapter(
     private val mValues: List<BasePublishModel>,
     private val mListener: OnListFragmentInteractionListener?,
-    private val mCheckedChangeListener: OnCheckedChangeListener?
+    private val mCheckedChangeListener: OnCheckedChangeListener?,
+    private val mPublishOnLongClickListener: PublishOnLongClickListener?
 ) : RecyclerView.Adapter<PublishRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
+    private val mOnLongClickListener: View.OnLongClickListener
 
     init {
         mOnClickListener = View.OnClickListener { v ->
@@ -38,6 +38,12 @@ class PublishRecyclerViewAdapter(
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
             mListener?.onListFragmentInteraction(item)
+        }
+
+        mOnLongClickListener = View.OnLongClickListener {
+            val item = it.tag as BasePublishModel
+            mPublishOnLongClickListener?.onLongClick(item)
+            true
         }
     }
 
@@ -66,6 +72,8 @@ class PublishRecyclerViewAdapter(
         holder.mEnableView.setOnCheckedChangeListener({ _, isChecked ->
             mCheckedChangeListener?.onCheckedChange(isChecked, position)
         })
+
+        holder.mView.setOnLongClickListener(mOnLongClickListener)
     }
 
     override fun getItemCount(): Int = mValues.size

@@ -3,10 +3,7 @@ package com.aconno.acnsensa.viewmodel
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
-import com.aconno.acnsensa.domain.interactor.ifttt.GetAllGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.GetAllRESTPublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateRESTPublishUserCase
+import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
@@ -17,8 +14,8 @@ import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 
 class PublishListViewModel(
     private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
@@ -28,30 +25,27 @@ class PublishListViewModel(
     private val googlePublishDataMapper: GooglePublishDataMapper,
     private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
     private val restPublishDataMapper: RESTPublishDataMapper,
-    private val restPublishModelDataMapper: RESTPublishModelDataMapper
-
+    private val restPublishModelDataMapper: RESTPublishModelDataMapper,
+    private val deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
+    private val deleteRestPublishUseCase: DeleteRestPublishUseCase
 ) : ViewModel() {
 
-    fun update(googlePublishModel: GooglePublishModel) {
+    fun update(googlePublishModel: GooglePublishModel): Disposable {
         val googlePublish = googlePublishModelDataMapper.transform(googlePublishModel)
 
-        updateGooglePublishUseCase.execute(googlePublish)
+        return updateGooglePublishUseCase.execute(googlePublish)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { Timber.d("Save succeeded, action id: ${googlePublish.id}") },
-                { Timber.e("Failed to update Google Publish Data with id: ${googlePublish.id}") })
+            .subscribe()
     }
 
-    fun update(restPublish: RESTPublishModel) {
+    fun update(restPublish: RESTPublishModel): Disposable {
         val generalRESTPublish = restPublishModelDataMapper.transform(restPublish)
 
-        updateRESTPublishUserCase.execute(generalRESTPublish)
+        return updateRESTPublishUserCase.execute(generalRESTPublish)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { Timber.d("Save succeeded, action id: ${generalRESTPublish.id}") },
-                { Timber.e("Failed to update REST Publish Data with id: ${generalRESTPublish.id}") })
+            .subscribe()
     }
 
     fun getAllPublish(): Flowable<List<BasePublishModel>> {
@@ -74,4 +68,21 @@ class PublishListViewModel(
             }.toList()
             .toFlowable()
     }
+
+    fun delete(googlePublishModel: GooglePublishModel): Disposable {
+        val googlePublish = googlePublishModelDataMapper.transform(googlePublishModel)
+
+        return deleteGooglePublishUseCase.execute(googlePublish)
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
+    fun delete(restPublishModel: RESTPublishModel): Disposable {
+        val restPublish = restPublishModelDataMapper.transform(restPublishModel)
+
+        return deleteRestPublishUseCase.execute(restPublish)
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
 }

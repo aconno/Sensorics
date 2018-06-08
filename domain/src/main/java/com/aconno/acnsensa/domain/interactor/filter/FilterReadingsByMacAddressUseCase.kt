@@ -8,11 +8,11 @@ class FilterReadingsByMacAddressUseCase :
     MaybeUseCaseWithTwoParameters<List<SensorReading>, List<SensorReading>, String> {
 
     override fun execute(
-        sensorReadings: List<SensorReading>,
-        macAddress: String
+        firstParameter: List<SensorReading>,
+        secondParameter: String
     ): Maybe<List<SensorReading>> {
-        return if (sensorReadings[0].device.macAddress == macAddress) {
-            Maybe.just(sensorReadings)
+        return if (firstParameter[0].device.macAddress == secondParameter) {
+            Maybe.just(firstParameter)
         } else {
             Maybe.empty()
         }
