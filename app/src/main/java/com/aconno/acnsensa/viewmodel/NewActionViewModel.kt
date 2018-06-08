@@ -21,8 +21,7 @@ import timber.log.Timber
 class NewActionViewModel(
     private val addActionUseCase: AddActionUseCase,
     application: Application
-) :
-    AndroidViewModel(application) {
+) : AndroidViewModel(application) {
 
     val addActionResults: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -33,12 +32,12 @@ class NewActionViewModel(
         try {
             when (constraint) {
                 "<" -> condition = LimitCondition(
-                    sensorType.toInt(),
+                    sensorType,
                     constraintValue.toFloat(),
                     LimitCondition.LESS_THAN
                 )
                 ">" -> condition = LimitCondition(
-                    sensorType.toInt(),
+                    sensorType,
                     constraintValue.toFloat(),
                     LimitCondition.MORE_THAN
                 )
@@ -54,6 +53,7 @@ class NewActionViewModel(
 
     fun addAction(
         name: String,
+        deviceMacAddress: String,
         outcomeType: String,
         smsDestination: String,
         content: String
@@ -87,7 +87,7 @@ class NewActionViewModel(
                 }
 
                 val outcome = Outcome(parameters, outcomeEndType)
-                val newAction = GeneralAction(newId, name, condition, outcome)
+                val newAction = GeneralAction(newId, name, deviceMacAddress, condition, outcome)
 
                 addActionUseCase.execute(newAction)
                     .subscribeOn(Schedulers.io())

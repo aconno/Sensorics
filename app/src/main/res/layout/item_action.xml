@@ -29,4 +29,14 @@
         app:layout_constraintTop_toBottomOf="@id/action_name"
         tools:text="Temperature > 4.0" />
 
+    <TextView
+        android:id="@+id/text_mac_address"
+        style="@style/ListItemSecondaryText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+        app:layout_constraintBaseline_toBaselineOf="@id/action_condition"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Mac address" />
+
 </android.support.constraint.ConstraintLayout>

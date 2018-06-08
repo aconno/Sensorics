@@ -1,11 +1,11 @@
 package com.aconno.acnsensa.data.repository
 
-import android.os.Parcelable
 import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
+import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import io.reactivex.Single
 
 class ActionsRepositoryImpl(
@@ -34,6 +34,7 @@ class ActionsRepositoryImpl(
     private fun toEntity(action: Action): ActionEntity {
         val id = action.id
         val name = action.name
+        val deviceMacAddress = action.deviceMacAddress
         val sensorType = action.condition.sensorType
         val conditionType = action.condition.type
         val value = action.condition.limit
@@ -45,7 +46,8 @@ class ActionsRepositoryImpl(
         return ActionEntity(
             id = id,
             name = name,
-            sensorType = sensorType,
+            deviceMacAddress = deviceMacAddress,
+            sensorType = sensorType.id,
             conditionType = conditionType,
             value = value,
             textMessage = message,
@@ -57,8 +59,13 @@ class ActionsRepositoryImpl(
     private fun toAction(actionEntity: ActionEntity): Action {
         val id = actionEntity.id
         val name = actionEntity.name
+        val deviceMacAddress = actionEntity.deviceMacAddress
         val condition =
-            LimitCondition(actionEntity.sensorType, actionEntity.value, actionEntity.conditionType)
+            LimitCondition(
+                SensorTypeSingle.ofId(actionEntity.sensorType),
+                actionEntity.value,
+                actionEntity.conditionType
+            )
 
         val parameters = mapOf(
             Pair(Outcome.TEXT_MESSAGE, actionEntity.textMessage),
@@ -67,6 +74,6 @@ class ActionsRepositoryImpl(
 
         val outcome = Outcome(parameters, actionEntity.outcomeType)
 
-        return GeneralAction(id, name, condition, outcome)
+        return GeneralAction(id, name, deviceMacAddress, condition, outcome)
     }
 }

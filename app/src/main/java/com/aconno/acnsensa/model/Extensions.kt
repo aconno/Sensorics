@@ -65,7 +65,7 @@ fun Int.toSensorType(): SensorTypeSingle {
 }
 
 fun Condition.toString(context: Context): String {
-    val sensor = sensorType.toSensorType().toStringResource(context)
+    val sensor = sensorType.toStringResource(context)
     //TODO: Refactor constraint type
     val constraint = when (type) {
         LimitCondition.MORE_THAN -> ">"

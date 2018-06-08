@@ -17,15 +17,19 @@ import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.model.toSensorType
 import com.aconno.acnsensa.model.toStringResource
+import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialog
+import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialogListener
 import com.aconno.acnsensa.viewmodel.ActionViewModel
 import kotlinx.android.synthetic.main.activity_action_edit.*
 import kotlinx.android.synthetic.main.content_action_detail.*
 import javax.inject.Inject
 
-class EditActionActivity : AppCompatActivity(), ConditionDialogListener {
+class EditActionActivity : AppCompatActivity(), ConditionDialogListener,
+    SavedDevicesDialogListener {
 
     @Inject
     lateinit var actionViewModel: ActionViewModel
@@ -49,11 +53,18 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener {
         initUi()
 
         actionViewModel.nameLiveData.observe(this, Observer { updateName(it) })
+        actionViewModel.deviceMacAddressLiveData.observe(
+            this,
+            Observer { updateDeviceMacAddress(it) })
         actionViewModel.conditionLiveData.observe(this, Observer { updateConditions(it) })
         actionViewModel.outcomeLiveData.observe(this, Observer { updateOutcome(it) })
 
         val actionId = intent.getLongExtra(ACTION_ID_EXTRA, -1)
         actionViewModel.getAction(actionId)
+
+        button_device.setOnClickListener {
+            SavedDevicesDialog().show(supportFragmentManager, "saved_devices_dialog")
+        }
     }
 
     private fun initUi() {
@@ -88,6 +99,7 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener {
         save_action_button.setOnClickListener {
             actionViewModel.save(
                 action_name.text.toString(),
+                text_mac_address.text.toString(),
                 getOutcomeType(),
                 message.text.toString(),
                 phone_number.text.toString()
@@ -170,10 +182,18 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener {
         action_name.setText(name)
     }
 
+    override fun onSavedDevicesDialogItemClick(item: Device) {
+        text_mac_address.text = item.macAddress
+    }
+
+    private fun updateDeviceMacAddress(mac: String?) {
+        text_mac_address.text = mac
+    }
+
     private fun updateConditions(condition: Condition?) {
         initConditions()
         if (condition != null) {
-            val conditionView = getConditionView(condition.sensorType.toSensorType())
+            val conditionView = getConditionView(condition.sensorType)
             conditionView.isChecked = true
             val constraintType = when (condition.type) {
                 LimitCondition.LESS_THAN -> "<"

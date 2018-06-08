@@ -16,11 +16,12 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.domain.scanning.BluetoothState
 import com.aconno.acnsensa.model.AcnSensaPermission
 import com.aconno.acnsensa.ui.devices.SavedDevicesFragment
-import com.aconno.acnsensa.ui.devices.ScannedDevicesFragment
+import com.aconno.acnsensa.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.acnsensa.ui.sensors.SensorListFragment
 import com.aconno.acnsensa.ui.settings.PublishListActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
@@ -29,7 +30,8 @@ import com.aconno.acnsensa.viewmodel.PermissionViewModel
 import kotlinx.android.synthetic.main.activity_toolbar.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks {
+class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks,
+    ScannedDevicesDialogListener {
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
@@ -158,15 +160,16 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     private fun showSavedDevicesFragment() {
         supportFragmentManager.beginTransaction()
-            .replace(content_container.id, SavedDevicesFragment.newInstance())
+            .replace(content_container.id, SavedDevicesFragment())
             .commit()
     }
 
-    fun showScannedDevicesFragment() {
-        supportFragmentManager.beginTransaction()
-            .replace(content_container.id, ScannedDevicesFragment.newInstance())
-            .addToBackStack(null)
-            .commit()
+    override fun onDevicesDialogItemClick(item: Device) {
+        supportFragmentManager.fragments.map {
+            if (it is ScannedDevicesDialogListener) {
+                it.onDevicesDialogItemClick(item)
+            }
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {

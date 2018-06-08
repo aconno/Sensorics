@@ -10,12 +10,15 @@ import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
+import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
+import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialog
+import com.aconno.acnsensa.ui.dialogs.ScannedDevicesDialog
 import dagger.Component
 import io.reactivex.Flowable
 import javax.inject.Singleton
@@ -34,7 +37,9 @@ interface AppComponent {
 
     fun sensorReadings(): Flowable<List<SensorReading>>
 
-    fun beacons(): Flowable<Device>
+    fun scannedDevices(): Flowable<Device>
+
+    fun savedDevices(): Flowable<List<Device>>
 
     fun scanResults(): Flowable<ScanResult>
 
@@ -65,6 +70,12 @@ interface AppComponent {
     fun intentProvider(): IntentProvider
 
     fun deviceRepository(): DeviceRepository
+
+    fun sensorReadingToInputUseCase() : SensorReadingToInputUseCase
+
+    fun inject(scannedDevicesDialog: ScannedDevicesDialog)
+
+    fun inject(savedDevicesDialog: SavedDevicesDialog)
 
     fun publishDeviceJoinRepository(): PublishDeviceJoinRepository
 }

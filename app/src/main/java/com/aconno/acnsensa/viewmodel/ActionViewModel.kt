@@ -26,6 +26,7 @@ class ActionViewModel(
 
     private var id = 0L
     val nameLiveData = MutableLiveData<String>()
+    val deviceMacAddressLiveData = MutableLiveData<String>()
     val conditionLiveData = MutableLiveData<Condition>()
     val outcomeLiveData = MutableLiveData<Outcome>()
 
@@ -39,6 +40,7 @@ class ActionViewModel(
     private fun onActionFound(action: Action) {
         id = action.id
         nameLiveData.value = action.name
+        deviceMacAddressLiveData.value = action.deviceMacAddress
         conditionLiveData.value = action.condition
         outcomeLiveData.value = action.outcome
     }
@@ -54,21 +56,27 @@ class ActionViewModel(
         } else {
             when (constraintType) {
                 "<" -> conditionLiveData.value =
-                        LimitCondition(sensorType.toInt(), valueFloat, LimitCondition.LESS_THAN)
+                        LimitCondition(sensorType, valueFloat, LimitCondition.LESS_THAN)
                 ">" -> conditionLiveData.value =
-                        LimitCondition(sensorType.toInt(), valueFloat, LimitCondition.MORE_THAN)
+                        LimitCondition(sensorType, valueFloat, LimitCondition.MORE_THAN)
                 else -> Timber.d("Constraint type is not valid constraint type: $constraintType")
             }
         }
     }
 
-    fun save(name: String, outcomeType: Int, message: String, phoneNumber: String) {
+    fun save(
+        name: String,
+        deviceMacAddress: String,
+        outcomeType: Int,
+        message: String,
+        phoneNumber: String
+    ) {
         val condition = conditionLiveData.value
         val parameters =
             mapOf(Pair(Outcome.TEXT_MESSAGE, message), Pair(Outcome.PHONE_NUMBER, phoneNumber))
         val outcome = Outcome(parameters, outcomeType)
         if (condition != null) {
-            val action = GeneralAction(id, name, condition, outcome)
+            val action = GeneralAction(id, name, deviceMacAddress, condition, outcome)
             updateActionUseCase.execute(action)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -81,10 +89,11 @@ class ActionViewModel(
 
     fun delete() {
         val name = nameLiveData.value
+        val deviceMacAddress = deviceMacAddressLiveData.value
         val condition = conditionLiveData.value
         val outcome = outcomeLiveData.value
-        if (name != null && condition != null && outcome != null) {
-            val action = GeneralAction(id, name, condition, outcome)
+        if (name != null && deviceMacAddress != null && condition != null && outcome != null) {
+            val action = GeneralAction(id, name, deviceMacAddress, condition, outcome)
             deleteActionUseCase.execute(action)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
