@@ -41,6 +41,7 @@ class ActionAdapter(
 
         fun bind(action: Action) {
             view.action_name.text = action.name
+            view.text_mac_address.text = action.deviceMacAddress
             view.action_condition.text = action.condition.toString(view.context)
             view.setOnClickListener { clickListener.onItemClick(action) }
         }
