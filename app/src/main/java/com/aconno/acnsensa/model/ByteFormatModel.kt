@@ -1,9 +1,23 @@
 package com.aconno.acnsensa.model
 
-data class ByteFormatModel(
-    val name: String,
-    val startIndexInclusive: Int,
-    val endIndexExclusive: Int,
-    val isReversed: Boolean,
-    val dataType: String
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+
+
+class ByteFormatModel(
+    @SerializedName("name")
+    @Expose
+    var name: String,
+    @SerializedName("start_index_inclusive")
+    @Expose
+    var startIndexInclusive: Int,
+    @SerializedName("end_index_inclusive")
+    @Expose
+    var endIndexInclusive: Int,
+    @SerializedName("reversed")
+    @Expose
+    var reversed: Boolean,
+    @SerializedName("data_type")
+    @Expose
+    var dataType: String
 )
