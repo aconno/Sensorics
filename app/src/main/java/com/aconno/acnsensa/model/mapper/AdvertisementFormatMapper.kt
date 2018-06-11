@@ -12,10 +12,10 @@ class AdvertisementFormatMapper {
 
     fun toAdvertisementModel(genericFormatModel: GenericFormatModel): AdvertisementFormat {
         return GenericFormat(
-            genericFormatModel.formatName,
+            genericFormatModel.name,
             genericFormatModel.icon,
             genericFormatModel.format.map { toByteFormat(it) },
-            genericFormatModel.requiredFormat.map { toByteFormatRequired(it) }
+            genericFormatModel.formatRequired.map { toByteFormatRequired(it) }
         )
     }
 
@@ -23,8 +23,8 @@ class AdvertisementFormatMapper {
     private fun toByteFormatRequired(byteFormatRequiredModel: ByteFormatRequiredModel): ByteFormatRequired {
         return ByteFormatRequired(
             byteFormatRequiredModel.name,
-            byteFormatRequiredModel.position,
-            byteFormatRequiredModel.value
+            byteFormatRequiredModel.index,
+            byteFormatRequiredModel.value.toByte()
         )
     }
 
@@ -32,8 +32,8 @@ class AdvertisementFormatMapper {
         return ByteFormat(
             byteFormatModel.name,
             byteFormatModel.startIndexInclusive,
-            byteFormatModel.endIndexExclusive,
-            byteFormatModel.isReversed,
+            byteFormatModel.endIndexInclusive,
+            byteFormatModel.reversed,
             byteFormatModel.dataType
         )
     }
