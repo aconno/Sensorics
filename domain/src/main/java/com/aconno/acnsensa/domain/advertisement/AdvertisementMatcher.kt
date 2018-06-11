@@ -2,14 +2,11 @@ package com.aconno.acnsensa.domain.advertisement
 
 import com.aconno.acnsensa.domain.format.AdvertisementFormat
 import com.aconno.acnsensa.domain.format.ByteFormatRequired
-import com.aconno.acnsensa.domain.format.ScalarsAdvertisementFormat
-import com.aconno.acnsensa.domain.format.VectorsAdvertisementFormat
 import com.aconno.acnsensa.domain.model.Advertisement
 
-class AdvertisementMatcher {
-
-    private val supportedFormats: List<AdvertisementFormat> =
-        listOf(ScalarsAdvertisementFormat(), VectorsAdvertisementFormat())
+class AdvertisementMatcher(
+    private val supportedFormats: List<AdvertisementFormat>
+) {
 
     fun getCountOfMatchingFormats(advertisement: Advertisement): Int {
         val matchedFormats: List<AdvertisementFormat> = getMatchedFormats(advertisement)
@@ -45,7 +42,7 @@ class AdvertisementMatcher {
 
     private fun bytesMatchMask(bytes: List<Byte>, target: List<ByteFormatRequired>): Boolean {
         target.forEach {
-            if (bytes[it.position] != it.value){
+            if (bytes[it.position] != it.value) {
                 return false
             }
         }

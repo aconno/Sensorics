@@ -23,6 +23,7 @@ import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
+import com.aconno.acnsensa.domain.format.AdvertisementFormat
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
@@ -42,7 +43,10 @@ import io.reactivex.Flowable
 import javax.inject.Singleton
 
 @Module
-class AppModule(private val acnSensaApplication: AcnSensaApplication) {
+class AppModule(
+    private val acnSensaApplication: AcnSensaApplication,
+    private val supportedFormats: List<AdvertisementFormat>
+) {
 
     @Provides
     @Singleton
@@ -80,7 +84,7 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
     @Provides
     @Singleton
-    fun provideAdvertisementMatcher() = AdvertisementMatcher()
+    fun provideAdvertisementMatcher() = AdvertisementMatcher(supportedFormats)
 
     @Provides
     @Singleton

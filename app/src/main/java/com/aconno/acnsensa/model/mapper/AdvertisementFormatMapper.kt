@@ -10,7 +10,7 @@ import com.aconno.acnsensa.model.GenericFormatModel
 
 class AdvertisementFormatMapper {
 
-    fun toAdvertisementModel(genericFormatModel: GenericFormatModel): AdvertisementFormat {
+    fun toAdvertisementFormat(genericFormatModel: GenericFormatModel): AdvertisementFormat {
         return GenericFormat(
             genericFormatModel.name,
             genericFormatModel.icon,
@@ -24,7 +24,10 @@ class AdvertisementFormatMapper {
         return ByteFormatRequired(
             byteFormatRequiredModel.name,
             byteFormatRequiredModel.index,
-            byteFormatRequiredModel.value.toByte()
+            (Integer.parseInt(
+                byteFormatRequiredModel.value.replace("0x", ""),
+                16
+            ) and 0xff).toByte()
         )
     }
 
