@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -369,12 +368,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         }
 
         //After save or update finish activity
-        Handler()
-            .postDelayed(
-                {
-                    finish()
-                }, 1000
-            )
+        finish()
     }
 
     private fun millisToFormattedDateString(millis: Long): String {
