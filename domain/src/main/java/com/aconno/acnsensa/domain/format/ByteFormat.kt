@@ -1,11 +1,9 @@
 package com.aconno.acnsensa.domain.format
 
-/**
- * @author aconno
- */
 data class ByteFormat(
+    val name: String,
     val startIndexInclusive: Int,
     val endIndexExclusive: Int,
     val isReversed: Boolean,
-    val targetType: String
+    val dataType: String
 )
