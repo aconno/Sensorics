@@ -1,68 +1,62 @@
 package com.aconno.acnsensa.domain.format
 
-/**
- * @author aconno
- */
 class ScalarsAdvertisementFormat : AcnSensaBaseFormat() {
 
-    private val requiredFormat: List<Byte> = generateAcnSensaRequiredFormat(0x01)
+    private val requiredFormat: List<ByteFormatRequired> = generateAcnSensaRequiredFormat(0x01)
 
     override fun getFormat(): Map<String, ByteFormat> {
         val baseFormat: Map<String, ByteFormat> = super.getFormat()
 
         val temperature = Pair(
-            TEMPERATURE,
-            ByteFormat(
+            TEMPERATURE, ByteFormat(
+                name = TEMPERATURE,
                 startIndexInclusive = 10,
                 endIndexExclusive = 14,
                 isReversed = true,
-                targetType = SupportedTypes.FLOAT
+                dataType = SupportedTypes.FLOAT
             )
         )
         val humidity = Pair(
-            HUMIDITY,
-            ByteFormat(
+            HUMIDITY, ByteFormat(
+                name = HUMIDITY,
                 startIndexInclusive = 14,
                 endIndexExclusive = 18,
                 isReversed = true,
-                targetType = SupportedTypes.FLOAT
+                dataType = SupportedTypes.FLOAT
             )
         )
         val pressure = Pair(
-            PRESSURE,
-            ByteFormat(
+            PRESSURE, ByteFormat(
+                name = PRESSURE,
                 startIndexInclusive = 18,
                 endIndexExclusive = 22,
                 isReversed = true,
-                targetType = SupportedTypes.FLOAT
+                dataType = SupportedTypes.FLOAT
             )
         )
         val light = Pair(
-            LIGHT,
-            ByteFormat(
+            LIGHT, ByteFormat(
+                name = LIGHT,
                 startIndexInclusive = 22,
                 endIndexExclusive = 26,
                 isReversed = true,
-                targetType = SupportedTypes.FLOAT
+                dataType = SupportedTypes.FLOAT
             )
         )
-
         val batteryLevel = Pair(
-            BATTERY_LEVEL,
-            ByteFormat(
+            BATTERY_LEVEL, ByteFormat(
+                name = BATTERY_LEVEL,
                 startIndexInclusive = 26,
                 endIndexExclusive = 27,
                 isReversed = false,
-                targetType = SupportedTypes.BYTE
+                dataType = SupportedTypes.BYTE
             )
         )
 
-        return baseFormat + mapOf(temperature, humidity, pressure, light, batteryLevel)
+        return baseFormat + listOf(temperature, humidity, pressure, light, batteryLevel)
     }
 
-    override fun getRequiredFormat(): List<Byte> = requiredFormat
-
-    override fun getMaskBytePositions(): List<Int> = acnSensaMaskBytesPosition
+    override fun getRequiredFormat(): List<ByteFormatRequired> = requiredFormat
 
     companion object {
         const val TEMPERATURE = "Temperature"
