@@ -24,6 +24,8 @@ import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
 import com.aconno.acnsensa.domain.format.AdvertisementFormat
+import com.aconno.acnsensa.domain.format.Deserializer
+import com.aconno.acnsensa.domain.format.DeserializerImpl
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
@@ -40,6 +42,7 @@ import com.aconno.acnsensa.domain.scanning.Bluetooth
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
+import timber.log.Timber
 import javax.inject.Singleton
 
 @Module
@@ -97,13 +100,21 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideScanResultToSensorReadingsUseCase(advertisementMatcher: AdvertisementMatcher) =
-        ScanResultToSensorReadingsUseCase(advertisementMatcher)
+    fun provideDeserializer(): Deserializer = DeserializerImpl()
 
     @Provides
     @Singleton
-    fun provideSensorValuesUseCase(advertisementMatcher: AdvertisementMatcher) =
-        DeserializeScanResultUseCase(advertisementMatcher)
+    fun provideScanResultToSensorReadingsUseCase(
+        advertisementMatcher: AdvertisementMatcher,
+        deserializer: Deserializer
+    ) = ScanResultToSensorReadingsUseCase(advertisementMatcher, deserializer)
+
+    @Provides
+    @Singleton
+    fun provideSensorValuesUseCase(
+        advertisementMatcher: AdvertisementMatcher,
+        deserializer: Deserializer
+    ) = DeserializeScanResultUseCase(advertisementMatcher, deserializer)
 
     @Provides
     @Singleton
@@ -146,8 +157,14 @@ class AppModule(
         scanResultToSensorReadingsUseCase: ScanResultToSensorReadingsUseCase
     ): Flowable<List<SensorReading>> {
         return bluetooth.getScanResults()
-            .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
-            .concatMap { scanResultToSensorReadingsUseCase.execute(it).toFlowable() }
+            .concatMap {
+                Timber.d("Scan result: ${it.device.macAddress}")
+                filterAdvertisementsUseCase.execute(it).toFlowable()
+            }
+            .concatMap {
+                Timber.d("Scan result: ${it.device.macAddress} (filtered)")
+                scanResultToSensorReadingsUseCase.execute(it).toFlowable()
+            }
     }
 
     @Provides

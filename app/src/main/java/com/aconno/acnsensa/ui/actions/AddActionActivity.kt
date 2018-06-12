@@ -20,7 +20,6 @@ import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
-import com.aconno.acnsensa.model.toSensorType
 import com.aconno.acnsensa.model.toStringResource
 import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialog
 import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialogListener
@@ -242,6 +241,7 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
             SensorTypeSingle.GYROSCOPE_Y -> gyroscope_y
             SensorTypeSingle.GYROSCOPE_Z -> gyroscope_z
             SensorTypeSingle.BATTERY_LEVEL -> battery_level
+            SensorTypeSingle.OTHER -> temperature //TODO: Fix
         }
     }
 

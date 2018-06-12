@@ -203,47 +203,47 @@ class SensorListFragment : Fragment() {
             temperature?.let {
                 sensor_temperature.update(
                     temperatureLabel,
-                    "${String.format("%.2f", temperature)}°C"
+                    "${String.format("%.2f", temperature.toFloat())}°C"
                 )
             }
 
             light?.let {
                 sensor_light.update(
                     lightLabel,
-                    "${String.format("%.2f", light)}%"
+                    "${String.format("%.2f", light.toFloat())}%"
                 )
             }
 
             humidity?.let {
                 sensor_humidity.update(
                     humidityLabel,
-                    "${String.format("%.2f", humidity)}%"
+                    "${String.format("%.2f", humidity.toFloat())}%"
                 )
             }
 
             pressure?.let {
                 sensor_pressure.update(
                     pressureLabel,
-                    "${String.format("%.2f", pressure)}hPa"
+                    "${String.format("%.2f", pressure.toFloat())}hPa"
                 )
             }
 
             magnetometerX?.let {
                 sensor_magnetometer_x.update(
                     magnetoXLabel,
-                    "${String.format("%.2f", magnetometerX)}µT"
+                    "${String.format("%.2f", magnetometerX.toFloat())}µT"
                 )
             }
             magnetometerY?.let {
                 sensor_magnetometer_y.update(
                     magnetoYLabel,
-                    "${String.format("%.2f", magnetometerY)}µT"
+                    "${String.format("%.2f", magnetometerY.toFloat())}µT"
                 )
             }
             magnetometerZ?.let {
                 sensor_magnetometer_z.update(
                     magnetoZLabel,
-                    "${String.format("%.2f", magnetometerZ)}µT"
+                    "${String.format("%.2f", magnetometerZ.toFloat())}µT"
                 )
             }
 
@@ -251,40 +251,40 @@ class SensorListFragment : Fragment() {
                 ?.let {
                     sensor_accelerometer_x.update(
                         accelerometerXLabel,
-                        "${String.format("%.2f", accelerometerX)}mg"
+                        "${String.format("%.2f", accelerometerX.toFloat())}mg"
                     )
                 }
             accelerometerY
                 ?.let {
                     sensor_accelerometer_y.update(
                         accelerometerYLabel,
-                        "${String.format("%.2f", accelerometerY)}mg"
+                        "${String.format("%.2f", accelerometerY.toFloat())}mg"
                     )
                 }
             accelerometerZ
                 ?.let {
                     sensor_accelerometer_z.update(
                         accelerometerZLabel,
-                        "${String.format("%.2f", accelerometerZ)}mg"
+                        "${String.format("%.2f", accelerometerZ.toFloat())}mg"
                     )
                 }
 
             gyroscopeX?.let {
                 sensor_gyroscope_x.update(
                     gyroXLabel,
-                    "${String.format("%.2f", gyroscopeX)}dps"
+                    "${String.format("%.2f", gyroscopeX.toFloat())}dps"
                 )
             }
             gyroscopeY?.let {
                 sensor_gyroscope_y.update(
                     gyroYLabel,
-                    "${String.format("%.2f", gyroscopeY)}dps"
+                    "${String.format("%.2f", gyroscopeY.toFloat())}dps"
                 )
             }
             gyroscopeZ?.let {
                 sensor_gyroscope_z.update(
                     gyroZLabel,
-                    "${String.format("%.2f", gyroscopeZ)}dps"
+                    "${String.format("%.2f", gyroscopeZ.toFloat())}dps"
                 )
             }
 

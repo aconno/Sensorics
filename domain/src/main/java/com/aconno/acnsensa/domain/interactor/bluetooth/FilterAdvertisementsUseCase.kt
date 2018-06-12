@@ -6,9 +6,6 @@ import com.aconno.acnsensa.domain.model.Advertisement
 import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.Maybe
 
-/**
- * @author aconno
- */
 class FilterAdvertisementsUseCase(
     private val advertisementMatcher: AdvertisementMatcher
 ) : MaybeUseCaseWithParameter<ScanResult, ScanResult> {

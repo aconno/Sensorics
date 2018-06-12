@@ -3,62 +3,6 @@
   "icon": "",
   "format": [
     {
-      "name": "Flags Length",
-      "start_index_inclusive": 0,
-      "end_index_inclusive": 1,
-      "reversed": false,
-      "data_type": "BYTE"
-    },
-    {
-      "name": "Flags Type",
-      "start_index_inclusive": 1,
-      "end_index_inclusive": 2,
-      "reversed": false,
-      "data_type": "BYTE"
-    },
-    {
-      "name": "Flags",
-      "start_index_inclusive": 2,
-      "end_index_inclusive": 3,
-      "reversed": false,
-      "data_type": "BYTE"
-    },
-    {
-      "name": "Content Length",
-      "start_index_inclusive": 3,
-      "end_index_inclusive": 4,
-      "reversed": false,
-      "data_type": "BYTE"
-    },
-    {
-      "name": "Content Type",
-      "start_index_inclusive": 4,
-      "end_index_inclusive": 5,
-      "reversed": false,
-      "data_type": "BYTE"
-    },
-    {
-      "name": "Vendor ID",
-      "start_index_inclusive": 5,
-      "end_index_inclusive": 7,
-      "reversed": false,
-      "data_type": "SINT16"
-    },
-    {
-      "name": "App ID",
-      "start_index_inclusive": 7,
-      "end_index_inclusive": 9,
-      "reversed": false,
-      "data_type": "SINT16"
-    },
-    {
-      "name": "Advertisement Type",
-      "start_index_inclusive": 9,
-      "end_index_inclusive": 10,
-      "reversed": false,
-      "data_type": "BYTE"
-    },
-    {
       "name": "Gyroscope X",
       "start_index_inclusive": 10,
       "end_index_inclusive": 12,

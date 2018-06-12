@@ -14,7 +14,8 @@ enum class SensorTypeSingle(val id: Int) {
     GYROSCOPE_X(11),
     GYROSCOPE_Y(12),
     GYROSCOPE_Z(13),
-    BATTERY_LEVEL(14);
+    BATTERY_LEVEL(14),
+    OTHER(15);
 
     companion object {
 
@@ -34,6 +35,7 @@ enum class SensorTypeSingle(val id: Int) {
                 12 -> GYROSCOPE_Y
                 13 -> GYROSCOPE_Z
                 14 -> BATTERY_LEVEL
+                15 -> OTHER
                 else -> throw IllegalArgumentException("Invalid sensor type id: $id")
             }
         }

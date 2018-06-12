@@ -67,6 +67,7 @@ class InMemoryRepositoryImpl : InMemoryRepository {
             SensorTypeSingle.GYROSCOPE_Y -> gyroscopeYReadings
             SensorTypeSingle.GYROSCOPE_Z -> gyroscopeZReadings
             SensorTypeSingle.BATTERY_LEVEL -> batteryLevelReadings
+            SensorTypeSingle.OTHER -> emptyList()
         }
     }
 

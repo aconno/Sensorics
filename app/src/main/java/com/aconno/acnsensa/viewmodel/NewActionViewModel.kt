@@ -10,7 +10,6 @@ import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
 import com.aconno.acnsensa.domain.interactor.ifttt.AddActionUseCase
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
-import com.aconno.acnsensa.model.toInt
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber

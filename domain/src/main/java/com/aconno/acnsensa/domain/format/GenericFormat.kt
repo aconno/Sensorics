@@ -11,13 +11,7 @@ data class GenericFormat(
         val map = hashMapOf<String, ByteFormat>()
 
         format.forEach {
-            map[it.name] = ByteFormat(
-                it.name,
-                it.startIndexInclusive,
-                it.endIndexExclusive,
-                it.isReversed,
-                it.dataType
-            )
+            map[it.name] = it
         }
 
         return map

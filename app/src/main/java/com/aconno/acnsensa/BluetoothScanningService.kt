@@ -20,6 +20,7 @@ import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
+import com.aconno.acnsensa.domain.ifttt.outcome.VibrationOutcomeExecutor.Companion.running
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.*

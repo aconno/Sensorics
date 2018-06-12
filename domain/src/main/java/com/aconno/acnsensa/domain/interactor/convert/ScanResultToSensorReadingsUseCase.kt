@@ -1,10 +1,7 @@
 package com.aconno.acnsensa.domain.interactor.convert
 
-import com.aconno.acnsensa.domain.advertisement.AdvertisementDeserializer
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
-import com.aconno.acnsensa.domain.advertisement.ScalarsAdvertisementDeserializer
-import com.aconno.acnsensa.domain.advertisement.VectorsAdvertisementDeserializer
-import com.aconno.acnsensa.domain.format.AdvertisementFormat
+import com.aconno.acnsensa.domain.format.Deserializer
 import com.aconno.acnsensa.domain.format.ScalarsAdvertisementFormat
 import com.aconno.acnsensa.domain.format.VectorsAdvertisementFormat
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
@@ -14,7 +11,8 @@ import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import io.reactivex.Single
 
 class ScanResultToSensorReadingsUseCase(
-    private val advertisementMatcher: AdvertisementMatcher
+    private val advertisementMatcher: AdvertisementMatcher,
+    private val deserializer: Deserializer
 ) : SingleUseCaseWithParameter<List<SensorReading>, ScanResult> {
 
     override fun execute(scanResult: ScanResult): Single<List<SensorReading>> {
@@ -22,27 +20,21 @@ class ScanResultToSensorReadingsUseCase(
     }
 
     private fun toSensorReadings(scanResult: ScanResult): List<SensorReading> {
+        val sensorReadings = mutableListOf<SensorReading>()
+        val rawData = scanResult.advertisement.rawData
         val advertisementFormat =
             advertisementMatcher.matchAdvertisementToFormat(scanResult.advertisement)
-        val advertisementDeserializer = getAdvertisementDeserializer(advertisementFormat)
-        val values = advertisementDeserializer.deserialize(scanResult.advertisement)
-        return values.map {
-            SensorReading(
-                System.currentTimeMillis(), //TODO: Read this value from scan reading
-                scanResult.device,
-                it.value,
-                getSensorType(it.key)
+        advertisementFormat.getFormat().forEach { name, byteFormat ->
+            sensorReadings.add(
+                SensorReading(
+                    System.currentTimeMillis(),
+                    scanResult.device,
+                    deserializer.deserializeNumber(rawData, byteFormat),
+                    getSensorType(name)
+                )
             )
         }
-    }
-
-    private fun getAdvertisementDeserializer(advertisementFormat: AdvertisementFormat):
-            AdvertisementDeserializer {
-        return when (advertisementFormat) {
-            is ScalarsAdvertisementFormat -> ScalarsAdvertisementDeserializer(advertisementFormat)
-            is VectorsAdvertisementFormat -> VectorsAdvertisementDeserializer(advertisementFormat)
-            else -> throw IllegalArgumentException("Invalid advertisement format")
-        }
+        return sensorReadings
     }
 
     private fun getSensorType(sensorType: String): SensorTypeSingle {
@@ -61,7 +53,7 @@ class ScanResultToSensorReadingsUseCase(
             VectorsAdvertisementFormat.MAGNETOMETER_X -> SensorTypeSingle.MAGNETOMETER_X
             VectorsAdvertisementFormat.MAGNETOMETER_Y -> SensorTypeSingle.MAGNETOMETER_Y
             VectorsAdvertisementFormat.MAGNETOMETER_Z -> SensorTypeSingle.MAGNETOMETER_Z
-            else -> throw IllegalArgumentException("Sensor type not valid: $sensorType")
+            else -> SensorTypeSingle.OTHER
         }
     }
 }
