@@ -14,11 +14,12 @@ class FilterAdvertisementsUseCase(
         val advertisement: Advertisement = parameter.advertisement
         val countFormats: Int = advertisementMatcher.getCountOfMatchingFormats(advertisement)
         return if (countFormats == 1) {
+            val advertisementFormat = advertisementMatcher.matchAdvertisementToFormat(advertisement)
             val scanResult = ScanResult(
                 Device(
-                    parameter.device.name,
+                    advertisementFormat.getName(),
                     parameter.device.macAddress,
-                    advertisementMatcher.matchAdvertisementToFormat(advertisement).getIcon()
+                    advertisementFormat.getIcon()
                 ),
                 advertisement
             )
