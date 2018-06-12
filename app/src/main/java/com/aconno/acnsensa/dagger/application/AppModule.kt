@@ -22,8 +22,8 @@ import com.aconno.acnsensa.device.notification.NotificationDisplayImpl
 import com.aconno.acnsensa.device.notification.NotificationFactory
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
-import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
 import com.aconno.acnsensa.domain.format.AdvertisementFormat
+import com.aconno.acnsensa.domain.format.FormatMatcher
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
@@ -87,12 +87,12 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideAdvertisementMatcher() = AdvertisementMatcher(supportedFormats)
+    fun provideAdvertisementMatcher() = FormatMatcher(supportedFormats)
 
     @Provides
     @Singleton
-    fun provideFilterAdvertisementUseCase(advertisementMatcher: AdvertisementMatcher) =
-        FilterAdvertisementsUseCase(advertisementMatcher)
+    fun provideFilterAdvertisementUseCase(formatMatcher: FormatMatcher) =
+        FilterAdvertisementsUseCase(formatMatcher)
 
     @Provides
     @Singleton
@@ -105,16 +105,16 @@ class AppModule(
     @Provides
     @Singleton
     fun provideScanResultToSensorReadingsUseCase(
-        advertisementMatcher: AdvertisementMatcher,
+        formatMatcher: FormatMatcher,
         deserializer: Deserializer
-    ) = ScanResultToSensorReadingsUseCase(advertisementMatcher, deserializer)
+    ) = ScanResultToSensorReadingsUseCase(formatMatcher, deserializer)
 
     @Provides
     @Singleton
     fun provideSensorValuesUseCase(
-        advertisementMatcher: AdvertisementMatcher,
+        formatMatcher: FormatMatcher,
         deserializer: Deserializer
-    ) = DeserializeScanResultUseCase(advertisementMatcher, deserializer)
+    ) = DeserializeScanResultUseCase(formatMatcher, deserializer)
 
     @Provides
     @Singleton

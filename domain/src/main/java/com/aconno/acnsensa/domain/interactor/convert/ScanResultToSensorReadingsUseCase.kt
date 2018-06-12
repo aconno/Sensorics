@@ -1,16 +1,16 @@
 package com.aconno.acnsensa.domain.interactor.convert
 
-import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
-import com.aconno.acnsensa.domain.serialization.Deserializer
+import com.aconno.acnsensa.domain.format.FormatMatcher
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
+import com.aconno.acnsensa.domain.serialization.Deserializer
 import io.reactivex.Single
 
 class ScanResultToSensorReadingsUseCase(
-    private val advertisementMatcher: AdvertisementMatcher,
+    private val formatMatcher: FormatMatcher,
     private val deserializer: Deserializer
 ) : SingleUseCaseWithParameter<List<SensorReading>, ScanResult> {
 
@@ -21,8 +21,8 @@ class ScanResultToSensorReadingsUseCase(
     private fun toSensorReadings(scanResult: ScanResult): List<SensorReading> {
         val sensorReadings = mutableListOf<SensorReading>()
         val rawData = scanResult.advertisement.rawData
-        val advertisementFormat =
-            advertisementMatcher.matchAdvertisementToFormat(scanResult.advertisement)
+        val advertisementFormat = formatMatcher.findFormat(scanResult.advertisement.rawData)
+                ?: throw IllegalArgumentException("No format for scan result: $scanResult")
         val device = Device(
             scanResult.device.name,
             scanResult.device.macAddress,
