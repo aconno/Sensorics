@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.domain.interactor.bluetooth
 
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
-import com.aconno.acnsensa.domain.format.Deserializer
+import com.aconno.acnsensa.domain.serialization.Deserializer
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.Single

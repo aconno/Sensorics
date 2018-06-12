@@ -24,8 +24,6 @@ import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
 import com.aconno.acnsensa.domain.format.AdvertisementFormat
-import com.aconno.acnsensa.domain.format.Deserializer
-import com.aconno.acnsensa.domain.format.DeserializerImpl
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
@@ -39,6 +37,8 @@ import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
+import com.aconno.acnsensa.domain.serialization.Deserializer
+import com.aconno.acnsensa.domain.serialization.DeserializerImpl
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable

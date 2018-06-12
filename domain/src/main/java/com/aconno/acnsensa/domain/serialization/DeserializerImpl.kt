@@ -1,5 +1,7 @@
-package com.aconno.acnsensa.domain.format
+package com.aconno.acnsensa.domain.serialization
 
+import com.aconno.acnsensa.domain.format.ByteFormat
+import com.aconno.acnsensa.domain.format.SupportedTypes
 import java.nio.ByteBuffer
 
 class DeserializerImpl : Deserializer {
