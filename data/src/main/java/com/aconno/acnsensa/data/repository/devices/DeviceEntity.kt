@@ -6,5 +6,6 @@ import android.arch.persistence.room.PrimaryKey
 @Entity(tableName = "devices")
 data class DeviceEntity(
     var name: String,
-    @PrimaryKey var macAddress: String
+    @PrimaryKey var macAddress: String,
+    var icon: String
 )

@@ -3,7 +3,7 @@ package com.aconno.acnsensa.domain.format
 /**
  * @author aconno
  */
-class VectorsAdvertisementFormat : AcnSensaBaseFormat() {
+abstract class VectorsAdvertisementFormat : AcnSensaBaseFormat() {
 
     private val requiredFormat: List<ByteFormatRequired> = generateAcnSensaRequiredFormat(0x00)
 

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.model.Device
 import kotlinx.android.synthetic.main.item_device.view.*
+import timber.log.Timber
 
 class DeviceAdapter(
     private val devices: MutableList<Device>,
@@ -45,6 +46,13 @@ class DeviceAdapter(
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(device: Device) {
+            Timber.d("Bind device to view, name: ${device.name}, mac: ${device.macAddress}, icon: ${device.icon}")
+            val iconId = view.context.resources.getIdentifier(
+                device.icon,
+                "drawable",
+                view.context.packageName
+            )
+            view.image_icon.setImageResource(iconId)
             view.name.text = device.name
             view.mac_address.text = device.macAddress
             view.setOnClickListener { itemClickListener.onItemClick(device) }

@@ -1,6 +1,6 @@
 {
   "name": "AcnSensa Scalar Values",
-  "icon": "",
+  "icon": "ic_device",
   "format": [
     {
       "name": "Gyroscope X",

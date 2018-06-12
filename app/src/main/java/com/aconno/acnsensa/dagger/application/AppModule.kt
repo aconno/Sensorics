@@ -145,7 +145,9 @@ class AppModule(
     ): Flowable<Device> {
         val observable: Flowable<ScanResult> = bluetooth.getScanResults()
         return observable
-            .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
+            .concatMap {
+                filterAdvertisementsUseCase.execute(it).toFlowable()
+            }
             .map { it.device }
     }
 

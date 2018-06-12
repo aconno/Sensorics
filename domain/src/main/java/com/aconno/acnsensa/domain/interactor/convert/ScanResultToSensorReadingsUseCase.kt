@@ -2,9 +2,8 @@ package com.aconno.acnsensa.domain.interactor.convert
 
 import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
 import com.aconno.acnsensa.domain.format.Deserializer
-import com.aconno.acnsensa.domain.format.ScalarsAdvertisementFormat
-import com.aconno.acnsensa.domain.format.VectorsAdvertisementFormat
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
@@ -24,11 +23,16 @@ class ScanResultToSensorReadingsUseCase(
         val rawData = scanResult.advertisement.rawData
         val advertisementFormat =
             advertisementMatcher.matchAdvertisementToFormat(scanResult.advertisement)
+        val device = Device(
+            scanResult.device.name,
+            scanResult.device.macAddress,
+            advertisementFormat.getIcon()
+        )
         advertisementFormat.getFormat().forEach { name, byteFormat ->
             sensorReadings.add(
                 SensorReading(
                     System.currentTimeMillis(),
-                    scanResult.device,
+                    device,
                     deserializer.deserializeNumber(rawData, byteFormat),
                     getSensorType(name)
                 )
@@ -39,20 +43,20 @@ class ScanResultToSensorReadingsUseCase(
 
     private fun getSensorType(sensorType: String): SensorTypeSingle {
         return when (sensorType) {
-            ScalarsAdvertisementFormat.TEMPERATURE -> SensorTypeSingle.TEMPERATURE
-            ScalarsAdvertisementFormat.LIGHT -> SensorTypeSingle.LIGHT
-            ScalarsAdvertisementFormat.HUMIDITY -> SensorTypeSingle.HUMIDITY
-            ScalarsAdvertisementFormat.PRESSURE -> SensorTypeSingle.PRESSURE
-            ScalarsAdvertisementFormat.BATTERY_LEVEL -> SensorTypeSingle.BATTERY_LEVEL
-            VectorsAdvertisementFormat.ACCELEROMETER_X -> SensorTypeSingle.ACCELEROMETER_X
-            VectorsAdvertisementFormat.ACCELEROMETER_Y -> SensorTypeSingle.ACCELEROMETER_Y
-            VectorsAdvertisementFormat.ACCELEROMETER_Z -> SensorTypeSingle.ACCELEROMETER_Z
-            VectorsAdvertisementFormat.GYROSCOPE_X -> SensorTypeSingle.GYROSCOPE_X
-            VectorsAdvertisementFormat.GYROSCOPE_Y -> SensorTypeSingle.GYROSCOPE_Y
-            VectorsAdvertisementFormat.GYROSCOPE_Z -> SensorTypeSingle.GYROSCOPE_Z
-            VectorsAdvertisementFormat.MAGNETOMETER_X -> SensorTypeSingle.MAGNETOMETER_X
-            VectorsAdvertisementFormat.MAGNETOMETER_Y -> SensorTypeSingle.MAGNETOMETER_Y
-            VectorsAdvertisementFormat.MAGNETOMETER_Z -> SensorTypeSingle.MAGNETOMETER_Z
+            "Temperature" -> SensorTypeSingle.TEMPERATURE
+            "Light" -> SensorTypeSingle.LIGHT
+            "Humidity" -> SensorTypeSingle.HUMIDITY
+            "Pressure" -> SensorTypeSingle.PRESSURE
+            "Battery Level" -> SensorTypeSingle.BATTERY_LEVEL
+            "Accelerometer X" -> SensorTypeSingle.ACCELEROMETER_X
+            "Accelerometer Y" -> SensorTypeSingle.ACCELEROMETER_Y
+            "Accelerometer Z" -> SensorTypeSingle.ACCELEROMETER_Z
+            "Gyroscope X" -> SensorTypeSingle.GYROSCOPE_X
+            "Gyroscope Y" -> SensorTypeSingle.GYROSCOPE_Y
+            "Gyroscope Z" -> SensorTypeSingle.GYROSCOPE_Z
+            "Magnetometer X" -> SensorTypeSingle.MAGNETOMETER_X
+            "Magnetometer Y" -> SensorTypeSingle.MAGNETOMETER_Y
+            "Magnetometer Z" -> SensorTypeSingle.MAGNETOMETER_Z
             else -> SensorTypeSingle.OTHER
         }
     }

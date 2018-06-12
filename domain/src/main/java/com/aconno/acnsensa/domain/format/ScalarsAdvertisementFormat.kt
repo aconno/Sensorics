@@ -1,6 +1,6 @@
 package com.aconno.acnsensa.domain.format
 
-class ScalarsAdvertisementFormat : AcnSensaBaseFormat() {
+abstract class ScalarsAdvertisementFormat : AcnSensaBaseFormat() {
 
     private val requiredFormat: List<ByteFormatRequired> = generateAcnSensaRequiredFormat(0x01)
 

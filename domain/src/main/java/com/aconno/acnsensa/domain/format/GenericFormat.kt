@@ -7,6 +7,14 @@ data class GenericFormat(
     private val requiredFormat: List<ByteFormatRequired>
 ) : AdvertisementFormat {
 
+    override fun getName(): String {
+        return formatName
+    }
+
+    override fun getIcon(): String {
+        return icon
+    }
+
     override fun getFormat(): Map<String, ByteFormat> {
         val map = hashMapOf<String, ByteFormat>()
 
