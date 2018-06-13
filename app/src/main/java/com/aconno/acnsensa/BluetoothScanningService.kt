@@ -12,11 +12,9 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceComponent
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
-import com.aconno.acnsensa.data.publisher.EmptyPublisher
 import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
 import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
-import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
@@ -26,12 +24,11 @@ import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.repository.*
-import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.scanning.Bluetooth
-import io.reactivex.Flowable
-import io.reactivex.Single
+import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -103,7 +100,7 @@ class BluetoothScanningService : Service() {
 
     private var closeConnectionUseCase: CloseConnectionUseCase? = null
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
-    private var publishers: List<Publisher>? = null
+    private var publishers: MutableList<Publisher>? = null
 
     private val bluetoothScanningServiceComponent: BluetoothScanningServiceComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -211,59 +208,66 @@ class BluetoothScanningService : Service() {
     }
 
     private fun initPublishers() {
-        Single.merge(
-            getAllEnabledGooglePublishUseCase.execute(),
-            getAllEnabledRESTPublishUseCase.execute()
+        Observable.merge(
+            getGooglePublisherObservable(),
+            getRestPublisherObservable()
         )
-            .subscribeOn(Schedulers.io())
-            .flatMapIterable { it }
-            .flatMap<Pair<BasePublish, List<Device>>>({
-                when (it) {
-                    is GooglePublish -> Flowable.just(it).zipWith(
-                        getDevicesThatConnectedWithGooglePublishUseCase.execute(it.id)
-                            .toFlowable()
-                    )
-                    is RESTPublish -> Flowable.just(it).zipWith(
-                        getDevicesThatConnectedWithRESTPublishUseCase.execute(it.id)
-                            .toFlowable()
-                    )
-                    else -> throw IllegalArgumentException("Illegal argument passed")
-                }
-            })
-            .map {
-                if (it.second.isNotEmpty()) {
-                    when (it.first) {
-                        is GooglePublish -> GoogleCloudPublisher(
-                            this,
-                            it.first as GooglePublish,
-                            it.second
-                        )
-                        is RESTPublish -> RESTPublisher(
-                            it.first as RESTPublish,
-                            it.second, listOf()
-                        )
-                        else -> {
-                            EmptyPublisher()
-                        }
-                    }
-                } else {
-                    EmptyPublisher()
-                }
-            }//This line is used to eliminate unregistered types or nulls.
-            .filter { it !is EmptyPublisher }
             .toList()
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { it ->
-                publishers = if (it.size < 1) {
-                    null
-                } else {
-                    it
-                }
+            .subscribe(
+                Consumer {
+                    publishers = if (it.size < 1) {
+                        null
+                    } else {
+                        it
+                    }
 
-                if (publishers != null) {
-                    publishReadingsUseCase = PublishReadingsUseCase(publishers!!)
-                    closeConnectionUseCase = CloseConnectionUseCase(publishers!!)
+                    if (publishers != null) {
+                        publishReadingsUseCase = PublishReadingsUseCase(publishers!!)
+                        closeConnectionUseCase = CloseConnectionUseCase(publishers!!)
+                    }
                 }
+            )
+
+    }
+
+    private fun getGooglePublisherObservable(): Observable<Publisher> {
+        return getAllEnabledGooglePublishUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .toObservable()
+            .flatMapIterable { it }
+            .map { it as GooglePublish }
+            .flatMap {
+                Observable.just(it).zipWith(
+                    getDevicesThatConnectedWithGooglePublishUseCase.execute(it.id)
+                        .toObservable()
+                )
+            }.map {
+                GoogleCloudPublisher(
+                    this,
+                    it.first,
+                    it.second
+                ) as Publisher
+            }
+    }
+
+    private fun getRestPublisherObservable(): Observable<Publisher> {
+        return getAllEnabledRESTPublishUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .toObservable()
+            .flatMapIterable { it }
+            .map { it as RESTPublish }
+            .flatMap {
+                Observable.just(it).zipWith(
+                    getDevicesThatConnectedWithRESTPublishUseCase.execute(it.id)
+                        .toObservable().zipWith(getRESTHeadersByIdUseCase.execute(it.id).toObservable())
+                )
+            }.map {
+                RESTPublisher(
+                    it.first,
+                    it.second.first,
+                    it.second.second
+                ) as Publisher
             }
     }
 
