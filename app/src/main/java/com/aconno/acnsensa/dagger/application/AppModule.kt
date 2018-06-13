@@ -28,8 +28,11 @@ import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
+import com.aconno.acnsensa.domain.interactor.consolidation.GenerateDeviceUseCase
+import com.aconno.acnsensa.domain.interactor.consolidation.GenerateReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.convert.ScanResultToSensorReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
+import com.aconno.acnsensa.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
@@ -87,20 +90,12 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideAdvertisementMatcher() = FormatMatcher(supportedFormats)
-
-    @Provides
-    @Singleton
     fun provideFilterAdvertisementUseCase(formatMatcher: FormatMatcher) =
         FilterAdvertisementsUseCase(formatMatcher)
 
     @Provides
     @Singleton
     fun provideFilterByMacAddressUseCase() = FilterByMacAddressUseCase()
-
-    @Provides
-    @Singleton
-    fun provideDeserializer(): Deserializer = DeserializerImpl()
 
     @Provides
     @Singleton
@@ -284,4 +279,31 @@ class AppModule(
             publishDeviceJoinJoinMapper
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideFormatMatcher() = FormatMatcher(supportedFormats)
+
+    @Provides
+    @Singleton
+    fun provideDeserializer(): Deserializer = DeserializerImpl()
+
+    @Provides
+    @Singleton
+    fun provideFilterByFormatUseCase(
+        formatMatcher: FormatMatcher
+    ) = FilterByFormatUseCase(formatMatcher)
+
+    @Provides
+    @Singleton
+    fun provideGenerateDeviceUseCase(
+        formatMatcher: FormatMatcher
+    ) = GenerateDeviceUseCase(formatMatcher)
+
+    @Provides
+    @Singleton
+    fun provideGenerateReadingsUseCase(
+        formatMatcher: FormatMatcher,
+        deserializer: Deserializer
+    ) = GenerateReadingsUseCase(formatMatcher, deserializer)
 }
