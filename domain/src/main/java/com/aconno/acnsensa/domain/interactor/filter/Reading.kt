@@ -7,4 +7,9 @@ data class Reading(
     val device: Device,
     val value: Number,
     val type: ReadingType
-)
+) {
+
+    fun toCsvString(): String {
+        return "$timestamp, ${device.macAddress}, ${type.toString()}, $value"
+    }
+}

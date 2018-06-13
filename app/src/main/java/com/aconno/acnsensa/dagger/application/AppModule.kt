@@ -110,26 +110,6 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideSensorValuesFlowable(
-        bluetooth: Bluetooth,
-        filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
-        sensorValuesUseCase: DeserializeScanResultUseCase
-    ): Flowable<Map<String, Number>> {
-        val observable: Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult> =
-            bluetooth.getScanResults()
-        return observable
-            .concatMap {
-                val scanResult = ScanResult(
-                    Device("Unknown", it.macAddress),
-                    Advertisement(it.rawData)
-                )
-                filterAdvertisementsUseCase.execute(scanResult).toFlowable()
-            }
-            .concatMap { sensorValuesUseCase.execute(it).toFlowable() }
-    }
-
-    @Provides
-    @Singleton
     fun provideBeaconsFlowable(
         bluetooth: Bluetooth,
         filterAdvertisementsUseCase: FilterAdvertisementsUseCase

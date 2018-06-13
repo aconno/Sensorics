@@ -33,8 +33,6 @@ interface AppComponent {
 
     fun inMemoryRepository(): InMemoryRepository
 
-    fun sensorValues(): Flowable<Map<String, Number>>
-
     fun sensorReadings(): Flowable<List<SensorReading>>
 
     fun scannedDevices(): Flowable<Device>
