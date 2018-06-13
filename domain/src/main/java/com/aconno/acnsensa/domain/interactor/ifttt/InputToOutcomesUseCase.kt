@@ -6,7 +6,6 @@ import com.aconno.acnsensa.domain.ifttt.Input
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
 import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
-import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import io.reactivex.Observable
 import io.reactivex.Single
 

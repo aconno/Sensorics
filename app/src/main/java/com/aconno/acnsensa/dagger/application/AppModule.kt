@@ -7,7 +7,8 @@ import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.IntentProviderImpl
 import com.aconno.acnsensa.data.mapper.*
-import com.aconno.acnsensa.data.repository.*
+import com.aconno.acnsensa.data.repository.AcnSensaDatabase
+import com.aconno.acnsensa.data.repository.InMemoryRepositoryImpl
 import com.aconno.acnsensa.data.repository.action.ActionsRepositoryImpl
 import com.aconno.acnsensa.data.repository.devices.DeviceMapper
 import com.aconno.acnsensa.data.repository.devices.DeviceRepositoryImpl
@@ -33,16 +34,12 @@ import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseC
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.consolidation.GenerateDeviceUseCase
 import com.aconno.acnsensa.domain.interactor.consolidation.GenerateReadingsUseCase
-import com.aconno.acnsensa.domain.interactor.convert.ScanResultToSensorReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
-import com.aconno.acnsensa.domain.model.Advertisement
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.ScanResult
-import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
@@ -100,37 +97,10 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideScanResultToSensorReadingsUseCase(
-        formatMatcher: FormatMatcher,
-        deserializer: Deserializer
-    ) = ScanResultToSensorReadingsUseCase(formatMatcher, deserializer)
-
-    @Provides
-    @Singleton
     fun provideSensorValuesUseCase(
         formatMatcher: FormatMatcher,
         deserializer: Deserializer
     ) = DeserializeScanResultUseCase(formatMatcher, deserializer)
-
-    @Provides
-    @Singleton
-    fun provideSensorReadingsFlowable(
-        bluetooth: Bluetooth,
-        filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
-        scanResultToSensorReadingsUseCase: ScanResultToSensorReadingsUseCase
-    ): Flowable<List<SensorReading>> {
-        return bluetooth.getScanResults()
-            .concatMap {
-                val scanResult = ScanResult(
-                    Device("Unknown", it.macAddress),
-                    Advertisement(it.rawData)
-                )
-                filterAdvertisementsUseCase.execute(scanResult).toFlowable()
-            }
-            .concatMap {
-                scanResultToSensorReadingsUseCase.execute(it).toFlowable()
-            }
-    }
 
     @Provides
     @Singleton
