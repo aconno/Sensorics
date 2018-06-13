@@ -1,7 +1,8 @@
-package com.aconno.acnsensa.data.repository
+package com.aconno.acnsensa.data.repository.pdjoin
 
 import android.arch.persistence.room.ForeignKey
 import com.aconno.acnsensa.data.repository.devices.DeviceEntity
+import com.aconno.acnsensa.data.repository.rpublish.RESTPublishEntity
 
 @android.arch.persistence.room.Entity(
     tableName = "rest_publish_device_join",

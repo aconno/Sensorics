@@ -16,10 +16,7 @@ import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.ifttt.outcome.*
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.*
-import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
-import com.aconno.acnsensa.domain.interactor.repository.SaveSensorReadingsUseCase
-import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Module
 import dagger.Provides
@@ -138,5 +135,11 @@ class BluetoothScanningServiceModule(
     @BluetoothScanningServiceScope
     fun provideGetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithRESTPublishUseCase {
         return GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideGetRESTHeadersByIdUseCase(restPublishRepository: RESTPublishRepository): GetRESTHeadersByIdUseCase {
+        return GetRESTHeadersByIdUseCase(restPublishRepository)
     }
 }

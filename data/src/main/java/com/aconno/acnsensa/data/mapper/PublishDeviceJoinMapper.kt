@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.data.mapper
 
-import com.aconno.acnsensa.data.repository.GooglePublishDeviceJoinEntity
-import com.aconno.acnsensa.data.repository.RestPublishDeviceJoinEntity
+import com.aconno.acnsensa.data.repository.pdjoin.GooglePublishDeviceJoinEntity
+import com.aconno.acnsensa.data.repository.pdjoin.RestPublishDeviceJoinEntity
 import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublishDeviceJoin
 import com.aconno.acnsensa.domain.ifttt.GeneralRestPublishDeviceJoin
 import com.aconno.acnsensa.domain.ifttt.GooglePublishDeviceJoin

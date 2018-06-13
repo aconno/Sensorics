@@ -48,7 +48,6 @@ class PublishListActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id: Int? = item?.itemId
         when (id) {
-        //TODO Add startActivityForResult
             R.id.action_publish_add -> AddPublishActivity.start(
                 this
             )

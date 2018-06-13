@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.data.repository
+package com.aconno.acnsensa.data.repository.pdjoin
 
 import android.arch.persistence.room.*
 import com.aconno.acnsensa.data.repository.devices.DeviceEntity

@@ -36,6 +36,12 @@
             android:label="@string/title_publish_list"
             android:theme="@style/AppTheme" />
         <activity android:name=".ui.settings.AddPublishActivity" />
+        <activity
+            android:name="com.aconno.acnsensa.ui.settings.rheader.RESTHeadersActivity"
+            android:label="@string/title_activity_rest_header"
+            android:parentActivityName=".ui.settings.AddPublishActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
+

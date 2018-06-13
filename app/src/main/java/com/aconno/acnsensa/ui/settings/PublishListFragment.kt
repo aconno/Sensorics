@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.adapter.LongItemClickListener
 import com.aconno.acnsensa.dagger.publish.DaggerPublishListComponent
 import com.aconno.acnsensa.dagger.publish.PublishListComponent
 import com.aconno.acnsensa.dagger.publish.PublishListModule
@@ -30,7 +31,8 @@ import javax.inject.Inject
  * Activities containing this fragment MUST implement the
  * [PublishListFragment.OnListFragmentInteractionListener] interface.
  */
-class PublishListFragment : BaseFragment(), PublishOnLongClickListener {
+class PublishListFragment : BaseFragment(),
+    LongItemClickListener<BasePublishModel> {
 
     @Inject
     lateinit var publishListViewModel: PublishListViewModel

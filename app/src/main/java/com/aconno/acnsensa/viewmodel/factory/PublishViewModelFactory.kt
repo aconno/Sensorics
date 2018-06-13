@@ -6,6 +6,7 @@ import com.aconno.acnsensa.domain.interactor.ifttt.AddRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.model.mapper.DeviceRelationModelMapper
 import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 
@@ -19,7 +20,11 @@ class PublishViewModelFactory(
     private val devicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
     private val devicesThatConnectedWithRESTPublishUseCase: GetDevicesThatConnectedWithRESTPublishUseCase,
     private val savedDevicesUseCase: GetSavedDevicesMaybeUseCase,
-    private val deviceRelationModelMapper: DeviceRelationModelMapper
+    private val deviceRelationModelMapper: DeviceRelationModelMapper,
+    private val saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
+    private val deleteRESTHeaderUseCase: DeleteRESTHeaderUseCase,
+    private val getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
+    private val restHeaderModelMapper: RESTHeaderModelMapper
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -33,7 +38,11 @@ class PublishViewModelFactory(
             devicesThatConnectedWithGooglePublishUseCase,
             devicesThatConnectedWithRESTPublishUseCase,
             savedDevicesUseCase,
-            deviceRelationModelMapper
+            deviceRelationModelMapper,
+            saveRESTHeaderUseCase,
+            deleteRESTHeaderUseCase,
+            getRESTHeadersByIdUseCase,
+            restHeaderModelMapper
         )
         return getViewModel(viewModel, modelClass)
     }
