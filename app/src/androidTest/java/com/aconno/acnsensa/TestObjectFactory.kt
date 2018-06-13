@@ -10,7 +10,14 @@ import com.aconno.acnsensa.data.repository.rpublish.RESTPublishRepositoryImpl
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import com.aconno.acnsensa.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository
-import com.aconno.acnsensa.domain.interactor.ifttt.*
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.AddGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.GetAllEnabledGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.GetAllGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllEnabledRESTPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
@@ -100,34 +107,50 @@ object TestObjectFactory {
     }
 
     fun getAddGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): AddGooglePublishUseCase {
-        return AddGooglePublishUseCase(googlePublishRepository)
+        return AddGooglePublishUseCase(
+            googlePublishRepository
+        )
     }
 
     fun getAddRESTPublishUseCase(restPublishRepository: RESTPublishRepository): AddRESTPublishUseCase {
-        return AddRESTPublishUseCase(restPublishRepository)
+        return AddRESTPublishUseCase(
+            restPublishRepository
+        )
     }
 
     fun getUpdateGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): UpdateGooglePublishUseCase {
-        return UpdateGooglePublishUseCase(googlePublishRepository)
+        return UpdateGooglePublishUseCase(
+            googlePublishRepository
+        )
     }
 
     fun getUpdateRESTPublishUseCase(restPublishRepository: RESTPublishRepository): UpdateRESTPublishUserCase {
-        return UpdateRESTPublishUserCase(restPublishRepository)
+        return UpdateRESTPublishUserCase(
+            restPublishRepository
+        )
     }
 
     fun getAllGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): GetAllGooglePublishUseCase {
-        return GetAllGooglePublishUseCase(googlePublishRepository)
+        return GetAllGooglePublishUseCase(
+            googlePublishRepository
+        )
     }
 
     fun getAllRESTPublishUseCase(restPublishRepository: RESTPublishRepository): GetAllRESTPublishUseCase {
-        return GetAllRESTPublishUseCase(restPublishRepository)
+        return GetAllRESTPublishUseCase(
+            restPublishRepository
+        )
     }
 
     fun getAllEnabledGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): GetAllEnabledGooglePublishUseCase {
-        return GetAllEnabledGooglePublishUseCase(googlePublishRepository)
+        return GetAllEnabledGooglePublishUseCase(
+            googlePublishRepository
+        )
     }
 
     fun getAllEnabledRESTPublishUseCase(restPublishRepository: RESTPublishRepository): GetAllEnabledRESTPublishUseCase {
-        return GetAllEnabledRESTPublishUseCase(restPublishRepository)
+        return GetAllEnabledRESTPublishUseCase(
+            restPublishRepository
+        )
     }
 }

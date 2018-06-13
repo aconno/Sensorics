@@ -13,7 +13,7 @@ import com.aconno.acnsensa.dagger.actionlist.ActionListComponent
 import com.aconno.acnsensa.dagger.actionlist.ActionListModule
 import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.domain.ifttt.Action
-import com.aconno.acnsensa.domain.interactor.ifttt.GetAllActionsUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.GetAllActionsUseCase
 import com.aconno.acnsensa.ui.actions.AddActionActivity
 import com.aconno.acnsensa.ui.actions.EditActionActivity
 import io.reactivex.android.schedulers.AndroidSchedulers

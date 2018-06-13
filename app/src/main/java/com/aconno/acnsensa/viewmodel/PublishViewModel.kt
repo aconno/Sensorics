@@ -4,8 +4,8 @@ import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublishDeviceJoin
 import com.aconno.acnsensa.domain.ifttt.GeneralRestPublishDeviceJoin
 import com.aconno.acnsensa.domain.ifttt.RESTHeader
-import com.aconno.acnsensa.domain.interactor.ifttt.AddGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.AddRESTPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.AddGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.model.DeviceRelationModel
 import com.aconno.acnsensa.model.GooglePublishModel

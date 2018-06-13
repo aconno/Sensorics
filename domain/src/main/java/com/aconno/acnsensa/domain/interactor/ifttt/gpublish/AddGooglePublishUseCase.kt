@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.domain.interactor.ifttt
+package com.aconno.acnsensa.domain.interactor.ifttt.gpublish
 
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository

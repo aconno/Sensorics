@@ -2,10 +2,9 @@ package com.aconno.acnsensa.viewmodel.factory
 
 import android.app.Application
 import android.arch.lifecycle.ViewModel
-import com.aconno.acnsensa.domain.interactor.ifttt.DeleteActionUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.GetActionByIdUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateActionUseCase
-import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.DeleteActionUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.GetActionByIdUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.UpdateActionUseCase
 import com.aconno.acnsensa.viewmodel.ActionViewModel
 
 class ActionViewModelFactory(

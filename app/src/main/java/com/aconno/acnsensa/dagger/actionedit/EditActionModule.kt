@@ -2,9 +2,9 @@ package com.aconno.acnsensa.dagger.actionedit
 
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
-import com.aconno.acnsensa.domain.interactor.ifttt.DeleteActionUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.GetActionByIdUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateActionUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.DeleteActionUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.GetActionByIdUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.UpdateActionUseCase
 import com.aconno.acnsensa.ui.actions.EditActionActivity
 import com.aconno.acnsensa.viewmodel.ActionViewModel
 import com.aconno.acnsensa.viewmodel.factory.ActionViewModelFactory
@@ -39,18 +39,24 @@ class EditActionModule(private val editActionActivity: EditActionActivity) {
     @Provides
     @EditActionActivityScope
     fun providesGetActionActionUseCase(actionsRepository: ActionsRepository): GetActionByIdUseCase {
-        return GetActionByIdUseCase(actionsRepository)
+        return GetActionByIdUseCase(
+            actionsRepository
+        )
     }
 
     @Provides
     @EditActionActivityScope
     fun provideUpdateActionUseCase(actionsRepository: ActionsRepository): UpdateActionUseCase {
-        return UpdateActionUseCase(actionsRepository)
+        return UpdateActionUseCase(
+            actionsRepository
+        )
     }
 
     @Provides
     @EditActionActivityScope
     fun providesDeleteActionUseCase(actionsRepository: ActionsRepository): DeleteActionUseCase {
-        return DeleteActionUseCase(actionsRepository)
+        return DeleteActionUseCase(
+            actionsRepository
+        )
     }
 }

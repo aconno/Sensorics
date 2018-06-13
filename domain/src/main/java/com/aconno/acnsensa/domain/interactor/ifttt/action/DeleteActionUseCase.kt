@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.domain.interactor.ifttt
+package com.aconno.acnsensa.domain.interactor.ifttt.action
 
 import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
@@ -8,13 +8,12 @@ import io.reactivex.Completable
 /**
  * @author aconno
  */
-class AddActionUseCase(
+class DeleteActionUseCase(
     private val actionsRepository: ActionsRepository
-) :
-    CompletableUseCaseWithParameter<Action> {
+) : CompletableUseCaseWithParameter<Action> {
     override fun execute(parameter: Action): Completable {
         return Completable.fromAction {
-            actionsRepository.addAction(parameter)
+            actionsRepository.deleteAction(parameter)
         }
     }
 }

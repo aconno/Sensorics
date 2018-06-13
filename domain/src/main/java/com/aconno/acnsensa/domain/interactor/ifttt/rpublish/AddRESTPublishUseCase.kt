@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.domain.interactor.ifttt
+package com.aconno.acnsensa.domain.interactor.ifttt.rpublish
 
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository

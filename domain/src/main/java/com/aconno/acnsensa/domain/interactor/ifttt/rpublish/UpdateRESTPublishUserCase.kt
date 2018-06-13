@@ -1,16 +1,17 @@
-package com.aconno.acnsensa.domain.interactor.ifttt
+package com.aconno.acnsensa.domain.interactor.ifttt.rpublish
 
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository
 import com.aconno.acnsensa.domain.interactor.type.CompletableUseCaseWithParameter
 import io.reactivex.Completable
 
-class DeleteRestPublishUseCase(
+class UpdateRESTPublishUserCase(
     private val restPublishRepository: RESTPublishRepository
 ) : CompletableUseCaseWithParameter<RESTPublish> {
+
     override fun execute(parameter: RESTPublish): Completable {
         return Completable.fromAction {
-            restPublishRepository.deleteRESTPublish(parameter)
+            restPublishRepository.updateRESTPublish(parameter)
         }
     }
 }

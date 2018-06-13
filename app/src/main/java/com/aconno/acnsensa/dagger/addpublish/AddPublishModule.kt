@@ -3,10 +3,9 @@ package com.aconno.acnsensa.dagger.addpublish
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import com.aconno.acnsensa.domain.ifttt.PublishDeviceJoinRepository
-import com.aconno.acnsensa.domain.ifttt.RESTHeader
 import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository
-import com.aconno.acnsensa.domain.interactor.ifttt.AddGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.AddRESTPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.AddGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.model.mapper.DeviceRelationModelMapper
@@ -70,13 +69,17 @@ class AddPublishModule(private val addPublishActivity: AddPublishActivity) {
     @Provides
     @AddPublishActivityScope
     fun provideAddGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): AddGooglePublishUseCase {
-        return AddGooglePublishUseCase(googlePublishRepository)
+        return AddGooglePublishUseCase(
+            googlePublishRepository
+        )
     }
 
     @Provides
     @AddPublishActivityScope
     fun provideAddRESTPublishUseCase(restPublishRepository: RESTPublishRepository): AddRESTPublishUseCase {
-        return AddRESTPublishUseCase(restPublishRepository)
+        return AddRESTPublishUseCase(
+            restPublishRepository
+        )
     }
 
     @Provides

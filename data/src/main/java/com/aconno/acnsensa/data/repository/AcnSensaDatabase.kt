@@ -9,6 +9,9 @@ import com.aconno.acnsensa.data.repository.devices.DeviceEntity
 import com.aconno.acnsensa.data.repository.gpublish.GooglePublishDao
 import com.aconno.acnsensa.data.repository.pdjoin.GooglePublishDeviceJoinEntity
 import com.aconno.acnsensa.data.repository.gpublish.GooglePublishEntity
+import com.aconno.acnsensa.data.repository.mpublish.MqttPublishDao
+import com.aconno.acnsensa.data.repository.mpublish.MqttPublishEntity
+import com.aconno.acnsensa.data.repository.pdjoin.MqttPublishDeviceJoinEntity
 import com.aconno.acnsensa.data.repository.pdjoin.PublishDeviceJoinDao
 import com.aconno.acnsensa.data.repository.rpublish.RESTPublishDao
 import com.aconno.acnsensa.data.repository.rpublish.RESTPublishEntity
@@ -16,10 +19,12 @@ import com.aconno.acnsensa.data.repository.pdjoin.RestPublishDeviceJoinEntity
 import com.aconno.acnsensa.data.repository.rpublish.RESTHeaderEntity
 
 @Database(
-    entities = [ActionEntity::class, DeviceEntity::class, GooglePublishEntity::class, RESTPublishEntity::class, GooglePublishDeviceJoinEntity::class, RestPublishDeviceJoinEntity::class, RESTHeaderEntity::class],
+    entities = [ActionEntity::class, DeviceEntity::class, GooglePublishEntity::class, RESTPublishEntity::class, GooglePublishDeviceJoinEntity::class, RestPublishDeviceJoinEntity::class, RESTHeaderEntity::class, MqttPublishEntity::class, MqttPublishDeviceJoinEntity::class],
     version = 1
 )
 abstract class AcnSensaDatabase : RoomDatabase() {
+
+    abstract fun mqttPublishDao(): MqttPublishDao
 
     abstract fun publishDeviceJoinDao(): PublishDeviceJoinDao
 

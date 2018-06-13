@@ -3,7 +3,12 @@ package com.aconno.acnsensa.dagger.publish
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository
-import com.aconno.acnsensa.domain.interactor.ifttt.*
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.DeleteGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.GetAllGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.DeleteRestPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
 import com.aconno.acnsensa.model.mapper.GooglePublishDataMapper
 import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishDataMapper
@@ -23,37 +28,49 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
     @Provides
     @PublishListScope
     fun provideGetAllGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): GetAllGooglePublishUseCase {
-        return GetAllGooglePublishUseCase(googlePublishRepository)
+        return GetAllGooglePublishUseCase(
+            googlePublishRepository
+        )
     }
 
     @Provides
     @PublishListScope
     fun provideGetAllRESTPublishUseCase(restPublishRepository: RESTPublishRepository): GetAllRESTPublishUseCase {
-        return GetAllRESTPublishUseCase(restPublishRepository)
+        return GetAllRESTPublishUseCase(
+            restPublishRepository
+        )
     }
 
     @Provides
     @PublishListScope
     fun provideUpdateGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): UpdateGooglePublishUseCase {
-        return UpdateGooglePublishUseCase(googlePublishRepository)
+        return UpdateGooglePublishUseCase(
+            googlePublishRepository
+        )
     }
 
     @Provides
     @PublishListScope
     fun provideUpdateRESTPublishUseCase(restPublishRepository: RESTPublishRepository): UpdateRESTPublishUserCase {
-        return UpdateRESTPublishUserCase(restPublishRepository)
+        return UpdateRESTPublishUserCase(
+            restPublishRepository
+        )
     }
 
     @Provides
     @PublishListScope
     fun provideDeleteGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): DeleteGooglePublishUseCase {
-        return DeleteGooglePublishUseCase(googlePublishRepository)
+        return DeleteGooglePublishUseCase(
+            googlePublishRepository
+        )
     }
 
     @Provides
     @PublishListScope
     fun provideDeleteRESTPublishUseCase(restPublishRepository: RESTPublishRepository): DeleteRestPublishUseCase {
-        return DeleteRestPublishUseCase(restPublishRepository)
+        return DeleteRestPublishUseCase(
+            restPublishRepository
+        )
     }
 
     @Provides
