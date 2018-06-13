@@ -1,9 +1,9 @@
 package com.aconno.acnsensa.dagger.livegraph
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorReadingsUseCase
-import com.aconno.acnsensa.domain.interactor.filter.FilterReadingsByMacAddressUseCase
-import com.aconno.acnsensa.domain.model.SensorReading
+import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.ui.LiveGraphActivity
 import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
@@ -18,16 +18,15 @@ class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
     @Provides
     @LiveGraphScope
     fun provideLiveGraphViewModelFactory(
-        sensorReadings: Flowable<List<SensorReading>>,
-        filterReadingsByMacAddressUseCase: FilterReadingsByMacAddressUseCase,
-        getSensorReadingsUseCase: GetSensorReadingsUseCase
-    ) =
-        LiveGraphViewModelFactory(
-            sensorReadings,
-            filterReadingsByMacAddressUseCase,
-            getSensorReadingsUseCase,
-            liveGraphActivity.application
-        )
+        readings: Flowable<List<Reading>>,
+        filterByMacUseCase: FilterByMacUseCase,
+        getReadingsUseCase: GetReadingsUseCase
+    ) = LiveGraphViewModelFactory(
+        readings,
+        filterByMacUseCase,
+        getReadingsUseCase,
+        liveGraphActivity.application
+    )
 
     @Provides
     @LiveGraphScope
@@ -41,9 +40,5 @@ class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
     @LiveGraphScope
     fun provideGetSensorReadingsUseCase(
         inMemoryRepository: InMemoryRepository
-    ) = GetSensorReadingsUseCase(inMemoryRepository)
-
-    @Provides
-    @LiveGraphScope
-    fun provideFilterReadingsByMacAddress() = FilterReadingsByMacAddressUseCase()
+    ) = GetReadingsUseCase(inMemoryRepository)
 }

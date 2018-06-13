@@ -1,16 +1,16 @@
 package com.aconno.acnsensa.domain.interactor.bluetooth
 
+import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
-import com.aconno.acnsensa.domain.model.SensorReading
-import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import io.reactivex.Single
 
-class GetSensorReadingsUseCase(
+class GetReadingsUseCase(
     private val inMemoryRepository: InMemoryRepository
-) : SingleUseCaseWithParameter<List<SensorReading>, SensorTypeSingle> {
+) : SingleUseCaseWithParameter<List<Reading>, ReadingType> {
 
-    override fun execute(parameter: SensorTypeSingle): Single<List<SensorReading>> {
-        return Single.just(inMemoryRepository.getSensorReadingsFor(parameter))
+    override fun execute(parameter: ReadingType): Single<List<Reading>> {
+        return Single.just(inMemoryRepository.getReadingsFor(parameter))
     }
 }

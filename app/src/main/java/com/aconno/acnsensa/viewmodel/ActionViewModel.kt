@@ -8,6 +8,7 @@ import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
+import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 import com.aconno.acnsensa.domain.interactor.ifttt.DeleteActionUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.GetActionByIdUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.UpdateActionUseCase
@@ -45,7 +46,7 @@ class ActionViewModel(
     }
 
     fun setCondition(
-        sensorType: SensorTypeSingle,
+        readingType: ReadingType,
         constraintType: String,
         constraintValue: String
     ) {
@@ -55,9 +56,9 @@ class ActionViewModel(
         } else {
             when (constraintType) {
                 "<" -> conditionLiveData.value =
-                        LimitCondition(sensorType, valueFloat, LimitCondition.LESS_THAN)
+                        LimitCondition(readingType, valueFloat, LimitCondition.LESS_THAN)
                 ">" -> conditionLiveData.value =
-                        LimitCondition(sensorType, valueFloat, LimitCondition.MORE_THAN)
+                        LimitCondition(readingType, valueFloat, LimitCondition.MORE_THAN)
                 else -> Timber.d("Constraint type is not valid constraint type: $constraintType")
             }
         }

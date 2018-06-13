@@ -7,15 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.model.SensorTypeSingle
-import com.aconno.acnsensa.model.toStringResource
+import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 import kotlinx.android.synthetic.main.dialog_condition.*
 
 class ConditionDialog : DialogFragment() {
 
     private lateinit var listener: ConditionDialogListener
 
-    private var sensorType: SensorTypeSingle? = null
+    private var sensorType: ReadingType? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +29,7 @@ class ConditionDialog : DialogFragment() {
 
         sensorType = arguments?.let { getSensorTypeExtra(it) }
 
-        view_title.text = sensorType?.toStringResource(view.context)
+        view_title.text = sensorType?.toString()
 
         view_less.setOnClickListener {
             view_less.isChecked = !view_less.isChecked
@@ -84,19 +83,19 @@ class ConditionDialog : DialogFragment() {
 
     companion object {
 
-        private const val SENSOR_TYPE_EXTRA = "sensor_type"
+        private const val TYPE_EXTRA = "type_extra"
 
-        fun newInstance(sensorType: SensorTypeSingle): ConditionDialog {
+        fun newInstance(readingType: ReadingType): ConditionDialog {
             val dialog = ConditionDialog()
             val args = Bundle()
-            args.putString(SENSOR_TYPE_EXTRA, sensorType.name)
+            args.putString(TYPE_EXTRA, readingType.name)
             dialog.arguments = args
             return dialog
         }
 
-        private fun getSensorTypeExtra(args: Bundle): SensorTypeSingle {
-            val name = args.getString(SENSOR_TYPE_EXTRA)
-            return SensorTypeSingle.valueOf(name)
+        private fun getSensorTypeExtra(args: Bundle): ReadingType {
+            val name = args.getString(TYPE_EXTRA)
+            return ReadingType.valueOf(name)
         }
     }
 }

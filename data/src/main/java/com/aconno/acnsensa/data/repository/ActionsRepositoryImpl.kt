@@ -5,7 +5,7 @@ import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
-import com.aconno.acnsensa.domain.model.SensorTypeSingle
+import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 import io.reactivex.Single
 
 class ActionsRepositoryImpl(
@@ -35,7 +35,7 @@ class ActionsRepositoryImpl(
         val id = action.id
         val name = action.name
         val deviceMacAddress = action.deviceMacAddress
-        val sensorType = action.condition.sensorType
+        val readingType = action.condition.readingType
         val conditionType = action.condition.type
         val value = action.condition.limit
 
@@ -47,7 +47,7 @@ class ActionsRepositoryImpl(
             id = id,
             name = name,
             deviceMacAddress = deviceMacAddress,
-            sensorType = sensorType.id,
+            readingType = readingType.id,
             conditionType = conditionType,
             value = value,
             textMessage = message,
@@ -62,7 +62,7 @@ class ActionsRepositoryImpl(
         val deviceMacAddress = actionEntity.deviceMacAddress
         val condition =
             LimitCondition(
-                SensorTypeSingle.ofId(actionEntity.sensorType),
+                ReadingType.fromId(actionEntity.readingType),
                 actionEntity.value,
                 actionEntity.conditionType
             )

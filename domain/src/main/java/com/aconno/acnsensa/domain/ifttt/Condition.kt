@@ -1,9 +1,9 @@
 package com.aconno.acnsensa.domain.ifttt
 
-import com.aconno.acnsensa.domain.model.SensorTypeSingle
+import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 
 interface Condition {
-    val sensorType: SensorTypeSingle
+    val readingType: ReadingType
     val limit: Float
     val type: Int
     fun isSatisfied(input: Input): Boolean

@@ -4,16 +4,15 @@ import com.aconno.acnsensa.data.converter.PublisherDataConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
+import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.SensorReading
-import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
-
 
 class RESTPublisher(
     private val restPublish: RESTPublish,
@@ -35,7 +34,7 @@ class RESTPublisher(
         private const val GET_PARAMETER_NAME = "ACNSensa"
     }
 
-    override fun publish(reading: SensorReading) {
+    override fun publish(reading: Reading) {
         val messages = PublisherDataConverter.convert(reading)
 
         Observable.fromIterable(messages)
@@ -53,11 +52,11 @@ class RESTPublisher(
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
 
         val convertList = PublisherDataConverter.convert(
-            SensorReading(
+            Reading(
                 System.currentTimeMillis(),
                 Device("TestDevice", "MA:CA:DD:RE:SS:11"),
-                20,
-                SensorTypeSingle.LIGHT
+                1,
+                ReadingType.OTHER
             )
         )
 
@@ -109,6 +108,4 @@ class RESTPublisher(
     override fun closeConnection() {
         //Do-nothing
     }
-
-
 }

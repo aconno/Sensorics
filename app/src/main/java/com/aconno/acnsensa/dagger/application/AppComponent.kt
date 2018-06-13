@@ -11,7 +11,6 @@ import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
@@ -30,8 +29,6 @@ interface AppComponent {
     fun bluetooth(): Bluetooth
 
     fun inMemoryRepository(): InMemoryRepository
-
-    fun sensorReadings(): Flowable<List<SensorReading>>
 
     fun scannedDevice(): Flowable<Device>
 

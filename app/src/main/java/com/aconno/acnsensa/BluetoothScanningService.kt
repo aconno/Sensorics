@@ -30,7 +30,6 @@ import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedW
 import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SaveSensorReadingsUseCase
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.scanning.Bluetooth
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -39,9 +38,6 @@ import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-/**
- * @author aconno
- */
 class BluetoothScanningService : Service() {
 
     @Inject
@@ -49,9 +45,6 @@ class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var readings: Flowable<List<Reading>>
-
-    @Inject
-    lateinit var sensorReadings: Flowable<List<SensorReading>>
 
     @Inject
     lateinit var saveSensorReadingsUseCase: SaveSensorReadingsUseCase
@@ -137,7 +130,7 @@ class BluetoothScanningService : Service() {
     }
 
     private fun startSyncing() {
-        sensorReadings.subscribe {
+        readings.subscribe {
             //Publish when Google Cloud Integration Enabled
             publishReadingsUseCase?.execute(it)
                 ?.subscribeOn(Schedulers.io())
@@ -166,7 +159,7 @@ class BluetoothScanningService : Service() {
     }
 
     private fun handleInputsForActions() {
-        sensorReadings
+        readings
             .concatMap { sensorReadingToInputUseCase.execute(it).toFlowable() }
             .flatMapIterable { it }
             .concatMap {
@@ -195,7 +188,7 @@ class BluetoothScanningService : Service() {
     }
 
     private fun startRecording() {
-        sensorReadings.subscribe {
+        readings.subscribe {
             saveSensorReadingsUseCase.execute(it)
         }
     }

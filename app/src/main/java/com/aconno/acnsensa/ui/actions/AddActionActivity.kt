@@ -18,6 +18,7 @@ import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
 import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
+import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.model.toStringResource
@@ -95,7 +96,7 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
     }
 
     private fun setConditionChipOnClickListeners() {
-        SensorTypeSingle.values().forEach { sensorType ->
+        ReadingType.values().forEach { sensorType ->
             getConditionView(sensorType).setOnClickListener {
                 openConditionDialog(sensorType)
             }
@@ -106,8 +107,8 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
         text_mac_address.text = item.macAddress
     }
 
-    private fun openConditionDialog(sensorType: SensorTypeSingle) {
-        val dialog = ConditionDialog.newInstance(sensorType)
+    private fun openConditionDialog(readingType: ReadingType) {
+        val dialog = ConditionDialog.newInstance(readingType)
         dialog.show(supportFragmentManager, "condition_dialog_fragment")
     }
 
@@ -182,10 +183,10 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
         }
     }
 
-    override fun onSetClicked(sensorType: SensorTypeSingle, constraint: String, value: String) {
+    override fun onSetClicked(readingType: ReadingType, constraint: String, value: String) {
         initConditionViews()
         //TODO: Prevent passing an empty string value
-        newActionViewModel.setCondition(sensorType, constraint, value)
+        newActionViewModel.setCondition(readingType, constraint, value)
         val condition = newActionViewModel.getCondition()
         condition?.let {
             setSelectedCondition(condition)
@@ -199,19 +200,19 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
     }
 
     private fun initConditionTexts() {
-        SensorTypeSingle.values().forEach {
-            getConditionView(it).text = it.toStringResource(this)
+        ReadingType.values().forEach {
+            getConditionView(it).text = it.toString()
         }
     }
 
     private fun initConditionStates() {
-        SensorTypeSingle.values().forEach {
+        ReadingType.values().forEach {
             getConditionView(it).isChecked = false
         }
     }
 
     private fun setSelectedCondition(condition: Condition) {
-        val conditionView = getConditionView(condition.sensorType)
+        val conditionView = getConditionView(condition.readingType)
         conditionView.isChecked = true
         appendConditionString(conditionView, condition)
     }
@@ -225,23 +226,23 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
         textView.text = "${textView.text} $constraint ${condition.limit}"
     }
 
-    private fun getConditionView(sensorType: SensorTypeSingle): CheckedTextView {
-        return when (sensorType) {
-            SensorTypeSingle.TEMPERATURE -> temperature
-            SensorTypeSingle.LIGHT -> light
-            SensorTypeSingle.HUMIDITY -> humidity
-            SensorTypeSingle.PRESSURE -> pressure
-            SensorTypeSingle.MAGNETOMETER_X -> magnetometer_x
-            SensorTypeSingle.MAGNETOMETER_Y -> magnetometer_y
-            SensorTypeSingle.MAGNETOMETER_Z -> magnetometer_z
-            SensorTypeSingle.ACCELEROMETER_X -> accelerometer_x
-            SensorTypeSingle.ACCELEROMETER_Y -> accelerometer_y
-            SensorTypeSingle.ACCELEROMETER_Z -> accelerometer_z
-            SensorTypeSingle.GYROSCOPE_X -> gyroscope_x
-            SensorTypeSingle.GYROSCOPE_Y -> gyroscope_y
-            SensorTypeSingle.GYROSCOPE_Z -> gyroscope_z
-            SensorTypeSingle.BATTERY_LEVEL -> battery_level
-            SensorTypeSingle.OTHER -> temperature //TODO: Fix
+    private fun getConditionView(readingType: ReadingType): CheckedTextView {
+        return when (readingType) {
+            ReadingType.TEMPERATURE -> temperature
+            ReadingType.LIGHT -> light
+            ReadingType.HUMIDITY -> humidity
+            ReadingType.PRESSURE -> pressure
+            ReadingType.MAGNETOMETER_X -> magnetometer_x
+            ReadingType.MAGNETOMETER_Y -> magnetometer_y
+            ReadingType.MAGNETOMETER_Z -> magnetometer_z
+            ReadingType.ACCELEROMETER_X -> accelerometer_x
+            ReadingType.ACCELEROMETER_Y -> accelerometer_y
+            ReadingType.ACCELEROMETER_Z -> accelerometer_z
+            ReadingType.GYROSCOPE_X -> gyroscope_x
+            ReadingType.GYROSCOPE_Y -> gyroscope_y
+            ReadingType.GYROSCOPE_Z -> gyroscope_z
+            ReadingType.BATTERY_LEVEL -> battery_level
+            ReadingType.OTHER -> temperature //TODO: Fix
         }
     }
 

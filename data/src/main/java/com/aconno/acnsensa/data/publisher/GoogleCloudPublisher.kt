@@ -6,8 +6,8 @@ import com.aconno.acnsensa.data.converter.PublisherDataConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
+import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.SensorReading
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -97,7 +97,7 @@ class GoogleCloudPublisher(
                 && listDevices.contains(device)
     }
 
-    override fun publish(reading: SensorReading) {
+    override fun publish(reading: Reading) {
         val messages = PublisherDataConverter.convert(reading)
         for (message in messages) {
             Timber.tag("Publisher Google")
