@@ -7,8 +7,6 @@ import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
-import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.acnsensa.domain.interactor.filter.Reading
@@ -35,7 +33,7 @@ interface AppComponent {
 
     fun sensorReadings(): Flowable<List<SensorReading>>
 
-    fun scannedDevices(): Flowable<Device>
+    fun scannedDevice(): Flowable<Device>
 
     fun savedDevices(): Flowable<List<Device>>
 

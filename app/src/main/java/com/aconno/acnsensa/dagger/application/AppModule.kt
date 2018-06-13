@@ -110,25 +110,6 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideBeaconsFlowable(
-        bluetooth: Bluetooth,
-        filterAdvertisementsUseCase: FilterAdvertisementsUseCase
-    ): Flowable<Device> {
-        val observable: Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult> =
-            bluetooth.getScanResults()
-        return observable
-            .concatMap {
-                val scanResult = ScanResult(
-                    Device("Unknown", it.macAddress),
-                    Advertisement(it.rawData)
-                )
-                filterAdvertisementsUseCase.execute(scanResult).toFlowable()
-            }
-            .map { it.device }
-    }
-
-    @Provides
-    @Singleton
     fun provideSensorReadingsFlowable(
         bluetooth: Bluetooth,
         filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
@@ -296,7 +277,7 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideFilteredScanResultStream(
+    fun provideFilteredScanResult(
         bluetooth: Bluetooth,
         filterByFormatUseCase: FilterByFormatUseCase
     ): Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult> {
@@ -306,11 +287,19 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideReadingsStream(
-        filteredScanResultStream: Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult>,
+    fun provideDevice(
+        filteredScanResult: Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult>,
+        generateDeviceUseCase: GenerateDeviceUseCase
+    ): Flowable<Device> {
+        return filteredScanResult.concatMap { generateDeviceUseCase.execute(it).toFlowable() }
+    }
+
+    @Provides
+    @Singleton
+    fun provideReadings(
+        filteredScanResult: Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult>,
         generateReadingsUseCase: GenerateReadingsUseCase
     ): Flowable<List<Reading>> {
-        return filteredScanResultStream
-            .concatMap { generateReadingsUseCase.execute(it).toFlowable() }
+        return filteredScanResult.concatMap { generateReadingsUseCase.execute(it).toFlowable() }
     }
 }
