@@ -18,6 +18,25 @@ enum class ReadingType(val id: Int) {
     GYROSCOPE_Z(13),
     BATTERY_LEVEL(14);
 
+    override fun toString(): String {
+        return when (this) {
+            ReadingType.OTHER -> "Other"
+            ReadingType.TEMPERATURE -> "Temperature"
+            ReadingType.LIGHT -> "Light"
+            ReadingType.HUMIDITY -> "Humidity"
+            ReadingType.PRESSURE -> "Pressure"
+            ReadingType.MAGNETOMETER_X -> "Magnetometer X"
+            ReadingType.MAGNETOMETER_Y -> "Magnetometer Y"
+            ReadingType.MAGNETOMETER_Z -> "Magnetometer Z"
+            ReadingType.ACCELEROMETER_X -> "Accelerometer X"
+            ReadingType.ACCELEROMETER_Y -> "Accelerometer Y"
+            ReadingType.ACCELEROMETER_Z -> "Accelerometer Z"
+            ReadingType.GYROSCOPE_X -> "Gyroscope X"
+            ReadingType.GYROSCOPE_Y -> "Gyroscope Y"
+            ReadingType.GYROSCOPE_Z -> "Gyroscope Z"
+            ReadingType.BATTERY_LEVEL -> "Battery Level"
+        }
+    }
 
     companion object {
 

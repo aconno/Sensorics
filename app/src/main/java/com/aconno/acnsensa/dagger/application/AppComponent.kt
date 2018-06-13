@@ -9,10 +9,10 @@ import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
 import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
+import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
@@ -41,13 +41,7 @@ interface AppComponent {
 
     fun savedDevices(): Flowable<List<Device>>
 
-    fun scanResults(): Flowable<ScanResult>
-
-    fun filterAdvertisementUseCase(): FilterAdvertisementsUseCase
-
-    fun filterByMacAddressUseCase(): FilterByMacAddressUseCase
-
-    fun deserializeScanResultUseCase(): DeserializeScanResultUseCase
+    fun filterByMacUseCase(): FilterByMacUseCase
 
     fun googlePublishRepository(): GooglePublishRepository
 
@@ -71,11 +65,13 @@ interface AppComponent {
 
     fun deviceRepository(): DeviceRepository
 
-    fun sensorReadingToInputUseCase() : SensorReadingToInputUseCase
+    fun sensorReadingToInputUseCase(): SensorReadingToInputUseCase
 
     fun inject(scannedDevicesDialog: ScannedDevicesDialog)
 
     fun inject(savedDevicesDialog: SavedDevicesDialog)
 
     fun publishDeviceJoinRepository(): PublishDeviceJoinRepository
+
+    fun readingsStream(): Flowable<List<Reading>>
 }

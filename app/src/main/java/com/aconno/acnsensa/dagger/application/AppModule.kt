@@ -27,13 +27,15 @@ import com.aconno.acnsensa.domain.format.FormatMatcher
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
 import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
 import com.aconno.acnsensa.domain.interactor.consolidation.GenerateDeviceUseCase
 import com.aconno.acnsensa.domain.interactor.consolidation.GenerateReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.convert.ScanResultToSensorReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByFormatUseCase
+import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
+import com.aconno.acnsensa.domain.model.Advertisement
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.SensorReading
@@ -45,7 +47,6 @@ import com.aconno.acnsensa.domain.serialization.DeserializerImpl
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
-import timber.log.Timber
 import javax.inject.Singleton
 
 @Module
@@ -95,10 +96,6 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideFilterByMacAddressUseCase() = FilterByMacAddressUseCase()
-
-    @Provides
-    @Singleton
     fun provideScanResultToSensorReadingsUseCase(
         formatMatcher: FormatMatcher,
         deserializer: Deserializer
@@ -118,18 +115,17 @@ class AppModule(
         filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
         sensorValuesUseCase: DeserializeScanResultUseCase
     ): Flowable<Map<String, Number>> {
-        val observable: Flowable<ScanResult> = bluetooth.getScanResults()
+        val observable: Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult> =
+            bluetooth.getScanResults()
         return observable
-            .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
+            .concatMap {
+                val scanResult = ScanResult(
+                    Device("Unknown", it.macAddress),
+                    Advertisement(it.rawData)
+                )
+                filterAdvertisementsUseCase.execute(scanResult).toFlowable()
+            }
             .concatMap { sensorValuesUseCase.execute(it).toFlowable() }
-    }
-
-    @Provides
-    @Singleton
-    fun provideScanResultsFlowable(
-        bluetooth: Bluetooth
-    ): Flowable<ScanResult> {
-        return bluetooth.getScanResults()
     }
 
     @Provides
@@ -138,10 +134,15 @@ class AppModule(
         bluetooth: Bluetooth,
         filterAdvertisementsUseCase: FilterAdvertisementsUseCase
     ): Flowable<Device> {
-        val observable: Flowable<ScanResult> = bluetooth.getScanResults()
+        val observable: Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult> =
+            bluetooth.getScanResults()
         return observable
             .concatMap {
-                filterAdvertisementsUseCase.execute(it).toFlowable()
+                val scanResult = ScanResult(
+                    Device("Unknown", it.macAddress),
+                    Advertisement(it.rawData)
+                )
+                filterAdvertisementsUseCase.execute(scanResult).toFlowable()
             }
             .map { it.device }
     }
@@ -155,11 +156,13 @@ class AppModule(
     ): Flowable<List<SensorReading>> {
         return bluetooth.getScanResults()
             .concatMap {
-                Timber.d("Scan result: ${it.device.macAddress}")
-                filterAdvertisementsUseCase.execute(it).toFlowable()
+                val scanResult = ScanResult(
+                    Device("Unknown", it.macAddress),
+                    Advertisement(it.rawData)
+                )
+                filterAdvertisementsUseCase.execute(scanResult).toFlowable()
             }
             .concatMap {
-                Timber.d("Scan result: ${it.device.macAddress} (filtered)")
                 scanResultToSensorReadingsUseCase.execute(it).toFlowable()
             }
     }
@@ -296,6 +299,10 @@ class AppModule(
 
     @Provides
     @Singleton
+    fun provideFilterByMacUseCase() = FilterByMacUseCase()
+
+    @Provides
+    @Singleton
     fun provideGenerateDeviceUseCase(
         formatMatcher: FormatMatcher
     ) = GenerateDeviceUseCase(formatMatcher)
@@ -306,4 +313,24 @@ class AppModule(
         formatMatcher: FormatMatcher,
         deserializer: Deserializer
     ) = GenerateReadingsUseCase(formatMatcher, deserializer)
+
+    @Provides
+    @Singleton
+    fun provideFilteredScanResultStream(
+        bluetooth: Bluetooth,
+        filterByFormatUseCase: FilterByFormatUseCase
+    ): Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult> {
+        return bluetooth.getScanResults()
+            .concatMap { filterByFormatUseCase.execute(it).toFlowable() }
+    }
+
+    @Provides
+    @Singleton
+    fun provideReadingsStream(
+        filteredScanResultStream: Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult>,
+        generateReadingsUseCase: GenerateReadingsUseCase
+    ): Flowable<List<Reading>> {
+        return filteredScanResultStream
+            .concatMap { generateReadingsUseCase.execute(it).toFlowable() }
+    }
 }

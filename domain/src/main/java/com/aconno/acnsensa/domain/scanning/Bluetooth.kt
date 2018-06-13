@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.domain.scanning
 
+import com.aconno.acnsensa.domain.interactor.filter.ScanResult
 import com.aconno.acnsensa.domain.model.ScanEvent
-import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.Flowable
 
 interface Bluetooth {
