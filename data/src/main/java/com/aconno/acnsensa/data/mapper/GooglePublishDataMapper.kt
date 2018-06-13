@@ -1,6 +1,6 @@
 package com.aconno.acnsensa.data.mapper
 
-import com.aconno.acnsensa.data.repository.GooglePublishEntity
+import com.aconno.acnsensa.data.repository.gpublish.GooglePublishEntity
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import javax.inject.Inject
 import javax.inject.Singleton

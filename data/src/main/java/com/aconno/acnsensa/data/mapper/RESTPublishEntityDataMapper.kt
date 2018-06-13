@@ -1,6 +1,6 @@
 package com.aconno.acnsensa.data.mapper
 
-import com.aconno.acnsensa.data.repository.RESTPublishEntity
+import com.aconno.acnsensa.data.repository.rpublish.RESTPublishEntity
 import com.aconno.acnsensa.domain.ifttt.GeneralRESTPublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import javax.inject.Inject
@@ -21,6 +21,7 @@ class RESTPublishEntityDataMapper @Inject constructor() {
             restPublishEntity.name,
             restPublishEntity.url,
             restPublishEntity.method,
+            restPublishEntity.parameterName,
             restPublishEntity.enabled,
             restPublishEntity.timeType,
             restPublishEntity.timeMillis,

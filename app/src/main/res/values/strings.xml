@@ -162,7 +162,7 @@
     <string name="last_data_sent">Last data sent at : </string>
     <string name="snackbar_stop_scanning">Please stop scanning first</string>
     <string name="test">Test</string>
-    <string name="http_get_parameter_text">HTTP GET paramater name is \'ACNSensa\'</string>
+    <string name="http_get_parameter_text">HTTP GET Parameter Name</string>
     <string name="please_fill_blanks">Please fill the blanks</string>
     <string name="created">Created</string>
     <string name="updated">Updated</string>
@@ -176,4 +176,70 @@
     <string name="are_you_sure">Are you sure you want to delete?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="headers">Headers (%d)</string>
+    <string name="title_activity_rest_header">REST Header</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="add_new">Add New</string>
+    <string name="rest_headers_title">Headers</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="value">Value</string>
+    <string name="key">Key</string>
+    <string name="close">Close</string>
+    <string name="done">Done</string>
+    <string name="values_connot_empty">Values cannot be Empty</string>
+
+    <string-array name="header_keys">
+        <item>A-IM</item>
+        <item>Accept</item>
+        <item>Accept-Charset</item>
+        <item>Accept-Encoding</item>
+        <item>Accept-Language</item>
+        <item>Accept-Datetime</item>
+        <item>Access-Control-Request-Method</item>
+        <item>Access-Control-Request-Headers</item>
+        <item>Authorization</item>
+        <item>Cache-Control</item>
+        <item>Connection</item>
+        <item>Content-Length</item>
+        <item>Content-MD5</item>
+        <item>Content-Type</item>
+        <item>Cookie</item>
+        <item>Date</item>
+        <item>Expect</item>
+        <item>Forwarded</item>
+        <item>From</item>
+        <item>Host</item>
+        <item>If-Match</item>
+        <item>If-Modified-Since</item>
+        <item>If-None-Match</item>
+        <item>If-Range</item>
+        <item>If-Unmodified-Since</item>
+        <item>Max-Forwards</item>
+        <item>Origin</item>
+        <item>Pragma</item>
+        <item>Proxy-Authorization</item>
+        <item>Range</item>
+        <item>Referer</item>
+        <item>TE</item>
+        <item>User-Agent</item>
+        <item>Upgrade</item>
+        <item>Via</item>
+        <item>Warning</item>
+        <item>Upgrade-Insecure-Requests</item>
+        <item>X-Requested-With</item>
+        <item>DNT</item>
+        <item>X-Forwarded-For</item>
+        <item>X-Forwarded-Host</item>
+        <item>X-Forwarded-Proto</item>
+        <item>Front-End-Https</item>
+        <item>X-Http-Method-Override</item>
+        <item>X-ATT-DeviceId</item>
+        <item>X-Wap-Profile</item>
+        <item>Proxy-Connection</item>
+        <item>X-UIDH</item>
+        <item>X-Csrf-Token</item>
+    </string-array>
 </resources>

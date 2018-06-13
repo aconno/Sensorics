@@ -8,8 +8,12 @@ import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.IntentProviderImpl
 import com.aconno.acnsensa.data.mapper.*
 import com.aconno.acnsensa.data.repository.*
+import com.aconno.acnsensa.data.repository.action.ActionsRepositoryImpl
 import com.aconno.acnsensa.data.repository.devices.DeviceMapper
 import com.aconno.acnsensa.data.repository.devices.DeviceRepositoryImpl
+import com.aconno.acnsensa.data.repository.gpublish.GooglePublishRepositoryImpl
+import com.aconno.acnsensa.data.repository.pdjoin.PublishDeviceJoinRepositoryImpl
+import com.aconno.acnsensa.data.repository.rpublish.RESTPublishRepositoryImpl
 import com.aconno.acnsensa.device.SmsSenderImpl
 import com.aconno.acnsensa.device.TextToSpeechPlayerImpl
 import com.aconno.acnsensa.device.VibratorImpl
@@ -195,12 +199,14 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
     fun provideRESTPublishRepository(
         acnSensaDatabase: AcnSensaDatabase,
         restPublishEntityDataMapper: RESTPublishEntityDataMapper,
-        restPublishDataMapper: RESTPublishDataMapper
+        restPublishDataMapper: RESTPublishDataMapper,
+        restHeaderDataMapper: RESTHeaderDataMapper
     ): RESTPublishRepository {
         return RESTPublishRepositoryImpl(
             acnSensaDatabase.restPublishDao(),
             restPublishEntityDataMapper,
-            restPublishDataMapper
+            restPublishDataMapper,
+            restHeaderDataMapper
         )
     }
 

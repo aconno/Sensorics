@@ -3,6 +3,7 @@ package com.aconno.acnsensa.data.publisher
 import com.aconno.acnsensa.data.converter.PublisherDataConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
+import com.aconno.acnsensa.domain.ifttt.RESTHeader
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.SensorReading
@@ -17,14 +18,15 @@ import timber.log.Timber
 
 class RESTPublisher(
     private val restPublish: RESTPublish,
-    private val listDevices: List<Device>
+    private val listDevices: List<Device>,
+    private val listHeaders: List<RESTHeader>
 ) : Publisher {
 
     private val httpClient: OkHttpClient
 
     init {
         val logging = HttpLoggingInterceptor()
-        logging.level = HttpLoggingInterceptor.Level.BASIC
+        logging.level = HttpLoggingInterceptor.Level.HEADERS
         httpClient = OkHttpClient.Builder()
             .addInterceptor(logging)
             .build()
@@ -32,7 +34,6 @@ class RESTPublisher(
 
     companion object {
         private val JSON = MediaType.parse("application/json; charset=utf-8")
-        private const val GET_PARAMETER_NAME = "ACNSensa"
     }
 
     override fun publish(reading: SensorReading) {
@@ -78,13 +79,26 @@ class RESTPublisher(
             when {
                 restPublish.method == "GET" -> {
                     val httpBuilder = HttpUrl.parse(restPublish.url)!!.newBuilder()
-                    httpBuilder.addQueryParameter(GET_PARAMETER_NAME, message)
+                    httpBuilder.addQueryParameter(restPublish.parameterName, message)
 
-                    httpClient.newCall(Request.Builder().url(httpBuilder.build()).build()).execute()
+                    val builder = Request.Builder()
+                    listHeaders.forEach {
+                        builder.addHeader(it.key, it.value)
+                    }
+
+                    val request = builder.url(httpBuilder.build()).build();
+
+                    httpClient.newCall(request).execute()
                 }
                 restPublish.method == "POST" -> {
                     val body = RequestBody.create(JSON, message)
-                    val request = Request.Builder()
+
+                    val builder = Request.Builder()
+                    listHeaders.forEach {
+                        builder.addHeader(it.key, it.value)
+                    }
+
+                    val request = builder
                         .url(restPublish.url)
                         .post(body)
                         .build()

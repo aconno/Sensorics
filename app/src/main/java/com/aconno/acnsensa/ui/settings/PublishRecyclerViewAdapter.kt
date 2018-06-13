@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.ifttt.GooglePublish
+import com.aconno.acnsensa.adapter.LongItemClickListener
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
@@ -26,7 +26,7 @@ class PublishRecyclerViewAdapter(
     private val mValues: List<BasePublishModel>,
     private val mListener: OnListFragmentInteractionListener?,
     private val mCheckedChangeListener: OnCheckedChangeListener?,
-    private val mPublishOnLongClickListener: PublishOnLongClickListener?
+    private val mLongItemClickListener: LongItemClickListener<BasePublishModel>?
 ) : RecyclerView.Adapter<PublishRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
@@ -42,7 +42,7 @@ class PublishRecyclerViewAdapter(
 
         mOnLongClickListener = View.OnLongClickListener {
             val item = it.tag as BasePublishModel
-            mPublishOnLongClickListener?.onLongClick(item)
+            mLongItemClickListener?.onLongClick(item)
             true
         }
     }

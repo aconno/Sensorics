@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.data.repository
+package com.aconno.acnsensa.data.repository.rpublish
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
@@ -11,6 +11,7 @@ data class RESTPublishEntity(
     var name: String,
     var url: String,
     var method: String,
+    var parameterName: String,
     var enabled: Boolean,
     var timeType: String,
     var timeMillis: Long,

@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.data.repository
+package com.aconno.acnsensa.data.repository.action
 
 import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository

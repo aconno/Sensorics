@@ -23,13 +23,12 @@ import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
 import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.model.BasePublishModel
-import com.aconno.acnsensa.model.DeviceRelationModel
-import com.aconno.acnsensa.model.GooglePublishModel
-import com.aconno.acnsensa.model.RESTPublishModel
+import com.aconno.acnsensa.model.*
 import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.ui.base.BaseActivity
+import com.aconno.acnsensa.ui.settings.rheader.RESTHeadersActivity
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
@@ -42,6 +41,7 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
 
@@ -52,6 +52,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
     private var basePublish: BasePublishModel? = null
     private var isTestingAlreadyRunning: Boolean = false
     private lateinit var deviceList: List<DeviceRelationModel>
+    private var restHeaderList: ArrayList<RESTHeaderModel> = arrayListOf()
 
     private val addPublishComponent: AddPublishComponent by lazy {
         val acnSensaApplication: AcnSensaApplication? = application as? AcnSensaApplication
@@ -83,6 +84,8 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
     }
 
     private fun initViews() {
+        updateHeaderText()
+
         edit_privatekey.setOnClickListener {
 
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
@@ -136,6 +139,10 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             }
         }
 
+        text_http_headers.setOnClickListener {
+            RESTHeadersActivity.start(this, restHeaderList)
+        }
+
         val subscribe = publishViewModel.getAllDevices()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -186,26 +193,25 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
 
         nameView.text = it.name
         macAddressView.text = it.macAddress
-
-        //TODO : Check if device is active for this publish
         switchView.isChecked = it.related
 
         return inflatedView
     }
 
-    private fun testRESTConnection(toRESTPublishModel: RESTPublishModel?) {
+    private fun testRESTConnection(toRESTPublishModel: RESTPublishModel) {
         val publisher = RESTPublisher(
-            RESTPublishModelDataMapper().transform(toRESTPublishModel!!),
-            listOf(Device("TestDevice", "Mac"))
+            RESTPublishModelDataMapper().transform(toRESTPublishModel),
+            listOf(Device("TestDevice", "Mac")),
+            RESTHeaderModelMapper().toRESTHeaderList(restHeaderList)
         )
 
         publisher.test(this)
     }
 
-    private fun testGoogleConnection(toGooglePublishModel: GooglePublishModel?) {
+    private fun testGoogleConnection(toGooglePublishModel: GooglePublishModel) {
         val publisher = GoogleCloudPublisher(
             applicationContext,
-            GooglePublishModelDataMapper().transform(toGooglePublishModel!!),
+            GooglePublishModelDataMapper().transform(toGooglePublishModel),
             listOf(Device("TestDevice", "Mac"))
         )
 
@@ -246,9 +252,19 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                     ).show()
                 }
             }
+        } else if (resultCode == Activity.RESULT_OK && requestCode == RESTHeadersActivity.EDIT_HEADERS_REQUEST_CODE) {
+            val list =
+                data!!.getParcelableArrayListExtra<RESTHeaderModel>(RESTHeadersActivity.REST_HEADERS_ACTIVITY_LIST_KEY)
+            restHeaderList.clear()
+            restHeaderList.addAll(list)
+            updateHeaderText()
         }
 
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun updateHeaderText() {
+        text_http_headers.text = getString(R.string.headers, restHeaderList.size)
     }
 
     private fun setTextsWithPublishData() {
@@ -297,6 +313,16 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             edit_url.setText(restPublish.url)
             val selection = if (restPublish.method == "GET") 0 else 1
             spinner_methods.setSelection(selection)
+
+            addDisposable(
+                publishViewModel.getRESTHeadersById(restPublish.id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {
+                        restHeaderList = ArrayList(it)
+                        updateHeaderText()
+                    }
+            )
         }
     }
 
@@ -351,9 +377,21 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             Toast.makeText(this, getString(R.string.testings_started), Toast.LENGTH_SHORT).show()
             if (spinner_toolbar.selectedItemPosition == 0) {
                 val toGooglePublishModel = toGooglePublishModel()
+
+                if (toGooglePublishModel == null) {
+                    isTestingAlreadyRunning = false
+                    return
+                }
+
                 testGoogleConnection(toGooglePublishModel)
             } else if (spinner_toolbar.selectedItemPosition == 1) {
                 val toRESTPublishModel = toRESTPublishModel()
+
+                if (toRESTPublishModel == null) {
+                    isTestingAlreadyRunning = false
+                    return
+                }
+
                 testRESTConnection(toRESTPublishModel)
             }
         }
@@ -391,9 +429,18 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 publishViewModel.save(restPublishModel)
                     .subscribe(Consumer {
                         addRelationsToREST(it)
+                        addHeadersToREST(it)
                     })
             )
         }
+    }
+
+    private fun addHeadersToREST(it: Long) {
+        addDisposable(
+            publishViewModel.addRESTHeader(
+                restHeaderList,it
+            )
+        )
     }
 
     private fun addRelationsToREST(rId: Long) {
@@ -427,6 +474,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         val name = edit_name.text.toString().trim()
         val url = edit_url.text.toString().trim()
         val method = spinner_methods.selectedItem.toString()
+        val parameterName = text_http_get.text.toString()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
 
@@ -442,6 +490,11 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             return null
         }
 
+        if (method == "GET" && publishViewModel.checkFieldsAreEmpty(parameterName)) {
+            Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
+            return null
+        }
+
         val id = if (basePublish == null) 0 else basePublish!!.id
         val timeMillis = PublisherIntervalConverter.calculateMillis(timeCount, timeType)
         val lastTimeMillis = if (basePublish == null) 0 else basePublish!!.lastTimeMillis
@@ -450,6 +503,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             name,
             url,
             method,
+            parameterName,
             false,
             timeType,
             timeMillis,
