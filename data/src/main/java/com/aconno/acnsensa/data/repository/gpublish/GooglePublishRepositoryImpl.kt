@@ -1,9 +1,8 @@
-package com.aconno.acnsensa.data.repository
+package com.aconno.acnsensa.data.repository.gpublish
 
 import com.aconno.acnsensa.data.mapper.GooglePublishDataMapper
 import com.aconno.acnsensa.data.mapper.GooglePublishEntityDataMapper
 import com.aconno.acnsensa.domain.ifttt.BasePublish
-import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import io.reactivex.Maybe

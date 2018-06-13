@@ -25,10 +25,7 @@ import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
-import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
-import com.aconno.acnsensa.domain.interactor.repository.SaveSensorReadingsUseCase
-import com.aconno.acnsensa.domain.interactor.repository.SensorValuesToReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.scanning.Bluetooth
@@ -82,6 +79,9 @@ class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var getDevicesThatConnectedWithRESTPublishUseCase: GetDevicesThatConnectedWithRESTPublishUseCase
+
+    @Inject
+    lateinit var getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase
 
     @Inject
     lateinit var runOutcomeUseCase: RunOutcomeUseCase
@@ -240,7 +240,7 @@ class BluetoothScanningService : Service() {
                         )
                         is RESTPublish -> RESTPublisher(
                             it.first as RESTPublish,
-                            it.second
+                            it.second, listOf()
                         )
                         else -> {
                             EmptyPublisher()

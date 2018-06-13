@@ -3,6 +3,7 @@ package com.aconno.acnsensa.dagger.addpublish
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
 import com.aconno.acnsensa.domain.ifttt.PublishDeviceJoinRepository
+import com.aconno.acnsensa.domain.ifttt.RESTHeader
 import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository
 import com.aconno.acnsensa.domain.interactor.ifttt.AddGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.AddRESTPublishUseCase
@@ -10,6 +11,7 @@ import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.model.mapper.DeviceRelationModelMapper
 import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.ui.settings.AddPublishActivity
 import com.aconno.acnsensa.viewmodel.PublishViewModel
@@ -42,7 +44,11 @@ class AddPublishModule(private val addPublishActivity: AddPublishActivity) {
         getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
         getDevicesThatConnectedWithRESTPublishUseCase: GetDevicesThatConnectedWithRESTPublishUseCase,
         getSavedDevicesUseCase: GetSavedDevicesMaybeUseCase,
-        deviceRelationModelMapper: DeviceRelationModelMapper
+        deviceRelationModelMapper: DeviceRelationModelMapper,
+        saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
+        deleteRESTHeaderUseCase: DeleteRESTHeaderUseCase,
+        getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
+        restHeaderModelMapper: RESTHeaderModelMapper
     ) =
         PublishViewModelFactory(
             addGooglePublishUseCase,
@@ -54,7 +60,11 @@ class AddPublishModule(private val addPublishActivity: AddPublishActivity) {
             getDevicesThatConnectedWithGooglePublishUseCase,
             getDevicesThatConnectedWithRESTPublishUseCase,
             getSavedDevicesUseCase,
-            deviceRelationModelMapper
+            deviceRelationModelMapper,
+            saveRESTHeaderUseCase,
+            deleteRESTHeaderUseCase,
+            getRESTHeadersByIdUseCase,
+            restHeaderModelMapper
         )
 
     @Provides
@@ -97,5 +107,23 @@ class AddPublishModule(private val addPublishActivity: AddPublishActivity) {
     @AddPublishActivityScope
     fun provideGetSavedDevicesUseCase(deviceRepository: DeviceRepository): GetSavedDevicesMaybeUseCase {
         return GetSavedDevicesMaybeUseCase(deviceRepository)
+    }
+
+    @Provides
+    @AddPublishActivityScope
+    fun provideSaveRESTHeaderUseCase(restPublishRepository: RESTPublishRepository): SaveRESTHeaderUseCase {
+        return SaveRESTHeaderUseCase(restPublishRepository)
+    }
+
+    @Provides
+    @AddPublishActivityScope
+    fun provideDeleteRESTHeaderUseCase(restPublishRepository: RESTPublishRepository): DeleteRESTHeaderUseCase {
+        return DeleteRESTHeaderUseCase(restPublishRepository)
+    }
+
+    @Provides
+    @AddPublishActivityScope
+    fun provideGetRESTHeadersByIdUseCase(restPublishRepository: RESTPublishRepository): GetRESTHeadersByIdUseCase {
+        return GetRESTHeadersByIdUseCase(restPublishRepository)
     }
 }

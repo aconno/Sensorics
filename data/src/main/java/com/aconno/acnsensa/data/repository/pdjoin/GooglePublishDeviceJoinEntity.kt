@@ -1,8 +1,9 @@
-package com.aconno.acnsensa.data.repository
+package com.aconno.acnsensa.data.repository.pdjoin
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey
 import com.aconno.acnsensa.data.repository.devices.DeviceEntity
+import com.aconno.acnsensa.data.repository.gpublish.GooglePublishEntity
 
 @Entity(
     tableName = "google_publish_device_join",

@@ -2,9 +2,9 @@ package com.aconno.acnsensa
 
 import com.aconno.acnsensa.data.mapper.*
 import com.aconno.acnsensa.data.repository.AcnSensaDatabase
-import com.aconno.acnsensa.data.repository.GooglePublishRepositoryImpl
-import com.aconno.acnsensa.data.repository.PublishDeviceJoinRepositoryImpl
-import com.aconno.acnsensa.data.repository.RESTPublishRepositoryImpl
+import com.aconno.acnsensa.data.repository.gpublish.GooglePublishRepositoryImpl
+import com.aconno.acnsensa.data.repository.pdjoin.PublishDeviceJoinRepositoryImpl
+import com.aconno.acnsensa.data.repository.rpublish.RESTPublishRepositoryImpl
 import com.aconno.acnsensa.data.repository.devices.DeviceMapper
 import com.aconno.acnsensa.data.repository.devices.DeviceRepositoryImpl
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository

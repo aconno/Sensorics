@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.data.repository
+package com.aconno.acnsensa.data.repository.action
 
 import android.arch.persistence.room.*
 import io.reactivex.Single

@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.data.repository
+package com.aconno.acnsensa.data.repository.pdjoin
 
 import com.aconno.acnsensa.data.mapper.PublishPublishDeviceJoinJoinMapper
 import com.aconno.acnsensa.data.repository.devices.DeviceMapper
