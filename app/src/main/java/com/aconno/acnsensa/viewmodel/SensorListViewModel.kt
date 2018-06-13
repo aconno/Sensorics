@@ -2,21 +2,14 @@ package com.aconno.acnsensa.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
-import com.aconno.acnsensa.domain.model.ScanResult
+import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.filter.Reading
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
 
-/**
- * @author aconno
- */
 class SensorListViewModel(
-    private val scanResults: Flowable<ScanResult>,
-    private val filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
-    private val filterByMacAddressUseCase: FilterByMacAddressUseCase,
-    private val deserializeScanResultUseCase: DeserializeScanResultUseCase
+    private val readingsStream: Flowable<List<Reading>>,
+    private val filterByMacUseCase: FilterByMacUseCase
 ) : ViewModel() {
 
     private val sensorValuesLiveData: MutableLiveData<Map<String, Number>> = MutableLiveData()
@@ -25,14 +18,13 @@ class SensorListViewModel(
 
     fun setMacAddress(macAddress: String) {
         disposable?.dispose()
-        disposable = scanResults.concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
-            .concatMap { filterByMacAddressUseCase.execute(it, macAddress).toFlowable() }
-            .concatMap { deserializeScanResultUseCase.execute(it).toFlowable() }
+        disposable = readingsStream
+            .concatMap { filterByMacUseCase.execute(it, macAddress).toFlowable() }
             .subscribe { processSensorValues(it) }
     }
 
-    private fun processSensorValues(values: Map<String, Number>) {
-        sensorValuesLiveData.value = values
+    private fun processSensorValues(values: List<Reading>) {
+        sensorValuesLiveData.value = values.associateBy({ it.type.toString() }, { it.value })
     }
 
     fun getSensorValuesLiveData(): MutableLiveData<Map<String, Number>> {

@@ -2,9 +2,8 @@ package com.aconno.acnsensa.data.publisher
 
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
+import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.SensorReading
-import com.aconno.acnsensa.domain.model.readings.Reading
 
 class EmptyPublisher : Publisher {
 
@@ -20,7 +19,7 @@ class EmptyPublisher : Publisher {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun publish(reading: SensorReading) {
+    override fun publish(reading: Reading) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

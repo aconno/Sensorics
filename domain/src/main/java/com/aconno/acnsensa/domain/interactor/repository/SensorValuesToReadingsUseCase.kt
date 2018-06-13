@@ -1,15 +1,11 @@
 package com.aconno.acnsensa.domain.interactor.repository
 
-import com.aconno.acnsensa.domain.format.ScalarsAdvertisementFormat
-import com.aconno.acnsensa.domain.format.VectorsAdvertisementFormat
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.acnsensa.domain.model.SensorType
+import com.aconno.acnsensa.domain.model.SupportedNames
 import com.aconno.acnsensa.domain.model.readings.Reading
 import io.reactivex.Single
 
-/**
- * @aconno
- */
 class SensorValuesToReadingsUseCase :
     SingleUseCaseWithParameter<List<Reading>, Map<String, Number>> {
     override fun execute(parameter: Map<String, Number>): Single<List<Reading>> {
@@ -33,9 +29,9 @@ class SensorValuesToReadingsUseCase :
         timestamp: Long,
         values: Map<String, Number>
     ): Reading? {
-        val x = values[VectorsAdvertisementFormat.ACCELEROMETER_X]
-        val y = values[VectorsAdvertisementFormat.ACCELEROMETER_Y]
-        val z = values[VectorsAdvertisementFormat.ACCELEROMETER_Z]
+        val x = values[SupportedNames.ACCELEROMETER_X]
+        val y = values[SupportedNames.ACCELEROMETER_Y]
+        val z = values[SupportedNames.ACCELEROMETER_Z]
 
         return if (x != null && y != null && z != null) {
             Reading(listOf(x, y, z), timestamp, SensorType.ACCELEROMETER)
@@ -48,9 +44,9 @@ class SensorValuesToReadingsUseCase :
         timestamp: Long,
         values: Map<String, Number>
     ): Reading? {
-        val x = values[VectorsAdvertisementFormat.GYROSCOPE_X]
-        val y = values[VectorsAdvertisementFormat.GYROSCOPE_Y]
-        val z = values[VectorsAdvertisementFormat.GYROSCOPE_Z]
+        val x = values[SupportedNames.GYROSCOPE_X]
+        val y = values[SupportedNames.GYROSCOPE_Y]
+        val z = values[SupportedNames.GYROSCOPE_Z]
 
         return if (x != null && y != null && z != null) {
             Reading(listOf(x, y, z), timestamp, SensorType.GYROSCOPE)
@@ -63,7 +59,7 @@ class SensorValuesToReadingsUseCase :
         timestamp: Long,
         values: Map<String, Number>
     ): Reading? {
-        val humidity = values[ScalarsAdvertisementFormat.HUMIDITY]
+        val humidity = values[SupportedNames.HUMIDITY]
         humidity?.let { return Reading(listOf(it), timestamp, SensorType.HUMIDITY) }
         return null
     }
@@ -72,7 +68,7 @@ class SensorValuesToReadingsUseCase :
         timestamp: Long,
         values: Map<String, Number>
     ): Reading? {
-        val light = values[ScalarsAdvertisementFormat.LIGHT]
+        val light = values[SupportedNames.LIGHT]
         light?.let { return Reading(listOf(it), timestamp, SensorType.LIGHT) }
         return null
     }
@@ -81,9 +77,9 @@ class SensorValuesToReadingsUseCase :
         timestamp: Long,
         values: Map<String, Number>
     ): Reading? {
-        val x = values[VectorsAdvertisementFormat.MAGNETOMETER_X]
-        val y = values[VectorsAdvertisementFormat.MAGNETOMETER_Y]
-        val z = values[VectorsAdvertisementFormat.MAGNETOMETER_Z]
+        val x = values[SupportedNames.MAGNETOMETER_X]
+        val y = values[SupportedNames.MAGNETOMETER_Y]
+        val z = values[SupportedNames.MAGNETOMETER_Z]
 
         return if (x != null && y != null && z != null) {
             Reading(listOf(x, y, z), timestamp, SensorType.MAGNETOMETER)
@@ -96,7 +92,7 @@ class SensorValuesToReadingsUseCase :
         timestamp: Long,
         values: Map<String, Number>
     ): Reading? {
-        val pressure = values[ScalarsAdvertisementFormat.PRESSURE]
+        val pressure = values[SupportedNames.PRESSURE]
         pressure?.let { return Reading(listOf(it), timestamp, SensorType.PRESSURE) }
         return null
     }
@@ -105,7 +101,7 @@ class SensorValuesToReadingsUseCase :
         timestamp: Long,
         values: Map<String, Number>
     ): Reading? {
-        val temperature = values[ScalarsAdvertisementFormat.TEMPERATURE]
+        val temperature = values[SupportedNames.TEMPERATURE]
         temperature?.let { return Reading(listOf(it), timestamp, SensorType.TEMPERATURE) }
         return null
     }
@@ -114,7 +110,7 @@ class SensorValuesToReadingsUseCase :
         timestamp: Long,
         values: Map<String, Number>
     ): Reading? {
-        val batteryLevel = values[ScalarsAdvertisementFormat.BATTERY_LEVEL]
+        val batteryLevel = values[SupportedNames.BATTERY_LEVEL]
         batteryLevel?.let { return Reading(listOf(it), timestamp, SensorType.BATTERY_LEVEL) }
         return null
     }

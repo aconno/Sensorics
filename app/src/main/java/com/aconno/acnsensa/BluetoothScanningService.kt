@@ -20,38 +20,33 @@ import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
+import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
-import com.aconno.acnsensa.domain.interactor.repository.*
-import com.aconno.acnsensa.domain.model.SensorReading
+import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetRESTHeadersByIdUseCase
+import com.aconno.acnsensa.domain.interactor.repository.SaveSensorReadingsUseCase
 import com.aconno.acnsensa.domain.scanning.Bluetooth
-import io.reactivex.*
+import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-/**
- * @author aconno
- */
 class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var bluetooth: Bluetooth
 
     @Inject
-    lateinit var sensorReadings: Flowable<List<SensorReading>>
-
-    @Inject
-    lateinit var sensorValues: Flowable<Map<String, Number>>
+    lateinit var readings: Flowable<List<Reading>>
 
     @Inject
     lateinit var saveSensorReadingsUseCase: SaveSensorReadingsUseCase
-
-    @Inject
-    lateinit var sensorValuesToReadingsUseCase: SensorValuesToReadingsUseCase
 
     @Inject
     lateinit var logReadingsUseCase: LogReadingUseCase
@@ -137,7 +132,7 @@ class BluetoothScanningService : Service() {
     }
 
     private fun startSyncing() {
-        sensorReadings.subscribe {
+        readings.subscribe {
             //Publish when Google Cloud Integration Enabled
             publishReadingsUseCase?.execute(it)
                 ?.subscribeOn(Schedulers.io())
@@ -166,7 +161,7 @@ class BluetoothScanningService : Service() {
     }
 
     private fun handleInputsForActions() {
-        sensorReadings
+        readings
             .concatMap { sensorReadingToInputUseCase.execute(it).toFlowable() }
             .flatMapIterable { it }
             .concatMap {
@@ -195,16 +190,15 @@ class BluetoothScanningService : Service() {
     }
 
     private fun startRecording() {
-        sensorReadings.subscribe {
+        readings.subscribe {
             saveSensorReadingsUseCase.execute(it)
         }
     }
 
     private fun startLogging() {
-        sensorValues.concatMap { sensorValuesToReadingsUseCase.execute(it).toFlowable() }
-            .subscribe {
-                logReadingsUseCase.execute(it)
-            }
+        readings.subscribe {
+            logReadingsUseCase.execute(it)
+        }
     }
 
     private fun initPublishers() {

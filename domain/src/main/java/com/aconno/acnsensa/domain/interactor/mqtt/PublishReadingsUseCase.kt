@@ -1,18 +1,15 @@
 package com.aconno.acnsensa.domain.interactor.mqtt
 
 import com.aconno.acnsensa.domain.Publisher
+import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.interactor.type.FlowableUseCaseWithParameter
-import com.aconno.acnsensa.domain.model.SensorReading
 import io.reactivex.Flowable
 
-/**
- * @aconno
- */
 class PublishReadingsUseCase(
     private val listPublisher: List<Publisher>
-) : FlowableUseCaseWithParameter<List<Publisher>, List<SensorReading>> {
+) : FlowableUseCaseWithParameter<List<Publisher>, List<Reading>> {
 
-    override fun execute(parameter: List<SensorReading>): Flowable<List<Publisher>> {
+    override fun execute(parameter: List<Reading>): Flowable<List<Publisher>> {
         val publishedPublishers = mutableListOf<Publisher>()
 
         var isPublished = false

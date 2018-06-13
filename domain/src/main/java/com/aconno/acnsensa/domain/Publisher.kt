@@ -1,13 +1,12 @@
 package com.aconno.acnsensa.domain
 
 import com.aconno.acnsensa.domain.ifttt.BasePublish
+import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.SensorReading
-import com.aconno.acnsensa.domain.model.readings.Reading
 
 interface Publisher {
 
-    fun publish(reading: SensorReading)
+    fun publish(reading: Reading)
 
     fun isPublishable(device: Device): Boolean
 

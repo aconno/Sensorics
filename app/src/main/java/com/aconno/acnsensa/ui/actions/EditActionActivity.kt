@@ -17,10 +17,8 @@ import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
+import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.SensorTypeSingle
-import com.aconno.acnsensa.model.toSensorType
-import com.aconno.acnsensa.model.toStringResource
 import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialog
 import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialogListener
 import com.aconno.acnsensa.viewmodel.ActionViewModel
@@ -75,23 +73,23 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener,
     }
 
     private fun initConditions() {
-        SensorTypeSingle.values().forEach { sensorType ->
-            val view = getConditionView(sensorType)
-            view.text = sensorType.toStringResource(this)
+        ReadingType.values().forEach { type ->
+            val view = getConditionView(type)
+            view.text = type.toString()
             view.isChecked = false
         }
     }
 
     private fun setConditionListeners() {
-        SensorTypeSingle.values().forEach { sensorType ->
-            getConditionView(sensorType).setOnClickListener {
-                openConditionDialog(sensorType)
+        ReadingType.values().forEach { type ->
+            getConditionView(type).setOnClickListener {
+                openConditionDialog(type)
             }
         }
     }
 
-    private fun openConditionDialog(sensorType: SensorTypeSingle) {
-        val dialog = ConditionDialog.newInstance(sensorType)
+    private fun openConditionDialog(readingType: ReadingType) {
+        val dialog = ConditionDialog.newInstance(readingType)
         dialog.show(supportFragmentManager, "condition_dialog_fragment")
     }
 
@@ -193,7 +191,7 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener,
     private fun updateConditions(condition: Condition?) {
         initConditions()
         if (condition != null) {
-            val conditionView = getConditionView(condition.sensorType)
+            val conditionView = getConditionView(condition.readingType)
             conditionView.isChecked = true
             val constraintType = when (condition.type) {
                 LimitCondition.LESS_THAN -> "<"
@@ -236,27 +234,28 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener,
         showOutcomeOptions()
     }
 
-    private fun getConditionView(sensorType: SensorTypeSingle): CheckedTextView {
-        return when (sensorType) {
-            SensorTypeSingle.TEMPERATURE -> temperature
-            SensorTypeSingle.LIGHT -> light
-            SensorTypeSingle.HUMIDITY -> humidity
-            SensorTypeSingle.PRESSURE -> pressure
-            SensorTypeSingle.MAGNETOMETER_X -> magnetometer_x
-            SensorTypeSingle.MAGNETOMETER_Y -> magnetometer_y
-            SensorTypeSingle.MAGNETOMETER_Z -> magnetometer_z
-            SensorTypeSingle.ACCELEROMETER_X -> accelerometer_x
-            SensorTypeSingle.ACCELEROMETER_Y -> accelerometer_y
-            SensorTypeSingle.ACCELEROMETER_Z -> accelerometer_z
-            SensorTypeSingle.GYROSCOPE_X -> gyroscope_x
-            SensorTypeSingle.GYROSCOPE_Y -> gyroscope_y
-            SensorTypeSingle.GYROSCOPE_Z -> gyroscope_z
-            SensorTypeSingle.BATTERY_LEVEL -> battery_level
+    private fun getConditionView(readingType: ReadingType): CheckedTextView {
+        return when (readingType) {
+            ReadingType.TEMPERATURE -> temperature
+            ReadingType.LIGHT -> light
+            ReadingType.HUMIDITY -> humidity
+            ReadingType.PRESSURE -> pressure
+            ReadingType.MAGNETOMETER_X -> magnetometer_x
+            ReadingType.MAGNETOMETER_Y -> magnetometer_y
+            ReadingType.MAGNETOMETER_Z -> magnetometer_z
+            ReadingType.ACCELEROMETER_X -> accelerometer_x
+            ReadingType.ACCELEROMETER_Y -> accelerometer_y
+            ReadingType.ACCELEROMETER_Z -> accelerometer_z
+            ReadingType.GYROSCOPE_X -> gyroscope_x
+            ReadingType.GYROSCOPE_Y -> gyroscope_y
+            ReadingType.GYROSCOPE_Z -> gyroscope_z
+            ReadingType.BATTERY_LEVEL -> battery_level
+            ReadingType.OTHER -> temperature
         }
     }
 
-    override fun onSetClicked(sensorType: SensorTypeSingle, constraint: String, value: String) {
-        actionViewModel.setCondition(sensorType, constraint, value)
+    override fun onSetClicked(readingType: ReadingType, constraint: String, value: String) {
+        actionViewModel.setCondition(readingType, constraint, value)
     }
 
     companion object {

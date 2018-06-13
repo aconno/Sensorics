@@ -10,6 +10,7 @@ class DeviceRelationModelMapper @Inject constructor() {
         return DeviceRelationModel(
             device.name,
             device.macAddress,
+            device.icon,
             related
         )
     }
@@ -17,7 +18,8 @@ class DeviceRelationModelMapper @Inject constructor() {
     fun toDevice(deviceRelationModel: DeviceRelationModel): Device {
         return Device(
             deviceRelationModel.name,
-            deviceRelationModel.macAddress
+            deviceRelationModel.macAddress,
+            deviceRelationModel.icon
         )
     }
 }

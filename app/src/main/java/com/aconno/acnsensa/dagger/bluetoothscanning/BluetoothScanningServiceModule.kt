@@ -69,13 +69,6 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideSensorValuesToReadingsUseCase(): SensorValuesToReadingsUseCase {
-        return SensorValuesToReadingsUseCase()
-
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
     fun provideLogReadingsUseCase(): LogReadingUseCase {
         return LogReadingUseCase(FileStorageImpl(bluetoothScanningService))
     }

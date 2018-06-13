@@ -1,6 +1,8 @@
 package com.aconno.acnsensa
 
 import com.aconno.acnsensa.data.repository.AcnSensaDatabase
+import com.aconno.acnsensa.domain.interactor.ifttt.DeleteGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.DeleteRestPublishUseCase
 import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.model.mapper.*
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
@@ -22,8 +24,6 @@ object TestViewModelFactory {
         return PublishViewModel(
             TestObjectFactory.getAddGooglePublishUseCase(googlePublishRepository),
             TestObjectFactory.getAddRESTPublishUseCase(restPublishRepository),
-            TestObjectFactory.getUpdateGooglePublishUseCase(googlePublishRepository),
-            TestObjectFactory.getUpdateRESTPublishUseCase(restPublishRepository),
             GooglePublishModelDataMapper(),
             RESTPublishModelDataMapper(),
             SavePublishDeviceJoinUseCase(publishDeviceJoinRepository),
@@ -48,7 +48,9 @@ object TestViewModelFactory {
             GooglePublishDataMapper(),
             GooglePublishModelDataMapper(),
             RESTPublishDataMapper(),
-            RESTPublishModelDataMapper()
+            RESTPublishModelDataMapper(),
+            DeleteGooglePublishUseCase(googlePublishRepository),
+            DeleteRestPublishUseCase(restPublishRepository)
         )
     }
 }

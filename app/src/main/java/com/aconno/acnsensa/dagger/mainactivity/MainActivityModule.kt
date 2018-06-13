@@ -4,13 +4,11 @@ import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
-import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterByMacAddressUseCase
+import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.ui.MainActivity
@@ -32,15 +30,11 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     @Provides
     @MainActivityScope
     fun provideSensorListViewModelFactory(
-        scanResults: Flowable<ScanResult>,
-        filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
-        filterByMacAddressUseCase: FilterByMacAddressUseCase,
-        deserializeScanResultUseCase: DeserializeScanResultUseCase
+        readingsStream: Flowable<List<Reading>>,
+        filterByMacUseCase: FilterByMacUseCase
     ) = SensorListViewModelFactory(
-        scanResults,
-        filterAdvertisementsUseCase,
-        filterByMacAddressUseCase,
-        deserializeScanResultUseCase
+        readingsStream,
+        filterByMacUseCase
     )
 
     @Provides

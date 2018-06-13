@@ -5,8 +5,11 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.support.v4.content.ContextCompat
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetSensorReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterReadingsByMacAddressUseCase
+import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 import com.aconno.acnsensa.domain.model.SensorReading
 import com.aconno.acnsensa.domain.model.SensorTypeSingle
 import com.aconno.acnsensa.model.DataSeriesSettings
@@ -17,9 +20,9 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
 
 class LiveGraphViewModel(
-    private val sensorReadings: Flowable<List<SensorReading>>,
-    private val filterReadingsByMacAddressUseCase: FilterReadingsByMacAddressUseCase,
-    private val getSensorReadingsUseCase: GetSensorReadingsUseCase,
+    private val readings: Flowable<List<Reading>>,
+    private val filterByMacUseCase: FilterByMacUseCase,
+    private val getReadingsUseCase: GetReadingsUseCase,
     application: Application
 ) : AndroidViewModel(application) {
     private val refreshTimestamp: MutableLiveData<Long> = MutableLiveData()
@@ -31,8 +34,8 @@ class LiveGraphViewModel(
     fun setMacAddress(macAddress: String) {
         this.macAddress = macAddress
         disposable?.dispose()
-        disposable = sensorReadings.concatMap {
-            filterReadingsByMacAddressUseCase.execute(it, macAddress).toFlowable()
+        disposable = readings.concatMap {
+            filterByMacUseCase.execute(it, macAddress).toFlowable()
         }.subscribe { processSensorValues(it) }
     }
 
@@ -176,10 +179,10 @@ class LiveGraphViewModel(
         }
     }
 
-    private fun processSensorValues(sensorReadings: List<SensorReading>) {
+    private fun processSensorValues(readings: List<Reading>) {
         when (graphType) {
             GraphType.TEMPERATURE ->
-                getSensorReadingsUseCase.execute(SensorTypeSingle.TEMPERATURE)
+                getReadingsUseCase.execute(ReadingType.TEMPERATURE)
                     .subscribe { temperatureReadings ->
                         val filtered = temperatureReadings.filter {
                             it.device.macAddress == macAddress
@@ -187,7 +190,7 @@ class LiveGraphViewModel(
                         temperatureSeries.updateDataSet(filtered)
                     }
             GraphType.LIGHT ->
-                getSensorReadingsUseCase.execute(SensorTypeSingle.LIGHT)
+                getReadingsUseCase.execute(ReadingType.LIGHT)
                     .subscribe { lightReadings ->
                         val filtered = lightReadings.filter {
                             it.device.macAddress == macAddress
@@ -195,7 +198,7 @@ class LiveGraphViewModel(
                         lightSeries.updateDataSet(filtered)
                     }
             GraphType.HUMIDITY ->
-                getSensorReadingsUseCase.execute(SensorTypeSingle.HUMIDITY)
+                getReadingsUseCase.execute(ReadingType.HUMIDITY)
                     .subscribe { humidityReadings ->
                         val filtered = humidityReadings.filter {
                             it.device.macAddress == macAddress
@@ -203,7 +206,7 @@ class LiveGraphViewModel(
                         humiditySeries.updateDataSet(filtered)
                     }
             GraphType.PRESSURE ->
-                getSensorReadingsUseCase.execute(SensorTypeSingle.PRESSURE)
+                getReadingsUseCase.execute(ReadingType.PRESSURE)
                     .subscribe { pressureReadings ->
                         val filtered = pressureReadings.filter {
                             it.device.macAddress == macAddress
@@ -211,21 +214,21 @@ class LiveGraphViewModel(
                         pressureSeries.updateDataSet(filtered)
                     }
             GraphType.MAGNETOMETER -> {
-                getSensorReadingsUseCase.execute(SensorTypeSingle.MAGNETOMETER_X)
+                getReadingsUseCase.execute(ReadingType.MAGNETOMETER_X)
                     .subscribe { magnetometerXReadings ->
                         val filtered = magnetometerXReadings.filter {
                             it.device.macAddress == macAddress
                         }
                         xMagnetometerSeries.updateDataSet(filtered)
                     }
-                getSensorReadingsUseCase.execute(SensorTypeSingle.MAGNETOMETER_Y)
+                getReadingsUseCase.execute(ReadingType.MAGNETOMETER_Y)
                     .subscribe { magnetometerYReadings ->
                         val filtered = magnetometerYReadings.filter {
                             it.device.macAddress == macAddress
                         }
                         yMagnetometerSeries.updateDataSet(filtered)
                     }
-                getSensorReadingsUseCase.execute(SensorTypeSingle.MAGNETOMETER_Z)
+                getReadingsUseCase.execute(ReadingType.MAGNETOMETER_Z)
                     .subscribe { magnetometerZReadings ->
                         val filtered = magnetometerZReadings.filter {
                             it.device.macAddress == macAddress
@@ -234,21 +237,21 @@ class LiveGraphViewModel(
                     }
             }
             GraphType.ACCELEROMETER -> {
-                getSensorReadingsUseCase.execute(SensorTypeSingle.ACCELEROMETER_X)
+                getReadingsUseCase.execute(ReadingType.ACCELEROMETER_X)
                     .subscribe { accelerometerXReadings ->
                         val filtered = accelerometerXReadings.filter {
                             it.device.macAddress == macAddress
                         }
                         xAccelerometerSeries.updateDataSet(filtered)
                     }
-                getSensorReadingsUseCase.execute(SensorTypeSingle.ACCELEROMETER_Y)
+                getReadingsUseCase.execute(ReadingType.ACCELEROMETER_Y)
                     .subscribe { accelerometerYReadings ->
                         val filtered = accelerometerYReadings.filter {
                             it.device.macAddress == macAddress
                         }
                         yAccelerometerSeries.updateDataSet(filtered)
                     }
-                getSensorReadingsUseCase.execute(SensorTypeSingle.ACCELEROMETER_Z)
+                getReadingsUseCase.execute(ReadingType.ACCELEROMETER_Z)
                     .subscribe { accelerometerZReadings ->
                         val filtered = accelerometerZReadings.filter {
                             it.device.macAddress == macAddress
@@ -257,21 +260,21 @@ class LiveGraphViewModel(
                     }
             }
             GraphType.GYROSCOPE -> {
-                getSensorReadingsUseCase.execute(SensorTypeSingle.GYROSCOPE_X)
+                getReadingsUseCase.execute(ReadingType.GYROSCOPE_X)
                     .subscribe { gyroscopeXReadings ->
                         val filtered = gyroscopeXReadings.filter {
                             it.device.macAddress == macAddress
                         }
                         xGyroscopeSeries.updateDataSet(filtered)
                     }
-                getSensorReadingsUseCase.execute(SensorTypeSingle.GYROSCOPE_Y)
+                getReadingsUseCase.execute(ReadingType.GYROSCOPE_Y)
                     .subscribe { gyroscopeYReadings ->
                         val filtered = gyroscopeYReadings.filter {
                             it.device.macAddress == macAddress
                         }
                         yGyroscopeSeries.updateDataSet(filtered)
                     }
-                getSensorReadingsUseCase.execute(SensorTypeSingle.GYROSCOPE_Z)
+                getReadingsUseCase.execute(ReadingType.GYROSCOPE_Z)
                     .subscribe { gyroscopeZReadings ->
                         val filtered = gyroscopeZReadings.filter {
                             it.device.macAddress == macAddress
@@ -280,7 +283,7 @@ class LiveGraphViewModel(
                     }
             }
             GraphType.BATTERY_LEVEL ->
-                getSensorReadingsUseCase.execute(SensorTypeSingle.BATTERY_LEVEL)
+                getReadingsUseCase.execute(ReadingType.BATTERY_LEVEL)
                     .subscribe { batteryLevelReadings ->
                         val filtered = batteryLevelReadings.filter {
                             it.device.macAddress == macAddress
@@ -289,7 +292,6 @@ class LiveGraphViewModel(
                     }
             else -> throw IllegalArgumentException()
         }
-
         refreshTimestamp.value = System.currentTimeMillis()
     }
 }
