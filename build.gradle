@@ -27,10 +27,15 @@ task clean(type: Delete) {
 }
 
 ext {
+    acnSensaVersionCode = 8
+    acnSensaVersionName = '2.1.4'
+
     supportLibraryVersion = '27.1.1'
 
     daggerVersion = '2.14.1'
     timberVersion = '4.7.0'
-    acnSensaVersionCode = 8
-    acnSensaVersionName = "2.1.4"
+
+    junitVersion = '4.12'
+    testRunnerVersion = '1.0.2'
+    espressoVersion = '3.0.2'
 }

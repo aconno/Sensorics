@@ -32,18 +32,22 @@ repositories {
 
 dependencies {
     implementation project(':domain')
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation "com.jakewharton.timber:timber:$timberVersion"
-
-    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+    // Support
+    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+
+    // Testing
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
+
+    // Logging
+    implementation "com.jakewharton.timber:timber:$timberVersion"
+
+    // MQTT
     implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.1.1') {
         exclude module: 'support-v4'
     }
@@ -64,5 +68,4 @@ dependencies {
     //javax inject
     implementation 'javax.inject:javax.inject:1'
     compileOnly 'javax.annotation:jsr250-api:1.0'
-
 }
