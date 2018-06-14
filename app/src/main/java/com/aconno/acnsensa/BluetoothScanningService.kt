@@ -20,7 +20,7 @@ import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.ifttt.*
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase

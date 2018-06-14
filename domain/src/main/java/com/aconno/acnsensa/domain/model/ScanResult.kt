@@ -1,3 +1,7 @@
 package com.aconno.acnsensa.domain.model
 
-data class ScanResult(val device: Device, val advertisement: Advertisement)
+data class ScanResult(
+    val timestamp: Long,
+    val macAddress: String,
+    val rawData: List<Byte>
+)

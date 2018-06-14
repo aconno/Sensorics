@@ -9,7 +9,7 @@ import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository

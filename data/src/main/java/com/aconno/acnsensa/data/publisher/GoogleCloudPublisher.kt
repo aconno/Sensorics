@@ -6,7 +6,7 @@ import com.aconno.acnsensa.data.converter.PublisherDataConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.model.Device
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm

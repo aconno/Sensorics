@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.data.repository
 
-import com.aconno.acnsensa.domain.interactor.filter.Reading
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.Reading
+import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 
 class InMemoryRepositoryImpl : InMemoryRepository {

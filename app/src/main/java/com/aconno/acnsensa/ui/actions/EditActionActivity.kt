@@ -17,7 +17,7 @@ import com.aconno.acnsensa.dagger.actionlist.DaggerActionListComponent
 import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialog
 import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialogListener

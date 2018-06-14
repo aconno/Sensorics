@@ -5,7 +5,7 @@ import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.ReadingType
 import io.reactivex.Single
 
 class ActionsRepositoryImpl(

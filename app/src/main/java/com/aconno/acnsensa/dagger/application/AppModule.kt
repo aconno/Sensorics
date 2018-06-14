@@ -30,16 +30,15 @@ import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.format.AdvertisementFormat
 import com.aconno.acnsensa.domain.format.FormatMatcher
 import com.aconno.acnsensa.domain.ifttt.*
-import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
 import com.aconno.acnsensa.domain.interactor.consolidation.GenerateDeviceUseCase
 import com.aconno.acnsensa.domain.interactor.consolidation.GenerateReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
@@ -89,18 +88,6 @@ class AppModule(
     @Provides
     @Singleton
     fun provideAcnSensaApplication(): AcnSensaApplication = acnSensaApplication
-
-    @Provides
-    @Singleton
-    fun provideFilterAdvertisementUseCase(formatMatcher: FormatMatcher) =
-        FilterAdvertisementsUseCase(formatMatcher)
-
-    @Provides
-    @Singleton
-    fun provideSensorValuesUseCase(
-        formatMatcher: FormatMatcher,
-        deserializer: Deserializer
-    ) = DeserializeScanResultUseCase(formatMatcher, deserializer)
 
     @Provides
     @Singleton
@@ -256,7 +243,7 @@ class AppModule(
     fun provideFilteredScanResult(
         bluetooth: Bluetooth,
         filterByFormatUseCase: FilterByFormatUseCase
-    ): Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult> {
+    ): Flowable<ScanResult> {
         return bluetooth.getScanResults()
             .concatMap { filterByFormatUseCase.execute(it).toFlowable() }
     }
@@ -264,7 +251,7 @@ class AppModule(
     @Provides
     @Singleton
     fun provideDevice(
-        filteredScanResult: Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult>,
+        filteredScanResult: Flowable<ScanResult>,
         generateDeviceUseCase: GenerateDeviceUseCase
     ): Flowable<Device> {
         return filteredScanResult.concatMap { generateDeviceUseCase.execute(it).toFlowable() }
@@ -273,7 +260,7 @@ class AppModule(
     @Provides
     @Singleton
     fun provideReadings(
-        filteredScanResult: Flowable<com.aconno.acnsensa.domain.interactor.filter.ScanResult>,
+        filteredScanResult: Flowable<ScanResult>,
         generateReadingsUseCase: GenerateReadingsUseCase
     ): Flowable<List<Reading>> {
         return filteredScanResult.concatMap { generateReadingsUseCase.execute(it).toFlowable() }

@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.ReadingType
 import kotlinx.android.synthetic.main.dialog_condition.*
 
 class ConditionDialog : DialogFragment() {

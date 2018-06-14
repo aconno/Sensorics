@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.domain.interactor.bluetooth
 
-import com.aconno.acnsensa.domain.interactor.filter.Reading
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.Reading
+import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import io.reactivex.Single

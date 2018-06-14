@@ -2,6 +2,7 @@ package com.aconno.acnsensa.domain.interactor.filter
 
 import com.aconno.acnsensa.domain.format.FormatMatcher
 import com.aconno.acnsensa.domain.interactor.type.MaybeUseCaseWithParameter
+import com.aconno.acnsensa.domain.model.ScanResult
 import io.reactivex.Maybe
 
 class FilterByFormatUseCase(

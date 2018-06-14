@@ -1,6 +1,6 @@
 package com.aconno.acnsensa.domain.interactor.repository
 
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.type.CompletableUseCaseWithParameter
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import io.reactivex.Completable

@@ -4,7 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
 import io.reactivex.Flowable
 

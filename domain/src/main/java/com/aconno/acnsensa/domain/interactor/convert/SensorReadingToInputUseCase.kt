@@ -2,7 +2,7 @@ package com.aconno.acnsensa.domain.interactor.convert
 
 import com.aconno.acnsensa.domain.ifttt.GeneralInput
 import com.aconno.acnsensa.domain.ifttt.Input
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import io.reactivex.Single
 

@@ -1,8 +1,8 @@
 package com.aconno.acnsensa.domain.interactor
 
 import com.aconno.acnsensa.domain.FileStorage
-import com.aconno.acnsensa.domain.interactor.filter.Reading
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.Reading
+import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.domain.interactor.type.CompletableUseCaseWithParameter
 import io.reactivex.Completable
 

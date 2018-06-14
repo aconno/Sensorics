@@ -1,6 +1,4 @@
-package com.aconno.acnsensa.domain.interactor.filter
-
-import com.aconno.acnsensa.domain.model.Device
+package com.aconno.acnsensa.domain.model
 
 data class Reading(
     val timestamp: Long,

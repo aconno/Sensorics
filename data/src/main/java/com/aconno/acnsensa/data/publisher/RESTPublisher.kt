@@ -5,8 +5,8 @@ import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.RESTHeader
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
-import com.aconno.acnsensa.domain.interactor.filter.Reading
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.Reading
+import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.domain.model.Device
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

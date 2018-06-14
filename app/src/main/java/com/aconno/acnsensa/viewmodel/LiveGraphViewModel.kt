@@ -7,8 +7,8 @@ import android.support.v4.content.ContextCompat
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.acnsensa.domain.interactor.filter.Reading
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.Reading
+import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.model.DataSeriesSettings
 import com.aconno.acnsensa.ui.graph.BleDataSeries
 import com.aconno.acnsensa.ui.graph.BleGraph

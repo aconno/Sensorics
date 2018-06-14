@@ -1,6 +1,6 @@
 package com.aconno.acnsensa.data.converter
 
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import java.text.SimpleDateFormat
 import java.util.*
 

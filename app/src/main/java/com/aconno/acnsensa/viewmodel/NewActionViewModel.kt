@@ -8,7 +8,7 @@ import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.domain.interactor.ifttt.AddActionUseCase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

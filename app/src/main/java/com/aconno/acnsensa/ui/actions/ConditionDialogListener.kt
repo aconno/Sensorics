@@ -1,6 +1,6 @@
 package com.aconno.acnsensa.ui.actions
 
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.ReadingType
 
 interface ConditionDialogListener {
 

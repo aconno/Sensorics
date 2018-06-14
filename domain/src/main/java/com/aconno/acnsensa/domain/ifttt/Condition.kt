@@ -1,6 +1,6 @@
 package com.aconno.acnsensa.domain.ifttt
 
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.ReadingType
 
 interface Condition {
     val readingType: ReadingType

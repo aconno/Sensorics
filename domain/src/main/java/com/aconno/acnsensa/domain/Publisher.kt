@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.domain
 
 import com.aconno.acnsensa.domain.ifttt.BasePublish
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.model.Device
 
 interface Publisher {

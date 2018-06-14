@@ -5,7 +5,7 @@ import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.acnsensa.domain.model.Device

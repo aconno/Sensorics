@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.domain.interactor.mqtt
 
 import com.aconno.acnsensa.domain.Publisher
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.type.FlowableUseCaseWithParameter
 import io.reactivex.Flowable
 
