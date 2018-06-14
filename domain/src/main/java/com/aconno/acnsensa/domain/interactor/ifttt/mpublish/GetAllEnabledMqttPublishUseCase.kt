@@ -5,7 +5,7 @@ import com.aconno.acnsensa.domain.ifttt.MqttPublishRepository
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCase
 import io.reactivex.Single
 
-class GetAllEnabledGooglePublishUseCase(
+class GetAllEnabledMqttPublishUseCase(
     private val mqttPublishRepository: MqttPublishRepository
 ) : SingleUseCase<List<BasePublish>> {
     override fun execute(): Single<List<BasePublish>> {

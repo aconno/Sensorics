@@ -2,19 +2,17 @@ package com.aconno.acnsensa.viewmodel
 
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.ifttt.GeneralGooglePublishDeviceJoin
+import com.aconno.acnsensa.domain.ifttt.GeneralMqttPublishDeviceJoin
 import com.aconno.acnsensa.domain.ifttt.GeneralRestPublishDeviceJoin
 import com.aconno.acnsensa.domain.ifttt.RESTHeader
 import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.AddGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.AddMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.repository.*
-import com.aconno.acnsensa.model.DeviceRelationModel
-import com.aconno.acnsensa.model.GooglePublishModel
-import com.aconno.acnsensa.model.RESTHeaderModel
-import com.aconno.acnsensa.model.RESTPublishModel
-import com.aconno.acnsensa.model.mapper.DeviceRelationModelMapper
-import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
-import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
-import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
+import com.aconno.acnsensa.model.*
+import com.aconno.acnsensa.model.mapper.*
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -35,7 +33,10 @@ class PublishViewModel(
     private val saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
     private val deleteRESTHeaderUseCase: DeleteRESTHeaderUseCase,
     private val getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
-    private val restHeaderModelMapper: RESTHeaderModelMapper
+    private val restHeaderModelMapper: RESTHeaderModelMapper,
+    private val addMqttPublishUseCase: AddMqttPublishUseCase,
+    private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
+    private val devicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase
 ) : ViewModel() {
 
     fun save(
@@ -54,6 +55,16 @@ class PublishViewModel(
 
         val transform = restPublishModelDataMapper.transform(restPublishModel)
         return addRESTPublishUseCase.execute(transform)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun save(
+        mqttPublishModel: MqttPublishModel
+    ): Single<Long> {
+
+        val transform = mqttPublishModelDataMapper.toMqttPublish(mqttPublishModel)
+        return addMqttPublishUseCase.execute(transform)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -78,6 +89,19 @@ class PublishViewModel(
         return savePublishDeviceJoinUseCase.execute(
             GeneralGooglePublishDeviceJoin(
                 googleId,
+                deviceId
+            )
+        ).subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
+    fun addOrUpdateMqttRelation(
+        deviceId: String,
+        mqttId: Long
+    ): Disposable {
+        return savePublishDeviceJoinUseCase.execute(
+            GeneralMqttPublishDeviceJoin(
+                mqttId,
                 deviceId
             )
         ).subscribeOn(Schedulers.io())
@@ -111,6 +135,15 @@ class PublishViewModel(
             }.toList()
     }
 
+    fun getDevicesThatConnectedWithMqttPublish(mqttId: Long): Single<MutableList<DeviceRelationModel>> {
+        return devicesThatConnectedWithMqttPublishUseCase.execute(mqttId)
+            .toFlowable()
+            .flatMapIterable { it }
+            .map {
+                deviceRelationModelMapper.toDeviceRelationModel(it, true)
+            }.toList()
+    }
+
     fun deleteRelationGoogle(
         deviceId: String,
         googleId: Long
@@ -131,6 +164,19 @@ class PublishViewModel(
         return deletePublishDeviceJoinUseCase.execute(
             GeneralRestPublishDeviceJoin(
                 restId,
+                deviceId
+            )
+        ).subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
+    fun deleteRelationMqtt(
+        deviceId: String,
+        mqttId: Long
+    ): Disposable {
+        return deletePublishDeviceJoinUseCase.execute(
+            GeneralMqttPublishDeviceJoin(
+                mqttId,
                 deviceId
             )
         ).subscribeOn(Schedulers.io())

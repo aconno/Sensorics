@@ -18,6 +18,7 @@ import com.aconno.acnsensa.dagger.publish.PublishListComponent
 import com.aconno.acnsensa.dagger.publish.PublishListModule
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
+import com.aconno.acnsensa.model.MqttPublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
 import com.aconno.acnsensa.ui.base.BaseFragment
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
@@ -77,6 +78,8 @@ class PublishListFragment : BaseFragment(),
                 addDisposable(publishListViewModel.update(item))
             } else if (item is RESTPublishModel) {
                 addDisposable(publishListViewModel.update(item))
+            } else if (item is MqttPublishModel) {
+                addDisposable(publishListViewModel.update(item))
             }
         }
     }
@@ -100,7 +103,7 @@ class PublishListFragment : BaseFragment(),
 
             val dividerItemDecoration = DividerItemDecoration(
                 recyclerView.context,
-                (layoutManager as LinearLayoutManager).getOrientation()
+                (layoutManager as LinearLayoutManager).orientation
             )
             this.addItemDecoration(dividerItemDecoration)
         }
@@ -159,6 +162,11 @@ class PublishListFragment : BaseFragment(),
                         publishListViewModel.delete(selectedItem as RESTPublishModel)
                     )
                 }
+                is MqttPublishModel -> {
+                    addDisposable(
+                        publishListViewModel.delete(selectedItem as MqttPublishModel)
+                    )
+                }
                 else -> throw IllegalArgumentException("Illegal argument provided.")
             }
 
@@ -171,8 +179,8 @@ class PublishListFragment : BaseFragment(),
         }
     }
 
-    override fun onLongClick(basePublishModel: BasePublishModel) {
-        selectedItem = basePublishModel
+    override fun onLongClick(param: BasePublishModel) {
+        selectedItem = param
         val builder = AlertDialog.Builder(context)
 
         builder.setMessage(getString(R.string.are_you_sure))

@@ -2,17 +2,18 @@ package com.aconno.acnsensa.dagger.publish
 
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.domain.ifttt.GooglePublishRepository
+import com.aconno.acnsensa.domain.ifttt.MqttPublishRepository
 import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository
 import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.DeleteGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.GetAllGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.AddMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.DeleteRestPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
-import com.aconno.acnsensa.model.mapper.GooglePublishDataMapper
-import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
-import com.aconno.acnsensa.model.mapper.RESTPublishDataMapper
-import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.*
 import com.aconno.acnsensa.ui.settings.PublishListFragment
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import com.aconno.acnsensa.viewmodel.factory.PublishListViewModelFactory
@@ -43,6 +44,14 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
+    fun provideGetAllMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): GetAllMqttPublishUseCase {
+        return GetAllMqttPublishUseCase(
+            mqttPublishRepository
+        )
+    }
+
+    @Provides
+    @PublishListScope
     fun provideUpdateGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): UpdateGooglePublishUseCase {
         return UpdateGooglePublishUseCase(
             googlePublishRepository
@@ -59,6 +68,14 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
+    fun provideAddMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): AddMqttPublishUseCase {
+        return AddMqttPublishUseCase(
+            mqttPublishRepository
+        )
+    }
+
+    @Provides
+    @PublishListScope
     fun provideDeleteGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): DeleteGooglePublishUseCase {
         return DeleteGooglePublishUseCase(
             googlePublishRepository
@@ -70,6 +87,14 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
     fun provideDeleteRESTPublishUseCase(restPublishRepository: RESTPublishRepository): DeleteRestPublishUseCase {
         return DeleteRestPublishUseCase(
             restPublishRepository
+        )
+    }
+
+    @Provides
+    @PublishListScope
+    fun provideDeleteMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): DeleteMqttPublishUseCase {
+        return DeleteMqttPublishUseCase(
+            mqttPublishRepository
         )
     }
 
@@ -92,7 +117,12 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
         restPublishDataMapper: RESTPublishDataMapper,
         restPublishModelDataMapper: RESTPublishModelDataMapper,
         deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
-        deleteRestPublishUseCase: DeleteRestPublishUseCase
+        deleteRestPublishUseCase: DeleteRestPublishUseCase,
+        getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
+        updateMqttPublishUseCase: AddMqttPublishUseCase,
+        mqttPublishModelDataMapper: MqttPublishModelDataMapper,
+        deleteMqttPublishUseCase: DeleteMqttPublishUseCase
+
     ) =
         PublishListViewModelFactory(
             getAllGooglePublishUseCase,
@@ -104,6 +134,10 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
             restPublishDataMapper,
             restPublishModelDataMapper,
             deleteGooglePublishUseCase,
-            deleteRestPublishUseCase
+            deleteRestPublishUseCase,
+            getAllMqttPublishUseCase,
+            updateMqttPublishUseCase,
+            mqttPublishModelDataMapper,
+            deleteMqttPublishUseCase
         )
 }
