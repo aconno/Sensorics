@@ -9,9 +9,6 @@ import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.model.toString
 import kotlinx.android.synthetic.main.item_action.view.*
 
-/**
- * @author aconno
- */
 class ActionAdapter(
     private val actions: MutableList<Action>,
     private val clickListener: ItemClickListener<Action>
@@ -40,9 +37,10 @@ class ActionAdapter(
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(action: Action) {
-            view.action_name.text = action.name
+            view.text_name.text = action.name
             view.text_mac_address.text = action.deviceMacAddress
-            view.action_condition.text = action.condition.toString(view.context)
+            view.text_condition.text = action.condition.toString(view.context)
+            view.text_outcome.text = action.outcome.toString()
             view.setOnClickListener { clickListener.onItemClick(action) }
         }
     }

@@ -41,6 +41,16 @@ class OutcomeExecutorSelector(
 
 class Outcome(val parameters: Map<String, String>, val type: Int) {
 
+    override fun toString(): String {
+        return when (type) {
+            0 -> "Notification"
+            1 -> "SMS"
+            2 -> "Text to Speech"
+            3 -> "Vibration"
+            else -> throw IllegalArgumentException("Outcome type not valid: $type")
+        }
+    }
+
     companion object {
         const val OUTCOME_TYPE_NOTIFICATION = 0
         const val OUTCOME_TYPE_SMS = 1
