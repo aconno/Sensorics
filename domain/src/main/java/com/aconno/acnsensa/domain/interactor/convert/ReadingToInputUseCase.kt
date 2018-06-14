@@ -6,7 +6,7 @@ import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import io.reactivex.Single
 
-class SensorReadingToInputUseCase : SingleUseCaseWithParameter<List<Input>, List<Reading>> {
+class ReadingToInputUseCase : SingleUseCaseWithParameter<List<Input>, List<Reading>> {
 
     override fun execute(parameter: List<Reading>): Single<List<Input>> {
         return Single.just(parameter.map {

@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.domain.interactor.bluetooth
+package com.aconno.acnsensa.domain.interactor.repository
 
 import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.model.ReadingType

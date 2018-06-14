@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.dagger.livegraph
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.repository.InMemoryRepository

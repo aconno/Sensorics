@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.support.v4.content.ContextCompat
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.interactor.bluetooth.GetReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.model.ReadingType

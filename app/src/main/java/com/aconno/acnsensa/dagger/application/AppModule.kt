@@ -32,7 +32,7 @@ import com.aconno.acnsensa.domain.format.FormatMatcher
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.consolidation.GenerateDeviceUseCase
 import com.aconno.acnsensa.domain.interactor.consolidation.GenerateReadingsUseCase
-import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
+import com.aconno.acnsensa.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.acnsensa.domain.model.Reading
@@ -191,7 +191,7 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideSensorReadingToInputUseCase() = SensorReadingToInputUseCase()
+    fun provideReadingToInputUseCase() = ReadingToInputUseCase()
 
     @Provides
     @Singleton
