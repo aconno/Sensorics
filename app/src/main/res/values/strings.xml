@@ -200,6 +200,8 @@
     <string name="qos_1">1</string>
     <string name="qos_0">0</string>
     <string name="qos_2">2</string>
+    <string name="dataString">Data String</string>
+    <string name="dataStringHint">211,$temperature\n212,$battery</string>
 
     <string-array name="header_keys">
         <item>A-IM</item>

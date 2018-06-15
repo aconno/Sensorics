@@ -1,6 +1,6 @@
 package com.aconno.acnsensa.ui.graph
 
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.model.DataSeriesSettings
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet

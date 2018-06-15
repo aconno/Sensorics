@@ -7,9 +7,9 @@ import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
-import com.aconno.acnsensa.domain.interactor.convert.SensorReadingToInputUseCase
+import com.aconno.acnsensa.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
@@ -60,7 +60,7 @@ interface AppComponent {
 
     fun deviceRepository(): DeviceRepository
 
-    fun sensorReadingToInputUseCase(): SensorReadingToInputUseCase
+    fun readingToInputUseCase(): ReadingToInputUseCase
 
     fun inject(scannedDevicesDialog: ScannedDevicesDialog)
 

@@ -2,7 +2,7 @@ package com.aconno.acnsensa.device.storage
 
 import android.content.Context
 import com.aconno.acnsensa.domain.FileStorage
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintWriter

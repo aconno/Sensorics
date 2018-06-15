@@ -1,13 +1,13 @@
 package com.aconno.acnsensa.data.publisher
 
-import com.aconno.acnsensa.data.converter.PublisherDataConverter
+import com.aconno.acnsensa.data.converter.DataStringConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.RESTHeader
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
-import com.aconno.acnsensa.domain.interactor.filter.Reading
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
 import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.Reading
+import com.aconno.acnsensa.domain.model.ReadingType
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -22,13 +22,16 @@ class RESTPublisher(
 ) : Publisher {
 
     private val httpClient: OkHttpClient
+    private val dataStringConverter: DataStringConverter
 
     init {
         val logging = HttpLoggingInterceptor()
-        logging.level = HttpLoggingInterceptor.Level.HEADERS
+        logging.level = HttpLoggingInterceptor.Level.BODY
         httpClient = OkHttpClient.Builder()
             .addInterceptor(logging)
             .build()
+
+        dataStringConverter = DataStringConverter(restPublish.dataString)
     }
 
     companion object {
@@ -36,7 +39,7 @@ class RESTPublisher(
     }
 
     override fun publish(reading: Reading) {
-        val messages = PublisherDataConverter.convert(reading)
+        val messages = dataStringConverter.convert(reading) ?: return
 
         Observable.fromIterable(messages)
             .subscribeOn(Schedulers.io())
@@ -52,16 +55,16 @@ class RESTPublisher(
 
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
 
-        val convertList = PublisherDataConverter.convert(
+        val convertList = dataStringConverter.convert(
             Reading(
                 System.currentTimeMillis(),
                 Device("TestDevice", "MA:CA:DD:RE:SS:11"),
                 1,
-                ReadingType.OTHER
+                ReadingType.TEMPERATURE
             )
         )
 
-        getRequestObservable(convertList[0])
+        getRequestObservable(convertList!![0])
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {

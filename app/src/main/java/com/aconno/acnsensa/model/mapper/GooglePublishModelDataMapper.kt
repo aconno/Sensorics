@@ -26,8 +26,8 @@ class GooglePublishModelDataMapper @Inject constructor() {
             googlePublishModel.enabled,
             googlePublishModel.timeType,
             googlePublishModel.timeMillis,
-            googlePublishModel.lastTimeMillis
-
+            googlePublishModel.lastTimeMillis,
+            googlePublishModel.dataString
         )
     }
 }

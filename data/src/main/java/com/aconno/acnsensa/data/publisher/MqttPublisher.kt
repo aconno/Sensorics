@@ -1,12 +1,12 @@
 package com.aconno.acnsensa.data.publisher
 
 import android.content.Context
-import com.aconno.acnsensa.data.converter.PublisherDataConverter
+import com.aconno.acnsensa.data.converter.DataStringConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.MqttPublish
-import com.aconno.acnsensa.domain.interactor.filter.Reading
 import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.Reading
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import timber.log.Timber
@@ -27,6 +27,8 @@ class MqttPublisher(
     private val messagesQueue: Queue<String> = LinkedList<String>()
 
     private var testConnectionCallback: Publisher.TestConnectionCallback? = null
+    private val dataStringConverter: DataStringConverter
+
 
     init {
         mqttAndroidClient.setCallback(
@@ -48,6 +50,8 @@ class MqttPublisher(
                     Timber.d("Delivery complete, token: %s", token)
                 }
             })
+
+        dataStringConverter = DataStringConverter(mqttPublish.dataString)
     }
 
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
@@ -69,7 +73,7 @@ class MqttPublisher(
     }
 
     override fun publish(reading: Reading) {
-        val messages = PublisherDataConverter.convert(reading)
+        val messages = dataStringConverter.convert(reading) ?: return
         for (message in messages) {
             Timber.tag("Publisher Mqtt ")
                 .d("${mqttPublish.name} publishes from ${reading.device}")

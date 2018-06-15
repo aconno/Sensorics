@@ -12,5 +12,6 @@ class GeneralMqttPublish(
     override var enabled: Boolean,
     override var timeType: String,
     override var timeMillis: Long,
-    override var lastTimeMillis: Long
+    override var lastTimeMillis: Long,
+    override var dataString: String
 ) : MqttPublish

@@ -18,10 +18,8 @@ import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
 import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
-import com.aconno.acnsensa.domain.interactor.filter.ReadingType
+import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.domain.model.SensorTypeSingle
-import com.aconno.acnsensa.model.toStringResource
 import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialog
 import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialogListener
 import com.aconno.acnsensa.viewmodel.NewActionViewModel

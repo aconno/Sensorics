@@ -216,6 +216,16 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         publisher.test(this)
     }
 
+    private fun testMqttConnection(toMqttPublishModel: MqttPublishModel) {
+        val publisher = MqttPublisher(
+            applicationContext,
+            MqttPublishModelDataMapper().toMqttPublish(toMqttPublishModel),
+            listOf(Device("TestDevice", "Mac"))
+        )
+
+        publisher.test(this)
+    }
+
 
     override fun onSuccess() {
         isTestingAlreadyRunning = false
@@ -267,6 +277,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
 
     private fun setTextsWithPublishData() {
         edit_name.setText(basePublish?.name)
+        edit_datastring.setText(basePublish?.dataString)
         spinner_interval_time.setSelection(
             resources.getStringArray(R.array.PublishIntervals).indexOf(
                 basePublish?.timeType
@@ -420,41 +431,35 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         }
     }
 
-    private fun testMqttConnection(toMqttPublishModel: MqttPublishModel) {
-        val publisher = MqttPublisher(
-            applicationContext,
-            MqttPublishModelDataMapper().toMqttPublish(toMqttPublishModel),
-            listOf(Device("TestDevice", "Mac"))
-        )
-
-        publisher.test(this)
-    }
-
     private fun addOrUpdate() {
         val selectedItem = spinner_toolbar.selectedItemPosition
 
-        when (selectedItem) {
+        val isOk = when (selectedItem) {
             0 -> googleAddOrUpdate()
             1 -> restAddOrUpdate()
             2 -> mqttAddOrUpdate()
             else -> throw IllegalArgumentException("Please use registered types.")
         }
 
-        //After save or update finish activity
-        finish()
+        if (isOk) {
+            //After save or update finish activity
+            finish()
+        }
     }
 
-    private fun mqttAddOrUpdate() {
+    private fun mqttAddOrUpdate(): Boolean {
         val mqttPublishModel = toMqttPublishModel()
-        if (mqttPublishModel != null) {
+        return if (mqttPublishModel != null) {
             addDisposable(
                 publishViewModel.save(mqttPublishModel)
                     .subscribe(Consumer {
                         addRelationsToMqtt(it)
                     })
             )
+            true
+        } else {
+            false
         }
-
     }
 
     private fun addRelationsToMqtt(it: Long) {
@@ -495,6 +500,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             findViewById<RadioButton>(radio_group_mqtt.checkedRadioButtonId).text.toString().toInt()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
+        val datastring = edit_datastring.text.toString()
 
         if (publishViewModel.checkFieldsAreEmpty(
                 name,
@@ -504,7 +510,8 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 password,
                 topic,
                 timeType,
-                timeCount
+                timeCount,
+                datastring
             )
         ) {
             Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
@@ -526,7 +533,8 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             false,
             timeType,
             timeMillis,
-            lastTimeMillis
+            lastTimeMillis,
+            datastring
         )
     }
 
@@ -537,9 +545,9 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         return sdf.format(date)
     }
 
-    private fun restAddOrUpdate() {
+    private fun restAddOrUpdate(): Boolean {
         val restPublishModel = toRESTPublishModel()
-        if (restPublishModel != null) {
+        return if (restPublishModel != null) {
             addDisposable(
                 publishViewModel.save(restPublishModel)
                     .subscribe(Consumer {
@@ -547,6 +555,10 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                         addHeadersToREST(it)
                     })
             )
+
+            true
+        } else {
+            false
         }
     }
 
@@ -592,13 +604,15 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         val parameterName = text_http_get.text.toString()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
+        val datastring = edit_datastring.text.toString()
 
         if (publishViewModel.checkFieldsAreEmpty(
                 name,
                 url,
                 method,
                 timeType,
-                timeCount
+                timeCount,
+                datastring
             )
         ) {
             Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
@@ -622,19 +636,23 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             false,
             timeType,
             timeMillis,
-            lastTimeMillis
+            lastTimeMillis,
+            datastring
         )
     }
 
-    private fun googleAddOrUpdate() {
+    private fun googleAddOrUpdate(): Boolean {
         val googlePublishModel = toGooglePublishModel()
-        if (googlePublishModel != null) {
+        return if (googlePublishModel != null) {
             addDisposable(
                 publishViewModel.save(googlePublishModel)
                     .subscribe(Consumer {
                         addRelationsToGoogle(it)
                     })
             )
+            true
+        } else {
+            false
         }
     }
 
@@ -674,6 +692,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         val privateKey = edit_privatekey.text.toString().trim()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
+        val datastring = edit_datastring.text.toString()
 
         if (publishViewModel.checkFieldsAreEmpty(
                 name,
@@ -683,7 +702,8 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 device,
                 privateKey,
                 timeType,
-                timeCount
+                timeCount,
+                datastring
             )
         ) {
             Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
@@ -704,10 +724,10 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             false,
             timeType,
             timeMillis,
-            lastTimeMillis
+            lastTimeMillis,
+            datastring
         )
     }
-
 
     private fun isFileValidPKCS8(byteArray: ByteArray): Boolean {
         val spec = PKCS8EncodedKeySpec(byteArray)

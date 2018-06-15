@@ -3,7 +3,7 @@ package com.aconno.acnsensa.viewmodel
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.acnsensa.domain.interactor.filter.Reading
+import com.aconno.acnsensa.domain.model.Reading
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
 

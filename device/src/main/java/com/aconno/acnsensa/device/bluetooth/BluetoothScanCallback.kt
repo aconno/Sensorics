@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.device.bluetooth
 
 import android.bluetooth.le.ScanCallback
-import com.aconno.acnsensa.domain.interactor.filter.ScanResult
+import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.ScanEvent
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber

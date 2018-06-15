@@ -22,7 +22,8 @@ class MqttPublishDataMapper @Inject constructor() {
             mqttPublishEntity.enabled,
             mqttPublishEntity.timeType,
             mqttPublishEntity.timeMillis,
-            mqttPublishEntity.lastTimeMillis
+            mqttPublishEntity.lastTimeMillis,
+            mqttPublishEntity.dataString
         )
     }
 
@@ -39,7 +40,8 @@ class MqttPublishDataMapper @Inject constructor() {
             mqttPublish.enabled,
             mqttPublish.timeType,
             mqttPublish.timeMillis,
-            mqttPublish.lastTimeMillis
+            mqttPublish.lastTimeMillis,
+            mqttPublish.dataString
         )
     }
 

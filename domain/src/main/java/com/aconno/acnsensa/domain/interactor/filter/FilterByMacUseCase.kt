@@ -1,6 +1,7 @@
 package com.aconno.acnsensa.domain.interactor.filter
 
 import com.aconno.acnsensa.domain.interactor.type.MaybeUseCaseWithTwoParameters
+import com.aconno.acnsensa.domain.model.Reading
 import io.reactivex.Maybe
 
 class FilterByMacUseCase

@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.domain.interactor.consolidation
 
 import com.aconno.acnsensa.domain.format.FormatMatcher
-import com.aconno.acnsensa.domain.interactor.filter.ScanResult
+import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.acnsensa.domain.model.Device
 import io.reactivex.Single
