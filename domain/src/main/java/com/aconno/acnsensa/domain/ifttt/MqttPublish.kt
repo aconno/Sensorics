@@ -5,4 +5,6 @@ interface MqttPublish : BasePublish {
     val clientId: String
     val username: String
     val password: String
+    val topic: String
+    val qos: Int
 }

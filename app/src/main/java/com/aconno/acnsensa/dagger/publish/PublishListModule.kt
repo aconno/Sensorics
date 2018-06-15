@@ -10,6 +10,7 @@ import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.UpdateGooglePublishU
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.AddMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.DeleteRestPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
@@ -68,8 +69,8 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
-    fun provideAddMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): AddMqttPublishUseCase {
-        return AddMqttPublishUseCase(
+    fun provideUpdateMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): UpdateMqttPublishUseCase {
+        return UpdateMqttPublishUseCase(
             mqttPublishRepository
         )
     }
@@ -119,7 +120,7 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
         deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
         deleteRestPublishUseCase: DeleteRestPublishUseCase,
         getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
-        updateMqttPublishUseCase: AddMqttPublishUseCase,
+        updateMqttPublishUseCase: UpdateMqttPublishUseCase,
         mqttPublishModelDataMapper: MqttPublishModelDataMapper,
         deleteMqttPublishUseCase: DeleteMqttPublishUseCase
 

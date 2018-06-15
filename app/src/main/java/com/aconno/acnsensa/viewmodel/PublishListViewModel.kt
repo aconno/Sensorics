@@ -10,6 +10,7 @@ import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.UpdateGooglePublishU
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.AddMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.DeleteRestPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
@@ -22,7 +23,9 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 class PublishListViewModel(
     private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
@@ -36,7 +39,7 @@ class PublishListViewModel(
     private val deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
     private val deleteRestPublishUseCase: DeleteRestPublishUseCase,
     private val getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
-    private val updateMqttPublishUseCase: AddMqttPublishUseCase,
+    private val updateMqttPublishUseCase: UpdateMqttPublishUseCase,
     private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
     private val deleteMqttPublishUseCase: DeleteMqttPublishUseCase
 ) : ViewModel() {

@@ -10,6 +10,8 @@ class MqttPublishModel(
     val clientId: String,
     val username: String,
     val password: String,
+    val topic: String,
+    val qos: Int,
     enabled: Boolean,
     timeType: String,
     timeMillis: Long,
@@ -22,6 +24,8 @@ class MqttPublishModel(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readString(),
+        parcel.readInt(),
         parcel.readByte() != 0.toByte(),
         parcel.readString(),
         parcel.readLong(),
@@ -35,6 +39,8 @@ class MqttPublishModel(
         parcel.writeString(clientId)
         parcel.writeString(username)
         parcel.writeString(password)
+        parcel.writeString(topic)
+        parcel.writeInt(qos)
         parcel.writeByte(if (enabled) 1 else 0)
         parcel.writeString(timeType)
         parcel.writeLong(timeMillis)

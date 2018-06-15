@@ -8,10 +8,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.Switch
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
@@ -19,11 +16,14 @@ import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
 import com.aconno.acnsensa.data.converter.PublisherIntervalConverter
 import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
+import com.aconno.acnsensa.data.publisher.MqttPublisher
 import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
+import com.aconno.acnsensa.domain.ifttt.MqttPublish
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.model.*
 import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.MqttPublishModelDataMapper
 import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.ui.base.BaseActivity
@@ -34,6 +34,7 @@ import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_add_publish.*
 import kotlinx.android.synthetic.main.layout_google.*
+import kotlinx.android.synthetic.main.layout_mqtt.*
 import kotlinx.android.synthetic.main.layout_rest.*
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
@@ -107,16 +108,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 position: Int,
                 id: Long
             ) {
-                when (position) {
-                    0 -> {
-                        layout_google.visibility = View.VISIBLE
-                        layout_rest.visibility = View.GONE
-                    }
-                    1 -> {
-                        layout_rest.visibility = View.VISIBLE
-                        layout_google.visibility = View.GONE
-                    }
-                }
+                publish_view_flipper.displayedChild = position
             }
         }
 
@@ -150,8 +142,8 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 addDevices(deviceList)
 
                 if (basePublish != null) {
-                    if (basePublish is GooglePublishModel) {
-                        addDisposable(
+                    when (basePublish) {
+                        is GooglePublishModel -> addDisposable(
                             publishViewModel.getDevicesThatConnectedWithGooglePublish((basePublish as GooglePublishModel).id)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -159,9 +151,16 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                                     updateDeviceList(it)
                                 })
                         )
-                    } else if (basePublish is RESTPublishModel) {
-                        addDisposable(
+                        is RESTPublishModel -> addDisposable(
                             publishViewModel.getDevicesThatConnectedWithRESTPublish((basePublish as RESTPublishModel).id)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(Consumer {
+                                    updateDeviceList(it)
+                                })
+                        )
+                        is MqttPublishModel -> addDisposable(
+                            publishViewModel.getDevicesThatConnectedWithMqttPublish((basePublish as MqttPublishModel).id)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(Consumer {
@@ -294,7 +293,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
 
         if (basePublish is GooglePublishModel) {
             spinner_toolbar.setSelection(0)
-            layout_google.visibility = View.VISIBLE
+            publish_view_flipper.displayedChild = 0
 
             val googlePublish = basePublish as GooglePublishModel
 
@@ -305,8 +304,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             edit_privatekey.text = googlePublish.privateKey
         } else if (basePublish is RESTPublishModel) {
             spinner_toolbar.setSelection(1)
-            layout_rest.visibility = View.VISIBLE
-
+            publish_view_flipper.displayedChild = 1
             val restPublish = basePublish as RESTPublishModel
 
             edit_url.setText(restPublish.url)
@@ -322,6 +320,23 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                         updateHeaderText()
                     }
             )
+        } else if (basePublish is MqttPublishModel) {
+            spinner_toolbar.setSelection(2)
+            publish_view_flipper.displayedChild = 2
+
+            val mqttPublishModel = basePublish as MqttPublishModel
+
+            edit_url_mqtt.setText(mqttPublishModel.url)
+            edit_clientid_mqtt.setText(mqttPublishModel.clientId)
+            edit_username_mqtt.setText(mqttPublishModel.username)
+            edit_password_mqtt.setText(mqttPublishModel.password)
+            edit_topic_mqtt.setText(mqttPublishModel.topic)
+
+            when (mqttPublishModel.qos) {
+                0 -> qos_0.isChecked = true
+                1 -> qos_1.isChecked = true
+                2 -> qos_2.isChecked = true
+            }
         }
     }
 
@@ -392,8 +407,27 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 }
 
                 testRESTConnection(toRESTPublishModel)
+            } else if (spinner_toolbar.selectedItemPosition == 2) {
+                val toMqttPublishModel = toMqttPublishModel()
+
+                if (toMqttPublishModel == null) {
+                    isTestingAlreadyRunning = false
+                    return
+                }
+
+                testMqttConnection(toMqttPublishModel)
             }
         }
+    }
+
+    private fun testMqttConnection(toMqttPublishModel: MqttPublishModel) {
+        val publisher = MqttPublisher(
+            applicationContext,
+            MqttPublishModelDataMapper().toMqttPublish(toMqttPublishModel),
+            listOf(Device("TestDevice", "Mac"))
+        )
+
+        publisher.test(this)
     }
 
     private fun addOrUpdate() {
@@ -402,11 +436,98 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         when (selectedItem) {
             0 -> googleAddOrUpdate()
             1 -> restAddOrUpdate()
+            2 -> mqttAddOrUpdate()
             else -> throw IllegalArgumentException("Please use registered types.")
         }
 
         //After save or update finish activity
         finish()
+    }
+
+    private fun mqttAddOrUpdate() {
+        val mqttPublishModel = toMqttPublishModel()
+        if (mqttPublishModel != null) {
+            addDisposable(
+                publishViewModel.save(mqttPublishModel)
+                    .subscribe(Consumer {
+                        addRelationsToMqtt(it)
+                    })
+            )
+        }
+
+    }
+
+    private fun addRelationsToMqtt(it: Long) {
+        val count = layout_devices.childCount
+
+        for (i in 0..(count - 1)) {
+            val deviceRelationModel = deviceList[i]
+
+            val isChecked =
+                layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
+
+            if (isChecked) {
+                addDisposable(
+                    publishViewModel.addOrUpdateMqttRelation(
+                        deviceId = deviceRelationModel.macAddress,
+                        mqttId = it
+                    )
+                )
+            } else {
+                addDisposable(
+                    publishViewModel.deleteRelationMqtt(
+                        deviceId = deviceRelationModel.macAddress,
+                        mqttId = it
+                    )
+                )
+            }
+        }
+    }
+
+    private fun toMqttPublishModel(): MqttPublishModel? {
+        val name = edit_name.text.toString().trim()
+        val url = edit_url_mqtt.text.toString().trim()
+        val clientId = edit_clientid_mqtt.text.toString().trim()
+        val username = edit_username_mqtt.text.toString().trim()
+        val password = edit_password_mqtt.text.toString().trim()
+        val topic = edit_topic_mqtt.text.toString().trim()
+        val qos =
+            findViewById<RadioButton>(radio_group_mqtt.checkedRadioButtonId).text.toString().toInt()
+        val timeType = spinner_interval_time.selectedItem.toString()
+        val timeCount = edit_interval_count.text.toString()
+
+        if (publishViewModel.checkFieldsAreEmpty(
+                name,
+                url,
+                clientId,
+                username,
+                password,
+                topic,
+                timeType,
+                timeCount
+            )
+        ) {
+            Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
+            return null
+        }
+
+        val id = if (basePublish == null) 0 else basePublish!!.id
+        val timeMillis = PublisherIntervalConverter.calculateMillis(timeCount, timeType)
+        val lastTimeMillis = if (basePublish == null) 0 else basePublish!!.lastTimeMillis
+        return MqttPublishModel(
+            id,
+            name,
+            url,
+            clientId,
+            username,
+            password,
+            topic,
+            qos,
+            false,
+            timeType,
+            timeMillis,
+            lastTimeMillis
+        )
     }
 
     private fun millisToFormattedDateString(millis: Long): String {
@@ -432,7 +553,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
     private fun addHeadersToREST(it: Long) {
         addDisposable(
             publishViewModel.addRESTHeader(
-                restHeaderList,it
+                restHeaderList, it
             )
         )
     }

@@ -7,6 +7,7 @@ import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.UpdateGooglePublishU
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.AddMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.DeleteRestPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
@@ -25,7 +26,7 @@ class PublishListViewModelFactory(
     private val deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
     private val deleteRestPublishUseCase: DeleteRestPublishUseCase,
     private val getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
-    private val updateMqttPublishUseCase: AddMqttPublishUseCase,
+    private val updateMqttPublishUseCase: UpdateMqttPublishUseCase,
     private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
     private val deleteMqttPublishUseCase: DeleteMqttPublishUseCase
 ) : BaseViewModelFactory() {

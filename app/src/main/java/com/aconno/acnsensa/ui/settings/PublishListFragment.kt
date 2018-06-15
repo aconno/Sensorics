@@ -74,12 +74,10 @@ class PublishListFragment : BaseFragment(),
             val item = listBasePublish[position]
             item.enabled = checked
 
-            if (item is GooglePublishModel) {
-                addDisposable(publishListViewModel.update(item))
-            } else if (item is RESTPublishModel) {
-                addDisposable(publishListViewModel.update(item))
-            } else if (item is MqttPublishModel) {
-                addDisposable(publishListViewModel.update(item))
+            when (item) {
+                is GooglePublishModel -> addDisposable(publishListViewModel.update(item))
+                is RESTPublishModel -> addDisposable(publishListViewModel.update(item))
+                is MqttPublishModel -> addDisposable(publishListViewModel.update(item))
             }
         }
     }
@@ -94,7 +92,6 @@ class PublishListFragment : BaseFragment(),
         rvAdapter = PublishRecyclerViewAdapter(
             listBasePublish,
             listener,
-            checkedChangeListener,
             this
         )
         with(recyclerView) {
@@ -135,8 +132,8 @@ class PublishListFragment : BaseFragment(),
         addDisposable(subscribe)
     }
 
-
     override fun onPause() {
+        rvAdapter.setOnCheckedChangeListener(null)
         listBasePublish.clear()
         rvAdapter.notifyDataSetChanged()
         super.onPause()
@@ -146,6 +143,7 @@ class PublishListFragment : BaseFragment(),
         if (actions != null) {
             listBasePublish.addAll(actions)
             rvAdapter.notifyDataSetChanged()
+            rvAdapter.setOnCheckedChangeListener(checkedChangeListener)
         }
     }
 

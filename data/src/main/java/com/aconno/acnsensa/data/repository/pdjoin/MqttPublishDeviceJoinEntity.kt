@@ -3,14 +3,14 @@ package com.aconno.acnsensa.data.repository.pdjoin
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey
 import com.aconno.acnsensa.data.repository.devices.DeviceEntity
-import com.aconno.acnsensa.data.repository.gpublish.GooglePublishEntity
+import com.aconno.acnsensa.data.repository.mpublish.MqttPublishEntity
 
 @Entity(
     tableName = "mqtt_publish_device_join",
     primaryKeys = ["mId", "dId"],
     foreignKeys =
     [(ForeignKey(
-        entity = GooglePublishEntity::class,
+        entity = MqttPublishEntity::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("mId"),
         onDelete = ForeignKey.CASCADE

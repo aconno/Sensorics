@@ -121,10 +121,12 @@
 
     <!--Publish Default Spinner Values-->
     <string name="google_iot_cloud">Google IOT Cloud</string>
-    <string name="other_backend">Http Backend</string>
+    <string name="http_backend">Http Backend</string>
+    <string name="mqtt_backend">MQTT Backend</string>
     <string-array name="PublishTypes">
         <item>@string/google_iot_cloud</item>
-        <item>@string/other_backend</item>
+        <item>@string/http_backend</item>
+        <item>@string/mqtt_backend</item>
     </string-array>
 
     <!-- Device list screen -->
@@ -190,6 +192,14 @@
     <string name="close">Close</string>
     <string name="done">Done</string>
     <string name="values_connot_empty">Values cannot be Empty</string>
+    <string name="clientId">Client Id</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="topic">Topic</string>
+    <string name="quality_of_service">Quality Of Service</string>
+    <string name="qos_1">1</string>
+    <string name="qos_0">0</string>
+    <string name="qos_2">2</string>
 
     <string-array name="header_keys">
         <item>A-IM</item>

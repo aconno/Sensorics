@@ -15,9 +15,11 @@ import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.ifttt.outcome.*
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.*
+import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.GetAllEnabledGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.GetAllEnabledMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllEnabledRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
 import com.aconno.acnsensa.domain.interactor.repository.*
@@ -123,6 +125,14 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
+    fun provideGetAllEnabledMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): GetAllEnabledMqttPublishUseCase {
+        return GetAllEnabledMqttPublishUseCase(
+            mqttPublishRepository
+        )
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
     fun provideUpdateRESTPublishUseCase(restPublishRepository: RESTPublishRepository): UpdateRESTPublishUserCase {
         return UpdateRESTPublishUserCase(
             restPublishRepository
@@ -139,6 +149,14 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
+    fun provideUpdateMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): UpdateMqttPublishUseCase {
+        return UpdateMqttPublishUseCase(
+            mqttPublishRepository
+        )
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
     fun provideGetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithGooglePublishUseCase {
         return GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository)
     }
@@ -147,6 +165,12 @@ class BluetoothScanningServiceModule(
     @BluetoothScanningServiceScope
     fun provideGetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithRESTPublishUseCase {
         return GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideGetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithMqttPublishUseCase {
+        return GetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository)
     }
 
     @Provides

@@ -11,6 +11,7 @@ import com.aconno.acnsensa.R
 import com.aconno.acnsensa.adapter.LongItemClickListener
 import com.aconno.acnsensa.model.BasePublishModel
 import com.aconno.acnsensa.model.GooglePublishModel
+import com.aconno.acnsensa.model.MqttPublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
 
 
@@ -25,12 +26,12 @@ import kotlinx.android.synthetic.main.item_publish.view.*
 class PublishRecyclerViewAdapter(
     private val mValues: List<BasePublishModel>,
     private val mListener: OnListFragmentInteractionListener?,
-    private val mCheckedChangeListener: OnCheckedChangeListener?,
     private val mLongItemClickListener: LongItemClickListener<BasePublishModel>?
 ) : RecyclerView.Adapter<PublishRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
     private val mOnLongClickListener: View.OnLongClickListener
+    private var mCheckedChangeListener: OnCheckedChangeListener? = null
 
     init {
         mOnClickListener = View.OnClickListener { v ->
@@ -47,6 +48,10 @@ class PublishRecyclerViewAdapter(
         }
     }
 
+    fun setOnCheckedChangeListener(checkedChangeListener: OnCheckedChangeListener?) {
+        this.mCheckedChangeListener = checkedChangeListener
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_publish, parent, false)
@@ -58,10 +63,10 @@ class PublishRecyclerViewAdapter(
         holder.mNameView.text = item.name
         holder.mEnableView.isChecked = item.enabled
 
-        if (item is GooglePublishModel) {
-            holder.mImageView.setImageResource(R.drawable.google_logo)
-        } else if (item is RESTPublishModel) {
-            holder.mImageView.setImageResource(R.drawable.uplaod_cloud)
+        when (item) {
+            is GooglePublishModel -> holder.mImageView.setImageResource(R.drawable.google_logo)
+            is RESTPublishModel -> holder.mImageView.setImageResource(R.drawable.uplaod_cloud)
+            is MqttPublishModel -> holder.mImageView.setImageResource(R.drawable.mqtt_logo)
         }
 
         with(holder.mView) {

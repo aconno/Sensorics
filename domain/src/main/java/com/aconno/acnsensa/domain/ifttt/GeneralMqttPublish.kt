@@ -7,6 +7,8 @@ class GeneralMqttPublish(
     override val clientId: String,
     override val username: String,
     override val password: String,
+    override val topic: String,
+    override val qos: Int,
     override var enabled: Boolean,
     override var timeType: String,
     override var timeMillis: Long,

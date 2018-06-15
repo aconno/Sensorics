@@ -11,6 +11,8 @@ data class MqttPublishEntity(
     var clientId: String,
     var username: String,
     var password: String,
+    var topic: String,
+    var qos: Int,
     var enabled: Boolean,
     var timeType: String,
     var timeMillis: Long,
