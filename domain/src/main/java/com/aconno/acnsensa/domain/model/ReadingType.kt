@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.domain.interactor.filter
+package com.aconno.acnsensa.domain.model
 
 enum class ReadingType(val id: Int) {
 
@@ -20,21 +20,41 @@ enum class ReadingType(val id: Int) {
 
     override fun toString(): String {
         return when (this) {
-            ReadingType.OTHER -> "Other"
-            ReadingType.TEMPERATURE -> "Temperature"
-            ReadingType.LIGHT -> "Light"
-            ReadingType.HUMIDITY -> "Humidity"
-            ReadingType.PRESSURE -> "Pressure"
-            ReadingType.MAGNETOMETER_X -> "Magnetometer X"
-            ReadingType.MAGNETOMETER_Y -> "Magnetometer Y"
-            ReadingType.MAGNETOMETER_Z -> "Magnetometer Z"
-            ReadingType.ACCELEROMETER_X -> "Accelerometer X"
-            ReadingType.ACCELEROMETER_Y -> "Accelerometer Y"
-            ReadingType.ACCELEROMETER_Z -> "Accelerometer Z"
-            ReadingType.GYROSCOPE_X -> "Gyroscope X"
-            ReadingType.GYROSCOPE_Y -> "Gyroscope Y"
-            ReadingType.GYROSCOPE_Z -> "Gyroscope Z"
-            ReadingType.BATTERY_LEVEL -> "Battery Level"
+            OTHER -> "Other"
+            TEMPERATURE -> "Temperature"
+            LIGHT -> "Light"
+            HUMIDITY -> "Humidity"
+            PRESSURE -> "Pressure"
+            MAGNETOMETER_X -> "Magnetometer X"
+            MAGNETOMETER_Y -> "Magnetometer Y"
+            MAGNETOMETER_Z -> "Magnetometer Z"
+            ACCELEROMETER_X -> "Accelerometer X"
+            ACCELEROMETER_Y -> "Accelerometer Y"
+            ACCELEROMETER_Z -> "Accelerometer Z"
+            GYROSCOPE_X -> "Gyroscope X"
+            GYROSCOPE_Y -> "Gyroscope Y"
+            GYROSCOPE_Z -> "Gyroscope Z"
+            BATTERY_LEVEL -> "Battery Level"
+        }
+    }
+
+    fun toDataString(): String {
+        return when (this) {
+            OTHER -> "Other"
+            TEMPERATURE -> "Temperature"
+            LIGHT -> "Light"
+            HUMIDITY -> "Humidity"
+            PRESSURE -> "Pressure"
+            MAGNETOMETER_X -> "Magnetometer_X"
+            MAGNETOMETER_Y -> "Magnetometer_Y"
+            MAGNETOMETER_Z -> "Magnetometer_Z"
+            ACCELEROMETER_X -> "Accelerometer_X"
+            ACCELEROMETER_Y -> "Accelerometer_Y"
+            ACCELEROMETER_Z -> "Accelerometer_Z"
+            GYROSCOPE_X -> "Gyroscope_X"
+            GYROSCOPE_Y -> "Gyroscope_Y"
+            GYROSCOPE_Z -> "Gyroscope_Z"
+            BATTERY_LEVEL -> "Battery_Level"
         }
     }
 
