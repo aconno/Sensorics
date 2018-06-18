@@ -40,6 +40,8 @@ interface AppComponent {
 
     fun restPublishRepository(): RESTPublishRepository
 
+    fun mqttPublishRepository(): MqttPublishRepository
+
     fun actionsRepository(): ActionsRepository
 
     fun notificationDisplay(): NotificationDisplay

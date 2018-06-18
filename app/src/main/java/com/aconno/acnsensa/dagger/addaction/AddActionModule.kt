@@ -2,8 +2,7 @@ package com.aconno.acnsensa.dagger.addaction
 
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
-import com.aconno.acnsensa.domain.interactor.ifttt.AddActionUseCase
-import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.acnsensa.ui.actions.AddActionActivity
 import com.aconno.acnsensa.viewmodel.NewActionViewModel
 import com.aconno.acnsensa.viewmodel.factory.NewActionViewModelFactory

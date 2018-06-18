@@ -9,7 +9,7 @@ import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
 import com.aconno.acnsensa.domain.model.ReadingType
-import com.aconno.acnsensa.domain.interactor.ifttt.AddActionUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.AddActionUseCase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber

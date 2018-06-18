@@ -115,16 +115,18 @@
     <string name="preference_summary_projectid">Project ID Summary</string>
     <string name="preference_title_projectid">Project ID</string>
     <string name="preference_gcloud_title">Google Cloud On/Off</string>
-    <string name="title_publish_list">Publishes</string>
+    <string name="title_publish_list">Publishers</string>
     <string name="title_publish_detail">Publish Detail</string>
 
 
     <!--Publish Default Spinner Values-->
     <string name="google_iot_cloud">Google IOT Cloud</string>
-    <string name="other_backend">Http Backend</string>
+    <string name="http_backend">Http Backend</string>
+    <string name="mqtt_backend">MQTT Backend</string>
     <string-array name="PublishTypes">
         <item>@string/google_iot_cloud</item>
-        <item>@string/other_backend</item>
+        <item>@string/http_backend</item>
+        <item>@string/mqtt_backend</item>
     </string-array>
 
     <!-- Device list screen -->
@@ -190,6 +192,19 @@
     <string name="close">Close</string>
     <string name="done">Done</string>
     <string name="values_connot_empty">Values cannot be Empty</string>
+    <string name="clientId">Client Id</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="topic">Topic</string>
+    <string name="quality_of_service">Quality Of Service</string>
+    <string name="qos_1">1</string>
+    <string name="qos_0">0</string>
+    <string name="qos_2">2</string>
+    <string name="dataString">Data String</string>
+    <string name="dataStringHint">211,$temperature\n212,$battery</string>
+    <string name="publisher_info_text"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$name</i> => key \n<i>$value</i> => sensor value \n<b>Specific Values:</b> \n<i>$temperature,$light,$battery_level</i> etc.</string>
+    <string name="publisher_info_title">Info</string>
+    <string name="okey">Okey</string>
 
     <string-array name="header_keys">
         <item>A-IM</item>

@@ -1,13 +1,11 @@
 package com.aconno.acnsensa.viewmodel.factory
 
 import android.arch.lifecycle.ViewModel
-import com.aconno.acnsensa.domain.interactor.ifttt.AddGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.AddRESTPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.AddGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.AddMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.repository.*
-import com.aconno.acnsensa.model.mapper.DeviceRelationModelMapper
-import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
-import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
-import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.*
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 
 class PublishViewModelFactory(
@@ -24,7 +22,10 @@ class PublishViewModelFactory(
     private val saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
     private val deleteRESTHeaderUseCase: DeleteRESTHeaderUseCase,
     private val getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
-    private val restHeaderModelMapper: RESTHeaderModelMapper
+    private val restHeaderModelMapper: RESTHeaderModelMapper,
+    private val addMqttPublishUseCase: AddMqttPublishUseCase,
+    private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
+    private val devicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -42,7 +43,10 @@ class PublishViewModelFactory(
             saveRESTHeaderUseCase,
             deleteRESTHeaderUseCase,
             getRESTHeadersByIdUseCase,
-            restHeaderModelMapper
+            restHeaderModelMapper,
+            addMqttPublishUseCase,
+            mqttPublishModelDataMapper,
+            devicesThatConnectedWithMqttPublishUseCase
         )
         return getViewModel(viewModel, modelClass)
     }

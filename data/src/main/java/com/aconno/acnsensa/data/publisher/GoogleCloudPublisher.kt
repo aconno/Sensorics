@@ -2,12 +2,12 @@ package com.aconno.acnsensa.data.publisher
 
 import android.content.Context
 import android.net.Uri
-import com.aconno.acnsensa.data.converter.PublisherDataConverter
+import com.aconno.acnsensa.data.converter.DataStringConverter
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.BasePublish
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
-import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.Reading
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -32,6 +32,8 @@ class GoogleCloudPublisher(
     private val messagesQueue: Queue<String> = LinkedList<String>()
 
     private var testConnectionCallback: Publisher.TestConnectionCallback? = null
+
+    private val dataStringConverter: DataStringConverter
 
     init {
         jwtByteArray = getPrivateKeyData(context)
@@ -58,6 +60,8 @@ class GoogleCloudPublisher(
                     Timber.d("Delivery complete, token: %s", token)
                 }
             })
+
+        dataStringConverter = DataStringConverter(googlePublish.dataString)
     }
 
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
@@ -98,7 +102,7 @@ class GoogleCloudPublisher(
     }
 
     override fun publish(reading: Reading) {
-        val messages = PublisherDataConverter.convert(reading)
+        val messages = dataStringConverter.convert(reading) ?: return
         for (message in messages) {
             Timber.tag("Publisher Google")
                 .d("${googlePublish.name} publishes from ${reading.device}")
@@ -134,7 +138,8 @@ class GoogleCloudPublisher(
                     publishMessagesFromQueue()
 
                     if (testConnectionCallback != null) {
-                        testConnectionCallback?.onSuccess()
+                        testConnectionCallback?.onConnectionSuccess()
+                        testConnectionCallback = null
                         mqttAndroidClient.close()
                         mqttAndroidClient.disconnect()
                     }
@@ -142,7 +147,7 @@ class GoogleCloudPublisher(
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
                     Timber.e(exception, "Failed to connect to server")
-                    testConnectionCallback?.onFail()
+                    testConnectionCallback?.onConnectionFail()
                 }
             })
         } catch (e: MqttException) {

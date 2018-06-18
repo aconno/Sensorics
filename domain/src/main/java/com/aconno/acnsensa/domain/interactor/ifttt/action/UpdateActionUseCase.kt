@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.domain.interactor.ifttt
+package com.aconno.acnsensa.domain.interactor.ifttt.action
 
 import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository

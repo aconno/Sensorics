@@ -15,7 +15,13 @@ import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.ifttt.outcome.*
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.*
+import com.aconno.acnsensa.domain.interactor.ifttt.InputToOutcomesUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.GetAllEnabledGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.GetAllEnabledMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllEnabledRESTPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
 import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
 import dagger.Module
@@ -104,25 +110,49 @@ class BluetoothScanningServiceModule(
     @Provides
     @BluetoothScanningServiceScope
     fun provideGetAllEnabledGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): GetAllEnabledGooglePublishUseCase {
-        return GetAllEnabledGooglePublishUseCase(googlePublishRepository)
+        return GetAllEnabledGooglePublishUseCase(
+            googlePublishRepository
+        )
     }
 
     @Provides
     @BluetoothScanningServiceScope
     fun provideGetAllEnabledRESTPublishUseCase(restPublishRepository: RESTPublishRepository): GetAllEnabledRESTPublishUseCase {
-        return GetAllEnabledRESTPublishUseCase(restPublishRepository)
+        return GetAllEnabledRESTPublishUseCase(
+            restPublishRepository
+        )
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideGetAllEnabledMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): GetAllEnabledMqttPublishUseCase {
+        return GetAllEnabledMqttPublishUseCase(
+            mqttPublishRepository
+        )
     }
 
     @Provides
     @BluetoothScanningServiceScope
     fun provideUpdateRESTPublishUseCase(restPublishRepository: RESTPublishRepository): UpdateRESTPublishUserCase {
-        return UpdateRESTPublishUserCase(restPublishRepository)
+        return UpdateRESTPublishUserCase(
+            restPublishRepository
+        )
     }
 
     @Provides
     @BluetoothScanningServiceScope
     fun provideUpdateGooglePublishUseCase(restPublishRepository: GooglePublishRepository): UpdateGooglePublishUseCase {
-        return UpdateGooglePublishUseCase(restPublishRepository)
+        return UpdateGooglePublishUseCase(
+            restPublishRepository
+        )
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideUpdateMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): UpdateMqttPublishUseCase {
+        return UpdateMqttPublishUseCase(
+            mqttPublishRepository
+        )
     }
 
     @Provides
@@ -135,6 +165,12 @@ class BluetoothScanningServiceModule(
     @BluetoothScanningServiceScope
     fun provideGetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithRESTPublishUseCase {
         return GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideGetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithMqttPublishUseCase {
+        return GetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository)
     }
 
     @Provides

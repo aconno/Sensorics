@@ -13,6 +13,7 @@ import com.aconno.acnsensa.data.repository.action.ActionsRepositoryImpl
 import com.aconno.acnsensa.data.repository.devices.DeviceMapper
 import com.aconno.acnsensa.data.repository.devices.DeviceRepositoryImpl
 import com.aconno.acnsensa.data.repository.gpublish.GooglePublishRepositoryImpl
+import com.aconno.acnsensa.data.repository.mpublish.MqttPublishRepositoryImpl
 import com.aconno.acnsensa.data.repository.pdjoin.PublishDeviceJoinRepositoryImpl
 import com.aconno.acnsensa.data.repository.rpublish.RESTPublishRepositoryImpl
 import com.aconno.acnsensa.device.SmsSenderImpl
@@ -146,6 +147,18 @@ class AppModule(
             restPublishEntityDataMapper,
             restPublishDataMapper,
             restHeaderDataMapper
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMqttPublishRepository(
+        acnSensaDatabase: AcnSensaDatabase,
+        mqttPublishDataMapper: MqttPublishDataMapper
+    ): MqttPublishRepository {
+        return MqttPublishRepositoryImpl(
+            acnSensaDatabase.mqttPublishDao(),
+            mqttPublishDataMapper
         )
     }
 

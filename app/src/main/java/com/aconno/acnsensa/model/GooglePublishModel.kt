@@ -14,9 +14,9 @@ class GooglePublishModel(
     enabled: Boolean,
     timeType: String,
     timeMillis: Long,
-    lastTimeMillis: Long
-
-) : BasePublishModel(id, name, enabled, timeType, timeMillis, lastTimeMillis) {
+    lastTimeMillis: Long,
+    dataString: String
+) : BasePublishModel(id, name, enabled, timeType, timeMillis, lastTimeMillis, dataString) {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
         parcel.readString(),
@@ -28,7 +28,8 @@ class GooglePublishModel(
         parcel.readByte() != 0.toByte(),
         parcel.readString(),
         parcel.readLong(),
-        parcel.readLong()
+        parcel.readLong(),
+        parcel.readString()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -43,6 +44,7 @@ class GooglePublishModel(
         parcel.writeString(timeType)
         parcel.writeLong(timeMillis)
         parcel.writeLong(lastTimeMillis)
+        parcel.writeString(dataString)
     }
 
     override fun describeContents(): Int {

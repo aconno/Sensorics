@@ -1,6 +1,7 @@
 package com.aconno.acnsensa.ui.settings
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -8,32 +9,36 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.Switch
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.R.id.*
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
 import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
 import com.aconno.acnsensa.data.converter.PublisherIntervalConverter
 import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
+import com.aconno.acnsensa.data.publisher.MqttPublisher
 import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.model.*
 import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
+import com.aconno.acnsensa.model.mapper.MqttPublishModelDataMapper
 import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.ui.base.BaseActivity
 import com.aconno.acnsensa.ui.settings.rheader.RESTHeadersActivity
 import com.aconno.acnsensa.viewmodel.PublishViewModel
+import io.reactivex.Completable
+import io.reactivex.CompletableObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_add_publish.*
 import kotlinx.android.synthetic.main.layout_google.*
+import kotlinx.android.synthetic.main.layout_mqtt.*
 import kotlinx.android.synthetic.main.layout_rest.*
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
@@ -43,8 +48,7 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
-
-
+    //TODO Create Tester Class
     @Inject
     lateinit var publishViewModel: PublishViewModel
 
@@ -107,16 +111,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 position: Int,
                 id: Long
             ) {
-                when (position) {
-                    0 -> {
-                        layout_google.visibility = View.VISIBLE
-                        layout_rest.visibility = View.GONE
-                    }
-                    1 -> {
-                        layout_rest.visibility = View.VISIBLE
-                        layout_google.visibility = View.GONE
-                    }
-                }
+                publish_view_flipper.displayedChild = position
             }
         }
 
@@ -131,11 +126,25 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 position: Int,
                 id: Long
             ) {
+
                 when (position) {
-                    0 -> text_http_get.visibility = View.VISIBLE
-                    1 -> text_http_get.visibility = View.GONE
+                    0 -> layout_text_http_get.visibility = View.VISIBLE
+                    1 -> layout_text_http_get.visibility = View.GONE
                 }
             }
+        }
+
+        btn_info.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+
+            builder.setTitle(R.string.publisher_info_title)
+                .setMessage(R.string.publisher_info_text)
+                .setNeutralButton(
+                    R.string.okey
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
 
         text_http_headers.setOnClickListener {
@@ -150,25 +159,14 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 addDevices(deviceList)
 
                 if (basePublish != null) {
-                    if (basePublish is GooglePublishModel) {
-                        addDisposable(
-                            publishViewModel.getDevicesThatConnectedWithGooglePublish((basePublish as GooglePublishModel).id)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(Consumer {
-                                    updateDeviceList(it)
-                                })
-                        )
-                    } else if (basePublish is RESTPublishModel) {
-                        addDisposable(
-                            publishViewModel.getDevicesThatConnectedWithRESTPublish((basePublish as RESTPublishModel).id)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(Consumer {
-                                    updateDeviceList(it)
-                                })
-                        )
-                    }
+                    addDisposable(
+                        publishViewModel.getDevicesThatConnectedWithPublish(basePublish!!)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(Consumer {
+                                updateDeviceList(it)
+                            })
+                    )
                 }
             })
         addDisposable(subscribe)
@@ -204,6 +202,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             RESTHeaderModelMapper().toRESTHeaderList(restHeaderList)
         )
 
+        onConnectionStart()
         publisher.test(this)
     }
 
@@ -214,18 +213,35 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             listOf(Device("TestDevice", "Mac"))
         )
 
+        onConnectionStart()
         publisher.test(this)
     }
 
+    private fun testMqttConnection(toMqttPublishModel: MqttPublishModel) {
+        val publisher = MqttPublisher(
+            applicationContext,
+            MqttPublishModelDataMapper().toMqttPublish(toMqttPublishModel),
+            listOf(Device("TestDevice", "Mac"))
+        )
 
-    override fun onSuccess() {
+        onConnectionStart()
+        publisher.test(this)
+    }
+
+    override fun onConnectionSuccess() {
+        progressbar.visibility = View.INVISIBLE
         isTestingAlreadyRunning = false
         Toast.makeText(this, getString(R.string.test_succeeded), Toast.LENGTH_SHORT).show()
     }
 
-    override fun onFail() {
+    override fun onConnectionFail() {
+        progressbar.visibility = View.INVISIBLE
         isTestingAlreadyRunning = false
         Toast.makeText(this, getString(R.string.test_failed), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onConnectionStart() {
+        progressbar.visibility = View.VISIBLE
     }
 
     /**
@@ -268,6 +284,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
 
     private fun setTextsWithPublishData() {
         edit_name.setText(basePublish?.name)
+        edit_datastring.setText(basePublish?.dataString)
         spinner_interval_time.setSelection(
             resources.getStringArray(R.array.PublishIntervals).indexOf(
                 basePublish?.timeType
@@ -292,36 +309,56 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             text_lastdatasent.text = str
         }
 
-        if (basePublish is GooglePublishModel) {
-            spinner_toolbar.setSelection(0)
-            layout_google.visibility = View.VISIBLE
+        when (basePublish) {
+            is GooglePublishModel -> {
+                spinner_toolbar.setSelection(0)
+                publish_view_flipper.displayedChild = 0
 
-            val googlePublish = basePublish as GooglePublishModel
+                val googlePublish = basePublish as GooglePublishModel
 
-            edit_projectid.setText(googlePublish.projectId)
-            edit_region.setText(googlePublish.region)
-            edit_deviceregistry.setText(googlePublish.deviceRegistry)
-            edit_device.setText(googlePublish.device)
-            edit_privatekey.text = googlePublish.privateKey
-        } else if (basePublish is RESTPublishModel) {
-            spinner_toolbar.setSelection(1)
-            layout_rest.visibility = View.VISIBLE
+                edit_projectid.setText(googlePublish.projectId)
+                edit_region.setText(googlePublish.region)
+                edit_deviceregistry.setText(googlePublish.deviceRegistry)
+                edit_device.setText(googlePublish.device)
+                edit_privatekey.text = googlePublish.privateKey
+            }
+            is RESTPublishModel -> {
+                spinner_toolbar.setSelection(1)
+                publish_view_flipper.displayedChild = 1
+                val restPublish = basePublish as RESTPublishModel
 
-            val restPublish = basePublish as RESTPublishModel
+                edit_url.setText(restPublish.url)
+                val selection = if (restPublish.method == "GET") 0 else 1
+                spinner_methods.setSelection(selection)
 
-            edit_url.setText(restPublish.url)
-            val selection = if (restPublish.method == "GET") 0 else 1
-            spinner_methods.setSelection(selection)
+                addDisposable(
+                    publishViewModel.getRESTHeadersById(restPublish.id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe {
+                            restHeaderList = ArrayList(it)
+                            updateHeaderText()
+                        }
+                )
+            }
+            is MqttPublishModel -> {
+                spinner_toolbar.setSelection(2)
+                publish_view_flipper.displayedChild = 2
 
-            addDisposable(
-                publishViewModel.getRESTHeadersById(restPublish.id)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        restHeaderList = ArrayList(it)
-                        updateHeaderText()
-                    }
-            )
+                val mqttPublishModel = basePublish as MqttPublishModel
+
+                edit_url_mqtt.setText(mqttPublishModel.url)
+                edit_clientid_mqtt.setText(mqttPublishModel.clientId)
+                edit_username_mqtt.setText(mqttPublishModel.username)
+                edit_password_mqtt.setText(mqttPublishModel.password)
+                edit_topic_mqtt.setText(mqttPublishModel.topic)
+
+                when (mqttPublishModel.qos) {
+                    0 -> qos_0.isChecked = true
+                    1 -> qos_1.isChecked = true
+                    2 -> qos_2.isChecked = true
+                }
+            }
         }
     }
 
@@ -374,24 +411,37 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             isTestingAlreadyRunning = true
 
             Toast.makeText(this, getString(R.string.testings_started), Toast.LENGTH_SHORT).show()
-            if (spinner_toolbar.selectedItemPosition == 0) {
-                val toGooglePublishModel = toGooglePublishModel()
+            when {
+                spinner_toolbar.selectedItemPosition == 0 -> {
+                    val toGooglePublishModel = toGooglePublishModel()
 
-                if (toGooglePublishModel == null) {
-                    isTestingAlreadyRunning = false
-                    return
+                    if (toGooglePublishModel == null) {
+                        isTestingAlreadyRunning = false
+                        return
+                    }
+
+                    testGoogleConnection(toGooglePublishModel)
                 }
+                spinner_toolbar.selectedItemPosition == 1 -> {
+                    val toRESTPublishModel = toRESTPublishModel()
 
-                testGoogleConnection(toGooglePublishModel)
-            } else if (spinner_toolbar.selectedItemPosition == 1) {
-                val toRESTPublishModel = toRESTPublishModel()
+                    if (toRESTPublishModel == null) {
+                        isTestingAlreadyRunning = false
+                        return
+                    }
 
-                if (toRESTPublishModel == null) {
-                    isTestingAlreadyRunning = false
-                    return
+                    testRESTConnection(toRESTPublishModel)
                 }
+                spinner_toolbar.selectedItemPosition == 2 -> {
+                    val toMqttPublishModel = toMqttPublishModel()
 
-                testRESTConnection(toRESTPublishModel)
+                    if (toMqttPublishModel == null) {
+                        isTestingAlreadyRunning = false
+                        return
+                    }
+
+                    testMqttConnection(toMqttPublishModel)
+                }
             }
         }
     }
@@ -399,14 +449,126 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
     private fun addOrUpdate() {
         val selectedItem = spinner_toolbar.selectedItemPosition
 
-        when (selectedItem) {
+        val completable = when (selectedItem) {
             0 -> googleAddOrUpdate()
             1 -> restAddOrUpdate()
+            2 -> mqttAddOrUpdate()
             else -> throw IllegalArgumentException("Please use registered types.")
         }
 
-        //After save or update finish activity
-        finish()
+        completable
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe(object : CompletableObserver {
+                override fun onComplete() {
+                    progressbar.visibility = View.INVISIBLE
+                    finish()
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    addDisposable(d)
+                    progressbar.visibility = View.VISIBLE
+                }
+
+                override fun onError(e: Throwable) {
+                    progressbar.visibility = View.INVISIBLE
+                    Toast.makeText(this@AddPublishActivity, e.message, Toast.LENGTH_SHORT)
+                        .show()
+                }
+            })
+    }
+
+    private fun mqttAddOrUpdate(): Completable? {
+        val mqttPublishModel = toMqttPublishModel()
+        return if (mqttPublishModel != null) {
+            publishViewModel.save(mqttPublishModel)
+                .flatMapCompletable {
+                    addRelationsToMqtt(it)
+                }
+        } else {
+            null
+        }
+    }
+
+    private fun addRelationsToMqtt(it: Long): Completable {
+        val count = layout_devices.childCount
+
+        val setOfCompletable = mutableSetOf<Completable>()
+
+        for (i in 0..(count - 1)) {
+            val deviceRelationModel = deviceList[i]
+
+            val isChecked =
+                layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
+
+            if (isChecked) {
+                setOfCompletable.add(
+                    publishViewModel.addOrUpdateMqttRelation(
+                        deviceId = deviceRelationModel.macAddress,
+                        mqttId = it
+                    )
+                )
+
+            } else {
+                setOfCompletable.add(
+                    publishViewModel.deleteRelationMqtt(
+                        deviceId = deviceRelationModel.macAddress,
+                        mqttId = it
+                    )
+                )
+            }
+        }
+
+        return Completable.merge(setOfCompletable)
+    }
+
+    private fun toMqttPublishModel(): MqttPublishModel? {
+        val name = edit_name.text.toString().trim()
+        val url = edit_url_mqtt.text.toString().trim()
+        val clientId = edit_clientid_mqtt.text.toString().trim()
+        val username = edit_username_mqtt.text.toString().trim()
+        val password = edit_password_mqtt.text.toString().trim()
+        val topic = edit_topic_mqtt.text.toString().trim()
+        val qos =
+            findViewById<RadioButton>(radio_group_mqtt.checkedRadioButtonId).text.toString().toInt()
+        val timeType = spinner_interval_time.selectedItem.toString()
+        val timeCount = edit_interval_count.text.toString()
+        val datastring = edit_datastring.text.toString()
+
+        if (publishViewModel.checkFieldsAreEmpty(
+                name,
+                url,
+                clientId,
+                username,
+                password,
+                topic,
+                timeType,
+                timeCount,
+                datastring
+            )
+        ) {
+            Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
+            return null
+        }
+
+        val id = if (basePublish == null) 0 else basePublish!!.id
+        val timeMillis = PublisherIntervalConverter.calculateMillis(timeCount, timeType)
+        val lastTimeMillis = if (basePublish == null) 0 else basePublish!!.lastTimeMillis
+        return MqttPublishModel(
+            id,
+            name,
+            url,
+            clientId,
+            username,
+            password,
+            topic,
+            qos,
+            false,
+            timeType,
+            timeMillis,
+            lastTimeMillis,
+            datastring
+        )
     }
 
     private fun millisToFormattedDateString(millis: Long): String {
@@ -416,29 +578,28 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         return sdf.format(date)
     }
 
-    private fun restAddOrUpdate() {
+    private fun restAddOrUpdate(): Completable? {
         val restPublishModel = toRESTPublishModel()
-        if (restPublishModel != null) {
-            addDisposable(
-                publishViewModel.save(restPublishModel)
-                    .subscribe(Consumer {
-                        addRelationsToREST(it)
-                        addHeadersToREST(it)
-                    })
-            )
+        return if (restPublishModel != null) {
+            publishViewModel.save(restPublishModel)
+                .flatMapCompletable { id ->
+                    addRelationsToREST(id).mergeWith(addHeadersToREST(id))
+                }
+        } else {
+            null
         }
     }
 
-    private fun addHeadersToREST(it: Long) {
-        addDisposable(
-            publishViewModel.addRESTHeader(
-                restHeaderList,it
-            )
+    private fun addHeadersToREST(it: Long): Completable {
+        return publishViewModel.addRESTHeader(
+            restHeaderList, it
         )
     }
 
-    private fun addRelationsToREST(rId: Long) {
+    private fun addRelationsToREST(rId: Long): Completable {
         val count = layout_devices.childCount
+
+        val setOfCompletable: MutableSet<Completable> = mutableSetOf()
 
         for (i in 0..(count - 1)) {
             val deviceRelationModel = deviceList[i]
@@ -447,14 +608,14 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
 
             if (isChecked) {
-                addDisposable(
+                setOfCompletable.add(
                     publishViewModel.addOrUpdateRestRelation(
                         deviceId = deviceRelationModel.macAddress,
                         restId = rId
                     )
                 )
             } else {
-                addDisposable(
+                setOfCompletable.add(
                     publishViewModel.deleteRelationRest(
                         deviceId = deviceRelationModel.macAddress,
                         restId = rId
@@ -462,22 +623,25 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 )
             }
         }
+        return Completable.merge(setOfCompletable)
     }
 
     private fun toRESTPublishModel(): RESTPublishModel? {
         val name = edit_name.text.toString().trim()
         val url = edit_url.text.toString().trim()
         val method = spinner_methods.selectedItem.toString()
-        val parameterName = text_http_get.text.toString()
+        val parameterName = layout_text_http_get.editText!!.text.toString()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
+        val datastring = edit_datastring.text.toString()
 
         if (publishViewModel.checkFieldsAreEmpty(
                 name,
                 url,
                 method,
                 timeType,
-                timeCount
+                timeCount,
+                datastring
             )
         ) {
             Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
@@ -501,24 +665,27 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             false,
             timeType,
             timeMillis,
-            lastTimeMillis
+            lastTimeMillis,
+            datastring
         )
     }
 
-    private fun googleAddOrUpdate() {
+    private fun googleAddOrUpdate(): Completable? {
         val googlePublishModel = toGooglePublishModel()
-        if (googlePublishModel != null) {
-            addDisposable(
-                publishViewModel.save(googlePublishModel)
-                    .subscribe(Consumer {
-                        addRelationsToGoogle(it)
-                    })
-            )
+        return if (googlePublishModel != null) {
+            publishViewModel.save(googlePublishModel)
+                .flatMapCompletable {
+                    addRelationsToGoogle(it)
+                }
+        } else {
+            null
         }
     }
 
-    private fun addRelationsToGoogle(gId: Long) {
+    private fun addRelationsToGoogle(gId: Long): Completable {
         val count = layout_devices.childCount
+
+        val setOfCompletable: MutableSet<Completable> = mutableSetOf()
 
         for (i in 0..(count - 1)) {
             val deviceRelationModel = deviceList[i]
@@ -527,14 +694,14 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
 
             if (isChecked) {
-                addDisposable(
+                setOfCompletable.add(
                     publishViewModel.addOrUpdateGoogleRelation(
                         deviceId = deviceRelationModel.macAddress,
                         googleId = gId
                     )
                 )
             } else {
-                addDisposable(
+                setOfCompletable.add(
                     publishViewModel.deleteRelationGoogle(
                         deviceId = deviceRelationModel.macAddress,
                         googleId = gId
@@ -542,6 +709,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 )
             }
         }
+        return Completable.merge(setOfCompletable)
     }
 
     private fun toGooglePublishModel(): GooglePublishModel? {
@@ -553,6 +721,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         val privateKey = edit_privatekey.text.toString().trim()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
+        val datastring = edit_datastring.text.toString()
 
         if (publishViewModel.checkFieldsAreEmpty(
                 name,
@@ -562,7 +731,8 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 device,
                 privateKey,
                 timeType,
-                timeCount
+                timeCount,
+                datastring
             )
         ) {
             Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
@@ -583,10 +753,10 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             false,
             timeType,
             timeMillis,
-            lastTimeMillis
+            lastTimeMillis,
+            datastring
         )
     }
-
 
     private fun isFileValidPKCS8(byteArray: ByteArray): Boolean {
         val spec = PKCS8EncodedKeySpec(byteArray)

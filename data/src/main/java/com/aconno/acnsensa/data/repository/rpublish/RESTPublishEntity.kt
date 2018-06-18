@@ -15,5 +15,6 @@ data class RESTPublishEntity(
     var enabled: Boolean,
     var timeType: String,
     var timeMillis: Long,
-    var lastTimeMillis: Long
+    var lastTimeMillis: Long,
+    var dataString: String
 )

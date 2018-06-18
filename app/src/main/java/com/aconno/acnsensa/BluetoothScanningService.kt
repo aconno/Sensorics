@@ -13,21 +13,26 @@ import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceComp
 import com.aconno.acnsensa.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.acnsensa.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
 import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
+import com.aconno.acnsensa.data.publisher.MqttPublisher
 import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.ifttt.GooglePublish
+import com.aconno.acnsensa.domain.ifttt.MqttPublish
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.acnsensa.domain.interactor.LogReadingUseCase
 import com.aconno.acnsensa.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.ifttt.*
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.GetAllEnabledGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.GetAllEnabledMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllEnabledRESTPublishUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
 import com.aconno.acnsensa.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.acnsensa.domain.interactor.mqtt.PublishReadingsUseCase
-import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
-import com.aconno.acnsensa.domain.interactor.repository.GetRESTHeadersByIdUseCase
-import com.aconno.acnsensa.domain.interactor.repository.SaveSensorReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.domain.scanning.Bluetooth
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -61,16 +66,25 @@ class BluetoothScanningService : Service() {
     lateinit var getAllEnabledRESTPublishUseCase: GetAllEnabledRESTPublishUseCase
 
     @Inject
+    lateinit var getAllEnabledMqttPublishUseCase: GetAllEnabledMqttPublishUseCase
+
+    @Inject
     lateinit var updateRESTPublishUserCase: UpdateRESTPublishUserCase
 
     @Inject
     lateinit var updateGooglePublishUseCase: UpdateGooglePublishUseCase
 
     @Inject
+    lateinit var updateMqttPublishUseCase: UpdateMqttPublishUseCase
+
+    @Inject
     lateinit var getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase
 
     @Inject
     lateinit var getDevicesThatConnectedWithRESTPublishUseCase: GetDevicesThatConnectedWithRESTPublishUseCase
+
+    @Inject
+    lateinit var getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase
 
     @Inject
     lateinit var getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase
@@ -145,9 +159,11 @@ class BluetoothScanningService : Service() {
                         is GooglePublish -> {
                             updateGooglePublishUseCase.execute(data)
                         }
-
                         is RESTPublish -> {
                             updateRESTPublishUserCase.execute(data)
+                        }
+                        is MqttPublish -> {
+                            updateMqttPublishUseCase.execute(data)
                         }
                         else -> {
                             throw IllegalArgumentException("Illegal data provided.")
@@ -204,7 +220,8 @@ class BluetoothScanningService : Service() {
     private fun initPublishers() {
         Observable.merge(
             getGooglePublisherObservable(),
-            getRestPublisherObservable()
+            getRestPublisherObservable(),
+            getMqttPublisherObservable()
         )
             .toList()
             .observeOn(AndroidSchedulers.mainThread())
@@ -261,6 +278,26 @@ class BluetoothScanningService : Service() {
                     it.first,
                     it.second.first,
                     it.second.second
+                ) as Publisher
+            }
+    }
+
+    private fun getMqttPublisherObservable(): Observable<Publisher> {
+        return getAllEnabledMqttPublishUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .toObservable()
+            .flatMapIterable { it }
+            .map { it as MqttPublish }
+            .flatMap {
+                Observable.just(it).zipWith(
+                    getDevicesThatConnectedWithMqttPublishUseCase.execute(it.id)
+                        .toObservable()
+                )
+            }.map {
+                MqttPublisher(
+                    this,
+                    it.first,
+                    it.second
                 ) as Publisher
             }
     }

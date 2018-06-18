@@ -38,6 +38,26 @@ enum class ReadingType(val id: Int) {
         }
     }
 
+    fun toDataString(): String {
+        return when (this) {
+            OTHER -> "Other"
+            TEMPERATURE -> "Temperature"
+            LIGHT -> "Light"
+            HUMIDITY -> "Humidity"
+            PRESSURE -> "Pressure"
+            MAGNETOMETER_X -> "Magnetometer_X"
+            MAGNETOMETER_Y -> "Magnetometer_Y"
+            MAGNETOMETER_Z -> "Magnetometer_Z"
+            ACCELEROMETER_X -> "Accelerometer_X"
+            ACCELEROMETER_Y -> "Accelerometer_Y"
+            ACCELEROMETER_Z -> "Accelerometer_Z"
+            GYROSCOPE_X -> "Gyroscope_X"
+            GYROSCOPE_Y -> "Gyroscope_Y"
+            GYROSCOPE_Z -> "Gyroscope_Z"
+            BATTERY_LEVEL -> "Battery_Level"
+        }
+    }
+
     companion object {
 
         fun fromId(id: Int): ReadingType {

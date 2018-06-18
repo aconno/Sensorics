@@ -8,10 +8,10 @@ import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
+import com.aconno.acnsensa.domain.interactor.ifttt.action.DeleteActionUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.GetActionByIdUseCase
+import com.aconno.acnsensa.domain.interactor.ifttt.action.UpdateActionUseCase
 import com.aconno.acnsensa.domain.model.ReadingType
-import com.aconno.acnsensa.domain.interactor.ifttt.DeleteActionUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.GetActionByIdUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.UpdateActionUseCase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber

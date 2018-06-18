@@ -26,7 +26,8 @@ class GooglePublishDataMapper @Inject constructor() {
             googlePublish.enabled,
             googlePublish.timeType,
             googlePublish.timeMillis,
-            googlePublish.lastTimeMillis
+            googlePublish.lastTimeMillis,
+            googlePublish.dataString
         )
     }
 
