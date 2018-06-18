@@ -1,13 +1,14 @@
 package com.aconno.acnsensa.data.converter
 
 import com.aconno.acnsensa.domain.model.Reading
-
-import java.util.HashMap
-import java.util.Scanner
-import java.util.regex.Matcher
+import java.util.*
 import java.util.regex.Pattern
 
 class DataStringConverter(userDataString: String) {
+
+    companion object {
+        private const val VALUE = "value"
+    }
 
     private var map: HashMap<String, String>? = null
 
@@ -39,10 +40,29 @@ class DataStringConverter(userDataString: String) {
     }
 
     fun convert(data: Reading): List<String>? {
-        val dataString = map!![data.type.toDataString().toLowerCase()] ?: return null
+        val type = data.type.toDataString().toLowerCase()
+        val map = this.map!!
+
+        val dataString: String
+
+        dataString = if (map.containsKey(type)) {
+            map[type]!!.replace(
+                "$" + data.type.toDataString().toLowerCase(),
+                data.value.toString()
+            )
+        } else {
+            if (map.containsKey(DataStringConverter.VALUE)) {
+                map[DataStringConverter.VALUE]!!.replace(
+                    "\$value",
+                    data.value.toString()
+                )
+            } else {
+                return null
+            }
+        }
 
         return listOf(
-            dataString.replace("$" + data.type.toDataString().toLowerCase(), data.value.toString())
+            dataString
                 .replace("\$ts", System.currentTimeMillis().toString())
                 .replace("\$name", data.type.toDataString())
         )

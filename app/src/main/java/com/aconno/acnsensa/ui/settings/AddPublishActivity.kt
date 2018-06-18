@@ -1,6 +1,7 @@
 package com.aconno.acnsensa.ui.settings
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -11,6 +12,7 @@ import android.view.View
 import android.widget.*
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
+import com.aconno.acnsensa.R.id.*
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
 import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
@@ -19,7 +21,6 @@ import com.aconno.acnsensa.data.publisher.GoogleCloudPublisher
 import com.aconno.acnsensa.data.publisher.MqttPublisher
 import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
-import com.aconno.acnsensa.domain.ifttt.MqttPublish
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.model.*
 import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
@@ -44,7 +45,6 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
-
 
     @Inject
     lateinit var publishViewModel: PublishViewModel
@@ -123,11 +123,25 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 position: Int,
                 id: Long
             ) {
+
                 when (position) {
-                    0 -> text_http_get.visibility = View.VISIBLE
-                    1 -> text_http_get.visibility = View.GONE
+                    0 -> layout_text_http_get.visibility = View.VISIBLE
+                    1 -> layout_text_http_get.visibility = View.GONE
                 }
             }
+        }
+
+        btn_info.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+
+            builder.setTitle(R.string.publisher_info_title)
+                .setMessage(R.string.publisher_info_text)
+                .setNeutralButton(
+                    R.string.okey
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
 
         text_http_headers.setOnClickListener {
@@ -142,32 +156,14 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 addDevices(deviceList)
 
                 if (basePublish != null) {
-                    when (basePublish) {
-                        is GooglePublishModel -> addDisposable(
-                            publishViewModel.getDevicesThatConnectedWithGooglePublish((basePublish as GooglePublishModel).id)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(Consumer {
-                                    updateDeviceList(it)
-                                })
-                        )
-                        is RESTPublishModel -> addDisposable(
-                            publishViewModel.getDevicesThatConnectedWithRESTPublish((basePublish as RESTPublishModel).id)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(Consumer {
-                                    updateDeviceList(it)
-                                })
-                        )
-                        is MqttPublishModel -> addDisposable(
-                            publishViewModel.getDevicesThatConnectedWithMqttPublish((basePublish as MqttPublishModel).id)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(Consumer {
-                                    updateDeviceList(it)
-                                })
-                        )
-                    }
+                    addDisposable(
+                        publishViewModel.getDevicesThatConnectedWithPublish(basePublish!!)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(Consumer {
+                                updateDeviceList(it)
+                            })
+                    )
                 }
             })
         addDisposable(subscribe)
@@ -225,7 +221,6 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
 
         publisher.test(this)
     }
-
 
     override fun onSuccess() {
         isTestingAlreadyRunning = false
@@ -302,51 +297,55 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             text_lastdatasent.text = str
         }
 
-        if (basePublish is GooglePublishModel) {
-            spinner_toolbar.setSelection(0)
-            publish_view_flipper.displayedChild = 0
+        when (basePublish) {
+            is GooglePublishModel -> {
+                spinner_toolbar.setSelection(0)
+                publish_view_flipper.displayedChild = 0
 
-            val googlePublish = basePublish as GooglePublishModel
+                val googlePublish = basePublish as GooglePublishModel
 
-            edit_projectid.setText(googlePublish.projectId)
-            edit_region.setText(googlePublish.region)
-            edit_deviceregistry.setText(googlePublish.deviceRegistry)
-            edit_device.setText(googlePublish.device)
-            edit_privatekey.text = googlePublish.privateKey
-        } else if (basePublish is RESTPublishModel) {
-            spinner_toolbar.setSelection(1)
-            publish_view_flipper.displayedChild = 1
-            val restPublish = basePublish as RESTPublishModel
+                edit_projectid.setText(googlePublish.projectId)
+                edit_region.setText(googlePublish.region)
+                edit_deviceregistry.setText(googlePublish.deviceRegistry)
+                edit_device.setText(googlePublish.device)
+                edit_privatekey.text = googlePublish.privateKey
+            }
+            is RESTPublishModel -> {
+                spinner_toolbar.setSelection(1)
+                publish_view_flipper.displayedChild = 1
+                val restPublish = basePublish as RESTPublishModel
 
-            edit_url.setText(restPublish.url)
-            val selection = if (restPublish.method == "GET") 0 else 1
-            spinner_methods.setSelection(selection)
+                edit_url.setText(restPublish.url)
+                val selection = if (restPublish.method == "GET") 0 else 1
+                spinner_methods.setSelection(selection)
 
-            addDisposable(
-                publishViewModel.getRESTHeadersById(restPublish.id)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        restHeaderList = ArrayList(it)
-                        updateHeaderText()
-                    }
-            )
-        } else if (basePublish is MqttPublishModel) {
-            spinner_toolbar.setSelection(2)
-            publish_view_flipper.displayedChild = 2
+                addDisposable(
+                    publishViewModel.getRESTHeadersById(restPublish.id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe {
+                            restHeaderList = ArrayList(it)
+                            updateHeaderText()
+                        }
+                )
+            }
+            is MqttPublishModel -> {
+                spinner_toolbar.setSelection(2)
+                publish_view_flipper.displayedChild = 2
 
-            val mqttPublishModel = basePublish as MqttPublishModel
+                val mqttPublishModel = basePublish as MqttPublishModel
 
-            edit_url_mqtt.setText(mqttPublishModel.url)
-            edit_clientid_mqtt.setText(mqttPublishModel.clientId)
-            edit_username_mqtt.setText(mqttPublishModel.username)
-            edit_password_mqtt.setText(mqttPublishModel.password)
-            edit_topic_mqtt.setText(mqttPublishModel.topic)
+                edit_url_mqtt.setText(mqttPublishModel.url)
+                edit_clientid_mqtt.setText(mqttPublishModel.clientId)
+                edit_username_mqtt.setText(mqttPublishModel.username)
+                edit_password_mqtt.setText(mqttPublishModel.password)
+                edit_topic_mqtt.setText(mqttPublishModel.topic)
 
-            when (mqttPublishModel.qos) {
-                0 -> qos_0.isChecked = true
-                1 -> qos_1.isChecked = true
-                2 -> qos_2.isChecked = true
+                when (mqttPublishModel.qos) {
+                    0 -> qos_0.isChecked = true
+                    1 -> qos_1.isChecked = true
+                    2 -> qos_2.isChecked = true
+                }
             }
         }
     }
@@ -400,33 +399,37 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             isTestingAlreadyRunning = true
 
             Toast.makeText(this, getString(R.string.testings_started), Toast.LENGTH_SHORT).show()
-            if (spinner_toolbar.selectedItemPosition == 0) {
-                val toGooglePublishModel = toGooglePublishModel()
+            when {
+                spinner_toolbar.selectedItemPosition == 0 -> {
+                    val toGooglePublishModel = toGooglePublishModel()
 
-                if (toGooglePublishModel == null) {
-                    isTestingAlreadyRunning = false
-                    return
+                    if (toGooglePublishModel == null) {
+                        isTestingAlreadyRunning = false
+                        return
+                    }
+
+                    testGoogleConnection(toGooglePublishModel)
                 }
+                spinner_toolbar.selectedItemPosition == 1 -> {
+                    val toRESTPublishModel = toRESTPublishModel()
 
-                testGoogleConnection(toGooglePublishModel)
-            } else if (spinner_toolbar.selectedItemPosition == 1) {
-                val toRESTPublishModel = toRESTPublishModel()
+                    if (toRESTPublishModel == null) {
+                        isTestingAlreadyRunning = false
+                        return
+                    }
 
-                if (toRESTPublishModel == null) {
-                    isTestingAlreadyRunning = false
-                    return
+                    testRESTConnection(toRESTPublishModel)
                 }
+                spinner_toolbar.selectedItemPosition == 2 -> {
+                    val toMqttPublishModel = toMqttPublishModel()
 
-                testRESTConnection(toRESTPublishModel)
-            } else if (spinner_toolbar.selectedItemPosition == 2) {
-                val toMqttPublishModel = toMqttPublishModel()
+                    if (toMqttPublishModel == null) {
+                        isTestingAlreadyRunning = false
+                        return
+                    }
 
-                if (toMqttPublishModel == null) {
-                    isTestingAlreadyRunning = false
-                    return
+                    testMqttConnection(toMqttPublishModel)
                 }
-
-                testMqttConnection(toMqttPublishModel)
             }
         }
     }
@@ -601,7 +604,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         val name = edit_name.text.toString().trim()
         val url = edit_url.text.toString().trim()
         val method = spinner_methods.selectedItem.toString()
-        val parameterName = text_http_get.text.toString()
+        val parameterName = layout_text_http_get.editText!!.text.toString()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
         val datastring = edit_datastring.text.toString()

@@ -117,7 +117,16 @@ class PublishViewModel(
             }.toList()
     }
 
-    fun getDevicesThatConnectedWithGooglePublish(googleId: Long): Single<MutableList<DeviceRelationModel>> {
+    fun getDevicesThatConnectedWithPublish(basePublishModel: BasePublishModel): Single<MutableList<DeviceRelationModel>> {
+        return when (basePublishModel) {
+            is GooglePublishModel -> getDevicesThatConnectedWithGooglePublish(basePublishModel.id)
+            is RESTPublishModel -> getDevicesThatConnectedWithRESTPublish(basePublishModel.id)
+            is MqttPublishModel -> getDevicesThatConnectedWithMqttPublish(basePublishModel.id)
+            else -> throw IllegalArgumentException()
+        }
+    }
+
+    private fun getDevicesThatConnectedWithGooglePublish(googleId: Long): Single<MutableList<DeviceRelationModel>> {
         return devicesThatConnectedWithGooglePublishUseCase.execute(googleId)
             .toFlowable()
             .flatMapIterable { it }
@@ -126,7 +135,7 @@ class PublishViewModel(
             }.toList()
     }
 
-    fun getDevicesThatConnectedWithRESTPublish(restId: Long): Single<MutableList<DeviceRelationModel>> {
+    private fun getDevicesThatConnectedWithRESTPublish(restId: Long): Single<MutableList<DeviceRelationModel>> {
         return devicesThatConnectedWithRESTPublishUseCase.execute(restId)
             .toFlowable()
             .flatMapIterable { it }
@@ -135,7 +144,7 @@ class PublishViewModel(
             }.toList()
     }
 
-    fun getDevicesThatConnectedWithMqttPublish(mqttId: Long): Single<MutableList<DeviceRelationModel>> {
+    private fun getDevicesThatConnectedWithMqttPublish(mqttId: Long): Single<MutableList<DeviceRelationModel>> {
         return devicesThatConnectedWithMqttPublishUseCase.execute(mqttId)
             .toFlowable()
             .flatMapIterable { it }

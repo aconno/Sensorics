@@ -202,6 +202,9 @@
     <string name="qos_2">2</string>
     <string name="dataString">Data String</string>
     <string name="dataStringHint">211,$temperature\n212,$battery</string>
+    <string name="publisher_info_text"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$name</i> => key \n<i>$value</i> => sensor value \n<b>Specific Values:</b> \n<i>$temperature,$light,$battery_level</i> etc.</string>
+    <string name="publisher_info_title">Info</string>
+    <string name="okey">Okey</string>
 
     <string-array name="header_keys">
         <item>A-IM</item>
