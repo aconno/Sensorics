@@ -18,7 +18,8 @@ interface Publisher {
     fun test(testConnectionCallback: TestConnectionCallback)
 
     interface TestConnectionCallback {
-        fun onSuccess()
-        fun onFail()
+        fun onConnectionStart()
+        fun onConnectionSuccess()
+        fun onConnectionFail()
     }
 }

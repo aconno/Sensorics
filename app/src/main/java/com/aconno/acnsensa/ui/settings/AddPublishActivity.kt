@@ -30,7 +30,10 @@ import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.ui.base.BaseActivity
 import com.aconno.acnsensa.ui.settings.rheader.RESTHeadersActivity
 import com.aconno.acnsensa.viewmodel.PublishViewModel
+import io.reactivex.Completable
+import io.reactivex.CompletableObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_add_publish.*
@@ -45,7 +48,7 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
-
+    //TODO Create Tester Class
     @Inject
     lateinit var publishViewModel: PublishViewModel
 
@@ -199,6 +202,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             RESTHeaderModelMapper().toRESTHeaderList(restHeaderList)
         )
 
+        onConnectionStart()
         publisher.test(this)
     }
 
@@ -209,6 +213,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             listOf(Device("TestDevice", "Mac"))
         )
 
+        onConnectionStart()
         publisher.test(this)
     }
 
@@ -219,17 +224,24 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
             listOf(Device("TestDevice", "Mac"))
         )
 
+        onConnectionStart()
         publisher.test(this)
     }
 
-    override fun onSuccess() {
+    override fun onConnectionSuccess() {
+        progressbar.visibility = View.INVISIBLE
         isTestingAlreadyRunning = false
         Toast.makeText(this, getString(R.string.test_succeeded), Toast.LENGTH_SHORT).show()
     }
 
-    override fun onFail() {
+    override fun onConnectionFail() {
+        progressbar.visibility = View.INVISIBLE
         isTestingAlreadyRunning = false
         Toast.makeText(this, getString(R.string.test_failed), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onConnectionStart() {
+        progressbar.visibility = View.VISIBLE
     }
 
     /**
@@ -437,36 +449,51 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
     private fun addOrUpdate() {
         val selectedItem = spinner_toolbar.selectedItemPosition
 
-        val isOk = when (selectedItem) {
+        val completable = when (selectedItem) {
             0 -> googleAddOrUpdate()
             1 -> restAddOrUpdate()
             2 -> mqttAddOrUpdate()
             else -> throw IllegalArgumentException("Please use registered types.")
         }
 
-        if (isOk) {
-            //After save or update finish activity
-            finish()
-        }
+        completable
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe(object : CompletableObserver {
+                override fun onComplete() {
+                    progressbar.visibility = View.INVISIBLE
+                    finish()
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    addDisposable(d)
+                    progressbar.visibility = View.VISIBLE
+                }
+
+                override fun onError(e: Throwable) {
+                    progressbar.visibility = View.INVISIBLE
+                    Toast.makeText(this@AddPublishActivity, e.message, Toast.LENGTH_SHORT)
+                        .show()
+                }
+            })
     }
 
-    private fun mqttAddOrUpdate(): Boolean {
+    private fun mqttAddOrUpdate(): Completable? {
         val mqttPublishModel = toMqttPublishModel()
         return if (mqttPublishModel != null) {
-            addDisposable(
-                publishViewModel.save(mqttPublishModel)
-                    .subscribe(Consumer {
-                        addRelationsToMqtt(it)
-                    })
-            )
-            true
+            publishViewModel.save(mqttPublishModel)
+                .flatMapCompletable {
+                    addRelationsToMqtt(it)
+                }
         } else {
-            false
+            null
         }
     }
 
-    private fun addRelationsToMqtt(it: Long) {
+    private fun addRelationsToMqtt(it: Long): Completable {
         val count = layout_devices.childCount
+
+        val setOfCompletable = mutableSetOf<Completable>()
 
         for (i in 0..(count - 1)) {
             val deviceRelationModel = deviceList[i]
@@ -475,14 +502,15 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
 
             if (isChecked) {
-                addDisposable(
+                setOfCompletable.add(
                     publishViewModel.addOrUpdateMqttRelation(
                         deviceId = deviceRelationModel.macAddress,
                         mqttId = it
                     )
                 )
+
             } else {
-                addDisposable(
+                setOfCompletable.add(
                     publishViewModel.deleteRelationMqtt(
                         deviceId = deviceRelationModel.macAddress,
                         mqttId = it
@@ -490,6 +518,8 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 )
             }
         }
+
+        return Completable.merge(setOfCompletable)
     }
 
     private fun toMqttPublishModel(): MqttPublishModel? {
@@ -548,33 +578,28 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         return sdf.format(date)
     }
 
-    private fun restAddOrUpdate(): Boolean {
+    private fun restAddOrUpdate(): Completable? {
         val restPublishModel = toRESTPublishModel()
         return if (restPublishModel != null) {
-            addDisposable(
-                publishViewModel.save(restPublishModel)
-                    .subscribe(Consumer {
-                        addRelationsToREST(it)
-                        addHeadersToREST(it)
-                    })
-            )
-
-            true
+            publishViewModel.save(restPublishModel)
+                .flatMapCompletable { id ->
+                    addRelationsToREST(id).mergeWith(addHeadersToREST(id))
+                }
         } else {
-            false
+            null
         }
     }
 
-    private fun addHeadersToREST(it: Long) {
-        addDisposable(
-            publishViewModel.addRESTHeader(
-                restHeaderList, it
-            )
+    private fun addHeadersToREST(it: Long): Completable {
+        return publishViewModel.addRESTHeader(
+            restHeaderList, it
         )
     }
 
-    private fun addRelationsToREST(rId: Long) {
+    private fun addRelationsToREST(rId: Long): Completable {
         val count = layout_devices.childCount
+
+        val setOfCompletable: MutableSet<Completable> = mutableSetOf()
 
         for (i in 0..(count - 1)) {
             val deviceRelationModel = deviceList[i]
@@ -583,14 +608,14 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
 
             if (isChecked) {
-                addDisposable(
+                setOfCompletable.add(
                     publishViewModel.addOrUpdateRestRelation(
                         deviceId = deviceRelationModel.macAddress,
                         restId = rId
                     )
                 )
             } else {
-                addDisposable(
+                setOfCompletable.add(
                     publishViewModel.deleteRelationRest(
                         deviceId = deviceRelationModel.macAddress,
                         restId = rId
@@ -598,6 +623,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 )
             }
         }
+        return Completable.merge(setOfCompletable)
     }
 
     private fun toRESTPublishModel(): RESTPublishModel? {
@@ -644,23 +670,22 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
         )
     }
 
-    private fun googleAddOrUpdate(): Boolean {
+    private fun googleAddOrUpdate(): Completable? {
         val googlePublishModel = toGooglePublishModel()
         return if (googlePublishModel != null) {
-            addDisposable(
-                publishViewModel.save(googlePublishModel)
-                    .subscribe(Consumer {
-                        addRelationsToGoogle(it)
-                    })
-            )
-            true
+            publishViewModel.save(googlePublishModel)
+                .flatMapCompletable {
+                    addRelationsToGoogle(it)
+                }
         } else {
-            false
+            null
         }
     }
 
-    private fun addRelationsToGoogle(gId: Long) {
+    private fun addRelationsToGoogle(gId: Long): Completable {
         val count = layout_devices.childCount
+
+        val setOfCompletable: MutableSet<Completable> = mutableSetOf()
 
         for (i in 0..(count - 1)) {
             val deviceRelationModel = deviceList[i]
@@ -669,14 +694,14 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
 
             if (isChecked) {
-                addDisposable(
+                setOfCompletable.add(
                     publishViewModel.addOrUpdateGoogleRelation(
                         deviceId = deviceRelationModel.macAddress,
                         googleId = gId
                     )
                 )
             } else {
-                addDisposable(
+                setOfCompletable.add(
                     publishViewModel.deleteRelationGoogle(
                         deviceId = deviceRelationModel.macAddress,
                         googleId = gId
@@ -684,6 +709,7 @@ class AddPublishActivity : BaseActivity(), Publisher.TestConnectionCallback {
                 )
             }
         }
+        return Completable.merge(setOfCompletable)
     }
 
     private fun toGooglePublishModel(): GooglePublishModel? {

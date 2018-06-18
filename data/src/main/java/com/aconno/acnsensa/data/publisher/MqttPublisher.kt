@@ -109,7 +109,8 @@ class MqttPublisher(
                     publishMessagesFromQueue()
 
                     if (testConnectionCallback != null) {
-                        testConnectionCallback?.onSuccess()
+                        testConnectionCallback?.onConnectionSuccess()
+                        testConnectionCallback = null
                         mqttAndroidClient.close()
                         mqttAndroidClient.disconnect()
                     }
@@ -117,7 +118,7 @@ class MqttPublisher(
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
                     Timber.e(exception, "Failed to connect to server")
-                    testConnectionCallback?.onFail()
+                    testConnectionCallback?.onConnectionFail()
                 }
             })
         } catch (e: MqttException) {

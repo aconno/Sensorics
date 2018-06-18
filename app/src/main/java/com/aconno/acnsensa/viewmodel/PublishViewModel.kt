@@ -13,6 +13,7 @@ import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.AddRESTPublishUseCas
 import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.model.*
 import com.aconno.acnsensa.model.mapper.*
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,8 +46,6 @@ class PublishViewModel(
 
         val transform = googlePublishModelDataMapper.transform(googlePublishModel)
         return addGooglePublishUseCase.execute(transform)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun save(
@@ -55,8 +54,6 @@ class PublishViewModel(
 
         val transform = restPublishModelDataMapper.transform(restPublishModel)
         return addRESTPublishUseCase.execute(transform)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun save(
@@ -65,47 +62,42 @@ class PublishViewModel(
 
         val transform = mqttPublishModelDataMapper.toMqttPublish(mqttPublishModel)
         return addMqttPublishUseCase.execute(transform)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun addOrUpdateRestRelation(
         deviceId: String,
         restId: Long
-    ): Disposable {
+    ): Completable {
         return savePublishDeviceJoinUseCase.execute(
             GeneralRestPublishDeviceJoin(
                 restId,
                 deviceId
             )
-        ).subscribeOn(Schedulers.io())
-            .subscribe()
+        )
     }
 
     fun addOrUpdateGoogleRelation(
         deviceId: String,
         googleId: Long
-    ): Disposable {
+    ): Completable {
         return savePublishDeviceJoinUseCase.execute(
             GeneralGooglePublishDeviceJoin(
                 googleId,
                 deviceId
             )
-        ).subscribeOn(Schedulers.io())
-            .subscribe()
+        )
     }
 
     fun addOrUpdateMqttRelation(
         deviceId: String,
         mqttId: Long
-    ): Disposable {
+    ): Completable {
         return savePublishDeviceJoinUseCase.execute(
             GeneralMqttPublishDeviceJoin(
                 mqttId,
                 deviceId
             )
-        ).subscribeOn(Schedulers.io())
-            .subscribe()
+        )
     }
 
     fun getAllDevices(): Single<MutableList<DeviceRelationModel>> {
@@ -156,50 +148,46 @@ class PublishViewModel(
     fun deleteRelationGoogle(
         deviceId: String,
         googleId: Long
-    ): Disposable {
+    ): Completable {
         return deletePublishDeviceJoinUseCase.execute(
             GeneralGooglePublishDeviceJoin(
                 googleId,
                 deviceId
             )
-        ).subscribeOn(Schedulers.io())
-            .subscribe()
+        )
     }
 
     fun deleteRelationRest(
         deviceId: String,
         restId: Long
-    ): Disposable {
+    ): Completable {
         return deletePublishDeviceJoinUseCase.execute(
             GeneralRestPublishDeviceJoin(
                 restId,
                 deviceId
             )
-        ).subscribeOn(Schedulers.io())
-            .subscribe()
+        )
     }
 
     fun deleteRelationMqtt(
         deviceId: String,
         mqttId: Long
-    ): Disposable {
+    ): Completable {
         return deletePublishDeviceJoinUseCase.execute(
             GeneralMqttPublishDeviceJoin(
                 mqttId,
                 deviceId
             )
-        ).subscribeOn(Schedulers.io())
-            .subscribe()
+        )
     }
 
     fun addRESTHeader(
         list: List<RESTHeaderModel>,
         it: Long
-    ): Disposable {
+    ): Completable {
         return saveRESTHeaderUseCase.execute(
             restHeaderModelMapper.toRESTHeaderListByRESTPublishId(list, it)
-        ).subscribeOn(Schedulers.io())
-            .subscribe()
+        )
     }
 
     fun deleteRESTHeader(restHeader: RESTHeader): Disposable {

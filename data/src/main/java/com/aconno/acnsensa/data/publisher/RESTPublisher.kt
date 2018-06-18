@@ -54,7 +54,6 @@ class RESTPublisher(
     }
 
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
-
         val convertList = dataStringConverter.convert(
             Reading(
                 System.currentTimeMillis(),
@@ -69,9 +68,9 @@ class RESTPublisher(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 if (it.isSuccessful) {
-                    testConnectionCallback.onSuccess()
+                    testConnectionCallback.onConnectionSuccess()
                 } else {
-                    testConnectionCallback.onFail()
+                    testConnectionCallback.onConnectionFail()
                 }
             }
     }
