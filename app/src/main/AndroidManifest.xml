@@ -35,15 +35,20 @@
         <activity android:name=".ui.actions.EditActionActivity" />
         <activity
             android:name=".ui.settings.PublishListActivity"
-            android:label="@string/title_publish_list"
-            android:theme="@style/AppTheme" />
+            android:label="@string/title_publish_list" />
         <activity android:name=".ui.settings.AddPublishActivity" />
         <activity
             android:name=".ui.settings.rheader.RESTHeadersActivity"
             android:label="@string/title_activity_rest_header"
-            android:parentActivityName=".ui.settings.AddPublishActivity"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".ui.settings.SelectPublishActivity" />
+            android:parentActivityName=".ui.settings.selectpublish.RESTPublisherActivity" />
+        <activity
+            android:name=".ui.settings.selectpublish.SelectPublisherActivity"
+            android:label="@string/title_select_publish"
+            android:noHistory="true"
+            android:theme="@style/SelectPublisherTheme" />
+        <activity android:name=".ui.settings.selectpublish.RESTPublisherActivity" />
+        <activity android:name=".ui.settings.selectpublish.GoogleCloudPublisherActivity" />
+        <activity android:name=".ui.settings.selectpublish.MqttPublisherActivity" />
     </application>
 
 </manifest>

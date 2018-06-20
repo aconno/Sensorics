@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -21,9 +22,11 @@ import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.MqttPublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
 import com.aconno.acnsensa.ui.base.BaseFragment
+import com.aconno.acnsensa.ui.settings.selectpublish.SelectPublisherActivity
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_publish_list.*
 import javax.inject.Inject
 
 
@@ -89,6 +92,7 @@ class PublishListFragment : BaseFragment(),
         val view = inflater.inflate(R.layout.fragment_publish_list, container, false)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.view_publish_list)
+        val fab = view.findViewById<FloatingActionButton>(R.id.button_add_publisher)
         rvAdapter = PublishRecyclerViewAdapter(
             listBasePublish,
             listener,
@@ -103,6 +107,10 @@ class PublishListFragment : BaseFragment(),
                 (layoutManager as LinearLayoutManager).orientation
             )
             this.addItemDecoration(dividerItemDecoration)
+        }
+
+        fab.setOnClickListener {
+            SelectPublisherActivity.start(context!!)
         }
 
         return view

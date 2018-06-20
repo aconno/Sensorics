@@ -9,6 +9,13 @@ import android.view.Menu
 import android.view.MenuItem
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.model.BasePublishModel
+import com.aconno.acnsensa.model.GooglePublishModel
+import com.aconno.acnsensa.model.MqttPublishModel
+import com.aconno.acnsensa.model.RESTPublishModel
+import com.aconno.acnsensa.ui.settings.selectpublish.GoogleCloudPublisherActivity
+import com.aconno.acnsensa.ui.settings.selectpublish.MqttPublisherActivity
+import com.aconno.acnsensa.ui.settings.selectpublish.RESTPublisherActivity
+import com.aconno.acnsensa.ui.settings.selectpublish.SelectPublisherActivity
 import kotlinx.android.synthetic.main.activity_add_publish.*
 
 
@@ -36,26 +43,12 @@ class PublishListActivity : AppCompatActivity(),
     }
 
     override fun onListFragmentInteraction(item: BasePublishModel?) {
-        AddPublishActivity.start(this, item)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.publish_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id: Int? = item?.itemId
-        when (id) {
-            R.id.action_publish_add -> AddPublishActivity.start(
-                this
-            )
+        when (item) {
+            is GooglePublishModel -> GoogleCloudPublisherActivity.start(this, item)
+            is RESTPublishModel -> RESTPublisherActivity.start(this, item)
+            is MqttPublishModel -> MqttPublisherActivity.start(this, item)
         }
-
-        return super.onOptionsItemSelected(item)
     }
-
 
     companion object {
         fun start(context: Context) {
