@@ -9,7 +9,7 @@ import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.model.mapper.DeviceRelationModelMapper
 import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
-import com.aconno.acnsensa.ui.settings.selectpublish.RESTPublisherActivity
+import com.aconno.acnsensa.ui.settings.publishers.selectpublish.RESTPublisherActivity
 import com.aconno.acnsensa.viewmodel.RestPublisherViewModel
 import com.aconno.acnsensa.viewmodel.factory.RestPublisherViewModelFactory
 import dagger.Module

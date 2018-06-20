@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.dagger.restpublisher
 
 import com.aconno.acnsensa.dagger.application.AppComponent
-import com.aconno.acnsensa.ui.settings.selectpublish.RESTPublisherActivity
+import com.aconno.acnsensa.ui.settings.publishers.selectpublish.RESTPublisherActivity
 import dagger.Component
 
 @RESTPublisherScope

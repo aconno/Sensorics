@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.dagger.addpublish
 
 import com.aconno.acnsensa.dagger.application.AppComponent
-import com.aconno.acnsensa.ui.settings.AddPublishActivity
+import com.aconno.acnsensa.ui.settings.publishers.AddPublishActivity
 import dagger.Component
 
 /**

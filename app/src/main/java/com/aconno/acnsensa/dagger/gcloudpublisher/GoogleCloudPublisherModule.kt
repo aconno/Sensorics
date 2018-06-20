@@ -11,7 +11,7 @@ import com.aconno.acnsensa.domain.interactor.repository.SavePublishDeviceJoinUse
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.model.mapper.DeviceRelationModelMapper
 import com.aconno.acnsensa.model.mapper.GooglePublishModelDataMapper
-import com.aconno.acnsensa.ui.settings.selectpublish.GoogleCloudPublisherActivity
+import com.aconno.acnsensa.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.acnsensa.viewmodel.GoogleCloudPublisherViewModel
 import com.aconno.acnsensa.viewmodel.factory.GoogleCloudPublisherViewModelFactory
 import dagger.Module

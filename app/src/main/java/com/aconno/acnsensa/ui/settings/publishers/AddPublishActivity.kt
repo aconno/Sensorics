@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui.settings
+package com.aconno.acnsensa.ui.settings.publishers
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -12,7 +12,6 @@ import android.view.View
 import android.widget.*
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.R.id.*
 import com.aconno.acnsensa.dagger.addpublish.AddPublishComponent
 import com.aconno.acnsensa.dagger.addpublish.AddPublishModule
 import com.aconno.acnsensa.dagger.addpublish.DaggerAddPublishComponent
@@ -28,7 +27,7 @@ import com.aconno.acnsensa.model.mapper.MqttPublishModelDataMapper
 import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.ui.base.BaseActivity
-import com.aconno.acnsensa.ui.settings.rheader.RESTHeadersActivity
+import com.aconno.acnsensa.ui.settings.publishers.rheader.RESTHeadersActivity
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver

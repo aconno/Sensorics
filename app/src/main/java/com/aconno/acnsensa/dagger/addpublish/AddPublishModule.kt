@@ -11,7 +11,7 @@ import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.AddRESTPublishUseCas
 import com.aconno.acnsensa.domain.interactor.repository.*
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.model.mapper.*
-import com.aconno.acnsensa.ui.settings.AddPublishActivity
+import com.aconno.acnsensa.ui.settings.publishers.AddPublishActivity
 import com.aconno.acnsensa.viewmodel.PublishViewModel
 import com.aconno.acnsensa.viewmodel.factory.PublishViewModelFactory
 import dagger.Module

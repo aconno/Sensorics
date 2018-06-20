@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui.settings.selectpublish
+package com.aconno.acnsensa.ui.settings.publishers.selectpublish
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -27,7 +27,7 @@ import com.aconno.acnsensa.model.RESTPublishModel
 import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.ui.base.BaseActivity
-import com.aconno.acnsensa.ui.settings.rheader.RESTHeadersActivity
+import com.aconno.acnsensa.ui.settings.publishers.rheader.RESTHeadersActivity
 import com.aconno.acnsensa.viewmodel.RestPublisherViewModel
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -91,9 +91,9 @@ class RESTPublisherActivity : BaseActivity() {
         supportActionBar!!.setDisplayShowTitleEnabled(true)
 
         initViews()
-        if (intent.hasExtra(RESTPublisherActivity.REST_PUBLISHER_ACTIVITY_KEY)) {
+        if (intent.hasExtra(REST_PUBLISHER_ACTIVITY_KEY)) {
             restPublishModel =
-                    intent.getParcelableExtra(RESTPublisherActivity.REST_PUBLISHER_ACTIVITY_KEY)
+                    intent.getParcelableExtra(REST_PUBLISHER_ACTIVITY_KEY)
 
             setFields()
         }

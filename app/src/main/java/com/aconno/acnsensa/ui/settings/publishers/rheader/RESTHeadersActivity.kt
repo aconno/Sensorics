@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui.settings.rheader
+package com.aconno.acnsensa.ui.settings.publishers.rheader
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -15,7 +15,8 @@ import com.aconno.acnsensa.model.RESTHeaderModel
 import kotlinx.android.synthetic.main.activity_rest_headers.*
 
 
-class RESTHeadersActivity : AppCompatActivity(), AddRESTHeaderDialog.OnFragmentInteractionListener,
+class RESTHeadersActivity : AppCompatActivity(),
+    AddRESTHeaderDialog.OnFragmentInteractionListener,
     LongItemClickListener<RESTHeaderModel> {
 
     private lateinit var headers: ArrayList<RESTHeaderModel>
@@ -38,9 +39,13 @@ class RESTHeadersActivity : AppCompatActivity(), AddRESTHeaderDialog.OnFragmentI
         }
 
     init {
-        onItemClickListener = object : ItemClickListenerWithPos<RESTHeaderModel> {
+        onItemClickListener = object :
+            ItemClickListenerWithPos<RESTHeaderModel> {
             override fun onItemClick(position: Int, item: RESTHeaderModel?) {
-                AddRESTHeaderDialog.newInstance(item, position)
+                AddRESTHeaderDialog.newInstance(
+                    item,
+                    position
+                )
                     .show(supportFragmentManager, null)
             }
         }
@@ -79,7 +84,10 @@ class RESTHeadersActivity : AppCompatActivity(), AddRESTHeaderDialog.OnFragmentI
         }
 
         button_addHeader.setOnClickListener {
-            AddRESTHeaderDialog.newInstance(null, -1)
+            AddRESTHeaderDialog.newInstance(
+                null,
+                -1
+            )
                 .show(supportFragmentManager, null)
         }
 

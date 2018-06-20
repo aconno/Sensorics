@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui.settings
+package com.aconno.acnsensa.ui.settings.publishers
 
 import android.app.AlertDialog
 import android.content.Context
@@ -22,11 +22,10 @@ import com.aconno.acnsensa.model.GooglePublishModel
 import com.aconno.acnsensa.model.MqttPublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
 import com.aconno.acnsensa.ui.base.BaseFragment
-import com.aconno.acnsensa.ui.settings.selectpublish.SelectPublisherActivity
+import com.aconno.acnsensa.ui.settings.publishers.selectpublish.SelectPublisherActivity
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_publish_list.*
 import javax.inject.Inject
 
 

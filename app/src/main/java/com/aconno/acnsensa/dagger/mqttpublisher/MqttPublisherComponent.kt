@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.dagger.mqttpublisher
 
 import com.aconno.acnsensa.dagger.application.AppComponent
-import com.aconno.acnsensa.ui.settings.selectpublish.MqttPublisherActivity
+import com.aconno.acnsensa.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import dagger.Component
 
 @Component(dependencies = [AppComponent::class], modules = [MqttPublisherModule::class])

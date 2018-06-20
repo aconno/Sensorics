@@ -11,7 +11,7 @@ import com.aconno.acnsensa.domain.interactor.repository.SavePublishDeviceJoinUse
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.model.mapper.DeviceRelationModelMapper
 import com.aconno.acnsensa.model.mapper.MqttPublishModelDataMapper
-import com.aconno.acnsensa.ui.settings.selectpublish.MqttPublisherActivity
+import com.aconno.acnsensa.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.acnsensa.viewmodel.MqttPublisherViewModel
 import com.aconno.acnsensa.viewmodel.factory.MqttPublisherViewModelFactory
 import dagger.Module

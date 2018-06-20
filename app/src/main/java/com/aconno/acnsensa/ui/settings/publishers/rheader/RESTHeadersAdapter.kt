@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui.settings.rheader
+package com.aconno.acnsensa.ui.settings.publishers.rheader
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater

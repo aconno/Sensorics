@@ -1,7 +1,7 @@
 package com.aconno.acnsensa.dagger.publish
 
 import com.aconno.acnsensa.dagger.application.AppComponent
-import com.aconno.acnsensa.ui.settings.PublishListFragment
+import com.aconno.acnsensa.ui.settings.publishers.PublishListFragment
 import dagger.Component
 
 /**

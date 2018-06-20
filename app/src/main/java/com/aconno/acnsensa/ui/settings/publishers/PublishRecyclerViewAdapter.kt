@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui.settings
+package com.aconno.acnsensa.ui.settings.publishers
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -15,7 +15,7 @@ import com.aconno.acnsensa.model.MqttPublishModel
 import com.aconno.acnsensa.model.RESTPublishModel
 
 
-import com.aconno.acnsensa.ui.settings.PublishListFragment.OnListFragmentInteractionListener
+import com.aconno.acnsensa.ui.settings.publishers.PublishListFragment.OnListFragmentInteractionListener
 
 import kotlinx.android.synthetic.main.item_publish.view.*
 

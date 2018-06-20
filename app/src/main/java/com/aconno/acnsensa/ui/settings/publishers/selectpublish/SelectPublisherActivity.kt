@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui.settings.selectpublish
+package com.aconno.acnsensa.ui.settings.publishers.selectpublish
 
 import android.app.Activity
 import android.app.ActivityOptions
@@ -17,15 +17,21 @@ class SelectPublisherActivity : AppCompatActivity() {
         setSupportActionBar(custom_toolbar)
 
         google_cloud_iot.setOnClickListener {
-            GoogleCloudPublisherActivity.start(this@SelectPublisherActivity)
+            GoogleCloudPublisherActivity.start(
+                this@SelectPublisherActivity
+            )
         }
 
         http_backend.setOnClickListener {
-            RESTPublisherActivity.start(this@SelectPublisherActivity)
+            RESTPublisherActivity.start(
+                this@SelectPublisherActivity
+            )
         }
 
         mqtt_backend.setOnClickListener {
-            MqttPublisherActivity.start(this@SelectPublisherActivity)
+            MqttPublisherActivity.start(
+                this@SelectPublisherActivity
+            )
         }
     }
 

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#dfdfdf"
     android:orientation="vertical"
-    tools:context=".ui.settings.AddPublishActivity">
+    tools:context=".ui.settings.publishers.AddPublishActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/custom_toolbar"
@@ -192,7 +192,7 @@
                         android:layout_marginStart="16dp"
                         android:background="@drawable/bg_rectangle_black"
                         android:gravity="top|start"
-                        android:hint="@string/dataStringHint"
+                        android:text="@string/default_data_string"
                         android:inputType="textMultiLine"
                         android:lines="8"
                         android:maxLines="10"

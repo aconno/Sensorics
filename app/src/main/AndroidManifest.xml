@@ -34,21 +34,21 @@
 
         <activity android:name=".ui.actions.EditActionActivity" />
         <activity
-            android:name=".ui.settings.PublishListActivity"
+            android:name=".ui.settings.publishers.PublishListActivity"
             android:label="@string/title_publish_list" />
-        <activity android:name=".ui.settings.AddPublishActivity" />
+        <activity android:name=".ui.settings.publishers.AddPublishActivity" />
         <activity
-            android:name=".ui.settings.rheader.RESTHeadersActivity"
+            android:name=".ui.settings.publishers.rheader.RESTHeadersActivity"
             android:label="@string/title_activity_rest_header"
-            android:parentActivityName=".ui.settings.selectpublish.RESTPublisherActivity" />
+            android:parentActivityName=".ui.settings.publishers.selectpublish.RESTPublisherActivity" />
         <activity
-            android:name=".ui.settings.selectpublish.SelectPublisherActivity"
+            android:name=".ui.settings.publishers.selectpublish.SelectPublisherActivity"
             android:label="@string/title_select_publish"
             android:noHistory="true"
             android:theme="@style/SelectPublisherTheme" />
-        <activity android:name=".ui.settings.selectpublish.RESTPublisherActivity" />
-        <activity android:name=".ui.settings.selectpublish.GoogleCloudPublisherActivity" />
-        <activity android:name=".ui.settings.selectpublish.MqttPublisherActivity" />
+        <activity android:name=".ui.settings.publishers.selectpublish.RESTPublisherActivity" />
+        <activity android:name=".ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity" />
+        <activity android:name=".ui.settings.publishers.selectpublish.MqttPublisherActivity" />
     </application>
 
 </manifest>
