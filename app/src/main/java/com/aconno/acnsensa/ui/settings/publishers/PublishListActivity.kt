@@ -13,7 +13,7 @@ import com.aconno.acnsensa.model.RESTPublishModel
 import com.aconno.acnsensa.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.acnsensa.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.acnsensa.ui.settings.publishers.selectpublish.RESTPublisherActivity
-import kotlinx.android.synthetic.main.activity_add_publish.*
+import kotlinx.android.synthetic.main.activity_publish_list.*
 
 
 /**
