@@ -46,9 +46,18 @@
             android:label="@string/title_select_publish"
             android:noHistory="true"
             android:theme="@style/SelectPublisherTheme" />
-        <activity android:name=".ui.settings.publishers.selectpublish.RESTPublisherActivity" />
-        <activity android:name=".ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity" />
-        <activity android:name=".ui.settings.publishers.selectpublish.MqttPublisherActivity" />
+        <activity
+            android:name=".ui.settings.publishers.selectpublish.RESTPublisherActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".ui.settings.publishers.selectpublish.MqttPublisherActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:label="@string/title_settings"
+            android:theme="@style/SettingsTheme" />
     </application>
-
 </manifest>
