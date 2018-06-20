@@ -52,11 +52,7 @@ class GoogleCloudPublisherViewModel(
             }.toList()
     }
 
-    fun getDevicesThatConnectedWithPublish(googlePublishModel: GooglePublishModel): Single<MutableList<DeviceRelationModel>> {
-        return getDevicesThatConnectedWithGooglePublish(googlePublishModel.id)
-    }
-
-    private fun getDevicesThatConnectedWithGooglePublish(googleId: Long): Single<MutableList<DeviceRelationModel>> {
+    public fun getDevicesThatConnectedWithGooglePublish(googleId: Long): Single<MutableList<DeviceRelationModel>> {
         return devicesThatConnectedWithGooglePublishUseCase.execute(googleId)
             .toFlowable()
             .flatMapIterable { it }

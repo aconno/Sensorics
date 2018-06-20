@@ -189,7 +189,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
 
                 if (googlePublishModel != null) {
                     addDisposable(
-                        googleViewModel.getDevicesThatConnectedWithPublish(googlePublishModel!!)
+                        googleViewModel.getDevicesThatConnectedWithGooglePublish(googlePublishModel!!.id)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(Consumer {

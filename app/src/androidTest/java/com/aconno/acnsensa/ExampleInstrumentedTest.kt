@@ -24,26 +24,4 @@ class ExampleInstrumentedTest {
         val appContext = InstrumentationRegistry.getTargetContext()
         assertEquals("com.aconno.acnsensa", appContext.packageName)
     }
-
-    @Test
-    fun getAdvertisementsFromAssets() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("com.aconno.acnsensa", appContext.packageName)
-
-        val reader = AdvertisementFormatReader()
-        val readFlowable = reader.readFlowable(appContext)
-
-
-        val test = readFlowable
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .test()
-
-        test.awaitTerminalEvent()
-
-        test.assertComplete()
-        test.assertNoErrors()
-        assert(test.values().isNotEmpty())
-    }
 }
