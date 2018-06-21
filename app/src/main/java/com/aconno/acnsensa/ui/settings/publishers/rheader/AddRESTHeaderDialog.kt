@@ -1,4 +1,4 @@
-package com.aconno.acnsensa.ui.settings.rheader
+package com.aconno.acnsensa.ui.settings.publishers.rheader
 
 import android.content.Context
 import android.os.Bundle

@@ -7,7 +7,6 @@ import com.aconno.acnsensa.domain.ifttt.RESTPublishRepository
 import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.DeleteGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.GetAllGooglePublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
-import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.AddMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
@@ -15,7 +14,7 @@ import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.DeleteRestPublishUse
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
 import com.aconno.acnsensa.model.mapper.*
-import com.aconno.acnsensa.ui.settings.PublishListFragment
+import com.aconno.acnsensa.ui.settings.publishers.PublishListFragment
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import com.aconno.acnsensa.viewmodel.factory.PublishListViewModelFactory
 import dagger.Module

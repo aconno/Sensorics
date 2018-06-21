@@ -23,7 +23,7 @@ import com.aconno.acnsensa.model.AcnSensaPermission
 import com.aconno.acnsensa.ui.devices.SavedDevicesFragment
 import com.aconno.acnsensa.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.acnsensa.ui.sensors.SensorListFragment
-import com.aconno.acnsensa.ui.settings.PublishListActivity
+import com.aconno.acnsensa.ui.settings.SettingsActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import com.aconno.acnsensa.viewmodel.BluetoothViewModel
 import com.aconno.acnsensa.viewmodel.PermissionViewModel
@@ -212,7 +212,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
                 Snackbar.LENGTH_SHORT
             ).show()
         } else {
-            PublishListActivity.start(this)
+            SettingsActivity.start(this)
         }
     }
 

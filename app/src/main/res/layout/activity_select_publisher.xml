@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.settings.publishers.selectpublish.SelectPublisherActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/custom_toolbar"
+        style="@style/Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize" />
+
+    <LinearLayout
+        android:id="@+id/google_cloud_iot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:src="@drawable/google_logo" />
+
+        <TextView
+            style="@style/ListItemText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:text="@string/google_iot_cloud"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/http_backend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:src="@drawable/uplaod_cloud" />
+
+        <TextView
+            style="@style/ListItemText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:text="@string/http_backend"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/mqtt_backend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:src="@drawable/mqtt_logo" />
+
+        <TextView
+            style="@style/ListItemText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:text="@string/mqtt_backend"
+            android:textSize="18sp" />
+    </LinearLayout>
+</LinearLayout>
