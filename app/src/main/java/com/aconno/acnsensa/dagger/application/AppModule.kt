@@ -73,10 +73,12 @@ class AppModule(
     @Provides
     @Singleton
     fun provideBluetooth(
+        application: AcnSensaApplication,
         bluetoothAdapter: BluetoothAdapter,
         bluetoothPermission: BluetoothPermission,
         bluetoothStateListener: BluetoothStateListener
-    ): Bluetooth = BluetoothImpl(bluetoothAdapter, bluetoothPermission, bluetoothStateListener)
+    ): Bluetooth =
+        BluetoothImpl(application, bluetoothAdapter, bluetoothPermission, bluetoothStateListener)
 
     @Provides
     @Singleton
