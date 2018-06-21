@@ -8,8 +8,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.RadioButton
-import android.widget.Switch
-import android.widget.TextView
 import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
@@ -20,19 +18,20 @@ import com.aconno.acnsensa.data.converter.PublisherIntervalConverter
 import com.aconno.acnsensa.data.publisher.MqttPublisher
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.model.DeviceRelationModel
 import com.aconno.acnsensa.model.MqttPublishModel
 import com.aconno.acnsensa.model.mapper.MqttPublishModelDataMapper
 import com.aconno.acnsensa.ui.base.BaseActivity
+import com.aconno.acnsensa.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.acnsensa.viewmodel.MqttPublisherViewModel
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_mqtt_publisher.*
+import kotlinx.android.synthetic.main.layout_datastring.*
 import kotlinx.android.synthetic.main.layout_mqtt.*
+import kotlinx.android.synthetic.main.layout_publisher_header.*
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -43,7 +42,6 @@ class MqttPublisherActivity : BaseActivity() {
     lateinit var mqttPublisherViewModel: MqttPublisherViewModel
 
     private var mqttPublishModel: MqttPublishModel? = null
-    private lateinit var deviceList: List<DeviceRelationModel>
     private var isTestingAlreadyRunning: Boolean = false
 
     private val testConnectionCallback = object : Publisher.TestConnectionCallback {
@@ -97,6 +95,11 @@ class MqttPublisherActivity : BaseActivity() {
                     intent.getParcelableExtra(MQTT_PUBLISHER_ACTIVITY_KEY)
             setFields()
         }
+
+        val fragment = DeviceSelectFragment.newInstance(mqttPublishModel)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.frame, fragment)
+            .commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -137,72 +140,6 @@ class MqttPublisherActivity : BaseActivity() {
                 }
                 .show()
         }
-
-        //Load Devices
-        val subscribe = mqttPublisherViewModel.getAllDevices()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                deviceList = it!!
-                addDevices(deviceList)
-
-                if (mqttPublishModel != null) {
-                    addDisposable(
-                        mqttPublisherViewModel.getDevicesThatConnectedWithMqttPublish(
-                            mqttPublishModel!!.id
-                        )
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(Consumer {
-                                updateDeviceList(it)
-                            })
-                    )
-                }
-            })
-        addDisposable(subscribe)
-    }
-
-    private fun addDevices(deviceList: List<DeviceRelationModel>) {
-        layout_devices.removeAllViews()
-
-        deviceList.forEach {
-            layout_devices.addView(getDeviceView(it))
-        }
-    }
-
-    private fun getDeviceView(it: DeviceRelationModel): View? {
-        val inflatedView =
-            layoutInflater.inflate(R.layout.item_device_switch, layout_devices, false)
-
-        val nameView = inflatedView.findViewById<TextView>(R.id.name)
-        val macAddressView = inflatedView.findViewById<TextView>(R.id.mac_address)
-        val switchView = inflatedView.findViewById<Switch>(R.id.switch_device)
-
-        nameView.text = it.name
-        macAddressView.text = it.macAddress
-        switchView.isChecked = it.related
-
-        return inflatedView
-    }
-
-    private fun updateDeviceList(list: MutableList<DeviceRelationModel>) {
-        if (list.size == 0) return
-
-        deviceList.forEachIndexed { index, it ->
-            list.forEach { related ->
-                if (it.macAddress == related.macAddress) {
-                    it.related = true
-                    updateDeviceViewAt(index)
-                    return@forEach
-                }
-            }
-        }
-    }
-
-    private fun updateDeviceViewAt(index: Int) {
-        val childAt = layout_devices.getChildAt(index)
-        childAt.findViewById<Switch>(R.id.switch_device)
-            .isChecked = true
     }
 
     private fun setFields() {
@@ -287,33 +224,28 @@ class MqttPublisherActivity : BaseActivity() {
         }
     }
 
-    private fun addRelationsToMqtt(it: Long): Completable {
-        val count = layout_devices.childCount
+    private fun addRelationsToMqtt(mId: Long): Completable? {
+        val fragment = supportFragmentManager.findFragmentById(R.id.frame) as DeviceSelectFragment
+        val devices = fragment.getDevices()
 
-        val setOfCompletable = mutableSetOf<Completable>()
+        val setOfCompletable: MutableSet<Completable> = mutableSetOf()
 
-        for (i in 0..(count - 1)) {
-            val deviceRelationModel = deviceList[i]
-
-            val isChecked =
-                layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
-
-            if (isChecked) {
-                setOfCompletable.add(
-                    mqttPublisherViewModel.addOrUpdateMqttRelation(
-                        deviceId = deviceRelationModel.macAddress,
-                        mqttId = it
-                    )
+        devices.forEach {
+            val completable = if (it.related) {
+                mqttPublisherViewModel.addOrUpdateMqttRelation(
+                    deviceId = it.macAddress,
+                    mqttId = mId
                 )
-
             } else {
-                setOfCompletable.add(
-                    mqttPublisherViewModel.deleteRelationMqtt(
-                        deviceId = deviceRelationModel.macAddress,
-                        mqttId = it
-                    )
+                mqttPublisherViewModel.deleteRelationMqtt(
+                    deviceId = it.macAddress,
+                    mqttId = mId
                 )
             }
+
+            setOfCompletable.add(
+                completable
+            )
         }
 
         return Completable.merge(setOfCompletable)

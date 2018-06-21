@@ -26,6 +26,7 @@ import com.aconno.acnsensa.ui.settings.publishers.selectpublish.SelectPublisherA
 import com.aconno.acnsensa.viewmodel.PublishListViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_publish_list.*
 import javax.inject.Inject
 
 
@@ -132,6 +133,7 @@ class PublishListFragment : BaseFragment(),
     override fun onResume() {
         super.onResume()
         val subscribe = publishListViewModel.getAllPublish()
+            .filter { !it.isEmpty() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { actions -> initPublishList(actions) }
@@ -146,12 +148,11 @@ class PublishListFragment : BaseFragment(),
         super.onPause()
     }
 
-    private fun initPublishList(actions: List<BasePublishModel>?) {
-        if (actions != null) {
-            listBasePublish.addAll(actions)
-            rvAdapter.notifyDataSetChanged()
-            rvAdapter.setOnCheckedChangeListener(checkedChangeListener)
-        }
+    private fun initPublishList(actions: List<BasePublishModel>) {
+        empty_view.visibility = View.GONE
+        listBasePublish.addAll(actions)
+        rvAdapter.notifyDataSetChanged()
+        rvAdapter.setOnCheckedChangeListener(checkedChangeListener)
     }
 
     private fun deleteSelectedItem() {

@@ -39,79 +39,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <android.support.design.widget.TextInputLayout
-                        android:id="@+id/layout_edit_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="24dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/spinner">
-
-                        <EditText
-                            android:id="@+id/edit_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:hint="@string/name"
-                            android:inputType="textPersonName"
-                            tools:text="123" />
-                    </android.support.design.widget.TextInputLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="12dp"
-                        android:orientation="horizontal">
-
-                        <EditText
-                            android:id="@+id/edit_interval_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:gravity="center"
-                            android:hint="@string/publish_sec"
-                            android:inputType="numberDecimal"
-                            tools:text="123" />
-
-                        <Spinner
-                            android:id="@+id/spinner_interval_time"
-                            android:layout_width="match_parent"
-                            android:layout_height="30dp"
-                            android:entries="@array/PublishIntervals" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/text_lastdatasent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center"
-                        android:textAppearance="?android:attr/textAppearanceMediumInverse"
-                        android:textColor="?attr/editTextColor"
-                        android:textSize="14sp"
-                        tools:text="Last data sent time : " />
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
+            <include layout="@layout/layout_publisher_header" />
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
@@ -125,84 +53,12 @@
 
             </android.support.v7.widget.CardView>
 
-            <android.support.v7.widget.CardView
+            <RelativeLayout
+                android:id="@+id/frame"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp">
+                android:layout_height="wrap_content" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:layout_gravity="top"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="8dp"
-                    android:gravity="center"
-                    android:text="@string/devices" />
-
-                <LinearLayout
-                    android:id="@+id/layout_devices"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="35dp"
-                    android:orientation="vertical"
-                    android:visibility="visible" />
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp">
-
-                <ImageButton
-                    android:id="@+id/btn_info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|end"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginTop="7dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:src="@drawable/ic_info_black" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:layout_gravity="top"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="8dp"
-                        android:gravity="center"
-                        android:text="@string/dataString" />
-
-                    <EditText
-                        android:id="@+id/edit_datastring"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
-                        android:background="@drawable/bg_rectangle_black"
-                        android:gravity="top|start"
-                        android:text="@string/default_data_string"
-                        android:inputType="textMultiLine"
-                        android:lines="8"
-                        android:maxLines="10"
-                        android:minLines="4"
-                        android:padding="5dp"
-                        android:scrollbars="none" />
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
+            <include layout="@layout/layout_datastring" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

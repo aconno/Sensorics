@@ -9,8 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
-import android.widget.Switch
-import android.widget.TextView
 import android.widget.Toast
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
@@ -21,19 +19,22 @@ import com.aconno.acnsensa.data.converter.PublisherIntervalConverter
 import com.aconno.acnsensa.data.publisher.RESTPublisher
 import com.aconno.acnsensa.domain.Publisher
 import com.aconno.acnsensa.domain.model.Device
-import com.aconno.acnsensa.model.DeviceRelationModel
 import com.aconno.acnsensa.model.RESTHeaderModel
 import com.aconno.acnsensa.model.RESTPublishModel
 import com.aconno.acnsensa.model.mapper.RESTHeaderModelMapper
 import com.aconno.acnsensa.model.mapper.RESTPublishModelDataMapper
 import com.aconno.acnsensa.ui.base.BaseActivity
+import com.aconno.acnsensa.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.acnsensa.ui.settings.publishers.rheader.RESTHeadersActivity
 import com.aconno.acnsensa.viewmodel.RestPublisherViewModel
 import io.reactivex.Completable
+import io.reactivex.CompletableObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Consumer
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_restpublisher.*
+import kotlinx.android.synthetic.main.layout_datastring.*
+import kotlinx.android.synthetic.main.layout_publisher_header.*
 import kotlinx.android.synthetic.main.layout_rest.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -46,7 +47,6 @@ class RESTPublisherActivity : BaseActivity() {
 
     private var restPublishModel: RESTPublishModel? = null
     private var isTestingAlreadyRunning: Boolean = false
-    private lateinit var deviceList: List<DeviceRelationModel>
     private var restHeaderList: ArrayList<RESTHeaderModel> = arrayListOf()
 
     private val testConnectionCallback = object : Publisher.TestConnectionCallback {
@@ -97,6 +97,11 @@ class RESTPublisherActivity : BaseActivity() {
 
             setFields()
         }
+
+        val fragment = DeviceSelectFragment.newInstance(restPublishModel)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.frame, fragment)
+            .commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -177,73 +182,6 @@ class RESTPublisherActivity : BaseActivity() {
         }
 
         updateHeaderText()
-
-        //Load Devices
-        val subscribe = restPublisherViewModel.getAllDevices()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
-                deviceList = it!!
-                addDevices(deviceList)
-
-                if (restPublishModel != null) {
-                    addDisposable(
-                        restPublisherViewModel.getDevicesThatConnectedWithRESTPublish(
-                            restPublishModel!!.id
-                        )
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(Consumer {
-                                updateDeviceList(it)
-                            })
-                    )
-                }
-            })
-        addDisposable(subscribe)
-    }
-
-    private fun addDevices(deviceList: List<DeviceRelationModel>) {
-        layout_devices.removeAllViews()
-
-        deviceList.forEach {
-            layout_devices.addView(getDeviceView(it))
-        }
-    }
-
-    private fun getDeviceView(it: DeviceRelationModel): View? {
-        val inflatedView =
-            layoutInflater.inflate(R.layout.item_device_switch, layout_devices, false)
-
-        val nameView = inflatedView.findViewById<TextView>(R.id.name)
-        val macAddressView = inflatedView.findViewById<TextView>(R.id.mac_address)
-        val switchView = inflatedView.findViewById<Switch>(R.id.switch_device)
-
-        nameView.text = it.name
-        macAddressView.text = it.macAddress
-        switchView.isChecked = it.related
-
-        return inflatedView
-    }
-
-
-    private fun updateDeviceList(list: MutableList<DeviceRelationModel>) {
-        if (list.size == 0) return
-
-        deviceList.forEachIndexed { index, it ->
-            list.forEach { related ->
-                if (it.macAddress == related.macAddress) {
-                    it.related = true
-                    updateDeviceViewAt(index)
-                    return@forEach
-                }
-            }
-        }
-    }
-
-    private fun updateDeviceViewAt(index: Int) {
-        val childAt = layout_devices.getChildAt(index)
-        childAt.findViewById<Switch>(R.id.switch_device)
-            .isChecked = true
     }
 
     private fun setFields() {
@@ -305,8 +243,30 @@ class RESTPublisherActivity : BaseActivity() {
         if (restPublishModel != null) {
             restPublisherViewModel.save(restPublishModel)
                 .flatMapCompletable { id ->
-                    addRelationsToREST(id).mergeWith(addHeadersToREST(id))
-                }
+                    addRelationsToRest(id).mergeWith(addHeadersToREST(id))
+                }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : CompletableObserver {
+                    override fun onComplete() {
+                        progressbar.visibility = View.INVISIBLE
+                        finish()
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        addDisposable(d)
+                        progressbar.visibility = View.VISIBLE
+                    }
+
+                    override fun onError(e: Throwable) {
+                        progressbar.visibility = View.INVISIBLE
+                        Toast.makeText(
+                            this@RESTPublisherActivity,
+                            e.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                })
         }
     }
 
@@ -316,34 +276,30 @@ class RESTPublisherActivity : BaseActivity() {
         )
     }
 
-
-    private fun addRelationsToREST(rId: Long): Completable {
-        val count = layout_devices.childCount
+    private fun addRelationsToRest(rId: Long): Completable {
+        val fragment = supportFragmentManager.findFragmentById(R.id.frame) as DeviceSelectFragment
+        val devices = fragment.getDevices()
 
         val setOfCompletable: MutableSet<Completable> = mutableSetOf()
 
-        for (i in 0..(count - 1)) {
-            val deviceRelationModel = deviceList[i]
-
-            val isChecked =
-                layout_devices.getChildAt(i).findViewById<Switch>(R.id.switch_device).isChecked
-
-            if (isChecked) {
-                setOfCompletable.add(
-                    restPublisherViewModel.addOrUpdateRestRelation(
-                        deviceId = deviceRelationModel.macAddress,
-                        restId = rId
-                    )
+        devices.forEach {
+            val completable = if (it.related) {
+                restPublisherViewModel.addOrUpdateRestRelation(
+                    deviceId = it.macAddress,
+                    restId = rId
                 )
             } else {
-                setOfCompletable.add(
-                    restPublisherViewModel.deleteRelationRest(
-                        deviceId = deviceRelationModel.macAddress,
-                        restId = rId
-                    )
+                restPublisherViewModel.deleteRelationRest(
+                    deviceId = it.macAddress,
+                    restId = rId
                 )
             }
+
+            setOfCompletable.add(
+                completable
+            )
         }
+
         return Completable.merge(setOfCompletable)
     }
 
