@@ -11,7 +11,7 @@
         android:title="Scan Background" />
 
     <ListPreference
-        android:defaultValue="true"
+        android:defaultValue="3"
         android:entries="@array/SettingsScanMode"
         android:entryValues="@array/SettingsScanModeValues"
         android:key="scan_mode"
