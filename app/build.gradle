@@ -61,9 +61,9 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:1.1.1"
 
     // Room + RxJava support
-    implementation "android.arch.persistence.room:runtime:1.1.0"
-    kapt "android.arch.persistence.room:compiler:1.1.0"
-    implementation "android.arch.persistence.room:rxjava2:1.1.0"
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    kapt "android.arch.persistence.room:compiler:1.1.1"
+    implementation "android.arch.persistence.room:rxjava2:1.1.1"
 
     // Flexbox
     implementation 'com.google.android:flexbox:0.3.2'
