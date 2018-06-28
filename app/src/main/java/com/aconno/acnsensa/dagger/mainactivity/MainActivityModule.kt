@@ -83,20 +83,6 @@ class MainActivityModule(private val mainActivity: MainActivity) {
 
     @Provides
     @MainActivityScope
-    fun provideBeaconListViewModel(
-        beaconListViewModelFactory: BeaconListViewModelFactory
-    ) = ViewModelProviders.of(mainActivity, beaconListViewModelFactory)
-        .get(BeaconListViewModel::class.java)
-
-
-    @Provides
-    @MainActivityScope
-    fun provideBeaconListViewModelFactory(
-        beacons: Flowable<Device>
-    ) = BeaconListViewModelFactory(beacons)
-
-    @Provides
-    @MainActivityScope
     fun provideGetAllDevicesUseCase(
         deviceRepository: DeviceRepository
     ): GetSavedDevicesUseCase {
