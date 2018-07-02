@@ -18,14 +18,11 @@ import io.reactivex.subjects.PublishSubject
 
 //TODO: This needs refactoring.
 class BluetoothImpl(
-    context: Context,
+    private val sharedPrefs: SharedPreferences,
     private val bluetoothAdapter: BluetoothAdapter,
     private val bluetoothPermission: BluetoothPermission,
     private val bluetoothStateListener: BluetoothStateListener
 ) : Bluetooth {
-
-    private val sharedPrefs: SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(context)
 
     private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
     private val scanEvents: PublishSubject<ScanEvent> = PublishSubject.create()
