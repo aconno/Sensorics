@@ -118,6 +118,17 @@
     <string name="title_publish_list">Publishers</string>
     <string name="title_publish_detail">Publish Detail</string>
 
+    <string-array name="SettingsScanMode">
+        <item>Low Power</item>
+        <item>Balanced</item>
+        <item>Low Latency</item>
+    </string-array>
+
+    <string-array name="SettingsScanModeValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 
     <!--Publish Default Spinner Values-->
     <string name="google_iot_cloud">Google IOT Cloud</string>

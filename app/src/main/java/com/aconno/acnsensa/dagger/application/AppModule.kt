@@ -2,6 +2,8 @@ package com.aconno.acnsensa.dagger.application
 
 import android.arch.persistence.room.Room
 import android.bluetooth.BluetoothAdapter
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
@@ -73,10 +75,12 @@ class AppModule(
     @Provides
     @Singleton
     fun provideBluetooth(
+        sharedPreferences: SharedPreferences,
         bluetoothAdapter: BluetoothAdapter,
         bluetoothPermission: BluetoothPermission,
         bluetoothStateListener: BluetoothStateListener
-    ): Bluetooth = BluetoothImpl(bluetoothAdapter, bluetoothPermission, bluetoothStateListener)
+    ): Bluetooth =
+        BluetoothImpl(sharedPreferences, bluetoothAdapter, bluetoothPermission, bluetoothStateListener)
 
     @Provides
     @Singleton
@@ -93,6 +97,13 @@ class AppModule(
     @Provides
     @Singleton
     fun provideInMemoryRepository(): InMemoryRepository = InMemoryRepositoryImpl()
+
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(acnSensaApplication)
+    }
 
     @Provides
     @Singleton
