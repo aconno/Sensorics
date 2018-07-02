@@ -9,6 +9,7 @@ import com.aconno.acnsensa.domain.Vibrator
 import com.aconno.acnsensa.domain.ifttt.*
 import com.aconno.acnsensa.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.repository.DeviceRepository
@@ -69,4 +70,6 @@ interface AppComponent {
     fun publishDeviceJoinRepository(): PublishDeviceJoinRepository
 
     fun readingsStream(): Flowable<List<Reading>>
+
+    fun getSavedDevicesMaybeUseCase(): GetSavedDevicesMaybeUseCase
 }

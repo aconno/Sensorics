@@ -44,12 +44,6 @@ class DeviceSelectModule(private val deviceSelectFragment: DeviceSelectFragment)
 
     @Provides
     @DeviceSelectScope
-    fun provideGetSavedDevicesMaybeUseCase(deviceRepository: DeviceRepository): GetSavedDevicesMaybeUseCase {
-        return GetSavedDevicesMaybeUseCase(deviceRepository)
-    }
-
-    @Provides
-    @DeviceSelectScope
     fun provideGetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithGooglePublishUseCase {
         return GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository)
     }

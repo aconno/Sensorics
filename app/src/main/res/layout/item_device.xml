@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_item_height"
-    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
-    android:layout_marginStart="@dimen/screen_edge_left_right_margin">
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingEnd="@dimen/screen_edge_left_right_margin"
+    android:paddingStart="@dimen/screen_edge_left_right_margin">
 
     <ImageView
         android:id="@+id/image_icon"

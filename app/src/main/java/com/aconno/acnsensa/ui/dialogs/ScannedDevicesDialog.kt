@@ -2,7 +2,6 @@ package com.aconno.acnsensa.ui.dialogs
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -11,22 +10,29 @@ import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.adapter.DeviceAdapter
 import com.aconno.acnsensa.adapter.ItemClickListener
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.ui.base.BaseDialogFragment
 import io.reactivex.Flowable
-import io.reactivex.disposables.Disposable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.dialog_devices.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class ScannedDevicesDialog : DialogFragment(), ItemClickListener<Device> {
+class ScannedDevicesDialog : BaseDialogFragment(), ItemClickListener<Device> {
 
     @Inject
     lateinit var devices: Flowable<Device>
-    private var disposable: Disposable? = null
+
+    @Inject
+    lateinit var savedDevicesUseCase: GetSavedDevicesMaybeUseCase
 
     private lateinit var adapter: DeviceAdapter
 
     private lateinit var listener: ScannedDevicesDialogListener
+
+    private var savedDevices = mutableListOf<Device>()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -56,21 +62,33 @@ class ScannedDevicesDialog : DialogFragment(), ItemClickListener<Device> {
         adapter = DeviceAdapter(mutableListOf(), this)
         list_devices.adapter = adapter
 
-        disposable = devices.distinct()
-            .subscribe {
-                text_empty.visibility = View.INVISIBLE
-                adapter.addDevice(it)
-            }
+
+        addDisposable(
+            savedDevicesUseCase.execute()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    savedDevices.clear()
+                    savedDevices.addAll(it)
+
+                    addDisposable(
+                        devices.distinct()
+                            .filter {
+                                !savedDevices.contains(it)
+                            }
+                            .subscribe {
+                                text_empty.visibility = View.INVISIBLE
+                                adapter.addDevice(it)
+                            }
+                    )
+                }
+        )
+
     }
 
     override fun onItemClick(item: Device) {
         Timber.d("Item clicked, mac: ${item.macAddress}")
         listener.onDevicesDialogItemClick(item)
         dialog.dismiss()
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        disposable?.dispose()
     }
 }

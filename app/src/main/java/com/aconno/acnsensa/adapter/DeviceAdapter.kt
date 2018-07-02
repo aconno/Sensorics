@@ -11,11 +11,17 @@ import timber.log.Timber
 
 class DeviceAdapter(
     private val devices: MutableList<Device>,
-    private val itemClickListener: ItemClickListener<Device>
+    private val itemClickListener: ItemClickListener<Device>,
+    private var longItemClickListener: LongItemClickListener<Device>? = null
 ) : RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
 
     fun addDevice(device: Device) {
         devices.add(device)
+        notifyDataSetChanged()
+    }
+
+    fun deleteDevice(device: Device) {
+        devices.remove(device)
         notifyDataSetChanged()
     }
 
@@ -56,6 +62,12 @@ class DeviceAdapter(
             view.name.text = device.name
             view.mac_address.text = device.macAddress
             view.setOnClickListener { itemClickListener.onItemClick(device) }
+            longItemClickListener?.let {
+                view.setOnLongClickListener {
+                    longItemClickListener?.onLongClick(device)
+                    true
+                }
+            }
         }
     }
 }

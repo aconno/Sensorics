@@ -61,12 +61,6 @@ class MqttPublisherModule(private val mqttPublisherActivity: MqttPublisherActivi
 
     @Provides
     @MqttPublisherScope
-    fun provideGetSavedDevicesMaybeUseCase(deviceRepository: DeviceRepository): GetSavedDevicesMaybeUseCase {
-        return GetSavedDevicesMaybeUseCase(deviceRepository)
-    }
-
-    @Provides
-    @MqttPublisherScope
     fun provideAddMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): AddMqttPublishUseCase {
         return AddMqttPublishUseCase(mqttPublishRepository)
     }
@@ -76,6 +70,4 @@ class MqttPublisherModule(private val mqttPublisherActivity: MqttPublisherActivi
     fun provideGetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithMqttPublishUseCase {
         return GetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository)
     }
-
-
 }
