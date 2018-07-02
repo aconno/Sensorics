@@ -5,6 +5,7 @@ import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SaveDeviceUseCase
@@ -113,11 +114,20 @@ class MainActivityModule(private val mainActivity: MainActivity) {
 
     @Provides
     @MainActivityScope
+    fun provideDeleteDeviceUseCase(
+        deviceRepository: DeviceRepository
+    ): DeleteDeviceUseCase {
+        return DeleteDeviceUseCase(deviceRepository)
+    }
+
+    @Provides
+    @MainActivityScope
     fun provideDeviceListViewModelFactory(
         getSavedDevicesUseCase: GetSavedDevicesUseCase,
-        saveDeviceUseCase: SaveDeviceUseCase
+        saveDeviceUseCase: SaveDeviceUseCase,
+        deleteDeviceUseCase: DeleteDeviceUseCase
     ): DeviceListViewModelFactory {
-        return DeviceListViewModelFactory(getSavedDevicesUseCase, saveDeviceUseCase)
+        return DeviceListViewModelFactory(getSavedDevicesUseCase, saveDeviceUseCase,deleteDeviceUseCase)
     }
 
     @Provides

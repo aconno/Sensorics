@@ -21,6 +21,7 @@ import com.aconno.acnsensa.domain.model.ScanEvent
 import com.aconno.acnsensa.domain.scanning.BluetoothState
 import com.aconno.acnsensa.model.AcnSensaPermission
 import com.aconno.acnsensa.ui.devices.SavedDevicesFragment
+import com.aconno.acnsensa.ui.devices.SavedDevicesFragmentListener
 import com.aconno.acnsensa.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.acnsensa.ui.sensors.SensorListFragment
 import com.aconno.acnsensa.ui.settings.SettingsActivity
@@ -31,7 +32,7 @@ import kotlinx.android.synthetic.main.activity_toolbar.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks,
-    ScannedDevicesDialogListener {
+    ScannedDevicesDialogListener, SavedDevicesFragmentListener {
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
@@ -120,6 +121,14 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
             ScanEvent.SCAN_FAILED -> onScanFailed()
             ScanEvent.SCAN_START -> onScanStart()
             ScanEvent.SCAN_STOP -> onScanStop()
+        }
+    }
+
+    override fun onFABClicked() {
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
+            if (!it.isChecked) {
+                toggleScan(it)
+            }
         }
     }
 
