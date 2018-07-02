@@ -62,7 +62,6 @@ class ScannedDevicesDialog : BaseDialogFragment(), ItemClickListener<Device> {
         adapter = DeviceAdapter(mutableListOf(), this)
         list_devices.adapter = adapter
 
-
         addDisposable(
             savedDevicesUseCase.execute()
                 .subscribeOn(Schedulers.io())
@@ -76,6 +75,7 @@ class ScannedDevicesDialog : BaseDialogFragment(), ItemClickListener<Device> {
                             .filter {
                                 !savedDevices.contains(it)
                             }
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe {
                                 text_empty.visibility = View.INVISIBLE
                                 adapter.addDevice(it)
@@ -83,7 +83,6 @@ class ScannedDevicesDialog : BaseDialogFragment(), ItemClickListener<Device> {
                     )
                 }
         )
-
     }
 
     override fun onItemClick(item: Device) {

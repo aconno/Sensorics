@@ -18,12 +18,8 @@ class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
     @Provides
     @LiveGraphScope
     fun provideLiveGraphViewModelFactory(
-        readings: Flowable<List<Reading>>,
-        filterByMacUseCase: FilterByMacUseCase,
         getReadingsUseCase: GetReadingsUseCase
     ) = LiveGraphViewModelFactory(
-        readings,
-        filterByMacUseCase,
         getReadingsUseCase,
         liveGraphActivity.application
     )

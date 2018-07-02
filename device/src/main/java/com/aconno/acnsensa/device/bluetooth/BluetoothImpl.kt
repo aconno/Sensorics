@@ -4,16 +4,15 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
-import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
-import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.model.ScanEvent
+import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.domain.scanning.BluetoothState
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
 //TODO: This needs refactoring.
@@ -97,7 +96,7 @@ class BluetoothImpl(
     }
 
     override fun getScanResults(): Flowable<ScanResult> {
-        return scanResults.toFlowable(BackpressureStrategy.LATEST)
+        return scanResults.toFlowable(BackpressureStrategy.LATEST).observeOn(Schedulers.io())
     }
 
     override fun getScanEvents(): Flowable<ScanEvent> {

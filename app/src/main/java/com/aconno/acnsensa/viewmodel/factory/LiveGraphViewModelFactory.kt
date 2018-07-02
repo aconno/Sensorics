@@ -9,16 +9,12 @@ import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
 import io.reactivex.Flowable
 
 class LiveGraphViewModelFactory(
-    private val readings: Flowable<List<Reading>>,
-    private val filterByMacUseCase: FilterByMacUseCase,
     private val getReadingsUseCase: GetReadingsUseCase,
     private val application: Application
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = LiveGraphViewModel(
-            readings,
-            filterByMacUseCase,
             getReadingsUseCase,
             application
         )

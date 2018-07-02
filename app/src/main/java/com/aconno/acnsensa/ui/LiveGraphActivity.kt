@@ -35,15 +35,13 @@ class LiveGraphActivity : AppCompatActivity() {
         setContentView(R.layout.activity_graph)
 
         liveGraphComponent.inject(this)
-
-        val macAddress = intent.getStringExtra(MAC_ADDRESS_EXTRA)
-        liveGraphViewModel.setMacAddress(macAddress)
     }
 
     override fun onResume() {
         super.onResume()
+        val macAddress = intent.getStringExtra(MAC_ADDRESS_EXTRA)
         val type: Int = intent.getIntExtra(GRAPH_TYPE_EXTRA, -1)
-        liveGraphViewModel.graphType = type
+        liveGraphViewModel.setMacAddressAndGraphType(macAddress, type)
         liveGraphViewModel.getUpdates().observe(this, Observer { updateGraph(it) })
         loadGraph(type)
     }
