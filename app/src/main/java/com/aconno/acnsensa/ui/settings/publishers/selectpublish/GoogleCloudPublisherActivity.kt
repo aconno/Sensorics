@@ -53,7 +53,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
             isTestingAlreadyRunning = false
             Toast.makeText(
                 this@GoogleCloudPublisherActivity,
-                getString(R.string.test_succeeded),
+                getString(R.string.testings_started),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -63,13 +63,19 @@ class GoogleCloudPublisherActivity : BaseActivity() {
             isTestingAlreadyRunning = false
             Toast.makeText(
                 this@GoogleCloudPublisherActivity,
-                getString(R.string.test_failed),
+                getString(R.string.test_succeeded),
                 Toast.LENGTH_SHORT
             ).show()
         }
 
         override fun onConnectionFail() {
             progressbar.visibility = View.VISIBLE
+            isTestingAlreadyRunning = false
+            Toast.makeText(
+                this@GoogleCloudPublisherActivity,
+                getString(R.string.test_failed),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
