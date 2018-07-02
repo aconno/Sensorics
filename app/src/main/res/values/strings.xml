@@ -48,30 +48,16 @@
     <string name="battery_level">Battery Level</string>
     <string name="default_battery_level">0%</string>
 
-    <string name="grant_permissions">Please grant required permissions.</string>
     <string name="bt_disabled">Bluetooth is disabled</string>
     <string name="enable">Enable</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Add new action screen -->
     <string name="add_new_action_title">Add New Action</string>
     <string name="action_name">Action Name</string>
-    <string name="condition_name">Condition</string>
-    <string name="sensor_label">Sensor</string>
-    <string name="type_label">Type</string>
-    <string name="value_label">Value</string>
-    <string name="outcome_name">Outcome</string>
-    <string name="notification_label">Notification</string>
     <string name="add">Add</string>
-    <string name="notification_message">Notification message</string>
     <string name="phone_number">Phone number</string>
     <string name="message_hint">Message</string>
-    <string name="vibrate_checkbox_label">Vibrate</string>
-    <string name="update">Update Action</string>
-    <string name="update_new_action_title">Update Action</string>
-    <string name="delete">Delete Action</string>
+    <string name="delete">Delete</string>
 
     <string name="condition_less">Less</string>
     <string name="condition_equal">Equal</string>
@@ -105,4 +91,187 @@
     <string name="outcomes">Outcomes</string>
     <string name="set_action_hint">To set an action click on + button.</string>
     <string name="text_to_speech">Text to Speech</string>
+    <string name="notification">Notification</string>
+    <string name="sms">SMS</string>
+    <string name="edit_action">Edit action</string>
+    <string name="save">Save</string>
+
+
+    <!--Settings-->
+    <string name="preferences_title">Settings</string>
+    <string name="preferences_gcloud">Google Cloud</string>
+    <string name="preference_dialog_region">Preference Dialog Region</string>
+    <string name="preference_summary_region">Preference Summary Region</string>
+    <string name="preference_title_region">Region</string>
+    <string name="preference_dialog_deviceregisitry">Preference Dialog DeviceRegistry</string>
+    <string name="preference_title_deviceregistry">Device Registry</string>
+    <string name="preference_title_device">Device</string>
+    <string name="preference_dialog_device">Preference Dialog Device</string>
+    <string name="preference_summary_device">Preference Summary Device</string>
+    <string name="preference_title_privatekey">Private Key (PKCS8)</string>
+    <string name="settings">Settings</string>
+    <string name="preference_summary_privatekey">Preference Summary Private Key</string>
+    <string name="preference_dialog_projectid">Project ID Dialog</string>
+    <string name="preference_summary_projectid">Project ID Summary</string>
+    <string name="preference_title_projectid">Project ID</string>
+    <string name="preference_gcloud_title">Google Cloud On/Off</string>
+    <string name="title_publish_list">Publishers</string>
+    <string name="title_publish_detail">Publish Detail</string>
+
+    <string-array name="SettingsScanMode">
+        <item>Low Power</item>
+        <item>Balanced</item>
+        <item>Low Latency</item>
+    </string-array>
+
+    <string-array name="SettingsScanModeValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <!--Publish Default Spinner Values-->
+    <string name="google_iot_cloud">Google IOT Cloud</string>
+    <string name="http_backend">Http Backend</string>
+    <string name="mqtt_backend">MQTT Backend</string>
+    <string-array name="PublishTypes">
+        <item>@string/google_iot_cloud</item>
+        <item>@string/http_backend</item>
+        <item>@string/mqtt_backend</item>
+    </string-array>
+
+    <!-- Device list screen -->
+    <string name="no_devices_label">There are no devices</string>
+    <string name="no_scanned_devices_label">There are no scanned devices.\nStart scanning…</string>
+
+    <string-array name="RESTMethods">
+        <item>@string/rest_method_get</item>
+        <item>@string/rest_method_post</item>
+    </string-array>
+
+    <string-array name="PublishIntervals">
+        <item>@string/publish_sec</item>
+        <item>@string/publish_min</item>
+        <item>@string/publish_hour</item>
+        <item>@string/publish_day</item>
+    </string-array>
+
+    <!-- AddPublishActivity -->
+    <string name="name">Name</string>
+    <string name="project_id">ProjectId</string>
+    <string name="region">Region</string>
+    <string name="device_registry">Device Registry</string>
+    <string name="device">Device</string>
+    <string name="private_key">Private Key</string>
+    <string name="private_key_click">Touch to choose</string>
+    <string name="not_valid_file_pkcs8">Selected File is not valid PKCS8 FIle.</string>
+    <string name="rest_method_post">POST</string>
+    <string name="rest_method_get">GET</string>
+    <string name="url">URL</string>
+    <string name="publish_day">Days</string>
+    <string name="publish_hour">Hours</string>
+    <string name="publish_min">Mins</string>
+    <string name="publish_sec">Secs</string>
+    <string name="last_data_sent">Last data sent at : </string>
+    <string name="snackbar_stop_scanning">Please stop scanning first</string>
+    <string name="test">Test</string>
+    <string name="http_get_parameter_text">HTTP GET Parameter Name</string>
+    <string name="please_fill_blanks">Please fill the blanks</string>
+    <string name="created">Created</string>
+    <string name="updated">Updated</string>
+    <string name="testings_started">Testing Started</string>
+    <string name="update">Update</string>
+    <string name="test_failed">Test Failed</string>
+    <string name="test_succeeded">Test Succeeded</string>
+    <string name="snackbar_permission_message">You can always set permissions</string>
+    <string name="snackbar_settings">Settings</string>
+    <string name="devices">Devices</string>
+    <string name="are_you_sure">Are you sure you want to delete?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="headers">Headers (%d)</string>
+    <string name="title_activity_rest_header">REST Header</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="add_new">Add New</string>
+    <string name="rest_headers_title">Headers</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="value">Value</string>
+    <string name="key">Key</string>
+    <string name="close">Close</string>
+    <string name="done">Done</string>
+    <string name="values_connot_empty">Values cannot be Empty</string>
+    <string name="clientId">Client Id</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="topic">Topic</string>
+    <string name="quality_of_service">Quality Of Service</string>
+    <string name="qos_1">1</string>
+    <string name="qos_0">0</string>
+    <string name="qos_2">2</string>
+    <string name="dataString">Data String</string>
+    <string name="dataStringHint">211,$temperature\n212,$battery</string>
+    <string name="publisher_info_text"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$name</i> => key \n<i>$value</i> => sensor value \n<b>Specific Values:</b> \n<i>$temperature,$light,$battery_level</i> etc.</string>
+    <string name="publisher_info_title">Info</string>
+    <string name="okey">Okey</string>
+    <string name="title_select_publish">Select Publisher</string>
+    <string name="title_settings">Settings</string>
+    <string name="default_data_string">
+        {\"value\" : \"$value\",\"timestamp\" : \"$ts\",\"type\" : \"$name\"}
+    </string>
+    <string name="no_publishers_found">No Publishers Found</string>
+
+    <string-array name="header_keys">
+        <item>A-IM</item>
+        <item>Accept</item>
+        <item>Accept-Charset</item>
+        <item>Accept-Encoding</item>
+        <item>Accept-Language</item>
+        <item>Accept-Datetime</item>
+        <item>Access-Control-Request-Method</item>
+        <item>Access-Control-Request-Headers</item>
+        <item>Authorization</item>
+        <item>Cache-Control</item>
+        <item>Connection</item>
+        <item>Content-Length</item>
+        <item>Content-MD5</item>
+        <item>Content-Type</item>
+        <item>Cookie</item>
+        <item>Date</item>
+        <item>Expect</item>
+        <item>Forwarded</item>
+        <item>From</item>
+        <item>Host</item>
+        <item>If-Match</item>
+        <item>If-Modified-Since</item>
+        <item>If-None-Match</item>
+        <item>If-Range</item>
+        <item>If-Unmodified-Since</item>
+        <item>Max-Forwards</item>
+        <item>Origin</item>
+        <item>Pragma</item>
+        <item>Proxy-Authorization</item>
+        <item>Range</item>
+        <item>Referer</item>
+        <item>TE</item>
+        <item>User-Agent</item>
+        <item>Upgrade</item>
+        <item>Via</item>
+        <item>Warning</item>
+        <item>Upgrade-Insecure-Requests</item>
+        <item>X-Requested-With</item>
+        <item>DNT</item>
+        <item>X-Forwarded-For</item>
+        <item>X-Forwarded-Host</item>
+        <item>X-Forwarded-Proto</item>
+        <item>Front-End-Https</item>
+        <item>X-Http-Method-Override</item>
+        <item>X-ATT-DeviceId</item>
+        <item>X-Wap-Profile</item>
+        <item>Proxy-Connection</item>
+        <item>X-UIDH</item>
+        <item>X-Csrf-Token</item>
+    </string-array>
 </resources>

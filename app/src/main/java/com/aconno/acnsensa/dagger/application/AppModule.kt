@@ -2,13 +2,23 @@ package com.aconno.acnsensa.dagger.application
 
 import android.arch.persistence.room.Room
 import android.bluetooth.BluetoothAdapter
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.IntentProviderImpl
+import com.aconno.acnsensa.dagger.deviceselect.DeviceSelectScope
+import com.aconno.acnsensa.data.mapper.*
 import com.aconno.acnsensa.data.repository.AcnSensaDatabase
-import com.aconno.acnsensa.data.repository.ActionsRepositoryImpl
 import com.aconno.acnsensa.data.repository.InMemoryRepositoryImpl
+import com.aconno.acnsensa.data.repository.action.ActionsRepositoryImpl
+import com.aconno.acnsensa.data.repository.devices.DeviceMapper
+import com.aconno.acnsensa.data.repository.devices.DeviceRepositoryImpl
+import com.aconno.acnsensa.data.repository.gpublish.GooglePublishRepositoryImpl
+import com.aconno.acnsensa.data.repository.mpublish.MqttPublishRepositoryImpl
+import com.aconno.acnsensa.data.repository.pdjoin.PublishDeviceJoinRepositoryImpl
+import com.aconno.acnsensa.data.repository.rpublish.RESTPublishRepositoryImpl
 import com.aconno.acnsensa.device.SmsSenderImpl
 import com.aconno.acnsensa.device.TextToSpeechPlayerImpl
 import com.aconno.acnsensa.device.VibratorImpl
@@ -19,27 +29,36 @@ import com.aconno.acnsensa.device.bluetooth.BluetoothStateListener
 import com.aconno.acnsensa.device.notification.IntentProvider
 import com.aconno.acnsensa.device.notification.NotificationDisplayImpl
 import com.aconno.acnsensa.device.notification.NotificationFactory
-import com.aconno.acnsensa.domain.Bluetooth
 import com.aconno.acnsensa.domain.SmsSender
 import com.aconno.acnsensa.domain.Vibrator
-import com.aconno.acnsensa.domain.advertisement.AdvertisementMatcher
-import com.aconno.acnsensa.domain.ifttt.ActionsRepository
-import com.aconno.acnsensa.domain.ifttt.NotificationDisplay
-import com.aconno.acnsensa.domain.ifttt.TextToSpeechPlayer
-import com.aconno.acnsensa.domain.interactor.bluetooth.DeserializeScanResultUseCase
-import com.aconno.acnsensa.domain.interactor.bluetooth.FilterAdvertisementsUseCase
+import com.aconno.acnsensa.domain.format.AdvertisementFormat
+import com.aconno.acnsensa.domain.format.FormatMatcher
+import com.aconno.acnsensa.domain.ifttt.*
+import com.aconno.acnsensa.domain.interactor.consolidation.GenerateDeviceUseCase
+import com.aconno.acnsensa.domain.interactor.consolidation.GenerateReadingsUseCase
+import com.aconno.acnsensa.domain.interactor.convert.ReadingToInputUseCase
+import com.aconno.acnsensa.domain.interactor.filter.FilterByFormatUseCase
+import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesMaybeUseCase
+import com.aconno.acnsensa.domain.model.Reading
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanResult
+import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.repository.InMemoryRepository
+import com.aconno.acnsensa.domain.scanning.Bluetooth
+import com.aconno.acnsensa.domain.serialization.Deserializer
+import com.aconno.acnsensa.domain.serialization.DeserializerImpl
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
 import javax.inject.Singleton
 
-/**
- * @author aconno
- */
 @Module
-class AppModule(private val acnSensaApplication: AcnSensaApplication) {
+class AppModule(
+    private val acnSensaApplication: AcnSensaApplication,
+    private val supportedFormats: List<AdvertisementFormat>
+) {
 
     @Provides
     @Singleton
@@ -58,14 +77,16 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
     @Provides
     @Singleton
     fun provideBluetooth(
+        sharedPreferences: SharedPreferences,
         bluetoothAdapter: BluetoothAdapter,
         bluetoothPermission: BluetoothPermission,
         bluetoothStateListener: BluetoothStateListener
-    ): Bluetooth = BluetoothImpl(bluetoothAdapter, bluetoothPermission, bluetoothStateListener)
+    ): Bluetooth =
+        BluetoothImpl(sharedPreferences, bluetoothAdapter, bluetoothPermission, bluetoothStateListener)
 
     @Provides
     @Singleton
-    fun provideBluetoothAdapter() = BluetoothAdapter.getDefaultAdapter()
+    fun provideBluetoothAdapter(): BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     @Provides
     @Singleton
@@ -77,34 +98,14 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
 
     @Provides
     @Singleton
-    fun provideAdvertisementMatcher() = AdvertisementMatcher()
-
-    @Provides
-    @Singleton
-    fun provideFilterAdvertisementUseCase(advertisementMatcher: AdvertisementMatcher) =
-        FilterAdvertisementsUseCase(advertisementMatcher)
-
-    @Provides
-    @Singleton
-    fun provideSensorValuesUseCase(advertisementMatcher: AdvertisementMatcher) =
-        DeserializeScanResultUseCase(advertisementMatcher)
-
-    @Provides
-    @Singleton
-    fun provideSensorValuesFlowable(
-        bluetooth: Bluetooth,
-        filterAdvertisementsUseCase: FilterAdvertisementsUseCase,
-        sensorValuesUseCase: DeserializeScanResultUseCase
-    ): Flowable<Map<String, Number>> {
-        val observable: Flowable<ScanResult> = bluetooth.getScanResults()
-        return observable
-            .concatMap { filterAdvertisementsUseCase.execute(it).toFlowable() }
-            .concatMap { sensorValuesUseCase.execute(it).toFlowable() }
-    }
-
-    @Provides
-    @Singleton
     fun provideInMemoryRepository(): InMemoryRepository = InMemoryRepositoryImpl()
+
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(acnSensaApplication)
+    }
 
     @Provides
     @Singleton
@@ -127,18 +128,50 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
     @Provides
     @Singleton
     fun provideActionsRepository(
-        acnSensaDatabase: AcnSensaDatabase,
-        notificationDisplay: NotificationDisplay,
-        vibrator: Vibrator,
-        smsSender: SmsSender,
-        textToSpeechPlayer: TextToSpeechPlayer
+        acnSensaDatabase: AcnSensaDatabase
     ): ActionsRepository {
-        return ActionsRepositoryImpl(
-            acnSensaDatabase.actionDao(),
-            notificationDisplay,
-            vibrator,
-            smsSender,
-            textToSpeechPlayer
+        return ActionsRepositoryImpl(acnSensaDatabase.actionDao())
+    }
+
+    @Provides
+    @Singleton
+    fun provideGooglePublishRepository(
+        acnSensaDatabase: AcnSensaDatabase,
+        googlePublishEntityDataMapper: GooglePublishEntityDataMapper,
+        googlePublishDataMapper: GooglePublishDataMapper
+    ): GooglePublishRepository {
+        return GooglePublishRepositoryImpl(
+            acnSensaDatabase.googlePublishDao(),
+            googlePublishEntityDataMapper,
+            googlePublishDataMapper
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideRESTPublishRepository(
+        acnSensaDatabase: AcnSensaDatabase,
+        restPublishEntityDataMapper: RESTPublishEntityDataMapper,
+        restPublishDataMapper: RESTPublishDataMapper,
+        restHeaderDataMapper: RESTHeaderDataMapper
+    ): RESTPublishRepository {
+        return RESTPublishRepositoryImpl(
+            acnSensaDatabase.restPublishDao(),
+            restPublishEntityDataMapper,
+            restPublishDataMapper,
+            restHeaderDataMapper
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMqttPublishRepository(
+        acnSensaDatabase: AcnSensaDatabase,
+        mqttPublishDataMapper: MqttPublishDataMapper
+    ): MqttPublishRepository {
+        return MqttPublishRepositoryImpl(
+            acnSensaDatabase.mqttPublishDao(),
+            mqttPublishDataMapper
         )
     }
 
@@ -157,12 +190,111 @@ class AppModule(private val acnSensaApplication: AcnSensaApplication) {
         return NotificationDisplayImpl(
             NotificationFactory(), intentProvider, acnSensaApplication
         )
-
     }
 
     @Provides
     @Singleton
     fun provideIntentProvider(): IntentProvider {
         return IntentProviderImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeviceRepository(
+        acnSensaDatabase: AcnSensaDatabase,
+        deviceMapper: DeviceMapper
+    ): DeviceRepository {
+        return DeviceRepositoryImpl(acnSensaDatabase.deviceDao(), deviceMapper)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetSavedDevicesList(
+        deviceRepository: DeviceRepository
+    ): Flowable<List<Device>> {
+        return GetSavedDevicesUseCase(deviceRepository).execute()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetSavedDevicesMaybeUseCase(deviceRepository: DeviceRepository): GetSavedDevicesMaybeUseCase {
+        return GetSavedDevicesMaybeUseCase(deviceRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReadingToInputUseCase() = ReadingToInputUseCase()
+
+    @Provides
+    @Singleton
+    fun providePublishDeviceJoinRepository(
+        acnSensaDatabase: AcnSensaDatabase,
+        deviceMapper: DeviceMapper,
+        publishDeviceJoinJoinMapper: PublishPublishDeviceJoinJoinMapper
+    ): PublishDeviceJoinRepository {
+        return PublishDeviceJoinRepositoryImpl(
+            acnSensaDatabase.publishDeviceJoinDao(),
+            deviceMapper,
+            publishDeviceJoinJoinMapper
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFormatMatcher() = FormatMatcher(supportedFormats)
+
+    @Provides
+    @Singleton
+    fun provideDeserializer(): Deserializer = DeserializerImpl()
+
+    @Provides
+    @Singleton
+    fun provideFilterByFormatUseCase(
+        formatMatcher: FormatMatcher
+    ) = FilterByFormatUseCase(formatMatcher)
+
+    @Provides
+    @Singleton
+    fun provideFilterByMacUseCase() = FilterByMacUseCase()
+
+    @Provides
+    @Singleton
+    fun provideGenerateDeviceUseCase(
+        formatMatcher: FormatMatcher
+    ) = GenerateDeviceUseCase(formatMatcher)
+
+    @Provides
+    @Singleton
+    fun provideGenerateReadingsUseCase(
+        formatMatcher: FormatMatcher,
+        deserializer: Deserializer
+    ) = GenerateReadingsUseCase(formatMatcher, deserializer)
+
+    @Provides
+    @Singleton
+    fun provideFilteredScanResult(
+        bluetooth: Bluetooth,
+        filterByFormatUseCase: FilterByFormatUseCase
+    ): Flowable<ScanResult> {
+        return bluetooth.getScanResults()
+            .concatMap { filterByFormatUseCase.execute(it).toFlowable() }
+    }
+
+    @Provides
+    @Singleton
+    fun provideDevice(
+        filteredScanResult: Flowable<ScanResult>,
+        generateDeviceUseCase: GenerateDeviceUseCase
+    ): Flowable<Device> {
+        return filteredScanResult.concatMap { generateDeviceUseCase.execute(it).toFlowable() }
+    }
+
+    @Provides
+    @Singleton
+    fun provideReadings(
+        filteredScanResult: Flowable<ScanResult>,
+        generateReadingsUseCase: GenerateReadingsUseCase
+    ): Flowable<List<Reading>> {
+        return filteredScanResult.concatMap { generateReadingsUseCase.execute(it).toFlowable() }
     }
 }

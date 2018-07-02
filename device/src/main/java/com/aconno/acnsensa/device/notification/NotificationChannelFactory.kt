@@ -30,7 +30,7 @@ class NotificationChannelFactory(private val notificationManager: NotificationMa
                 NotificationChannel(
                     ALERTS_CHANNEL_ID,
                     ALERTS_CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_LOW
+                    NotificationManager.IMPORTANCE_HIGH
                 )
             } else {
                 TODO("VERSION.SDK_INT < O")

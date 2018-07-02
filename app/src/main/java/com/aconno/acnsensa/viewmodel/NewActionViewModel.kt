@@ -4,45 +4,38 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.SmsSender
-import com.aconno.acnsensa.domain.Vibrator
-import com.aconno.acnsensa.domain.ifttt.*
-import com.aconno.acnsensa.domain.model.SensorTypeSingle
-import com.aconno.acnsensa.model.toInt
+import com.aconno.acnsensa.domain.ifttt.Condition
+import com.aconno.acnsensa.domain.ifttt.GeneralAction
+import com.aconno.acnsensa.domain.ifttt.LimitCondition
+import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
+import com.aconno.acnsensa.domain.model.ReadingType
+import com.aconno.acnsensa.domain.interactor.ifttt.action.AddActionUseCase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-/**
- * @author aconno
- */
 class NewActionViewModel(
     private val addActionUseCase: AddActionUseCase,
-    private val notificationDisplay: NotificationDisplay,
-    private val vibrator: Vibrator,
-    private val smsSender: SmsSender,
-    private val textToSpeechPlayer: TextToSpeechPlayer,
     application: Application
-) :
-    AndroidViewModel(application) {
+) : AndroidViewModel(application) {
 
     val addActionResults: MutableLiveData<Boolean> = MutableLiveData()
 
     private var condition: Condition? = null
 
-    fun setCondition(sensorType: SensorTypeSingle, constraint: String, constraintValue: String) {
+    fun setCondition(readingType: ReadingType, constraint: String, constraintValue: String) {
         //TODO: Fix this try catch, it catches the exception when constraintValue is empty string
         try {
             when (constraint) {
                 "<" -> condition = LimitCondition(
-                    sensorType.toInt(),
+                    readingType,
                     constraintValue.toFloat(),
-                    LimitCondition.LOWER_LIMIT
+                    LimitCondition.LESS_THAN
                 )
                 ">" -> condition = LimitCondition(
-                    sensorType.toInt(),
+                    readingType,
                     constraintValue.toFloat(),
-                    LimitCondition.UPPER_LIMIT
+                    LimitCondition.MORE_THAN
                 )
             }
         } catch (e: Exception) {
@@ -56,11 +49,11 @@ class NewActionViewModel(
 
     fun addAction(
         name: String,
+        deviceMacAddress: String,
         outcomeType: String,
         smsDestination: String,
         content: String
     ) {
-        var newAction: Action? = null
         try {
             val newId = 0L
             val condition = this.condition
@@ -68,31 +61,34 @@ class NewActionViewModel(
             if (condition == null) {
                 Timber.d("Condition is null. Cannot save action.")
             } else {
-                when (outcomeType) {
+
+                val parameters = mapOf(
+                    Pair(Outcome.TEXT_MESSAGE, content), Pair(Outcome.PHONE_NUMBER, smsDestination)
+                )
+
+                val outcomeEndType = when (outcomeType) {
                     getApplication<Application>().getString(R.string.phone_notification) -> {
-                        val outcome = NotificationOutcome(content, notificationDisplay)
-                        newAction = GeneralAction(newId, name, condition, outcome)
+                        Outcome.OUTCOME_TYPE_NOTIFICATION
                     }
                     getApplication<Application>().getString(R.string.sms_message) -> {
-                        val outcome = SmsOutcome(smsSender, smsDestination, content)
-                        newAction = GeneralAction(newId, name, condition, outcome)
+                        Outcome.OUTCOME_TYPE_SMS
                     }
                     getApplication<Application>().getString(R.string.vibration) -> {
-                        val outcome = VibrationOutcome(vibrator)
-                        newAction = GeneralAction(newId, name, condition, outcome)
+                        Outcome.OUTCOME_TYPE_VIBRATION
                     }
                     getApplication<Application>().getString(R.string.text_to_speech) -> {
-                        val outcome = TextToSpeechOutcome(content, textToSpeechPlayer)
-                        newAction = GeneralAction(newId, name, condition, outcome)
+                        Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH
                     }
+                    else -> throw IllegalArgumentException("Invalid outcome type")
                 }
 
-                newAction?.let {
-                    addActionUseCase.execute(it)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ onAddActionSuccess() }, { onAddActionFail() })
-                }
+                val outcome = Outcome(parameters, outcomeEndType)
+                val newAction = GeneralAction(newId, name, deviceMacAddress, condition, outcome)
+
+                addActionUseCase.execute(newAction)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ onAddActionSuccess() }, { onAddActionFail() })
             }
         } catch (e: Exception) {
             Timber.e(e)
@@ -100,11 +96,11 @@ class NewActionViewModel(
     }
 
 
-    fun onAddActionSuccess() {
+    private fun onAddActionSuccess() {
         addActionResults.value = true
     }
 
-    fun onAddActionFail() {
+    private fun onAddActionFail() {
         addActionResults.value = false
     }
 }

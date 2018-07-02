@@ -1,8 +1,8 @@
 package com.aconno.acnsensa.ui.actions
 
-import com.aconno.acnsensa.domain.model.SensorTypeSingle
+import com.aconno.acnsensa.domain.model.ReadingType
 
 interface ConditionDialogListener {
 
-    fun onSetClicked(sensorType: SensorTypeSingle, constraint: String, value: String)
+    fun onSetClicked(readingType: ReadingType, constraint: String, value: String)
 }

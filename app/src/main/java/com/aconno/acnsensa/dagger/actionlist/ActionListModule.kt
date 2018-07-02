@@ -1,32 +1,30 @@
 package com.aconno.acnsensa.dagger.actionlist
 
-import android.arch.lifecycle.ViewModelProviders
-import android.support.v7.app.AppCompatActivity
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
-import com.aconno.acnsensa.domain.ifttt.GetAllActionsUseCase
-import com.aconno.acnsensa.viewmodel.ActionOptionsViewModel
-import com.aconno.acnsensa.viewmodel.factory.ActionOptionsViewModelFactory
+import com.aconno.acnsensa.domain.interactor.ifttt.action.GetAllActionsUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
+import com.aconno.acnsensa.domain.repository.DeviceRepository
 import dagger.Module
 import dagger.Provides
 
-/**
- * @author aconno
- */
 @Module
-class ActionListModule(private val activity: AppCompatActivity) {
+class ActionListModule {
 
     @Provides
     @ActionListScope
-    fun provideGetAllActionsUseCase(actionsRepository: ActionsRepository): GetAllActionsUseCase {
-        return GetAllActionsUseCase(actionsRepository)
+    fun provideGetAllActionsUseCase(
+        actionsRepository: ActionsRepository
+    ): GetAllActionsUseCase {
+        return GetAllActionsUseCase(
+            actionsRepository
+        )
     }
 
     @Provides
     @ActionListScope
-    fun provideActionOptionsViewModel(): ActionOptionsViewModel {
-        val actionOptionsViewModelFactory = ActionOptionsViewModelFactory(activity.application)
-
-        return ViewModelProviders.of(activity, actionOptionsViewModelFactory)
-            .get(ActionOptionsViewModel::class.java)
+    fun provideGetAllDevicesUseCase(
+        deviceRepository: DeviceRepository
+    ): GetSavedDevicesUseCase {
+        return GetSavedDevicesUseCase(deviceRepository)
     }
 }

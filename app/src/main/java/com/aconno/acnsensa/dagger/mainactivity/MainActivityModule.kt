@@ -4,22 +4,21 @@ import android.arch.lifecycle.ViewModelProviders
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
-import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.repository.DeleteDeviceUseCase
+import com.aconno.acnsensa.domain.model.Reading
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
+import com.aconno.acnsensa.domain.interactor.repository.SaveDeviceUseCase
+import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.repository.DeviceRepository
+import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.ui.MainActivity
-import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
-import com.aconno.acnsensa.viewmodel.BluetoothViewModel
-import com.aconno.acnsensa.viewmodel.PermissionViewModel
-import com.aconno.acnsensa.viewmodel.SensorListViewModel
-import com.aconno.acnsensa.viewmodel.factory.BluetoothScanningViewModelFactory
-import com.aconno.acnsensa.viewmodel.factory.BluetoothViewModelFactory
-import com.aconno.acnsensa.viewmodel.factory.SensorListViewModelFactory
+import com.aconno.acnsensa.viewmodel.*
+import com.aconno.acnsensa.viewmodel.factory.*
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
 
-/**
- * @author aconno
- */
 @Module
 class MainActivityModule(private val mainActivity: MainActivity) {
 
@@ -32,8 +31,12 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     @Provides
     @MainActivityScope
     fun provideSensorListViewModelFactory(
-        sensorValues: Flowable<Map<String, Number>>
-    ) = SensorListViewModelFactory(sensorValues)
+        readingsStream: Flowable<List<Reading>>,
+        filterByMacUseCase: FilterByMacUseCase
+    ) = SensorListViewModelFactory(
+        readingsStream,
+        filterByMacUseCase
+    )
 
     @Provides
     @MainActivityScope
@@ -78,4 +81,47 @@ class MainActivityModule(private val mainActivity: MainActivity) {
             mainActivity,
             bluetoothViewModelFactory
         ).get(BluetoothViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideGetAllDevicesUseCase(
+        deviceRepository: DeviceRepository
+    ): GetSavedDevicesUseCase {
+        return GetSavedDevicesUseCase(deviceRepository)
+    }
+
+    @Provides
+    @MainActivityScope
+    fun provideSaveDeviceUseCase(
+        deviceRepository: DeviceRepository
+    ): SaveDeviceUseCase {
+        return SaveDeviceUseCase(deviceRepository)
+    }
+
+    @Provides
+    @MainActivityScope
+    fun provideDeleteDeviceUseCase(
+        deviceRepository: DeviceRepository
+    ): DeleteDeviceUseCase {
+        return DeleteDeviceUseCase(deviceRepository)
+    }
+
+    @Provides
+    @MainActivityScope
+    fun provideDeviceListViewModelFactory(
+        getSavedDevicesUseCase: GetSavedDevicesUseCase,
+        saveDeviceUseCase: SaveDeviceUseCase,
+        deleteDeviceUseCase: DeleteDeviceUseCase
+    ): DeviceListViewModelFactory {
+        return DeviceListViewModelFactory(getSavedDevicesUseCase, saveDeviceUseCase,deleteDeviceUseCase)
+    }
+
+    @Provides
+    @MainActivityScope
+    fun provideDeviceListViewModel(
+        deviceListViewModelFactory: DeviceListViewModelFactory
+    ): DeviceViewModel {
+        return ViewModelProviders.of(mainActivity, deviceListViewModelFactory)
+            .get(DeviceViewModel::class.java)
+    }
 }

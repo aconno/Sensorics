@@ -1,6 +1,6 @@
 package com.aconno.acnsensa.device.bluetooth
 
-import com.aconno.acnsensa.domain.BluetoothState
+import com.aconno.acnsensa.domain.scanning.BluetoothState
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 

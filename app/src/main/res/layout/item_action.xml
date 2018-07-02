@@ -3,30 +3,54 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/list_item_height">
+    android:layout_height="@dimen/list_item_height"
+    android:paddingEnd="@dimen/screen_edge_left_right_margin"
+    android:paddingStart="@dimen/screen_edge_left_right_margin">
 
     <TextView
-        android:id="@+id/action_name"
+        android:id="@+id/text_name"
         style="@style/ListItemText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
-        app:layout_constraintBottom_toTopOf="@id/action_condition"
+        app:layout_constraintBottom_toTopOf="@id/text_mac_address"
+        app:layout_constraintEnd_toStartOf="@id/text_condition"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="Name of the Action" />
 
     <TextView
-        android:id="@+id/action_condition"
+        android:id="@+id/text_mac_address"
         style="@style/ListItemSecondaryText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
         android:layout_marginTop="@dimen/list_item_text_padding"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/text_outcome"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/action_name"
+        app:layout_constraintTop_toBottomOf="@id/text_name"
+        tools:text="MA:CA:DD:RE:SS:00" />
+
+    <TextView
+        android:id="@+id/text_condition"
+        style="@style/ListItemText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        app:layout_constraintBaseline_toBaselineOf="@id/text_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_name"
         tools:text="Temperature > 4.0" />
+
+    <TextView
+        android:id="@+id/text_outcome"
+        style="@style/ListItemSecondaryText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        app:layout_constraintBaseline_toBaselineOf="@id/text_mac_address"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_mac_address"
+        tools:text="Notification" />
 
 </android.support.constraint.ConstraintLayout>

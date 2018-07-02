@@ -13,8 +13,6 @@
     <dimen name="message_text_size">15sp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="sensor_text_size">14sp</dimen>
     <dimen name="sensor_value_text_size">24sp</dimen>
     <dimen name="toolbar_elevation">4dp</dimen>
@@ -25,16 +23,19 @@
     <dimen name="item_vertical_spacing">8dp</dimen>
 
     <!-- Dialog -->
+    <dimen name="dialog_min_width">240dp</dimen>
     <dimen name="dialog_padding">24dp</dimen>
     <dimen name="dialog_padding_title_body">20dp</dimen>
     <dimen name="dialog_padding_conditions">4dp</dimen>
     <dimen name="dialog_padding_content">8dp</dimen>
     <dimen name="dialog_button_margin">8dp</dimen>
     <dimen name="dialog_button_height">36dp</dimen>
-    <dimen name="dialog_action_area_height">52dp</dimen>
-    <dimen name="dialog_elevation">24dp</dimen>
 
     <!-- Graph -->
     <dimen name="graph_line_width">1dp</dimen>
     <dimen name="graph_circle_radius">1dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="app_bar_height">200dp</dimen>
+    <dimen name="item_width">200dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>

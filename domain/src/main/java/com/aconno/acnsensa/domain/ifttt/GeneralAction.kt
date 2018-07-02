@@ -1,18 +1,11 @@
 package com.aconno.acnsensa.domain.ifttt
 
-/**
- * @author aconno
- */
+import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
+
 class GeneralAction(
     override val id: Long,
     override val name: String,
+    override val deviceMacAddress : String,
     override val condition: Condition,
     override val outcome: Outcome
-) : Action {
-
-    override fun processInput(input: Input) {
-        if (condition.isSatisfied(input)) {
-            outcome.execute()
-        }
-    }
-}
+) : Action

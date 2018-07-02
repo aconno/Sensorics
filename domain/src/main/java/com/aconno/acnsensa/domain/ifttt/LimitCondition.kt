@@ -1,18 +1,18 @@
 package com.aconno.acnsensa.domain.ifttt
 
+import com.aconno.acnsensa.domain.model.ReadingType
+
 class LimitCondition(
-    override val sensorType: Int,
+    override val readingType: ReadingType,
     override val limit: Float,
     override val type: Int
-) :
-    Condition {
+) : Condition {
 
     override fun isSatisfied(input: Input): Boolean {
-        println("Condition Type: $type Value: ${input.value} Limit: $limit")
-        return if (input.type == sensorType) {
+        return if (input.type == readingType) {
             when (type) {
-                LOWER_LIMIT -> input.value <= limit
-                UPPER_LIMIT -> input.value >= limit
+                LESS_THAN -> input.value <= limit
+                MORE_THAN -> input.value >= limit
                 else -> false
             }
         } else {
@@ -21,7 +21,7 @@ class LimitCondition(
     }
 
     companion object {
-        const val LOWER_LIMIT = 0
-        const val UPPER_LIMIT = 1
+        const val LESS_THAN = 0
+        const val MORE_THAN = 1
     }
 }

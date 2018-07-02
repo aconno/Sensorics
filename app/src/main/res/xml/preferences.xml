@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:defaultValue="0"
+        android:key="publishers"
+        android:title="Publishers" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="scan_background"
+        android:title="Scan Background" />
+
+    <ListPreference
+        android:defaultValue="3"
+        android:entries="@array/SettingsScanMode"
+        android:entryValues="@array/SettingsScanModeValues"
+        android:key="scan_mode"
+        android:title="Scan Mode" />
+</PreferenceScreen>

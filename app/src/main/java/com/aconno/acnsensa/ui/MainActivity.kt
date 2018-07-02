@@ -1,26 +1,38 @@
 package com.aconno.acnsensa.ui
 
 import android.arch.lifecycle.Observer
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothScanningService
+import com.aconno.acnsensa.BuildConfig
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityComponent
 import com.aconno.acnsensa.dagger.mainactivity.MainActivityModule
-import com.aconno.acnsensa.domain.BluetoothState
+import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.ScanEvent
+import com.aconno.acnsensa.domain.scanning.BluetoothState
+import com.aconno.acnsensa.model.AcnSensaPermission
+import com.aconno.acnsensa.ui.devices.SavedDevicesFragment
+import com.aconno.acnsensa.ui.devices.SavedDevicesFragmentListener
+import com.aconno.acnsensa.ui.dialogs.ScannedDevicesDialogListener
+import com.aconno.acnsensa.ui.sensors.SensorListFragment
+import com.aconno.acnsensa.ui.settings.SettingsActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
 import com.aconno.acnsensa.viewmodel.BluetoothViewModel
 import com.aconno.acnsensa.viewmodel.PermissionViewModel
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_toolbar.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks {
+class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks,
+    ScannedDevicesDialogListener, SavedDevicesFragmentListener {
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
@@ -45,23 +57,23 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_toolbar)
 
         mainActivityComponent.inject(this)
 
         snackbar =
-                Snackbar.make(activity_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(content_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
 
         snackbar?.setActionTextColor(resources.getColor(R.color.primaryColor))
 
-        custom_toolbar.title = getString(R.string.app_name)
-        setSupportActionBar(custom_toolbar)
+        toolbar.title = getString(R.string.app_name)
+        setSupportActionBar(toolbar)
 
         invalidateOptionsMenu()
 
         if (savedInstanceState == null) {
-            addFragment()
+            showSavedDevicesFragment()
         }
     }
 
@@ -112,6 +124,14 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         }
     }
 
+    override fun onFABClicked() {
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
+            if (!it.isChecked) {
+                toggleScan(it)
+            }
+        }
+    }
+
     private fun onScanFailedAlreadyStarted() {
         //Do nothing.
     }
@@ -140,10 +160,25 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         }
     }
 
-    private fun addFragment() {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.add(activity_container.id, SensorListFragment())
-        transaction.commit()
+    fun showSensorValues(macAddress: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(content_container.id, SensorListFragment.newInstance(macAddress))
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun showSavedDevicesFragment() {
+        supportFragmentManager.beginTransaction()
+            .replace(content_container.id, SavedDevicesFragment())
+            .commit()
+    }
+
+    override fun onDevicesDialogItemClick(item: Device) {
+        supportFragmentManager.fragments.map {
+            if (it is ScannedDevicesDialogListener) {
+                it.onDevicesDialogItemClick(item)
+            }
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -168,6 +203,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         when (id) {
             R.id.action_toggle_scan -> toggleScan(item)
             R.id.action_start_actions_activity -> startActionListActivity()
+            R.id.action_start_settings_activity -> startSettingsActivity()
         }
 
         return super.onOptionsItemSelected(item)
@@ -175,6 +211,18 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     private fun startActionListActivity() {
         ActionListActivity.start(this)
+    }
+
+    private fun startSettingsActivity() {
+        if (BluetoothScanningService.isRunning()) {
+            Snackbar.make(
+                findViewById(android.R.id.content),
+                getString(R.string.snackbar_stop_scanning),
+                Snackbar.LENGTH_SHORT
+            ).show()
+        } else {
+            SettingsActivity.start(this)
+        }
     }
 
     private fun toggleScan(item: MenuItem?) {
@@ -206,12 +254,26 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     override fun permissionAccepted(actionCode: Int) {
-        bluetoothScanningViewModel.startScanning()
-        //TODO: Permission accepted
+        if (actionCode == AcnSensaPermission.ACCESS_FINE_LOCATION.code) {
+            // TODO: Why do we need READ_EXTERNAL_STORAGE for scanning??? @Sergio
+            permissionViewModel.requestAccessToReadExternalStorage()
+        } else {
+            bluetoothScanningViewModel.startScanning()
+        }
     }
 
     override fun permissionDenied(actionCode: Int) {
-        //TODO: Permission denied
+        //TODO: Make this nice...
+        Snackbar.make(
+            content_container,
+            getString(R.string.snackbar_permission_message),
+            Snackbar.LENGTH_LONG
+        ).setAction(getString(R.string.snackbar_settings)) {
+            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+            startActivity(intent)
+        }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+            .show()
     }
 
     override fun showRationale(actionCode: Int) {

@@ -1,10 +1,9 @@
 package com.aconno.acnsensa.domain.format
 
-/**
- * @author aconno
- */
 interface AdvertisementFormat {
+
+    fun getName(): String
+    fun getIcon(): String
     fun getFormat(): Map<String, ByteFormat>
-    fun getRequiredFormat(): List<Byte>
-    fun getMaskBytePositions(): List<Int>
+    fun getRequiredFormat(): List<ByteFormatRequired>
 }

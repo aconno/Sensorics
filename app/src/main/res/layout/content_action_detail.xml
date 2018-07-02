@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/action_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:layout_marginTop="@dimen/item_vertical_spacing"
+            android:hint="@string/action_name"
+            android:inputType="textPersonName" />
+
+        <LinearLayout
+            android:id="@+id/button_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                android:layout_marginTop="@dimen/item_vertical_spacing"
+                android:text="@string/device"
+                android:textColor="@color/primaryTextColor" />
+
+            <TextView
+                android:id="@+id/text_mac_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+                android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                android:textSize="@dimen/list_item_text_size"
+                tools:text="Mac address" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/view_conditions_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:layout_marginTop="@dimen/item_vertical_spacing"
+            android:text="@string/conditions"
+            android:textColor="@color/primaryTextColor" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/condition_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:layout_marginTop="@dimen/title_padding"
+            app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
+            app:dividerDrawableVertical="@drawable/chip_divider_vertical"
+            app:flexWrap="wrap"
+            app:showDivider="middle">
+
+            <CheckedTextView
+                android:id="@+id/temperature"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Temperature" />
+
+            <CheckedTextView
+                android:id="@+id/light"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Light" />
+
+            <CheckedTextView
+                android:id="@+id/humidity"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Humidity" />
+
+            <CheckedTextView
+                android:id="@+id/pressure"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Pressure" />
+
+            <CheckedTextView
+                android:id="@+id/magnetometer_x"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Magnetometer X" />
+
+            <CheckedTextView
+                android:id="@+id/magnetometer_y"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Magnetometer Y" />
+
+            <CheckedTextView
+                android:id="@+id/magnetometer_z"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Magnetometer Z" />
+
+            <CheckedTextView
+                android:id="@+id/accelerometer_x"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Accelerometer X" />
+
+            <CheckedTextView
+                android:id="@+id/accelerometer_y"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Accelerometer Y" />
+
+            <CheckedTextView
+                android:id="@+id/accelerometer_z"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Accelerometer Z" />
+
+            <CheckedTextView
+                android:id="@+id/gyroscope_x"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Gyroscope X" />
+
+            <CheckedTextView
+                android:id="@+id/gyroscope_y"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Gyroscope Y" />
+
+            <CheckedTextView
+                android:id="@+id/gyroscope_z"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Gyroscope Z" />
+
+            <CheckedTextView
+                android:id="@+id/battery_level"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Battery Level" />
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <TextView
+            android:id="@+id/view_outcomes_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:layout_marginTop="@dimen/item_vertical_spacing"
+            android:text="@string/outcomes"
+            android:textColor="@color/primaryTextColor" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/outcome_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:layout_marginTop="@dimen/title_padding"
+            app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
+            app:dividerDrawableVertical="@drawable/chip_divider_vertical"
+            app:flexWrap="wrap"
+            app:showDivider="middle">
+
+            <CheckedTextView
+                android:id="@+id/outcome_notification"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification" />
+
+            <CheckedTextView
+                android:id="@+id/outcome_sms"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sms" />
+
+            <CheckedTextView
+                android:id="@+id/outcome_vibration"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vibration" />
+
+            <CheckedTextView
+                android:id="@+id/outcome_text_to_speech"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_to_speech" />
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <EditText
+            android:id="@+id/phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:layout_marginTop="@dimen/title_padding"
+            android:hint="@string/phone_number"
+            android:inputType="phone"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:layout_marginTop="@dimen/item_vertical_spacing"
+            android:hint="@string/message_hint"
+            android:inputType="text"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</ScrollView>

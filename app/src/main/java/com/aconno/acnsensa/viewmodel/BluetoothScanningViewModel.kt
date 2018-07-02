@@ -6,7 +6,7 @@ import android.content.Intent
 import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothScanningService
-import com.aconno.acnsensa.domain.Bluetooth
+import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.domain.model.ScanEvent
 import io.reactivex.Flowable
 import timber.log.Timber

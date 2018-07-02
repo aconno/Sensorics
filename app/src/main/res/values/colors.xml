@@ -11,6 +11,9 @@
     <color name="secondaryTextColor">#ffffff</color>
     <color name="secondaryIconColor">#ffffff</color>
 
+    <color name="white">#ffffff</color>
+    <color name="progress_indicator">#1a09d6</color>
+
     <color name="graph_x">#FF0000</color>
     <color name="graph_y">#00FF00</color>
     <color name="graph_z">#0000FF</color>
