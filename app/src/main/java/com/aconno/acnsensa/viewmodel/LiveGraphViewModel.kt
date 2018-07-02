@@ -5,45 +5,197 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.support.v4.content.ContextCompat
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.acnsensa.domain.interactor.repository.GetReadingsUseCase
-import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.model.DataSeriesSettings
 import com.aconno.acnsensa.ui.graph.BleDataSeries
 import com.aconno.acnsensa.ui.graph.BleGraph
 import com.aconno.acnsensa.ui.graph.GraphType
-import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
 class LiveGraphViewModel(
-    private val readings: Flowable<List<Reading>>,
-    private val filterByMacUseCase: FilterByMacUseCase,
     private val getReadingsUseCase: GetReadingsUseCase,
     application: Application
 ) : AndroidViewModel(application) {
+
     private val refreshTimestamp: MutableLiveData<Long> = MutableLiveData()
 
     private var disposable: Disposable? = null
+    private var disposableY: Disposable? = null
+    private var disposableZ: Disposable? = null
 
     private lateinit var macAddress: String
+    private var graphType: Int = -1
 
-    fun setMacAddress(macAddress: String) {
+    fun setMacAddressAndGraphType(macAddress: String, graphType: Int) {
         this.macAddress = macAddress
+        this.graphType = graphType
         disposable?.dispose()
-        disposable = readings.concatMap {
-            filterByMacUseCase.execute(it, macAddress).toFlowable()
-        }.observeOn(AndroidSchedulers.mainThread())
-            .subscribe { processSensorValues(it) }
+
+        when (graphType) {
+            GraphType.TEMPERATURE -> {
+                disposable?.dispose()
+                disposable = getReadingsUseCase.execute(ReadingType.TEMPERATURE)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        temperatureSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+            }
+            GraphType.LIGHT -> {
+                disposable?.dispose()
+                disposable = getReadingsUseCase.execute(ReadingType.LIGHT)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        lightSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+            }
+            GraphType.HUMIDITY -> {
+                disposable?.dispose()
+                disposable = getReadingsUseCase.execute(ReadingType.HUMIDITY)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        humiditySeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+            }
+            GraphType.PRESSURE -> {
+                disposable?.dispose()
+                disposable = getReadingsUseCase.execute(ReadingType.PRESSURE)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        pressureSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+            }
+            GraphType.MAGNETOMETER -> {
+                disposable?.dispose()
+                disposable = getReadingsUseCase.execute(ReadingType.MAGNETOMETER_X)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        xMagnetometerSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+                disposableY?.dispose()
+                disposableY = getReadingsUseCase.execute(ReadingType.MAGNETOMETER_Y)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        yMagnetometerSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+                disposableZ?.dispose()
+                disposableZ = getReadingsUseCase.execute(ReadingType.MAGNETOMETER_Z)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        zMagnetometerSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+            }
+            GraphType.ACCELEROMETER -> {
+                disposable?.dispose()
+                disposable = getReadingsUseCase.execute(ReadingType.ACCELEROMETER_X)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        xAccelerometerSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+                disposableY?.dispose()
+                disposableY = getReadingsUseCase.execute(ReadingType.ACCELEROMETER_Y)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        yAccelerometerSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+                disposableZ?.dispose()
+                disposableZ = getReadingsUseCase.execute(ReadingType.ACCELEROMETER_Z)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        zAccelerometerSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+            }
+            GraphType.GYROSCOPE -> {
+                disposable?.dispose()
+                disposable = getReadingsUseCase.execute(ReadingType.GYROSCOPE_X)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        xGyroscopeSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+                disposableY?.dispose()
+                disposableY = getReadingsUseCase.execute(ReadingType.GYROSCOPE_Y)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        yGyroscopeSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+                disposableZ?.dispose()
+                disposableZ = getReadingsUseCase.execute(ReadingType.GYROSCOPE_Z)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        zGyroscopeSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+            }
+            GraphType.BATTERY_LEVEL -> {
+                disposable?.dispose()
+                disposable = getReadingsUseCase.execute(ReadingType.BATTERY_LEVEL)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { readings ->
+                        val filtered = readings.filter {
+                            it.device.macAddress == macAddress
+                        }
+                        batteryLevelSeries.updateDataSet(filtered)
+                        refreshTimestamp.value = System.currentTimeMillis()
+                    }
+            }
+        }
     }
 
     fun getUpdates(): MutableLiveData<Long> {
         return refreshTimestamp
     }
-
-    //TODO Custom setter to check if graph type is valid.
-    var graphType: Int = -1
 
     private val graphSettingsX = DataSeriesSettings(
         ContextCompat.getColor(application, R.color.graph_x),
@@ -176,121 +328,5 @@ class LiveGraphViewModel(
             GraphType.BATTERY_LEVEL -> batteryLevelGraph
             else -> throw IllegalArgumentException()
         }
-    }
-
-    private fun processSensorValues(readings: List<Reading>) {
-        when (graphType) {
-            GraphType.TEMPERATURE ->
-                getReadingsUseCase.execute(ReadingType.TEMPERATURE)
-                    .subscribe { temperatureReadings ->
-                        val filtered = temperatureReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        temperatureSeries.updateDataSet(filtered)
-                    }
-            GraphType.LIGHT ->
-                getReadingsUseCase.execute(ReadingType.LIGHT)
-                    .subscribe { lightReadings ->
-                        val filtered = lightReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        lightSeries.updateDataSet(filtered)
-                    }
-            GraphType.HUMIDITY ->
-                getReadingsUseCase.execute(ReadingType.HUMIDITY)
-                    .subscribe { humidityReadings ->
-                        val filtered = humidityReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        humiditySeries.updateDataSet(filtered)
-                    }
-            GraphType.PRESSURE ->
-                getReadingsUseCase.execute(ReadingType.PRESSURE)
-                    .subscribe { pressureReadings ->
-                        val filtered = pressureReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        pressureSeries.updateDataSet(filtered)
-                    }
-            GraphType.MAGNETOMETER -> {
-                getReadingsUseCase.execute(ReadingType.MAGNETOMETER_X)
-                    .subscribe { magnetometerXReadings ->
-                        val filtered = magnetometerXReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        xMagnetometerSeries.updateDataSet(filtered)
-                    }
-                getReadingsUseCase.execute(ReadingType.MAGNETOMETER_Y)
-                    .subscribe { magnetometerYReadings ->
-                        val filtered = magnetometerYReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        yMagnetometerSeries.updateDataSet(filtered)
-                    }
-                getReadingsUseCase.execute(ReadingType.MAGNETOMETER_Z)
-                    .subscribe { magnetometerZReadings ->
-                        val filtered = magnetometerZReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        zMagnetometerSeries.updateDataSet(filtered)
-                    }
-            }
-            GraphType.ACCELEROMETER -> {
-                getReadingsUseCase.execute(ReadingType.ACCELEROMETER_X)
-                    .subscribe { accelerometerXReadings ->
-                        val filtered = accelerometerXReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        xAccelerometerSeries.updateDataSet(filtered)
-                    }
-                getReadingsUseCase.execute(ReadingType.ACCELEROMETER_Y)
-                    .subscribe { accelerometerYReadings ->
-                        val filtered = accelerometerYReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        yAccelerometerSeries.updateDataSet(filtered)
-                    }
-                getReadingsUseCase.execute(ReadingType.ACCELEROMETER_Z)
-                    .subscribe { accelerometerZReadings ->
-                        val filtered = accelerometerZReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        zAccelerometerSeries.updateDataSet(filtered)
-                    }
-            }
-            GraphType.GYROSCOPE -> {
-                getReadingsUseCase.execute(ReadingType.GYROSCOPE_X)
-                    .subscribe { gyroscopeXReadings ->
-                        val filtered = gyroscopeXReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        xGyroscopeSeries.updateDataSet(filtered)
-                    }
-                getReadingsUseCase.execute(ReadingType.GYROSCOPE_Y)
-                    .subscribe { gyroscopeYReadings ->
-                        val filtered = gyroscopeYReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        yGyroscopeSeries.updateDataSet(filtered)
-                    }
-                getReadingsUseCase.execute(ReadingType.GYROSCOPE_Z)
-                    .subscribe { gyroscopeZReadings ->
-                        val filtered = gyroscopeZReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        zGyroscopeSeries.updateDataSet(filtered)
-                    }
-            }
-            GraphType.BATTERY_LEVEL ->
-                getReadingsUseCase.execute(ReadingType.BATTERY_LEVEL)
-                    .subscribe { batteryLevelReadings ->
-                        val filtered = batteryLevelReadings.filter {
-                            it.device.macAddress == macAddress
-                        }
-                        batteryLevelSeries.updateDataSet(filtered)
-                    }
-            else -> throw IllegalArgumentException()
-        }
-        refreshTimestamp.value = System.currentTimeMillis()
     }
 }
