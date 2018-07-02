@@ -6,6 +6,7 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.acnsensa.AcnSensaApplication
 import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.IntentProviderImpl
+import com.aconno.acnsensa.dagger.deviceselect.DeviceSelectScope
 import com.aconno.acnsensa.data.mapper.*
 import com.aconno.acnsensa.data.repository.AcnSensaDatabase
 import com.aconno.acnsensa.data.repository.InMemoryRepositoryImpl
@@ -36,6 +37,7 @@ import com.aconno.acnsensa.domain.interactor.consolidation.GenerateReadingsUseCa
 import com.aconno.acnsensa.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.model.Device
@@ -200,6 +202,12 @@ class AppModule(
         deviceRepository: DeviceRepository
     ): Flowable<List<Device>> {
         return GetSavedDevicesUseCase(deviceRepository).execute()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetSavedDevicesMaybeUseCase(deviceRepository: DeviceRepository): GetSavedDevicesMaybeUseCase {
+        return GetSavedDevicesMaybeUseCase(deviceRepository)
     }
 
     @Provides

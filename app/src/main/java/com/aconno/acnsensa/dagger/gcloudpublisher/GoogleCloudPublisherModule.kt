@@ -72,11 +72,4 @@ class GoogleCloudPublisherModule(private val googleCloudPublisherActivity: Googl
     fun provideGetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithGooglePublishUseCase {
         return GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository)
     }
-
-    @Provides
-    @GoogleCloudPublisherScope
-    fun provideGetSavedDevicesUseCase(deviceRepository: DeviceRepository): GetSavedDevicesMaybeUseCase {
-        return GetSavedDevicesMaybeUseCase(deviceRepository)
-    }
-
 }

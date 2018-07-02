@@ -79,12 +79,6 @@ class RESTPublisherModule(private val restPublisherActivity: RESTPublisherActivi
 
     @Provides
     @RESTPublisherScope
-    fun provideGetSavedDevicesMaybeUseCase(deviceRepository: DeviceRepository): GetSavedDevicesMaybeUseCase {
-        return GetSavedDevicesMaybeUseCase(deviceRepository)
-    }
-
-    @Provides
-    @RESTPublisherScope
     fun provideSaveRESTHeaderUseCase(restPublishRepository: RESTPublishRepository): SaveRESTHeaderUseCase {
         return SaveRESTHeaderUseCase(restPublishRepository)
     }
