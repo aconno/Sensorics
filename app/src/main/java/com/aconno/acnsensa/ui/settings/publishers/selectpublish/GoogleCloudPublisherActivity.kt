@@ -49,7 +49,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
 
     private val testConnectionCallback = object : Publisher.TestConnectionCallback {
         override fun onConnectionStart() {
-            progressbar.visibility = View.INVISIBLE
+            progressbar.visibility = View.VISIBLE
             isTestingAlreadyRunning = false
             Toast.makeText(
                 this@GoogleCloudPublisherActivity,
@@ -69,7 +69,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         }
 
         override fun onConnectionFail() {
-            progressbar.visibility = View.VISIBLE
+            progressbar.visibility = View.INVISIBLE
             isTestingAlreadyRunning = false
             Toast.makeText(
                 this@GoogleCloudPublisherActivity,
