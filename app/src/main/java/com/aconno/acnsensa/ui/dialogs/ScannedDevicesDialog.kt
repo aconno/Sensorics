@@ -13,6 +13,7 @@ import com.aconno.acnsensa.adapter.DeviceAdapter
 import com.aconno.acnsensa.adapter.ItemClickListener
 import com.aconno.acnsensa.domain.model.Device
 import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.dialog_devices.*
 import timber.log.Timber
@@ -57,6 +58,7 @@ class ScannedDevicesDialog : DialogFragment(), ItemClickListener<Device> {
         list_devices.adapter = adapter
 
         disposable = devices.distinct()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 text_empty.visibility = View.INVISIBLE
                 adapter.addDevice(it)

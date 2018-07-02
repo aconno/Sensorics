@@ -5,8 +5,8 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.support.v4.content.ContextCompat
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.acnsensa.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.model.DataSeriesSettings
@@ -14,6 +14,7 @@ import com.aconno.acnsensa.ui.graph.BleDataSeries
 import com.aconno.acnsensa.ui.graph.BleGraph
 import com.aconno.acnsensa.ui.graph.GraphType
 import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
 class LiveGraphViewModel(
@@ -33,7 +34,8 @@ class LiveGraphViewModel(
         disposable?.dispose()
         disposable = readings.concatMap {
             filterByMacUseCase.execute(it, macAddress).toFlowable()
-        }.subscribe { processSensorValues(it) }
+        }.observeOn(AndroidSchedulers.mainThread())
+            .subscribe { processSensorValues(it) }
     }
 
     fun getUpdates(): MutableLiveData<Long> {

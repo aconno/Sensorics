@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.acnsensa.domain.model.Reading
 import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
 class SensorListViewModel(
@@ -19,6 +20,7 @@ class SensorListViewModel(
     fun setMacAddress(macAddress: String) {
         disposable?.dispose()
         disposable = readingsStream
+            .observeOn(AndroidSchedulers.mainThread())
             .concatMap { filterByMacUseCase.execute(it, macAddress).toFlowable() }
             .subscribe { processSensorValues(it) }
     }
