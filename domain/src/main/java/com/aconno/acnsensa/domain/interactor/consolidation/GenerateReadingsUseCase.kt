@@ -1,11 +1,10 @@
 package com.aconno.acnsensa.domain.interactor.consolidation
 
 import com.aconno.acnsensa.domain.format.FormatMatcher
-import com.aconno.acnsensa.domain.model.Reading
-import com.aconno.acnsensa.domain.model.ReadingType
-import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.Reading
+import com.aconno.acnsensa.domain.model.ScanResult
 import com.aconno.acnsensa.domain.serialization.Deserializer
 import io.reactivex.Single
 
@@ -28,7 +27,7 @@ class GenerateReadingsUseCase(
                 parameter.timestamp,
                 device,
                 deserializer.deserializeNumber(parameter.rawData, byteFormat),
-                ReadingType.fromString(name)
+                name
             )
             sensorReadings.add(reading)
         }

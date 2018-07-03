@@ -7,7 +7,6 @@ import com.aconno.acnsensa.domain.ifttt.RESTHeader
 import com.aconno.acnsensa.domain.ifttt.RESTPublish
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.domain.model.Reading
-import com.aconno.acnsensa.domain.model.ReadingType
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -59,7 +58,7 @@ class RESTPublisher(
                 System.currentTimeMillis(),
                 Device("TestDevice", "MA:CA:DD:RE:SS:11"),
                 1,
-                ReadingType.TEMPERATURE
+                "Temperature"
             )
         )
 

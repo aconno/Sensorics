@@ -11,7 +11,6 @@ import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
 import com.aconno.acnsensa.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.action.GetActionByIdUseCase
 import com.aconno.acnsensa.domain.interactor.ifttt.action.UpdateActionUseCase
-import com.aconno.acnsensa.domain.model.ReadingType
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -45,7 +44,7 @@ class ActionViewModel(
     }
 
     fun setCondition(
-        readingType: ReadingType,
+        readingType: String,
         constraintType: String,
         constraintValue: String
     ) {

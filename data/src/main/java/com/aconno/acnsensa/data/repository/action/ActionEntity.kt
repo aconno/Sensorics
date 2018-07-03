@@ -8,7 +8,7 @@ data class ActionEntity(
     @PrimaryKey(autoGenerate = true) var id: Long,
     var name: String,
     var deviceMacAddress: String,
-    var readingType: Int,
+    var readingType: String,
     var conditionType: Int,
     var value: Float,
     var textMessage: String,
