@@ -15,9 +15,6 @@ import com.aconno.acnsensa.viewmodel.LiveGraphViewModel
 import kotlinx.android.synthetic.main.activity_graph.*
 import javax.inject.Inject
 
-/**
- * @aconno
- */
 class LiveGraphActivity : AppCompatActivity() {
 
     @Inject
@@ -40,21 +37,21 @@ class LiveGraphActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         val macAddress = intent.getStringExtra(MAC_ADDRESS_EXTRA)
-        val type: Int = intent.getIntExtra(GRAPH_TYPE_EXTRA, -1)
-        liveGraphViewModel.setMacAddressAndGraphType(macAddress, type)
-        liveGraphViewModel.getUpdates().observe(this, Observer { updateGraph(it) })
-        loadGraph(type)
+        val graphName = intent.getStringExtra(GRAPH_NAME_EXTRA)
+        liveGraphViewModel.setMacAddressAndGraphName(macAddress, graphName)
+        liveGraphViewModel.getUpdates().observe(this, Observer { updateGraph() })
+        loadGraph(graphName)
     }
 
 
-    private fun loadGraph(type: Int) {
+    private fun loadGraph(type: String) {
         val graph: BleGraph = liveGraphViewModel.getGraph(type)
         line_chart.description = graph.getDescription()
         line_chart.data = graph.lineData
         line_chart.invalidate()
     }
 
-    private fun updateGraph(long: Long?) {
+    private fun updateGraph() {
         line_chart.data?.notifyDataChanged()
         line_chart.notifyDataSetChanged()
         line_chart.invalidate()
@@ -63,12 +60,12 @@ class LiveGraphActivity : AppCompatActivity() {
     companion object {
 
         private const val MAC_ADDRESS_EXTRA = "mac_address"
-        private const val GRAPH_TYPE_EXTRA = "graph_type"
+        private const val GRAPH_NAME_EXTRA = "graph_type"
 
-        fun start(context: Context, macAddress: String, type: Int) {
+        fun start(context: Context, macAddress: String, graphName: String) {
             val intent = Intent(context, LiveGraphActivity::class.java)
             intent.putExtra(MAC_ADDRESS_EXTRA, macAddress)
-            intent.putExtra(GRAPH_TYPE_EXTRA, type)
+            intent.putExtra(GRAPH_NAME_EXTRA, graphName)
             context.startActivity(intent)
         }
     }
