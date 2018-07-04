@@ -8,7 +8,6 @@ import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.GeneralAction
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
-import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.domain.interactor.ifttt.action.AddActionUseCase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -23,7 +22,7 @@ class NewActionViewModel(
 
     private var condition: Condition? = null
 
-    fun setCondition(readingType: ReadingType, constraint: String, constraintValue: String) {
+    fun setCondition(readingType: String, constraint: String, constraintValue: String) {
         //TODO: Fix this try catch, it catches the exception when constraintValue is empty string
         try {
             when (constraint) {

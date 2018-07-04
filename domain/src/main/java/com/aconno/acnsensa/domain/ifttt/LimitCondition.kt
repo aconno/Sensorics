@@ -1,9 +1,7 @@
 package com.aconno.acnsensa.domain.ifttt
 
-import com.aconno.acnsensa.domain.model.ReadingType
-
 class LimitCondition(
-    override val readingType: ReadingType,
+    override val readingType: String,
     override val limit: Float,
     override val type: Int
 ) : Condition {

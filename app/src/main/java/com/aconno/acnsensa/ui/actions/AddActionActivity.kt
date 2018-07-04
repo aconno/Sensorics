@@ -18,7 +18,6 @@ import com.aconno.acnsensa.dagger.addaction.AddActionModule
 import com.aconno.acnsensa.dagger.addaction.DaggerAddActionComponent
 import com.aconno.acnsensa.domain.ifttt.Condition
 import com.aconno.acnsensa.domain.ifttt.LimitCondition
-import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.domain.model.Device
 import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialog
 import com.aconno.acnsensa.ui.dialogs.SavedDevicesDialogListener
@@ -94,10 +93,47 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
     }
 
     private fun setConditionChipOnClickListeners() {
-        ReadingType.values().forEach { sensorType ->
-            getConditionView(sensorType).setOnClickListener {
-                openConditionDialog(sensorType)
-            }
+        temperature.setOnClickListener {
+            openConditionDialog("Temperature")
+        }
+        light.setOnClickListener {
+            openConditionDialog("Light")
+        }
+        humidity.setOnClickListener {
+            openConditionDialog("Humidity")
+        }
+        pressure.setOnClickListener {
+            openConditionDialog("Pressure")
+        }
+        magnetometer_x.setOnClickListener {
+            openConditionDialog("Magnetometer X")
+        }
+        magnetometer_y.setOnClickListener {
+            openConditionDialog("Magnetometer Y")
+        }
+        magnetometer_z.setOnClickListener {
+            openConditionDialog("Magnetometer Z")
+        }
+        accelerometer_x.setOnClickListener {
+            openConditionDialog("Accelerometer X")
+        }
+        accelerometer_y.setOnClickListener {
+            openConditionDialog("Accelerometer Y")
+        }
+        accelerometer_z.setOnClickListener {
+            openConditionDialog("Accelerometer Z")
+        }
+        gyroscope_x.setOnClickListener {
+            openConditionDialog("Gyroscope X")
+        }
+        gyroscope_y.setOnClickListener {
+            openConditionDialog("Gyroscope Y")
+        }
+        gyroscope_z.setOnClickListener {
+            openConditionDialog("Gyroscope Z")
+        }
+        battery_level.setOnClickListener {
+            openConditionDialog("Battery Level")
         }
     }
 
@@ -105,7 +141,7 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
         text_mac_address.text = item.macAddress
     }
 
-    private fun openConditionDialog(readingType: ReadingType) {
+    private fun openConditionDialog(readingType: String) {
         val dialog = ConditionDialog.newInstance(readingType)
         dialog.show(supportFragmentManager, "condition_dialog_fragment")
     }
@@ -181,7 +217,7 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
         }
     }
 
-    override fun onSetClicked(readingType: ReadingType, constraint: String, value: String) {
+    override fun onSetClicked(readingType: String, constraint: String, value: String) {
         initConditionViews()
         //TODO: Prevent passing an empty string value
         newActionViewModel.setCondition(readingType, constraint, value)
@@ -198,15 +234,37 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
     }
 
     private fun initConditionTexts() {
-        ReadingType.values().forEach {
-            getConditionView(it).text = it.toString()
-        }
+        temperature.text = "Temperature"
+        light.text = "Light"
+        humidity.text = "Humidity"
+        pressure.text = "Pressure"
+        magnetometer_x.text = "Magnetometer X"
+        magnetometer_y.text = "Magnetometer Y"
+        magnetometer_z.text = "Magnetometer Z"
+        accelerometer_x.text = "Accelerometer X"
+        accelerometer_y.text = "Accelerometer Y"
+        accelerometer_z.text = "Accelerometer Z"
+        gyroscope_x.text = "Gyroscope X"
+        gyroscope_y.text = "Gyroscope Y"
+        gyroscope_z.text = "Gyroscope Z"
+        battery_level.text = "Battery Level"
     }
 
     private fun initConditionStates() {
-        ReadingType.values().forEach {
-            getConditionView(it).isChecked = false
-        }
+        temperature.isChecked = false
+        light.isChecked = false
+        humidity.isChecked = false
+        pressure.isChecked = false
+        magnetometer_x.isChecked = false
+        magnetometer_y.isChecked = false
+        magnetometer_z.isChecked = false
+        accelerometer_x.isChecked = false
+        accelerometer_y.isChecked = false
+        accelerometer_z.isChecked = false
+        gyroscope_x.isChecked = false
+        gyroscope_y.isChecked = false
+        gyroscope_z.isChecked = false
+        battery_level.isChecked = false
     }
 
     private fun setSelectedCondition(condition: Condition) {
@@ -224,23 +282,23 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
         textView.text = "${textView.text} $constraint ${condition.limit}"
     }
 
-    private fun getConditionView(readingType: ReadingType): CheckedTextView {
+    private fun getConditionView(readingType: String): CheckedTextView {
         return when (readingType) {
-            ReadingType.TEMPERATURE -> temperature
-            ReadingType.LIGHT -> light
-            ReadingType.HUMIDITY -> humidity
-            ReadingType.PRESSURE -> pressure
-            ReadingType.MAGNETOMETER_X -> magnetometer_x
-            ReadingType.MAGNETOMETER_Y -> magnetometer_y
-            ReadingType.MAGNETOMETER_Z -> magnetometer_z
-            ReadingType.ACCELEROMETER_X -> accelerometer_x
-            ReadingType.ACCELEROMETER_Y -> accelerometer_y
-            ReadingType.ACCELEROMETER_Z -> accelerometer_z
-            ReadingType.GYROSCOPE_X -> gyroscope_x
-            ReadingType.GYROSCOPE_Y -> gyroscope_y
-            ReadingType.GYROSCOPE_Z -> gyroscope_z
-            ReadingType.BATTERY_LEVEL -> battery_level
-            ReadingType.OTHER -> temperature //TODO: Fix
+            "Temperature" -> temperature
+            "Light" -> light
+            "Humidity" -> humidity
+            "Pressure" -> pressure
+            "Magnetometer X" -> magnetometer_x
+            "Magnetometer Y" -> magnetometer_y
+            "Magnetometer Z" -> magnetometer_z
+            "Accelerometer X" -> accelerometer_x
+            "Accelerometer Y" -> accelerometer_y
+            "Accelerometer Z" -> accelerometer_z
+            "Gyroscope X" -> gyroscope_x
+            "Gyroscope Y" -> gyroscope_y
+            "Gyroscope Z" -> gyroscope_z
+            "Battery Level" -> battery_level
+            else -> temperature //TODO: Fix
         }
     }
 

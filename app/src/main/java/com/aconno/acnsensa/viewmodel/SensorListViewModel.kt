@@ -26,7 +26,7 @@ class SensorListViewModel(
     }
 
     private fun processSensorValues(values: List<Reading>) {
-        sensorValuesLiveData.value = values.associateBy({ it.type.toString() }, { it.value })
+        sensorValuesLiveData.value = values.associateBy({ it.type }, { it.value })
     }
 
     fun getSensorValuesLiveData(): MutableLiveData<Map<String, Number>> {

@@ -4,7 +4,6 @@ import com.aconno.acnsensa.domain.ifttt.Action
 import com.aconno.acnsensa.domain.ifttt.ActionsRepository
 import com.aconno.acnsensa.domain.ifttt.Input
 import com.aconno.acnsensa.domain.ifttt.outcome.Outcome
-import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.domain.interactor.type.SingleUseCaseWithParameter
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -21,7 +20,7 @@ class InputToOutcomesUseCase(
         return Single.fromObservable(observable)
     }
 
-    private val previousConditions: MutableMap<Long, MutableMap<ReadingType, Boolean>> =
+    private val previousConditions: MutableMap<Long, MutableMap<String, Boolean>> =
         mutableMapOf()
 
     private fun actionsToOutcomes(actions: List<Action>, input: Input): List<Outcome> {

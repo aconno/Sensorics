@@ -6,7 +6,6 @@ import android.arch.lifecycle.MutableLiveData
 import android.support.v4.content.ContextCompat
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.domain.interactor.repository.GetReadingsUseCase
-import com.aconno.acnsensa.domain.model.ReadingType
 import com.aconno.acnsensa.model.DataSeriesSettings
 import com.aconno.acnsensa.ui.graph.BleDataSeries
 import com.aconno.acnsensa.ui.graph.BleGraph
@@ -36,7 +35,7 @@ class LiveGraphViewModel(
         when (graphType) {
             GraphType.TEMPERATURE -> {
                 disposable?.dispose()
-                disposable = getReadingsUseCase.execute(ReadingType.TEMPERATURE)
+                disposable = getReadingsUseCase.execute("Temperature")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -48,7 +47,7 @@ class LiveGraphViewModel(
             }
             GraphType.LIGHT -> {
                 disposable?.dispose()
-                disposable = getReadingsUseCase.execute(ReadingType.LIGHT)
+                disposable = getReadingsUseCase.execute("Light")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -60,7 +59,7 @@ class LiveGraphViewModel(
             }
             GraphType.HUMIDITY -> {
                 disposable?.dispose()
-                disposable = getReadingsUseCase.execute(ReadingType.HUMIDITY)
+                disposable = getReadingsUseCase.execute("Humidity")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -72,7 +71,7 @@ class LiveGraphViewModel(
             }
             GraphType.PRESSURE -> {
                 disposable?.dispose()
-                disposable = getReadingsUseCase.execute(ReadingType.PRESSURE)
+                disposable = getReadingsUseCase.execute("Pressure")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -84,7 +83,7 @@ class LiveGraphViewModel(
             }
             GraphType.MAGNETOMETER -> {
                 disposable?.dispose()
-                disposable = getReadingsUseCase.execute(ReadingType.MAGNETOMETER_X)
+                disposable = getReadingsUseCase.execute("Magnetometer X")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -94,7 +93,7 @@ class LiveGraphViewModel(
                         refreshTimestamp.value = System.currentTimeMillis()
                     }
                 disposableY?.dispose()
-                disposableY = getReadingsUseCase.execute(ReadingType.MAGNETOMETER_Y)
+                disposableY = getReadingsUseCase.execute("Magnetometer Y")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -104,7 +103,7 @@ class LiveGraphViewModel(
                         refreshTimestamp.value = System.currentTimeMillis()
                     }
                 disposableZ?.dispose()
-                disposableZ = getReadingsUseCase.execute(ReadingType.MAGNETOMETER_Z)
+                disposableZ = getReadingsUseCase.execute("Magnetometer Z")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -116,7 +115,7 @@ class LiveGraphViewModel(
             }
             GraphType.ACCELEROMETER -> {
                 disposable?.dispose()
-                disposable = getReadingsUseCase.execute(ReadingType.ACCELEROMETER_X)
+                disposable = getReadingsUseCase.execute("Accelerometer X")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -126,7 +125,7 @@ class LiveGraphViewModel(
                         refreshTimestamp.value = System.currentTimeMillis()
                     }
                 disposableY?.dispose()
-                disposableY = getReadingsUseCase.execute(ReadingType.ACCELEROMETER_Y)
+                disposableY = getReadingsUseCase.execute("Accelerometer Y")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -136,7 +135,7 @@ class LiveGraphViewModel(
                         refreshTimestamp.value = System.currentTimeMillis()
                     }
                 disposableZ?.dispose()
-                disposableZ = getReadingsUseCase.execute(ReadingType.ACCELEROMETER_Z)
+                disposableZ = getReadingsUseCase.execute("Accelerometer Z")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -148,7 +147,7 @@ class LiveGraphViewModel(
             }
             GraphType.GYROSCOPE -> {
                 disposable?.dispose()
-                disposable = getReadingsUseCase.execute(ReadingType.GYROSCOPE_X)
+                disposable = getReadingsUseCase.execute("Gyroscope X")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -158,7 +157,7 @@ class LiveGraphViewModel(
                         refreshTimestamp.value = System.currentTimeMillis()
                     }
                 disposableY?.dispose()
-                disposableY = getReadingsUseCase.execute(ReadingType.GYROSCOPE_Y)
+                disposableY = getReadingsUseCase.execute("Gyroscope Y")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -168,7 +167,7 @@ class LiveGraphViewModel(
                         refreshTimestamp.value = System.currentTimeMillis()
                     }
                 disposableZ?.dispose()
-                disposableZ = getReadingsUseCase.execute(ReadingType.GYROSCOPE_Z)
+                disposableZ = getReadingsUseCase.execute("Gyroscope Z")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
@@ -180,7 +179,7 @@ class LiveGraphViewModel(
             }
             GraphType.BATTERY_LEVEL -> {
                 disposable?.dispose()
-                disposable = getReadingsUseCase.execute(ReadingType.BATTERY_LEVEL)
+                disposable = getReadingsUseCase.execute("Battery Level")
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { readings ->
                         val filtered = readings.filter {
