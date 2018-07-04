@@ -17,7 +17,7 @@ class LogReadingUseCase(
     }
 
     private fun logReading(reading: Reading) {
-        val fileName = "${reading.type.toLowerCase()}.csv"
+        val fileName = "${reading.name.toLowerCase()}.csv"
         fileStorage.storeReading(reading, fileName)
     }
 }

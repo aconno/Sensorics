@@ -40,14 +40,14 @@ class DataStringConverter(userDataString: String) {
     }
 
     fun convert(data: Reading): List<String>? {
-        val type = data.type.toLowerCase()
+        val type = data.name.toLowerCase()
         val map = this.map!!
 
         val dataString: String
 
         dataString = if (map.containsKey(type)) {
             map[type]!!.replace(
-                "$" + data.type.toLowerCase(),
+                "$" + data.name.toLowerCase(),
                 data.value.toString()
             )
         } else {
@@ -64,7 +64,7 @@ class DataStringConverter(userDataString: String) {
         return listOf(
             dataString
                 .replace("\$ts", System.currentTimeMillis().toString())
-                .replace("\$name", data.type)
+                .replace("\$name", data.name)
         )
     }
 }

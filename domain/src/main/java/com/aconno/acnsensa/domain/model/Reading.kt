@@ -4,10 +4,10 @@ data class Reading(
     val timestamp: Long,
     val device: Device,
     val value: Number,
-    val type: String
+    val name: String
 ) {
 
     fun toCsvString(): String {
-        return "$timestamp, ${device.macAddress}, $type, $value"
+        return "$timestamp, ${device.macAddress}, $name, $value"
     }
 }

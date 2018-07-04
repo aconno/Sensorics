@@ -53,8 +53,8 @@ class GenericReadingListFragment : Fragment() {
     }
 
     private fun addReadings(readings: List<Reading>) {
-        readings.sortedBy { it.type }.forEach { reading ->
-            val view = views[reading.type]
+        readings.sortedBy { it.name }.forEach { reading ->
+            val view = views[reading.name]
             if (view == null) {
                 val newView =
                     LayoutInflater.from(context).inflate(R.layout.item_reading, null)
@@ -66,13 +66,13 @@ class GenericReadingListFragment : Fragment() {
                         newView.image_reading_icon.setImageResource(iconId)
                     }
                     newView.setOnClickListener {
-                        LiveGraphActivity.start(context, macAddress, reading.type)
+                        LiveGraphActivity.start(context, macAddress, reading.name)
                     }
                 }
-                newView.text_reading_name.text = reading.type
+                newView.text_reading_name.text = reading.name
                 newView.text_reading_value.text = String.format("%.2f", reading.value.toFloat())
                 list_readings.addView(newView)
-                views[reading.type] = newView
+                views[reading.name] = newView
             } else {
                 view.text_reading_value.text = String.format("%.2f", reading.value.toFloat())
             }
