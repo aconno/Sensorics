@@ -23,13 +23,54 @@ class GenerateReadingsUseCase(
                 parameter.macAddress,
                 format.getIcon()
             )
-            val reading = Reading(
-                parameter.timestamp,
-                device,
-                deserializer.deserializeNumber(parameter.rawData, byteFormat),
-                name
-            )
-            sensorReadings.add(reading)
+            if (name.startsWith("Magnetometer")) {
+                val reading = Reading(
+                    parameter.timestamp,
+                    device,
+                    deserializer.deserializeNumber(
+                        parameter.rawData,
+                        byteFormat
+                    ).toFloat() * 0.00014,
+                    name
+                )
+                sensorReadings.add(reading)
+            } else if (name.startsWith("Accelerometer")) {
+                val scaleFactorFormat = format.getFormat()["Accelerometer Scale Factor"]
+                scaleFactorFormat?.let {
+                    val reading = Reading(
+                        parameter.timestamp,
+                        device,
+                        deserializer.deserializeNumber(
+                            parameter.rawData,
+                            byteFormat
+                        ).toFloat() * deserializer.deserializeNumber(
+                            parameter.rawData,
+                            scaleFactorFormat
+                        ).toFloat() / 65536,
+                        name
+                    )
+                    sensorReadings.add(reading)
+                }
+            } else if (name.startsWith("Gyroscope")) {
+                val reading = Reading(
+                    parameter.timestamp,
+                    device,
+                    deserializer.deserializeNumber(
+                        parameter.rawData,
+                        byteFormat
+                    ).toFloat() * 245 / 32768,
+                    name
+                )
+                sensorReadings.add(reading)
+            } else {
+                val reading = Reading(
+                    parameter.timestamp,
+                    device,
+                    deserializer.deserializeNumber(parameter.rawData, byteFormat),
+                    name
+                )
+                sensorReadings.add(reading)
+            }
         }
         return Single.just(sensorReadings)
     }
