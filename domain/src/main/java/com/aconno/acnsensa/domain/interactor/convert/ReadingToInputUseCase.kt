@@ -13,7 +13,7 @@ class ReadingToInputUseCase : SingleUseCaseWithParameter<List<Input>, List<Readi
             GeneralInput(
                 it.device.macAddress,
                 it.value.toFloat(),
-                it.type,
+                it.name,
                 it.timestamp
             )
         })

@@ -1,5 +1,6 @@
-package com.aconno.acnsensa.viewmodel
+package com.aconno.acnsensa.ui.readings
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
@@ -8,28 +9,28 @@ import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
-class SensorListViewModel(
+class ReadingListViewModel(
     private val readingsStream: Flowable<List<Reading>>,
     private val filterByMacUseCase: FilterByMacUseCase
 ) : ViewModel() {
 
-    private val sensorValuesLiveData: MutableLiveData<Map<String, Number>> = MutableLiveData()
-
     private var disposable: Disposable? = null
 
-    fun setMacAddress(macAddress: String) {
+    private val readingsLiveData = MutableLiveData<List<Reading>>()
+
+    fun getReadingsLiveData(): LiveData<List<Reading>> {
+        return readingsLiveData
+    }
+
+    fun init(macAddress: String) {
         disposable?.dispose()
         disposable = readingsStream
             .observeOn(AndroidSchedulers.mainThread())
             .concatMap { filterByMacUseCase.execute(it, macAddress).toFlowable() }
-            .subscribe { processSensorValues(it) }
+            .subscribe { updateLiveData(it) }
     }
 
-    private fun processSensorValues(values: List<Reading>) {
-        sensorValuesLiveData.value = values.associateBy({ it.name }, { it.value })
-    }
-
-    fun getSensorValuesLiveData(): MutableLiveData<Map<String, Number>> {
-        return sensorValuesLiveData
+    private fun updateLiveData(readings: List<Reading>) {
+        readingsLiveData.value = readings
     }
 }

@@ -1,6 +1,8 @@
 package com.aconno.acnsensa.ui.settings.publishers
 
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,13 +62,13 @@ class DeviceSelectFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_devices, container, false)
-        val listView = view.findViewById<ListView>(R.id.list_devices)
+        val listView = view.findViewById<RecyclerView>(R.id.list_devices)
 
         adapter = DeviceSelectAdapter(
-            context!!,
             deviceList,
             itemCheckChangeListener
         )
+        listView.layoutManager = LinearLayoutManager(context)
         listView.adapter = adapter
         listView.isNestedScrollingEnabled = true
 

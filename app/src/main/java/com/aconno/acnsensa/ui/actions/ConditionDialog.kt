@@ -7,14 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.acnsensa.R
-import com.aconno.acnsensa.domain.model.ReadingType
 import kotlinx.android.synthetic.main.dialog_condition.*
 
 class ConditionDialog : DialogFragment() {
 
     private lateinit var listener: ConditionDialogListener
 
-    private var sensorType: ReadingType? = null
+    private var sensorType: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -85,17 +84,16 @@ class ConditionDialog : DialogFragment() {
 
         private const val TYPE_EXTRA = "type_extra"
 
-        fun newInstance(readingType: ReadingType): ConditionDialog {
+        fun newInstance(readingType: String): ConditionDialog {
             val dialog = ConditionDialog()
             val args = Bundle()
-            args.putString(TYPE_EXTRA, readingType.name)
+            args.putString(TYPE_EXTRA, readingType)
             dialog.arguments = args
             return dialog
         }
 
-        private fun getSensorTypeExtra(args: Bundle): ReadingType {
-            val name = args.getString(TYPE_EXTRA)
-            return ReadingType.valueOf(name)
+        private fun getSensorTypeExtra(args: Bundle): String {
+            return args.getString(TYPE_EXTRA)
         }
     }
 }

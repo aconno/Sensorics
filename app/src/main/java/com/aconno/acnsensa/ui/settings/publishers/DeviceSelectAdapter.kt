@@ -1,66 +1,44 @@
 package com.aconno.acnsensa.ui.settings.publishers
 
-import android.content.Context
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.CheckBox
-import android.widget.Switch
-import android.widget.TextView
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.model.DeviceRelationModel
+import kotlinx.android.synthetic.main.item_device_switch.view.*
 
 
 class DeviceSelectAdapter(
-    context: Context,
-    itemList: List<DeviceRelationModel>,
+    private val itemList: List<DeviceRelationModel>,
     private val itemCheckChangeListener: ItemCheckChangeListener? = null
-) :
-    ArrayAdapter<DeviceRelationModel>(context, 0, itemList) {
+) : RecyclerView.Adapter<DeviceSelectAdapter.ViewHolder>() {
 
-    // View lookup cache
-    private class ViewHolder {
-        internal var nameView: TextView? = null
-        internal var macAddressView: TextView? = null
-        internal var checkBoxView: Switch? = null
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_device_switch, parent, false)
+        return ViewHolder(view)
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
-        // Get the data item for this position
-        val deviceRelationModel = getItem(position)
-        // Check if an existing view is being reused, otherwise inflate the view
-        val viewHolder: ViewHolder // view lookup cache stored in tag
-        if (convertView == null) {
-            viewHolder = ViewHolder()
-            val inflater = LayoutInflater.from(context)
-            convertView = inflater.inflate(R.layout.item_device_switch, parent, false)
-            viewHolder.macAddressView = convertView!!.findViewById(R.id.mac_address)
-            viewHolder.nameView = convertView.findViewById(R.id.name)
-            viewHolder.checkBoxView = convertView.findViewById(R.id.switch_device)
-            // Cache the viewHolder object inside the fresh view
-            convertView.tag = viewHolder
-        } else {
-            // View is being recycled, retrieve the viewHolder object from tag
-            viewHolder = convertView.tag as ViewHolder
-        }
+    override fun getItemCount(): Int {
+        return itemList.size
+    }
 
-        viewHolder.checkBoxView!!.setOnCheckedChangeListener(null)
-        // Populate the data from the data object via the viewHolder object
-        // into the template view.
-        viewHolder.macAddressView!!.text = deviceRelationModel.name
-        viewHolder.nameView!!.text = deviceRelationModel.macAddress
-        viewHolder.checkBoxView!!.isChecked = deviceRelationModel.related
-        // Return the completed view to render on screen
-
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(itemList[position])
         itemCheckChangeListener?.let {
-            viewHolder.checkBoxView!!.setOnCheckedChangeListener { _, isChecked ->
+            holder.view.switch_device!!.setOnCheckedChangeListener { _, isChecked ->
                 it.onItemCheckedChange(position, isChecked)
             }
         }
+    }
 
-        return convertView
+    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        fun bind(deviceRelationModel: DeviceRelationModel) {
+            view.name.text = deviceRelationModel.name
+            view.mac_address.text = deviceRelationModel.macAddress
+            view.switch_device.isChecked = deviceRelationModel.related
+        }
     }
 
     interface ItemCheckChangeListener {
