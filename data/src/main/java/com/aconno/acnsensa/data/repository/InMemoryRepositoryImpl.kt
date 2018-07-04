@@ -12,16 +12,16 @@ class InMemoryRepositoryImpl : InMemoryRepository {
     private val subjects = hashMapOf<String, PublishSubject<List<Reading>>>()
 
     override fun addReading(reading: Reading) {
-        if (!buffers.containsKey(reading.type)) {
-            buffers[reading.type] = CopyOnWriteArrayList()
+        if (!buffers.containsKey(getKey(reading))) {
+            buffers[getKey(reading)] = CopyOnWriteArrayList()
         }
-        val buffer = buffers[reading.type]
+        val buffer = buffers[getKey(reading)]
         buffer?.let { addToBuffer(reading, buffer) }
 
-        if (!subjects.containsKey(reading.type)) {
-            subjects[reading.type] = PublishSubject.create()
+        if (!subjects.containsKey(getKey(reading))) {
+            subjects[getKey(reading)] = PublishSubject.create()
         }
-        val subject = subjects[reading.type]
+        val subject = subjects[getKey(reading)]
         subject?.let { buffer?.let { subject.onNext(buffer) } }
     }
 
@@ -32,12 +32,20 @@ class InMemoryRepositoryImpl : InMemoryRepository {
         readings.add(reading)
     }
 
-    override fun getReadingsFor(type: String): Observable<List<Reading>> {
-        return subjects[type] ?: Observable.empty()
+    override fun getReadingsFor(macAddress: String, type: String): Observable<List<Reading>> {
+        return subjects[getKey(macAddress, type)] ?: Observable.empty()
     }
 
     override fun deleteAllReadings() {
         buffers.values.forEach { it.clear() }
+    }
+
+    private fun getKey(reading: Reading): String {
+        return "${reading.device.macAddress}${reading.type}"
+    }
+
+    private fun getKey(macAddress: String, readingName: String): String {
+        return "$macAddress$readingName"
     }
 
     companion object {

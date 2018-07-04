@@ -33,44 +33,32 @@ class LiveGraphViewModel(
 
         if (graphName in vectorGraphs) {
             disposable?.dispose()
-            disposable = getReadingsUseCase.execute("$graphName X")
+            disposable = getReadingsUseCase.execute(macAddress, "$graphName X")
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { readings ->
-                    val filtered = readings.filter {
-                        it.device.macAddress == macAddress
-                    }
-                    xDataSeries.updateDataSet(filtered)
+                .subscribe {
+                    xDataSeries.updateDataSet(it)
                     refreshTimestamp.value = System.currentTimeMillis()
                 }
             disposableY?.dispose()
-            disposableY = getReadingsUseCase.execute("$graphName Y")
+            disposableY = getReadingsUseCase.execute(macAddress, "$graphName Y")
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { readings ->
-                    val filtered = readings.filter {
-                        it.device.macAddress == macAddress
-                    }
-                    yDataSeries.updateDataSet(filtered)
+                .subscribe {
+                    yDataSeries.updateDataSet(it)
                     refreshTimestamp.value = System.currentTimeMillis()
                 }
             disposableZ?.dispose()
-            disposableZ = getReadingsUseCase.execute("$graphName Z")
+            disposableZ = getReadingsUseCase.execute(macAddress, "$graphName Z")
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { readings ->
-                    val filtered = readings.filter {
-                        it.device.macAddress == macAddress
-                    }
-                    zDataSeries.updateDataSet(filtered)
+                .subscribe {
+                    zDataSeries.updateDataSet(it)
                     refreshTimestamp.value = System.currentTimeMillis()
                 }
         } else {
             disposable?.dispose()
-            disposable = getReadingsUseCase.execute(graphName)
+            disposable = getReadingsUseCase.execute(macAddress, graphName)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { readings ->
-                    val filtered = readings.filter {
-                        it.device.macAddress == macAddress
-                    }
-                    dataSeries.updateDataSet(filtered)
+                .subscribe {
+                    dataSeries.updateDataSet(it)
                     refreshTimestamp.value = System.currentTimeMillis()
                 }
         }

@@ -7,7 +7,7 @@ interface InMemoryRepository {
 
     fun addReading(reading: Reading)
 
-    fun getReadingsFor(type: String): Observable<List<Reading>>
+    fun getReadingsFor(macAddress: String, type: String): Observable<List<Reading>>
 
     fun deleteAllReadings()
 }
