@@ -6,15 +6,19 @@ import com.aconno.acnsensa.BluetoothStateReceiver
 import com.aconno.acnsensa.device.permissons.PermissionActionFactory
 import com.aconno.acnsensa.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.acnsensa.domain.interactor.repository.DeleteDeviceUseCase
-import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.acnsensa.domain.interactor.repository.SaveDeviceUseCase
-import com.aconno.acnsensa.domain.model.Device
+import com.aconno.acnsensa.domain.model.Reading
 import com.aconno.acnsensa.domain.repository.DeviceRepository
 import com.aconno.acnsensa.domain.scanning.Bluetooth
 import com.aconno.acnsensa.ui.MainActivity
+import com.aconno.acnsensa.ui.readings.ReadingListViewModel
+import com.aconno.acnsensa.ui.readings.ReadingListViewModelFactory
 import com.aconno.acnsensa.viewmodel.*
-import com.aconno.acnsensa.viewmodel.factory.*
+import com.aconno.acnsensa.viewmodel.factory.BluetoothScanningViewModelFactory
+import com.aconno.acnsensa.viewmodel.factory.BluetoothViewModelFactory
+import com.aconno.acnsensa.viewmodel.factory.DeviceListViewModelFactory
+import com.aconno.acnsensa.viewmodel.factory.SensorListViewModelFactory
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
@@ -34,6 +38,22 @@ class MainActivityModule(private val mainActivity: MainActivity) {
         readingsStream: Flowable<List<Reading>>,
         filterByMacUseCase: FilterByMacUseCase
     ) = SensorListViewModelFactory(
+        readingsStream,
+        filterByMacUseCase
+    )
+
+    @Provides
+    @MainActivityScope
+    fun provideReadingListViewModel(readingListViewModelFactory: ReadingListViewModelFactory) =
+        ViewModelProviders.of(mainActivity, readingListViewModelFactory)
+            .get(ReadingListViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideReadingListViewModelFactory(
+        readingsStream: Flowable<List<Reading>>,
+        filterByMacUseCase: FilterByMacUseCase
+    ) = ReadingListViewModelFactory(
         readingsStream,
         filterByMacUseCase
     )
@@ -113,7 +133,11 @@ class MainActivityModule(private val mainActivity: MainActivity) {
         saveDeviceUseCase: SaveDeviceUseCase,
         deleteDeviceUseCase: DeleteDeviceUseCase
     ): DeviceListViewModelFactory {
-        return DeviceListViewModelFactory(getSavedDevicesUseCase, saveDeviceUseCase,deleteDeviceUseCase)
+        return DeviceListViewModelFactory(
+            getSavedDevicesUseCase,
+            saveDeviceUseCase,
+            deleteDeviceUseCase
+        )
     }
 
     @Provides

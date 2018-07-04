@@ -132,7 +132,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
     override fun onItemClick(item: Device) {
         activity?.let {
             val mainActivity = it as MainActivity
-            mainActivity.showSensorValues(item.macAddress)
+            mainActivity.showSensorValues(item)
         }
     }
 }

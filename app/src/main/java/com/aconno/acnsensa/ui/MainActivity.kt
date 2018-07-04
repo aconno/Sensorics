@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -23,6 +24,7 @@ import com.aconno.acnsensa.model.AcnSensaPermission
 import com.aconno.acnsensa.ui.devices.SavedDevicesFragment
 import com.aconno.acnsensa.ui.devices.SavedDevicesFragmentListener
 import com.aconno.acnsensa.ui.dialogs.ScannedDevicesDialogListener
+import com.aconno.acnsensa.ui.readings.GenericReadingListFragment
 import com.aconno.acnsensa.ui.sensors.SensorListFragment
 import com.aconno.acnsensa.ui.settings.SettingsActivity
 import com.aconno.acnsensa.viewmodel.BluetoothScanningViewModel
@@ -160,11 +162,21 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         }
     }
 
-    fun showSensorValues(macAddress: String) {
+    fun showSensorValues(device: Device) {
         supportFragmentManager.beginTransaction()
-            .replace(content_container.id, SensorListFragment.newInstance(macAddress))
+            .replace(
+                content_container.id,
+                getReadingListFragment(device)
+            )
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun getReadingListFragment(device: Device): Fragment {
+        return when (device.name) {
+            "AcnSensa" -> SensorListFragment.newInstance(device.macAddress)
+            else -> GenericReadingListFragment.newInstance(device.macAddress)
+        }
     }
 
     private fun showSavedDevicesFragment() {
