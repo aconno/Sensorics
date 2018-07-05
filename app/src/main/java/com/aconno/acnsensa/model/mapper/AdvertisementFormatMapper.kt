@@ -35,7 +35,7 @@ class AdvertisementFormatMapper {
         return ByteFormat(
             byteFormatModel.name,
             byteFormatModel.startIndexInclusive,
-            byteFormatModel.endIndexInclusive,
+            byteFormatModel.endIndexExclusive,
             byteFormatModel.reversed,
             byteFormatModel.dataType
         )
