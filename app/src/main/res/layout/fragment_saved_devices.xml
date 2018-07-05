@@ -17,7 +17,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/no_devices_label" />
+        android:gravity="center"
+        android:ems="15"
+        android:text="@string/no_devices_plus_button_label" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/button_add_device"

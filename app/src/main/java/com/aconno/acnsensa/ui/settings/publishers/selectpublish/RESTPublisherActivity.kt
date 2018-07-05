@@ -179,6 +179,7 @@ class RESTPublisherActivity : BaseActivity() {
                 when (position) {
                     0 -> layout_text_http_get.visibility = View.VISIBLE
                     1 -> layout_text_http_get.visibility = View.GONE
+                    2 -> layout_text_http_get.visibility = View.GONE
                 }
             }
         }
@@ -219,7 +220,8 @@ class RESTPublisherActivity : BaseActivity() {
         edit_datastring.setText(restPublishModel?.dataString)
 
         edit_url.setText(restPublishModel!!.url)
-        val selection = if (restPublishModel!!.method == "GET") 0 else 1
+        val selection =
+            if (restPublishModel!!.method == "GET") 0 else if (restPublishModel!!.method == "POST") 1 else 2
         spinner_methods.setSelection(selection)
 
         addDisposable(

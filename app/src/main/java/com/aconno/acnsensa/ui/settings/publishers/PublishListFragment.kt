@@ -47,7 +47,7 @@ class PublishListFragment : BaseFragment(),
     private var listBasePublish: MutableList<BasePublishModel> = mutableListOf()
     private var selectedItem: BasePublishModel? = null
 
-    var dialogClickListener: DialogInterface.OnClickListener =
+    private var dialogClickListener: DialogInterface.OnClickListener =
         DialogInterface.OnClickListener { dialog, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
