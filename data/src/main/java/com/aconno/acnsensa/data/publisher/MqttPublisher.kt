@@ -111,8 +111,7 @@ class MqttPublisher(
                     if (testConnectionCallback != null) {
                         testConnectionCallback?.onConnectionSuccess()
                         testConnectionCallback = null
-                        mqttAndroidClient.close()
-                        mqttAndroidClient.disconnect()
+                        closeConnection()
                     }
                 }
 
@@ -149,8 +148,13 @@ class MqttPublisher(
     }
 
     override fun closeConnection() {
-        mqttAndroidClient.unregisterResources()
-        mqttAndroidClient.close()
+        try {
+            mqttAndroidClient.unregisterResources()
+            mqttAndroidClient.close()
+            mqttAndroidClient.disconnect()
+        } catch (ex: Exception) {
+            //Do-Nothing
+        }
     }
 
     companion object {
