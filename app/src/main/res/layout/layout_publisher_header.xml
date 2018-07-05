@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:gravity="center"
-                android:hint="@string/publish_sec"
+                android:hint="@string/sending_interval"
                 android:inputType="numberDecimal"
                 tools:text="123" />
 

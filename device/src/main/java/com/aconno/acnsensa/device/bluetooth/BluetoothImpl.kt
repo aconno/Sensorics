@@ -27,7 +27,7 @@ class BluetoothImpl(
     private val scanEvents: PublishSubject<ScanEvent> = PublishSubject.create()
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvents)
 
-    private fun getScanSettings(): Pair<List<ScanFilter>?, ScanSettings> {
+    private fun getScanSettings(): Pair<List<ScanFilter>, ScanSettings> {
         val settingsBuilder = ScanSettings.Builder()
 
         val scanMode = sharedPrefs.getString("scan_mode", "3").toInt()
@@ -39,21 +39,11 @@ class BluetoothImpl(
         //TODO Fast Scan
         settingsBuilder.setReportDelay(0)
 
-        val scanInBackground = sharedPrefs.getBoolean("scan_background", true)
-        //Note: This is only for Andorid 8.1.0. TODO Implementation for prior 8.1.0
-        //https://stackoverflow.com/questions/48077690/ble-scan-is-not-working-when-screen-is-off-on-android-8-1-0/48079800#48079800
-        return if (scanInBackground) {
-            val scanFilterBuilder = ScanFilter.Builder()
-            Pair<List<ScanFilter>?, ScanSettings>(
-                listOf(scanFilterBuilder.build()),
-                settingsBuilder.build()
-            )
-        } else {
-            Pair<List<ScanFilter>?, ScanSettings>(
-                null,
-                settingsBuilder.build()
-            )
-        }
+        val scanFilterBuilder = ScanFilter.Builder()
+        return Pair<List<ScanFilter>, ScanSettings>(
+            listOf(scanFilterBuilder.build()),
+            settingsBuilder.build()
+        )
     }
 
     override fun enable() {

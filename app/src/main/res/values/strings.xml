@@ -115,7 +115,7 @@
     <string name="preference_summary_projectid">Project ID Summary</string>
     <string name="preference_title_projectid">Project ID</string>
     <string name="preference_gcloud_title">Google Cloud On/Off</string>
-    <string name="title_publish_list">Publishers</string>
+    <string name="title_publish_list">Backends</string>
     <string name="title_publish_detail">Publish Detail</string>
 
     <string-array name="SettingsScanMode">
@@ -169,9 +169,10 @@
     <string name="rest_method_get">GET</string>
     <string name="url">URL</string>
     <string name="publish_day">Days</string>
-    <string name="publish_hour">Hours</string>
-    <string name="publish_min">Mins</string>
-    <string name="publish_sec">Secs</string>
+    <string name="publish_hour">Hour</string>
+    <string name="publish_min">Min</string>
+    <string name="publish_sec">Sec</string>
+    <string name="sending_interval">Sending Interval</string>
     <string name="last_data_sent">Last data sent at : </string>
     <string name="snackbar_stop_scanning">Please stop scanning first</string>
     <string name="test">Test</string>
@@ -215,7 +216,7 @@
     <string name="dataStringHint">211,$temperature\n212,$battery</string>
     <string name="publisher_info_text"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$name</i> => key \n<i>$value</i> => sensor value \n<b>Specific Values:</b> \n<i>$temperature,$light,$battery_level</i> etc.</string>
     <string name="publisher_info_title">Info</string>
-    <string name="okey">Okey</string>
+    <string name="okey">Close</string>
     <string name="title_select_publish">Select Publisher</string>
     <string name="title_settings">Settings</string>
     <string name="default_data_string">

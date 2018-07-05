@@ -36,7 +36,6 @@
         <activity
             android:name=".ui.settings.publishers.PublishListActivity"
             android:label="@string/title_publish_list" />
-        <activity android:name=".ui.settings.publishers.AddPublishActivity" />
         <activity
             android:name=".ui.settings.publishers.rheader.RESTHeadersActivity"
             android:label="@string/title_activity_rest_header"
