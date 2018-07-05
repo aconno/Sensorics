@@ -41,20 +41,24 @@
             android:layout_marginTop="12dp"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/edit_interval_count"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:gravity="center"
-                android:hint="@string/sending_interval"
-                android:inputType="numberDecimal"
-                tools:text="123" />
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edit_interval_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/sending_interval"
+                    android:inputType="numberDecimal"
+                    tools:text="123" />
+            </android.support.design.widget.TextInputLayout>
 
             <Spinner
                 android:id="@+id/spinner_interval_time"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="53dp"
                 android:entries="@array/PublishIntervals" />
         </LinearLayout>
 

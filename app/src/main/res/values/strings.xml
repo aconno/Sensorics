@@ -89,7 +89,8 @@
     <string name="service_notification_content">AcnSensa is scanning</string>
     <string name="conditions">Conditions</string>
     <string name="outcomes">Outcomes</string>
-    <string name="set_action_hint">To set an action click on + button.</string>
+    <string name="set_action_hint">There are no actions.\nPress plus (+) to add a new action.</string>
+    <string name="no_rest_headers">There are no headers.\nPress plus (+) to add a new header.</string>
     <string name="text_to_speech">Text to Speech</string>
     <string name="notification">Notification</string>
     <string name="sms">SMS</string>
@@ -142,7 +143,7 @@
 
     <!-- Device list screen -->
     <string name="no_devices_label">There are no devices.</string>
-    <string name="no_devices_plus_button_label">There are no devices. Press on plus(+) button to add new device.</string>
+    <string name="no_devices_plus_button_label">There are no devices.\nPress plus (+) to add a new device.</string>
     <string name="no_scanned_devices_label">There are no scanned devices.\nStart scanning…</string>
 
     <string-array name="RESTMethods">
@@ -225,7 +226,8 @@
     <string name="default_data_string">
         {\"value\" : \"$value\",\"timestamp\" : \"$ts\",\"type\" : \"$name\"}
     </string>
-    <string name="no_publishers_found">There are no backends. Press on plus(+) button to add new backend.</string>
+    <string name="no_publishers_found">There are no backends.\nPress plus (+) to add a new backend.</string>
+    <string name="no_devices_found">There are no saved devices.</string>
 
     <string-array name="header_keys">
         <item>A-IM</item>
