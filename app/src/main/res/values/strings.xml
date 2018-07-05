@@ -225,7 +225,7 @@
     <string name="default_data_string">
         {\"value\" : \"$value\",\"timestamp\" : \"$ts\",\"type\" : \"$name\"}
     </string>
-    <string name="no_publishers_found">No Publishers Found</string>
+    <string name="no_publishers_found">There are no backends. Press on plus(+) button to add new backend.</string>
 
     <string-array name="header_keys">
         <item>A-IM</item>

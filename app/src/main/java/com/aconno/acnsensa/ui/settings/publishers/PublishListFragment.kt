@@ -180,6 +180,9 @@ class PublishListFragment : BaseFragment(),
             listBasePublish.remove(selectedItem!!)
             rvAdapter.notifyItemRemoved(index)
 
+            if (listBasePublish.isEmpty()) {
+                empty_view.visibility = View.VISIBLE
+            }
             //Let GC collect removed instance
             selectedItem = null
         }
