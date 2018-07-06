@@ -14,6 +14,7 @@ android {
         versionCode rootProject.ext.acnSensaVersionCode
         versionName rootProject.ext.acnSensaVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
 
@@ -29,6 +30,10 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
     }
 }
 
