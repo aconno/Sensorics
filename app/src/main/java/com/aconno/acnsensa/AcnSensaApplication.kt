@@ -7,6 +7,9 @@ import com.aconno.acnsensa.dagger.application.DaggerAppComponent
 import com.aconno.acnsensa.model.mapper.AdvertisementFormatMapper
 import com.squareup.leakcanary.LeakCanary
 import timber.log.Timber
+import com.crashlytics.android.Crashlytics
+import io.fabric.sdk.android.Fabric
+
 
 /**
  * @author aconno
@@ -24,6 +27,7 @@ class AcnSensaApplication : Application() {
         }
         LeakCanary.install(this)
         Timber.plant(Timber.DebugTree())
+        Fabric.with(this, Crashlytics())
 
         val mapper = AdvertisementFormatMapper()
         val reader = AdvertisementFormatReader()

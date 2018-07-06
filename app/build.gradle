@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 27
@@ -83,8 +84,14 @@ dependencies {
 
     // Gson
     implementation 'com.google.code.gson:gson:2.8.5'
+
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
+        transitive = true
+    }
+
 }
 
 repositories {
     maven { url 'https://jitpack.io' }
+    maven { url 'https://maven.fabric.io/public' }
 }
