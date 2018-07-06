@@ -21,7 +21,7 @@
             android:labelFor="@id/edit_key"
             android:text="@string/key" />
 
-        <com.aconno.acnsensa.ui.KeyboardAutoCompleteTextView
+        <com.aconno.sensorics.ui.KeyboardAutoCompleteTextView
             android:id="@+id/edit_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- MainActivity -->
-    <string name="app_name">AcnSensaDroid</string>
+    <string name="app_name">Sensorics</string>
     <string name="start_scan">Scan starten</string>
     <string name="stop_scan">Scan stoppen</string>
     <string name="actions">Aktionen</string>
@@ -84,8 +84,8 @@
     <string name="battery_level_graph_label">Akkudiagramm</string>
 
     <string name="sensor_card_image_content_description">Bild der Sensorkarte</string>
-    <string name="service_notification_title">AcnSensa</string>
-    <string name="service_notification_content">AcnSensa scannt</string>
+    <string name="service_notification_title">Sensorics</string>
+    <string name="service_notification_content">Sensorics scannt</string>
 
     <string name="conditions">Bedingungen</string>
     <string name="outcomes">Ergebnisse</string>
