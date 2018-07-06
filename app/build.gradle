@@ -7,12 +7,12 @@ apply plugin: 'io.fabric'
 android {
     compileSdkVersion 27
     defaultConfig {
-        manifestPlaceholders = [fabricAPIKey:ACNSensa_fabricKey]
-        applicationId "com.aconno.acnsensa"
+        manifestPlaceholders = [fabricAPIKey:sensorics_fabricKey]
+        applicationId "com.aconno.sensorics"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode rootProject.ext.acnSensaVersionCode
-        versionName rootProject.ext.acnSensaVersionName
+        versionCode rootProject.ext.sensoricsVersionCode
+        versionName rootProject.ext.sensoricsVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -21,7 +21,7 @@ android {
         debug {
             applicationVariants.all { variant ->
                 variant.outputs.all {
-                    outputFileName = "acnsensa-${defaultConfig.versionName}-${variant.buildType.name}.apk"
+                    outputFileName = "sensorics-${defaultConfig.versionName}-${variant.buildType.name}.apk"
                 }
             }
         }

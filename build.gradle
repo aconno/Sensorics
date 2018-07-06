@@ -29,8 +29,8 @@ task clean(type: Delete) {
 }
 
 ext {
-    acnSensaVersionCode = 11
-    acnSensaVersionName = '3.0.2'
+    sensoricsVersionCode = 11
+    sensoricsVersionName = '3.0.2'
 
     supportLibraryVersion = '27.1.1'
 

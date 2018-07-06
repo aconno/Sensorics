@@ -1,6 +1,6 @@
 <resources>
     <!-- MainActivity -->
-    <string name="app_name">AcnSensaDroid</string>
+    <string name="app_name">Sensorics</string>
     <string name="start_scan">Start scan</string>
     <string name="stop_scan">Stop scan</string>
     <string name="actions">Actions</string>
@@ -85,8 +85,8 @@
 
     <string name="sensor_card_image_content_description">Sensor card image</string>
 
-    <string name="service_notification_title">AcnSensa</string>
-    <string name="service_notification_content">AcnSensa is scanning</string>
+    <string name="service_notification_title">Sensorics</string>
+    <string name="service_notification_content">Sensorics is scanning</string>
     <string name="conditions">Conditions</string>
     <string name="outcomes">Outcomes</string>
     <string name="set_action_hint">There are no actions.\nPress plus (+) to add a new action.</string>

@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode rootProject.ext.acnSensaVersionCode
-        versionName rootProject.ext.acnSensaVersionName
+        versionCode rootProject.ext.sensoricsVersionCode
+        versionName rootProject.ext.sensoricsVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
