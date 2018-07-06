@@ -18,13 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.LiveGraphActivity" />
         <activity android:name=".ui.ActionListActivity" />
         <activity android:name=".ui.actions.AddActionActivity" />
@@ -59,6 +53,14 @@
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_settings"
             android:theme="@style/SettingsTheme" />
+
+        <activity android:name=".ui.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="io.fabric.ApiKey"
