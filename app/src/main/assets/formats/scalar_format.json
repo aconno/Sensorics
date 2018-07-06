@@ -5,35 +5,35 @@
     {
       "name": "Temperature",
       "start_index_inclusive": 10,
-      "end_index_inclusive": 14,
+      "end_index_exclusive": 14,
       "reversed": true,
       "data_type": "FLOAT"
     },
     {
       "name": "Humidity",
       "start_index_inclusive": 14,
-      "end_index_inclusive": 18,
+      "end_index_exclusive": 18,
       "reversed": true,
       "data_type": "FLOAT"
     },
     {
       "name": "Pressure",
       "start_index_inclusive": 18,
-      "end_index_inclusive": 22,
+      "end_index_exclusive": 22,
       "reversed": true,
       "data_type": "FLOAT"
     },
     {
       "name": "Light",
       "start_index_inclusive": 22,
-      "end_index_inclusive": 26,
+      "end_index_exclusive": 26,
       "reversed": true,
       "data_type": "FLOAT"
     },
     {
       "name": "Battery Level",
       "start_index_inclusive": 26,
-      "end_index_inclusive": 27,
+      "end_index_exclusive": 27,
       "reversed": false,
       "data_type": "BYTE"
     }

@@ -89,7 +89,8 @@
     <string name="service_notification_content">AcnSensa is scanning</string>
     <string name="conditions">Conditions</string>
     <string name="outcomes">Outcomes</string>
-    <string name="set_action_hint">To set an action click on + button.</string>
+    <string name="set_action_hint">There are no actions.\nPress plus (+) to add a new action.</string>
+    <string name="no_rest_headers">There are no headers.\nPress plus (+) to add a new header.</string>
     <string name="text_to_speech">Text to Speech</string>
     <string name="notification">Notification</string>
     <string name="sms">SMS</string>
@@ -115,7 +116,7 @@
     <string name="preference_summary_projectid">Project ID Summary</string>
     <string name="preference_title_projectid">Project ID</string>
     <string name="preference_gcloud_title">Google Cloud On/Off</string>
-    <string name="title_publish_list">Publishers</string>
+    <string name="title_publish_list">Backends</string>
     <string name="title_publish_detail">Publish Detail</string>
 
     <string-array name="SettingsScanMode">
@@ -141,12 +142,14 @@
     </string-array>
 
     <!-- Device list screen -->
-    <string name="no_devices_label">There are no devices</string>
+    <string name="no_devices_label">There are no devices.</string>
+    <string name="no_devices_plus_button_label">There are no devices.\nPress plus (+) to add a new device.</string>
     <string name="no_scanned_devices_label">There are no scanned devices.\nStart scanning…</string>
 
     <string-array name="RESTMethods">
         <item>@string/rest_method_get</item>
         <item>@string/rest_method_post</item>
+        <item>@string/rest_method_put</item>
     </string-array>
 
     <string-array name="PublishIntervals">
@@ -167,11 +170,13 @@
     <string name="not_valid_file_pkcs8">Selected File is not valid PKCS8 FIle.</string>
     <string name="rest_method_post">POST</string>
     <string name="rest_method_get">GET</string>
+    <string name="rest_method_put">PUT</string>
     <string name="url">URL</string>
     <string name="publish_day">Days</string>
-    <string name="publish_hour">Hours</string>
-    <string name="publish_min">Mins</string>
-    <string name="publish_sec">Secs</string>
+    <string name="publish_hour">Hour</string>
+    <string name="publish_min">Min</string>
+    <string name="publish_sec">Sec</string>
+    <string name="sending_interval">Sending Interval</string>
     <string name="last_data_sent">Last data sent at : </string>
     <string name="snackbar_stop_scanning">Please stop scanning first</string>
     <string name="test">Test</string>
@@ -215,13 +220,14 @@
     <string name="dataStringHint">211,$temperature\n212,$battery</string>
     <string name="publisher_info_text"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$name</i> => key \n<i>$value</i> => sensor value \n<b>Specific Values:</b> \n<i>$temperature,$light,$battery_level</i> etc.</string>
     <string name="publisher_info_title">Info</string>
-    <string name="okey">Okey</string>
+    <string name="okey">Close</string>
     <string name="title_select_publish">Select Publisher</string>
     <string name="title_settings">Settings</string>
     <string name="default_data_string">
         {\"value\" : \"$value\",\"timestamp\" : \"$ts\",\"type\" : \"$name\"}
     </string>
-    <string name="no_publishers_found">No Publishers Found</string>
+    <string name="no_publishers_found">There are no backends.\nPress plus (+) to add a new backend.</string>
+    <string name="no_devices_found">There are no saved devices.</string>
 
     <string-array name="header_keys">
         <item>A-IM</item>

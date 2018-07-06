@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.aconno.acnsensa.R
 import com.aconno.acnsensa.adapter.LongItemClickListener
 import com.aconno.acnsensa.model.RESTHeaderModel
@@ -24,7 +25,7 @@ class RESTHeadersActivity : AppCompatActivity(),
     private var onItemClickListener: ItemClickListenerWithPos<RESTHeaderModel>
     private var selectedItem: RESTHeaderModel? = null
 
-    var dialogClickListener: DialogInterface.OnClickListener =
+    private var dialogClickListener: DialogInterface.OnClickListener =
         DialogInterface.OnClickListener { dialog, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
@@ -68,6 +69,10 @@ class RESTHeadersActivity : AppCompatActivity(),
     }
 
     private fun initView() {
+        if (headers.isNotEmpty()) {
+            empty_view.visibility = View.GONE
+        }
+
         rvAdapter = RESTHeadersAdapter(
             headers,
             onItemClickListener, this
@@ -132,6 +137,9 @@ class RESTHeadersActivity : AppCompatActivity(),
             headers.remove(selectedItem!!)
             rvAdapter.notifyItemRemoved(index)
 
+            if (headers.isEmpty()) {
+                empty_view.visibility = View.VISIBLE
+            }
             //Let GC collect removed instance
             selectedItem = null
         }
@@ -145,6 +153,8 @@ class RESTHeadersActivity : AppCompatActivity(),
     }
 
     override fun onFragmentInteraction(position: Int, key: String, value: String) {
+        empty_view.visibility = View.GONE
+
         if (position == -1) {
             headers.add(
                 RESTHeaderModel(

@@ -140,7 +140,7 @@ class MqttPublisherActivity : BaseActivity() {
             builder.setTitle(R.string.publisher_info_title)
                 .setMessage(R.string.publisher_info_text)
                 .setNeutralButton(
-                    R.string.okey
+                    R.string.close
                 ) { dialog, _ ->
                     dialog.dismiss()
                 }

@@ -11,9 +11,9 @@ class ByteFormatModel(
     @SerializedName("start_index_inclusive")
     @Expose
     var startIndexInclusive: Int,
-    @SerializedName("end_index_inclusive")
+    @SerializedName("end_index_exclusive")
     @Expose
-    var endIndexInclusive: Int,
+    var endIndexExclusive: Int,
     @SerializedName("reversed")
     @Expose
     var reversed: Boolean,

@@ -59,6 +59,8 @@ class NewActionViewModel(
 
             if (condition == null) {
                 Timber.d("Condition is null. Cannot save action.")
+            } else if (deviceMacAddress == "") {
+                Timber.d("Device MAC address is empty")
             } else {
 
                 val parameters = mapOf(

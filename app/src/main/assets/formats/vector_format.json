@@ -5,70 +5,70 @@
     {
       "name": "Gyroscope X",
       "start_index_inclusive": 10,
-      "end_index_inclusive": 12,
+      "end_index_exclusive": 12,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Gyroscope Y",
       "start_index_inclusive": 12,
-      "end_index_inclusive": 14,
+      "end_index_exclusive": 14,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Gyroscope Z",
       "start_index_inclusive": 14,
-      "end_index_inclusive": 16,
+      "end_index_exclusive": 16,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Accelerometer X",
       "start_index_inclusive": 16,
-      "end_index_inclusive": 18,
+      "end_index_exclusive": 18,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Accelerometer Y",
       "start_index_inclusive": 18,
-      "end_index_inclusive": 20,
+      "end_index_exclusive": 20,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Accelerometer Z",
       "start_index_inclusive": 20,
-      "end_index_inclusive": 22,
+      "end_index_exclusive": 22,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Magnetometer X",
       "start_index_inclusive": 22,
-      "end_index_inclusive": 24,
+      "end_index_exclusive": 24,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Magnetometer Y",
       "start_index_inclusive": 24,
-      "end_index_inclusive": 26,
+      "end_index_exclusive": 26,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Magnetometer Z",
       "start_index_inclusive": 26,
-      "end_index_inclusive": 28,
+      "end_index_exclusive": 28,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Accelerometer Scale Factor",
       "start_index_inclusive": 28,
-      "end_index_inclusive": 30,
+      "end_index_exclusive": 30,
       "reversed": true,
       "data_type": "UINT16"
     }

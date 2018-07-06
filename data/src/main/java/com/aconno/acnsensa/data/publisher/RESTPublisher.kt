@@ -104,6 +104,20 @@ class RESTPublisher(
                         .build()
                     httpClient.newCall(request).execute()
                 }
+                restPublish.method == "PUT" -> {
+                    val body = RequestBody.create(JSON, message)
+
+                    val builder = Request.Builder()
+                    listHeaders.forEach {
+                        builder.addHeader(it.key, it.value)
+                    }
+
+                    val request = builder
+                        .url(restPublish.url)
+                        .put(body)
+                        .build()
+                    httpClient.newCall(request).execute()
+                }
                 else -> {
                     throw IllegalArgumentException("Illegal Http method please check from getRequestObservable list.")
                 }

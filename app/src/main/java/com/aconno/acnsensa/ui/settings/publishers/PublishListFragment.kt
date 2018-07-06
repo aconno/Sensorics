@@ -47,7 +47,7 @@ class PublishListFragment : BaseFragment(),
     private var listBasePublish: MutableList<BasePublishModel> = mutableListOf()
     private var selectedItem: BasePublishModel? = null
 
-    var dialogClickListener: DialogInterface.OnClickListener =
+    private var dialogClickListener: DialogInterface.OnClickListener =
         DialogInterface.OnClickListener { dialog, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
@@ -180,6 +180,9 @@ class PublishListFragment : BaseFragment(),
             listBasePublish.remove(selectedItem!!)
             rvAdapter.notifyItemRemoved(index)
 
+            if (listBasePublish.isEmpty()) {
+                empty_view.visibility = View.VISIBLE
+            }
             //Let GC collect removed instance
             selectedItem = null
         }

@@ -24,9 +24,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/simple_list_item" />
-
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/empty_view"
+        style="@style/MessageText"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:ems="15"
+        android:gravity="center"
+        android:text="@string/no_rest_headers"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/button_addHeader"
