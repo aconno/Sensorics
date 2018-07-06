@@ -29,8 +29,8 @@ task clean(type: Delete) {
 }
 
 ext {
-    sensoricsVersionCode = 11
-    sensoricsVersionName = '3.0.2'
+    sensoricsVersionCode = 12
+    sensoricsVersionName = '4.0.0'
 
     supportLibraryVersion = '27.1.1'
 
