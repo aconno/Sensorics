@@ -35,7 +35,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
 
     private lateinit var listener: SavedDevicesFragmentListener
 
-    var dialogClickListener: DialogInterface.OnClickListener =
+    private var dialogClickListener: DialogInterface.OnClickListener =
         DialogInterface.OnClickListener { dialog, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
@@ -131,5 +131,9 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
             val mainActivity = it as MainActivity
             mainActivity.showSensorValues(item)
         }
+    }
+
+    override fun onDialogDismissed() {
+        //Do-Nothing
     }
 }

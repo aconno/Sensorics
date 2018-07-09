@@ -107,6 +107,9 @@ class BluetoothScanningService : Service() {
     @Inject
     lateinit var readingToInputUseCase: ReadingToInputUseCase
 
+    @Inject
+    lateinit var getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase
+
     private var closeConnectionUseCase: CloseConnectionUseCase? = null
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
     private var publishers: MutableList<Publisher>? = null
@@ -136,12 +139,26 @@ class BluetoothScanningService : Service() {
 
         initPublishers()
 
-        bluetooth.startScanning()
-        running = true
-        startRecording()
-        startLogging()
-        startSyncing()
-        handleInputsForActions()
+        if (intent!!.getBooleanExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, true)) {
+            getSavedDevicesMaybeUseCase.execute()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    bluetooth.startScanning(it)
+                    running = true
+                    startRecording()
+                    startLogging()
+                    startSyncing()
+                    handleInputsForActions()
+                }
+        } else {
+            bluetooth.startScanning()
+            running = true
+            startRecording()
+            startLogging()
+            startSyncing()
+            handleInputsForActions()
+        }
         return START_STICKY
     }
 
@@ -304,8 +321,9 @@ class BluetoothScanningService : Service() {
 
     companion object {
 
-        fun start(context: Context) {
+        fun start(context: Context, filterByDevice: Boolean = true) {
             val intent = Intent(context, BluetoothScanningService::class.java)
+            intent.putExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, filterByDevice)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
@@ -313,6 +331,8 @@ class BluetoothScanningService : Service() {
                 context.startService(intent)
             }
         }
+
+        private const val BLUETOOTH_SCANNING_SERVICE_EXTRA = "BLUETOOTH_SCANNING_SERVICE_EXTRA"
 
         private var running = false
 

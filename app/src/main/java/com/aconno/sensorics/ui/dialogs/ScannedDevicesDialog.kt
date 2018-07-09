@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui.dialogs
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -83,6 +84,11 @@ class ScannedDevicesDialog : BaseDialogFragment(), ItemClickListener<Device> {
                     )
                 }
         )
+    }
+
+    override fun onDismiss(dialog: DialogInterface?) {
+        super.onDismiss(dialog)
+        listener.onDialogDismissed()
     }
 
     override fun onItemClick(item: Device) {
