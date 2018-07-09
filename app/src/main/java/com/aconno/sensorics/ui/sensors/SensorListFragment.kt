@@ -40,7 +40,8 @@ class SensorListFragment : Fragment() {
         initValues()
 
         val mainActivity: MainActivity? = context as MainActivity
-        mainActivity?.supportActionBar?.title = macAddress
+        mainActivity?.supportActionBar?.title = "AcnSensa"
+        mainActivity?.supportActionBar?.subtitle = macAddress
     }
 
     override fun onCreateView(

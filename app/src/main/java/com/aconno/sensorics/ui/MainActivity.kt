@@ -10,10 +10,10 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
+import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.dagger.mainactivity.DaggerMainActivityComponent
 import com.aconno.sensorics.dagger.mainactivity.MainActivityComponent
 import com.aconno.sensorics.dagger.mainactivity.MainActivityModule
@@ -21,6 +21,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanEvent
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.model.SensoricsPermission
+import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -186,7 +187,8 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     private fun getReadingListFragment(device: Device): Fragment {
         return when (device.name) {
             "AcnSensa" -> SensorListFragment.newInstance(device.macAddress)
-            else -> GenericReadingListFragment.newInstance(device.macAddress)
+            "AcnRange" -> AcnRangeFragment.newInstance(device.macAddress)
+            else -> GenericReadingListFragment.newInstance(device.macAddress, device.name)
         }
     }
 
