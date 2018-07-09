@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     private fun getReadingListFragment(device: Device): Fragment {
         return when (device.name) {
             "AcnSensa" -> SensorListFragment.newInstance(device.macAddress)
-            else -> GenericReadingListFragment.newInstance(device.macAddress)
+            else -> GenericReadingListFragment.newInstance(device.macAddress, device.name)
         }
     }
 
