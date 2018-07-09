@@ -17,9 +17,10 @@ import com.aconno.sensorics.data.repository.rpublish.RESTPublishDao
 import com.aconno.sensorics.data.repository.rpublish.RESTPublishEntity
 import com.aconno.sensorics.data.repository.pdjoin.RestPublishDeviceJoinEntity
 import com.aconno.sensorics.data.repository.rpublish.RESTHeaderEntity
+import com.aconno.sensorics.data.repository.rpublish.RESTHttpGetEntity
 
 @Database(
-    entities = [ActionEntity::class, DeviceEntity::class, GooglePublishEntity::class, RESTPublishEntity::class, GooglePublishDeviceJoinEntity::class, RestPublishDeviceJoinEntity::class, RESTHeaderEntity::class, MqttPublishEntity::class, MqttPublishDeviceJoinEntity::class],
+    entities = [ActionEntity::class, DeviceEntity::class, GooglePublishEntity::class, RESTPublishEntity::class, GooglePublishDeviceJoinEntity::class, RestPublishDeviceJoinEntity::class, RESTHeaderEntity::class, MqttPublishEntity::class, MqttPublishDeviceJoinEntity::class, RESTHttpGetEntity::class],
     version = 1
 )
 abstract class SensoricsDatabase : RoomDatabase() {
