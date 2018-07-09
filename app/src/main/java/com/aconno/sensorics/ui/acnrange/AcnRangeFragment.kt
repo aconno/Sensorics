@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
 import kotlinx.android.synthetic.main.fragment_acnrange.*
@@ -21,14 +22,6 @@ class AcnRangeFragment : Fragment() {
     @Inject
     lateinit var readingListViewModel: ReadingListViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_acnrange, container, false)
-    }
-
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
@@ -40,6 +33,21 @@ class AcnRangeFragment : Fragment() {
             macAddress = it.getString(MAC_ADDRESS_EXTRA)
             readingListViewModel.init(macAddress)
             mainActivity.supportActionBar?.subtitle = macAddress
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_acnrange, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        frame_fragment.setOnClickListener {
+            context?.let { LiveGraphActivity.start(it, macAddress, "Range") }
         }
     }
 
