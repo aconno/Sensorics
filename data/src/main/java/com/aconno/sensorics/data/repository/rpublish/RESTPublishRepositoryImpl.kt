@@ -1,6 +1,7 @@
 package com.aconno.sensorics.data.repository.rpublish
 
 import com.aconno.sensorics.data.mapper.RESTHeaderDataMapper
+import com.aconno.sensorics.data.mapper.RESTHttpGetParamDataMapper
 import com.aconno.sensorics.data.mapper.RESTPublishDataMapper
 import com.aconno.sensorics.data.mapper.RESTPublishEntityDataMapper
 import com.aconno.sensorics.domain.ifttt.*
@@ -11,7 +12,8 @@ class RESTPublishRepositoryImpl(
     private val restPublishDao: RESTPublishDao,
     private val restPublishEntityDataMapper: RESTPublishEntityDataMapper,
     private val restPublishDataMapper: RESTPublishDataMapper,
-    private val restHeaderDataMapper: RESTHeaderDataMapper
+    private val restHeaderDataMapper: RESTHeaderDataMapper,
+    private val restHttpGetParamDataMapper: RESTHttpGetParamDataMapper
 ) :
     RESTPublishRepository {
     override fun addRESTPublish(restPublish: RESTPublish): Long {
@@ -53,5 +55,24 @@ class RESTPublishRepositoryImpl(
     override fun getHeadersByRESTPublishId(restPublishId: Long): Maybe<List<RESTHeader>> {
         return restPublishDao.getHeadersByRESTPublishId(restPublishId)
             .map(restHeaderDataMapper::toRESTHeaderList)
+    }
+
+    override fun addHttpGetParams(restHttpGetParams: List<RESTHttpGetParam>) {
+        if (restHttpGetParams.isNotEmpty()) {
+            restPublishDao.insertHttpGetParams(
+                restHttpGetParamDataMapper.toRESTHttpGetParamEntityList(
+                    restHttpGetParams
+                )
+            )
+        }
+    }
+
+    override fun deleteRESTHttpGetParam(restHttpGetParam: RESTHttpGetParam) {
+        restPublishDao.delete(restHttpGetParamDataMapper.toRESTHttpGetParamEntity(restHttpGetParam))
+    }
+
+    override fun getRESTHttpGetParamsByRESTPublishId(restPublishId: Long): Maybe<List<RESTHttpGetParam>> {
+        return restPublishDao.getRESTHttpGetParamsByRESTPublishId(restPublishId)
+            .map(restHttpGetParamDataMapper::toRESTHttpGetParamList)
     }
 }
