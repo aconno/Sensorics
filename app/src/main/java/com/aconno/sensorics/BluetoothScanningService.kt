@@ -22,8 +22,7 @@ import com.aconno.sensorics.domain.ifttt.RESTPublish
 import com.aconno.sensorics.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
-import com.aconno.sensorics.domain.model.Reading
-import com.aconno.sensorics.domain.interactor.ifttt.*
+import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.GetAllEnabledGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mpublish.GetAllEnabledMqttPublishUseCase
@@ -33,6 +32,7 @@ import com.aconno.sensorics.domain.interactor.ifttt.rpublish.UpdateRESTPublishUs
 import com.aconno.sensorics.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
+import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -107,6 +107,9 @@ class BluetoothScanningService : Service() {
     @Inject
     lateinit var readingToInputUseCase: ReadingToInputUseCase
 
+    @Inject
+    lateinit var getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase
+
     private var closeConnectionUseCase: CloseConnectionUseCase? = null
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
     private var publishers: MutableList<Publisher>? = null
@@ -134,45 +137,65 @@ class BluetoothScanningService : Service() {
 
         startForeground(1, notification)
 
-        initPublishers()
+        val filterByDevice = intent!!.getBooleanExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, true)
 
-        bluetooth.startScanning()
-        running = true
-        startRecording()
-        startLogging()
-        startSyncing()
-        handleInputsForActions()
+        if (filterByDevice) {
+            //send values only while scanning with device filter
+            initPublishers()
+
+            getSavedDevicesMaybeUseCase.execute()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    bluetooth.startScanning(it)
+                    running = true
+                    startRecording()
+                    startLogging()
+                    startSyncing()
+                    handleInputsForActions()
+                }
+        } else {
+            bluetooth.startScanning()
+            running = true
+            startRecording()
+            startLogging()
+            startSyncing()
+            handleInputsForActions()
+        }
         return START_STICKY
     }
 
     private fun startSyncing() {
-        readings.subscribe {
-            //Publish when Google Cloud Integration Enabled
-            publishReadingsUseCase?.execute(it)
-                ?.subscribeOn(Schedulers.io())
-                ?.flatMapIterable { it }
-                ?.map {
-                    val data = it.getPublishData()
-                    data.lastTimeMillis = System.currentTimeMillis()
+        readings.subscribe { readings ->
+            //Send data and update last sent date-time
 
-                    when (data) {
-                        is GooglePublish -> {
-                            updateGooglePublishUseCase.execute(data)
-                        }
-                        is RESTPublish -> {
-                            updateRESTPublishUserCase.execute(data)
-                        }
-                        is MqttPublish -> {
-                            updateMqttPublishUseCase.execute(data)
-                        }
-                        else -> {
-                            throw IllegalArgumentException("Illegal data provided.")
+            publishReadingsUseCase?.let {
+                it.execute(readings)
+                    .subscribeOn(Schedulers.io())
+                    .flatMapIterable { it }
+                    .map {
+                        val data = it.getPublishData()
+                        data.lastTimeMillis = System.currentTimeMillis()
+
+                        when (data) {
+                            is GooglePublish -> {
+                                updateGooglePublishUseCase.execute(data)
+                            }
+                            is RESTPublish -> {
+                                updateRESTPublishUserCase.execute(data)
+                            }
+                            is MqttPublish -> {
+                                updateMqttPublishUseCase.execute(data)
+                            }
+                            else -> {
+                                throw IllegalArgumentException("Illegal data provided.")
+                            }
                         }
                     }
-                }
-                ?.subscribe {
-                    it.subscribeOn(Schedulers.io()).subscribe()
-                }
+                    .subscribe {
+                        it.subscribeOn(Schedulers.io()).subscribe()
+                    }
+            }
         }
     }
 
@@ -304,8 +327,9 @@ class BluetoothScanningService : Service() {
 
     companion object {
 
-        fun start(context: Context) {
+        fun start(context: Context, filterByDevice: Boolean = true) {
             val intent = Intent(context, BluetoothScanningService::class.java)
+            intent.putExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, filterByDevice)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
@@ -313,6 +337,8 @@ class BluetoothScanningService : Service() {
                 context.startService(intent)
             }
         }
+
+        private const val BLUETOOTH_SCANNING_SERVICE_EXTRA = "BLUETOOTH_SCANNING_SERVICE_EXTRA"
 
         private var running = false
 
