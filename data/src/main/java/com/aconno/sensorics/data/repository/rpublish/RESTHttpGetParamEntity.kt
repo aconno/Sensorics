@@ -6,7 +6,7 @@ import android.arch.persistence.room.PrimaryKey
 
 
 @Entity(
-    tableName = "rest_headers",
+    tableName = "rest_http_params",
     foreignKeys =
     [(ForeignKey(
         entity = RESTPublishEntity::class,
@@ -15,7 +15,7 @@ import android.arch.persistence.room.PrimaryKey
         onDelete = ForeignKey.CASCADE
     ))]
 )
-class RESTHttpGetEntity(
+class RESTHttpGetParamEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val rId: Long,
     val key: String,
