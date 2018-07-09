@@ -49,6 +49,8 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     private var snackbar: Snackbar? = null
 
+    private var filterByDevice: Boolean = true
+
     val mainActivityComponent: MainActivityComponent by lazy {
         val sensoricsApplication: SensoricsApplication? = application as? SensoricsApplication
         DaggerMainActivityComponent.builder()
@@ -129,6 +131,15 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     override fun onFABClicked() {
         mainMenu?.findItem(R.id.action_toggle_scan)?.let {
             if (!it.isChecked) {
+                toggleScan(it)
+                filterByDevice = false
+            }
+        }
+    }
+
+    override fun onDialogDismissed() {
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
+            if (it.isChecked) {
                 toggleScan(it)
             }
         }
@@ -270,7 +281,8 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
             // TODO: Why do we need READ_EXTERNAL_STORAGE for scanning??? @Sergio
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
-            bluetoothScanningViewModel.startScanning()
+            bluetoothScanningViewModel.startScanning(filterByDevice)
+            filterByDevice = true
         }
     }
 

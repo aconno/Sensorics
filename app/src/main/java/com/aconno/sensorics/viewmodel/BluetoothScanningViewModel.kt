@@ -30,9 +30,9 @@ class BluetoothScanningViewModel(
         observable.subscribe { result.value = it }
     }
 
-    fun startScanning() {
+    fun startScanning(filterByDevice: Boolean) {
         Timber.d("startScanning")
-        BluetoothScanningService.start(getApplication())
+        BluetoothScanningService.start(getApplication(), filterByDevice)
     }
 
     fun stopScanning() {
