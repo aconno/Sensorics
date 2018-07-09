@@ -36,6 +36,10 @@
             android:label="@string/title_activity_rest_header"
             android:parentActivityName=".ui.settings.publishers.selectpublish.RESTPublisherActivity" />
         <activity
+            android:name=".ui.settings.publishers.rhttpgetparams.RESTHttpGetParamsActivity"
+            android:label="@string/title_activity_rest_http_get_params"
+            android:parentActivityName=".ui.settings.publishers.selectpublish.RESTPublisherActivity" />
+        <activity
             android:name=".ui.settings.publishers.selectpublish.SelectPublisherActivity"
             android:label="@string/title_select_publish"
             android:noHistory="true"

@@ -16,9 +16,7 @@ import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.data.publisher.RESTPublisher
 import com.aconno.sensorics.domain.Publisher
-import com.aconno.sensorics.domain.ifttt.GooglePublish
-import com.aconno.sensorics.domain.ifttt.MqttPublish
-import com.aconno.sensorics.domain.ifttt.RESTPublish
+import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
@@ -32,15 +30,19 @@ import com.aconno.sensorics.domain.interactor.ifttt.rpublish.UpdateRESTPublishUs
 import com.aconno.sensorics.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
+import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
+import io.reactivex.functions.Function3
+import io.reactivex.functions.Function4
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
+
 
 class BluetoothScanningService : Service() {
 
@@ -88,6 +90,9 @@ class BluetoothScanningService : Service() {
 
     @Inject
     lateinit var getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase
+
+    @Inject
+    lateinit var getRESTHttpGetParamsByIdUseCase: GetRESTHttpGetParamsByIdUseCase
 
     @Inject
     lateinit var runOutcomeUseCase: RunOutcomeUseCase
@@ -292,16 +297,20 @@ class BluetoothScanningService : Service() {
             .flatMapIterable { it }
             .map { it as RESTPublish }
             .flatMap {
-                Observable.just(it).zipWith(
-                    getDevicesThatConnectedWithRESTPublishUseCase.execute(it.id)
-                        .toObservable().zipWith(getRESTHeadersByIdUseCase.execute(it.id).toObservable())
+                Observable.zip(
+                    Observable.just(it),
+                    getDevicesThatConnectedWithRESTPublishUseCase.execute(it.id).toObservable(),
+                    getRESTHeadersByIdUseCase.execute(it.id).toObservable(),
+                    getRESTHttpGetParamsByIdUseCase.execute(it.id).toObservable(),
+                    Function4<RESTPublish, List<Device>, List<RESTHeader>, List<RESTHttpGetParam>, Publisher> { t1, t2, t3, t4 ->
+                        RESTPublisher(
+                            t1,
+                            t2,
+                            t3,
+                            t4
+                        )
+                    }
                 )
-            }.map {
-                RESTPublisher(
-                    it.first,
-                    it.second.first,
-                    it.second.second
-                ) as Publisher
             }
     }
 
