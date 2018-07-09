@@ -8,6 +8,7 @@ import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.*
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
+import com.aconno.sensorics.model.mapper.RESTHttpGetParamModelMapper
 import com.aconno.sensorics.model.mapper.RESTPublishModelDataMapper
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -26,7 +27,11 @@ class RestPublisherViewModel(
     private val saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
     private val deleteRESTHeaderUseCase: DeleteRESTHeaderUseCase,
     private val getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
-    private val restHeaderModelMapper: RESTHeaderModelMapper
+    private val restHeaderModelMapper: RESTHeaderModelMapper,
+    private val saveRESTHttpGetParamUseCase: SaveRESTHttpGetParamUseCase,
+    private val deleteRESTHttpGetParamUseCase: DeleteRESTHttpGetParamUseCase,
+    private val getRESTHttpGetParamsByIdUseCase: GetRESTHttpGetParamsByIdUseCase,
+    private val restHttpGetParamModelMapper: RESTHttpGetParamModelMapper
 ) : ViewModel() {
 
     fun save(
@@ -88,6 +93,15 @@ class RestPublisherViewModel(
         )
     }
 
+    fun addRESTHttpGetParams(
+        list: List<RESTHttpGetParamModel>,
+        it: Long
+    ): Completable {
+        return saveRESTHttpGetParamUseCase.execute(
+            restHttpGetParamModelMapper.toRESTHttpGetParamListByRESTPublishId(list, it)
+        )
+    }
+
     fun deleteRESTHeader(restHeader: RESTHeader): Disposable {
         return deleteRESTHeaderUseCase.execute(
             restHeader
@@ -95,9 +109,21 @@ class RestPublisherViewModel(
             .subscribe()
     }
 
+    fun deleteRESTHttpGetParam(restHttpGetParamModel: RESTHttpGetParamModel): Disposable {
+        return deleteRESTHttpGetParamUseCase.execute(
+            restHttpGetParamModelMapper.toRESTHttpGetParam(restHttpGetParamModel)
+        ).subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
     fun getRESTHeadersById(rId: Long): Maybe<List<RESTHeaderModel>> {
         return getRESTHeadersByIdUseCase.execute(rId)
             .map(restHeaderModelMapper::toRESTHeaderModelList)
+    }
+
+    fun getRESTHttpGetParamsById(rId: Long): Maybe<List<RESTHttpGetParamModel>> {
+        return getRESTHttpGetParamsByIdUseCase.execute(rId)
+            .map(restHttpGetParamModelMapper::toRESTHttpGetParamModelList)
     }
 
     fun checkFieldsAreEmpty(

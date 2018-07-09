@@ -5,12 +5,12 @@ import android.bluetooth.BluetoothAdapter
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.support.v4.content.LocalBroadcastManager
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.IntentProviderImpl
+import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.data.mapper.*
-import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.data.repository.InMemoryRepositoryImpl
+import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.data.repository.action.ActionsRepositoryImpl
 import com.aconno.sensorics.data.repository.devices.DeviceMapper
 import com.aconno.sensorics.data.repository.devices.DeviceRepositoryImpl
@@ -39,9 +39,9 @@ import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
-import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
@@ -81,7 +81,12 @@ class AppModule(
         bluetoothPermission: BluetoothPermission,
         bluetoothStateListener: BluetoothStateListener
     ): Bluetooth =
-        BluetoothImpl(sharedPreferences, bluetoothAdapter, bluetoothPermission, bluetoothStateListener)
+        BluetoothImpl(
+            sharedPreferences,
+            bluetoothAdapter,
+            bluetoothPermission,
+            bluetoothStateListener
+        )
 
     @Provides
     @Singleton
@@ -152,13 +157,15 @@ class AppModule(
         sensoricsDatabase: SensoricsDatabase,
         restPublishEntityDataMapper: RESTPublishEntityDataMapper,
         restPublishDataMapper: RESTPublishDataMapper,
-        restHeaderDataMapper: RESTHeaderDataMapper
+        restHeaderDataMapper: RESTHeaderDataMapper,
+        restHttpGetParamDataMapper: RESTHttpGetParamDataMapper
     ): RESTPublishRepository {
         return RESTPublishRepositoryImpl(
             sensoricsDatabase.restPublishDao(),
             restPublishEntityDataMapper,
             restPublishDataMapper,
-            restHeaderDataMapper
+            restHeaderDataMapper,
+            restHttpGetParamDataMapper
         )
     }
 
@@ -177,10 +184,13 @@ class AppModule(
     @Provides
     @Singleton
     fun provideSensoricsDatabase(): SensoricsDatabase {
-        return Room.databaseBuilder(sensoricsApplication, SensoricsDatabase::class.java, "Sensorics")
+        return Room.databaseBuilder(
+            sensoricsApplication,
+            SensoricsDatabase::class.java,
+            "Sensorics"
+        )
             .fallbackToDestructiveMigration()
             .build()
-
     }
 
     @Provides
