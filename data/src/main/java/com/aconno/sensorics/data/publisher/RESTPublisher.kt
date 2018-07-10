@@ -72,7 +72,6 @@ class RESTPublisher(
             }
     }
 
-    //TODO shorten
     private fun getRequestObservable(message: Reading): Observable<Response> {
         return Observable.fromCallable {
             when {
@@ -92,40 +91,20 @@ class RESTPublisher(
                     }
 
                     val builder = Request.Builder()
-                    listHeaders.forEach {
-                        builder.addHeader(
-                            readingToStringParser.convert(
-                                message,
-                                it.key
-                            ), readingToStringParser.convert(
-                                message,
-                                it.value
-                            )
-                        )
-                    }
+                    addHeaders(builder, message)
 
-                    val request = builder.url(httpBuilder.build()).build();
+                    val request = builder.url(httpBuilder.build()).build()
 
                     httpClient.newCall(request).execute()
                 }
                 restPublish.method == "POST" -> {
                     val body = RequestBody.create(
-                        JSON,
+                        getMediaType(),
                         readingToStringParser.convert(message, restPublish.dataString)
                     )
 
                     val builder = Request.Builder()
-                    listHeaders.forEach {
-                        builder.addHeader(
-                            readingToStringParser.convert(
-                                message,
-                                it.key
-                            ), readingToStringParser.convert(
-                                message,
-                                it.value
-                            )
-                        )
-                    }
+                    addHeaders(builder, message)
 
                     val request = builder
                         .url(restPublish.url)
@@ -135,22 +114,12 @@ class RESTPublisher(
                 }
                 restPublish.method == "PUT" -> {
                     val body = RequestBody.create(
-                        JSON,
+                        getMediaType(),
                         readingToStringParser.convert(message, restPublish.dataString)
                     )
 
                     val builder = Request.Builder()
-                    listHeaders.forEach {
-                        builder.addHeader(
-                            readingToStringParser.convert(
-                                message,
-                                it.key
-                            ), readingToStringParser.convert(
-                                message,
-                                it.value
-                            )
-                        )
-                    }
+                    addHeaders(builder, message)
 
                     val request = builder
                         .url(restPublish.url)
@@ -162,6 +131,33 @@ class RESTPublisher(
                     throw IllegalArgumentException("Illegal Http method please check from getRequestObservable list.")
                 }
             }
+        }
+    }
+
+    private fun getMediaType(): MediaType? {
+        listHeaders.forEach {
+            if (it.key == "Content-Type") {
+                return MediaType.parse(it.value)
+            }
+        }
+
+        return JSON
+    }
+
+    private fun addHeaders(
+        builder: Request.Builder,
+        message: Reading
+    ) {
+        listHeaders.forEach {
+            builder.addHeader(
+                readingToStringParser.convert(
+                    message,
+                    it.key
+                ), readingToStringParser.convert(
+                    message,
+                    it.value
+                )
+            )
         }
     }
 
