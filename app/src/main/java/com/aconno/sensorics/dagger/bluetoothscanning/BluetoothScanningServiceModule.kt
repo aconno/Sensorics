@@ -3,10 +3,10 @@ package com.aconno.sensorics.dagger.bluetoothscanning
 import android.app.Notification
 import android.content.BroadcastReceiver
 import android.content.IntentFilter
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BluetoothScanningServiceReceiver
 import com.aconno.sensorics.R
+import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.device.storage.FileStorageImpl
@@ -177,5 +177,11 @@ class BluetoothScanningServiceModule(
     @BluetoothScanningServiceScope
     fun provideGetRESTHeadersByIdUseCase(restPublishRepository: RESTPublishRepository): GetRESTHeadersByIdUseCase {
         return GetRESTHeadersByIdUseCase(restPublishRepository)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideGetRESTHttpGetParamsByIdUseCase(restPublishRepository: RESTPublishRepository): GetRESTHttpGetParamsByIdUseCase {
+        return GetRESTHttpGetParamsByIdUseCase(restPublishRepository)
     }
 }

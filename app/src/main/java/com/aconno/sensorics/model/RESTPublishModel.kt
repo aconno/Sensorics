@@ -8,7 +8,6 @@ class RESTPublishModel(
     name: String,
     val url: String,
     val method: String,
-    val parameterName: String,
     enabled: Boolean,
     timeType: String,
     timeMillis: Long,
@@ -17,7 +16,6 @@ class RESTPublishModel(
 ) : BasePublishModel(id, name, enabled, timeType, timeMillis, lastTimeMillis, dataString) {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
-        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -33,7 +31,6 @@ class RESTPublishModel(
         parcel.writeString(name)
         parcel.writeString(url)
         parcel.writeString(method)
-        parcel.writeString(parameterName)
         parcel.writeByte(if (enabled) 1 else 0)
         parcel.writeString(timeType)
         parcel.writeLong(timeMillis)

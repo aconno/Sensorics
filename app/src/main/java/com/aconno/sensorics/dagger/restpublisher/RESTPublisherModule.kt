@@ -8,6 +8,7 @@ import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
+import com.aconno.sensorics.model.mapper.RESTHttpGetParamModelMapper
 import com.aconno.sensorics.model.mapper.RESTPublishModelDataMapper
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RESTPublisherActivity
 import com.aconno.sensorics.viewmodel.RestPublisherViewModel
@@ -38,7 +39,11 @@ class RESTPublisherModule(private val restPublisherActivity: RESTPublisherActivi
         saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
         deleteRESTHeaderUseCase: DeleteRESTHeaderUseCase,
         getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
-        restHeaderModelMapper: RESTHeaderModelMapper
+        restHeaderModelMapper: RESTHeaderModelMapper,
+        saveRESTHttpGetParamUseCase: SaveRESTHttpGetParamUseCase,
+        deleteRESTHttpGetParamUseCase: DeleteRESTHttpGetParamUseCase,
+        getRESTHttpGetParamsByIdUseCase: GetRESTHttpGetParamsByIdUseCase,
+        restHttpGetParamModelMapper: RESTHttpGetParamModelMapper
     ) = RestPublisherViewModelFactory(
         addRESTPublishUseCase,
         restPublishModelDataMapper,
@@ -50,7 +55,11 @@ class RESTPublisherModule(private val restPublisherActivity: RESTPublisherActivi
         saveRESTHeaderUseCase,
         deleteRESTHeaderUseCase,
         getRESTHeadersByIdUseCase,
-        restHeaderModelMapper
+        restHeaderModelMapper,
+        saveRESTHttpGetParamUseCase,
+        deleteRESTHttpGetParamUseCase,
+        getRESTHttpGetParamsByIdUseCase,
+        restHttpGetParamModelMapper
     )
 
     @Provides
@@ -85,13 +94,31 @@ class RESTPublisherModule(private val restPublisherActivity: RESTPublisherActivi
 
     @Provides
     @RESTPublisherScope
+    fun provideSaveRESTHttpGetParamUseCase(restPublishRepository: RESTPublishRepository): SaveRESTHttpGetParamUseCase {
+        return SaveRESTHttpGetParamUseCase(restPublishRepository)
+    }
+
+    @Provides
+    @RESTPublisherScope
     fun provideDeleteRESTHeaderUseCase(restPublishRepository: RESTPublishRepository): DeleteRESTHeaderUseCase {
         return DeleteRESTHeaderUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
+    fun provideDeleteRESTHttpGetParamUseCase(restPublishRepository: RESTPublishRepository): DeleteRESTHttpGetParamUseCase {
+        return DeleteRESTHttpGetParamUseCase(restPublishRepository)
+    }
+
+    @Provides
+    @RESTPublisherScope
     fun provideGetRESTHeadersByIdUseCase(restPublishRepository: RESTPublishRepository): GetRESTHeadersByIdUseCase {
         return GetRESTHeadersByIdUseCase(restPublishRepository)
+    }
+
+    @Provides
+    @RESTPublisherScope
+    fun provideGetRESTHttpGetParamsByIdUseCase(restPublishRepository: RESTPublishRepository): GetRESTHttpGetParamsByIdUseCase {
+        return GetRESTHttpGetParamsByIdUseCase(restPublishRepository)
     }
 }

@@ -21,7 +21,6 @@ class RESTPublishDataMapper @Inject constructor() {
             restPublish.name,
             restPublish.url,
             restPublish.method,
-            restPublish.parameterName,
             restPublish.enabled,
             restPublish.timeType,
             restPublish.timeMillis,

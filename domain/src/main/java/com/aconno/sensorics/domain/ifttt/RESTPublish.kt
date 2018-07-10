@@ -7,5 +7,4 @@ package com.aconno.sensorics.domain.ifttt
 interface RESTPublish : BasePublish {
     val url: String
     val method: String
-    val parameterName: String
 }

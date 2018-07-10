@@ -91,6 +91,7 @@
     <string name="outcomes">Outcomes</string>
     <string name="set_action_hint">There are no actions.\nPress plus (+) to add a new action.</string>
     <string name="no_rest_headers">There are no headers.\nPress plus (+) to add a new header.</string>
+    <string name="no_rest_httpgetparams">There are no HTTP Get Params.\nPress plus (+) to add a new HTTP Param.</string>
     <string name="text_to_speech">Text to Speech</string>
     <string name="notification">Notification</string>
     <string name="sms">SMS</string>
@@ -195,11 +196,14 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="headers">Headers (%d)</string>
+    <string name="httpget_params">HTTP Get Params (%d)</string>
     <string name="title_activity_rest_header">REST Header</string>
+    <string name="title_activity_rest_http_get_params">REST HTTP Get Params</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="add_new">Add New</string>
     <string name="rest_headers_title">Headers</string>
+    <string name="rest_http_get_params_title">HTTP Get Params</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
