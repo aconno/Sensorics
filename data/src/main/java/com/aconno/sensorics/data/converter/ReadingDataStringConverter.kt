@@ -4,7 +4,7 @@ import com.aconno.sensorics.domain.model.Reading
 import java.util.*
 import java.util.regex.Pattern
 
-class ReadingToStringParser() {
+class ReadingDataStringConverter {
 
     companion object {
         private const val VALUE = "value"
@@ -57,8 +57,8 @@ class ReadingToStringParser() {
                 data.value.toString()
             )
         } else {
-            if (map.containsKey(ReadingToStringParser.VALUE)) {
-                map[ReadingToStringParser.VALUE]!!.replace(
+            if (map.containsKey(ReadingDataStringConverter.VALUE)) {
+                map[ReadingDataStringConverter.VALUE]!!.replace(
                     "\$value",
                     data.value.toString()
                 )

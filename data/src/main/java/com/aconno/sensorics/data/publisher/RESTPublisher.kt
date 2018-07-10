@@ -1,7 +1,6 @@
 package com.aconno.sensorics.data.publisher
 
-import com.aconno.sensorics.data.converter.DataStringConverter
-import com.aconno.sensorics.data.converter.ReadingToStringParser
+import com.aconno.sensorics.data.converter.ReadingDataStringConverter
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.RESTHeader
@@ -24,8 +23,7 @@ class RESTPublisher(
 ) : Publisher {
 
     private val httpClient: OkHttpClient
-    private val dataStringConverter: DataStringConverter
-    private val readingToStringParser: ReadingToStringParser
+    private val readingToStringParser: ReadingDataStringConverter
 
     init {
         val logging = HttpLoggingInterceptor()
@@ -34,8 +32,7 @@ class RESTPublisher(
             .addInterceptor(logging)
             .build()
 
-        dataStringConverter = DataStringConverter(restPublish.dataString)
-        readingToStringParser = ReadingToStringParser()
+        readingToStringParser = ReadingDataStringConverter()
     }
 
     companion object {
