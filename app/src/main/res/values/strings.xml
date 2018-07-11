@@ -233,6 +233,7 @@
     <string name="no_publishers_found">There are no backends.\nPress plus (+) to add a new backend.</string>
     <string name="no_devices_found">There are no saved devices.</string>
     <string name="reading_value_acnrange">%1$d mm</string>
+    <string name="rssi">RSSI</string>
 
     <string-array name="header_keys">
         <item>A-IM</item>

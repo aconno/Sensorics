@@ -35,6 +35,7 @@ import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateDeviceUseCase
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateReadingsUseCase
+import com.aconno.sensorics.domain.interactor.consolidation.GenerateScanDeviceUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
@@ -42,6 +43,7 @@ import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUse
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
@@ -268,6 +270,12 @@ class AppModule(
 
     @Provides
     @Singleton
+    fun provideGenerateScanDeviceUseCase(
+        formatMatcher: FormatMatcher
+    ) = GenerateScanDeviceUseCase(formatMatcher)
+
+    @Provides
+    @Singleton
     fun provideGenerateDeviceUseCase(
         formatMatcher: FormatMatcher
     ) = GenerateDeviceUseCase(formatMatcher)
@@ -293,9 +301,9 @@ class AppModule(
     @Singleton
     fun provideDevice(
         filteredScanResult: Flowable<ScanResult>,
-        generateDeviceUseCase: GenerateDeviceUseCase
-    ): Flowable<Device> {
-        return filteredScanResult.concatMap { generateDeviceUseCase.execute(it).toFlowable() }
+        generateScanDeviceUseCase: GenerateScanDeviceUseCase
+    ): Flowable<ScanDevice> {
+        return filteredScanResult.concatMap { generateScanDeviceUseCase.execute(it).toFlowable() }
     }
 
     @Provides
