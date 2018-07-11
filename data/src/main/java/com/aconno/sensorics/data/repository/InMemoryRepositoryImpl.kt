@@ -25,6 +25,7 @@ class InMemoryRepositoryImpl : InMemoryRepository {
         subject?.let { buffer?.let { subject.onNext(buffer) } }
     }
 
+    @Synchronized
     private fun addToBuffer(reading: Reading, readings: MutableList<Reading>) {
         if (readings.size >= BUFFER_SIZE) {
             readings.removeAt(0)
