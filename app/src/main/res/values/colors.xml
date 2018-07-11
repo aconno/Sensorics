@@ -17,4 +17,5 @@
     <color name="graph_x">#FF0000</color>
     <color name="graph_y">#00FF00</color>
     <color name="graph_z">#0000FF</color>
+    <color name="bg_row_background">#fa315b</color>
 </resources>

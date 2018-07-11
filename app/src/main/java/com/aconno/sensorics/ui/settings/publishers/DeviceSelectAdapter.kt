@@ -35,7 +35,7 @@ class DeviceSelectAdapter(
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(deviceRelationModel: DeviceRelationModel) {
-            view.name.text = deviceRelationModel.name
+            view.name.text = deviceRelationModel.getRealName()
             view.mac_address.text = deviceRelationModel.macAddress
             view.switch_device.isChecked = deviceRelationModel.related
         }

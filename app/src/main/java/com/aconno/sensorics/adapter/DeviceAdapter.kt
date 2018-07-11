@@ -1,5 +1,6 @@
 package com.aconno.sensorics.adapter
 
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,8 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Device
 import kotlinx.android.synthetic.main.item_device.view.*
 import timber.log.Timber
+import android.widget.RelativeLayout
+
 
 class DeviceAdapter(
     private val devices: MutableList<Device>,
@@ -49,7 +52,20 @@ class DeviceAdapter(
         holder.bind(devices[position])
     }
 
+    fun removeItem(position: Int) {
+        devices.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+    fun restoreItem(item: Device, position: Int) {
+        devices.add(position, item)
+        notifyItemInserted(position)
+    }
+
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+
+        var viewBackground: RelativeLayout? = null
+        var viewForeground: ConstraintLayout? = null
 
         fun bind(device: Device) {
             Timber.d("Bind device to view, name: ${device.name}, mac: ${device.macAddress}, icon: ${device.icon}")
@@ -59,7 +75,7 @@ class DeviceAdapter(
                 view.context.packageName
             )
             view.image_icon.setImageResource(iconId)
-            view.name.text = device.name
+            view.name.text = if (device.alias.isEmpty()) device.name else device.alias
             view.mac_address.text = device.macAddress
             view.setOnClickListener { itemClickListener.onItemClick(device) }
             longItemClickListener?.let {
@@ -68,6 +84,9 @@ class DeviceAdapter(
                     true
                 }
             }
+
+            viewBackground = view.view_background
+            viewForeground = view.view_foreground
         }
     }
 }
