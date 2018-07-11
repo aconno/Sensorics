@@ -45,6 +45,8 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
 
     private var devices: MutableList<Device> = mutableListOf()
 
+    private var dontObserve: Boolean = false
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
@@ -89,7 +91,15 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(list_devices)
 
         deviceViewModel.getSavedDevicesLiveData().observe(this, Observer {
-            displayPreferredDevices(it)
+            if (it != null) {
+                if (!dontObserve || it.isEmpty()) {
+                    displayPreferredDevices(it)
+                } else {
+                    dontObserve = false
+                }
+            } else {
+                dontObserve = false
+            }
         })
 
         button_add_device.setOnClickListener {
@@ -173,26 +183,29 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int, position: Int) {
         if (viewHolder is DeviceAdapter.ViewHolder) {
             // get the removed item name to display it in snack bar and backup for undo
-            val deletedItem = devices[viewHolder.getAdapterPosition()]
+
+            val deletedItem = devices[position]
             val name = if (deletedItem.alias.isEmpty()) deletedItem.name else deletedItem.alias
-            val deletedIndex = viewHolder.getAdapterPosition()
 
             // remove the item from recycler view
-            deviceAdapter.removeItem(viewHolder.getAdapterPosition())
+            deviceAdapter.removeItem(position)
 
             // showing snack bar with Undo option
             val snackbar = Snackbar
                 .make(coordinatorLayout, "$name removed!", Snackbar.LENGTH_LONG)
             snackbar.setAction("UNDO") {
                 // undo is selected, restore the deleted item
-                deviceAdapter.restoreItem(deletedItem, deletedIndex)
+                deviceAdapter.restoreItem(deletedItem, position)
             }
 
             snackbar.addCallback(object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
+                        || event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
+                    ) {
                         //delete device from db if undo snackbar timeout.
                         deviceViewModel.deleteDevice(deletedItem)
+                        dontObserve = true
                     }
                 }
             })

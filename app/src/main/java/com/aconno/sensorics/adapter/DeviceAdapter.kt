@@ -5,11 +5,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Device
 import kotlinx.android.synthetic.main.item_device.view.*
 import timber.log.Timber
-import android.widget.RelativeLayout
 
 
 class DeviceAdapter(
@@ -24,8 +24,9 @@ class DeviceAdapter(
     }
 
     fun deleteDevice(device: Device) {
+        val index = devices.indexOf(device)
         devices.remove(device)
-        notifyDataSetChanged()
+        notifyItemRemoved(index)
     }
 
     fun setDevices(devices: List<Device>) {
