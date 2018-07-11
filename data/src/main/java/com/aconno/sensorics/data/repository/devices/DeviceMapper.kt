@@ -10,6 +10,7 @@ class DeviceMapper @Inject constructor() {
     fun toDevice(deviceEntity: DeviceEntity): Device {
         return Device(
             deviceEntity.name,
+            deviceEntity.alias,
             deviceEntity.macAddress,
             deviceEntity.icon
         )
@@ -26,6 +27,7 @@ class DeviceMapper @Inject constructor() {
     fun toDeviceEntity(device: Device): DeviceEntity {
         return DeviceEntity(
             device.name,
+            device.alias,
             device.macAddress,
             device.icon
         )

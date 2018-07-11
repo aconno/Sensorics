@@ -380,7 +380,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         val publisher = GoogleCloudPublisher(
             applicationContext,
             GooglePublishModelDataMapper().transform(toGooglePublishModel),
-            listOf(Device("TestDevice", "Mac"))
+            listOf(Device("TestDevice","Name", "Mac"))
         )
 
         testConnectionCallback.onConnectionStart()

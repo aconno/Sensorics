@@ -20,6 +20,7 @@ class GenerateReadingsUseCase(
         format.getFormat().forEach { name, byteFormat ->
             val device = Device(
                 format.getName(),
+                "",
                 parameter.macAddress,
                 format.getIcon()
             )
