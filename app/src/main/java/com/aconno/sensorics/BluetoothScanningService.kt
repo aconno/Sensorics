@@ -36,8 +36,8 @@ import com.aconno.sensorics.domain.scanning.Bluetooth
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
-import io.reactivex.functions.Function3
 import io.reactivex.functions.Function4
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
@@ -224,6 +224,7 @@ class BluetoothScanningService : Service() {
     }
 
     fun stopScanning() {
+        stopRecording()
         closeConnectionUseCase?.execute()
         bluetooth.stopScanning()
         running = false
@@ -233,10 +234,16 @@ class BluetoothScanningService : Service() {
         publishers = null
     }
 
+    private var recordReadingsDisposable: Disposable? = null
+
     private fun startRecording() {
-        readings.subscribe {
+        recordReadingsDisposable = readings.subscribe {
             saveSensorReadingsUseCase.execute(it)
         }
+    }
+
+    private fun stopRecording() {
+        recordReadingsDisposable?.dispose()
     }
 
     private fun startLogging() {
