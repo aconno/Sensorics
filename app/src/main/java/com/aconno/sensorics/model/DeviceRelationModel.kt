@@ -6,8 +6,4 @@ data class DeviceRelationModel(
     val macAddress: String,
     val icon: String,
     var related: Boolean = false
-) {
-    fun getRealName(): String {
-        return if (alias.isBlank()) name else alias
-    }
-}
+)

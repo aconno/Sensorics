@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.sensorics.R
+import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceRelationModel
 import kotlinx.android.synthetic.main.item_device_switch.view.*
 

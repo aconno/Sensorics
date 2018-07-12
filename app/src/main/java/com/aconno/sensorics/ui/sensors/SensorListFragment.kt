@@ -40,7 +40,7 @@ class SensorListFragment : Fragment() {
         initValues()
 
         val mainActivity: MainActivity? = context as MainActivity
-        mainActivity?.supportActionBar?.title = "AcnSensa"
+        mainActivity?.supportActionBar?.title = getDeviceName()
         mainActivity?.supportActionBar?.subtitle = macAddress
     }
 
@@ -292,13 +292,23 @@ class SensorListFragment : Fragment() {
         }
     }
 
+    private fun getDeviceName(): String {
+        arguments?.let {
+            return it.getString(DEVICE_NAME_EXTRA) ?: ""
+        }
+        return ""
+    }
+
+
     companion object {
 
         private const val MAC_ADDRESS_EXTRA = "mac_address"
+        private const val DEVICE_NAME_EXTRA = "device_name"
 
-        fun newInstance(macAddress: String): SensorListFragment {
+        fun newInstance(macAddress: String, deviceName: String): SensorListFragment {
             val bundle = Bundle()
             bundle.putString(MAC_ADDRESS_EXTRA, macAddress)
+            bundle.putString(DEVICE_NAME_EXTRA, deviceName)
             val fragment = SensorListFragment()
             fragment.arguments = bundle
             return fragment

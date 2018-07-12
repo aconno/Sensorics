@@ -2,6 +2,7 @@ package com.aconno.sensorics.ui.devices
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.ProgressDialog.show
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.DialogInterface
@@ -24,6 +25,7 @@ import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
 import com.aconno.sensorics.adapter.ItemClickListener
 import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -122,6 +124,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
         super.onResume()
         val mainActivity: MainActivity? = context as MainActivity
         mainActivity?.supportActionBar?.title = "Devices"
+        mainActivity?.supportActionBar?.subtitle = ""
     }
 
     @SuppressLint("InflateParams")
@@ -130,7 +133,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
 
         val inflate = layoutInflater.inflate(R.layout.layout_rename, null)
         val input = inflate.findViewById<EditText>(R.id.edit_name)
-        input.setText(if (param.alias.isBlank()) param.name else param.alias)
+        input.setText(param.getRealName())
 
         val dialogClickListener: DialogInterface.OnClickListener =
             DialogInterface.OnClickListener { dialog, which ->
@@ -182,7 +185,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
             // get the removed item name to display it in snack bar and backup for undo
 
             val deletedItem = devices[position]
-            val name = if (deletedItem.alias.isEmpty()) deletedItem.name else deletedItem.alias
+            val name = deletedItem.getRealName()
 
             // remove the item from recycler view
             deviceAdapter.removeItem(position)

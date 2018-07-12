@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.getRealName
 import kotlinx.android.synthetic.main.item_device.view.*
 import timber.log.Timber
 
@@ -69,14 +70,14 @@ class DeviceAdapter(
         var viewForeground: ConstraintLayout? = null
 
         fun bind(device: Device) {
-            Timber.d("Bind device to view, name: ${device.name}, mac: ${device.macAddress}, icon: ${device.icon}")
+            Timber.d("Bind device to view, name: ${device.getRealName()}, mac: ${device.macAddress}, icon: ${device.icon}")
             val iconId = view.context.resources.getIdentifier(
                 device.icon,
                 "drawable",
                 view.context.packageName
             )
             view.image_icon.setImageResource(iconId)
-            view.name.text = if (device.alias.isEmpty()) device.name else device.alias
+            view.name.text = device.getRealName()
             view.mac_address.text = device.macAddress
             view.setOnClickListener { itemClickListener.onItemClick(device) }
             longItemClickListener?.let {
