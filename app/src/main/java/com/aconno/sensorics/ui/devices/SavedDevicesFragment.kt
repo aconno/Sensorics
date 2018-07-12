@@ -30,6 +30,7 @@ import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceViewModel
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 
@@ -45,7 +46,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
 
     private var devices: MutableList<Device> = mutableListOf()
 
-    private var dontObserve: Boolean = false
+    private var dontObserveQueue: Queue<Boolean> = ArrayDeque<Boolean>()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -92,13 +93,9 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
 
         deviceViewModel.getSavedDevicesLiveData().observe(this, Observer {
             if (it != null) {
-                if (!dontObserve || it.isEmpty()) {
+                if (!(dontObserveQueue.size > 0 && dontObserveQueue.poll()) || it.isEmpty()) {
                     displayPreferredDevices(it)
-                } else {
-                    dontObserve = false
                 }
-            } else {
-                dontObserve = false
             }
         })
 
@@ -205,7 +202,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
                     ) {
                         //delete device from db if undo snackbar timeout.
                         deviceViewModel.deleteDevice(deletedItem)
-                        dontObserve = true
+                        dontObserveQueue.add(true)
                     }
                 }
             })
