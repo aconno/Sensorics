@@ -1,8 +1,8 @@
 package com.aconno.sensorics.device.bluetooth
 
 import android.bluetooth.le.ScanCallback
-import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.model.ScanEvent
+import com.aconno.sensorics.domain.model.ScanResult
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
@@ -14,15 +14,18 @@ class BluetoothScanCallback(
 
     override fun onScanResult(callbackType: Int, result: android.bluetooth.le.ScanResult?) {
         super.onScanResult(callbackType, result)
-        val scanResult = createScanResult(result)
-        scanResults.onNext(scanResult)
+        result?.let {
+            val scanResult = createScanResult(result)
+            scanResults.onNext(scanResult)
+        }
     }
 
-    private fun createScanResult(result: android.bluetooth.le.ScanResult?): ScanResult {
+    private fun createScanResult(result: android.bluetooth.le.ScanResult): ScanResult {
         val timestamp = System.currentTimeMillis()
-        val macAddress = result?.device?.address ?: "Unknown"
-        val bytes = result?.scanRecord?.bytes?.toList() ?: listOf()
-        return ScanResult(timestamp, macAddress, bytes)
+        val macAddress = result.device.address
+        val rssi = result.rssi
+        val bytes = result.scanRecord.bytes.toList()
+        return ScanResult(timestamp, macAddress, rssi, bytes)
     }
 
     override fun onScanFailed(errorCode: Int) {
