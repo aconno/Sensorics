@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class RESTHttpGetParamModelMapper @Inject constructor() {
 
-    fun toRESTHttpGetParamModel(restHttpGetParam: RESTHttpGetParam): RESTHttpGetParamModel {
+    private fun toRESTHttpGetParamModel(restHttpGetParam: RESTHttpGetParam): RESTHttpGetParamModel {
         return RESTHttpGetParamModel(
             restHttpGetParam.id,
             restHttpGetParam.rId,
@@ -25,7 +25,7 @@ class RESTHttpGetParamModelMapper @Inject constructor() {
         return restHttpGetParamModelList
     }
 
-    fun toRESTHttpGetParam(restHttpGetParamModel: RESTHttpGetParamModel): RESTHttpGetParam {
+    private fun toRESTHttpGetParam(restHttpGetParamModel: RESTHttpGetParamModel): RESTHttpGetParam {
         return GeneralRESTHttpGetParam(
             restHttpGetParamModel.id,
             restHttpGetParamModel.rId,
@@ -34,7 +34,7 @@ class RESTHttpGetParamModelMapper @Inject constructor() {
         )
     }
 
-    fun toRESTHttpGetParamByRESTPublishId(
+    private fun toRESTHttpGetParamByRESTPublishId(
         restHttpGetParamModel: RESTHttpGetParamModel,
         rId: Long
     ): RESTHttpGetParam {

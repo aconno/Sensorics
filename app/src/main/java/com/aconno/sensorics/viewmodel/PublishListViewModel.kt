@@ -7,7 +7,6 @@ import com.aconno.sensorics.domain.ifttt.RESTPublish
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.DeleteGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.GetAllGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
@@ -23,9 +22,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 
 class PublishListViewModel(
     private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
@@ -81,15 +78,15 @@ class PublishListViewModel(
                 when (it) {
                     is GooglePublish -> {
                         val transform = googlePublishDataMapper.transform(it)
-                        transform as BasePublishModel
+                        transform
                     }
                     is RESTPublish -> {
                         val transform = restPublishDataMapper.transform(it)
-                        transform as BasePublishModel
+                        transform
                     }
                     is MqttPublish -> {
                         val transform = mqttPublishModelDataMapper.toMqttPublishModel(it)
-                        transform as BasePublishModel
+                        transform
                     }
                     else -> throw NullPointerException("Illegal parameter provided. ")
                 }

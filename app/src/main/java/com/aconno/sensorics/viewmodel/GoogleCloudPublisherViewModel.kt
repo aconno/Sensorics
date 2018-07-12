@@ -4,11 +4,8 @@ import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.domain.ifttt.GeneralGooglePublishDeviceJoin
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.AddGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
-import com.aconno.sensorics.model.*
-import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
+import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.mapper.GooglePublishModelDataMapper
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -17,10 +14,7 @@ class GoogleCloudPublisherViewModel(
     private val addGooglePublishUseCase: AddGooglePublishUseCase,
     private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
     private val savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
-    private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-    private val devicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
-    private val savedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
-    private val deviceRelationModelMapper: DeviceRelationModelMapper
+    private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase
 ) : ViewModel() {
 
     fun save(
@@ -41,24 +35,6 @@ class GoogleCloudPublisherViewModel(
                 deviceId
             )
         )
-    }
-
-    fun getAllDevices(): Single<MutableList<DeviceRelationModel>> {
-        return savedDevicesMaybeUseCase.execute()
-            .toFlowable()
-            .flatMapIterable { it }
-            .map {
-                deviceRelationModelMapper.toDeviceRelationModel(it)
-            }.toList()
-    }
-
-    public fun getDevicesThatConnectedWithGooglePublish(googleId: Long): Single<MutableList<DeviceRelationModel>> {
-        return devicesThatConnectedWithGooglePublishUseCase.execute(googleId)
-            .toFlowable()
-            .flatMapIterable { it }
-            .map {
-                deviceRelationModelMapper.toDeviceRelationModel(it, true)
-            }.toList()
     }
 
     fun deleteRelationGoogle(

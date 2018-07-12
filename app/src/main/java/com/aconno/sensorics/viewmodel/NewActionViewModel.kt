@@ -57,39 +57,39 @@ class NewActionViewModel(
             val newId = 0L
             val condition = this.condition
 
-            if (condition == null) {
-                Timber.d("Condition is null. Cannot save action.")
-            } else if (deviceMacAddress == "") {
-                Timber.d("Device MAC address is empty")
-            } else {
+            when {
+                condition == null -> Timber.d("Condition is null. Cannot save action.")
+                deviceMacAddress == "" -> Timber.d("Device MAC address is empty")
+                else -> {
 
-                val parameters = mapOf(
-                    Pair(Outcome.TEXT_MESSAGE, content), Pair(Outcome.PHONE_NUMBER, smsDestination)
-                )
+                    val parameters = mapOf(
+                        Pair(Outcome.TEXT_MESSAGE, content), Pair(Outcome.PHONE_NUMBER, smsDestination)
+                    )
 
-                val outcomeEndType = when (outcomeType) {
-                    getApplication<Application>().getString(R.string.phone_notification) -> {
-                        Outcome.OUTCOME_TYPE_NOTIFICATION
+                    val outcomeEndType = when (outcomeType) {
+                        getApplication<Application>().getString(R.string.phone_notification) -> {
+                            Outcome.OUTCOME_TYPE_NOTIFICATION
+                        }
+                        getApplication<Application>().getString(R.string.sms_message) -> {
+                            Outcome.OUTCOME_TYPE_SMS
+                        }
+                        getApplication<Application>().getString(R.string.vibration) -> {
+                            Outcome.OUTCOME_TYPE_VIBRATION
+                        }
+                        getApplication<Application>().getString(R.string.text_to_speech) -> {
+                            Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH
+                        }
+                        else -> throw IllegalArgumentException("Invalid outcome type")
                     }
-                    getApplication<Application>().getString(R.string.sms_message) -> {
-                        Outcome.OUTCOME_TYPE_SMS
-                    }
-                    getApplication<Application>().getString(R.string.vibration) -> {
-                        Outcome.OUTCOME_TYPE_VIBRATION
-                    }
-                    getApplication<Application>().getString(R.string.text_to_speech) -> {
-                        Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH
-                    }
-                    else -> throw IllegalArgumentException("Invalid outcome type")
+
+                    val outcome = Outcome(parameters, outcomeEndType)
+                    val newAction = GeneralAction(newId, name, deviceMacAddress, condition, outcome)
+
+                    addActionUseCase.execute(newAction)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ onAddActionSuccess() }, { onAddActionFail() })
                 }
-
-                val outcome = Outcome(parameters, outcomeEndType)
-                val newAction = GeneralAction(newId, name, deviceMacAddress, condition, outcome)
-
-                addActionUseCase.execute(newAction)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ onAddActionSuccess() }, { onAddActionFail() })
             }
         } catch (e: Exception) {
             Timber.e(e)

@@ -18,6 +18,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="10dp"
+            android:contentDescription="@string/contentDescriptionUseless"
             android:src="@drawable/ic_delete_white_24dp" />
 
         <TextView
@@ -46,6 +47,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/contentDescriptionUseless"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

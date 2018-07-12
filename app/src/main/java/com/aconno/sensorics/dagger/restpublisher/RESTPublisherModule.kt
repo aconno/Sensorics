@@ -5,7 +5,6 @@ import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.ifttt.RESTPublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
-import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
 import com.aconno.sensorics.model.mapper.RESTHttpGetParamModelMapper
@@ -33,15 +32,10 @@ class RESTPublisherModule(private val restPublisherActivity: RESTPublisherActivi
         restPublishModelDataMapper: RESTPublishModelDataMapper,
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-        devicesThatConnectedWithRESTPublishUseCase: GetDevicesThatConnectedWithRESTPublishUseCase,
-        savedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
-        deviceRelationModelMapper: DeviceRelationModelMapper,
         saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
-        deleteRESTHeaderUseCase: DeleteRESTHeaderUseCase,
         getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
         restHeaderModelMapper: RESTHeaderModelMapper,
         saveRESTHttpGetParamUseCase: SaveRESTHttpGetParamUseCase,
-        deleteRESTHttpGetParamUseCase: DeleteRESTHttpGetParamUseCase,
         getRESTHttpGetParamsByIdUseCase: GetRESTHttpGetParamsByIdUseCase,
         restHttpGetParamModelMapper: RESTHttpGetParamModelMapper
     ) = RestPublisherViewModelFactory(
@@ -49,15 +43,10 @@ class RESTPublisherModule(private val restPublisherActivity: RESTPublisherActivi
         restPublishModelDataMapper,
         savePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase,
-        devicesThatConnectedWithRESTPublishUseCase,
-        savedDevicesMaybeUseCase,
-        deviceRelationModelMapper,
         saveRESTHeaderUseCase,
-        deleteRESTHeaderUseCase,
         getRESTHeadersByIdUseCase,
         restHeaderModelMapper,
         saveRESTHttpGetParamUseCase,
-        deleteRESTHttpGetParamUseCase,
         getRESTHttpGetParamsByIdUseCase,
         restHttpGetParamModelMapper
     )

@@ -1,16 +1,16 @@
 package com.aconno.sensorics.ui
 
 import android.content.Context
+import android.support.v7.widget.AppCompatAutoCompleteTextView
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
-import android.widget.AutoCompleteTextView
 
 /**
  * AutoCompleteTextview : When AutoComplete Drop is shown to user and user presses back button. First Keyboard is closed.
  * In original AutoCompleteTextView first dropdown dialog is closed.
  */
-class KeyboardAutoCompleteTextView : AutoCompleteTextView {
+class KeyboardAutoCompleteTextView : AppCompatAutoCompleteTextView {
 
     constructor(context: Context) : super(context)
 

@@ -16,7 +16,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/google_logo" />
+        tools:src="@drawable/google_logo"
+        android:contentDescription="@string/contentDescriptionUseless" />
 
     <TextView
         android:id="@+id/publish_name"

@@ -19,17 +19,6 @@ class DeviceAdapter(
     private var longItemClickListener: LongItemClickListener<Device>? = null
 ) : RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
 
-    fun addDevice(device: Device) {
-        devices.add(device)
-        notifyDataSetChanged()
-    }
-
-    fun deleteDevice(device: Device) {
-        val index = devices.indexOf(device)
-        devices.remove(device)
-        notifyItemRemoved(index)
-    }
-
     fun setDevices(devices: List<Device>) {
         this.devices.clear()
         this.devices.addAll(devices)
@@ -66,7 +55,7 @@ class DeviceAdapter(
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        var viewBackground: RelativeLayout? = null
+        private var viewBackground: RelativeLayout? = null
         var viewForeground: ConstraintLayout? = null
 
         fun bind(device: Device) {

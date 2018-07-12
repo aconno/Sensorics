@@ -4,7 +4,6 @@ import com.aconno.sensorics.domain.ifttt.GeneralRESTPublish
 import com.aconno.sensorics.domain.ifttt.RESTPublish
 import com.aconno.sensorics.model.RESTPublishModel
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class RESTPublishModelDataMapper @Inject constructor() {
     /**

@@ -5,10 +5,8 @@ import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnected
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
-import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.viewmodel.DeviceSelectViewModel
-import io.reactivex.Flowable
 
 class DeviceSelectViewModelFactory(
     private val getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,

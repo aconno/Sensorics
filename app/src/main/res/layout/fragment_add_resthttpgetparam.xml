@@ -67,6 +67,7 @@
             android:id="@+id/close_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="?android:attr/borderlessButtonStyle"
             android:background="?attr/selectableItemBackground"
             android:text="@string/close" />
 
@@ -74,6 +75,7 @@
             android:id="@+id/add_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="?android:attr/borderlessButtonStyle"
             android:background="?attr/selectableItemBackground"
             android:text="@string/add"
             android:textColor="@android:color/holo_green_light" />

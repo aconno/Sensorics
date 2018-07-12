@@ -15,13 +15,4 @@ class DeviceRelationModelMapper @Inject constructor() {
             related
         )
     }
-
-    fun toDevice(deviceRelationModel: DeviceRelationModel): Device {
-        return Device(
-            deviceRelationModel.name,
-            deviceRelationModel.alias,
-            deviceRelationModel.macAddress,
-            deviceRelationModel.icon
-        )
-    }
 }

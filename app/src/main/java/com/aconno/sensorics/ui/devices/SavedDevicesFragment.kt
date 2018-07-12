@@ -2,7 +2,6 @@ package com.aconno.sensorics.ui.devices
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.ProgressDialog.show
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.DialogInterface

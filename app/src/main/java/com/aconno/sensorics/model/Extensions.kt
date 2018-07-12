@@ -5,7 +5,7 @@ import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.ifttt.LimitCondition
 
 fun Condition.toString(context: Context): String {
-    val sensor = readingType.toString()
+    val sensor = readingType
     //TODO: Refactor constraint type
     val constraint = when (type) {
         LimitCondition.MORE_THAN -> ">"

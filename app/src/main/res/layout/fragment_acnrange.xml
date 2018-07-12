@@ -25,6 +25,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/contentDescriptionUseless"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_acnrange"
         app:layout_constraintBottom_toTopOf="@id/text_range"

@@ -12,6 +12,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/contentDescriptionUseless"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

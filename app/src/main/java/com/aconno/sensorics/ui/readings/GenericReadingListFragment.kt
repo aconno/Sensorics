@@ -58,7 +58,7 @@ class GenericReadingListFragment : Fragment() {
             val view = views[reading.name]
             if (view == null) {
                 val newView =
-                    LayoutInflater.from(context).inflate(R.layout.item_reading, null)
+                    LayoutInflater.from(context).inflate(R.layout.item_reading, list_readings,false)
                 context?.let { context ->
                     newView.setOnClickListener {
                         LiveGraphActivity.start(context, macAddress, reading.name)

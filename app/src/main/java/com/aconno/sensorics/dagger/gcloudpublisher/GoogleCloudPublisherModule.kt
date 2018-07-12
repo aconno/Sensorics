@@ -6,10 +6,7 @@ import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.AddGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
-import com.aconno.sensorics.domain.repository.DeviceRepository
-import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.model.mapper.GooglePublishModelDataMapper
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.viewmodel.GoogleCloudPublisherViewModel
@@ -33,18 +30,12 @@ class GoogleCloudPublisherModule(private val googleCloudPublisherActivity: Googl
         addGooglePublishUseCase: AddGooglePublishUseCase,
         googlePublishModelDataMapper: GooglePublishModelDataMapper,
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
-        deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-        devicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
-        savedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
-        deviceRelationModelMapper: DeviceRelationModelMapper
+        deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase
     ) = GoogleCloudPublisherViewModelFactory(
         addGooglePublishUseCase,
         googlePublishModelDataMapper,
         savePublishDeviceJoinUseCase,
-        deletePublishDeviceJoinUseCase,
-        devicesThatConnectedWithGooglePublishUseCase,
-        savedDevicesMaybeUseCase,
-        deviceRelationModelMapper
+        deletePublishDeviceJoinUseCase
     )
 
     @Provides

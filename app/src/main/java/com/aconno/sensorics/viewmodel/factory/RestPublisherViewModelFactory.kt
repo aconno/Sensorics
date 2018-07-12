@@ -14,15 +14,10 @@ class RestPublisherViewModelFactory(
     private val restPublishModelDataMapper: RESTPublishModelDataMapper,
     private val savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
     private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-    private val devicesThatConnectedWithRESTPublishUseCase: GetDevicesThatConnectedWithRESTPublishUseCase,
-    private val savedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
-    private val deviceRelationModelMapper: DeviceRelationModelMapper,
     private val saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
-    private val deleteRESTHeaderUseCase: DeleteRESTHeaderUseCase,
     private val getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
     private val restHeaderModelMapper: RESTHeaderModelMapper,
     private val saveRESTHttpGetParamUseCase: SaveRESTHttpGetParamUseCase,
-    private val deleteRESTHttpGetParamUseCase: DeleteRESTHttpGetParamUseCase,
     private val getRESTHttpGetParamsByIdUseCase: GetRESTHttpGetParamsByIdUseCase,
     private val restHttpGetParamModelMapper: RESTHttpGetParamModelMapper
 ) : BaseViewModelFactory() {
@@ -32,15 +27,10 @@ class RestPublisherViewModelFactory(
             restPublishModelDataMapper,
             savePublishDeviceJoinUseCase,
             deletePublishDeviceJoinUseCase,
-            devicesThatConnectedWithRESTPublishUseCase,
-            savedDevicesMaybeUseCase,
-            deviceRelationModelMapper,
             saveRESTHeaderUseCase,
-            deleteRESTHeaderUseCase,
             getRESTHeadersByIdUseCase,
             restHeaderModelMapper,
             saveRESTHttpGetParamUseCase,
-            deleteRESTHttpGetParamUseCase,
             getRESTHttpGetParamsByIdUseCase,
             restHttpGetParamModelMapper
         )
