@@ -57,8 +57,10 @@ class SavedDevicesDialog : DialogFragment(), ItemClickListener<Device> {
 
         disposable = savedDevices.first(listOf())
             .subscribe { devices ->
-                text_empty.visibility = View.INVISIBLE
-                adapter.setDevices(devices)
+                if (devices.isNotEmpty()) {
+                    text_empty.visibility = View.INVISIBLE
+                    adapter.setDevices(devices)
+                }
             }
     }
 

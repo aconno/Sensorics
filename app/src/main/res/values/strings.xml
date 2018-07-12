@@ -103,7 +103,7 @@
     <string name="mqtt_backend">MQTT Backend</string>
 
     <!-- Device list screen -->
-    <string name="no_devices_label">There are no devices.</string>
+    <string name="no_devices_label">There are no devices.\nAdd new device from the main screen.</string>
     <string name="no_devices_plus_button_label">There are no devices.\nPress plus (+) to add a new device.</string>
 
     <string-array name="RESTMethods">
@@ -127,6 +127,7 @@
     <string name="device">Device</string>
     <string name="private_key">Private Key</string>
     <string name="private_key_click">Touch to choose</string>
+    <string name="device_click">Touch to choose device</string>
     <string name="not_valid_file_pkcs8">Selected File is not valid PKCS8 FIle.</string>
     <string name="rest_method_post">POST</string>
     <string name="rest_method_get">GET</string>

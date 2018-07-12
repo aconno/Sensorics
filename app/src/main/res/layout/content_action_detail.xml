@@ -40,9 +40,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                 android:layout_marginStart="@dimen/screen_edge_left_right_margin"
-                android:textSize="@dimen/list_item_text_size"
-                tools:text="Mac address" />
-
+                android:background="?attr/editTextBackground"
+                android:gravity="center_vertical"
+                android:hint="@string/device_click"
+                android:textAppearance="?android:attr/textAppearanceMediumInverse"
+                android:textColor="?attr/editTextColor"
+                android:textSize="@dimen/list_item_text_size" />
         </LinearLayout>
 
         <TextView
