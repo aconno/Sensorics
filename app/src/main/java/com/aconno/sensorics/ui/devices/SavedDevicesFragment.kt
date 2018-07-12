@@ -50,6 +50,8 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
 
     private var dontObserveQueue: Queue<Boolean> = ArrayDeque<Boolean>()
 
+    private var snackbar: Snackbar? = null
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
@@ -102,6 +104,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
         })
 
         button_add_device.setOnClickListener {
+            snackbar?.dismiss()
             listener.onFABClicked()
             Timber.d("Button add device clicked")
             ScannedDevicesDialog().show(activity?.supportFragmentManager, "devices_dialog")
@@ -191,17 +194,19 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
             deviceAdapter.removeItem(position)
 
             // showing snack bar with Undo option
-            val snackbar = Snackbar
+            snackbar = Snackbar
                 .make(coordinatorLayout, "$name removed!", Snackbar.LENGTH_LONG)
-            snackbar.setAction("UNDO") {
+            snackbar?.setAction("UNDO") {
                 // undo is selected, restore the deleted item
                 deviceAdapter.restoreItem(deletedItem, position)
             }
 
-            snackbar.addCallback(object : Snackbar.Callback() {
+            snackbar?.addCallback(object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
                         || event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
+                        || event == Snackbar.Callback.DISMISS_EVENT_SWIPE
+                        || event == Snackbar.Callback.DISMISS_EVENT_MANUAL
                     ) {
                         //delete device from db if undo snackbar timeout.
                         deviceViewModel.deleteDevice(deletedItem)
@@ -209,8 +214,8 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
                     }
                 }
             })
-            snackbar.setActionTextColor(Color.YELLOW)
-            snackbar.show()
+            snackbar?.setActionTextColor(Color.YELLOW)
+            snackbar?.show()
         }
     }
 }

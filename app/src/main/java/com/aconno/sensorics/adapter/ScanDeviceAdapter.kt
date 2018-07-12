@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.sensorics.R
+import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanDevice
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -21,9 +22,15 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
             devices.add(scanDevice)
             notifyDataSetChanged()
         } else {
-            devices.set(index, scanDevice)
+            devices[index] = scanDevice
             notifyDataSetChanged()
         }
+    }
+
+    fun deleteDevice(device: ScanDevice) {
+        val index = devices.indexOf(device)
+        devices.remove(device)
+        notifyItemRemoved(index)
     }
 
     fun getClickedDevices(): Observable<ScanDevice> {

@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import com.aconno.sensorics.R
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.adapter.ScanDeviceAdapter
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.ui.base.BaseDialogFragment
@@ -28,7 +27,7 @@ class ScannedDevicesDialog : BaseDialogFragment() {
     lateinit var scanDeviceStream: Flowable<ScanDevice>
 
     @Inject
-    lateinit var savedDevicesUseCase: GetSavedDevicesMaybeUseCase
+    lateinit var savedDevicesUseCase: Flowable<List<Device>>
 
     private val adapter = ScanDeviceAdapter()
 
@@ -63,34 +62,40 @@ class ScannedDevicesDialog : BaseDialogFragment() {
         list_devices.layoutManager = LinearLayoutManager(context)
         list_devices.adapter = adapter
         adapter.getClickedDevices()
-            .take(1)
             .subscribe {
+                Timber.d("Item clicked, mac: ${it.device.macAddress}")
                 listener.onDevicesDialogItemClick(it.device)
-                dialog.dismiss()
+                savedDevices.add(it.device)
+                adapter.deleteDevice(it)
+
+                if (adapter.itemCount == 0) {
+                    text_empty.visibility = View.VISIBLE
+                }
             }
 
         addDisposable(
-            savedDevicesUseCase.execute()
+            savedDevicesUseCase
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     savedDevices.clear()
                     savedDevices.addAll(it)
+                }
+        )
 
-                    addDisposable(
-                        scanDeviceStream
-                            .filter {
-                                !savedDevices.contains(it.device)
-                            }
-                            .groupBy { it.device.macAddress }
-                            .map { it.sample(1, TimeUnit.SECONDS) }
-                            .flatMap { it }
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe {
-                                text_empty.visibility = View.INVISIBLE
-                                adapter.addScanDevice(it)
-                            }
-                    )
+        addDisposable(
+            scanDeviceStream
+                .groupBy { it.device.macAddress }
+                .map { it.sample(1, TimeUnit.SECONDS) }
+                .flatMap { it }
+                .filter {
+                    !savedDevices.contains(it.device)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    Timber.d("Item will be added, mac: ${it.device.macAddress}")
+                    text_empty.visibility = View.INVISIBLE
+                    adapter.addScanDevice(it)
                 }
         )
     }
@@ -98,16 +103,5 @@ class ScannedDevicesDialog : BaseDialogFragment() {
     override fun onDismiss(dialog: DialogInterface?) {
         super.onDismiss(dialog)
         listener.onDialogDismissed()
-    }
-  
-    override fun onItemClick(item: Device) {
-        Timber.d("Item clicked, mac: ${item.macAddress}")
-        listener.onDevicesDialogItemClick(item)
-        savedDevices.add(item)
-        adapter.deleteDevice(item)
-
-        if (adapter.itemCount == 0) {
-            text_empty.visibility = View.VISIBLE
-        }
     }
 }
