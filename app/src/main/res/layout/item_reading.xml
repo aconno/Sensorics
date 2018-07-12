@@ -3,20 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:minHeight="@dimen/list_item_height"
-    android:layout_height="@dimen/list_item_height">
-
-    <ImageView
-        android:id="@+id/image_reading_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_temperature" />
+    android:layout_height="@dimen/list_item_height"
+    android:minHeight="@dimen/list_item_height">
 
     <TextView
         android:id="@+id/text_reading_name"
@@ -25,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/image_reading_icon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Temperature" />
 

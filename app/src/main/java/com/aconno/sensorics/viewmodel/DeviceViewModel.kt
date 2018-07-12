@@ -40,6 +40,21 @@ class DeviceViewModel(
             .subscribe()
     }
 
+    fun updateDevice(device: Device, alias: String): Device {
+        val newDevice = Device(
+            device.name,
+            alias,
+            device.macAddress,
+            device.icon
+        )
+
+        saveDeviceUseCase.execute(newDevice)
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+
+        return newDevice
+    }
+
     fun deleteDevice(device: Device) {
         deleteDeviceUseCase.execute(device)
             .subscribeOn(Schedulers.io())

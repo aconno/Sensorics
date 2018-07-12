@@ -7,14 +7,15 @@ apply plugin: 'io.fabric'
 android {
     compileSdkVersion 27
     defaultConfig {
-        manifestPlaceholders = [fabricAPIKey:sensorics_fabricKey]
         applicationId "com.aconno.sensorics"
+        manifestPlaceholders = [fabricAPIKey: sensorics_fabricKey]
         minSdkVersion 21
         targetSdkVersion 27
         versionCode rootProject.ext.sensoricsVersionCode
         versionName rootProject.ext.sensoricsVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        flavorDimensions "version"
     }
     buildTypes {
 
@@ -34,6 +35,17 @@ android {
 
     lintOptions {
         checkReleaseBuilds false
+    }
+
+    productFlavors {
+        dev {
+            dimension "version"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
+        }
+        prod {
+            dimension "version"
+        }
     }
 }
 

@@ -14,6 +14,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import com.aconno.sensorics.domain.model.Device
 
 //TODO: This needs refactoring.
 class BluetoothImpl(
@@ -27,7 +28,7 @@ class BluetoothImpl(
     private val scanEvents: PublishSubject<ScanEvent> = PublishSubject.create()
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvents)
 
-    private fun getScanSettings(): Pair<List<ScanFilter>, ScanSettings> {
+    private fun getScanSettings(devices: List<Device>? = null): Pair<List<ScanFilter>?, ScanSettings> {
         val settingsBuilder = ScanSettings.Builder()
 
         val scanMode = sharedPrefs.getString("scan_mode", "3").toInt()
@@ -40,8 +41,23 @@ class BluetoothImpl(
         settingsBuilder.setReportDelay(0)
 
         val scanFilterBuilder = ScanFilter.Builder()
-        return Pair<List<ScanFilter>, ScanSettings>(
-            listOf(scanFilterBuilder.build()),
+        val scanFilterList = mutableListOf<ScanFilter>()
+
+        if (devices != null && devices.isNotEmpty()) {
+            devices.forEach {
+                scanFilterBuilder.setDeviceAddress(it.macAddress)
+                scanFilterList.add(
+                    scanFilterBuilder.build()
+                )
+            }
+        } else {
+            scanFilterList.add(
+                scanFilterBuilder.build()
+            )
+        }
+
+        return Pair<List<ScanFilter>?, ScanSettings>(
+            scanFilterList,
             settingsBuilder.build()
         )
     }
@@ -57,6 +73,20 @@ class BluetoothImpl(
     override fun disable() {
         if (bluetoothPermission.isGranted) {
             bluetoothAdapter.disable()
+        } else {
+            throw BluetoothException("Bluetooth permission not granted")
+        }
+    }
+
+    override fun startScanning(devices: List<Device>) {
+        val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
+        if (bluetoothPermission.isGranted) {
+            scanEvents.onNext(
+                ScanEvent(ScanEvent.SCAN_START, "Scan start at ${System.currentTimeMillis()}")
+            )
+
+            val scanSettings = getScanSettings(devices)
+            bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
         } else {
             throw BluetoothException("Bluetooth permission not granted")
         }

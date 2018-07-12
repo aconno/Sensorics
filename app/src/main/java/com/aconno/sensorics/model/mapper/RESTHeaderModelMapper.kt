@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class RESTHeaderModelMapper @Inject constructor() {
 
-    fun toRESTHeaderModel(restHeader: RESTHeader): RESTHeaderModel {
+    private fun toRESTHeaderModel(restHeader: RESTHeader): RESTHeaderModel {
         return RESTHeaderModel(
             restHeader.id,
             restHeader.rId,
@@ -25,7 +25,7 @@ class RESTHeaderModelMapper @Inject constructor() {
         return restHeaderModelList
     }
 
-    fun toRESTHeader(restHeaderModel: RESTHeaderModel): RESTHeader {
+    private fun toRESTHeader(restHeaderModel: RESTHeaderModel): RESTHeader {
         return GeneralRESTHeader(
             restHeaderModel.id,
             restHeaderModel.rId,
@@ -34,7 +34,7 @@ class RESTHeaderModelMapper @Inject constructor() {
         )
     }
 
-    fun toRESTHeaderByRESTPublishId(restHeaderModel: RESTHeaderModel, rId: Long): RESTHeader {
+    private fun toRESTHeaderByRESTPublishId(restHeaderModel: RESTHeaderModel, rId: Long): RESTHeader {
         return GeneralRESTHeader(
             restHeaderModel.id,
             rId,

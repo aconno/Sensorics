@@ -28,7 +28,7 @@ class ConditionDialog : DialogFragment() {
 
         sensorType = arguments?.let { getSensorTypeExtra(it) }
 
-        view_title.text = sensorType?.toString()
+        view_title.text = sensorType
 
         view_less.setOnClickListener {
             view_less.isChecked = !view_less.isChecked

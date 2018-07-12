@@ -7,6 +7,7 @@
     <dimen name="list_item_height">72dp</dimen>
     <dimen name="list_item_text_size">15sp</dimen>
     <dimen name="list_item_secondary_text_size">13sp</dimen>
+    <dimen name="list_item_label_small_text_size">10sp</dimen>
     <dimen name="list_item_text_padding">4dp</dimen>
 
     <!-- Message -->
@@ -34,8 +35,4 @@
     <!-- Graph -->
     <dimen name="graph_line_width">1dp</dimen>
     <dimen name="graph_circle_radius">1dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="app_bar_height">200dp</dimen>
-    <dimen name="item_width">200dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
 </resources>

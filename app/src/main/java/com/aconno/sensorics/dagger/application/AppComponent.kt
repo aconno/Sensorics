@@ -1,8 +1,8 @@
 package com.aconno.sensorics.dagger.application
 
 import android.support.v4.content.LocalBroadcastManager
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.BluetoothStateReceiver
+import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
@@ -10,8 +10,9 @@ import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
-import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
@@ -31,7 +32,7 @@ interface AppComponent {
 
     fun inMemoryRepository(): InMemoryRepository
 
-    fun scannedDevice(): Flowable<Device>
+    fun scannedDevice(): Flowable<ScanDevice>
 
     fun savedDevices(): Flowable<List<Device>>
 

@@ -1,9 +1,10 @@
 package com.aconno.sensorics.data.publisher
 
-import com.aconno.sensorics.data.converter.DataStringConverter
+import com.aconno.sensorics.data.converter.ReadingDataStringConverter
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.RESTHeader
+import com.aconno.sensorics.domain.ifttt.RESTHttpGetParam
 import com.aconno.sensorics.domain.ifttt.RESTPublish
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
@@ -17,11 +18,12 @@ import timber.log.Timber
 class RESTPublisher(
     private val restPublish: RESTPublish,
     private val listDevices: List<Device>,
-    private val listHeaders: List<RESTHeader>
+    private val listHeaders: List<RESTHeader>,
+    private val listHttpGetParams: List<RESTHttpGetParam>
 ) : Publisher {
 
     private val httpClient: OkHttpClient
-    private val dataStringConverter: DataStringConverter
+    private val readingToStringParser: ReadingDataStringConverter
 
     init {
         val logging = HttpLoggingInterceptor()
@@ -30,7 +32,7 @@ class RESTPublisher(
             .addInterceptor(logging)
             .build()
 
-        dataStringConverter = DataStringConverter(restPublish.dataString)
+        readingToStringParser = ReadingDataStringConverter()
     }
 
     companion object {
@@ -38,31 +40,24 @@ class RESTPublisher(
     }
 
     override fun publish(reading: Reading) {
-        val messages = dataStringConverter.convert(reading) ?: return
-
-        Observable.fromIterable(messages)
-            .subscribeOn(Schedulers.io())
-            .concatMap { it ->
-                Timber.tag("Publisher HTTP")
-                    .d("${restPublish.name} publishes from ${reading.device}")
-                getRequestObservable(it)
-            }
+        Timber.tag("Publisher HTTP")
+            .d("${restPublish.name} publishes from ${reading.device}")
+        getRequestObservable(reading)
             .subscribe {
                 Timber.d(it.body().toString())
             }
+
     }
 
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
-        val convertList = dataStringConverter.convert(
-            Reading(
-                System.currentTimeMillis(),
-                Device("TestDevice", "MA:CA:DD:RE:SS:11"),
-                1,
-                "Temperature"
-            )
+        val reading = Reading(
+            System.currentTimeMillis(),
+            Device("TestDevice", "Name", "MA:CA:DD:RE:SS:11"),
+            1,
+            "Temperature"
         )
 
-        getRequestObservable(convertList!![0])
+        getRequestObservable(reading)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
@@ -74,29 +69,39 @@ class RESTPublisher(
             }
     }
 
-    private fun getRequestObservable(message: String): Observable<Response> {
+    private fun getRequestObservable(message: Reading): Observable<Response> {
         return Observable.fromCallable {
             when {
                 restPublish.method == "GET" -> {
                     val httpBuilder = HttpUrl.parse(restPublish.url)!!.newBuilder()
-                    httpBuilder.addQueryParameter(restPublish.parameterName, message)
 
-                    val builder = Request.Builder()
-                    listHeaders.forEach {
-                        builder.addHeader(it.key, it.value)
+                    listHttpGetParams.forEach {
+                        httpBuilder.addQueryParameter(
+                            readingToStringParser.convert(
+                                message,
+                                it.key
+                            ), readingToStringParser.convert(
+                                message,
+                                it.value
+                            )
+                        )
                     }
 
-                    val request = builder.url(httpBuilder.build()).build();
+                    val builder = Request.Builder()
+                    addHeaders(builder, message)
+
+                    val request = builder.url(httpBuilder.build()).build()
 
                     httpClient.newCall(request).execute()
                 }
                 restPublish.method == "POST" -> {
-                    val body = RequestBody.create(JSON, message)
+                    val body = RequestBody.create(
+                        getMediaType(),
+                        readingToStringParser.convert(message, restPublish.dataString)
+                    )
 
                     val builder = Request.Builder()
-                    listHeaders.forEach {
-                        builder.addHeader(it.key, it.value)
-                    }
+                    addHeaders(builder, message)
 
                     val request = builder
                         .url(restPublish.url)
@@ -105,12 +110,13 @@ class RESTPublisher(
                     httpClient.newCall(request).execute()
                 }
                 restPublish.method == "PUT" -> {
-                    val body = RequestBody.create(JSON, message)
+                    val body = RequestBody.create(
+                        getMediaType(),
+                        readingToStringParser.convert(message, restPublish.dataString)
+                    )
 
                     val builder = Request.Builder()
-                    listHeaders.forEach {
-                        builder.addHeader(it.key, it.value)
-                    }
+                    addHeaders(builder, message)
 
                     val request = builder
                         .url(restPublish.url)
@@ -122,6 +128,33 @@ class RESTPublisher(
                     throw IllegalArgumentException("Illegal Http method please check from getRequestObservable list.")
                 }
             }
+        }
+    }
+
+    private fun getMediaType(): MediaType? {
+        listHeaders.forEach {
+            if (it.key == "Content-Type") {
+                return MediaType.parse(it.value)
+            }
+        }
+
+        return JSON
+    }
+
+    private fun addHeaders(
+        builder: Request.Builder,
+        message: Reading
+    ) {
+        listHeaders.forEach {
+            builder.addHeader(
+                readingToStringParser.convert(
+                    message,
+                    it.key
+                ), readingToStringParser.convert(
+                    message,
+                    it.value
+                )
+            )
         }
     }
 

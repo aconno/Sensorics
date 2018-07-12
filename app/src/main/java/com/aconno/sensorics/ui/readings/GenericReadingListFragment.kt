@@ -31,7 +31,8 @@ class GenericReadingListFragment : Fragment() {
 
         macAddress = getMacAddress(this)
         readingListViewModel.init(macAddress)
-        mainActivity.supportActionBar?.title = macAddress
+        mainActivity.supportActionBar?.title = getDeviceName()
+        mainActivity.supportActionBar?.subtitle = macAddress
     }
 
     override fun onCreateView(
@@ -57,14 +58,8 @@ class GenericReadingListFragment : Fragment() {
             val view = views[reading.name]
             if (view == null) {
                 val newView =
-                    LayoutInflater.from(context).inflate(R.layout.item_reading, null)
+                    LayoutInflater.from(context).inflate(R.layout.item_reading, list_readings,false)
                 context?.let { context ->
-                    // TODO: Implement icon configuration
-                    val iconId =
-                        context.resources.getIdentifier("it.icon", "drawable", context.packageName)
-                    if (iconId != 0) {
-                        newView.image_reading_icon.setImageResource(iconId)
-                    }
                     newView.setOnClickListener {
                         LiveGraphActivity.start(context, macAddress, reading.name)
                     }
@@ -79,13 +74,22 @@ class GenericReadingListFragment : Fragment() {
         }
     }
 
+    private fun getDeviceName(): String {
+        arguments?.let {
+            return it.getString(DEVICE_NAME_EXTRA) ?: ""
+        }
+        return ""
+    }
+
     companion object {
 
         private const val MAC_ADDRESS_EXTRA = "mac_address"
+        private const val DEVICE_NAME_EXTRA = "device_name"
 
-        fun newInstance(macAddress: String): Fragment {
+        fun newInstance(macAddress: String, deviceName: String): Fragment {
             val bundle = Bundle()
             bundle.putString(MAC_ADDRESS_EXTRA, macAddress)
+            bundle.putString(DEVICE_NAME_EXTRA, deviceName)
             val fragment = GenericReadingListFragment()
             fragment.arguments = bundle
             return fragment

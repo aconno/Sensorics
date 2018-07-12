@@ -2,9 +2,7 @@ package com.aconno.sensorics.ui
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import com.aconno.sensorics.R
-
 import kotlinx.android.synthetic.main.view_sensor_card.view.*
 
 /**
@@ -14,12 +12,12 @@ class SensorCardView(context: Context, attrs: AttributeSet?, defStyle: Int) :
     SquareCardView(context, attrs) {
 
     constructor(context: Context) : this(context, null, 0)
+
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     init {
         addView(
-            LayoutInflater.from(context)
-                .inflate(R.layout.view_sensor_card, null, false)
+            inflate(context, R.layout.view_sensor_card, null)
         )
     }
 

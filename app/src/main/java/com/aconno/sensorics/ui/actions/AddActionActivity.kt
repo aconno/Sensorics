@@ -1,5 +1,6 @@
 package com.aconno.sensorics.ui.actions
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
@@ -233,6 +234,7 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
         initConditionStates()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initConditionTexts() {
         temperature.text = "Temperature"
         light.text = "Light"
@@ -273,6 +275,7 @@ class AddActionActivity : AppCompatActivity(), ConditionDialogListener, SavedDev
         appendConditionString(conditionView, condition)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun appendConditionString(textView: TextView, condition: Condition) {
         val constraint = when (condition.type) {
             LimitCondition.LESS_THAN -> "<"

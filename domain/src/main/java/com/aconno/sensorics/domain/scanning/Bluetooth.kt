@@ -3,6 +3,7 @@ package com.aconno.sensorics.domain.scanning
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.model.ScanEvent
 import io.reactivex.Flowable
+import com.aconno.sensorics.domain.model.Device
 
 interface Bluetooth {
 
@@ -11,6 +12,8 @@ interface Bluetooth {
     fun disable()
 
     fun startScanning()
+
+    fun startScanning(devices: List<Device>)
 
     fun stopScanning()
 

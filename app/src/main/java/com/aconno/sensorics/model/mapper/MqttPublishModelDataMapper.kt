@@ -42,13 +42,4 @@ class MqttPublishModelDataMapper @Inject constructor() {
             mqttPublish.dataString
         )
     }
-
-    fun toMqttPublishModelList(mqttPublishCollection: Collection<MqttPublish>): List<MqttPublishModel> {
-        val mqttPublishModelList = mutableListOf<MqttPublishModel>()
-        for (mqttPublish in mqttPublishCollection) {
-            val user = toMqttPublishModel(mqttPublish)
-            mqttPublishModelList.add(user)
-        }
-        return mqttPublishModelList
-    }
 }

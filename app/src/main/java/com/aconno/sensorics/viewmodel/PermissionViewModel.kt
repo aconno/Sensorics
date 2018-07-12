@@ -16,16 +16,8 @@ class PermissionViewModel(
         checkAndRequestPermission(SensoricsPermission.ACCESS_FINE_LOCATION)
     }
 
-    fun requestAccessFineLocationAfterRationale() {
-        requestPermission(SensoricsPermission.ACCESS_FINE_LOCATION)
-    }
-
     fun requestAccessToReadExternalStorage() {
         checkAndRequestPermission(SensoricsPermission.READ_EXTERNAL_STORAGE)
-    }
-
-    fun requestAccessToReadExternalStorageAfterRationale() {
-        requestPermission(SensoricsPermission.READ_EXTERNAL_STORAGE)
     }
 
     private fun checkAndRequestPermission(sensoricsPermission: SensoricsPermission) {

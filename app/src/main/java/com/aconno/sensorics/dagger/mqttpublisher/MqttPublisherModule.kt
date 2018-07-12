@@ -8,7 +8,6 @@ import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoin
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
-import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
@@ -32,19 +31,13 @@ class MqttPublisherModule(private val mqttPublisherActivity: MqttPublisherActivi
     fun provideMqttPublisherViewModelFactory(
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-        savedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
-        deviceRelationModelMapper: DeviceRelationModelMapper,
         addMqttPublishUseCase: AddMqttPublishUseCase,
-        mqttPublishModelDataMapper: MqttPublishModelDataMapper,
-        devicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase
+        mqttPublishModelDataMapper: MqttPublishModelDataMapper
     ) = MqttPublisherViewModelFactory(
         savePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase,
-        savedDevicesMaybeUseCase,
-        deviceRelationModelMapper,
         addMqttPublishUseCase,
-        mqttPublishModelDataMapper,
-        devicesThatConnectedWithMqttPublishUseCase
+        mqttPublishModelDataMapper
     )
 
     @Provides

@@ -5,4 +5,6 @@ import com.aconno.sensorics.domain.model.Device
 interface ScannedDevicesDialogListener {
 
     fun onDevicesDialogItemClick(item: Device)
+
+    fun onDialogDismissed()
 }

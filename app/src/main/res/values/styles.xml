@@ -59,13 +59,13 @@
         <item name="android:textSize">@dimen/list_item_secondary_text_size</item>
     </style>
 
+    <style name="ListItemLabelSmall">
+        <item name="android:textColor">@color/secondaryLightColor</item>
+        <item name="android:textSize">@dimen/list_item_label_small_text_size</item>
+    </style>
+
     <style name="MessageText">
         <item name="android:textColor">@color/secondaryColor</item>
         <item name="android:textSize">@dimen/message_text_size</item>
     </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
 </resources>

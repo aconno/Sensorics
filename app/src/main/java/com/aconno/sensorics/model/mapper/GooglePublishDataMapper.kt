@@ -3,7 +3,6 @@ package com.aconno.sensorics.model.mapper
 import com.aconno.sensorics.domain.ifttt.GooglePublish
 import com.aconno.sensorics.model.GooglePublishModel
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class GooglePublishDataMapper @Inject constructor() {
 

@@ -15,6 +15,7 @@ class GenerateDeviceUseCase(
                 ?: throw IllegalArgumentException("No format for scan result: $parameter")
         val device = Device(
             format.getName(),
+            "",
             parameter.macAddress,
             format.getIcon()
         )

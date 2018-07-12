@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.DeleteGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.GetAllGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase

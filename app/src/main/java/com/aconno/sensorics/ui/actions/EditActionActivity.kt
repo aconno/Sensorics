@@ -1,5 +1,6 @@
 package com.aconno.sensorics.ui.actions
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
@@ -71,6 +72,7 @@ class EditActionActivity : AppCompatActivity(), ConditionDialogListener,
         setButtonListeners()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initConditions() {
         temperature.text = "Temperature"
         light.text = "Light"

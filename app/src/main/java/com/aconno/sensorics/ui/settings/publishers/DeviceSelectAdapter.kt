@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.sensorics.R
+import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceRelationModel
 import kotlinx.android.synthetic.main.item_device_switch.view.*
 
@@ -35,7 +36,7 @@ class DeviceSelectAdapter(
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(deviceRelationModel: DeviceRelationModel) {
-            view.name.text = deviceRelationModel.name
+            view.name.text = deviceRelationModel.getRealName()
             view.mac_address.text = deviceRelationModel.macAddress
             view.switch_device.isChecked = deviceRelationModel.related
         }

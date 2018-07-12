@@ -20,12 +20,15 @@ import com.aconno.sensorics.data.publisher.RESTPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.RESTHeaderModel
+import com.aconno.sensorics.model.RESTHttpGetParamModel
 import com.aconno.sensorics.model.RESTPublishModel
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
+import com.aconno.sensorics.model.mapper.RESTHttpGetParamModelMapper
 import com.aconno.sensorics.model.mapper.RESTPublishModelDataMapper
 import com.aconno.sensorics.ui.base.BaseActivity
 import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.sensorics.ui.settings.publishers.rheader.RESTHeadersActivity
+import com.aconno.sensorics.ui.settings.publishers.rhttpgetparams.RESTHttpGetParamsActivity
 import com.aconno.sensorics.viewmodel.RestPublisherViewModel
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
@@ -48,6 +51,7 @@ class RESTPublisherActivity : BaseActivity() {
     private var restPublishModel: RESTPublishModel? = null
     private var isTestingAlreadyRunning: Boolean = false
     private var restHeaderList: ArrayList<RESTHeaderModel> = arrayListOf()
+    private var restHttpGetParamList: ArrayList<RESTHttpGetParamModel> = arrayListOf()
 
     private val testConnectionCallback = object : Publisher.TestConnectionCallback {
         override fun onConnectionStart() {
@@ -139,12 +143,21 @@ class RESTPublisherActivity : BaseActivity() {
      * This method is called after @Intent.ACTION_OPEN_DOCUMENT result is returned.
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == RESTHeadersActivity.EDIT_HEADERS_REQUEST_CODE) {
-            val list =
-                data!!.getParcelableArrayListExtra<RESTHeaderModel>(RESTHeadersActivity.REST_HEADERS_ACTIVITY_LIST_KEY)
-            restHeaderList.clear()
-            restHeaderList.addAll(list)
-            updateHeaderText()
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == RESTHeadersActivity.EDIT_HEADERS_REQUEST_CODE) {
+                val list =
+                    data!!.getParcelableArrayListExtra<RESTHeaderModel>(RESTHeadersActivity.REST_HEADERS_ACTIVITY_LIST_KEY)
+                restHeaderList.clear()
+                restHeaderList.addAll(list)
+                updateHeaderText()
+            } else if (requestCode == RESTHttpGetParamsActivity.EDIT_HTTPGET_PARAMS_REQUEST_CODE) {
+                val list = data!!.getParcelableArrayListExtra<RESTHttpGetParamModel>(
+                    RESTHttpGetParamsActivity.REST_HTTPGET_PARAMS_ACTIVITY_LIST_KEY
+                )
+                restHttpGetParamList.clear()
+                restHttpGetParamList.addAll(list)
+                updateHttpGetParamText()
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data)
@@ -177,9 +190,8 @@ class RESTPublisherActivity : BaseActivity() {
             ) {
 
                 when (position) {
-                    0 -> layout_text_http_get.visibility = View.VISIBLE
-                    1 -> layout_text_http_get.visibility = View.GONE
-                    2 -> layout_text_http_get.visibility = View.GONE
+                    0 -> view_switcher.displayedChild = 1
+                    1, 2 -> view_switcher.displayedChild = 0
                 }
             }
         }
@@ -188,7 +200,12 @@ class RESTPublisherActivity : BaseActivity() {
             RESTHeadersActivity.start(this, restHeaderList)
         }
 
+        text_http_get_params.setOnClickListener {
+            RESTHttpGetParamsActivity.start(this, restHttpGetParamList)
+        }
+
         updateHeaderText()
+        updateHttpGetParamText()
     }
 
     private fun setFields() {
@@ -233,10 +250,24 @@ class RESTPublisherActivity : BaseActivity() {
                     updateHeaderText()
                 }
         )
+
+        addDisposable(
+            restPublisherViewModel.getRESTHttpGetParamsById(restPublishModel!!.id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    restHttpGetParamList = ArrayList(it)
+                    updateHttpGetParamText()
+                }
+        )
     }
 
     private fun updateHeaderText() {
         text_http_headers.text = getString(R.string.headers, restHeaderList.size)
+    }
+
+    private fun updateHttpGetParamText() {
+        text_http_get_params.text = getString(R.string.httpget_params, restHttpGetParamList.size)
     }
 
     private fun millisToFormattedDateString(millis: Long): String {
@@ -251,7 +282,18 @@ class RESTPublisherActivity : BaseActivity() {
         if (restPublishModel != null) {
             restPublisherViewModel.save(restPublishModel)
                 .flatMapCompletable { id ->
-                    addRelationsToRest(id).mergeWith(addHeadersToREST(id))
+                    if (restPublishModel.method == "GET") {
+                        Completable.concatArray(
+                            addRelationsToRest(id),
+                            addHeadersToREST(id),
+                            addHTTPGetParamsToREST(id)
+                        )
+                    } else {
+                        Completable.concatArray(
+                            addRelationsToRest(id),
+                            addHeadersToREST(id)
+                        )
+                    }
                 }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : CompletableObserver {
@@ -281,6 +323,12 @@ class RESTPublisherActivity : BaseActivity() {
     private fun addHeadersToREST(it: Long): Completable {
         return restPublisherViewModel.addRESTHeader(
             restHeaderList, it
+        )
+    }
+
+    private fun addHTTPGetParamsToREST(it: Long): Completable {
+        return restPublisherViewModel.addRESTHttpGetParams(
+            restHttpGetParamList, it
         )
     }
 
@@ -315,7 +363,6 @@ class RESTPublisherActivity : BaseActivity() {
         val name = edit_name.text.toString().trim()
         val url = edit_url.text.toString().trim()
         val method = spinner_methods.selectedItem.toString()
-        val parameterName = layout_text_http_get.editText!!.text.toString()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
         val datastring = edit_datastring.text.toString()
@@ -328,12 +375,8 @@ class RESTPublisherActivity : BaseActivity() {
                 timeCount,
                 datastring
             )
+            || (method == "GET" && restHeaderList.isEmpty())
         ) {
-            Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
-            return null
-        }
-
-        if (method == "GET" && restPublisherViewModel.checkFieldsAreEmpty(parameterName)) {
             Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
             return null
         }
@@ -346,7 +389,6 @@ class RESTPublisherActivity : BaseActivity() {
             name,
             url,
             method,
-            parameterName,
             false,
             timeType,
             timeMillis,
@@ -375,8 +417,9 @@ class RESTPublisherActivity : BaseActivity() {
     private fun testRESTConnection(toRESTPublishModel: RESTPublishModel) {
         val publisher = RESTPublisher(
             RESTPublishModelDataMapper().transform(toRESTPublishModel),
-            listOf(Device("TestDevice", "Mac")),
-            RESTHeaderModelMapper().toRESTHeaderList(restHeaderList)
+            listOf(Device("TestDevice","Name", "Mac")),
+            RESTHeaderModelMapper().toRESTHeaderList(restHeaderList),
+            RESTHttpGetParamModelMapper().toRESTHttpGetParamList(restHttpGetParamList)
         )
 
         testConnectionCallback.onConnectionStart()

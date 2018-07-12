@@ -9,7 +9,7 @@ import com.aconno.sensorics.viewmodel.DeviceViewModel
 class DeviceListViewModelFactory(
     private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
     private val saveDevicesUseCase: SaveDeviceUseCase,
-    val deleteDeviceUseCase: DeleteDeviceUseCase
+    private val deleteDeviceUseCase: DeleteDeviceUseCase
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {

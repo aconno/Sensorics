@@ -6,15 +6,12 @@ import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnected
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
-import com.aconno.sensorics.domain.model.Device
-import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.sensorics.viewmodel.DeviceSelectViewModel
 import com.aconno.sensorics.viewmodel.factory.DeviceSelectViewModelFactory
 import dagger.Module
 import dagger.Provides
-import io.reactivex.Flowable
 
 @Module
 class DeviceSelectModule(private val deviceSelectFragment: DeviceSelectFragment) {
