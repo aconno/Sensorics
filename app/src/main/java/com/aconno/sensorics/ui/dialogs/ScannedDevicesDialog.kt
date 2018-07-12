@@ -99,4 +99,15 @@ class ScannedDevicesDialog : BaseDialogFragment() {
         super.onDismiss(dialog)
         listener.onDialogDismissed()
     }
+  
+    override fun onItemClick(item: Device) {
+        Timber.d("Item clicked, mac: ${item.macAddress}")
+        listener.onDevicesDialogItemClick(item)
+        savedDevices.add(item)
+        adapter.deleteDevice(item)
+
+        if (adapter.itemCount == 0) {
+            text_empty.visibility = View.VISIBLE
+        }
+    }
 }

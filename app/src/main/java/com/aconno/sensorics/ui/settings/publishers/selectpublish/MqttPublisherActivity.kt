@@ -328,7 +328,7 @@ class MqttPublisherActivity : BaseActivity() {
         val publisher = MqttPublisher(
             applicationContext,
             MqttPublishModelDataMapper().toMqttPublish(toMqttPublishModel),
-            listOf(Device("TestDevice", "Mac"))
+            listOf(Device("TestDevice", "Name","Mac"))
         )
 
         testConnectionCallback.onConnectionStart()

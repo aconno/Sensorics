@@ -417,7 +417,7 @@ class RESTPublisherActivity : BaseActivity() {
     private fun testRESTConnection(toRESTPublishModel: RESTPublishModel) {
         val publisher = RESTPublisher(
             RESTPublishModelDataMapper().transform(toRESTPublishModel),
-            listOf(Device("TestDevice", "Mac")),
+            listOf(Device("TestDevice","Name", "Mac")),
             RESTHeaderModelMapper().toRESTHeaderList(restHeaderList),
             RESTHttpGetParamModelMapper().toRESTHttpGetParamList(restHttpGetParamList)
         )
