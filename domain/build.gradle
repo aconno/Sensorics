@@ -24,8 +24,14 @@ compileTestKotlin {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    def domainDependencies = rootProject.ext.domainDependencies
+    def domainTestDependencies = rootProject.ext.domainTestDependencies
 
-    implementation "io.reactivex.rxjava2:rxkotlin:2.2.0"
+    implementation domainDependencies.kotlin
+    implementation domainDependencies.rxkotlin
+
+    testImplementation domainTestDependencies.kotlinJUnit
+    testImplementation domainTestDependencies.junit
+    testImplementation domainTestDependencies.mockito
+    testImplementation domainTestDependencies.truth
 }
