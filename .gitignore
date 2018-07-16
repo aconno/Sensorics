@@ -61,3 +61,8 @@ freeline_project_description.json
 
 # Windows files
 Thumbs.db
+
+# Prod apk destination
+app/prod/
+
+
