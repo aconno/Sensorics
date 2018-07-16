@@ -19,12 +19,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import com.aconno.sensorics.R
-import com.aconno.sensorics.adapter.DeviceAdapter
-import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
-import com.aconno.sensorics.adapter.ItemClickListener
-import com.aconno.sensorics.adapter.LongItemClickListener
+import com.aconno.sensorics.adapter.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.getRealName
+import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -35,17 +33,19 @@ import java.util.*
 import javax.inject.Inject
 
 
-class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevicesDialogListener,
-    LongItemClickListener<Device>, DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener {
+class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
+    ScannedDevicesDialogListener,
+    LongItemClickListener<DeviceActive>,
+    DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener {
 
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
 
-    private lateinit var deviceAdapter: DeviceAdapter
+    private lateinit var deviceAdapter: DeviceActiveAdapter
 
     private lateinit var listener: SavedDevicesFragmentListener
 
-    private var devices: MutableList<Device> = mutableListOf()
+    private var devices: MutableList<DeviceActive> = mutableListOf()
 
     private var dontObserveQueue: Queue<Boolean> = ArrayDeque<Boolean>()
 
@@ -79,7 +79,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
         super.onViewCreated(view, savedInstanceState)
 
         list_devices.layoutManager = LinearLayoutManager(context)
-        deviceAdapter = DeviceAdapter(devices, this, this)
+        deviceAdapter = DeviceActiveAdapter(devices, this, this)
         list_devices.adapter = deviceAdapter
 
         list_devices.itemAnimator = DefaultItemAnimator()
@@ -110,7 +110,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
         }
     }
 
-    private fun displayPreferredDevices(preferredDevices: List<Device>?) {
+    private fun displayPreferredDevices(preferredDevices: List<DeviceActive>?) {
         preferredDevices?.let {
             if (preferredDevices.isEmpty()) {
                 empty_view.visibility = View.VISIBLE
@@ -130,12 +130,12 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
     }
 
     @SuppressLint("InflateParams")
-    override fun onLongClick(param: Device) {
+    override fun onLongClick(param: DeviceActive) {
         val builder = AlertDialog.Builder(context)
 
         val inflate = layoutInflater.inflate(R.layout.layout_rename, null)
         val input = inflate.findViewById<EditText>(R.id.edit_name)
-        input.setText(param.getRealName())
+        input.setText(param.device.getRealName())
 
         val dialogClickListener: DialogInterface.OnClickListener =
             DialogInterface.OnClickListener { dialog, which ->
@@ -144,10 +144,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
                         val text = input.text.toString()
 
                         if (!text.isBlank()) {
-                            val updateDevice = deviceViewModel.updateDevice(param, text)
-                            val index = devices.indexOf(param)
-                            devices[index] = updateDevice
-                            deviceAdapter.notifyItemChanged(index)
+                            deviceViewModel.updateDevice(param.device, text)
                         }
 
                         dialog.dismiss()
@@ -171,10 +168,10 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
         deviceViewModel.saveDevice(item)
     }
 
-    override fun onItemClick(item: Device) {
+    override fun onItemClick(item: DeviceActive) {
         activity?.let {
             val mainActivity = it as MainActivity
-            mainActivity.showSensorValues(item)
+            mainActivity.showSensorValues(item.device)
         }
     }
 
@@ -187,7 +184,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
             // get the removed item name to display it in snack bar and backup for undo
 
             val deletedItem = devices[position]
-            val name = deletedItem.getRealName()
+            val name = deletedItem.device.getRealName()
 
             // remove the item from recycler view
             deviceAdapter.removeItem(position)
@@ -208,7 +205,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<Device>, ScannedDevic
                         || event == Snackbar.Callback.DISMISS_EVENT_MANUAL
                     ) {
                         //delete device from db if undo snackbar timeout.
-                        deviceViewModel.deleteDevice(deletedItem)
+                        deviceViewModel.deleteDevice(deletedItem.device)
                         dontObserveQueue.add(true)
                     }
                 }
