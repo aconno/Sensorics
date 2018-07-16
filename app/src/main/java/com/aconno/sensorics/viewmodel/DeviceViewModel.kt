@@ -7,16 +7,46 @@ import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceActive
+import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class DeviceViewModel(
+    deviceStream: Flowable<Device>,
     private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
     private val saveDeviceUseCase: SaveDeviceUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase
 ) : ViewModel() {
 
     private val savedDevicesLiveData = MutableLiveData<List<DeviceActive>>()
+
+    private val timestamps = hashMapOf<Device, Long>()
+
+    private val deviceStreamDisposable = deviceStream.subscribe {
+        timestamps[it] = System.currentTimeMillis()
+    }
+
+    private val intervalDisposable = Observable.interval(10, TimeUnit.SECONDS)
+        .subscribe {
+            var refresh = false
+            savedDevicesLiveData.value?.forEach {
+                val lastSeenTimestamp = timestamps[it.device] ?: 0L
+                val timestampDiff = System.currentTimeMillis() - lastSeenTimestamp
+                if (timestampDiff < 10000) {
+                    refresh = !it.active
+                    it.active = true
+                } else {
+                    refresh = it.active
+                    it.active = false
+                }
+            }
+            if (refresh) {
+                savedDevicesLiveData.postValue(savedDevicesLiveData.value)
+            }
+        }
 
     init {
         loadSavedDevices()
@@ -58,5 +88,12 @@ class DeviceViewModel(
         deleteDeviceUseCase.execute(device)
             .subscribeOn(Schedulers.io())
             .subscribe()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        deviceStreamDisposable.dispose()
+        intervalDisposable.dispose()
+        Timber.d("Disposed")
     }
 }

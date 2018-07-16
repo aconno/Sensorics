@@ -76,9 +76,13 @@ class DeviceActiveAdapter(
                 }
             }
             if (device.active) {
-                view.alpha = 1f
+                view.image_icon.alpha = 1f
+                view.name.alpha = 1f
+                view.mac_address.alpha = 1f
             } else {
-                view.alpha = 0.5f
+                view.image_icon.alpha = 0.5f
+                view.name.alpha = 0.5f
+                view.mac_address.alpha = 0.5f
             }
 
             viewBackground = view.view_background
