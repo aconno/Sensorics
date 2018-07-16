@@ -27,6 +27,12 @@
         <item name="android:fontFamily">@font/rubik</item>
     </style>
 
+    <!--SplashScreen Theme-->
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:background">@color/primaryColor</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
     <!-- Settings application theme with ActionBar. -->
     <style name="SettingsTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->

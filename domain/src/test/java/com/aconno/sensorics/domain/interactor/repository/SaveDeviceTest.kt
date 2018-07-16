@@ -25,7 +25,7 @@ class SaveDeviceTest {
     lateinit var mockDeviceRepository: DeviceRepository
 
     @Rule
-    var expectedException = ExpectedException.none()
+    var expectedException = ExpectedException.none()!!
 
     @Before
     fun setUp() {

@@ -1,10 +1,8 @@
 package com.aconno.sensorics.data.mapper
 
 import com.aconno.sensorics.data.repository.rpublish.RESTHeaderEntity
-import com.aconno.sensorics.data.repository.rpublish.RESTPublishEntity
 import com.aconno.sensorics.domain.ifttt.GeneralRESTHeader
 import com.aconno.sensorics.domain.ifttt.RESTHeader
-import com.aconno.sensorics.domain.ifttt.RESTPublish
 import javax.inject.Inject
 import javax.inject.Singleton
 

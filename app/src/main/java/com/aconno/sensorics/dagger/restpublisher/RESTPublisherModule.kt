@@ -5,7 +5,6 @@ import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.ifttt.RESTPublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
-import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
 import com.aconno.sensorics.model.mapper.RESTHttpGetParamModelMapper
 import com.aconno.sensorics.model.mapper.RESTPublishModelDataMapper

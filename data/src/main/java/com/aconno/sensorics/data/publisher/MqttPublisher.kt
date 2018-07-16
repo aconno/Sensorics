@@ -59,10 +59,6 @@ class MqttPublisher(
         connect()
     }
 
-    private fun showError(s: String) {
-        TODO("Please provide an error mechanism")
-    }
-
     override fun getPublishData(): BasePublish {
         return mqttPublish
     }

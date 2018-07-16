@@ -69,10 +69,6 @@ class GoogleCloudPublisher(
         connect()
     }
 
-    private fun showError(s: String) {
-        TODO("Please provide an error mechanism")
-    }
-
     private fun getSubscriptionTopic(): String {
         return "/devices/${googlePublish.device}/events"
     }
