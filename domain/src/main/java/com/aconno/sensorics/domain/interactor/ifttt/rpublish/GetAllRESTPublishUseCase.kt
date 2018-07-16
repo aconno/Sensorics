@@ -1,7 +1,6 @@
 package com.aconno.sensorics.domain.interactor.ifttt.rpublish
 
 import com.aconno.sensorics.domain.ifttt.BasePublish
-import com.aconno.sensorics.domain.ifttt.RESTPublish
 import com.aconno.sensorics.domain.ifttt.RESTPublishRepository
 import com.aconno.sensorics.domain.interactor.type.SingleUseCase
 import io.reactivex.Single

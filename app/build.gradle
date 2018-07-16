@@ -5,14 +5,17 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 27
+    def globalConfiguration = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion globalConfiguration["androidCompileSdkVersion"]
+    buildToolsVersion globalConfiguration["androidBuildToolsVersion"]
     defaultConfig {
         applicationId "com.aconno.sensorics"
         manifestPlaceholders = [fabricAPIKey: sensorics_fabricKey]
-        minSdkVersion 21
-        targetSdkVersion 27
-        versionCode rootProject.ext.sensoricsVersionCode
-        versionName rootProject.ext.sensoricsVersionName
+        minSdkVersion globalConfiguration["androidMinSdkVersion"]
+        targetSdkVersion globalConfiguration["androidTargetSdkVersion"]
+        versionCode globalConfiguration["sensoricsVersionCode"]
+        versionName globalConfiguration["sensoricsVersionName"]
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         flavorDimensions "version"
@@ -48,65 +51,50 @@ android {
         }
     }
 }
-
 dependencies {
+    def presentationDependencies = rootProject.ext.presentationDependencies
+    def presentationTestDependencies = rootProject.ext.presentationTestDependencies
+    def developmentDependencies = rootProject.ext.developmentDependencies
+    def releaseDependencies = rootProject.ext.releaseDependencies
+
     implementation project(':domain')
     implementation project(':device')
     implementation project(':data')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-
-    // Support
-    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
-    implementation "com.android.support:cardview-v7:$supportLibraryVersion"
-    implementation "com.android.support:design:$supportLibraryVersion"
-    implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
-    implementation "com.android.support:support-v4:$supportLibraryVersion"
-
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-
-    // Testing
-    testImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
-
-    // Dagger
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
-
-    // Timber
-    implementation "com.jakewharton.timber:timber:$timberVersion"
-
-    // RxJava
-    implementation "io.reactivex.rxjava2:rxkotlin:2.2.0"
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-
-    // MPAndroidChart
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
-
-    // ViewModel and LiveData
-    implementation "android.arch.lifecycle:extensions:1.1.1"
-
-    // Room + RxJava support
-    implementation "android.arch.persistence.room:runtime:1.1.1"
-    kapt "android.arch.persistence.room:compiler:1.1.1"
-    implementation "android.arch.persistence.room:rxjava2:1.1.1"
-
-    // Flexbox
-    implementation 'com.google.android:flexbox:0.3.2'
-
-    // LeakCanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
-
-    // Gson
-    implementation 'com.google.code.gson:gson:2.8.5'
-
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
+    implementation presentationDependencies.kotlin
+    implementation presentationDependencies.appCompatv7
+    implementation presentationDependencies.cardviewv7
+    implementation presentationDependencies.design
+    implementation presentationDependencies.recyclerviewv7
+    implementation presentationDependencies.supportv4
+    implementation presentationDependencies.constraintLay
+    kapt presentationDependencies.daggerCompiler
+    implementation presentationDependencies.dagger
+    implementation presentationDependencies.timber
+    implementation presentationDependencies.rxAndroid
+    implementation presentationDependencies.rxkotlin
+    implementation presentationDependencies.mpAndroidChart
+    implementation presentationDependencies.lifeCycleExt
+    implementation presentationDependencies.roomRuntime
+    kapt presentationDependencies.roomCompile
+    implementation presentationDependencies.roomRxJava2
+    implementation presentationDependencies.flexbox
+    implementation presentationDependencies.gson
+    implementation(presentationDependencies.crashlytics) {
         transitive = true
     }
 
+    debugImplementation developmentDependencies.leakCanary
+    releaseImplementation releaseDependencies.leakCanary
+
+    testImplementation presentationTestDependencies.kotlinJUnit
+    testImplementation presentationTestDependencies.junit
+
+    androidTestImplementation presentationTestDependencies.mockito
+    androidTestImplementation presentationTestDependencies.espresso
+    androidTestImplementation presentationTestDependencies.testingSupportLib
+    androidTestImplementation presentationTestDependencies.testRunner
 }
 
 repositories {

@@ -3,7 +3,6 @@ package com.aconno.sensorics.viewmodel.factory
 import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
-import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
 import com.aconno.sensorics.model.mapper.RESTHttpGetParamModelMapper
 import com.aconno.sensorics.model.mapper.RESTPublishModelDataMapper
