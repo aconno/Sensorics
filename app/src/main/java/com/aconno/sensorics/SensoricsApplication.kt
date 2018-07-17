@@ -23,7 +23,10 @@ class SensoricsApplication : Application() {
         }
         LeakCanary.install(this)
         Timber.plant(Timber.DebugTree())
-        Fabric.with(this, Crashlytics())
+
+        if (BuildConfig.FLAVOR == "prod"){
+            Fabric.with(this, Crashlytics())
+        }
 
         val mapper = AdvertisementFormatMapper()
         val reader = AdvertisementFormatReader()
