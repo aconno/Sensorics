@@ -14,6 +14,7 @@ import com.aconno.sensorics.dagger.actionlist.ActionListModule
 import com.aconno.sensorics.dagger.actionlist.DaggerActionListComponent
 import com.aconno.sensorics.domain.ifttt.Action
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
+import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.aconno.sensorics.ui.actions.AddActionActivity
 import com.aconno.sensorics.ui.actions.EditActionActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -57,7 +58,7 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
     }
 
     private fun startAddActionActivity() {
-        context?.let { AddActionActivity.start(it) }
+        context?.let { ActionDetailsActivity.start(it) }
     }
 
     override fun onResume() {

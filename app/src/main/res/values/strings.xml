@@ -193,6 +193,13 @@
     <string name="contentDescriptionAction">button de action</string>
     <string name="contentDescriptionContent">image with data</string>
     <string name="contentDescriptionUserContent">image from an other user</string>
+    <string name="title_action_details">Action</string>
+    <string name="hint_name">Name</string>
+    <string name="content_description_icon_device">Device icon</string>
+    <string name="label_device">Device</string>
+    <string name="hint_action_name">Action name</string>
+    <string name="label_condition">Condition</string>
+    <string name="label_outcome">Outcome</string>
 
     <string-array name="header_keys">
         <item>A-IM</item>

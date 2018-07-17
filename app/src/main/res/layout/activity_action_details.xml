@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            style="@style/Toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="@string/title_action_details" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="80dp">
+
+                <EditText
+                    android:id="@+id/edittext_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginTop="@dimen/item_vertical_spacing"
+                    android:hint="@string/hint_action_name"
+                    android:inputType="textCapWords" />
+
+                <TextView
+                    android:id="@+id/label_device"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginTop="@dimen/item_vertical_spacing"
+                    android:text="@string/label_device"
+                    android:textColor="@color/primaryTextColor" />
+
+                <Spinner
+                    android:id="@+id/spinner_devices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/title_padding"
+                    tools:listitem="@layout/item_spinner_device" />
+
+                <TextView
+                    android:id="@+id/label_condition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginTop="@dimen/item_vertical_spacing"
+                    android:text="@string/label_condition"
+                    android:textColor="@color/primaryTextColor"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/container_conditions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginTop="@dimen/title_padding"
+                    android:visibility="gone"
+                    app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
+                    app:dividerDrawableVertical="@drawable/chip_divider_vertical"
+                    app:flexWrap="wrap"
+                    app:showDivider="middle"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/label_outcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginTop="@dimen/item_vertical_spacing"
+                    android:text="@string/label_outcome"
+                    android:textColor="@color/primaryTextColor"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/container_outcomes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginTop="@dimen/title_padding"
+                    android:visibility="gone"
+                    app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
+                    app:dividerDrawableVertical="@drawable/chip_divider_vertical"
+                    app:flexWrap="wrap"
+                    app:showDivider="middle"
+                    tools:visibility="visible">
+
+                    <CheckedTextView
+                        android:id="@+id/button_outcome_notification"
+                        style="@style/ChipView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/notification" />
+
+                    <CheckedTextView
+                        android:id="@+id/button_outcome_sms"
+                        style="@style/ChipView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sms" />
+
+                    <CheckedTextView
+                        android:id="@+id/button_outcome_vibration"
+                        style="@style/ChipView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/vibration" />
+
+                    <CheckedTextView
+                        android:id="@+id/button_outcome_text_to_speech"
+                        style="@style/ChipView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_to_speech" />
+
+                </com.google.android.flexbox.FlexboxLayout>
+
+                <EditText
+                    android:id="@+id/edittext_phone_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginTop="@dimen/title_padding"
+                    android:hint="@string/phone_number"
+                    android:inputType="phone"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <EditText
+                    android:id="@+id/edittext_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginTop="@dimen/item_vertical_spacing"
+                    android:hint="@string/message_hint"
+                    android:inputType="text"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/screen_edge_left_right_margin"
+        android:src="@drawable/ic_save"
+        android:tint="@color/secondaryTextColor"
+        android:visibility="gone"
+        app:fabSize="normal"
+        tools:visibility="visible" />
+
+</android.support.design.widget.CoordinatorLayout>
