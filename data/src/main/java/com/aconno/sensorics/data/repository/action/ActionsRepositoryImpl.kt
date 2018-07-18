@@ -11,17 +11,6 @@ import io.reactivex.Single
 class ActionsRepositoryImpl(
     private val actionDao: ActionDao
 ) : ActionsRepository {
-    override fun addAction(action: Action) {
-        actionDao.insert(toEntity(action))
-    }
-
-    override fun updateAction(action: Action) {
-        actionDao.update(toEntity(action))
-    }
-
-    override fun deleteAction(action: Action) {
-        actionDao.delete(toEntity(action))
-    }
 
     override fun getAllActions(): Single<List<Action>> {
         return actionDao.all.map { actionEntities -> actionEntities.map { toAction(it) } }
@@ -31,6 +20,15 @@ class ActionsRepositoryImpl(
         return actionDao.getActionById(actionId).map { actionEntity -> toAction(actionEntity) }
     }
 
+    override fun addAction(action: Action) {
+        actionDao.insert(toEntity(action))
+    }
+
+    override fun deleteAction(action: Action) {
+        actionDao.delete(toEntity(action))
+    }
+
+    //TODO: Move this to mapper object
     private fun toEntity(action: Action): ActionEntity {
         return ActionEntity(
             id = action.id,

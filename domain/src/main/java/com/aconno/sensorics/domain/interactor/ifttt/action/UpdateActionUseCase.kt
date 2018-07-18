@@ -11,7 +11,7 @@ class UpdateActionUseCase(
 
     override fun execute(parameter: Action): Completable {
         return Completable.fromAction {
-            actionsRepository.updateAction(parameter)
+            actionsRepository.addAction(parameter)
         }
     }
 }
