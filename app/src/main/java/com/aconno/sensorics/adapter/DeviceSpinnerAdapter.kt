@@ -24,6 +24,8 @@ class DeviceSpinnerAdapter : SpinnerAdapter, BaseAdapter() {
         return devices[position]
     }
 
+    fun getDevicePosition(device: Device) = devices.indexOf(device)
+
     override fun getCount(): Int {
         return devices.size
     }

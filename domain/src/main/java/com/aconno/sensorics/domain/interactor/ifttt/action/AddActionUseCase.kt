@@ -5,9 +5,6 @@ import com.aconno.sensorics.domain.ifttt.ActionsRepository
 import com.aconno.sensorics.domain.interactor.type.CompletableUseCaseWithParameter
 import io.reactivex.Completable
 
-/**
- * @author aconno
- */
 class AddActionUseCase(
     private val actionsRepository: ActionsRepository
 ) :

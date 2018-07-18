@@ -45,30 +45,22 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
 
         initDevicesSpinner()
 
-        actionDetailsViewModel.getDevicesLiveData().observe(this, Observer {
-            it?.let { deviceSpinnerAdapter.setDevices(it) }
-        })
-
-        actionDetailsViewModel.getReadingTypesLiveData().observe(this, Observer {
-            initConditionViews(it)
-        })
-
-        actionDetailsViewModel.getConditionLiveData().observe(this, Observer { condition ->
-            condition?.let {
-                val readingTypes = actionDetailsViewModel.getReadingTypesLiveData().value
-                readingTypes?.let {
-                    val position = readingTypes.indexOf(condition.readingType)
-                    val view = container_conditions.getChildAt(position)
-                    (view as CheckedTextView).isChecked = true
-                    view.text_title.text = condition.toString()
-                    initOutcomeViews()
-                }
-            }
-        })
-
         setSaveButtonOnClickListener()
         setOutcomeButtonOnClickListeners()
+
+        observeNameLiveData()
+        observeDevicesLiveData()
+        observeSelectedDeviceLiveData()
+        observeReadingTypesLiveData()
+        observeConditionLiveData()
         observeOutcomeLiveData()
+        observeMessageLiveData()
+        observePhoneNumberLiveData()
+
+        if (intent.hasExtra(ACTION_ID_EXTRA)) {
+            val actionId = intent.getLongExtra(ACTION_ID_EXTRA, 0L)
+            actionDetailsViewModel.setActionId(actionId)
+        }
     }
 
     private fun initDevicesSpinner() {
@@ -85,69 +77,11 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
                 position: Int,
                 id: Long
             ) {
+                hideConditions()
                 val device = deviceSpinnerAdapter.getDevice(position)
                 actionDetailsViewModel.setSelectedDevice(device)
             }
         }
-    }
-
-    override fun onSetClicked(readingType: String, constraint: String, value: String) {
-        val readingTypes = actionDetailsViewModel.getReadingTypesLiveData().value
-        initConditionViews(readingTypes)
-        actionDetailsViewModel.setCondition(readingType, constraint, value)
-    }
-
-    private fun initConditionViews(readingTypes: List<String>?) {
-        if (readingTypes == null) {
-            label_condition.visibility = View.GONE
-            container_conditions.visibility = View.GONE
-        } else {
-            label_condition.visibility = View.VISIBLE
-            container_conditions.visibility = View.VISIBLE
-            readingTypes.forEachIndexed { index, readingType ->
-                val view = container_conditions.getChildAt(index)
-                if (view == null) {
-                    val newView = LayoutInflater.from(this)
-                        .inflate(R.layout.item_chip, container_conditions, false)
-                    newView.text_title.text = readingType
-                    newView.setOnClickListener {
-                        val dialog = ConditionDialog.newInstance(readingType)
-                        dialog.show(supportFragmentManager, "condition_dialog_fragment")
-                    }
-                    container_conditions.addView(newView)
-                } else {
-                    view.text_title.text = readingType
-                    (view as CheckedTextView).isChecked = false
-                    view.visibility = View.VISIBLE
-                    view.setOnClickListener {
-                        val dialog = ConditionDialog.newInstance(readingType)
-                        dialog.show(supportFragmentManager, "condition_dialog_fragment")
-                    }
-                }
-            }
-            if (container_conditions.childCount > readingTypes.size) {
-                for (index in readingTypes.size until container_conditions.childCount) {
-                    container_conditions.getChildAt(index).visibility = View.GONE
-                }
-            }
-        }
-        label_outcome.visibility = View.GONE
-        container_outcomes.visibility = View.GONE
-        edittext_message.visibility = View.GONE
-        edittext_phone_number.visibility = View.GONE
-        button_save.visibility = View.GONE
-    }
-
-    private fun initOutcomeViews() {
-        label_outcome.visibility = View.VISIBLE
-        container_outcomes.visibility = View.VISIBLE
-        button_outcome_notification.isChecked = false
-        button_outcome_sms.isChecked = false
-        button_outcome_text_to_speech.isChecked = false
-        button_outcome_vibration.isChecked = false
-        edittext_message.visibility = View.GONE
-        edittext_phone_number.visibility = View.GONE
-        button_save.visibility = View.GONE
     }
 
     private fun setSaveButtonOnClickListener() {
@@ -188,6 +122,69 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
         button_outcome_vibration.setOnClickListener {
             actionDetailsViewModel.setOutcome("Vibration")
         }
+    }
+
+    private fun observeNameLiveData() {
+        actionDetailsViewModel.getNameLiveData().observe(this, Observer { name ->
+            if (name == null) {
+                edittext_name.text.clear()
+                Timber.d("Action name: $name")
+            } else {
+                edittext_name.setText(name)
+            }
+        })
+    }
+
+    private fun observeDevicesLiveData() {
+        actionDetailsViewModel.getDevicesLiveData().observe(this, Observer { devices ->
+            if (devices == null || devices.isEmpty()) {
+                hideDevicesSpinner()
+                showSnackbarMessage("There are no devices")
+                Timber.e(IllegalArgumentException("There are no devices"))
+            } else {
+                deviceSpinnerAdapter.setDevices(devices)
+                showDevicesSpinner()
+            }
+        })
+    }
+
+    private fun observeSelectedDeviceLiveData() {
+        actionDetailsViewModel.getSelectedDeviceLiveData().observe(this, Observer { device ->
+            device?.let {
+                val position = deviceSpinnerAdapter.getDevicePosition(device)
+                spinner_devices.setSelection(position)
+            }
+        })
+    }
+
+    private fun observeReadingTypesLiveData() {
+        actionDetailsViewModel.getReadingTypesLiveData().observe(this, Observer { readingTypes ->
+            if (readingTypes == null || readingTypes.isEmpty()) {
+                hideConditions()
+                showSnackbarMessage("There are no reading types")
+                Timber.d("No reading types: $readingTypes")
+            } else {
+                initConditionViews(readingTypes)
+                showConditions()
+            }
+        })
+    }
+
+    private fun observeConditionLiveData() {
+        actionDetailsViewModel.getConditionLiveData().observe(this, Observer { condition ->
+            Timber.d("Condition: $condition")
+            condition?.let {
+                val readingTypes = actionDetailsViewModel.getReadingTypesLiveData().value
+                Timber.d("Reading types: $readingTypes")
+                readingTypes?.let {
+                    val position = readingTypes.indexOf(condition.readingType)
+                    val view = container_conditions.getChildAt(position)
+                    (view as CheckedTextView).isChecked = true
+                    view.text_title.text = condition.toString()
+                    showOutcomes()
+                }
+            }
+        })
     }
 
     private fun observeOutcomeLiveData() {
@@ -231,10 +228,109 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
         })
     }
 
+    private fun observeMessageLiveData() {
+        actionDetailsViewModel.getMessageLiveData().observe(this, Observer {
+            it?.let {
+                edittext_message.setText(it)
+            }
+        })
+    }
+
+    private fun observePhoneNumberLiveData() {
+        actionDetailsViewModel.getPhoneNumberLiveData().observe(this, Observer {
+            it?.let {
+                edittext_phone_number.setText(it)
+            }
+        })
+    }
+
+    override fun onSetClicked(readingType: String, constraint: String, value: String) {
+        container_activity.requestFocus()
+        val readingTypes = actionDetailsViewModel.getReadingTypesLiveData().value
+        initConditionViews(readingTypes!!)
+        actionDetailsViewModel.setCondition(readingType, constraint, value)
+    }
+
+    private fun initConditionViews(readingTypes: List<String>) {
+        readingTypes.forEachIndexed { index, readingType ->
+            val view = container_conditions.getChildAt(index)
+            if (view == null) {
+                val newView = LayoutInflater.from(this)
+                    .inflate(R.layout.item_chip, container_conditions, false)
+                newView.text_title.text = readingType
+                newView.setOnClickListener {
+                    val dialog = ConditionDialog.newInstance(readingType)
+                    dialog.show(supportFragmentManager, "condition_dialog_fragment")
+                }
+                container_conditions.addView(newView)
+            } else {
+                view.text_title.text = readingType
+                (view as CheckedTextView).isChecked = false
+                view.visibility = View.VISIBLE
+                view.setOnClickListener {
+                    val dialog = ConditionDialog.newInstance(readingType)
+                    dialog.show(supportFragmentManager, "condition_dialog_fragment")
+                }
+            }
+        }
+        if (container_conditions.childCount > readingTypes.size) {
+            for (index in readingTypes.size until container_conditions.childCount) {
+                container_conditions.getChildAt(index).visibility = View.GONE
+            }
+        }
+    }
+
+    private fun hideDevicesSpinner() {
+        label_device.visibility = View.GONE
+        spinner_devices.visibility = View.GONE
+        hideConditions()
+    }
+
+    private fun showDevicesSpinner() {
+        label_device.visibility = View.VISIBLE
+        spinner_devices.visibility = View.VISIBLE
+    }
+
+    private fun hideConditions() {
+        label_condition.visibility = View.GONE
+        container_conditions.visibility = View.GONE
+        hideOutcomes()
+    }
+
+    private fun showConditions() {
+        label_condition.visibility = View.VISIBLE
+        container_conditions.visibility = View.VISIBLE
+    }
+
+    private fun hideOutcomes() {
+        label_outcome.visibility = View.GONE
+        container_outcomes.visibility = View.GONE
+        button_outcome_notification.isChecked = false
+        button_outcome_sms.isChecked = false
+        button_outcome_vibration.isChecked = false
+        button_outcome_text_to_speech.isChecked = false
+        edittext_phone_number.visibility = View.GONE
+        edittext_message.visibility = View.GONE
+        button_save.visibility = View.GONE
+    }
+
+    private fun showOutcomes() {
+        label_outcome.visibility = View.VISIBLE
+        container_outcomes.visibility = View.VISIBLE
+    }
+
     companion object {
+
+        private const val ACTION_ID_EXTRA = "action_id"
 
         fun start(context: Context) {
             val intent = Intent(context, ActionDetailsActivity::class.java)
+            context.startActivity(intent)
+        }
+
+        fun start(context: Context, actionId: Long) {
+            val intent = Intent(context, ActionDetailsActivity::class.java)
+            intent.putExtra(ACTION_ID_EXTRA, actionId)
             context.startActivity(intent)
         }
     }

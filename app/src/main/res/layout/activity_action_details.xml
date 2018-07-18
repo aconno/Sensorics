@@ -47,14 +47,18 @@
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
                     android:layout_marginTop="@dimen/item_vertical_spacing"
                     android:text="@string/label_device"
-                    android:textColor="@color/primaryTextColor" />
+                    android:textColor="@color/primaryTextColor"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
                 <Spinner
                     android:id="@+id/spinner_devices"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/title_padding"
-                    tools:listitem="@layout/item_spinner_device" />
+                    android:visibility="gone"
+                    tools:listitem="@layout/item_spinner_device"
+                    tools:visibility="visible" />
 
                 <TextView
                     android:id="@+id/label_condition"
