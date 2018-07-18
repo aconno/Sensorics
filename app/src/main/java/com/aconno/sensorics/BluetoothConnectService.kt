@@ -11,6 +11,7 @@ import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import io.reactivex.Flowable
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 
@@ -39,6 +40,18 @@ class BluetoothConnectService : Service() {
         // invoked when the UI is disconnected from the Service.
         bluetooth.closeConnection()
         return super.onUnbind(intent)
+    }
+
+    fun readCharacteristic(serviceUUID: UUID, characteristicUUID: UUID): Boolean {
+        return bluetooth.readCharacteristic(serviceUUID, characteristicUUID)
+    }
+
+    fun writeCharacteristic(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+        byteArray: ByteArray
+    ): Boolean {
+        return bluetooth.writeCharacteristic(serviceUUID, characteristicUUID, byteArray)
     }
 
     fun getConnectResults(): Flowable<GattCallbackPayload> {

@@ -5,6 +5,7 @@ import com.aconno.sensorics.domain.model.ScanEvent
 import io.reactivex.Flowable
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
+import java.util.*
 
 interface Bluetooth {
 
@@ -31,4 +32,15 @@ interface Bluetooth {
     fun getStateEvents(): Flowable<BluetoothState>
 
     fun getGattResults(): Flowable<GattCallbackPayload>
+
+    fun readCharacteristic(
+        serviceUUID: UUID,
+        characteristicUUID: UUID
+    ): Boolean
+
+    fun writeCharacteristic(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+        byteArray: ByteArray
+    ): Boolean
 }

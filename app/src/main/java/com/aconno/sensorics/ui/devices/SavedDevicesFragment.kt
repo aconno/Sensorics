@@ -3,11 +3,10 @@ package com.aconno.sensorics.ui.devices
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.arch.lifecycle.Observer
-import android.content.*
-import android.content.Context.BIND_AUTO_CREATE
+import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
-import android.os.IBinder
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DefaultItemAnimator
@@ -19,13 +18,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.R
-import com.aconno.sensorics.adapter.*
+import com.aconno.sensorics.adapter.DeviceActiveAdapter
+import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
+import com.aconno.sensorics.adapter.ItemClickListener
+import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.devicecon.DeviceConnectionFragment
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceViewModel
@@ -63,28 +65,10 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
         }
     }
 
-    private var serviceConnect: BluetoothConnectService? = null
-
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceDisconnected(name: ComponentName?) {
-            serviceConnect = null
-        }
-
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            serviceConnect = (service as BluetoothConnectService.LocalBinder).getService()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val mainActivity: MainActivity? = activity as MainActivity
         mainActivity?.mainActivityComponent?.inject(this)
-        val gattServiceIntent = Intent(
-            context, BluetoothConnectService::class.java
-        )
-        context!!.bindService(
-            gattServiceIntent, serviceConnection, BIND_AUTO_CREATE
-        )
     }
 
     override fun onCreateView(
@@ -128,12 +112,6 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
             Timber.d("Button add device clicked")
             ScannedDevicesDialog().show(activity?.supportFragmentManager, "devices_dialog")
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        context?.unbindService(serviceConnection)
-        serviceConnect = null
     }
 
     private fun displayPreferredDevices(preferredDevices: List<DeviceActive>?) {
@@ -195,11 +173,13 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
     }
 
     override fun onItemClick(item: DeviceActive) {
-        serviceConnect?.connect(item.device.macAddress)
 //        activity?.let {
-//                    val mainActivity = it as MainActivity
-//            mainActivity.showSensorValues(item)
+//            val mainActivity = it as MainActivity
+//            mainActivity.showSensorValues(item.device)
 //        }
+
+        val newInstance = DeviceConnectionFragment.newInstance(item.device)
+        newInstance.show(childFragmentManager, DeviceConnectionFragment::class.java.simpleName)
     }
 
     override fun onDialogDismissed() {

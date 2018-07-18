@@ -18,6 +18,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import java.util.*
 
 //TODO: This needs refactoring.
 class BluetoothImpl(
@@ -84,6 +85,39 @@ class BluetoothImpl(
         } else {
             throw BluetoothException("Bluetooth permission not granted")
         }
+    }
+
+    override fun readCharacteristic(serviceUUID: UUID, characteristicUUID: UUID): Boolean {
+        return lastConnectedGatt?.let {
+            val characteristic = it.getService(serviceUUID)
+                .getCharacteristic(characteristicUUID)
+
+            if (characteristic != null) {
+                it.readCharacteristic(characteristic)
+                true
+            } else {
+                false
+            }
+        }!!
+    }
+
+    override fun writeCharacteristic(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+        byteArray: ByteArray
+    ): Boolean {
+        return lastConnectedGatt?.let {
+            val characteristic = it.getService(serviceUUID)
+                .getCharacteristic(characteristicUUID)
+
+            characteristic.value = byteArray
+            if (characteristic != null) {
+                it.writeCharacteristic(characteristic)
+                true
+            } else {
+                false
+            }
+        }!!
     }
 
     override fun connect(address: String) {
