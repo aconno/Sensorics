@@ -2,6 +2,7 @@ package com.aconno.sensorics.dagger.application
 
 import android.arch.persistence.room.Room
 import android.bluetooth.BluetoothAdapter
+import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.support.v4.content.LocalBroadcastManager
@@ -84,6 +85,7 @@ class AppModule(
         bluetoothStateListener: BluetoothStateListener
     ): Bluetooth =
         BluetoothImpl(
+            sensoricsApplication,
             sharedPreferences,
             bluetoothAdapter,
             bluetoothPermission,

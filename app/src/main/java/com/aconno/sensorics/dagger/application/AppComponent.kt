@@ -1,6 +1,7 @@
 package com.aconno.sensorics.dagger.application
 
 import android.support.v4.content.LocalBroadcastManager
+import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.notification.IntentProvider
@@ -67,6 +68,8 @@ interface AppComponent {
     fun inject(scannedDevicesDialog: ScannedDevicesDialog)
 
     fun inject(savedDevicesDialog: SavedDevicesDialog)
+
+    fun inject(bluetoothConnectService: BluetoothConnectService)
 
     fun publishDeviceJoinRepository(): PublishDeviceJoinRepository
 

@@ -26,6 +26,9 @@
         <service
             android:name=".BluetoothScanningService"
             android:exported="false" />
+        <service
+            android:name=".BluetoothConnectService"
+            android:exported="false" />
 
         <activity android:name=".ui.actions.EditActionActivity" />
         <activity

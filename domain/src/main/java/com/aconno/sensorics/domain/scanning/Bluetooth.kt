@@ -4,6 +4,7 @@ import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.model.ScanEvent
 import io.reactivex.Flowable
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.model.GattCallbackPayload
 
 interface Bluetooth {
 
@@ -17,9 +18,17 @@ interface Bluetooth {
 
     fun stopScanning()
 
+    fun connect(address: String)
+
+    fun disconnect()
+
+    fun closeConnection()
+
     fun getScanResults(): Flowable<ScanResult>
 
     fun getScanEvents(): Flowable<ScanEvent>
 
     fun getStateEvents(): Flowable<BluetoothState>
+
+    fun getGattResults(): Flowable<GattCallbackPayload>
 }
