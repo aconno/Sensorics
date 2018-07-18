@@ -1,5 +1,6 @@
-package com.aconno.sensorics.domain.ifttt
+package com.aconno.sensorics.domain.actions
 
+import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.ifttt.outcome.Outcome
 
 class GeneralAction(

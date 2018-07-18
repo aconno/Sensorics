@@ -1,6 +1,6 @@
 package com.aconno.sensorics.domain.interactor.ifttt.action
 
-import com.aconno.sensorics.domain.ifttt.Action
+import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.ifttt.ActionsRepository
 import com.aconno.sensorics.domain.interactor.type.SingleUseCase
 import io.reactivex.Single

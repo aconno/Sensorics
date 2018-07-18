@@ -12,11 +12,9 @@ import com.aconno.sensorics.adapter.ItemClickListener
 import com.aconno.sensorics.dagger.actionlist.ActionListComponent
 import com.aconno.sensorics.dagger.actionlist.ActionListModule
 import com.aconno.sensorics.dagger.actionlist.DaggerActionListComponent
-import com.aconno.sensorics.domain.ifttt.Action
+import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
-import com.aconno.sensorics.ui.actions.AddActionActivity
-import com.aconno.sensorics.ui.actions.EditActionActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_action_list.*

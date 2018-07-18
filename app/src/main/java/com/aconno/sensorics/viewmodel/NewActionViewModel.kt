@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.ifttt.Condition
-import com.aconno.sensorics.domain.ifttt.GeneralAction
+import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.ifttt.outcome.Outcome
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
@@ -83,7 +83,13 @@ class NewActionViewModel(
                     }
 
                     val outcome = Outcome(parameters, outcomeEndType)
-                    val newAction = GeneralAction(newId, name, deviceMacAddress, condition, outcome)
+                    val newAction = GeneralAction(
+                        newId,
+                        name,
+                        deviceMacAddress,
+                        condition,
+                        outcome
+                    )
 
                     addActionUseCase.execute(newAction)
                         .subscribeOn(Schedulers.io())

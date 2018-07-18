@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.sensorics.R
-import com.aconno.sensorics.domain.ifttt.Action
+import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.model.toString
 import kotlinx.android.synthetic.main.item_action.view.*
 

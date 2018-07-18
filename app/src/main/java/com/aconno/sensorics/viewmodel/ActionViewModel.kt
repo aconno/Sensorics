@@ -3,9 +3,9 @@ package com.aconno.sensorics.viewmodel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import com.aconno.sensorics.domain.ifttt.Action
+import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.ifttt.Condition
-import com.aconno.sensorics.domain.ifttt.GeneralAction
+import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.ifttt.outcome.Outcome
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
@@ -74,7 +74,13 @@ class ActionViewModel(
             mapOf(Pair(Outcome.TEXT_MESSAGE, message), Pair(Outcome.PHONE_NUMBER, phoneNumber))
         val outcome = Outcome(parameters, outcomeType)
         if (condition != null) {
-            val action = GeneralAction(id, name, deviceMacAddress, condition, outcome)
+            val action = GeneralAction(
+                id,
+                name,
+                deviceMacAddress,
+                condition,
+                outcome
+            )
             updateActionUseCase.execute(action)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -91,7 +97,13 @@ class ActionViewModel(
         val condition = conditionLiveData.value
         val outcome = outcomeLiveData.value
         if (name != null && deviceMacAddress != null && condition != null && outcome != null) {
-            val action = GeneralAction(id, name, deviceMacAddress, condition, outcome)
+            val action = GeneralAction(
+                id,
+                name,
+                deviceMacAddress,
+                condition,
+                outcome
+            )
             deleteActionUseCase.execute(action)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -1,5 +1,6 @@
 package com.aconno.sensorics.domain.ifttt
 
+import com.aconno.sensorics.domain.actions.Action
 import io.reactivex.Single
 
 /**

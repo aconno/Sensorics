@@ -1,8 +1,8 @@
 package com.aconno.sensorics.data.repository.action
 
-import com.aconno.sensorics.domain.ifttt.Action
+import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.ifttt.ActionsRepository
-import com.aconno.sensorics.domain.ifttt.GeneralAction
+import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.ifttt.outcome.Outcome
 import io.reactivex.Single
@@ -73,6 +73,12 @@ class ActionsRepositoryImpl(
 
         val outcome = Outcome(parameters, actionEntity.outcomeType)
 
-        return GeneralAction(id, name, deviceMacAddress, condition, outcome)
+        return GeneralAction(
+            id,
+            name,
+            deviceMacAddress,
+            condition,
+            outcome
+        )
     }
 }
