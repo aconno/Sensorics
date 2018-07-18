@@ -6,6 +6,7 @@ import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase

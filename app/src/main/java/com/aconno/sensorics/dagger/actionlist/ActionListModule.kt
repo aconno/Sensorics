@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.actionlist
 
-import com.aconno.sensorics.domain.ifttt.ActionsRepository
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.repository.DeviceRepository

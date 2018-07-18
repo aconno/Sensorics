@@ -1,7 +1,7 @@
 package com.aconno.sensorics.dagger.actionedit
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.ifttt.ActionsRepository
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.UpdateActionUseCase

@@ -1,4 +1,4 @@
-package com.aconno.sensorics.domain.ifttt
+package com.aconno.sensorics.domain.actions
 
 import com.aconno.sensorics.domain.actions.Action
 import io.reactivex.Single

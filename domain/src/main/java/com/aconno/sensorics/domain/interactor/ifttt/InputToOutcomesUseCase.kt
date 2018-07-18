@@ -1,7 +1,7 @@
 package com.aconno.sensorics.domain.interactor.ifttt
 
 import com.aconno.sensorics.domain.actions.Action
-import com.aconno.sensorics.domain.ifttt.ActionsRepository
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.ifttt.Input
 import com.aconno.sensorics.domain.ifttt.outcome.Outcome
 import com.aconno.sensorics.domain.interactor.type.SingleUseCaseWithParameter

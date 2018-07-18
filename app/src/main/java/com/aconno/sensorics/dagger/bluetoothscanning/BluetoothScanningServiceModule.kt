@@ -12,6 +12,7 @@ import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.device.storage.FileStorageImpl
 import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.ifttt.outcome.*
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase

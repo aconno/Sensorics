@@ -2,7 +2,7 @@ package com.aconno.sensorics.data.repository.action
 
 import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.actions.GeneralAction
-import com.aconno.sensorics.domain.ifttt.ActionsRepository
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.ifttt.outcome.Outcome
 import com.aconno.sensorics.domain.model.Device

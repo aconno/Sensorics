@@ -3,7 +3,7 @@ package com.aconno.sensorics.dagger.actionlist
 import com.aconno.sensorics.dagger.application.AppComponent
 import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
-import com.aconno.sensorics.domain.ifttt.ActionsRepository
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.ifttt.NotificationDisplay
 import com.aconno.sensorics.domain.ifttt.TextToSpeechPlayer
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase

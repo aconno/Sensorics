@@ -1,7 +1,7 @@
 package com.aconno.sensorics.dagger.addaction
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.ifttt.ActionsRepository
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.ui.actions.AddActionActivity
 import com.aconno.sensorics.viewmodel.NewActionViewModel

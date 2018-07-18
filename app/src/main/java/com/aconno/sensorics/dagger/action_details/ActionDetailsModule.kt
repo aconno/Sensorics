@@ -2,7 +2,7 @@ package com.aconno.sensorics.dagger.action_details
 
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.format.FormatMatcher
-import com.aconno.sensorics.domain.ifttt.ActionsRepository
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionByIdUseCase
 import com.aconno.sensorics.domain.model.Device
