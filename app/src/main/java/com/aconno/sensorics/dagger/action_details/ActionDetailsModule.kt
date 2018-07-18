@@ -2,6 +2,8 @@ package com.aconno.sensorics.dagger.action_details
 
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.format.FormatMatcher
+import com.aconno.sensorics.domain.ifttt.ActionsRepository
+import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.aconno.sensorics.ui.actions.ActionDetailsViewModel
@@ -17,8 +19,9 @@ class ActionDetailsModule(private val actionDetailsActivity: ActionDetailsActivi
     @ActionDetailsActivityScope
     fun provideActionDetailsViewModelFactory(
         savedDevicesStream: Flowable<List<Device>>,
-        formatMatcher: FormatMatcher
-    ) = ActionDetailsViewModelFactory(savedDevicesStream, formatMatcher)
+        formatMatcher: FormatMatcher,
+        addActionUseCase: AddActionUseCase
+    ) = ActionDetailsViewModelFactory(savedDevicesStream, formatMatcher, addActionUseCase)
 
     @Provides
     @ActionDetailsActivityScope
@@ -26,4 +29,10 @@ class ActionDetailsModule(private val actionDetailsActivity: ActionDetailsActivi
         actionDetailsViewModelFactory: ActionDetailsViewModelFactory
     ) = ViewModelProviders.of(actionDetailsActivity, actionDetailsViewModelFactory)
         .get(ActionDetailsViewModel::class.java)
+
+    @Provides
+    @ActionDetailsActivityScope
+    fun provideAddActionUseCase(
+        actionsRepository: ActionsRepository
+    ) = AddActionUseCase(actionsRepository)
 }

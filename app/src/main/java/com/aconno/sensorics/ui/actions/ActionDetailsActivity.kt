@@ -16,6 +16,8 @@ import com.aconno.sensorics.adapter.DeviceSpinnerAdapter
 import com.aconno.sensorics.dagger.action_details.ActionDetailsComponent
 import com.aconno.sensorics.dagger.action_details.ActionDetailsModule
 import com.aconno.sensorics.dagger.action_details.DaggerActionDetailsComponent
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_action_details.*
 import kotlinx.android.synthetic.main.item_chip.view.*
 import timber.log.Timber
@@ -151,15 +153,26 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
     private fun setSaveButtonOnClickListener() {
         button_save.setOnClickListener {
             if (edittext_name.text.isBlank()) {
-                Snackbar.make(
-                    container_activity,
-                    "Action name cannot be blank",
-                    Snackbar.LENGTH_SHORT
-                ).show()
+                showSnackbarMessage("Action name cannot be blank")
             } else {
-                //TODO: Make a call to view model to save the action with edittext parameters
+                actionDetailsViewModel.saveAction(
+                    edittext_name.text.toString(),
+                    edittext_message.text.toString(),
+                    edittext_phone_number.text.toString()
+                )
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        finish()
+                    }, {
+                        showSnackbarMessage(it.message ?: "Save not succeeded")
+                    })
             }
         }
+    }
+
+    private fun showSnackbarMessage(message: String) {
+        Snackbar.make(container_activity, message, Snackbar.LENGTH_SHORT).show()
     }
 
     private fun setOutcomeButtonOnClickListeners() {
