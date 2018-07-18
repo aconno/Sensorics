@@ -5,9 +5,6 @@ import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.type.SingleUseCase
 import io.reactivex.Single
 
-/**
- * @author aconno
- */
 class GetAllActionsUseCase(
     private val actionsRepository: ActionsRepository
 ) : SingleUseCase<List<Action>> {

@@ -28,9 +28,6 @@ import com.aconno.sensorics.domain.repository.InMemoryRepository
 import dagger.Module
 import dagger.Provides
 
-/**
- * @author aconno
- */
 @Module
 class BluetoothScanningServiceModule(
     private val bluetoothScanningService: BluetoothScanningService

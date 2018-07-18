@@ -1,8 +1,8 @@
 package com.aconno.sensorics.data.repository.action
 
 import com.aconno.sensorics.domain.actions.Action
-import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.actions.ActionsRepository
+import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.ifttt.outcome.Outcome
 import com.aconno.sensorics.domain.model.Device
@@ -13,7 +13,7 @@ class ActionsRepositoryImpl(
 ) : ActionsRepository {
 
     override fun getAllActions(): Single<List<Action>> {
-        return actionDao.all.map { actionEntities -> actionEntities.map { toAction(it) } }
+        return actionDao.getAll().map { actionEntities -> actionEntities.map { toAction(it) } }
     }
 
     override fun getActionById(actionId: Long): Single<Action> {

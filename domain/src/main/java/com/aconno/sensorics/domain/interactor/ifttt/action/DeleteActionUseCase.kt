@@ -5,9 +5,6 @@ import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.type.CompletableUseCaseWithParameter
 import io.reactivex.Completable
 
-/**
- * @author aconno
- */
 class DeleteActionUseCase(
     private val actionsRepository: ActionsRepository
 ) : CompletableUseCaseWithParameter<Action> {
