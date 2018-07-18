@@ -7,7 +7,7 @@ import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.ifttt.LimitCondition
-import com.aconno.sensorics.domain.ifttt.outcome.Outcome
+import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionByIdUseCase
 import com.aconno.sensorics.domain.model.Device
@@ -100,10 +100,22 @@ class ActionDetailsViewModel(
         parameters[Outcome.PHONE_NUMBER] = phoneNumber
         parameters[Outcome.TEXT_MESSAGE] = message
         val outcome = when (outcomeLiveData.value) {
-            "Notification" -> Outcome(parameters, Outcome.OUTCOME_TYPE_NOTIFICATION)
-            "SMS" -> Outcome(parameters, Outcome.OUTCOME_TYPE_SMS)
-            "Vibration" -> Outcome(parameters, Outcome.OUTCOME_TYPE_VIBRATION)
-            "Text to speech" -> Outcome(parameters, Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH)
+            "Notification" -> Outcome(
+                parameters,
+                Outcome.OUTCOME_TYPE_NOTIFICATION
+            )
+            "SMS" -> Outcome(
+                parameters,
+                Outcome.OUTCOME_TYPE_SMS
+            )
+            "Vibration" -> Outcome(
+                parameters,
+                Outcome.OUTCOME_TYPE_VIBRATION
+            )
+            "Text to speech" -> Outcome(
+                parameters,
+                Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH
+            )
             else -> return Completable.error(IllegalArgumentException("Invalid outcome: ${outcomeLiveData.value}"))
         }
         return if (device == null || condition == null) {

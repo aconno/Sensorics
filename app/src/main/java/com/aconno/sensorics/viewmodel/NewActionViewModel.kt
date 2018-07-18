@@ -7,7 +7,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.ifttt.LimitCondition
-import com.aconno.sensorics.domain.ifttt.outcome.Outcome
+import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.model.Device
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -64,7 +64,8 @@ class NewActionViewModel(
                 else -> {
 
                     val parameters = mapOf(
-                        Pair(Outcome.TEXT_MESSAGE, content), Pair(Outcome.PHONE_NUMBER, smsDestination)
+                        Pair(Outcome.TEXT_MESSAGE, content), Pair(
+                            Outcome.PHONE_NUMBER, smsDestination)
                     )
 
                     val outcomeEndType = when (outcomeType) {
@@ -83,7 +84,10 @@ class NewActionViewModel(
                         else -> throw IllegalArgumentException("Invalid outcome type")
                     }
 
-                    val outcome = Outcome(parameters, outcomeEndType)
+                    val outcome = Outcome(
+                        parameters,
+                        outcomeEndType
+                    )
                     val newAction = GeneralAction(
                         newId,
                         name,

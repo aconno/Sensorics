@@ -7,7 +7,7 @@ import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.ifttt.LimitCondition
-import com.aconno.sensorics.domain.ifttt.outcome.Outcome
+import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.UpdateActionUseCase
@@ -72,7 +72,8 @@ class ActionViewModel(
     ) {
         val condition = conditionLiveData.value
         val parameters =
-            mapOf(Pair(Outcome.TEXT_MESSAGE, message), Pair(Outcome.PHONE_NUMBER, phoneNumber))
+            mapOf(Pair(Outcome.TEXT_MESSAGE, message), Pair(
+                Outcome.PHONE_NUMBER, phoneNumber))
         val outcome = Outcome(parameters, outcomeType)
         if (condition != null) {
             val action = GeneralAction(

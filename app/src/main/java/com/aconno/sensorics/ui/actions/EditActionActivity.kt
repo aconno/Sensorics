@@ -17,7 +17,7 @@ import com.aconno.sensorics.dagger.actionlist.ActionListModule
 import com.aconno.sensorics.dagger.actionlist.DaggerActionListComponent
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.ifttt.LimitCondition
-import com.aconno.sensorics.domain.ifttt.outcome.Outcome
+import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.ui.dialogs.SavedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.SavedDevicesDialogListener
