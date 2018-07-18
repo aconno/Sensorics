@@ -1,10 +1,11 @@
 package com.aconno.sensorics.data.repository.action
 
 import com.aconno.sensorics.domain.actions.Action
-import com.aconno.sensorics.domain.ifttt.ActionsRepository
 import com.aconno.sensorics.domain.actions.GeneralAction
+import com.aconno.sensorics.domain.ifttt.ActionsRepository
 import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.ifttt.outcome.Outcome
+import com.aconno.sensorics.domain.model.Device
 import io.reactivex.Single
 
 class ActionsRepositoryImpl(
@@ -31,34 +32,25 @@ class ActionsRepositoryImpl(
     }
 
     private fun toEntity(action: Action): ActionEntity {
-        val id = action.id
-        val name = action.name
-        val deviceMacAddress = action.deviceMacAddress
-        val readingType = action.condition.readingType
-        val conditionType = action.condition.type
-        val value = action.condition.limit
-
-        val type = action.outcome.type
-        val message = action.outcome.parameters[Outcome.TEXT_MESSAGE] ?: "null"
-        val number = action.outcome.parameters[Outcome.PHONE_NUMBER] ?: ""
-
         return ActionEntity(
-            id = id,
-            name = name,
-            deviceMacAddress = deviceMacAddress,
-            readingType = readingType,
-            conditionType = conditionType,
-            value = value,
-            textMessage = message,
-            outcomeType = type,
-            phoneNumber = number
+            id = action.id,
+            name = action.name,
+            deviceName = action.device.name,
+            deviceAlias = action.device.alias,
+            deviceMacAddress = action.device.macAddress,
+            deviceIcon = action.device.icon,
+            readingType = action.condition.readingType,
+            conditionType = action.condition.type,
+            value = action.condition.limit,
+            textMessage = action.outcome.parameters[Outcome.TEXT_MESSAGE] ?: "",
+            phoneNumber = action.outcome.parameters[Outcome.PHONE_NUMBER] ?: "",
+            outcomeType = action.outcome.type
         )
     }
 
     private fun toAction(actionEntity: ActionEntity): Action {
         val id = actionEntity.id
         val name = actionEntity.name
-        val deviceMacAddress = actionEntity.deviceMacAddress
         val condition =
             LimitCondition(
                 actionEntity.readingType,
@@ -73,10 +65,17 @@ class ActionsRepositoryImpl(
 
         val outcome = Outcome(parameters, actionEntity.outcomeType)
 
+        val device = Device(
+            actionEntity.deviceName,
+            actionEntity.deviceAlias,
+            actionEntity.deviceMacAddress,
+            actionEntity.deviceIcon
+        )
+
         return GeneralAction(
             id,
             name,
-            deviceMacAddress,
+            device,
             condition,
             outcome
         )

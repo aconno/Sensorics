@@ -9,6 +9,7 @@ import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.ifttt.outcome.Outcome
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
+import com.aconno.sensorics.domain.model.Device
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -86,7 +87,7 @@ class NewActionViewModel(
                     val newAction = GeneralAction(
                         newId,
                         name,
-                        deviceMacAddress,
+                        Device("", "", deviceMacAddress),
                         condition,
                         outcome
                     )

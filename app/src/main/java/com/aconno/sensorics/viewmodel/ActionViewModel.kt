@@ -11,6 +11,7 @@ import com.aconno.sensorics.domain.ifttt.outcome.Outcome
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.UpdateActionUseCase
+import com.aconno.sensorics.domain.model.Device
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -38,7 +39,7 @@ class ActionViewModel(
     private fun onActionFound(action: Action) {
         id = action.id
         nameLiveData.value = action.name
-        deviceMacAddressLiveData.value = action.deviceMacAddress
+        deviceMacAddressLiveData.value = action.device.macAddress
         conditionLiveData.value = action.condition
         outcomeLiveData.value = action.outcome
     }
@@ -77,7 +78,7 @@ class ActionViewModel(
             val action = GeneralAction(
                 id,
                 name,
-                deviceMacAddress,
+                Device("", "", deviceMacAddress),
                 condition,
                 outcome
             )
@@ -100,7 +101,7 @@ class ActionViewModel(
             val action = GeneralAction(
                 id,
                 name,
-                deviceMacAddress,
+                Device("", "", deviceMacAddress),
                 condition,
                 outcome
             )

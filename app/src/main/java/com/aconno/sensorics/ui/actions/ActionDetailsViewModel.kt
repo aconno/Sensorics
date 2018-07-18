@@ -54,7 +54,7 @@ class ActionDetailsViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { action ->
                 nameLiveData.value = action.name
-                val device = Device("", "", action.deviceMacAddress)
+                val device = Device("", "", action.device.macAddress)
                 setSelectedDevice(device)
                 conditionLiveData.value = action.condition
                 outcomeLiveData.value = when (action.outcome.type) {
@@ -94,7 +94,7 @@ class ActionDetailsViewModel(
     }
 
     fun saveAction(name: String, message: String, phoneNumber: String = ""): Completable {
-        val macAddress = selectedDeviceLiveData.value?.macAddress
+        val device = selectedDeviceLiveData.value
         val condition = conditionLiveData.value
         val parameters = hashMapOf<String, String>()
         parameters[Outcome.PHONE_NUMBER] = phoneNumber
@@ -106,13 +106,13 @@ class ActionDetailsViewModel(
             "Text to speech" -> Outcome(parameters, Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH)
             else -> return Completable.error(IllegalArgumentException("Invalid outcome: ${outcomeLiveData.value}"))
         }
-        return if (macAddress == null || condition == null) {
-            Completable.error(IllegalArgumentException("Invalid parameters, mac address: $macAddress, condition: $condition"))
+        return if (device == null || condition == null) {
+            Completable.error(IllegalArgumentException("Invalid parameters, device: $device, condition: $condition"))
         } else {
             val action = GeneralAction(
                 id,
                 name,
-                macAddress,
+                device,
                 condition,
                 outcome
             )

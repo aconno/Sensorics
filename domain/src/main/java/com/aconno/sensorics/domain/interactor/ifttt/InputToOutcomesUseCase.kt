@@ -26,7 +26,7 @@ class InputToOutcomesUseCase(
     private fun actionsToOutcomes(actions: List<Action>, input: Input): List<Outcome> {
         val result = mutableListOf<Outcome>()
 
-        actions.filter { it.deviceMacAddress == input.macAddress }
+        actions.filter { it.device.macAddress == input.macAddress }
             .forEach { action ->
                 val actionPreviousConditions = previousConditions[action.id] ?: mutableMapOf()
                 val previousCondition = actionPreviousConditions[input.type]
