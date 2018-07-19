@@ -6,16 +6,12 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.aconno.sensorics.BluetoothConnectService
-import com.aconno.sensorics.R
-import com.aconno.sensorics.SensoricsApplication
+import android.view.*
+import com.aconno.sensorics.*
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.model.Device
-import com.aconno.sensorics.hexToByte
+import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.base.BaseDialogFragment
 import com.google.gson.Gson
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -24,6 +20,7 @@ import kotlinx.android.synthetic.main.fragment_device_connection.*
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
+
 
 class DeviceConnectionFragment : BaseDialogFragment() {
 
@@ -73,6 +70,8 @@ class DeviceConnectionFragment : BaseDialogFragment() {
                             progressbar?.visibility = View.INVISIBLE
                             disableToggleViews()
                             text = "DISCONNECTED"
+
+                            serviceConnect?.close()
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_ERROR -> {
                             isServicesDiscovered = false
@@ -91,23 +90,31 @@ class DeviceConnectionFragment : BaseDialogFragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val mainActivity: MainActivity? = context as MainActivity
+        mainActivity?.supportActionBar?.title = mDevice.getRealName()
+        mainActivity?.supportActionBar?.subtitle = mDevice.macAddress
+    }
+
     private fun enableToggleViews() {
-        btn_buzzer.isEnabled = true
-        btn_redLight.isEnabled = true
-        btn_greenLight.isEnabled = true
-        btn_blueLight.isEnabled = true
+        btn_buzzer?.isEnabled = true
+        btn_redLight?.isEnabled = true
+        btn_greenLight?.isEnabled = true
+        btn_blueLight?.isEnabled = true
     }
 
     private fun disableToggleViews() {
-        btn_buzzer.isEnabled = false
-        btn_redLight.isEnabled = false
-        btn_greenLight.isEnabled = false
-        btn_blueLight.isEnabled = false
+        btn_buzzer?.isEnabled = false
+        btn_redLight?.isEnabled = false
+        btn_greenLight?.isEnabled = false
+        btn_blueLight?.isEnabled = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (context!!.applicationContext as SensoricsApplication).appComponent.inject(this)
+        setHasOptionsMenu(true)
         getParams()
     }
 
@@ -145,6 +152,37 @@ class DeviceConnectionFragment : BaseDialogFragment() {
 
         btn_blueLight.setOnCheckedChangeListener { _, isChecked ->
             toggleCharacteristic(3, isChecked)
+        }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        super.onPrepareOptionsMenu(menu)
+        menu?.clear()
+        activity?.menuInflater?.inflate(R.menu.menu_fragment_connect, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.action_toggle_connect ->
+                if (item.isChecked) {
+                    item.isChecked = false
+
+                    //stop
+                    serviceConnect?.disconnect()
+                    item.title = "CONNECT"
+                    true
+                } else {
+                    item.isChecked = true
+
+                    //start
+                    progressbar?.visibility = View.VISIBLE
+                    serviceConnect?.connect(mDevice.macAddress)
+                    item.title = "DISCONNECT"
+                    true
+                }
+            else -> {
+                false
+            }
         }
     }
 

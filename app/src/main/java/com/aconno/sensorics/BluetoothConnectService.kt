@@ -62,6 +62,14 @@ class BluetoothConnectService : Service() {
         bluetooth.connect(deviceAddress)
     }
 
+    fun disconnect() {
+        bluetooth.disconnect()
+    }
+
+    fun close(){
+        bluetooth.closeConnection()
+    }
+
     override fun onBind(intent: Intent?): IBinder {
         return mBinder
     }
