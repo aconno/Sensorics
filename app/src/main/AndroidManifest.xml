@@ -26,7 +26,6 @@
             android:name=".BluetoothScanningService"
             android:exported="false" />
 
-        <activity android:name=".ui.actions.EditActionActivity" />
         <activity
             android:name=".ui.settings.publishers.PublishListActivity"
             android:label="@string/title_publish_list" />
