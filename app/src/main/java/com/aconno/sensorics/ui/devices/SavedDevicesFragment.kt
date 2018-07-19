@@ -17,6 +17,7 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.EditText
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceActiveAdapter
@@ -55,6 +56,15 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
 
     private var snackbar: Snackbar? = null
 
+    private val onConnectClickListener = object : ItemClickListener<DeviceActive> {
+        override fun onItemClick(item: DeviceActive) {
+            activity?.let {
+                val mainActivity = it as MainActivity
+                mainActivity.connect(item.device)
+            }
+        }
+    }
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
@@ -83,7 +93,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
         super.onViewCreated(view, savedInstanceState)
 
         list_devices.layoutManager = LinearLayoutManager(context)
-        deviceAdapter = DeviceActiveAdapter(devices, this, this)
+        deviceAdapter = DeviceActiveAdapter(devices, this, onConnectClickListener, this)
         list_devices.adapter = deviceAdapter
 
         list_devices.itemAnimator = DefaultItemAnimator()
@@ -173,13 +183,10 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
     }
 
     override fun onItemClick(item: DeviceActive) {
-//        activity?.let {
-//            val mainActivity = it as MainActivity
-//            mainActivity.showSensorValues(item.device)
-//        }
-
-        val newInstance = DeviceConnectionFragment.newInstance(item.device)
-        newInstance.show(childFragmentManager, DeviceConnectionFragment::class.java.simpleName)
+        activity?.let {
+            val mainActivity = it as MainActivity
+            mainActivity.showSensorValues(item.device)
+        }
     }
 
     override fun onDialogDismissed() {

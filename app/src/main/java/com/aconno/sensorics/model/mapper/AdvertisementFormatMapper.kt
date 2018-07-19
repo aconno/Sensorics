@@ -1,12 +1,7 @@
 package com.aconno.sensorics.model.mapper
 
-import com.aconno.sensorics.domain.format.AdvertisementFormat
-import com.aconno.sensorics.domain.format.ByteFormat
-import com.aconno.sensorics.domain.format.ByteFormatRequired
-import com.aconno.sensorics.domain.format.GenericFormat
-import com.aconno.sensorics.model.ByteFormatModel
-import com.aconno.sensorics.model.ByteFormatRequiredModel
-import com.aconno.sensorics.model.GenericFormatModel
+import com.aconno.sensorics.domain.format.*
+import com.aconno.sensorics.model.*
 
 class AdvertisementFormatMapper {
 
@@ -15,10 +10,35 @@ class AdvertisementFormatMapper {
             genericFormatModel.name,
             genericFormatModel.icon,
             genericFormatModel.format.map { toByteFormat(it) },
-            genericFormatModel.formatRequired.map { toByteFormatRequired(it) }
+            genericFormatModel.formatRequired.map { toByteFormatRequired(it) },
+            genericFormatModel.connectible,
+            genericFormatModel.connectionWriteList?.map { toConnectionWrite(it) },
+            genericFormatModel.connectionReadList?.map { toConnectionRead(it) }
         )
     }
 
+    private fun toConnectionRead(connectionReadModel: ConnectionReadModel): ConnectionRead {
+        return ConnectionRead(
+            connectionReadModel.serviceUUID,
+            connectionReadModel.characteristicUUID
+        )
+    }
+
+    private fun toConnectionWrite(connectionWriteModel: ConnectionWriteModel): ConnectionWrite {
+        return ConnectionWrite(
+            connectionWriteModel.serviceUUID,
+            connectionWriteModel.characteristicUUID,
+            connectionWriteModel.values.map { toValue(it) }
+        )
+    }
+
+    private fun toValue(valueModel: ValueModel): Value {
+        return Value(
+            valueModel.name,
+            valueModel.type,
+            valueModel.value
+        )
+    }
 
     private fun toByteFormatRequired(byteFormatRequiredModel: ByteFormatRequiredModel): ByteFormatRequired {
         return ByteFormatRequired(

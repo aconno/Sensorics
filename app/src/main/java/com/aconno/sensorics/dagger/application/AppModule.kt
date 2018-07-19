@@ -32,6 +32,8 @@ import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.format.AdvertisementFormat
+import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
+import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinderImpl
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateDeviceUseCase
@@ -113,6 +115,12 @@ class AppModule(
     @Singleton
     fun provideSharedPreferences(): SharedPreferences {
         return PreferenceManager.getDefaultSharedPreferences(sensoricsApplication)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConnectionCharacteristicsFinder(): ConnectionCharacteristicsFinder {
+        return ConnectionCharacteristicsFinderImpl(supportedFormats)
     }
 
     @Provides

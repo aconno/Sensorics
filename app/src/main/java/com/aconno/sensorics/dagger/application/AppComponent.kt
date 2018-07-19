@@ -7,6 +7,7 @@ import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
+import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
@@ -17,6 +18,7 @@ import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
+import com.aconno.sensorics.ui.devicecon.DeviceConnectionFragment
 import com.aconno.sensorics.ui.dialogs.SavedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import dagger.Component
@@ -71,9 +73,13 @@ interface AppComponent {
 
     fun inject(bluetoothConnectService: BluetoothConnectService)
 
+    fun inject(deviceConnectionFragment: DeviceConnectionFragment)
+
     fun publishDeviceJoinRepository(): PublishDeviceJoinRepository
 
     fun readingsStream(): Flowable<List<Reading>>
 
     fun getSavedDevicesMaybeUseCase(): GetSavedDevicesMaybeUseCase
+
+    fun connectionCharacteristicsFinder(): ConnectionCharacteristicsFinder
 }

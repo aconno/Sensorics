@@ -11,15 +11,14 @@ class BluetoothGattCallback(
 ) : BluetoothGattCallback() {
 
     companion object {
-        val ACTION_GATT_ERROR = "com.aconno.sensorics.ACTION_GATT_ERROR"
-        val ACTION_GATT_CONNECTING = "com.aconno.sensorics.ACTION_GATT_CONNECTING"
-        val ACTION_GATT_DEVICE_NOT_FOUND = "com.aconno.sensorics.ACTION_GATT_DEVICE_NOT_FOUND"
-        val ACTION_GATT_CONNECTED = "com.aconno.sensorics.ACTION_GATT_CONNECTED"
-        val ACTION_GATT_DISCONNECTED = "com.aconno.sensorics.ACTION_GATT_DISCONNECTED"
-        val ACTION_GATT_SERVICES_DISCOVERED = "com.aconno.sensorics.ACTION_GATT_SERVICES_DISCOVERED"
-        val ACTION_DATA_AVAILABLE = "com.aconno.sensorics.ACTION_DATA_AVAILABLE"
+        const val ACTION_GATT_ERROR = "com.aconno.sensorics.ACTION_GATT_ERROR"
+        const val ACTION_GATT_CONNECTING = "com.aconno.sensorics.ACTION_GATT_CONNECTING"
+        const val ACTION_GATT_DEVICE_NOT_FOUND = "com.aconno.sensorics.ACTION_GATT_DEVICE_NOT_FOUND"
+        const val ACTION_GATT_CONNECTED = "com.aconno.sensorics.ACTION_GATT_CONNECTED"
+        const val ACTION_GATT_DISCONNECTED = "com.aconno.sensorics.ACTION_GATT_DISCONNECTED"
+        const val ACTION_GATT_SERVICES_DISCOVERED = "com.aconno.sensorics.ACTION_GATT_SERVICES_DISCOVERED"
+        const val ACTION_DATA_AVAILABLE = "com.aconno.sensorics.ACTION_DATA_AVAILABLE"
     }
-
 
     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
         if (newState == BluetoothProfile.STATE_CONNECTED) {
