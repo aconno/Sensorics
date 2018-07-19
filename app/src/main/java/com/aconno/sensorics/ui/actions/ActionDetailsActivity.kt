@@ -16,6 +16,9 @@ import com.aconno.sensorics.adapter.DeviceSpinnerAdapter
 import com.aconno.sensorics.dagger.action_details.ActionDetailsComponent
 import com.aconno.sensorics.dagger.action_details.ActionDetailsModule
 import com.aconno.sensorics.dagger.action_details.DaggerActionDetailsComponent
+import com.aconno.sensorics.domain.actions.outcomes.Outcome
+import com.aconno.sensorics.domain.ifttt.Condition
+import com.aconno.sensorics.domain.model.Device
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_action_details.*
@@ -43,19 +46,14 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
         setContentView(R.layout.activity_action_details)
         actionDetailsComponent.inject(this)
 
-        initDevicesSpinner()
+        setDevicesSpinnerAdapter()
+        setDevicesSelectListener()
 
-        setSaveButtonOnClickListener()
-        setOutcomeButtonOnClickListeners()
+        setOutcomeSelectListeners()
 
-        observeNameLiveData()
-        observeDevicesLiveData()
-        observeSelectedDeviceLiveData()
-        observeReadingTypesLiveData()
-        observeConditionLiveData()
-        observeOutcomeLiveData()
-        observeMessageLiveData()
-        observePhoneNumberLiveData()
+        setSaveButtonListener()
+
+        observeActionLiveData()
 
         if (intent.hasExtra(ACTION_ID_EXTRA)) {
             val actionId = intent.getLongExtra(ACTION_ID_EXTRA, 0L)
@@ -63,8 +61,22 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
         }
     }
 
-    private fun initDevicesSpinner() {
+    override fun onResume() {
+        super.onResume()
+        container_activity.requestFocus()
+    }
+
+    private fun setDevicesSpinnerAdapter() {
         spinner_devices.adapter = deviceSpinnerAdapter
+        actionDetailsViewModel.getDevices()
+            .subscribe({ devices ->
+                deviceSpinnerAdapter.setDevices(devices)
+            }, {
+                showSnackbarMessage("There are no devices")
+            })
+    }
+
+    private fun setDevicesSelectListener() {
         spinner_devices.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -77,181 +89,24 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
                 position: Int,
                 id: Long
             ) {
-                hideConditions()
+                Timber.d("Item selected, position: $position")
                 val device = deviceSpinnerAdapter.getDevice(position)
-                actionDetailsViewModel.setSelectedDevice(device)
+                val name = edittext_name.text.toString()
+                val message = edittext_message.text.toString()
+                val phoneNumber = edittext_phone_number.text.toString()
+                actionDetailsViewModel.setDevice(device, name, message, phoneNumber)
             }
         }
     }
 
-    private fun setSaveButtonOnClickListener() {
-        button_save.setOnClickListener {
-            if (edittext_name.text.isBlank()) {
-                showSnackbarMessage("Action name cannot be blank")
-            } else {
-                actionDetailsViewModel.saveAction(
-                    edittext_name.text.toString(),
-                    edittext_message.text.toString(),
-                    edittext_phone_number.text.toString()
-                )
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        finish()
-                    }, {
-                        showSnackbarMessage(it.message ?: "Save not succeeded")
-                    })
-            }
-        }
+    private fun invalidateConditions(device: Device) {
+        val readingTypes = actionDetailsViewModel.getReadingTypes(device)
+        val action = actionDetailsViewModel.getActionLiveData().value
+        Timber.d("Invalidate conditions: ${action?.condition}")
+        initConditionViews(readingTypes, action?.condition)
     }
 
-    private fun showSnackbarMessage(message: String) {
-        Snackbar.make(container_activity, message, Snackbar.LENGTH_SHORT).show()
-    }
-
-    private fun setOutcomeButtonOnClickListeners() {
-        button_outcome_notification.setOnClickListener {
-            actionDetailsViewModel.setOutcome("Notification")
-        }
-        button_outcome_sms.setOnClickListener {
-            actionDetailsViewModel.setOutcome("SMS")
-        }
-        button_outcome_text_to_speech.setOnClickListener {
-            actionDetailsViewModel.setOutcome("Text to speech")
-        }
-        button_outcome_vibration.setOnClickListener {
-            actionDetailsViewModel.setOutcome("Vibration")
-        }
-    }
-
-    private fun observeNameLiveData() {
-        actionDetailsViewModel.getNameLiveData().observe(this, Observer { name ->
-            if (name == null) {
-                edittext_name.text.clear()
-                Timber.d("Action name: $name")
-            } else {
-                edittext_name.setText(name)
-            }
-        })
-    }
-
-    private fun observeDevicesLiveData() {
-        actionDetailsViewModel.getDevicesLiveData().observe(this, Observer { devices ->
-            if (devices == null || devices.isEmpty()) {
-                hideDevicesSpinner()
-                showSnackbarMessage("There are no devices")
-                Timber.e(IllegalArgumentException("There are no devices"))
-            } else {
-                deviceSpinnerAdapter.setDevices(devices)
-                showDevicesSpinner()
-            }
-        })
-    }
-
-    private fun observeSelectedDeviceLiveData() {
-        actionDetailsViewModel.getSelectedDeviceLiveData().observe(this, Observer { device ->
-            device?.let {
-                val position = deviceSpinnerAdapter.getDevicePosition(device)
-                spinner_devices.setSelection(position)
-            }
-        })
-    }
-
-    private fun observeReadingTypesLiveData() {
-        actionDetailsViewModel.getReadingTypesLiveData().observe(this, Observer { readingTypes ->
-            if (readingTypes == null || readingTypes.isEmpty()) {
-                hideConditions()
-                showSnackbarMessage("There are no reading types")
-                Timber.d("No reading types: $readingTypes")
-            } else {
-                initConditionViews(readingTypes)
-                showConditions()
-            }
-        })
-    }
-
-    private fun observeConditionLiveData() {
-        actionDetailsViewModel.getConditionLiveData().observe(this, Observer { condition ->
-            Timber.d("Condition: $condition")
-            condition?.let {
-                val readingTypes = actionDetailsViewModel.getReadingTypesLiveData().value
-                Timber.d("Reading types: $readingTypes")
-                readingTypes?.let {
-                    val position = readingTypes.indexOf(condition.readingType)
-                    val view = container_conditions.getChildAt(position)
-                    (view as CheckedTextView).isChecked = true
-                    view.text_title.text = condition.toString()
-                    showOutcomes()
-                }
-            }
-        })
-    }
-
-    private fun observeOutcomeLiveData() {
-        actionDetailsViewModel.getOutcomeLiveData().observe(this, Observer { outcome ->
-            when (outcome) {
-                "Notification" -> {
-                    button_outcome_notification.isChecked = true
-                    button_outcome_sms.isChecked = false
-                    button_outcome_text_to_speech.isChecked = false
-                    button_outcome_vibration.isChecked = false
-                    edittext_phone_number.visibility = View.GONE
-                    edittext_message.visibility = View.VISIBLE
-                }
-                "SMS" -> {
-                    button_outcome_notification.isChecked = false
-                    button_outcome_sms.isChecked = true
-                    button_outcome_text_to_speech.isChecked = false
-                    button_outcome_vibration.isChecked = false
-                    edittext_phone_number.visibility = View.VISIBLE
-                    edittext_message.visibility = View.VISIBLE
-                }
-                "Text to speech" -> {
-                    button_outcome_notification.isChecked = false
-                    button_outcome_sms.isChecked = false
-                    button_outcome_text_to_speech.isChecked = true
-                    button_outcome_vibration.isChecked = false
-                    edittext_phone_number.visibility = View.GONE
-                    edittext_message.visibility = View.VISIBLE
-                }
-                "Vibration" -> {
-                    button_outcome_notification.isChecked = false
-                    button_outcome_sms.isChecked = false
-                    button_outcome_text_to_speech.isChecked = false
-                    button_outcome_vibration.isChecked = true
-                    edittext_phone_number.visibility = View.GONE
-                    edittext_message.visibility = View.GONE
-                }
-                else -> throw IllegalArgumentException("Invalid outcome value: $outcome")
-            }
-            button_save.visibility = View.VISIBLE
-        })
-    }
-
-    private fun observeMessageLiveData() {
-        actionDetailsViewModel.getMessageLiveData().observe(this, Observer {
-            it?.let {
-                edittext_message.setText(it)
-            }
-        })
-    }
-
-    private fun observePhoneNumberLiveData() {
-        actionDetailsViewModel.getPhoneNumberLiveData().observe(this, Observer {
-            it?.let {
-                edittext_phone_number.setText(it)
-            }
-        })
-    }
-
-    override fun onSetClicked(readingType: String, constraint: String, value: String) {
-        container_activity.requestFocus()
-        val readingTypes = actionDetailsViewModel.getReadingTypesLiveData().value
-        initConditionViews(readingTypes!!)
-        actionDetailsViewModel.setCondition(readingType, constraint, value)
-    }
-
-    private fun initConditionViews(readingTypes: List<String>) {
+    private fun initConditionViews(readingTypes: List<String>, condition: Condition?) {
         readingTypes.forEachIndexed { index, readingType ->
             val view = container_conditions.getChildAt(index)
             if (view == null) {
@@ -278,45 +133,130 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
                 container_conditions.getChildAt(index).visibility = View.GONE
             }
         }
+        condition?.let {
+            val position = readingTypes.indexOf(condition.readingType)
+            val view = container_conditions.getChildAt(position)
+            if (view is CheckedTextView) {
+                view.text = condition.toString()
+                view.isChecked = true
+            } else {
+                val name = edittext_name.text.toString()
+                val message = edittext_message.text.toString()
+                val phoneNumber = edittext_phone_number.text.toString()
+                actionDetailsViewModel.clearCondition(name, message, phoneNumber)
+            }
+        }
     }
 
-    private fun hideDevicesSpinner() {
-        label_device.visibility = View.GONE
-        spinner_devices.visibility = View.GONE
-        hideConditions()
+    private fun showSnackbarMessage(message: String) {
+        Snackbar.make(container_activity, message, Snackbar.LENGTH_SHORT).show()
     }
 
-    private fun showDevicesSpinner() {
-        label_device.visibility = View.VISIBLE
-        spinner_devices.visibility = View.VISIBLE
+    override fun onSetClicked(readingType: String, constraint: String, value: String) {
+        val name = edittext_name.text.toString()
+        val message = edittext_message.text.toString()
+        val phoneNumber = edittext_phone_number.text.toString()
+        actionDetailsViewModel.setCondition(
+            readingType,
+            value,
+            constraint,
+            name,
+            message,
+            phoneNumber
+        )
     }
 
-    private fun hideConditions() {
-        label_condition.visibility = View.GONE
-        container_conditions.visibility = View.GONE
-        hideOutcomes()
+    private fun observeActionLiveData() {
+        actionDetailsViewModel.getActionLiveData().observe(this, Observer { action ->
+            action?.let {
+                Timber.d("On action changed")
+                setName(action.name)
+                setDevice(action.device)
+                setOutcome(action.outcome)
+            }
+        })
     }
 
-    private fun showConditions() {
-        label_condition.visibility = View.VISIBLE
-        container_conditions.visibility = View.VISIBLE
+    private fun setName(name: String) {
+        edittext_name.setText(name)
     }
 
-    private fun hideOutcomes() {
-        label_outcome.visibility = View.GONE
-        container_outcomes.visibility = View.GONE
+    private fun setDevice(device: Device?) {
+        device?.let {
+            val position = deviceSpinnerAdapter.getDevicePosition(device)
+            if (spinner_devices.selectedItemPosition != position) {
+                spinner_devices.setSelection(position)
+            } else {
+                invalidateConditions(device)
+            }
+        }
+    }
+
+    private fun setOutcomeSelectListeners() {
+        button_outcome_notification.setOnClickListener {
+            setOutcomeData(Outcome.OUTCOME_TYPE_NOTIFICATION)
+        }
+        button_outcome_sms.setOnClickListener {
+            setOutcomeData(Outcome.OUTCOME_TYPE_SMS)
+        }
+        button_outcome_text_to_speech.setOnClickListener {
+            setOutcomeData(Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH)
+        }
+        button_outcome_vibration.setOnClickListener {
+            setOutcomeData(Outcome.OUTCOME_TYPE_VIBRATION)
+        }
+    }
+
+    private fun setOutcomeData(type: Int) {
+        val message = edittext_message.text.toString()
+        val phoneNumber = edittext_phone_number.text.toString()
+        val name = edittext_name.text.toString()
+        actionDetailsViewModel.setOutcome(type, message, phoneNumber, name)
+    }
+
+    private fun setOutcome(outcome: Outcome?) {
         button_outcome_notification.isChecked = false
         button_outcome_sms.isChecked = false
-        button_outcome_vibration.isChecked = false
         button_outcome_text_to_speech.isChecked = false
-        edittext_phone_number.visibility = View.GONE
+        button_outcome_vibration.isChecked = false
         edittext_message.visibility = View.GONE
-        button_save.visibility = View.GONE
+        edittext_phone_number.visibility = View.GONE
+        outcome?.let {
+            when (outcome.type) {
+                Outcome.OUTCOME_TYPE_NOTIFICATION -> {
+                    button_outcome_notification.isChecked = true
+                    edittext_message.visibility = View.VISIBLE
+                }
+                Outcome.OUTCOME_TYPE_SMS -> {
+                    button_outcome_sms.isChecked = true
+                    edittext_message.visibility = View.VISIBLE
+                    edittext_phone_number.visibility = View.VISIBLE
+                }
+                Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH -> {
+                    button_outcome_text_to_speech.isChecked = true
+                    edittext_message.visibility = View.VISIBLE
+                }
+                Outcome.OUTCOME_TYPE_VIBRATION -> button_outcome_vibration.isChecked = true
+            }
+            edittext_message.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
+            edittext_phone_number.setText(outcome.parameters[Outcome.PHONE_NUMBER] ?: "")
+        }
     }
 
-    private fun showOutcomes() {
-        label_outcome.visibility = View.VISIBLE
-        container_outcomes.visibility = View.VISIBLE
+    private fun setSaveButtonListener() {
+        button_save.setOnClickListener {
+            val message = edittext_message.text.toString()
+            val phoneNumber = edittext_phone_number.text.toString()
+            val name = edittext_name.text.toString()
+            actionDetailsViewModel.saveAction(name, message, phoneNumber)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    finish()
+                }, {
+                    showSnackbarMessage(it.message ?: "Save unsuccessful")
+                })
+        }
     }
 
     companion object {

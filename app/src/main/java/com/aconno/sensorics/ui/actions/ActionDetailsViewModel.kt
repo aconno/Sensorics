@@ -3,137 +3,187 @@ package com.aconno.sensorics.ui.actions
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import com.aconno.sensorics.domain.actions.GeneralAction
+import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.ifttt.Condition
-import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.ifttt.LimitCondition
-import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionByIdUseCase
 import com.aconno.sensorics.domain.model.Device
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 class ActionDetailsViewModel(
-    savedDevicesStream: Flowable<List<Device>>,
+    private val savedDevicesStream: Flowable<List<Device>>,
     private val formatMatcher: FormatMatcher,
     private val getActionByIdUseCase: GetActionByIdUseCase,
     private val addActionUseCase: AddActionUseCase
 ) : ViewModel() {
 
-    private var id = 0L
+    private val actionLiveData = MutableLiveData<ActionViewModel>()
+    fun getActionLiveData(): LiveData<ActionViewModel> = actionLiveData
 
-    private val nameLiveData = MutableLiveData<String>()
-    private val devicesLiveData = MutableLiveData<List<Device>>()
-    private val selectedDeviceLiveData = MutableLiveData<Device>()
-    private val readingTypesLiveData = MutableLiveData<List<String>>()
-    private val conditionLiveData = MutableLiveData<Condition>()
-    private val outcomeLiveData = MutableLiveData<String>()
-    private val messageLiveData = MutableLiveData<String>()
-    private val phoneNumberLiveData = MutableLiveData<String>()
-
-    fun getNameLiveData(): LiveData<String> = nameLiveData
-    fun getDevicesLiveData(): LiveData<List<Device>> = devicesLiveData
-    fun getSelectedDeviceLiveData(): LiveData<Device> = selectedDeviceLiveData
-    fun getReadingTypesLiveData(): LiveData<List<String>> = readingTypesLiveData
-    fun getConditionLiveData(): LiveData<Condition> = conditionLiveData
-    fun getOutcomeLiveData(): LiveData<String> = outcomeLiveData
-    fun getMessageLiveData(): LiveData<String> = messageLiveData
-    fun getPhoneNumberLiveData(): LiveData<String> = phoneNumberLiveData
-
-    private val devicesStreamDisposable = savedDevicesStream.subscribe {
-        devicesLiveData.postValue(it)
+    fun getDevices(): Single<List<Device>> {
+        return savedDevicesStream.firstOrError()
     }
 
     fun setActionId(actionId: Long) {
-        id = actionId
         getActionByIdUseCase.execute(actionId)
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribe { action ->
-                nameLiveData.value = action.name
-                val device = Device("", "", action.device.macAddress)
-                setSelectedDevice(device)
-                conditionLiveData.value = action.condition
-                outcomeLiveData.value = when (action.outcome.type) {
-                    Outcome.OUTCOME_TYPE_NOTIFICATION -> "Notification"
-                    Outcome.OUTCOME_TYPE_SMS -> "SMS"
-                    Outcome.OUTCOME_TYPE_VIBRATION -> "Vibration"
-                    Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH -> "Text to speech"
-                    else -> throw IllegalArgumentException("Invalid outcome type: ${action.outcome.type}")
-                }
-                val message = action.outcome.parameters[Outcome.TEXT_MESSAGE]
-                message?.let { messageLiveData.value = it }
-                val phoneNumber = action.outcome.parameters[Outcome.PHONE_NUMBER]
-                phoneNumber?.let { phoneNumberLiveData.value = it }
+                actionLiveData.postValue(
+                    ActionViewModel(
+                        action.id,
+                        action.name,
+                        action.device,
+                        action.condition,
+                        action.outcome
+                    )
+                )
             }
     }
 
-    fun setSelectedDevice(device: Device) {
-        selectedDeviceLiveData.value = device
-        readingTypesLiveData.value = formatMatcher.getReadingTypes(device.name)
-    }
-
-    fun setCondition(readingType: String, constraintType: String, limitValue: String) {
-        val condition = LimitCondition(
-            readingType,
-            limitValue.toFloat(),
-            when (constraintType) {
-                "<" -> LimitCondition.LESS_THAN
-                ">" -> LimitCondition.MORE_THAN
-                else -> throw IllegalArgumentException("Invalid constraint type: $constraintType")
+    fun setDevice(device: Device, name: String, message: String, phoneNumber: String) {
+        val actionViewModel = actionLiveData.value
+        if (actionViewModel == null) {
+            actionLiveData.value = ActionViewModel(
+                name = name,
+                device = device
+            )
+        } else {
+            actionViewModel.name = name
+            actionViewModel.device = device
+            val outcome = actionViewModel.outcome
+            if (outcome != null) {
+                val parameters = hashMapOf<String, String>()
+                parameters[Outcome.PHONE_NUMBER] = phoneNumber
+                parameters[Outcome.TEXT_MESSAGE] = message
+                val newOutcome = Outcome(parameters, outcome.type)
+                actionViewModel.outcome = newOutcome
             }
-        )
-        conditionLiveData.value = condition
+            actionLiveData.value = actionViewModel
+        }
     }
 
-    fun setOutcome(outcome: String) {
-        outcomeLiveData.value = outcome
+    fun setCondition(
+        readingType: String,
+        limitValue: String,
+        constraintType: String,
+        name: String,
+        message: String,
+        phoneNumber: String
+    ) {
+        val actionViewModel = actionLiveData.value
+        if (actionViewModel == null) {
+            actionLiveData.value = ActionViewModel(
+                name = name,
+                condition = LimitCondition(
+                    readingType,
+                    limitValue.toFloat(),
+                    LimitCondition.typeFromString(constraintType)
+                )
+            )
+        } else {
+            actionViewModel.name = name
+            actionViewModel.condition = LimitCondition(
+                readingType,
+                limitValue.toFloat(),
+                LimitCondition.typeFromString(constraintType)
+            )
+            val outcome = actionViewModel.outcome
+            if (outcome != null) {
+                val parameters = hashMapOf<String, String>()
+                parameters[Outcome.PHONE_NUMBER] = phoneNumber
+                parameters[Outcome.TEXT_MESSAGE] = message
+                val newOutcome = Outcome(parameters, outcome.type)
+                actionViewModel.outcome = newOutcome
+            }
+            actionLiveData.value = actionViewModel
+        }
     }
 
-    fun saveAction(name: String, message: String, phoneNumber: String = ""): Completable {
-        val device = selectedDeviceLiveData.value
-        val condition = conditionLiveData.value
+    fun clearCondition(name: String, message: String, phoneNumber: String) {
+        val actionViewModel = actionLiveData.value
+        if (actionViewModel == null) {
+            actionLiveData.value = ActionViewModel(
+                name = name
+            )
+        } else {
+            actionViewModel.name = name
+            actionViewModel.condition = null
+            val outcome = actionViewModel.outcome
+            if (outcome != null) {
+                val parameters = hashMapOf<String, String>()
+                parameters[Outcome.PHONE_NUMBER] = phoneNumber
+                parameters[Outcome.TEXT_MESSAGE] = message
+                val newOutcome = Outcome(parameters, outcome.type)
+                actionViewModel.outcome = newOutcome
+            }
+            actionLiveData.value = actionViewModel
+        }
+    }
+
+    fun setOutcome(outcomeType: Int, message: String, phoneNumber: String, name: String) {
         val parameters = hashMapOf<String, String>()
         parameters[Outcome.PHONE_NUMBER] = phoneNumber
         parameters[Outcome.TEXT_MESSAGE] = message
-        val outcome = when (outcomeLiveData.value) {
-            "Notification" -> Outcome(
-                parameters,
-                Outcome.OUTCOME_TYPE_NOTIFICATION
+        val outcome = Outcome(parameters, outcomeType)
+        val actionViewModel = actionLiveData.value
+        if (actionViewModel == null) {
+            actionLiveData.value = ActionViewModel(
+                name = name,
+                outcome = outcome
             )
-            "SMS" -> Outcome(
-                parameters,
-                Outcome.OUTCOME_TYPE_SMS
-            )
-            "Vibration" -> Outcome(
-                parameters,
-                Outcome.OUTCOME_TYPE_VIBRATION
-            )
-            "Text to speech" -> Outcome(
-                parameters,
-                Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH
-            )
-            else -> return Completable.error(IllegalArgumentException("Invalid outcome: ${outcomeLiveData.value}"))
-        }
-        return if (device == null || condition == null) {
-            Completable.error(IllegalArgumentException("Invalid parameters, device: $device, condition: $condition"))
         } else {
-            val action = GeneralAction(
-                id,
-                name,
-                device,
-                condition,
-                outcome
-            )
-            addActionUseCase.execute(action)
+            actionViewModel.name = name
+            actionViewModel.outcome = outcome
+            actionLiveData.value = actionViewModel
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        devicesStreamDisposable.dispose()
+    fun getReadingTypes(device: Device): List<String> {
+        return formatMatcher.getReadingTypes(device.name)
     }
+
+    fun saveAction(name: String, message: String, phoneNumber: String): Completable {
+        val id = actionLiveData.value?.id ?: 0L
+        if (name.isBlank()) {
+            return Completable.error(IllegalArgumentException("Action name cannot be blank"))
+        }
+        val device = actionLiveData.value?.device
+        val condition = actionLiveData.value?.condition
+        val outcome = actionLiveData.value?.outcome
+        if (device == null) {
+            return Completable.error(IllegalArgumentException("Device is not selected"))
+        }
+        if (condition == null) {
+            return Completable.error(IllegalArgumentException("Condition is not selected"))
+        }
+        if (outcome == null) {
+            return Completable.error(IllegalArgumentException("Outcome is not selected"))
+        }
+        val parameters = hashMapOf<String, String>()
+        parameters[Outcome.PHONE_NUMBER] = phoneNumber
+        parameters[Outcome.TEXT_MESSAGE] = message
+        val newOutcome = Outcome(parameters, outcome.type)
+        val action = GeneralAction(
+            id,
+            name,
+            device,
+            condition,
+            newOutcome
+        )
+        return addActionUseCase.execute(action)
+    }
+
+    inner class ActionViewModel(
+        var id: Long = 0L,
+        var name: String = "",
+        var device: Device? = null,
+        var condition: Condition? = null,
+        var outcome: Outcome? = null
+    )
 }

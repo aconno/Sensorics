@@ -47,18 +47,14 @@
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
                     android:layout_marginTop="@dimen/item_vertical_spacing"
                     android:text="@string/label_device"
-                    android:textColor="@color/primaryTextColor"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
+                    android:textColor="@color/primaryTextColor" />
 
                 <Spinner
                     android:id="@+id/spinner_devices"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/title_padding"
-                    android:visibility="gone"
-                    tools:listitem="@layout/item_spinner_device"
-                    tools:visibility="visible" />
+                    tools:listitem="@layout/item_spinner_device" />
 
                 <TextView
                     android:id="@+id/label_condition"
@@ -67,9 +63,7 @@
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
                     android:layout_marginTop="@dimen/item_vertical_spacing"
                     android:text="@string/label_condition"
-                    android:textColor="@color/primaryTextColor"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
+                    android:textColor="@color/primaryTextColor" />
 
                 <com.google.android.flexbox.FlexboxLayout
                     android:id="@+id/container_conditions"
@@ -78,12 +72,10 @@
                     android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
                     android:layout_marginTop="@dimen/title_padding"
-                    android:visibility="gone"
                     app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
                     app:dividerDrawableVertical="@drawable/chip_divider_vertical"
                     app:flexWrap="wrap"
-                    app:showDivider="middle"
-                    tools:visibility="visible" />
+                    app:showDivider="middle" />
 
                 <TextView
                     android:id="@+id/label_outcome"
@@ -92,9 +84,7 @@
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
                     android:layout_marginTop="@dimen/item_vertical_spacing"
                     android:text="@string/label_outcome"
-                    android:textColor="@color/primaryTextColor"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
+                    android:textColor="@color/primaryTextColor" />
 
                 <com.google.android.flexbox.FlexboxLayout
                     android:id="@+id/container_outcomes"
@@ -103,12 +93,10 @@
                     android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
                     android:layout_marginTop="@dimen/title_padding"
-                    android:visibility="gone"
                     app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
                     app:dividerDrawableVertical="@drawable/chip_divider_vertical"
                     app:flexWrap="wrap"
-                    app:showDivider="middle"
-                    tools:visibility="visible">
+                    app:showDivider="middle">
 
                     <CheckedTextView
                         android:id="@+id/button_outcome_notification"
@@ -178,8 +166,6 @@
         android:layout_margin="@dimen/screen_edge_left_right_margin"
         android:src="@drawable/ic_save"
         android:tint="@color/secondaryTextColor"
-        android:visibility="gone"
-        app:fabSize="normal"
-        tools:visibility="visible" />
+        app:fabSize="normal" />
 
 </android.support.design.widget.CoordinatorLayout>
