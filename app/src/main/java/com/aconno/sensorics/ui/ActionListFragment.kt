@@ -2,11 +2,13 @@ package com.aconno.sensorics.ui
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.DividerItemDecoration
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.R
+import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.adapter.ActionAdapter
 import com.aconno.sensorics.adapter.ItemClickListener
 import com.aconno.sensorics.dagger.actionlist.ActionListComponent
@@ -52,6 +54,15 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
         actionListComponent.inject(this)
         actionAdapter = ActionAdapter(mutableListOf(), this)
         action_list.adapter = actionAdapter
+
+        action_list.itemAnimator = DefaultItemAnimator()
+        action_list.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
         add_action_button.setOnClickListener { startAddActionActivity() }
     }
 
