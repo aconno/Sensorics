@@ -20,6 +20,20 @@ class ActionAdapter(
         notifyDataSetChanged()
     }
 
+    fun getAction(position: Int): Action {
+        return actions[position]
+    }
+
+    fun addActionAtPosition(action: Action, position: Int) {
+        actions.add(position, action)
+        notifyItemInserted(position)
+    }
+
+    fun removeAction(position: Int) {
+        actions.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.item_action, parent, false)
