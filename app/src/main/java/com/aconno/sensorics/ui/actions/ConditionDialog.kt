@@ -11,9 +11,18 @@ import kotlinx.android.synthetic.main.dialog_condition.*
 
 class ConditionDialog : DialogFragment() {
 
-    private lateinit var listener: ConditionDialogListener
+    private var listener: ConditionDialogListener? = null
 
     private var sensorType: String? = null
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        try {
+            listener = context as ConditionDialogListener
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$context must implement ConditionDialogListener")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,23 +56,19 @@ class ConditionDialog : DialogFragment() {
         }
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
+
     private fun onSetClicked() {
         if ((view_less.isChecked xor view_more.isChecked) && view_value.text.isNotBlank()) {
             val condition = if (view_less.isChecked) "<" else ">"
             val value = view_value.text.toString()
             sensorType?.let {
-                listener.onSetClicked(it, condition, value)
+                listener?.onSetClicked(it, condition, value)
             }
             dialog.dismiss()
-        }
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        try {
-            listener = context as ConditionDialogListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException(context.toString() + " must implement " + ConditionDialogListener::class.toString())
         }
     }
 
