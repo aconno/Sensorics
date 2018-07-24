@@ -32,7 +32,7 @@ class AcnFrightFragment : BaseDialogFragment() {
     private lateinit var mDevice: Device
     private var serviceConnect: BluetoothConnectService? = null
 
-    var isServicesDiscovered = false
+    private var isServicesDiscovered = false
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -188,11 +188,13 @@ class AcnFrightFragment : BaseDialogFragment() {
 
     private fun toggleCharacteristic(index: Int, turnOn: Boolean) {
         val deviceWrite = mDevice.connectionWriteList!![index]
+        val turnOnIndex = if (turnOn) 0 else 1
+
         serviceConnect!!.writeCharacteristic(
             UUID.fromString(deviceWrite.serviceUUID),
             UUID.fromString(deviceWrite.characteristicUUID),
-            deviceWrite.values[if (turnOn) 0 else 1].type,
-            byteArrayOf(deviceWrite.values[if (turnOn) 0 else 1].value.hexToByte())
+            deviceWrite.values[turnOnIndex].type,
+            byteArrayOf(deviceWrite.values[turnOnIndex].value.hexToByte())
         )
     }
 
