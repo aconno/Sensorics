@@ -156,7 +156,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
     override fun onResume() {
         super.onResume()
         val mainActivity: MainActivity? = context as MainActivity
-        mainActivity?.supportActionBar?.title = "Devices"
+        mainActivity?.supportActionBar?.title = getString(R.string.title_device_list)
         mainActivity?.supportActionBar?.subtitle = ""
     }
 

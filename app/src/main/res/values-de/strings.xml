@@ -111,4 +111,5 @@
     <string name="httpget_params">HTTP Get Params (%d)</string>
     <string name="headers">Headers (%d)</string>
     <string name="message_no_saved_devices_cannot_open_actions">Bitte zuerst ein Gerät hinzufügen</string>
+    <string name="title_device_list">Geräte</string>
 </resources>
