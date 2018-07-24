@@ -189,10 +189,26 @@
     <string name="title_publish_list">Backends</string>
     <string name="settings">Settings</string>
 
+    <!--ImageViewContent Description-->
     <string name="contentDescriptionUseless">deco</string>
     <string name="contentDescriptionAction">button de action</string>
     <string name="contentDescriptionContent">image with data</string>
     <string name="contentDescriptionUserContent">image from an other user</string>
+
+    <!--AcnFrightFragment-->
+    <string name="buzzer">Buzzer :</string>
+    <string name="red_light">Red Light :</string>
+    <string name="green_light">Green Light :</string>
+    <string name="blue_light">Blue Light :</string>
+    <string name="device_not_found">DEVICE NOT FOUND</string>
+    <string name="connecting">CONNECTING</string>
+    <string name="connected">CONNECTED</string>
+    <string name="discovered">DISCOVERED</string>
+    <string name="disconnected">DISCONNECTED</string>
+    <string name="error">ERROR</string>
+    <string name="status_txt">Status : %s</string>
+    <string name="connect">CONNECT</string>
+    <string name="disconnect">DISCONNECT</string>
 
     <string-array name="header_keys">
         <item>A-IM</item>

@@ -20,7 +20,8 @@ class AdvertisementFormatMapper {
     private fun toConnectionRead(connectionReadModel: ConnectionReadModel): ConnectionRead {
         return ConnectionRead(
             connectionReadModel.serviceUUID,
-            connectionReadModel.characteristicUUID
+            connectionReadModel.characteristicUUID,
+            connectionReadModel.characteristicName
         )
     }
 
@@ -28,6 +29,7 @@ class AdvertisementFormatMapper {
         return ConnectionWrite(
             connectionWriteModel.serviceUUID,
             connectionWriteModel.characteristicUUID,
+            connectionWriteModel.characteristicName,
             connectionWriteModel.values.map { toValue(it) }
         )
     }

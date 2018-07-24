@@ -22,7 +22,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class DeviceConnectionFragment : BaseDialogFragment() {
+class AcnFrightFragment : BaseDialogFragment() {
 
     @Inject
     lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
@@ -47,42 +47,42 @@ class DeviceConnectionFragment : BaseDialogFragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     Timber.d(it.action)
-                    var text = ""
+                    val text: String
 
                     when {
                         it.action == BluetoothGattCallback.ACTION_GATT_DEVICE_NOT_FOUND -> {
-                            text = "DEVICE NOT FOUND"
+                            text = getString(R.string.device_not_found)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
-                            text = "CONNECTING"
+                            text = getString(R.string.connecting)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
-                            text = "CONNECTED"
+                            text = getString(R.string.connected)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_SERVICES_DISCOVERED -> {
                             isServicesDiscovered = true
                             progressbar?.visibility = View.INVISIBLE
                             enableToggleViews()
-                            text = "DISCOVERED"
+                            text = getString(R.string.discovered)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
                             isServicesDiscovered = false
                             progressbar?.visibility = View.INVISIBLE
                             disableToggleViews()
-                            text = "DISCONNECTED"
+                            text = getString(R.string.disconnected)
 
                             serviceConnect?.close()
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_ERROR -> {
                             isServicesDiscovered = false
-                            text = "ERROR"
+                            text = getString(R.string.error)
                         }
                         else -> {
-
+                            return@subscribe
                         }
                     }
 
-                    lbl_status?.text = "Status : $text"
+                    lbl_status?.text = getString(R.string.status_txt, text)
                 }
 
             serviceConnect?.connect(mDevice.macAddress)
@@ -169,7 +169,7 @@ class DeviceConnectionFragment : BaseDialogFragment() {
 
                     //stop
                     serviceConnect?.disconnect()
-                    item.title = "CONNECT"
+                    item.title = getString(R.string.connect)
                     true
                 } else {
                     item.isChecked = true
@@ -177,7 +177,7 @@ class DeviceConnectionFragment : BaseDialogFragment() {
                     //start
                     progressbar?.visibility = View.VISIBLE
                     serviceConnect?.connect(mDevice.macAddress)
-                    item.title = "DISCONNECT"
+                    item.title = getString(R.string.disconnect)
                     true
                 }
             else -> {
@@ -187,10 +187,12 @@ class DeviceConnectionFragment : BaseDialogFragment() {
     }
 
     private fun toggleCharacteristic(index: Int, turnOn: Boolean) {
+        val deviceWrite = mDevice.connectionWriteList!![index]
         serviceConnect!!.writeCharacteristic(
-            UUID.fromString(mDevice.connectionWriteList!![index].serviceUUID),
-            UUID.fromString(mDevice.connectionWriteList!![index].characteristicUUID),
-            byteArrayOf(mDevice.connectionWriteList!![index].values[if (turnOn) 0 else 1].value.hexToByte())
+            UUID.fromString(deviceWrite.serviceUUID),
+            UUID.fromString(deviceWrite.characteristicUUID),
+            deviceWrite.values[if (turnOn) 0 else 1].type,
+            byteArrayOf(deviceWrite.values[if (turnOn) 0 else 1].value.hexToByte())
         )
     }
 
@@ -212,12 +214,12 @@ class DeviceConnectionFragment : BaseDialogFragment() {
     companion object {
         private const val KEY_DEVICE = "KEY_DEVICE"
 
-        fun newInstance(device: Device): DeviceConnectionFragment {
+        fun newInstance(device: Device): AcnFrightFragment {
 
             val bundle = Bundle()
             bundle.putString(KEY_DEVICE, Gson().toJson(device))
 
-            val fragment = DeviceConnectionFragment()
+            val fragment = AcnFrightFragment()
             fragment.arguments = bundle
 
             return fragment

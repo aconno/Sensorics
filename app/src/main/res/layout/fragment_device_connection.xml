@@ -45,7 +45,7 @@
             <TextView
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Buzzer : "
+                android:text="@string/buzzer"
                 android:textColor="@color/primaryTextColor"
                 android:textSize="20sp" />
 
@@ -66,7 +66,7 @@
             <TextView
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Red Light : "
+                android:text="@string/red_light"
                 android:textColor="#f00"
                 android:textSize="20sp" />
 
@@ -87,7 +87,7 @@
             <TextView
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Green Light : "
+                android:text="@string/green_light"
                 android:textColor="#0f0"
                 android:textSize="20sp" />
 
@@ -108,7 +108,7 @@
             <TextView
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Blue Light : "
+                android:text="@string/blue_light"
                 android:textColor="#00f"
                 android:textSize="20sp" />
 

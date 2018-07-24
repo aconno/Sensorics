@@ -123,7 +123,9 @@ ext {
             kotlin     : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version",
             appCompatv7: "com.android.support:appcompat-v7:$supportLibraryVersion",
             rxkotlin   : "io.reactivex.rxjava2:rxkotlin:$rxkotlinVersion",
-            timber     : "com.jakewharton.timber:timber:$timberVersion"
+            timber     : "com.jakewharton.timber:timber:$timberVersion",
+            javaxInject     : "javax.inject:javax.inject:$javaxInjectVersion",
+            javaxAnnotation : "javax.annotation:jsr250-api:$javaxAnnotationVersion"
     ]
 
     deviceTestDependencies = [

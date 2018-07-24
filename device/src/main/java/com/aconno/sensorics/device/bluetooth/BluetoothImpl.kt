@@ -7,6 +7,7 @@ import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.SharedPreferences
+import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.model.ScanEvent
@@ -26,14 +27,15 @@ class BluetoothImpl(
     private val sharedPrefs: SharedPreferences,
     private val bluetoothAdapter: BluetoothAdapter,
     private val bluetoothPermission: BluetoothPermission,
-    private val bluetoothStateListener: BluetoothStateListener
+    private val bluetoothStateListener: BluetoothStateListener,
+    private val bluetoothCharacteristicValueConverter: BluetoothCharacteristicValueConverter
 ) : Bluetooth {
 
     private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
     private val connectGattResults: PublishSubject<GattCallbackPayload> = PublishSubject.create()
     private val scanEvents: PublishSubject<ScanEvent> = PublishSubject.create()
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvents)
-    private val gattCallback: BluetoothGattCallback = BluetoothGattCallback(connectGattResults)
+    private val gattCallback: BluetoothGattCallback = BluetoothGattCallback(connectGattResults,bluetoothCharacteristicValueConverter)
     private var lastConnectedDeviceAddress: String? = null
     private var lastConnectedGatt: BluetoothGatt? = null
 
@@ -104,13 +106,14 @@ class BluetoothImpl(
     override fun writeCharacteristic(
         serviceUUID: UUID,
         characteristicUUID: UUID,
-        byteArray: ByteArray
+        type: String,
+        value: Any
     ): Boolean {
         return lastConnectedGatt?.let {
             val characteristic = it.getService(serviceUUID)
                 .getCharacteristic(characteristicUUID)
 
-            characteristic.value = byteArray
+            bluetoothCharacteristicValueConverter.setValue(characteristic, type, value)
             if (characteristic != null) {
                 it.writeCharacteristic(characteristic)
                 true

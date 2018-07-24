@@ -41,6 +41,7 @@ interface Bluetooth {
     fun writeCharacteristic(
         serviceUUID: UUID,
         characteristicUUID: UUID,
-        byteArray: ByteArray
+        type: String,
+        value: Any
     ): Boolean
 }

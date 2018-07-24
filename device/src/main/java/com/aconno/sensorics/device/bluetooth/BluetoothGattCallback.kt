@@ -2,12 +2,14 @@ package com.aconno.sensorics.device.bluetooth
 
 import android.bluetooth.*
 import android.bluetooth.BluetoothGattCallback
+import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import io.reactivex.subjects.PublishSubject
 
 
 class BluetoothGattCallback(
-    private val connectGattResults: PublishSubject<GattCallbackPayload>
+    private val connectGattResults: PublishSubject<GattCallbackPayload>,
+    bluetoothCharacteristicValueConverter: BluetoothCharacteristicValueConverter
 ) : BluetoothGattCallback() {
 
     companion object {
@@ -79,12 +81,10 @@ class BluetoothGattCallback(
         characteristic: BluetoothGattCharacteristic?
     ) {
         characteristic?.let {
-            val data = readCharacteristic(it)
-
             connectGattResults.onNext(
                 GattCallbackPayload(
                     update,
-                    data
+                    characteristic
                 )
             )
         }
@@ -102,9 +102,5 @@ class BluetoothGattCallback(
                 )
             )
         }
-    }
-
-    private fun readCharacteristic(characteristic: BluetoothGattCharacteristic): String {
-        return "READ"
     }
 }

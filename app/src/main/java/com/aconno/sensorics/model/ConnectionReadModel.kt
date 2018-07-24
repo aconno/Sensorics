@@ -9,5 +9,8 @@ data class ConnectionReadModel(
     val serviceUUID: String,
     @SerializedName("characteristicUUID")
     @Expose
-    val characteristicUUID: String
+    val characteristicUUID: String,
+    @SerializedName("characteristicName")
+    @Expose
+    val characteristicName: String
 )

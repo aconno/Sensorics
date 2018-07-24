@@ -17,7 +17,6 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.EditText
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceActiveAdapter
@@ -28,7 +27,6 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.MainActivity
-import com.aconno.sensorics.ui.devicecon.DeviceConnectionFragment
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceViewModel
@@ -193,7 +191,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
         //Do-Nothing
     }
 
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int, position: Int) {
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int) {
         if (viewHolder is DeviceActiveAdapter.ViewHolder) {
             // get the removed item name to display it in snack bar and backup for undo
 

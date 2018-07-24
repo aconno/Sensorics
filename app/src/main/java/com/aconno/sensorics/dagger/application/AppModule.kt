@@ -2,13 +2,13 @@ package com.aconno.sensorics.dagger.application
 
 import android.arch.persistence.room.Room
 import android.bluetooth.BluetoothAdapter
-import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.support.v4.content.LocalBroadcastManager
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.IntentProviderImpl
 import com.aconno.sensorics.SensoricsApplication
+import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.data.mapper.*
 import com.aconno.sensorics.data.repository.InMemoryRepositoryImpl
 import com.aconno.sensorics.data.repository.SensoricsDatabase
@@ -84,14 +84,16 @@ class AppModule(
         sharedPreferences: SharedPreferences,
         bluetoothAdapter: BluetoothAdapter,
         bluetoothPermission: BluetoothPermission,
-        bluetoothStateListener: BluetoothStateListener
+        bluetoothStateListener: BluetoothStateListener,
+        bluetoothCharacteristicValueConverter: BluetoothCharacteristicValueConverter
     ): Bluetooth =
         BluetoothImpl(
             sensoricsApplication,
             sharedPreferences,
             bluetoothAdapter,
             bluetoothPermission,
-            bluetoothStateListener
+            bluetoothStateListener,
+            bluetoothCharacteristicValueConverter
         )
 
     @Provides

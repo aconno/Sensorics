@@ -10,6 +10,9 @@ data class ConnectionWriteModel(
     @SerializedName("characteristicUUID")
     @Expose
     val characteristicUUID: String,
+    @SerializedName("characteristicName")
+    @Expose
+    val characteristicName: String,
     @SerializedName("values")
     @Expose
     val values: List<ValueModel>

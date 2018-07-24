@@ -49,9 +49,10 @@ class BluetoothConnectService : Service() {
     fun writeCharacteristic(
         serviceUUID: UUID,
         characteristicUUID: UUID,
-        byteArray: ByteArray
+        type: String,
+        value: Any
     ): Boolean {
-        return bluetooth.writeCharacteristic(serviceUUID, characteristicUUID, byteArray)
+        return bluetooth.writeCharacteristic(serviceUUID, characteristicUUID, type, value)
     }
 
     fun getConnectResults(): Flowable<GattCallbackPayload> {
@@ -66,7 +67,7 @@ class BluetoothConnectService : Service() {
         bluetooth.disconnect()
     }
 
-    fun close(){
+    fun close() {
         bluetooth.closeConnection()
     }
 
