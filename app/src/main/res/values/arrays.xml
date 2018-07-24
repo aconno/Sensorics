@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="header_keys">
+        <item>A-IM</item>
+        <item>Accept</item>
+        <item>Accept-Charset</item>
+        <item>Accept-Encoding</item>
+        <item>Accept-Language</item>
+        <item>Accept-Datetime</item>
+        <item>Access-Control-Request-Method</item>
+        <item>Access-Control-Request-Headers</item>
+        <item>Authorization</item>
+        <item>Cache-Control</item>
+        <item>Connection</item>
+        <item>Content-Length</item>
+        <item>Content-MD5</item>
+        <item>Content-Type</item>
+        <item>Cookie</item>
+        <item>Date</item>
+        <item>Expect</item>
+        <item>Forwarded</item>
+        <item>From</item>
+        <item>Host</item>
+        <item>If-Match</item>
+        <item>If-Modified-Since</item>
+        <item>If-None-Match</item>
+        <item>If-Range</item>
+        <item>If-Unmodified-Since</item>
+        <item>Max-Forwards</item>
+        <item>Origin</item>
+        <item>Pragma</item>
+        <item>Proxy-Authorization</item>
+        <item>Range</item>
+        <item>Referer</item>
+        <item>TE</item>
+        <item>User-Agent</item>
+        <item>Upgrade</item>
+        <item>Via</item>
+        <item>Warning</item>
+        <item>Upgrade-Insecure-Requests</item>
+        <item>X-Requested-With</item>
+        <item>DNT</item>
+        <item>X-Forwarded-For</item>
+        <item>X-Forwarded-Host</item>
+        <item>X-Forwarded-Proto</item>
+        <item>Front-End-Https</item>
+        <item>X-Http-Method-Override</item>
+        <item>X-ATT-DeviceId</item>
+        <item>X-Wap-Profile</item>
+        <item>Proxy-Connection</item>
+        <item>X-UIDH</item>
+        <item>X-Csrf-Token</item>
+    </string-array>
+
+    <string-array name="SettingsScanMode">
+        <item>@string/scan_mode_low_power</item>
+        <item>@string/scan_mode_balanced</item>
+        <item>@string/scan_mode_low_latency</item>
+    </string-array>
+
+    <string-array name="SettingsScanModeValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="RESTMethods">
+        <item>@string/rest_method_get</item>
+        <item>@string/rest_method_post</item>
+        <item>@string/rest_method_put</item>
+    </string-array>
+
+    <string-array name="PublishIntervals">
+        <item>@string/publish_sec</item>
+        <item>@string/publish_min</item>
+        <item>@string/publish_hour</item>
+        <item>@string/publish_day</item>
+    </string-array>
+
+</resources>
