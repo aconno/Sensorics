@@ -24,6 +24,8 @@ class ConnectionCharacteristicsFinderTest {
         val device = mockDevice("Name", true)
 
         val finder = ConnectionCharacteristicsFinderImpl(supportedFormats)
+
+        Mockito.verify(supportedFormats).add(mockedConnection)
         assertTrue(finder.hasCharacteristics(device))
     }
 
@@ -36,6 +38,8 @@ class ConnectionCharacteristicsFinderTest {
         val device = mockDevice("Name", false)
 
         val finder = ConnectionCharacteristicsFinderImpl(supportedFormats)
+
+        Mockito.verify(supportedFormats).add(mockedConnection)
         assertFalse(finder.hasCharacteristics(device))
     }
 
@@ -76,7 +80,7 @@ class ConnectionCharacteristicsFinderTest {
     }
 
     private fun mockDevice(name: String, connectable: Boolean): Device {
-        return Mockito.spy(Device(name, "", "", connectable = connectable))
+        return Device(name, "", "", connectable = connectable)
     }
 
     private fun mockConnection(name: String, connectable: Boolean): Connection {
