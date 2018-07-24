@@ -52,15 +52,12 @@
     <string name="enable">Aktivieren</string>
 
     <!-- Add new action screen -->
-    <string name="add_new_action_title">Neue Aktion hinzufügen</string>
-    <string name="action_name">Aktionsname</string>
     <string name="add">Hinzufügen</string>
     <string name="phone_number">Telefonnummer</string>
     <string name="message_hint">Nachricht</string>
     <string name="delete">Aktion löschen</string>
 
     <string name="condition_less">Kleiner</string>
-    <string name="condition_equal">Gleich</string>
     <string name="condition_more">Größer</string>
     <string name="condition_value_hint">Wert</string>
     <string name="condition_dialog_set">Festlegen</string>
@@ -70,29 +67,12 @@
     <string name="sms_message">SMS Nachricht</string>
     <string name="vibration">Vibration</string>
 
-    <string name="magnetometer">Magnetometer</string>
-    <string name="accelerometer">B-Messer</string>
-    <string name="gyro">Gyroskop</string>
-
-    <string name="temperature_graph_label">Temperaturdiagramm</string>
-    <string name="light_graph_label">Lichtdiagramm</string>
-    <string name="humidity_graph_label">Luftfeuchtediagramm</string>
-    <string name="pressure_graph_label">Druckdiagramm</string>
-    <string name="magnetometer_graph_label">Magnetometerdiagramm</string>
-    <string name="accelerometer_graph_label">B-Messerdiagramm</string>
-    <string name="gyro_graph_label">Gyroskopdiagramm</string>
-    <string name="battery_level_graph_label">Akkudiagramm</string>
-
     <string name="sensor_card_image_content_description">Bild der Sensorkarte</string>
     <string name="service_notification_title">Sensorics</string>
     <string name="service_notification_content">Sensorics scannt</string>
 
-    <string name="conditions">Bedingungen</string>
-    <string name="outcomes">Ergebnisse</string>
     <string name="set_action_hint">Um eine Aktion festzulegen, drücken Sie die + Taste.</string>
     <string name="text_to_speech">Text zu Sprache</string>
     <string name="notification">Benachrichtigung</string>
     <string name="sms">SMS</string>
-    <string name="edit_action">Aktion Bearbeiten</string>
-    <string name="save">Sparen</string>
 </resources>
