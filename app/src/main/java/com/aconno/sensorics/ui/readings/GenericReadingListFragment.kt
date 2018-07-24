@@ -3,11 +3,10 @@ package com.aconno.sensorics.ui.readings
 import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
 import kotlinx.android.synthetic.main.fragment_generic_reading_list.*
@@ -25,14 +24,35 @@ class GenericReadingListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val mainActivity = activity as MainActivity
         mainActivity.mainActivityComponent.inject(this)
+
+        setHasOptionsMenu(true)
 
         macAddress = getMacAddress(this)
         readingListViewModel.init(macAddress)
         mainActivity.supportActionBar?.title = getDeviceName()
         mainActivity.supportActionBar?.subtitle = macAddress
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        super.onPrepareOptionsMenu(menu)
+        activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        context?.let { context ->
+            when (item.itemId) {
+                R.id.action_start_actions_activity -> {
+                    ActionListActivity.start(context)
+                    return true
+                }
+                else -> {
+                    //Do nothing
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateView(
@@ -58,7 +78,8 @@ class GenericReadingListFragment : Fragment() {
             val view = views[reading.name]
             if (view == null) {
                 val newView =
-                    LayoutInflater.from(context).inflate(R.layout.item_reading, list_readings,false)
+                    LayoutInflater.from(context)
+                        .inflate(R.layout.item_reading, list_readings, false)
                 context?.let { context ->
                     newView.setOnClickListener {
                         LiveGraphActivity.start(context, macAddress, reading.name)

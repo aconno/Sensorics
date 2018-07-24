@@ -164,5 +164,6 @@
     <string name="scan_mode_low_latency">Low Latency</string>
     <string name="scan_mode_balanced">Balanced</string>
     <string name="scan_mode_low_power">Low Power</string>
+    <string name="message_no_saved_devices_cannot_open_actions">Please add a device first</string>
 
 </resources>
