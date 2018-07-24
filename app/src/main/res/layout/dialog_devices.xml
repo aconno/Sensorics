@@ -20,7 +20,6 @@
         android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="@string/no_devices_label"
         android:textColor="@color/primaryTextColor"
         android:textSize="@dimen/message_text_size" />
 

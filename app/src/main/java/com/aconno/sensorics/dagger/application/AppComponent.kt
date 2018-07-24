@@ -18,7 +18,6 @@ import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
-import com.aconno.sensorics.ui.dialogs.SavedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import dagger.Component
 import io.reactivex.Flowable
@@ -67,8 +66,6 @@ interface AppComponent {
     fun readingToInputUseCase(): ReadingToInputUseCase
 
     fun inject(scannedDevicesDialog: ScannedDevicesDialog)
-
-    fun inject(savedDevicesDialog: SavedDevicesDialog)
 
     fun publishDeviceJoinRepository(): PublishDeviceJoinRepository
 

@@ -59,6 +59,8 @@ class ScannedDevicesDialog : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        text_empty.setText(R.string.message_no_scanned_devices)
+
         list_devices.layoutManager = LinearLayoutManager(context)
         list_devices.adapter = adapter
         adapter.getClickedDevices()

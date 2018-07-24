@@ -79,8 +79,9 @@
     <string name="http_backend">Http Backend</string>
     <string name="mqtt_backend">MQTT Backend</string>
 
-    <string name="no_devices_label">There are no devices.\nAdd new device from the main screen.</string>
     <string name="no_devices_plus_button_label">There are no devices.\nPress plus (+) to add a new device.</string>
+
+    <string name="message_no_scanned_devices">There are no new nearby devices</string>
 
     <string name="name">Name</string>
     <string name="project_id">ProjectId</string>
