@@ -10,8 +10,6 @@ class AddActionUseCase(
 ) :
     CompletableUseCaseWithParameter<Action> {
     override fun execute(parameter: Action): Completable {
-        return Completable.fromAction {
-            actionsRepository.addAction(parameter)
-        }
+        return actionsRepository.addAction(parameter)
     }
 }

@@ -3,9 +3,10 @@ package com.aconno.sensorics.data.repository.action
 import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.actions.GeneralAction
-import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.actions.outcomes.Outcome
+import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.model.Device
+import io.reactivex.Completable
 import io.reactivex.Single
 
 class ActionsRepositoryImpl(
@@ -20,12 +21,16 @@ class ActionsRepositoryImpl(
         return actionDao.getActionById(actionId).map { actionEntity -> toAction(actionEntity) }
     }
 
-    override fun addAction(action: Action) {
-        actionDao.insert(toEntity(action))
+    override fun addAction(action: Action): Completable {
+        return Completable.fromAction {
+            actionDao.insert(toEntity(action))
+        }
     }
 
-    override fun deleteAction(action: Action) {
-        actionDao.delete(toEntity(action))
+    override fun deleteAction(action: Action): Completable {
+        return Completable.fromAction {
+            actionDao.delete(toEntity(action))
+        }
     }
 
     //TODO: Move this to mapper object

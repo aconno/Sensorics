@@ -1,5 +1,6 @@
 package com.aconno.sensorics.domain.actions
 
+import io.reactivex.Completable
 import io.reactivex.Single
 
 interface ActionsRepository {
@@ -8,7 +9,7 @@ interface ActionsRepository {
 
     fun getActionById(actionId: Long): Single<Action>
 
-    fun addAction(action: Action)
+    fun addAction(action: Action): Completable
 
-    fun deleteAction(action: Action)
+    fun deleteAction(action: Action): Completable
 }

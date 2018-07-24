@@ -9,8 +9,6 @@ class DeleteActionUseCase(
     private val actionsRepository: ActionsRepository
 ) : CompletableUseCaseWithParameter<Action> {
     override fun execute(parameter: Action): Completable {
-        return Completable.fromAction {
-            actionsRepository.deleteAction(parameter)
-        }
+        return actionsRepository.deleteAction(parameter)
     }
 }
