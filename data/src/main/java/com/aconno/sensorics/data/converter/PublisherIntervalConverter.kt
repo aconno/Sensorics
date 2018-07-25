@@ -1,6 +1,5 @@
 package com.aconno.sensorics.data.converter
 
-import android.content.Context
 import java.util.concurrent.TimeUnit
 
 object PublisherIntervalConverter {

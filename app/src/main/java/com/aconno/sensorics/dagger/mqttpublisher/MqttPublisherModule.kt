@@ -6,9 +6,7 @@ import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.interactor.ifttt.mpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
-import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.sensorics.viewmodel.MqttPublisherViewModel

@@ -11,9 +11,18 @@ import kotlinx.android.synthetic.main.dialog_condition.*
 
 class ConditionDialog : DialogFragment() {
 
-    private lateinit var listener: ConditionDialogListener
+    private var listener: ConditionDialogListener? = null
 
     private var sensorType: String? = null
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        try {
+            listener = context as ConditionDialogListener
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$context must implement ConditionDialogListener")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,10 +43,6 @@ class ConditionDialog : DialogFragment() {
             view_less.isChecked = !view_less.isChecked
         }
 
-        view_equal.setOnClickListener {
-            view_equal.isChecked = !view_equal.isChecked
-        }
-
         view_more.setOnClickListener {
             view_more.isChecked = !view_more.isChecked
         }
@@ -51,32 +56,19 @@ class ConditionDialog : DialogFragment() {
         }
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
+
     private fun onSetClicked() {
-        val condition = getCondition()
-        val value = view_value.text.toString()
-        sensorType?.let {
-            listener.onSetClicked(it, condition, value)
-        }
-        dialog.dismiss()
-    }
-
-    private fun getCondition(): String {
-        //TODO: Implement this better
-        if (view_less.isChecked) {
-            return "<"
-        }
-        if (view_more.isChecked) {
-            return ">"
-        }
-        return "="
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        try {
-            listener = context as ConditionDialogListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException(context.toString() + " must implement " + ConditionDialogListener::class.toString())
+        if ((view_less.isChecked xor view_more.isChecked) && view_value.text.isNotBlank()) {
+            val condition = if (view_less.isChecked) "<" else ">"
+            val value = view_value.text.toString()
+            sensorType?.let {
+                listener?.onSetClicked(it, condition, value)
+            }
+            dialog.dismiss()
         }
     }
 

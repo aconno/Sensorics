@@ -3,13 +3,16 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
+    def globalConfiguration = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion globalConfiguration["androidCompileSdkVersion"]
+    buildToolsVersion globalConfiguration["androidBuildToolsVersion"]
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 27
-        versionCode rootProject.ext.sensoricsVersionCode
-        versionName rootProject.ext.sensoricsVersionName
+        minSdkVersion globalConfiguration["androidMinSdkVersion"]
+        targetSdkVersion globalConfiguration["androidTargetSdkVersion"]
+        versionCode globalConfiguration["sensoricsVersionCode"]
+        versionName globalConfiguration["sensoricsVersionName"]
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -34,38 +37,32 @@ dependencies {
     implementation project(':domain')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    def dataDependencies = rootProject.ext.dataDependencies
+    def testDependencies = rootProject.ext.dataTestDependencies
 
-    // Support
-    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
-
-    // Testing
-    testImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
-
-    // Logging
-    implementation "com.jakewharton.timber:timber:$timberVersion"
-
-    // MQTT
-    implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.1.1') {
+    implementation dataDependencies.kotlin
+    implementation dataDependencies.appCompatv7
+    implementation dataDependencies.timber
+    implementation(dataDependencies.mqttPahoService) {
         exclude module: 'support-v4'
     }
-    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
+    implementation dataDependencies.mqttPaho
+    implementation dataDependencies.roomRuntime
+    kapt dataDependencies.roomCompile
+    implementation dataDependencies.roomRxJava2
+    implementation dataDependencies.jwt
+    implementation dataDependencies.rxAndroid
+    implementation dataDependencies.okHttp
+    implementation dataDependencies.okHttpLoggingInt
+    implementation dataDependencies.javaxInject
+    compileOnly dataDependencies.javaxAnnotation
 
-    // Room + RxJava support
-    implementation "android.arch.persistence.room:runtime:1.0.0"
-    kapt "android.arch.persistence.room:compiler:1.0.0"
-    implementation "android.arch.persistence.room:rxjava2:1.0.0"
+    testImplementation testDependencies.kotlinJUnit
+    testImplementation testDependencies.junit
 
-    implementation "io.jsonwebtoken:jjwt:0.9.0"
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-
-    //OkHttp
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
-
-    //javax inject
-    implementation 'javax.inject:javax.inject:1'
-    compileOnly 'javax.annotation:jsr250-api:1.0'
+    androidTestImplementation testDependencies.mockito
+    androidTestImplementation testDependencies.robolectric
+    androidTestImplementation testDependencies.espresso
+    androidTestImplementation testDependencies.testingSupportLib
+    androidTestImplementation testDependencies.testRunner
 }

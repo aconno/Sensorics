@@ -1,12 +1,9 @@
 package com.aconno.sensorics.domain.interactor.repository
 
 import com.aconno.sensorics.domain.interactor.type.FlowableUseCase
-import com.aconno.sensorics.domain.interactor.type.FlowableUseCaseWithParameter
-import com.aconno.sensorics.domain.interactor.type.SingleUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import io.reactivex.Flowable
-import io.reactivex.Single
 
 class GetSavedDevicesUseCase(
     private val deviceRepository: DeviceRepository

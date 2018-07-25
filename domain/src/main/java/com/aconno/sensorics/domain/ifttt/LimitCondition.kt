@@ -18,8 +18,34 @@ class LimitCondition(
         }
     }
 
+    override fun toString(): String {
+        val sign = when (type) {
+            LESS_THAN -> "<"
+            MORE_THAN -> ">"
+            else -> throw IllegalArgumentException("Invalid constraint type: $type")
+        }
+        return "$readingType $sign $limit"
+    }
+
     companion object {
+
         const val LESS_THAN = 0
         const val MORE_THAN = 1
+
+        fun typeFromString(type: String): Int {
+            return when (type) {
+                "<" -> LESS_THAN
+                ">" -> MORE_THAN
+                else -> throw IllegalArgumentException("Invalid constraint type: $type")
+            }
+        }
+
+        fun typeFromInt(type: Int): String {
+            return when (type) {
+                LESS_THAN -> "<"
+                MORE_THAN -> ">"
+                else -> throw IllegalArgumentException("Invalid constraint type: $type")
+            }
+        }
     }
 }

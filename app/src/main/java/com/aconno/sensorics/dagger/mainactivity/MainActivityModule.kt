@@ -1,14 +1,15 @@
 package com.aconno.sensorics.dagger.mainactivity
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.BluetoothStateReceiver
+import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.permissons.PermissionActionFactory
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.ui.MainActivity
@@ -129,11 +130,14 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     @Provides
     @MainActivityScope
     fun provideDeviceListViewModelFactory(
+        scanDeviceStream: Flowable<ScanDevice>,
         getSavedDevicesUseCase: GetSavedDevicesUseCase,
         saveDeviceUseCase: SaveDeviceUseCase,
         deleteDeviceUseCase: DeleteDeviceUseCase
     ): DeviceListViewModelFactory {
+        val deviceStream = scanDeviceStream.map { it.device }
         return DeviceListViewModelFactory(
+            deviceStream,
             getSavedDevicesUseCase,
             saveDeviceUseCase,
             deleteDeviceUseCase

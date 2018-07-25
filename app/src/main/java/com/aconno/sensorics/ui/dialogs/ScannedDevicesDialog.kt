@@ -31,7 +31,7 @@ class ScannedDevicesDialog : BaseDialogFragment() {
 
     private val adapter = ScanDeviceAdapter()
 
-    private lateinit var listener: ScannedDevicesDialogListener
+    private var listener: ScannedDevicesDialogListener? = null
 
     private var savedDevices = mutableListOf<Device>()
 
@@ -40,11 +40,10 @@ class ScannedDevicesDialog : BaseDialogFragment() {
         val sensoricsApplication = activity?.application as SensoricsApplication
         sensoricsApplication.appComponent.inject(this)
 
-        val activity = activity
-        if (activity is ScannedDevicesDialogListener) {
-            listener = activity
-        } else {
-            throw RuntimeException("$activity must implement ${ScannedDevicesDialogListener::class}")
+        try {
+            listener = context as ScannedDevicesDialogListener
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$context must implement ScannedDevicesDialogListener")
         }
     }
 
@@ -59,12 +58,14 @@ class ScannedDevicesDialog : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        text_empty.setText(R.string.message_no_scanned_devices)
+
         list_devices.layoutManager = LinearLayoutManager(context)
         list_devices.adapter = adapter
         adapter.getClickedDevices()
             .subscribe {
                 Timber.d("Item clicked, mac: ${it.device.macAddress}")
-                listener.onDevicesDialogItemClick(it.device)
+                listener?.onDevicesDialogItemClick(it.device)
                 savedDevices.add(it.device)
                 adapter.deleteDevice(it)
 
@@ -102,6 +103,11 @@ class ScannedDevicesDialog : BaseDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface?) {
         super.onDismiss(dialog)
-        listener.onDialogDismissed()
+        listener?.onDialogDismissed()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 }

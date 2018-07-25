@@ -2,14 +2,18 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 27
+    def globalConfiguration = rootProject.extensions.getByName("ext")
+
+    compileSdkVersion globalConfiguration["androidCompileSdkVersion"]
+    buildToolsVersion globalConfiguration["androidBuildToolsVersion"]
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 27
-        versionCode rootProject.ext.sensoricsVersionCode
-        versionName rootProject.ext.sensoricsVersionName
+        minSdkVersion globalConfiguration["androidMinSdkVersion"]
+        targetSdkVersion globalConfiguration["androidTargetSdkVersion"]
+        versionCode globalConfiguration["sensoricsVersionCode"]
+        versionName globalConfiguration["sensoricsVersionName"]
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -27,21 +31,23 @@ repositories {
 
 dependencies {
     implementation project(':domain')
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
 
-    // Testing
-    testImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "com.android.support.test:runner:$testRunnerVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
+    def deviceDependencies = rootProject.ext.deviceDependencies
+    def testDependencies = rootProject.ext.deviceTestDependencies
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation deviceDependencies.kotlin
+    implementation deviceDependencies.appCompatv7
+    implementation deviceDependencies.rxkotlin
+    implementation deviceDependencies.timber
 
-    implementation "io.reactivex.rxjava2:rxkotlin:2.2.0"
+    testImplementation testDependencies.kotlinJUnit
+    testImplementation testDependencies.junit
 
-    implementation "com.jakewharton.timber:timber:$timberVersion"
+    androidTestImplementation testDependencies.espresso
+    androidTestImplementation testDependencies.testingSupportLib
+    androidTestImplementation testDependencies.testRunner
 }
 
 apply plugin: 'kotlin-android-extensions'

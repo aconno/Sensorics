@@ -15,7 +15,7 @@ class PublishReadingsUseCase(
         var isPublished = false
 
         listPublisher
-            .forEach({
+            .forEach {
                 parameter
                     .filter { ad -> it.isPublishable(ad.device) }
                     .forEach { at ->
@@ -27,7 +27,7 @@ class PublishReadingsUseCase(
                     publishedPublishers.add(it)
                     isPublished = false
                 }
-            })
+            }
 
         return Flowable.fromArray(publishedPublishers)
     }
