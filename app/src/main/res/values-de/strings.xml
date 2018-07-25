@@ -114,9 +114,9 @@
     <string name="title_device_list">Geräte</string>
 
     <string name="message_no_devices">Es sind keine Geräte vorhanden</string>
-    <string name="message_save_unsuccessful"></string>
-    <string name="message_action_name_blank"></string>
-    <string name="message_action_device_not_selected"></string>
-    <string name="message_action_condition_not_selected"></string>
-    <string name="message_action_outcome_not_selected"></string>
+    <string name="message_save_unsuccessful">Speichern fehlgeschlagen</string>
+    <string name="message_action_name_blank">Name der Aktion muss eingetragen sein</string>
+    <string name="message_action_device_not_selected">Gerät ist nicht ausgewählt</string>
+    <string name="message_action_condition_not_selected">Bedingung ist nicht ausgewählt</string>
+    <string name="message_action_outcome_not_selected">Anweisung ist nicht ausgewählt</string>
 </resources>
