@@ -44,9 +44,9 @@ class SettingsFragment : PreferenceFragment() {
 
     private fun setScanModeSummarize(scanMode: String) {
         when (scanMode.toInt()) {
-            1 -> listPreference.summary = "Low Power"
-            2 -> listPreference.summary = "Balanced"
-            3 -> listPreference.summary = "Low Latency"
+            1 -> listPreference.summary = getString(R.string.scan_mode_low_power)
+            2 -> listPreference.summary = getString(R.string.scan_mode_balanced)
+            3 -> listPreference.summary = getString(R.string.scan_mode_low_latency)
         }
     }
 }
