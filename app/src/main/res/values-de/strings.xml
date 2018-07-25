@@ -66,9 +66,9 @@
     <string name="private_key_click">Berühren um auszuwählen</string>
     <string name="not_valid_file_pkcs8">Die ausgewählte Datei ist nicht PKCS8 kompatibel</string>
     <string name="publish_day">Tage</string>
-    <string name="publish_hour">Stunden</string>
-    <string name="publish_min">Minuten</string>
-    <string name="publish_sec">Sekunden</string>
+    <string name="publish_hour">Std.</string>
+    <string name="publish_min">Min.</string>
+    <string name="publish_sec">Sek.</string>
     <string name="sending_interval">Sende intervall</string>
     <string name="last_data_sent">"Letzte Daten gesendet um: "</string>
     <string name="snackbar_stop_scanning">Bitte scan zuerst beenden</string>
@@ -112,4 +112,11 @@
     <string name="headers">Headers (%d)</string>
     <string name="message_no_saved_devices_cannot_open_actions">Bitte zuerst ein Gerät hinzufügen</string>
     <string name="title_device_list">Geräte</string>
+
+    <string name="message_no_devices">Es sind keine Geräte vorhanden</string>
+    <string name="message_save_unsuccessful"></string>
+    <string name="message_action_name_blank"></string>
+    <string name="message_action_device_not_selected"></string>
+    <string name="message_action_condition_not_selected"></string>
+    <string name="message_action_outcome_not_selected"></string>
 </resources>

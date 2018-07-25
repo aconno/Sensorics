@@ -167,4 +167,10 @@
     <string name="message_no_saved_devices_cannot_open_actions">Please add a device first</string>
     <string name="title_device_list">Devices</string>
 
+    <string name="message_no_devices">There are no devices</string>
+    <string name="message_save_unsuccessful">Save unsuccessful</string>
+    <string name="message_action_name_blank">Action name cannot be blank</string>
+    <string name="message_action_device_not_selected">Device is not selected</string>
+    <string name="message_action_condition_not_selected">Condition is not selected</string>
+    <string name="message_action_outcome_not_selected">Outcome is not selected</string>
 </resources>

@@ -72,7 +72,7 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
             .subscribe({ devices ->
                 deviceSpinnerAdapter.setDevices(devices)
             }, {
-                showSnackbarMessage("There are no devices")
+                showSnackbarMessage(getString(R.string.message_no_devices))
             })
     }
 
@@ -254,7 +254,7 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
                 .subscribe({
                     finish()
                 }, {
-                    showSnackbarMessage(it.message ?: "Save unsuccessful")
+                    showSnackbarMessage(it.message ?: getString(R.string.message_save_unsuccessful))
                 })
         }
     }
