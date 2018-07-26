@@ -19,7 +19,7 @@ import com.aconno.sensorics.domain.model.ScanEvent
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
-import com.aconno.sensorics.ui.devicecon.AcnFrightFragment
+import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -197,7 +197,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     private fun getConnectableFragment(device: Device): Fragment {
         return when (device.name) {
-            "ACN Freight" -> AcnFrightFragment.newInstance(
+            "ACN Freight" -> AcnFreightFragment.newInstance(
                 device
             )
             else -> {

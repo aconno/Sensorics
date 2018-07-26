@@ -174,7 +174,7 @@
     <string name="message_action_condition_not_selected">Condition is not selected</string>
     <string name="message_action_outcome_not_selected">Outcome is not selected</string>
 
-    <!--AcnFrightFragment-->
+    <!--AcnFreightFragment-->
     <string name="buzzer">Buzzer :</string>
     <string name="red_light">Red Light :</string>
     <string name="green_light">Green Light :</string>

@@ -20,7 +20,7 @@ import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
-import com.aconno.sensorics.ui.devicecon.AcnFrightFragment
+import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import dagger.Component
 import io.reactivex.Flowable
@@ -72,7 +72,7 @@ interface AppComponent {
 
     fun inject(bluetoothConnectService: BluetoothConnectService)
 
-    fun inject(acnFrightFragment: AcnFrightFragment)
+    fun inject(acnFrightFragment: AcnFreightFragment)
 
     fun publishDeviceJoinRepository(): PublishDeviceJoinRepository
 
