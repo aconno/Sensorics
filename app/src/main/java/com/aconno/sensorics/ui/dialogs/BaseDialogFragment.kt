@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.base
+package com.aconno.sensorics.ui.dialogs
 
 import android.support.v4.app.DialogFragment
 import io.reactivex.disposables.CompositeDisposable

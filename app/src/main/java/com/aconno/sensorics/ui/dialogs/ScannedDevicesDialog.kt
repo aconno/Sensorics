@@ -12,7 +12,6 @@ import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.adapter.ScanDeviceAdapter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanDevice
-import com.aconno.sensorics.ui.base.BaseDialogFragment
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
