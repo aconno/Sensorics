@@ -61,17 +61,20 @@ class ScannedDevicesDialog : DisposeFragment() {
 
         list_devices.layoutManager = LinearLayoutManager(context)
         list_devices.adapter = adapter
-        adapter.getClickedDevices()
-            .subscribe {
-                Timber.d("Item clicked, mac: ${it.device.macAddress}")
-                listener?.onDevicesDialogItemClick(it.device)
-                savedDevices.add(it.device)
-                adapter.deleteDevice(it)
 
-                if (adapter.itemCount == 0) {
-                    text_empty.visibility = View.VISIBLE
+        addDisposable(
+            adapter.getClickedDevices()
+                .subscribe {
+                    Timber.d("Item clicked, mac: ${it.device.macAddress}")
+                    listener?.onDevicesDialogItemClick(it.device)
+                    savedDevices.add(it.device)
+                    adapter.deleteDevice(it)
+
+                    if (adapter.itemCount == 0) {
+                        text_empty.visibility = View.VISIBLE
+                    }
                 }
-            }
+        )
 
         addDisposable(
             savedDevicesUseCase
@@ -88,12 +91,9 @@ class ScannedDevicesDialog : DisposeFragment() {
                 .groupBy { it.device.macAddress }
                 .map { it.sample(1, TimeUnit.SECONDS) }
                 .flatMap { it }
-                .filter {
-                    !savedDevices.contains(it.device)
-                }
+                .filter { !savedDevices.contains(it.device) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    Timber.d("Item will be added, mac: ${it.device.macAddress}")
                     text_empty.visibility = View.INVISIBLE
                     adapter.addScanDevice(it)
                 }
