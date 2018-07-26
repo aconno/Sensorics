@@ -20,7 +20,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ScannedDevicesDialog : BaseDialogFragment() {
+class ScannedDevicesDialog : DisposeFragment() {
 
     @Inject
     lateinit var scanDeviceStream: Flowable<ScanDevice>
