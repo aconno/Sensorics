@@ -8,6 +8,7 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.IntentProviderImpl
 import com.aconno.sensorics.SensoricsApplication
+import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.data.mapper.*
 import com.aconno.sensorics.data.repository.InMemoryRepositoryImpl
 import com.aconno.sensorics.data.repository.SensoricsDatabase
@@ -32,6 +33,8 @@ import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.format.AdvertisementFormat
+import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
+import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinderImpl
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateDeviceUseCase
@@ -82,13 +85,16 @@ class AppModule(
         sharedPreferences: SharedPreferences,
         bluetoothAdapter: BluetoothAdapter,
         bluetoothPermission: BluetoothPermission,
-        bluetoothStateListener: BluetoothStateListener
+        bluetoothStateListener: BluetoothStateListener,
+        bluetoothCharacteristicValueConverter: BluetoothCharacteristicValueConverter
     ): Bluetooth =
         BluetoothImpl(
+            sensoricsApplication,
             sharedPreferences,
             bluetoothAdapter,
             bluetoothPermission,
-            bluetoothStateListener
+            bluetoothStateListener,
+            bluetoothCharacteristicValueConverter
         )
 
     @Provides
@@ -112,6 +118,12 @@ class AppModule(
     @Singleton
     fun provideSharedPreferences(): SharedPreferences {
         return PreferenceManager.getDefaultSharedPreferences(sensoricsApplication)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConnectionCharacteristicsFinder(): ConnectionCharacteristicsFinder {
+        return ConnectionCharacteristicsFinderImpl(supportedFormats)
     }
 
     @Provides

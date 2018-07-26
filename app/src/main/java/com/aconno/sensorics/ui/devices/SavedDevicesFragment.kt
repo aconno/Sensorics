@@ -53,6 +53,15 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
 
     private var snackbar: Snackbar? = null
 
+    private val onConnectClickListener = object : ItemClickListener<DeviceActive> {
+        override fun onItemClick(item: DeviceActive) {
+            activity?.let {
+                val mainActivity = it as MainActivity
+                mainActivity.connect(item.device)
+            }
+        }
+    }
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
@@ -110,7 +119,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
         super.onViewCreated(view, savedInstanceState)
 
         list_devices.layoutManager = LinearLayoutManager(context)
-        deviceAdapter = DeviceActiveAdapter(devices, this, this)
+        deviceAdapter = DeviceActiveAdapter(devices, this, onConnectClickListener, this)
         list_devices.adapter = deviceAdapter
 
         list_devices.itemAnimator = DefaultItemAnimator()
@@ -210,7 +219,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
         //Do-Nothing
     }
 
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int, position: Int) {
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int) {
         if (viewHolder is DeviceActiveAdapter.ViewHolder) {
             // get the removed item name to display it in snack bar and backup for undo
 

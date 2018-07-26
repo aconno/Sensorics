@@ -9,13 +9,14 @@ import android.widget.RelativeLayout
 import com.aconno.sensorics.R
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
-import kotlinx.android.synthetic.main.item_device.view.*
+import kotlinx.android.synthetic.main.item_device_with_connect.view.*
 import timber.log.Timber
 
 
 class DeviceActiveAdapter(
     private val devices: MutableList<DeviceActive>,
     private val itemClickListener: ItemClickListener<DeviceActive>,
+    private val connectClickListener: ItemClickListener<DeviceActive>,
     private var longItemClickListener: LongItemClickListener<DeviceActive>? = null
 ) : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>() {
 
@@ -31,7 +32,8 @@ class DeviceActiveAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_device, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_device_with_connect, parent, false)
         return ViewHolder(view)
     }
 
@@ -69,6 +71,15 @@ class DeviceActiveAdapter(
             view.name.text = device.device.getRealName()
             view.mac_address.text = device.device.macAddress
             view.setOnClickListener { itemClickListener.onItemClick(device) }
+            view.btn_connect.visibility = if (device.device.connectable) View.VISIBLE else View.GONE
+            view.btn_connect.setOnClickListener { connectClickListener.onItemClick(device) }
+            longItemClickListener?.let {
+                view.setOnLongClickListener {
+                    longItemClickListener?.onLongClick(device)
+                    true
+                }
+            }
+
             longItemClickListener?.let {
                 view.setOnLongClickListener {
                     longItemClickListener?.onLongClick(device)
@@ -79,10 +90,12 @@ class DeviceActiveAdapter(
                 view.image_icon.alpha = 1f
                 view.name.alpha = 1f
                 view.mac_address.alpha = 1f
+                view.btn_connect.isEnabled = true
             } else {
                 view.image_icon.alpha = 0.5f
                 view.name.alpha = 0.5f
                 view.mac_address.alpha = 0.5f
+                view.btn_connect.isEnabled = false
             }
 
             viewBackground = view.view_background
