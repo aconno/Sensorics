@@ -69,17 +69,17 @@
     <string name="service_notification_title">Sensorics</string>
     <string name="service_notification_content">Sensorics is scanning</string>
     <string name="set_action_hint">There are no actions.\nPress plus (+) to add a new action.</string>
-    <string name="no_rest_headers">There are no headers.\nPress plus (+) to add a new header.</string>
-    <string name="no_rest_httpgetparams">There are no HTTP Get Params.\nPress plus (+) to add a new HTTP Param.</string>
+    <string name="no_rest_headers">There are no headers. Press plus (+) to add a new header.</string>
+    <string name="no_rest_httpgetparams">There are no HTTP Get Params. Press plus (+) to add a new HTTP Param.</string>
     <string name="text_to_speech">Text to Speech</string>
     <string name="notification">Notification</string>
     <string name="sms">SMS</string>
 
-    <string name="google_iot_cloud">Google IOT Cloud</string>
-    <string name="http_backend">Http Backend</string>
-    <string name="mqtt_backend">MQTT Backend</string>
+    <string name="google_iot_cloud" translatable="false">Google IOT Cloud</string>
+    <string name="http_backend" translatable="false">Http Backend</string>
+    <string name="mqtt_backend" translatable="false">MQTT Backend</string>
 
-    <string name="no_devices_plus_button_label">There are no devices.\nPress plus (+) to add a new device.</string>
+    <string name="no_devices_plus_button_label">There are no devices. Press plus (+) to add a new device.</string>
 
     <string name="message_no_scanned_devices">There are no new nearby devices</string>
 
@@ -90,7 +90,7 @@
     <string name="device">Device</string>
     <string name="private_key">Private Key</string>
     <string name="private_key_click">Touch to choose</string>
-    <string name="not_valid_file_pkcs8">Selected File is not valid PKCS8 FIle.</string>
+    <string name="not_valid_file_pkcs8">Selected file is not valid PKCS8 file</string>
 
     <string name="rest_method_post" translatable="false">POST</string>
     <string name="rest_method_get" translatable="false">GET</string>
@@ -102,7 +102,7 @@
     <string name="publish_min">Min</string>
     <string name="publish_sec">Sec</string>
     <string name="sending_interval">Sending Interval</string>
-    <string name="last_data_sent">Last data sent at : </string>
+    <string name="last_data_sent">"Last data sent at: "</string>
     <string name="snackbar_stop_scanning">Please stop scanning first</string>
     <string name="test">Test</string>
     <string name="please_fill_blanks">Please fill the blanks</string>
@@ -129,7 +129,7 @@
     <string name="key">Key</string>
     <string name="close">Close</string>
     <string name="done">Done</string>
-    <string name="values_connot_empty">Values cannot be Empty</string>
+    <string name="values_connot_empty">Values cannot be empty</string>
     <string name="clientId">Client Id</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
@@ -164,5 +164,28 @@
     <string name="scan_mode_low_latency">Low Latency</string>
     <string name="scan_mode_balanced">Balanced</string>
     <string name="scan_mode_low_power">Low Power</string>
+    <string name="message_no_saved_devices_cannot_open_actions">Please add a device first</string>
+    <string name="title_device_list">Devices</string>
 
+    <string name="message_no_devices">There are no devices</string>
+    <string name="message_save_unsuccessful">Save unsuccessful</string>
+    <string name="message_action_name_blank">Action name cannot be blank</string>
+    <string name="message_action_device_not_selected">Device is not selected</string>
+    <string name="message_action_condition_not_selected">Condition is not selected</string>
+    <string name="message_action_outcome_not_selected">Outcome is not selected</string>
+
+    <!--AcnFrightFragment-->
+    <string name="buzzer">Buzzer :</string>
+    <string name="red_light">Red Light :</string>
+    <string name="green_light">Green Light :</string>
+    <string name="blue_light">Blue Light :</string>
+    <string name="device_not_found">DEVICE NOT FOUND</string>
+    <string name="connecting">CONNECTING</string>
+    <string name="connected">CONNECTED</string>
+    <string name="discovered">DISCOVERED</string>
+    <string name="disconnected">DISCONNECTED</string>
+    <string name="error">ERROR</string>
+    <string name="status_txt">Status : %s</string>
+    <string name="connect">CONNECT</string>
+    <string name="disconnect">DISCONNECT</string>
 </resources>

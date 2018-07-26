@@ -15,5 +15,14 @@ data class GenericFormatModel(
     var format: List<ByteFormatModel>,
     @SerializedName("format_required")
     @Expose
-    var formatRequired: List<ByteFormatRequiredModel>
+    var formatRequired: List<ByteFormatRequiredModel>,
+    @SerializedName("connectable")
+    @Expose
+    var connectible: Boolean,
+    @SerializedName("connection_write")
+    @Expose
+    var connectionWriteList: List<ConnectionWriteModel>?,
+    @SerializedName("connection_read")
+    @Expose
+    var connectionReadList: List<ConnectionReadModel>?
 )

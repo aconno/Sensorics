@@ -17,3 +17,10 @@ fun String.toHexByte(): Byte {
         16
     ) and 0xff).toByte()
 }
+
+fun String.hexToByte(): Byte {
+    return (Integer.parseInt(
+        this.replace("0x", ""),
+        16
+    ) and 0xff).toByte()
+}

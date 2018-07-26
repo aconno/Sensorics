@@ -3,11 +3,12 @@ package com.aconno.sensorics.ui.settings
 import android.os.Build
 import android.os.Bundle
 import android.preference.ListPreference
+import android.preference.Preference
 import android.preference.PreferenceFragment
 import com.aconno.sensorics.R
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 
-class SettingsFragment : PreferenceFragment() {
+class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener {
 
     private lateinit var listPreference: ListPreference
 
@@ -28,12 +29,23 @@ class SettingsFragment : PreferenceFragment() {
             }
 
         listPreference = findPreference("scan_mode") as ListPreference
-        listPreference.setOnPreferenceChangeListener { _, newValue ->
-            setScanModeSummarize(newValue as String)
-            true
-        }
 
         initSummaries()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        listPreference.onPreferenceChangeListener = this
+    }
+
+    override fun onPause() {
+        super.onPause()
+        listPreference.onPreferenceChangeListener = null
+    }
+
+    override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+        setScanModeSummarize(newValue as String)
+        return true
     }
 
     private fun initSummaries() {
@@ -44,9 +56,9 @@ class SettingsFragment : PreferenceFragment() {
 
     private fun setScanModeSummarize(scanMode: String) {
         when (scanMode.toInt()) {
-            1 -> listPreference.summary = "Low Power"
-            2 -> listPreference.summary = "Balanced"
-            3 -> listPreference.summary = "Low Latency"
+            1 -> listPreference.summary = getString(R.string.scan_mode_low_power)
+            2 -> listPreference.summary = getString(R.string.scan_mode_balanced)
+            3 -> listPreference.summary = getString(R.string.scan_mode_low_latency)
         }
     }
 }

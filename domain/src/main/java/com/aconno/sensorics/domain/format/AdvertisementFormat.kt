@@ -1,8 +1,7 @@
 package com.aconno.sensorics.domain.format
 
-interface AdvertisementFormat {
+interface AdvertisementFormat : Connection {
 
-    fun getName(): String
     fun getIcon(): String
     fun getFormat(): Map<String, ByteFormat>
     fun getRequiredFormat(): List<ByteFormatRequired>
