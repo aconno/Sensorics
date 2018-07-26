@@ -34,7 +34,6 @@ import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.ifttt.*
-import com.aconno.sensorics.domain.interactor.consolidation.GenerateDeviceUseCase
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateReadingsUseCase
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateScanDeviceUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
@@ -274,12 +273,6 @@ class AppModule(
     fun provideGenerateScanDeviceUseCase(
         formatMatcher: FormatMatcher
     ) = GenerateScanDeviceUseCase(formatMatcher)
-
-    @Provides
-    @Singleton
-    fun provideGenerateDeviceUseCase(
-        formatMatcher: FormatMatcher
-    ) = GenerateDeviceUseCase(formatMatcher)
 
     @Provides
     @Singleton
