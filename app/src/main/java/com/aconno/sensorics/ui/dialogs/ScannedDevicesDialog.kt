@@ -63,12 +63,12 @@ class ScannedDevicesDialog : DisposeFragment() {
         list_devices.adapter = adapter
 
         addDisposable(
-            adapter.getClickedDevices()
+            adapter.getClickedDeviceStream()
                 .subscribe {
                     Timber.d("Item clicked, mac: ${it.device.macAddress}")
                     listener?.onDevicesDialogItemClick(it.device)
                     savedDevices.add(it.device)
-                    adapter.deleteDevice(it)
+                    adapter.removeScanDevice(it)
 
                     if (adapter.itemCount == 0) {
                         text_empty.visibility = View.VISIBLE
