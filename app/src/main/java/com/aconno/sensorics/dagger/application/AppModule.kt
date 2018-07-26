@@ -31,6 +31,7 @@ import com.aconno.sensorics.device.notification.NotificationDisplayImpl
 import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinderImpl

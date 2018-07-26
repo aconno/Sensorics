@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.sensorics.R
-import com.aconno.sensorics.domain.ifttt.Action
+import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.model.toString
 import kotlinx.android.synthetic.main.item_action.view.*
 
@@ -18,6 +18,20 @@ class ActionAdapter(
         this.actions.clear()
         this.actions.addAll(actions)
         notifyDataSetChanged()
+    }
+
+    fun getAction(position: Int): Action {
+        return actions[position]
+    }
+
+    fun addActionAtPosition(action: Action, position: Int) {
+        actions.add(position, action)
+        notifyItemInserted(position)
+    }
+
+    fun removeAction(position: Int) {
+        actions.removeAt(position)
+        notifyItemRemoved(position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,7 +52,7 @@ class ActionAdapter(
 
         fun bind(action: Action) {
             view.text_name.text = action.name
-            view.text_mac_address.text = action.deviceMacAddress
+            view.text_mac_address.text = action.device.macAddress
             view.text_condition.text = action.condition.toString(view.context)
             view.text_outcome.text = action.outcome.toString()
             view.setOnClickListener { clickListener.onItemClick(action) }

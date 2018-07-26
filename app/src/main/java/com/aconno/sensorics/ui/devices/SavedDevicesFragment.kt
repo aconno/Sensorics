@@ -14,9 +14,7 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceActiveAdapter
@@ -26,6 +24,7 @@ import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
+import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -77,6 +76,35 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
         super.onCreate(savedInstanceState)
         val mainActivity: MainActivity? = activity as MainActivity
         mainActivity?.mainActivityComponent?.inject(this)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        super.onPrepareOptionsMenu(menu)
+        activity?.menuInflater?.inflate(R.menu.menu_devices, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        context?.let { context ->
+            when (item.itemId) {
+                R.id.action_start_actions_activity -> {
+                    if (deviceAdapter.itemCount > 0) {
+                        ActionListActivity.start(context)
+                    } else {
+                        Snackbar.make(
+                            container_fragment,
+                            R.string.message_no_saved_devices_cannot_open_actions,
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                    return true
+                }
+                else -> {
+                    //Do nothing
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateView(
@@ -137,7 +165,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
     override fun onResume() {
         super.onResume()
         val mainActivity: MainActivity? = context as MainActivity
-        mainActivity?.supportActionBar?.title = "Devices"
+        mainActivity?.supportActionBar?.title = getString(R.string.title_device_list)
         mainActivity?.supportActionBar?.subtitle = ""
     }
 
@@ -203,7 +231,7 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
 
             // showing snack bar with Undo option
             snackbar = Snackbar
-                .make(coordinatorLayout, "$name removed!", Snackbar.LENGTH_LONG)
+                .make(container_fragment, "$name removed!", Snackbar.LENGTH_LONG)
             snackbar?.setAction("UNDO") {
                 // undo is selected, restore the deleted item
                 deviceAdapter.restoreItem(deletedItem, position)

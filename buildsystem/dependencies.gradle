@@ -7,8 +7,8 @@ allprojects {
 
 ext {
     //App
-    sensoricsVersionCode = 13
-    sensoricsVersionName = '4.0.1'
+    sensoricsVersionCode = 14
+    sensoricsVersionName = '4.0.2'
 
     //Android
     androidBuildToolsVersion = "27.0.3"
@@ -46,7 +46,7 @@ ext {
     testRunnerVersion = '1.0.2'
 
     //Development
-    leakCanaryVersion = '1.5.4'
+    leakCanaryVersion = '1.6.1'
 
     presentationDependencies = [
             kotlin        : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version",

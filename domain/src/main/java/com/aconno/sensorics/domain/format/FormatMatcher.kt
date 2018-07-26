@@ -30,4 +30,13 @@ class FormatMatcher(
         }
         return true
     }
+
+    fun getReadingTypes(formatName: String): List<String> {
+        val readingTypes = mutableListOf<String>()
+        supportedFormats.filter { it.getName() == formatName }
+            .forEach {
+                readingTypes.addAll(it.getFormat().keys)
+            }
+        return readingTypes.sorted()
+    }
 }

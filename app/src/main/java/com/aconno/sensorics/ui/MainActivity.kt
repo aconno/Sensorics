@@ -250,15 +250,10 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
         val id: Int? = item?.itemId
         when (id) {
             R.id.action_toggle_scan -> toggleScan(item)
-            R.id.action_start_actions_activity -> startActionListActivity()
             R.id.action_start_settings_activity -> startSettingsActivity()
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun startActionListActivity() {
-        ActionListActivity.start(this)
     }
 
     private fun startSettingsActivity() {

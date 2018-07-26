@@ -4,11 +4,10 @@ import android.arch.lifecycle.Observer
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
@@ -24,16 +23,37 @@ class AcnRangeFragment : Fragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-
         val mainActivity = activity as MainActivity
         mainActivity.mainActivityComponent.inject(this)
         mainActivity.supportActionBar?.title = getDeviceName()
+
+        setHasOptionsMenu(true)
 
         arguments?.let {
             macAddress = it.getString(MAC_ADDRESS_EXTRA)
             readingListViewModel.init(macAddress)
             mainActivity.supportActionBar?.subtitle = macAddress
         }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        super.onPrepareOptionsMenu(menu)
+        activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        context?.let { context ->
+            when (item.itemId) {
+                R.id.action_start_actions_activity -> {
+                    ActionListActivity.start(context)
+                    return true
+                }
+                else -> {
+                    //Do nothing
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateView(

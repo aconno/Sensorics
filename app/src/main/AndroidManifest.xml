@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.aconno.sensorics">
 
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -21,7 +28,6 @@
         <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.LiveGraphActivity" />
         <activity android:name=".ui.ActionListActivity" />
-        <activity android:name=".ui.actions.AddActionActivity" />
 
         <service
             android:name=".BluetoothScanningService"
@@ -30,7 +36,6 @@
             android:name=".BluetoothConnectService"
             android:exported="false" />
 
-        <activity android:name=".ui.actions.EditActionActivity" />
         <activity
             android:name=".ui.settings.publishers.PublishListActivity"
             android:label="@string/title_publish_list" />
@@ -70,6 +75,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.actions.ActionDetailsActivity" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

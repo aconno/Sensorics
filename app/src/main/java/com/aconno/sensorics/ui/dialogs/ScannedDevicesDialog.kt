@@ -12,7 +12,6 @@ import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.adapter.ScanDeviceAdapter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanDevice
-import com.aconno.sensorics.ui.base.BaseDialogFragment
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -21,7 +20,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ScannedDevicesDialog : BaseDialogFragment() {
+class ScannedDevicesDialog : DisposeFragment() {
 
     @Inject
     lateinit var scanDeviceStream: Flowable<ScanDevice>
@@ -31,7 +30,7 @@ class ScannedDevicesDialog : BaseDialogFragment() {
 
     private val adapter = ScanDeviceAdapter()
 
-    private lateinit var listener: ScannedDevicesDialogListener
+    private var listener: ScannedDevicesDialogListener? = null
 
     private var savedDevices = mutableListOf<Device>()
 
@@ -40,11 +39,10 @@ class ScannedDevicesDialog : BaseDialogFragment() {
         val sensoricsApplication = activity?.application as SensoricsApplication
         sensoricsApplication.appComponent.inject(this)
 
-        val activity = activity
-        if (activity is ScannedDevicesDialogListener) {
-            listener = activity
-        } else {
-            throw RuntimeException("$activity must implement ${ScannedDevicesDialogListener::class}")
+        try {
+            listener = context as ScannedDevicesDialogListener
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$context must implement ScannedDevicesDialogListener")
         }
     }
 
@@ -59,19 +57,24 @@ class ScannedDevicesDialog : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        text_empty.setText(R.string.message_no_scanned_devices)
+
         list_devices.layoutManager = LinearLayoutManager(context)
         list_devices.adapter = adapter
-        adapter.getClickedDevices()
-            .subscribe {
-                Timber.d("Item clicked, mac: ${it.device.macAddress}")
-                listener.onDevicesDialogItemClick(it.device)
-                savedDevices.add(it.device)
-                adapter.deleteDevice(it)
 
-                if (adapter.itemCount == 0) {
-                    text_empty.visibility = View.VISIBLE
+        addDisposable(
+            adapter.getClickedDeviceStream()
+                .subscribe {
+                    Timber.d("Item clicked, mac: ${it.device.macAddress}")
+                    listener?.onDevicesDialogItemClick(it.device)
+                    savedDevices.add(it.device)
+                    adapter.removeScanDevice(it)
+
+                    if (adapter.itemCount == 0) {
+                        text_empty.visibility = View.VISIBLE
+                    }
                 }
-            }
+        )
 
         addDisposable(
             savedDevicesUseCase
@@ -88,12 +91,9 @@ class ScannedDevicesDialog : BaseDialogFragment() {
                 .groupBy { it.device.macAddress }
                 .map { it.sample(1, TimeUnit.SECONDS) }
                 .flatMap { it }
-                .filter {
-                    !savedDevices.contains(it.device)
-                }
+                .filter { !savedDevices.contains(it.device) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    Timber.d("Item will be added, mac: ${it.device.macAddress}")
                     text_empty.visibility = View.INVISIBLE
                     adapter.addScanDevice(it)
                 }
@@ -102,6 +102,11 @@ class ScannedDevicesDialog : BaseDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface?) {
         super.onDismiss(dialog)
-        listener.onDialogDismissed()
+        listener?.onDialogDismissed()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 }
