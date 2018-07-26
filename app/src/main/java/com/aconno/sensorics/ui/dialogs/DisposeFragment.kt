@@ -6,25 +6,14 @@ import io.reactivex.disposables.Disposable
 
 abstract class DisposeFragment : DialogFragment() {
 
-    private var compositeDisposable: CompositeDisposable? = null
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onDetach() {
-        clearCompositeDisposable()
+        compositeDisposable.clear()
         super.onDetach()
     }
 
     protected fun addDisposable(disposable: Disposable) {
-        getDisposable().add(disposable)
-    }
-
-    private fun clearCompositeDisposable() {
-        getDisposable().clear()
-    }
-
-    private fun getDisposable(): CompositeDisposable {
-        if (compositeDisposable == null || compositeDisposable!!.isDisposed) {
-            compositeDisposable = CompositeDisposable()
-        }
-        return compositeDisposable as CompositeDisposable
+        compositeDisposable.add(disposable)
     }
 }
