@@ -11,6 +11,13 @@ fun DeviceRelationModel.getRealName(): String {
     return if (alias.isBlank()) name else alias
 }
 
+fun String.toHexByte(): Byte {
+    return (Integer.parseInt(
+        this.replace("0x", ""),
+        16
+    ) and 0xff).toByte()
+}
+
 fun String.hexToByte(): Byte {
     return (Integer.parseInt(
         this.replace("0x", ""),

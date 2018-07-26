@@ -2,6 +2,7 @@ package com.aconno.sensorics.model.mapper
 
 import com.aconno.sensorics.domain.format.*
 import com.aconno.sensorics.model.*
+import com.aconno.sensorics.toHexByte
 
 class AdvertisementFormatMapper {
 
@@ -46,10 +47,7 @@ class AdvertisementFormatMapper {
         return ByteFormatRequired(
             byteFormatRequiredModel.name,
             byteFormatRequiredModel.index,
-            (Integer.parseInt(
-                byteFormatRequiredModel.value.replace("0x", ""),
-                16
-            ) and 0xff).toByte()
+            byteFormatRequiredModel.value.toHexByte()
         )
     }
 
