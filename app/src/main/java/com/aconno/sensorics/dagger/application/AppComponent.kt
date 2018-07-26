@@ -70,8 +70,6 @@ interface AppComponent {
 
     fun inject(scannedDevicesDialog: ScannedDevicesDialog)
 
-    fun inject(savedDevicesDialog: SavedDevicesDialog)
-
     fun inject(bluetoothConnectService: BluetoothConnectService)
 
     fun inject(acnFrightFragment: AcnFrightFragment)
