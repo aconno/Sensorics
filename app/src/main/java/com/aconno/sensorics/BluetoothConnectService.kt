@@ -1,16 +1,12 @@
 package com.aconno.sensorics
 
 import android.app.Service
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattService
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import io.reactivex.Flowable
-import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
