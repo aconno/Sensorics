@@ -17,7 +17,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.dagger.restpublisher.DaggerRESTPublisherComponent
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherComponent
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherModule
-import com.aconno.sensorics.data.converter.NewDataStringConverter
+import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.converter.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.RESTPublisher
 import com.aconno.sensorics.domain.Publisher
@@ -455,7 +455,7 @@ class RESTPublisherActivity : BaseActivity() {
     }
 
     private fun isDataStringValid(): Boolean {
-        val converter = NewDataStringConverter()
+        val converter = DataStringConverter()
 
         return if (restPublishModel?.method == "GET") {
 

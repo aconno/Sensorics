@@ -2,7 +2,6 @@ package com.aconno.sensorics.data.publisher
 
 import android.content.Context
 import com.aconno.sensorics.data.converter.DataStringConverter
-import com.aconno.sensorics.data.converter.NewDataStringConverter
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.MqttPublish
@@ -28,7 +27,7 @@ class MqttPublisher(
     private val messagesQueue: Queue<String> = LinkedList<String>()
 
     private var testConnectionCallback: Publisher.TestConnectionCallback? = null
-    private val dataStringConverter: NewDataStringConverter
+    private val dataStringConverter: DataStringConverter
 
 
     init {
@@ -52,7 +51,7 @@ class MqttPublisher(
                 }
             })
 
-        dataStringConverter = NewDataStringConverter(mqttPublish.dataString)
+        dataStringConverter = DataStringConverter(mqttPublish.dataString)
     }
 
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {

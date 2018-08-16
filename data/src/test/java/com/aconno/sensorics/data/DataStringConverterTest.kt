@@ -1,6 +1,6 @@
 package com.aconno.sensorics.data
 
-import com.aconno.sensorics.data.converter.NewDataStringConverter
+import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.domain.ifttt.GeneralRESTHttpGetParam
 import com.aconno.sensorics.domain.ifttt.RESTHttpGetParam
 import com.aconno.sensorics.domain.model.Device
@@ -10,7 +10,7 @@ import com.google.gson.reflect.TypeToken
 import org.junit.Before
 import org.junit.Test
 
-class NewDataStringConverterTest {
+class DataStringConverterTest {
 
     private lateinit var list: List<Reading>
     private lateinit var nameValueList: List<RESTHttpGetParam>
@@ -64,7 +64,7 @@ class NewDataStringConverterTest {
                 "\"accelerometer x\":\"\$accelerometer_x\"" +
                 "}"
 
-        val newDataStringConverter1 = NewDataStringConverter()
+        val newDataStringConverter1 = DataStringConverter()
         println(newDataStringConverter1.convert(list, dataString1))
 
         println(" -----  2nd Test Starts -----")
@@ -76,7 +76,7 @@ class NewDataStringConverterTest {
                 "\"accelerometer x\":\"\$accelerometer_x\"" +
                 "}"
 
-        val newDataStringConverter2 = NewDataStringConverter()
+        val newDataStringConverter2 = DataStringConverter()
         println(newDataStringConverter2.convert(list, dataString2))
 
         println(" -----  3rd Test Starts -----")
@@ -86,7 +86,7 @@ class NewDataStringConverterTest {
                 "\"value\":\"\$value\"" +
                 "}"
 
-        val newDataStringConverter3 = NewDataStringConverter()
+        val newDataStringConverter3 = DataStringConverter()
         println(newDataStringConverter3.convert(list, dataString3))
 
 
@@ -97,7 +97,7 @@ class NewDataStringConverterTest {
                 "\"value\":\"value\"" +
                 "}"
 
-        val newDataStringConverter4 = NewDataStringConverter()
+        val newDataStringConverter4 = DataStringConverter()
         println(newDataStringConverter4.convert(list, dataString4))
     }
 
@@ -107,7 +107,7 @@ class NewDataStringConverterTest {
         ////
         val json1 = Gson().toJson(nameValueList)
 
-        val newDataStringConverter1 = NewDataStringConverter()
+        val newDataStringConverter1 = DataStringConverter()
         val message1 = newDataStringConverter1.convert(list, json1)
         println(message1)
 
@@ -120,14 +120,14 @@ class NewDataStringConverterTest {
         ////
         val json2 = Gson().toJson(temperatureLightList)
 
-        val newDataStringConverter2 = NewDataStringConverter()
+        val newDataStringConverter2 = DataStringConverter()
         println(newDataStringConverter2.convert(list, json2))
 
         println(" -----  3rd Test Starts -----")
         ////
         val json3 = Gson().toJson(temperatureNameValueList)
 
-        val newDataStringConverter3 = NewDataStringConverter()
+        val newDataStringConverter3 = DataStringConverter()
         println(newDataStringConverter3.convert(list, json3))
 
 
@@ -135,7 +135,7 @@ class NewDataStringConverterTest {
         ////
         val json4 = Gson().toJson(withoutNameTemperatureList)
 
-        val newDataStringConverter4 = NewDataStringConverter()
+        val newDataStringConverter4 = DataStringConverter()
         println(newDataStringConverter4.convert(list, json4))
     }
 }

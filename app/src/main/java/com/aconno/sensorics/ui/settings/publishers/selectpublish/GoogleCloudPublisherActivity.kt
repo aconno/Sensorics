@@ -17,7 +17,7 @@ import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.dagger.gcloudpublisher.DaggerGoogleCloudPublisherComponent
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherComponent
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
-import com.aconno.sensorics.data.converter.NewDataStringConverter
+import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.converter.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.domain.Publisher
@@ -336,7 +336,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
 
     private fun isDataStringValid(): Boolean {
 
-        val converter = NewDataStringConverter()
+        val converter = DataStringConverter()
 
         val dataString = edit_datastring.text.toString()
         return converter.parseAndValidateDataString(dataString)

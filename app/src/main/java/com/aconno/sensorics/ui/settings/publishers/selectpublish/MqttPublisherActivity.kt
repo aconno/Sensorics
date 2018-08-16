@@ -16,7 +16,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.dagger.mqttpublisher.DaggerMqttPublisherComponent
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherComponent
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherModule
-import com.aconno.sensorics.data.converter.NewDataStringConverter
+import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.converter.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.domain.Publisher
@@ -26,7 +26,6 @@ import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
 import com.aconno.sensorics.ui.base.BaseActivity
 import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.sensorics.viewmodel.MqttPublisherViewModel
-import com.google.gson.Gson
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -336,7 +335,7 @@ class MqttPublisherActivity : BaseActivity() {
 
     private fun isDataStringValid(): Boolean {
 
-        val converter = NewDataStringConverter()
+        val converter = DataStringConverter()
 
         val dataString = edit_datastring.text.toString()
         return converter.parseAndValidateDataString(dataString)

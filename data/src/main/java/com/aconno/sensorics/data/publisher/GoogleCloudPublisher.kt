@@ -3,7 +3,6 @@ package com.aconno.sensorics.data.publisher
 import android.content.Context
 import android.net.Uri
 import com.aconno.sensorics.data.converter.DataStringConverter
-import com.aconno.sensorics.data.converter.NewDataStringConverter
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.GooglePublish
@@ -34,7 +33,7 @@ class GoogleCloudPublisher(
 
     private var testConnectionCallback: Publisher.TestConnectionCallback? = null
 
-    private val dataStringConverter: NewDataStringConverter
+    private val dataStringConverter: DataStringConverter
 
     init {
         jwtByteArray = getPrivateKeyData(context)
@@ -62,7 +61,7 @@ class GoogleCloudPublisher(
                 }
             })
 
-        dataStringConverter = NewDataStringConverter(googlePublish.dataString)
+        dataStringConverter = DataStringConverter(googlePublish.dataString)
     }
 
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
