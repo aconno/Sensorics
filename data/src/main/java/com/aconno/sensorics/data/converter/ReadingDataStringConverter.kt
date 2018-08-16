@@ -53,7 +53,7 @@ class ReadingDataStringConverter {
 
         dataString = if (map.containsKey(type)) {
             map[type]!!.replace(
-                "$" + data.name.toLowerCase(),
+                "$$type",
                 data.value.toString()
             )
         } else {
@@ -70,5 +70,6 @@ class ReadingDataStringConverter {
         return dataString
             .replace("\$ts", System.currentTimeMillis().toString())
             .replace("\$name", data.name)
+            .replace("\$device", data.device.macAddress)
     }
 }

@@ -14,6 +14,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.dagger.mqttpublisher.DaggerMqttPublisherComponent
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherComponent
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherModule
+import com.aconno.sensorics.data.converter.NewDataStringConverter
 import com.aconno.sensorics.data.converter.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.domain.Publisher
@@ -23,6 +24,7 @@ import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
 import com.aconno.sensorics.ui.base.BaseActivity
 import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.sensorics.viewmodel.MqttPublisherViewModel
+import com.google.gson.Gson
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -282,8 +284,23 @@ class MqttPublisherActivity : BaseActivity() {
                 datastring
             )
         ) {
-            Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                getString(R.string.please_fill_blanks),
+                Toast.LENGTH_SHORT
+            ).show()
             return null
+        } else {
+            if (!isDataStringValid()) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.data_string_not_valid),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+
+                return null
+            }
         }
 
         val id = if (mqttPublishModel == null) 0 else mqttPublishModel!!.id
@@ -304,6 +321,14 @@ class MqttPublisherActivity : BaseActivity() {
             lastTimeMillis,
             datastring
         )
+    }
+
+    private fun isDataStringValid(): Boolean {
+
+        val converter = NewDataStringConverter()
+
+        val dataString = edit_datastring.text.toString()
+        return converter.parseAndValidateDataString(dataString)
     }
 
     private fun test() {
@@ -328,7 +353,7 @@ class MqttPublisherActivity : BaseActivity() {
         val publisher = MqttPublisher(
             applicationContext,
             MqttPublishModelDataMapper().toMqttPublish(toMqttPublishModel),
-            listOf(Device("TestDevice", "Name","Mac"))
+            listOf(Device("TestDevice", "Name", "Mac"))
         )
 
         testConnectionCallback.onConnectionStart()

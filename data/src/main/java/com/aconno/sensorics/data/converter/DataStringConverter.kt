@@ -65,6 +65,7 @@ class DataStringConverter(userDataString: String) {
             dataString
                 .replace("\$ts", System.currentTimeMillis().toString())
                 .replace("\$name", data.name)
+                .replace("\$device", data.device.macAddress)
         )
     }
 }

@@ -3,6 +3,7 @@ package com.aconno.sensorics.data.publisher
 import android.content.Context
 import android.net.Uri
 import com.aconno.sensorics.data.converter.DataStringConverter
+import com.aconno.sensorics.data.converter.NewDataStringConverter
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.GooglePublish
@@ -33,7 +34,7 @@ class GoogleCloudPublisher(
 
     private var testConnectionCallback: Publisher.TestConnectionCallback? = null
 
-    private val dataStringConverter: DataStringConverter
+    private val dataStringConverter: NewDataStringConverter
 
     init {
         jwtByteArray = getPrivateKeyData(context)
@@ -61,7 +62,7 @@ class GoogleCloudPublisher(
                 }
             })
 
-        dataStringConverter = DataStringConverter(googlePublish.dataString)
+        dataStringConverter = NewDataStringConverter(googlePublish.dataString)
     }
 
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
@@ -97,14 +98,25 @@ class GoogleCloudPublisher(
                 && listDevices.contains(device)
     }
 
-    override fun publish(reading: Reading) {
-        val messages = dataStringConverter.convert(reading) ?: return
-        for (message in messages) {
-            Timber.tag("Publisher Google")
-                .d("${googlePublish.name} publishes from ${reading.device}")
-            publish(message)
+    override fun publish(readings: List<Reading>) {
+        if (readings.isNotEmpty()) {
+            val messages = dataStringConverter.convert(readings)
+            for (message in messages) {
+                Timber.tag("Publisher Google Cloud ")
+                    .d("${googlePublish.name} publishes from ${readings[0].device}")
+                publish(message)
+            }
         }
     }
+
+//    override fun publish(reading: Reading) {
+//        val messages = dataStringConverter.convert(reading) ?: return
+//        for (message in messages) {
+//            Timber.tag("Publisher Google")
+//                .d("${googlePublish.name} publishes from ${reading.device}")
+//            publish(message)
+//        }
+//    }
 
     private fun publish(message: String) {
         if (mqttAndroidClient.isConnected) {

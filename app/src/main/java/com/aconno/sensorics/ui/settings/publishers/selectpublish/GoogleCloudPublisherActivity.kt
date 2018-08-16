@@ -15,6 +15,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.dagger.gcloudpublisher.DaggerGoogleCloudPublisherComponent
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherComponent
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
+import com.aconno.sensorics.data.converter.NewDataStringConverter
 import com.aconno.sensorics.data.converter.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.domain.Publisher
@@ -289,6 +290,17 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         ) {
             Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
             return null
+        } else {
+            if (!isDataStringValid()) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.data_string_not_valid),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+
+                return null
+            }
         }
 
         val id = if (googlePublishModel == null) 0 else googlePublishModel!!.id
@@ -309,6 +321,14 @@ class GoogleCloudPublisherActivity : BaseActivity() {
             lastTimeMillis,
             datastring
         )
+    }
+
+    private fun isDataStringValid(): Boolean {
+
+        val converter = NewDataStringConverter()
+
+        val dataString = edit_datastring.text.toString()
+        return converter.parseAndValidateDataString(dataString)
     }
 
     private fun addRelationsToGoogle(gId: Long): Completable? {
@@ -380,7 +400,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         val publisher = GoogleCloudPublisher(
             applicationContext,
             GooglePublishModelDataMapper().transform(toGooglePublishModel),
-            listOf(Device("TestDevice","Name", "Mac"))
+            listOf(Device("TestDevice", "Name", "Mac"))
         )
 
         testConnectionCallback.onConnectionStart()

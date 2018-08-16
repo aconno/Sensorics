@@ -15,6 +15,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.dagger.restpublisher.DaggerRESTPublisherComponent
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherComponent
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherModule
+import com.aconno.sensorics.data.converter.NewDataStringConverter
 import com.aconno.sensorics.data.converter.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.RESTPublisher
 import com.aconno.sensorics.domain.Publisher
@@ -30,6 +31,7 @@ import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.sensorics.ui.settings.publishers.rheader.RESTHeadersActivity
 import com.aconno.sensorics.ui.settings.publishers.rhttpgetparams.RESTHttpGetParamsActivity
 import com.aconno.sensorics.viewmodel.RestPublisherViewModel
+import com.google.gson.Gson
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -365,20 +367,47 @@ class RESTPublisherActivity : BaseActivity() {
         val method = spinner_methods.selectedItem.toString()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
-        val datastring = edit_datastring.text.toString()
-
+        val dataString = edit_datastring.text.toString()
         if (restPublisherViewModel.checkFieldsAreEmpty(
                 name,
                 url,
                 method,
                 timeType,
-                timeCount,
-                datastring
+                timeCount
             )
-            || (method == "GET" && restHeaderList.isEmpty())
         ) {
             Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
             return null
+        } else {
+            val isNotOk = if (method == "GET") {
+                restHttpGetParamList.isEmpty()
+            } else {
+                dataString.isBlank()
+            }
+
+            if (isNotOk) {
+                Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT)
+                    .show()
+                return null
+            } else if (!isDataStringValid()) {
+                if (method == "GET") {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.http_get_params_not_valid),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.data_string_not_valid),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+
+                return null
+            }
         }
 
         val id = if (restPublishModel == null) 0 else restPublishModel!!.id
@@ -393,7 +422,7 @@ class RESTPublisherActivity : BaseActivity() {
             timeType,
             timeMillis,
             lastTimeMillis,
-            datastring
+            dataString
         )
     }
 
@@ -414,10 +443,25 @@ class RESTPublisherActivity : BaseActivity() {
         }
     }
 
+    private fun isDataStringValid(): Boolean {
+        val converter = NewDataStringConverter()
+
+        return if (restPublishModel?.method == "GET") {
+
+            val json1 = Gson().toJson(restHttpGetParamList)
+            converter.parseAndValidateDataString(json1)
+
+        } else {
+            val dataString = edit_datastring.text.toString()
+
+            converter.parseAndValidateDataString(dataString)
+        }
+    }
+
     private fun testRESTConnection(toRESTPublishModel: RESTPublishModel) {
         val publisher = RESTPublisher(
             RESTPublishModelDataMapper().transform(toRESTPublishModel),
-            listOf(Device("TestDevice","Name", "Mac")),
+            listOf(Device("TestDevice", "Name", "Mac")),
             RESTHeaderModelMapper().toRESTHeaderList(restHeaderList),
             RESTHttpGetParamModelMapper().toRESTHttpGetParamList(restHttpGetParamList)
         )
