@@ -141,7 +141,7 @@
     <string name="qos_0" translatable="false">0</string>
     <string name="qos_2" translatable="false">2</string>
     <string name="dataString">Data String</string>
-    <string name="publisher_info_text" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$name</i> => key \n<i>$value</i> => sensor value \n<b>Specific Values:</b> \n<i>$temperature,$light,$battery_level</i> etc. <b>Important: </b> \nPlease do not use General Values with Specific Values in the same request. It is not valid. Beacon advertisements can not be combined in one request. \nFor example you have 2 beacons one provides Temperature and Light and the other one provides Battery Level. If you put your data string as <i>{$temperature,$light,$battery_level}</i>. When device gets advertisement from Battery Level = 100, it will send as <i>{$temperature,$light,100}</i>. Ex: Temperature = 35, Light =18 send result is {35,18,$battery_level}</string>
+    <string name="publisher_info_text" formatted="true" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$name</i> => key \n<i>$value</i> => sensor value \n<b>Specific Values:</b> \n<i>$temperature,$light,$battery_level</i> etc. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a></string>
     <string name="publisher_info_title">Info</string>
     <string name="title_select_publish">Select Publisher</string>
     <string name="title_settings">Settings</string>

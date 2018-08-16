@@ -5,10 +5,12 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
+import android.widget.TextView
 import android.widget.Toast
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.R
@@ -167,16 +169,7 @@ class RESTPublisherActivity : BaseActivity() {
 
     private fun initViews() {
         btn_info.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-
-            builder.setTitle(R.string.publisher_info_title)
-                .setMessage(R.string.publisher_info_text)
-                .setNeutralButton(
-                    R.string.close
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+            createAndShowInfoDialog()
         }
 
         spinner_methods.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -208,6 +201,24 @@ class RESTPublisherActivity : BaseActivity() {
 
         updateHeaderText()
         updateHttpGetParamText()
+    }
+
+    private fun createAndShowInfoDialog() {
+        val view = View.inflate(this, R.layout.dialog_alert, null)
+        val textView = view.findViewById<TextView>(R.id.message)
+        textView.movementMethod = LinkMovementMethod.getInstance()
+        textView.setText(R.string.publisher_info_text)
+
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(R.string.publisher_info_title)
+            .setView(view)
+            .setNeutralButton(
+                R.string.close
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun setFields() {

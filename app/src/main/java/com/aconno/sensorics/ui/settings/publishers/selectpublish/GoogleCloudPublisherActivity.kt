@@ -6,12 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.R
+import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.dagger.gcloudpublisher.DaggerGoogleCloudPublisherComponent
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherComponent
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
@@ -175,20 +177,29 @@ class GoogleCloudPublisherActivity : BaseActivity() {
             )
 
         }
-
         btn_info.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-
-            builder.setTitle(R.string.publisher_info_title)
-                .setMessage(R.string.publisher_info_text)
-                .setNeutralButton(
-                    R.string.close
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+            createAndShowInfoDialog()
         }
     }
+
+    private fun createAndShowInfoDialog() {
+        val view = View.inflate(this, R.layout.dialog_alert, null)
+        val textView = view.findViewById<TextView>(R.id.message)
+        textView.movementMethod = LinkMovementMethod.getInstance()
+        textView.setText(R.string.publisher_info_text)
+
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(R.string.publisher_info_title)
+            .setView(view)
+            .setNeutralButton(
+                R.string.close
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
 
     private fun setFields() {
         edit_name.setText(googlePublishModel?.name)
