@@ -4,124 +4,99 @@
   "format": [
     {
       "name": "Gyroscope X",
-      "start_index_inclusive": 10,
-      "end_index_exclusive": 12,
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 7,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Gyroscope Y",
-      "start_index_inclusive": 12,
-      "end_index_exclusive": 14,
+      "start_index_inclusive": 7,
+      "end_index_exclusive": 9,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Gyroscope Z",
-      "start_index_inclusive": 14,
-      "end_index_exclusive": 16,
+      "start_index_inclusive": 9,
+      "end_index_exclusive": 11,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Accelerometer X",
-      "start_index_inclusive": 16,
-      "end_index_exclusive": 18,
+      "start_index_inclusive": 11,
+      "end_index_exclusive": 13,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Accelerometer Y",
-      "start_index_inclusive": 18,
-      "end_index_exclusive": 20,
+      "start_index_inclusive": 13,
+      "end_index_exclusive": 15,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Accelerometer Z",
-      "start_index_inclusive": 20,
-      "end_index_exclusive": 22,
+      "start_index_inclusive": 15,
+      "end_index_exclusive": 17,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Magnetometer X",
-      "start_index_inclusive": 22,
-      "end_index_exclusive": 24,
+      "start_index_inclusive": 17,
+      "end_index_exclusive": 19,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Magnetometer Y",
-      "start_index_inclusive": 24,
-      "end_index_exclusive": 26,
+      "start_index_inclusive": 19,
+      "end_index_exclusive": 21,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Magnetometer Z",
-      "start_index_inclusive": 26,
-      "end_index_exclusive": 28,
+      "start_index_inclusive": 21,
+      "end_index_exclusive": 23,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
       "name": "Accelerometer Scale Factor",
-      "start_index_inclusive": 28,
-      "end_index_exclusive": 30,
+      "start_index_inclusive": 23,
+      "end_index_exclusive": 25,
       "reversed": true,
       "data_type": "UINT16"
     }
   ],
   "format_required": [
     {
-      "name": "Flags Length",
-      "index": 0,
-      "value": "0x02"
-    },
-    {
-      "name": "Flags Type",
-      "index": 1,
-      "value": "0x01"
-    },
-    {
-      "name": "Flags",
-      "index": 2,
-      "value": "0x04"
-    },
-    {
-      "name": "Content Length",
-      "index": 3,
-      "value": "0x1A"
-    },
-    {
-      "name": "Content Type",
-      "index": 4,
-      "value": "0xFF"
-    },
-    {
       "name": "Vendor ID 1",
-      "index": 5,
+      "index": 0,
       "value": "0x59"
     },
     {
       "name": "Vendor ID 2",
-      "index": 6,
+      "index": 1,
       "value": "0x00"
     },
     {
       "name": "App ID 1",
-      "index": 7,
+      "index": 2,
       "value": "0x17"
     },
     {
       "name": "App ID 2",
-      "index": 8,
+      "index": 3,
       "value": "0xCF"
     },
     {
       "name": "Advertisement Type",
-      "index": 9,
+      "index": 4,
       "value": "0x00"
     }
   ]
