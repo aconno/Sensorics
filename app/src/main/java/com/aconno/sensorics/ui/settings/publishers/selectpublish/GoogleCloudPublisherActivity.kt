@@ -18,7 +18,7 @@ import com.aconno.sensorics.dagger.gcloudpublisher.DaggerGoogleCloudPublisherCom
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherComponent
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
 import com.aconno.sensorics.data.converter.DataStringConverter
-import com.aconno.sensorics.data.converter.PublisherIntervalConverter
+import com.aconno.sensorics.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
@@ -206,6 +206,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
 
         edit_interval_count.setText(
             PublisherIntervalConverter.calculateCountFromMillis(
+                this,
                 googlePublishModel!!.timeMillis,
                 googlePublishModel!!.timeType
             )
@@ -315,7 +316,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         }
 
         val id = if (googlePublishModel == null) 0 else googlePublishModel!!.id
-        val timeMillis = PublisherIntervalConverter.calculateMillis(timeCount, timeType)
+        val timeMillis = PublisherIntervalConverter.calculateMillis(this,timeCount, timeType)
         val lastTimeMillis =
             if (googlePublishModel == null) 0 else googlePublishModel!!.lastTimeMillis
         return GooglePublishModel(

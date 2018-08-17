@@ -17,7 +17,7 @@ import com.aconno.sensorics.dagger.mqttpublisher.DaggerMqttPublisherComponent
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherComponent
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherModule
 import com.aconno.sensorics.data.converter.DataStringConverter
-import com.aconno.sensorics.data.converter.PublisherIntervalConverter
+import com.aconno.sensorics.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
@@ -165,6 +165,7 @@ class MqttPublisherActivity : BaseActivity() {
 
         edit_interval_count.setText(
             PublisherIntervalConverter.calculateCountFromMillis(
+                this,
                 mqttPublishModel!!.timeMillis,
                 mqttPublishModel!!.timeType
             )
@@ -314,7 +315,7 @@ class MqttPublisherActivity : BaseActivity() {
         }
 
         val id = if (mqttPublishModel == null) 0 else mqttPublishModel!!.id
-        val timeMillis = PublisherIntervalConverter.calculateMillis(timeCount, timeType)
+        val timeMillis = PublisherIntervalConverter.calculateMillis(this,timeCount, timeType)
         val lastTimeMillis = if (mqttPublishModel == null) 0 else mqttPublishModel!!.lastTimeMillis
         return MqttPublishModel(
             id,

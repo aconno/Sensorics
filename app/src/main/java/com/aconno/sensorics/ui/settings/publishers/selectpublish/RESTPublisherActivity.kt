@@ -18,7 +18,7 @@ import com.aconno.sensorics.dagger.restpublisher.DaggerRESTPublisherComponent
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherComponent
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherModule
 import com.aconno.sensorics.data.converter.DataStringConverter
-import com.aconno.sensorics.data.converter.PublisherIntervalConverter
+import com.aconno.sensorics.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.RESTPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
@@ -231,6 +231,7 @@ class RESTPublisherActivity : BaseActivity() {
 
         edit_interval_count.setText(
             PublisherIntervalConverter.calculateCountFromMillis(
+                this,
                 restPublishModel!!.timeMillis,
                 restPublishModel!!.timeType
             )
@@ -422,7 +423,7 @@ class RESTPublisherActivity : BaseActivity() {
         }
 
         val id = if (restPublishModel == null) 0 else restPublishModel!!.id
-        val timeMillis = PublisherIntervalConverter.calculateMillis(timeCount, timeType)
+        val timeMillis = PublisherIntervalConverter.calculateMillis(this, timeCount, timeType)
         val lastTimeMillis = if (restPublishModel == null) 0 else restPublishModel!!.lastTimeMillis
         return RESTPublishModel(
             id,
