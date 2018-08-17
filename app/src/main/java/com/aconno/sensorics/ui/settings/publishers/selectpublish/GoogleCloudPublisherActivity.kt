@@ -6,16 +6,19 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.R
+import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.dagger.gcloudpublisher.DaggerGoogleCloudPublisherComponent
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherComponent
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
-import com.aconno.sensorics.data.converter.PublisherIntervalConverter
+import com.aconno.sensorics.data.converter.DataStringConverter
+import com.aconno.sensorics.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
@@ -174,26 +177,36 @@ class GoogleCloudPublisherActivity : BaseActivity() {
             )
 
         }
-
         btn_info.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-
-            builder.setTitle(R.string.publisher_info_title)
-                .setMessage(R.string.publisher_info_text)
-                .setNeutralButton(
-                    R.string.close
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+            createAndShowInfoDialog()
         }
     }
+
+    private fun createAndShowInfoDialog() {
+        val view = View.inflate(this, R.layout.dialog_alert, null)
+        val textView = view.findViewById<TextView>(R.id.message)
+        textView.movementMethod = LinkMovementMethod.getInstance()
+        textView.setText(R.string.publisher_info_text)
+
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(R.string.publisher_info_title)
+            .setView(view)
+            .setNeutralButton(
+                R.string.close
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
 
     private fun setFields() {
         edit_name.setText(googlePublishModel?.name)
 
         edit_interval_count.setText(
             PublisherIntervalConverter.calculateCountFromMillis(
+                this,
                 googlePublishModel!!.timeMillis,
                 googlePublishModel!!.timeType
             )
@@ -289,10 +302,21 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         ) {
             Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
             return null
+        } else {
+            if (!isDataStringValid()) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.data_string_not_valid),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+
+                return null
+            }
         }
 
         val id = if (googlePublishModel == null) 0 else googlePublishModel!!.id
-        val timeMillis = PublisherIntervalConverter.calculateMillis(timeCount, timeType)
+        val timeMillis = PublisherIntervalConverter.calculateMillis(this,timeCount, timeType)
         val lastTimeMillis =
             if (googlePublishModel == null) 0 else googlePublishModel!!.lastTimeMillis
         return GooglePublishModel(
@@ -309,6 +333,14 @@ class GoogleCloudPublisherActivity : BaseActivity() {
             lastTimeMillis,
             datastring
         )
+    }
+
+    private fun isDataStringValid(): Boolean {
+
+        val converter = DataStringConverter()
+
+        val dataString = edit_datastring.text.toString()
+        return converter.parseAndValidateDataString(dataString)
     }
 
     private fun addRelationsToGoogle(gId: Long): Completable? {
@@ -380,7 +412,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         val publisher = GoogleCloudPublisher(
             applicationContext,
             GooglePublishModelDataMapper().transform(toGooglePublishModel),
-            listOf(Device("TestDevice","Name", "Mac"))
+            listOf(Device("TestDevice", "Name", "Mac"))
         )
 
         testConnectionCallback.onConnectionStart()

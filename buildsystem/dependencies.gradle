@@ -67,8 +67,9 @@ ext {
             roomCompile   : "android.arch.persistence.room:compiler:$androidArchVersion",
             roomRxJava2   : "android.arch.persistence.room:rxjava2:$androidArchVersion",
             flexbox       : "com.google.android:flexbox:$flexBoxVersion",
-            gson          : "com.google.code.gson:gson:$gsonVersion",
-            crashlytics   : "com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion"
+            crashlytics   : "com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion",
+            gson          : "com.google.code.gson:gson:$gsonVersion"
+
     ]
 
     presentationTestDependencies = [
@@ -106,7 +107,9 @@ ext {
             okHttp          : "com.squareup.okhttp3:okhttp:$okHttpVersion",
             okHttpLoggingInt: "com.squareup.okhttp3:logging-interceptor:$okHttpLogginInterceptorVersion",
             javaxInject     : "javax.inject:javax.inject:$javaxInjectVersion",
-            javaxAnnotation : "javax.annotation:jsr250-api:$javaxAnnotationVersion"
+            javaxAnnotation : "javax.annotation:jsr250-api:$javaxAnnotationVersion",
+            gson            : "com.google.code.gson:gson:$gsonVersion"
+
     ]
 
     dataTestDependencies = [

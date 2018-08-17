@@ -6,7 +6,7 @@ import com.aconno.sensorics.domain.model.Device
 
 interface Publisher {
 
-    fun publish(reading: Reading)
+    fun publish(readings: List<Reading>)
 
     fun isPublishable(device: Device): Boolean
 

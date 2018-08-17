@@ -12,20 +12,12 @@ class PublishReadingsUseCase(
     override fun execute(parameter: List<Reading>): Flowable<List<Publisher>> {
         val publishedPublishers = mutableListOf<Publisher>()
 
-        var isPublished = false
-
         listPublisher
             .forEach {
-                parameter
-                    .filter { ad -> it.isPublishable(ad.device) }
-                    .forEach { at ->
-                        it.publish(at)
-                        isPublished = true
-                    }
 
-                if (isPublished) {
+                if (parameter.isNotEmpty() && it.isPublishable(parameter[0].device)) {
+                    it.publish(parameter)
                     publishedPublishers.add(it)
-                    isPublished = false
                 }
             }
 
