@@ -87,12 +87,12 @@
     {
       "name": "Advertisement Type",
       "index": 9,
-      "value": "0x00"
+      "value": "0x44"
     },
     {
       "name": "Freight Type",
       "index": 10,
-      "value": "0x00"
+      "value": "0x55"
     }
   ],
   "connectable": true,
