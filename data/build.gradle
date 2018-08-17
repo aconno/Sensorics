@@ -55,6 +55,7 @@ dependencies {
     implementation dataDependencies.okHttp
     implementation dataDependencies.okHttpLoggingInt
     implementation dataDependencies.javaxInject
+    implementation dataDependencies.gson
     compileOnly dataDependencies.javaxAnnotation
 
     testImplementation testDependencies.kotlinJUnit

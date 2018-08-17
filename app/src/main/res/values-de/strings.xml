@@ -74,6 +74,8 @@
     <string name="snackbar_stop_scanning">Bitte scan zuerst beenden</string>
     <string name="test">Test</string>
     <string name="please_fill_blanks">Leere Felder ausfüllen</string>
+    <string name="http_get_params_not_valid">HTTP Get Params ist nicht gültig.</string>
+    <string name="data_string_not_valid">DataString oder HTTP Get Params ist nicht gültig.</string>
     <string name="testings_started">Test gestartet</string>
     <string name="update">Update</string>
     <string name="test_failed">Test fehlgeschlagen</string>

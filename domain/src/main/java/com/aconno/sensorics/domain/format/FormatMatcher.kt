@@ -6,7 +6,7 @@ class FormatMatcher(
 
     fun matches(rawData: List<Byte>): Boolean {
         supportedFormats.forEach {
-            if (matches(rawData, it.getRequiredFormat())) {
+            if (matches(isolateMsd(rawData), it.getRequiredFormat())) {
                 return true
             }
         }
@@ -15,7 +15,7 @@ class FormatMatcher(
 
     fun findFormat(rawData: List<Byte>): AdvertisementFormat? {
         supportedFormats.forEach {
-            if (matches(rawData, it.getRequiredFormat())) {
+            if (matches(isolateMsd(rawData), it.getRequiredFormat())) {
                 return it
             }
         }
@@ -29,6 +29,24 @@ class FormatMatcher(
             }
         }
         return true
+    }
+
+    private fun isolateMsd(rawData: List<Byte>): List<Byte> {
+        var length: Byte = 0
+        var type: Byte? = null
+        rawData.forEachIndexed { i, byte ->
+            if(length == 0x00.toByte()) {
+                length = byte
+                type = null
+            } else {
+                if(type == null) type = byte
+                else {
+                    if(type==0xFF.toByte()) return rawData.toByteArray().copyOfRange(i, i+length).toList()
+                }
+                length--
+            }
+        }
+        return rawData
     }
 
     fun getReadingTypes(formatName: String): List<String> {

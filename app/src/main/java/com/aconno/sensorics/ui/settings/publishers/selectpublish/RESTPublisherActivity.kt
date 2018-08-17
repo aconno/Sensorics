@@ -5,17 +5,20 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
+import android.widget.TextView
 import android.widget.Toast
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.R
 import com.aconno.sensorics.dagger.restpublisher.DaggerRESTPublisherComponent
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherComponent
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherModule
-import com.aconno.sensorics.data.converter.PublisherIntervalConverter
+import com.aconno.sensorics.data.converter.DataStringConverter
+import com.aconno.sensorics.PublisherIntervalConverter
 import com.aconno.sensorics.data.publisher.RESTPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
@@ -30,6 +33,7 @@ import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.sensorics.ui.settings.publishers.rheader.RESTHeadersActivity
 import com.aconno.sensorics.ui.settings.publishers.rhttpgetparams.RESTHttpGetParamsActivity
 import com.aconno.sensorics.viewmodel.RestPublisherViewModel
+import com.google.gson.Gson
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -165,16 +169,7 @@ class RESTPublisherActivity : BaseActivity() {
 
     private fun initViews() {
         btn_info.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-
-            builder.setTitle(R.string.publisher_info_title)
-                .setMessage(R.string.publisher_info_text)
-                .setNeutralButton(
-                    R.string.close
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+            createAndShowInfoDialog()
         }
 
         spinner_methods.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -208,6 +203,24 @@ class RESTPublisherActivity : BaseActivity() {
         updateHttpGetParamText()
     }
 
+    private fun createAndShowInfoDialog() {
+        val view = View.inflate(this, R.layout.dialog_alert, null)
+        val textView = view.findViewById<TextView>(R.id.message)
+        textView.movementMethod = LinkMovementMethod.getInstance()
+        textView.setText(R.string.publisher_info_text)
+
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(R.string.publisher_info_title)
+            .setView(view)
+            .setNeutralButton(
+                R.string.close
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
     private fun setFields() {
         edit_name.setText(restPublishModel?.name)
         spinner_interval_time.setSelection(
@@ -218,6 +231,7 @@ class RESTPublisherActivity : BaseActivity() {
 
         edit_interval_count.setText(
             PublisherIntervalConverter.calculateCountFromMillis(
+                this,
                 restPublishModel!!.timeMillis,
                 restPublishModel!!.timeType
             )
@@ -365,24 +379,51 @@ class RESTPublisherActivity : BaseActivity() {
         val method = spinner_methods.selectedItem.toString()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
-        val datastring = edit_datastring.text.toString()
-
+        val dataString = edit_datastring.text.toString()
         if (restPublisherViewModel.checkFieldsAreEmpty(
                 name,
                 url,
                 method,
                 timeType,
-                timeCount,
-                datastring
+                timeCount
             )
-            || (method == "GET" && restHeaderList.isEmpty())
         ) {
             Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT).show()
             return null
+        } else {
+            val isNotOk = if (method == "GET") {
+                restHttpGetParamList.isEmpty()
+            } else {
+                dataString.isBlank()
+            }
+
+            if (isNotOk) {
+                Toast.makeText(this, getString(R.string.please_fill_blanks), Toast.LENGTH_SHORT)
+                    .show()
+                return null
+            } else if (!isDataStringValid()) {
+                if (method == "GET") {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.http_get_params_not_valid),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.data_string_not_valid),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+
+                return null
+            }
         }
 
         val id = if (restPublishModel == null) 0 else restPublishModel!!.id
-        val timeMillis = PublisherIntervalConverter.calculateMillis(timeCount, timeType)
+        val timeMillis = PublisherIntervalConverter.calculateMillis(this, timeCount, timeType)
         val lastTimeMillis = if (restPublishModel == null) 0 else restPublishModel!!.lastTimeMillis
         return RESTPublishModel(
             id,
@@ -393,7 +434,7 @@ class RESTPublisherActivity : BaseActivity() {
             timeType,
             timeMillis,
             lastTimeMillis,
-            datastring
+            dataString
         )
     }
 
@@ -414,10 +455,25 @@ class RESTPublisherActivity : BaseActivity() {
         }
     }
 
+    private fun isDataStringValid(): Boolean {
+        val converter = DataStringConverter()
+
+        return if (restPublishModel?.method == "GET") {
+
+            val json1 = Gson().toJson(restHttpGetParamList)
+            converter.parseAndValidateDataString(json1)
+
+        } else {
+            val dataString = edit_datastring.text.toString()
+
+            converter.parseAndValidateDataString(dataString)
+        }
+    }
+
     private fun testRESTConnection(toRESTPublishModel: RESTPublishModel) {
         val publisher = RESTPublisher(
             RESTPublishModelDataMapper().transform(toRESTPublishModel),
-            listOf(Device("TestDevice","Name", "Mac")),
+            listOf(Device("TestDevice", "Name", "Mac")),
             RESTHeaderModelMapper().toRESTHeaderList(restHeaderList),
             RESTHttpGetParamModelMapper().toRESTHttpGetParamList(restHttpGetParamList)
         )

@@ -68,12 +68,15 @@ class MqttPublisher(
                 && listDevices.contains(device)
     }
 
-    override fun publish(reading: Reading) {
-        val messages = dataStringConverter.convert(reading) ?: return
-        for (message in messages) {
-            Timber.tag("Publisher Mqtt ")
-                .d("${mqttPublish.name} publishes from ${reading.device}")
-            publish(message)
+    override fun publish(readings: List<Reading>) {
+        if (readings.isNotEmpty()) {
+            Timber.d("size is ${readings.size}")
+            val messages = dataStringConverter.convert(readings)
+            for (message in messages) {
+                Timber.tag("Publisher Mqtt ")
+                    .d("${mqttPublish.name} publishes from ${readings[0].device}")
+                publish(message)
+            }
         }
     }
 

@@ -97,14 +97,25 @@ class GoogleCloudPublisher(
                 && listDevices.contains(device)
     }
 
-    override fun publish(reading: Reading) {
-        val messages = dataStringConverter.convert(reading) ?: return
-        for (message in messages) {
-            Timber.tag("Publisher Google")
-                .d("${googlePublish.name} publishes from ${reading.device}")
-            publish(message)
+    override fun publish(readings: List<Reading>) {
+        if (readings.isNotEmpty()) {
+            val messages = dataStringConverter.convert(readings)
+            for (message in messages) {
+                Timber.tag("Publisher Google Cloud ")
+                    .d("${googlePublish.name} publishes from ${readings[0].device}")
+                publish(message)
+            }
         }
     }
+
+//    override fun publish(reading: Reading) {
+//        val messages = dataStringConverter.convert(reading) ?: return
+//        for (message in messages) {
+//            Timber.tag("Publisher Google")
+//                .d("${googlePublish.name} publishes from ${reading.device}")
+//            publish(message)
+//        }
+//    }
 
     private fun publish(message: String) {
         if (mqttAndroidClient.isConnected) {
