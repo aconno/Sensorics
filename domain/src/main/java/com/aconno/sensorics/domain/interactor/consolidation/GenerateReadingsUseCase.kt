@@ -1,7 +1,6 @@
 package com.aconno.sensorics.domain.interactor.consolidation
 
 import com.aconno.sensorics.domain.format.AdvertisementFormat
-import com.aconno.sensorics.domain.format.Connection
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.sensorics.domain.model.Device
@@ -17,6 +16,7 @@ class GenerateReadingsUseCase(
 
     override fun execute(parameter: ScanResult): Single<List<Reading>> {
         val sensorReadings = mutableListOf<Reading>()
+        val msd = isolateMsd(parameter.rawData)
         val format = formatMatcher.findFormat(parameter.rawData)
                 ?: throw IllegalArgumentException("No format for scan result: $parameter")
         format.getFormat().forEach { name, byteFormat ->
@@ -27,7 +27,7 @@ class GenerateReadingsUseCase(
                         parameter.timestamp,
                         device,
                         deserializer.deserializeNumber(
-                            parameter.rawData,
+                            msd,
                             byteFormat
                         ).toFloat() * 0.00014,
                         name
@@ -41,10 +41,10 @@ class GenerateReadingsUseCase(
                             parameter.timestamp,
                             device,
                             deserializer.deserializeNumber(
-                                parameter.rawData,
+                                msd,
                                 byteFormat
                             ).toFloat() * deserializer.deserializeNumber(
-                                parameter.rawData,
+                                msd,
                                 scaleFactorFormat
                             ).toFloat() / 65536,
                             name
@@ -57,7 +57,7 @@ class GenerateReadingsUseCase(
                         parameter.timestamp,
                         device,
                         deserializer.deserializeNumber(
-                            parameter.rawData,
+                            msd,
                             byteFormat
                         ).toFloat() * 245 / 32768,
                         name
@@ -68,7 +68,7 @@ class GenerateReadingsUseCase(
                     val reading = Reading(
                         parameter.timestamp,
                         device,
-                        deserializer.deserializeNumber(parameter.rawData, byteFormat),
+                        deserializer.deserializeNumber(msd, byteFormat),
                         name
                     )
                     sensorReadings.add(reading)
@@ -76,6 +76,24 @@ class GenerateReadingsUseCase(
             }
         }
         return Single.just(sensorReadings)
+    }
+
+    private fun isolateMsd(rawData: List<Byte>): List<Byte> {
+        var length: Byte = 0
+        var type: Byte? = null
+        rawData.forEachIndexed { i, byte ->
+            if(length == 0x00.toByte()) {
+                length = byte
+                type = null
+            } else {
+                if(type == null) type = byte
+                else {
+                    if(type==0xFF.toByte()) return rawData.toByteArray().copyOfRange(i, i+length).toList()
+                }
+                length--
+            }
+        }
+        return rawData
     }
 
     private fun generateDevice(
