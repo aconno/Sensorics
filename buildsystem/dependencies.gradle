@@ -7,8 +7,8 @@ allprojects {
 
 ext {
     //App
-    sensoricsVersionCode = 14
-    sensoricsVersionName = '4.0.2'
+    sensoricsVersionCode = 15
+    sensoricsVersionName = '4.1'
 
     //Android
     androidBuildToolsVersion = "27.0.3"
@@ -46,7 +46,7 @@ ext {
     testRunnerVersion = '1.0.2'
 
     //Development
-    leakCanaryVersion = '1.5.4'
+    leakCanaryVersion = '1.6.1'
 
     presentationDependencies = [
             kotlin        : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version",
@@ -67,8 +67,9 @@ ext {
             roomCompile   : "android.arch.persistence.room:compiler:$androidArchVersion",
             roomRxJava2   : "android.arch.persistence.room:rxjava2:$androidArchVersion",
             flexbox       : "com.google.android:flexbox:$flexBoxVersion",
-            gson          : "com.google.code.gson:gson:$gsonVersion",
-            crashlytics   : "com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion"
+            crashlytics   : "com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion",
+            gson          : "com.google.code.gson:gson:$gsonVersion"
+
     ]
 
     presentationTestDependencies = [
@@ -106,7 +107,9 @@ ext {
             okHttp          : "com.squareup.okhttp3:okhttp:$okHttpVersion",
             okHttpLoggingInt: "com.squareup.okhttp3:logging-interceptor:$okHttpLogginInterceptorVersion",
             javaxInject     : "javax.inject:javax.inject:$javaxInjectVersion",
-            javaxAnnotation : "javax.annotation:jsr250-api:$javaxAnnotationVersion"
+            javaxAnnotation : "javax.annotation:jsr250-api:$javaxAnnotationVersion",
+            gson            : "com.google.code.gson:gson:$gsonVersion"
+
     ]
 
     dataTestDependencies = [
@@ -123,7 +126,9 @@ ext {
             kotlin     : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version",
             appCompatv7: "com.android.support:appcompat-v7:$supportLibraryVersion",
             rxkotlin   : "io.reactivex.rxjava2:rxkotlin:$rxkotlinVersion",
-            timber     : "com.jakewharton.timber:timber:$timberVersion"
+            timber     : "com.jakewharton.timber:timber:$timberVersion",
+            javaxInject     : "javax.inject:javax.inject:$javaxInjectVersion",
+            javaxAnnotation : "javax.annotation:jsr250-api:$javaxAnnotationVersion"
     ]
 
     deviceTestDependencies = [

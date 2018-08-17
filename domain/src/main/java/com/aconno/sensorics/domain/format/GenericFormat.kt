@@ -4,7 +4,10 @@ data class GenericFormat(
     private val formatName: String,
     private val icon: String,
     private val format: List<ByteFormat>,
-    private val requiredFormat: List<ByteFormatRequired>
+    private val requiredFormat: List<ByteFormatRequired>,
+    private val connectible: Boolean,
+    private val connectionWrite: List<ConnectionWrite>?,
+    private val connectionRead: List<ConnectionRead>?
 ) : AdvertisementFormat {
 
     override fun getName(): String {
@@ -27,5 +30,17 @@ data class GenericFormat(
 
     override fun getRequiredFormat(): List<ByteFormatRequired> {
         return requiredFormat
+    }
+
+    override fun isConnectible(): Boolean {
+        return connectible
+    }
+
+    override fun getConnectionWriteList(): List<ConnectionWrite>? {
+        return connectionWrite
+    }
+
+    override fun getConnectionReadList(): List<ConnectionRead>? {
+        return connectionRead
     }
 }

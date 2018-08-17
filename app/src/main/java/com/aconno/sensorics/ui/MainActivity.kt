@@ -19,6 +19,7 @@ import com.aconno.sensorics.domain.model.ScanEvent
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
+import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
                 Snackbar.make(content_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
 
-        snackbar?.setActionTextColor(resources.getColor(R.color.primaryColor))
+        snackbar?.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
 
         toolbar.title = getString(R.string.app_name)
         setSupportActionBar(toolbar)
@@ -179,6 +180,31 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
             )
             .addToBackStack(null)
             .commit()
+    }
+
+    fun connect(device: Device) {
+        bluetoothScanningViewModel.stopScanning()
+        mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
+
+        supportFragmentManager.beginTransaction()
+            .replace(
+                content_container.id,
+                getConnectableFragment(device)
+            )
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun getConnectableFragment(device: Device): Fragment {
+        return when (device.name) {
+            "ACN Freight" -> AcnFreightFragment.newInstance(
+                device
+            )
+            else -> {
+                throw IllegalArgumentException()
+            }
+        }
+
     }
 
     private fun getReadingListFragment(device: Device): Fragment {

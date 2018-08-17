@@ -19,20 +19,20 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
         val index = devices.indexOf(scanDevice)
         if (index == -1) {
             devices.add(scanDevice)
-            notifyDataSetChanged()
+            notifyItemInserted(devices.size - 1)
         } else {
             devices[index] = scanDevice
-            notifyDataSetChanged()
+            notifyItemChanged(index)
         }
     }
 
-    fun deleteDevice(device: ScanDevice) {
-        val index = devices.indexOf(device)
-        devices.remove(device)
+    fun removeScanDevice(scanDevice: ScanDevice) {
+        val index = devices.indexOf(scanDevice)
+        devices.removeAt(index)
         notifyItemRemoved(index)
     }
 
-    fun getClickedDevices(): Observable<ScanDevice> {
+    fun getClickedDeviceStream(): Observable<ScanDevice> {
         return clickedDeviceStream
     }
 

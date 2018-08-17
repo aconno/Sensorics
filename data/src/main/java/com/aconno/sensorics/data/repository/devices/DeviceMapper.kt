@@ -12,7 +12,8 @@ class DeviceMapper @Inject constructor() {
             deviceEntity.name,
             deviceEntity.alias,
             deviceEntity.macAddress,
-            deviceEntity.icon
+            deviceEntity.icon,
+            deviceEntity.connectable
         )
     }
 
@@ -29,7 +30,9 @@ class DeviceMapper @Inject constructor() {
             device.name,
             device.alias,
             device.macAddress,
-            device.icon
+            device.icon,
+            device.connectable
+
         )
     }
 }
