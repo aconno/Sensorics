@@ -8,7 +8,7 @@ allprojects {
 ext {
     //App
     sensoricsVersionCode = 15
-    sensoricsVersionName = '4.0.3'
+    sensoricsVersionName = '4.1'
 
     //Android
     androidBuildToolsVersion = "27.0.3"
@@ -46,7 +46,7 @@ ext {
     testRunnerVersion = '1.0.2'
 
     //Development
-    leakCanaryVersion = '1.5.4'
+    leakCanaryVersion = '1.6.1'
 
     presentationDependencies = [
             kotlin        : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version",
@@ -126,7 +126,9 @@ ext {
             kotlin     : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version",
             appCompatv7: "com.android.support:appcompat-v7:$supportLibraryVersion",
             rxkotlin   : "io.reactivex.rxjava2:rxkotlin:$rxkotlinVersion",
-            timber     : "com.jakewharton.timber:timber:$timberVersion"
+            timber     : "com.jakewharton.timber:timber:$timberVersion",
+            javaxInject     : "javax.inject:javax.inject:$javaxInjectVersion",
+            javaxAnnotation : "javax.annotation:jsr250-api:$javaxAnnotationVersion"
     ]
 
     deviceTestDependencies = [

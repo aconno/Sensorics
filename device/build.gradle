@@ -33,7 +33,6 @@ dependencies {
     implementation project(':domain')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-
     def deviceDependencies = rootProject.ext.deviceDependencies
     def testDependencies = rootProject.ext.deviceTestDependencies
 
@@ -41,6 +40,8 @@ dependencies {
     implementation deviceDependencies.appCompatv7
     implementation deviceDependencies.rxkotlin
     implementation deviceDependencies.timber
+    implementation deviceDependencies.javaxInject
+    compileOnly deviceDependencies.javaxAnnotation
 
     testImplementation testDependencies.kotlinJUnit
     testImplementation testDependencies.junit
