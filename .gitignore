@@ -41,6 +41,7 @@ captures/
 .idea/libraries
 .idea/caches/build_file_checksums.ser
 .idea/assetWizardSettings.xml
+.idea/mainframer.xml
 
 # Keystore files
 *.jks
@@ -65,4 +66,5 @@ Thumbs.db
 # Prod apk destination
 app/prod/
 
-
+mainframer
+/.mainframer
