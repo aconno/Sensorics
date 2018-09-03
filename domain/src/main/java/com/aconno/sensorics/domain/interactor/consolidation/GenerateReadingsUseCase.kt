@@ -18,23 +18,23 @@ class GenerateReadingsUseCase(
         val sensorReadings = mutableListOf<Reading>()
         val msd = isolateMsd(parameter.rawData)
         val format = formatMatcher.findFormat(parameter.rawData)
-                ?: throw IllegalArgumentException("No format for scan result: $parameter")
-        format.getFormat().forEach { name, byteFormat ->
+            ?: throw IllegalArgumentException("No format for scan result: $parameter")
+        format.getFormat().forEach { entry ->
             val device = generateDevice(format, parameter)
             when {
-                name.startsWith("Magnetometer") -> {
+                entry.key.startsWith("Magnetometer") -> {
                     val reading = Reading(
                         parameter.timestamp,
                         device,
                         deserializer.deserializeNumber(
                             msd,
-                            byteFormat
+                            entry.value
                         ).toFloat() * 0.00014,
-                        name
+                        entry.key
                     )
                     sensorReadings.add(reading)
                 }
-                name.startsWith("Accelerometer") -> {
+                entry.key.startsWith("Accelerometer") -> {
                     val scaleFactorFormat = format.getFormat()["Accelerometer Scale Factor"]
                     scaleFactorFormat?.let {
                         val reading = Reading(
@@ -42,25 +42,25 @@ class GenerateReadingsUseCase(
                             device,
                             deserializer.deserializeNumber(
                                 msd,
-                                byteFormat
+                                entry.value
                             ).toFloat() * deserializer.deserializeNumber(
                                 msd,
                                 scaleFactorFormat
                             ).toFloat() / 65536,
-                            name
+                            entry.key
                         )
                         sensorReadings.add(reading)
                     }
                 }
-                name.startsWith("Gyroscope") -> {
+                entry.key.startsWith("Gyroscope") -> {
                     val reading = Reading(
                         parameter.timestamp,
                         device,
                         deserializer.deserializeNumber(
                             msd,
-                            byteFormat
+                            entry.value
                         ).toFloat() * 245 / 32768,
-                        name
+                        entry.key
                     )
                     sensorReadings.add(reading)
                 }
@@ -68,8 +68,8 @@ class GenerateReadingsUseCase(
                     val reading = Reading(
                         parameter.timestamp,
                         device,
-                        deserializer.deserializeNumber(msd, byteFormat),
-                        name
+                        deserializer.deserializeNumber(msd, entry.value),
+                        entry.key
                     )
                     sensorReadings.add(reading)
                 }
@@ -82,13 +82,14 @@ class GenerateReadingsUseCase(
         var length: Byte = 0
         var type: Byte? = null
         rawData.forEachIndexed { i, byte ->
-            if(length == 0x00.toByte()) {
+            if (length == 0x00.toByte()) {
                 length = byte
                 type = null
             } else {
-                if(type == null) type = byte
+                if (type == null) type = byte
                 else {
-                    if(type==0xFF.toByte()) return rawData.toByteArray().copyOfRange(i, i+length).toList()
+                    if (type == 0xFF.toByte()) return rawData.toByteArray()
+                        .copyOfRange(i, i + length).toList()
                 }
                 length--
             }
