@@ -2,18 +2,15 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    def globalConfiguration = rootProject.extensions.getByName("ext")
-
-    compileSdkVersion globalConfiguration["androidCompileSdkVersion"]
-    buildToolsVersion globalConfiguration["androidBuildToolsVersion"]
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tools_version
 
     defaultConfig {
-        minSdkVersion globalConfiguration["androidMinSdkVersion"]
-        targetSdkVersion globalConfiguration["androidTargetSdkVersion"]
-        versionCode globalConfiguration["sensoricsVersionCode"]
-        versionName globalConfiguration["sensoricsVersionName"]
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
+        versionCode sensorics_version_code
+        versionName sensorics_version_name
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -22,7 +19,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 repositories {
@@ -31,24 +27,26 @@ repositories {
 
 dependencies {
     implementation project(':domain')
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    def deviceDependencies = rootProject.ext.deviceDependencies
-    def testDependencies = rootProject.ext.deviceTestDependencies
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    implementation deviceDependencies.kotlin
-    implementation deviceDependencies.appCompatv7
-    implementation deviceDependencies.rxkotlin
-    implementation deviceDependencies.timber
-    implementation deviceDependencies.javaxInject
-    compileOnly deviceDependencies.javaxAnnotation
+    implementation "com.android.support:appcompat-v7:$support_library_version"
 
-    testImplementation testDependencies.kotlinJUnit
-    testImplementation testDependencies.junit
+    implementation "io.reactivex.rxjava2:rxkotlin:$rx_kotlin_version"
 
-    androidTestImplementation testDependencies.espresso
-    androidTestImplementation testDependencies.testingSupportLib
-    androidTestImplementation testDependencies.testRunner
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
+    compileOnly "javax.annotation:jsr250-api:$javax_annotation_version"
+    implementation "javax.inject:javax.inject:$javax_inject_version"
+
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_version"
+    androidTestImplementation "com.android.support.test:runner:$test_runner_version"
+    androidTestImplementation "com.android.support.test:testing-support-lib:$testing_support_library_version"
 }
 
 apply plugin: 'kotlin-android-extensions'

@@ -1,9 +1,6 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply from: 'buildsystem/dependencies.gradle'
-
 buildscript {
 
-    ext.kotlin_version = '1.2.60'
+    ext.kotlin_version = '1.2.61'
 
     repositories {
         google()
@@ -18,6 +15,13 @@ buildscript {
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
     }
 }
 
@@ -40,4 +44,37 @@ task runAcceptanceTests(dependsOn: [':presentation:connectedAndroidTest']) {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    sensorics_version_code = 16
+    sensorics_version_name = '4.1.0'
+
+    build_tools_version = '27.0.3'
+
+    compile_sdk_version = 27
+    min_sdk_version = 21
+    target_sdk_version = 27
+
+    support_library_version = '27.1.1'
+
+    timber_version = '4.7.1'
+
+    android_arch_version = '1.1.1'
+
+    rx_android_version = '2.0.2'
+    rx_kotlin_version = '2.2.0'
+
+    gson_version = '2.8.5'
+
+    junit_version = '4.12'
+
+    espresso_version = '3.0.2'
+    mockito_inline_version = '2.8.9'
+
+    test_runner_version = '1.0.2'
+    testing_support_library_version = '0.1'
+
+    javax_annotation_version = '1.0'
+    javax_inject_version = '1'
 }
