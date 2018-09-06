@@ -4,7 +4,7 @@ import android.support.v4.app.DialogFragment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-abstract class DisposeFragment : DialogFragment() {
+abstract class DisposerDialogFragment : DialogFragment() {
 
     private val compositeDisposable = CompositeDisposable()
 
