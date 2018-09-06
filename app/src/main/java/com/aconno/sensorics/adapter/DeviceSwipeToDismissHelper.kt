@@ -38,7 +38,7 @@ class DeviceSwipeToDismissHelper(
         )
     }
 
-    override fun clearView(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder) {
+    override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         val foregroundView = (viewHolder as DeviceActiveAdapter.ViewHolder).viewForeground
         ItemTouchHelper.Callback.getDefaultUIUtil().clearView(foregroundView)
     }

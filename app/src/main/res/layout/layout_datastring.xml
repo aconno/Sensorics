@@ -14,7 +14,7 @@
         android:layout_gravity="top|end"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="7dp"
-        android:background="?attr/selectableItemBackground"
+        android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/contentDescriptionUseless"
         android:src="@drawable/ic_info_black" />
 
@@ -66,7 +66,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="30dp"
-            android:background="?attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackground"
             android:drawableEnd="@drawable/ic_navigate_next_black"
             android:gravity="center"
             android:textSize="16sp"

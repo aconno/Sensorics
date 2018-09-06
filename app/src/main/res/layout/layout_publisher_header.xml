@@ -72,7 +72,7 @@
             android:layout_marginTop="12dp"
             android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceMediumInverse"
-            android:textColor="?attr/editTextColor"
+            android:textColor="?android:attr/editTextColor"
             android:textSize="14sp"
             tools:text="Last data sent time : " />
     </LinearLayout>

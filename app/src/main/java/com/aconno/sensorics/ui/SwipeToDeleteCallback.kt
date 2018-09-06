@@ -23,16 +23,16 @@ abstract class SwipeToDeleteCallback(
     private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
 
     override fun onMove(
-        recyclerView: RecyclerView?,
-        viewHolder: RecyclerView.ViewHolder?,
-        target: RecyclerView.ViewHolder?
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
     ): Boolean {
         return false
     }
 
     override fun onChildDraw(
-        c: Canvas?,
-        recyclerView: RecyclerView?,
+        c: Canvas,
+        recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
         dX: Float,
         dY: Float,

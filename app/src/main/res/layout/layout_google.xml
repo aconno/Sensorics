@@ -92,10 +92,10 @@
         android:layout_marginBottom="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:background="?attr/editTextBackground"
+        android:background="?android:attr/editTextBackground"
         android:gravity="center_vertical"
         android:hint="@string/private_key_click"
         android:textAppearance="?android:attr/textAppearanceMediumInverse"
-        android:textColor="?attr/editTextColor"
+        android:textColor="?android:attr/editTextColor"
         tools:text="Your text" />
 </LinearLayout>

@@ -5,15 +5,15 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tools_version
     defaultConfig {
         applicationId "com.aconno.sensorics"
         manifestPlaceholders = [fabricAPIKey: sensorics_fabricKey]
-        minSdkVersion 21
-        targetSdkVersion 27
-        versionCode 16
-        versionName "4.1.0"
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
+        versionCode sensorics_version_code
+        versionName sensorics_version_name
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         flavorDimensions "version"

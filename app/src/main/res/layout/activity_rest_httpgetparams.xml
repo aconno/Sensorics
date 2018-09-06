@@ -15,7 +15,7 @@
             android:id="@+id/toolbar"
             style="@style/Toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
             tools:title="Title" />
 
         <android.support.v7.widget.RecyclerView
