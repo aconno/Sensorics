@@ -18,8 +18,10 @@ class GenerateReadingsUseCase(
         val sensorReadings = mutableListOf<Reading>()
         val msd = isolateMsd(parameter.rawData)
         val format = formatMatcher.findFormat(parameter.rawData)
-                ?: throw IllegalArgumentException("No format for scan result: $parameter")
-        format.getFormat().forEach { name, byteFormat ->
+            ?: throw IllegalArgumentException("No format for scan result: $parameter")
+        format.getFormat().forEach {
+            val name = it.key
+            val byteFormat = it.value
             val device = generateDevice(format, parameter)
             when {
                 name.startsWith("Magnetometer") -> {
@@ -82,13 +84,14 @@ class GenerateReadingsUseCase(
         var length: Byte = 0
         var type: Byte? = null
         rawData.forEachIndexed { i, byte ->
-            if(length == 0x00.toByte()) {
+            if (length == 0x00.toByte()) {
                 length = byte
                 type = null
             } else {
-                if(type == null) type = byte
+                if (type == null) type = byte
                 else {
-                    if(type==0xFF.toByte()) return rawData.toByteArray().copyOfRange(i, i+length).toList()
+                    if (type == 0xFF.toByte()) return rawData.toByteArray()
+                        .copyOfRange(i, i + length).toList()
                 }
                 length--
             }

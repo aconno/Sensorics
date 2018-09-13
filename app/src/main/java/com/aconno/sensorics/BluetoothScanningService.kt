@@ -41,6 +41,7 @@ import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function4
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -167,7 +168,7 @@ class BluetoothScanningService : Service() {
             startSyncing()
             handleInputsForActions()
         }
-        return START_STICKY
+        return START_REDELIVER_INTENT
     }
 
     private fun startSyncing() {
