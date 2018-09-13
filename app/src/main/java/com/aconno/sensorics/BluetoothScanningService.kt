@@ -142,9 +142,10 @@ class BluetoothScanningService : Service() {
 
         startForeground(1, notification)
 
-        val filterByDevice = intent!!.getBooleanExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, true)
+        val filterByDevice =
+            intent?.getBooleanExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, false) ?: false
 
-        if (filterByDevice) {
+        if (filterByDevice && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //send values only while scanning with device filter
             initPublishers()
 
