@@ -6,6 +6,7 @@ import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import com.aconno.sensorics.R
 import kotlinx.android.synthetic.main.dialog_condition.*
 
@@ -29,7 +30,13 @@ class ConditionDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        removeTitleSpacing()
         return inflater.inflate(R.layout.dialog_condition, container)
+    }
+
+    private fun removeTitleSpacing() {
+        // Required for Lollipop (maybe others too) devices
+        dialog.window.requestFeature(Window.FEATURE_NO_TITLE)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

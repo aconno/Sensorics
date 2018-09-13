@@ -3,11 +3,10 @@ package com.aconno.sensorics.ui.settings.publishers.rhttpgetparams
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.*
+import android.view.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import com.aconno.sensorics.R
 import com.aconno.sensorics.model.RESTHttpGetParamModel
 
@@ -37,6 +36,8 @@ class AddRESTHttpGetParamDialog : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        removeTitleSpacing()
+
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_add_resthttpgetparam, container, false)
 
@@ -76,6 +77,11 @@ class AddRESTHttpGetParamDialog : DialogFragment() {
             this.dismiss()
         }
         return view
+    }
+
+    private fun removeTitleSpacing() {
+        // Required for Lollipop (maybe others too) devices
+        dialog.window.requestFeature(Window.FEATURE_NO_TITLE)
     }
 
     private fun isNotEmpty(vararg array: String): Boolean {
