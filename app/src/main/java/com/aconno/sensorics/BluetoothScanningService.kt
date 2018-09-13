@@ -41,7 +41,6 @@ import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function4
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -143,9 +142,10 @@ class BluetoothScanningService : Service() {
 
         startForeground(1, notification)
 
-        val filterByDevice = intent!!.getBooleanExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, true)
+        val filterByDevice =
+            intent?.getBooleanExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, false) ?: false
 
-        if (filterByDevice) {
+        if (filterByDevice && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //send values only while scanning with device filter
             initPublishers()
 
@@ -168,7 +168,7 @@ class BluetoothScanningService : Service() {
             startSyncing()
             handleInputsForActions()
         }
-        return START_REDELIVER_INTENT
+        return START_STICKY
     }
 
     private fun startSyncing() {
