@@ -25,8 +25,16 @@ class DeviceViewModel(
 
     private val timestamps = hashMapOf<Device, Long>()
 
-    private val deviceStreamDisposable = deviceStream.subscribe {
-        timestamps[it] = System.currentTimeMillis()
+    private val deviceStreamDisposable = deviceStream.subscribe { scannedDevice ->
+        timestamps[scannedDevice] = System.currentTimeMillis()
+        val savedDevices = savedDevicesLiveData.value
+        savedDevices?.forEach {
+            if (scannedDevice == it.device && !it.active) {
+                it.active = true
+                savedDevicesLiveData.postValue(savedDevicesLiveData.value)
+                return@forEach
+            }
+        }
     }
 
     private val intervalDisposable = Observable.interval(10, TimeUnit.SECONDS)
