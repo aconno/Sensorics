@@ -7,8 +7,8 @@ allprojects {
 
 ext {
     //App
-    sensoricsVersionCode = 15
-    sensoricsVersionName = '4.1'
+    sensoricsVersionCode = 17
+    sensoricsVersionName = '4.1.1'
 
     //Android
     androidBuildToolsVersion = "27.0.3"
