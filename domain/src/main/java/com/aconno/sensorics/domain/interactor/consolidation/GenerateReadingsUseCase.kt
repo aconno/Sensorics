@@ -19,22 +19,24 @@ class GenerateReadingsUseCase(
         val msd = isolateMsd(parameter.rawData)
         val format = formatMatcher.findFormat(parameter.rawData)
             ?: throw IllegalArgumentException("No format for scan result: $parameter")
-        format.getFormat().forEach { entry ->
+        format.getFormat().forEach {
+            val name = it.key
+            val byteFormat = it.value
             val device = generateDevice(format, parameter)
             when {
-                entry.key.startsWith("Magnetometer") -> {
+                name.startsWith("Magnetometer") -> {
                     val reading = Reading(
                         parameter.timestamp,
                         device,
                         deserializer.deserializeNumber(
                             msd,
-                            entry.value
+                            byteFormat
                         ).toFloat() * 0.00014,
-                        entry.key
+                        name
                     )
                     sensorReadings.add(reading)
                 }
-                entry.key.startsWith("Accelerometer") -> {
+                name.startsWith("Accelerometer") -> {
                     val scaleFactorFormat = format.getFormat()["Accelerometer Scale Factor"]
                     scaleFactorFormat?.let {
                         val reading = Reading(
@@ -42,25 +44,25 @@ class GenerateReadingsUseCase(
                             device,
                             deserializer.deserializeNumber(
                                 msd,
-                                entry.value
+                                byteFormat
                             ).toFloat() * deserializer.deserializeNumber(
                                 msd,
                                 scaleFactorFormat
                             ).toFloat() / 65536,
-                            entry.key
+                            name
                         )
                         sensorReadings.add(reading)
                     }
                 }
-                entry.key.startsWith("Gyroscope") -> {
+                name.startsWith("Gyroscope") -> {
                     val reading = Reading(
                         parameter.timestamp,
                         device,
                         deserializer.deserializeNumber(
                             msd,
-                            entry.value
+                            byteFormat
                         ).toFloat() * 245 / 32768,
-                        entry.key
+                        name
                     )
                     sensorReadings.add(reading)
                 }
@@ -68,8 +70,8 @@ class GenerateReadingsUseCase(
                     val reading = Reading(
                         parameter.timestamp,
                         device,
-                        deserializer.deserializeNumber(msd, entry.value),
-                        entry.key
+                        deserializer.deserializeNumber(msd, byteFormat),
+                        name
                     )
                     sensorReadings.add(reading)
                 }
