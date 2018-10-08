@@ -121,4 +121,17 @@
     <string name="message_action_device_not_selected">Gerät ist nicht ausgewählt</string>
     <string name="message_action_condition_not_selected">Bedingung ist nicht ausgewählt</string>
     <string name="message_action_outcome_not_selected">Anweisung ist nicht ausgewählt</string>
+    <string name="buzzer">Summer :</string>
+    <string name="red_light">Rot Licht :</string>
+    <string name="green_light">Grünes Licht :</string>
+    <string name="blue_light">Blaues Licht :</string>
+    <string name="device_not_found">GERÄT NICHT GEFUNDEN</string>
+    <string name="connecting">VERBINDEN</string>
+    <string name="connected">VERBUNDEN</string>
+    <string name="discovered">ENTDECKT</string>
+    <string name="disconnected">GETRENNT</string>
+    <string name="error">ERROR</string>
+    <string name="status_txt">Status : %s</string>
+    <string name="connect">VERBINDEN</string>
+    <string name="disconnect">TRENNEN</string>
 </resources>
