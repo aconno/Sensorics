@@ -69,6 +69,10 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
         list_devices.layoutManager = LinearLayoutManager(context)
         list_devices.adapter = adapter
 
+        button_cancel.setOnClickListener {
+            dismiss()
+        }
+
         addDisposable(
             adapter.getClickedDeviceStream()
                 .subscribe {

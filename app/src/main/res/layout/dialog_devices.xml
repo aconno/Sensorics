@@ -1,26 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:minHeight="@dimen/list_item_height"
-    android:minWidth="@dimen/dialog_min_width">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:itemCount="3"
-        tools:listitem="@layout/item_device" />
+    android:minWidth="@dimen/dialog_min_width"
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/text_empty"
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+        android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+        android:gravity="start|center_vertical"
+        android:text="Add nearby devices"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_devices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_scandevice" />
+
+        <TextView
+            android:id="@+id/text_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/list_item_height"
+            android:padding="16dp"
+            android:textColor="@color/primaryTextColor"
+            android:textSize="@dimen/message_text_size"
+            tools:text="@string/message_no_scanned_devices" />
+
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border" />
+
+    <Button
+        android:id="@+id/button_cancel"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:textColor="@color/primaryTextColor"
-        android:textSize="@dimen/message_text_size" />
+        android:layout_gravity="end"
+        android:layout_margin="4dp"
+        android:text="@string/condition_dialog_cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</RelativeLayout>
+</LinearLayout>

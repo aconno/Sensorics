@@ -9,6 +9,8 @@
     <color name="secondaryTextColor">#ffffff</color>
     <color name="secondaryIconColor">#ffffff</color>
 
+    <color name="border">#e3e3e3</color>
+
     <color name="white">#ffffff</color>
     <color name="progress_indicator">#1a09d6</color>
 
