@@ -16,6 +16,7 @@ import com.aconno.sensorics.domain.model.Device
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class ActionDetailsViewModel(
@@ -26,6 +27,8 @@ class ActionDetailsViewModel(
     private val addActionUseCase: AddActionUseCase
 ) : AndroidViewModel(application) {
 
+    private val disposables = CompositeDisposable()
+
     private val actionLiveData = MutableLiveData<ActionViewModel>()
     fun getActionLiveData(): LiveData<ActionViewModel> = actionLiveData
 
@@ -34,19 +37,21 @@ class ActionDetailsViewModel(
     }
 
     fun setActionId(actionId: Long) {
-        getActionByIdUseCase.execute(actionId)
-            .subscribeOn(Schedulers.io())
-            .subscribe { action ->
-                actionLiveData.postValue(
-                    ActionViewModel(
-                        action.id,
-                        action.name,
-                        action.device,
-                        action.condition,
-                        action.outcome
+        disposables.add(
+            getActionByIdUseCase.execute(actionId)
+                .subscribeOn(Schedulers.io())
+                .subscribe { action ->
+                    actionLiveData.postValue(
+                        ActionViewModel(
+                            action.id,
+                            action.name,
+                            action.device,
+                            action.condition,
+                            action.outcome
+                        )
                     )
-                )
-            }
+                }
+        )
     }
 
     fun setDevice(device: Device, name: String, message: String, phoneNumber: String) {
@@ -185,6 +190,11 @@ class ActionDetailsViewModel(
     private fun getCompletableIllegalArgumentError(messageResourceId: Int): Completable {
         val message = getApplication<Application>().getString(messageResourceId)
         return Completable.error(IllegalArgumentException(message))
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.clear()
     }
 
     inner class ActionViewModel(

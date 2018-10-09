@@ -20,6 +20,7 @@ import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.model.Device
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_action_details.*
 import kotlinx.android.synthetic.main.item_chip.view.*
@@ -32,6 +33,8 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
 
     private val deviceSpinnerAdapter = DeviceSpinnerAdapter()
+
+    private val disposables = CompositeDisposable()
 
     private val actionDetailsComponent: ActionDetailsComponent by lazy {
         val sensoricsApplication = application as SensoricsApplication
@@ -68,12 +71,14 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
 
     private fun setDevicesSpinnerAdapter() {
         spinner_devices.adapter = deviceSpinnerAdapter
-        actionDetailsViewModel.getDevices()
-            .subscribe({ devices ->
-                deviceSpinnerAdapter.setDevices(devices)
-            }, {
-                showSnackbarMessage(getString(R.string.message_no_devices))
-            })
+        disposables.add(
+            actionDetailsViewModel.getDevices()
+                .subscribe({ devices ->
+                    deviceSpinnerAdapter.setDevices(devices)
+                }, {
+                    showSnackbarMessage(getString(R.string.message_no_devices))
+                })
+        )
     }
 
     private fun setDevicesSelectListener() {
@@ -244,7 +249,7 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
     }
 
     private fun setSaveButtonListener() {
-        button_save.setOnClickListener {
+        button_save.setOnClickListener { _ ->
             val message = edittext_message.text.toString()
             val phoneNumber = edittext_phone_number.text.toString()
             val name = edittext_name.text.toString()
@@ -257,6 +262,11 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
                     showSnackbarMessage(it.message ?: getString(R.string.message_save_unsuccessful))
                 })
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.clear()
     }
 
     companion object {

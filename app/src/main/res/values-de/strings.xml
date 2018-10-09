@@ -33,8 +33,6 @@
     <string name="condition_dialog_set">Festlegen</string>
     <string name="condition_dialog_cancel">Abbrechen</string>
 
-    <string name="phone_notification">Telefonbenachrichtigung</string>
-    <string name="sms_message">SMS Nachricht</string>
     <string name="vibration">Vibration</string>
 
     <string name="sensor_card_image_content_description">Bild der Sensorkarte</string>

@@ -36,6 +36,7 @@ import com.aconno.sensorics.domain.scanning.Bluetooth
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function4
@@ -127,6 +128,8 @@ class BluetoothScanningService : Service() {
             .build()
     }
 
+    private val disposables = CompositeDisposable()
+
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
@@ -134,7 +137,6 @@ class BluetoothScanningService : Service() {
     override fun onCreate() {
         super.onCreate()
         bluetoothScanningServiceComponent.inject(this)
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -149,17 +151,19 @@ class BluetoothScanningService : Service() {
             //send values only while scanning with device filter
             initPublishers()
 
-            getSavedDevicesMaybeUseCase.execute()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    bluetooth.startScanning(it)
-                    running = true
-                    startRecording()
-                    startLogging()
-                    startSyncing()
-                    handleInputsForActions()
-                }
+            disposables.add(
+                getSavedDevicesMaybeUseCase.execute()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {
+                        bluetooth.startScanning(it)
+                        running = true
+                        startRecording()
+                        startLogging()
+                        startSyncing()
+                        handleInputsForActions()
+                    }
+            )
         } else {
             bluetooth.startScanning()
             running = true
@@ -172,56 +176,61 @@ class BluetoothScanningService : Service() {
     }
 
     private fun startSyncing() {
-        readings.subscribe { readings ->
-            //Send data and update last sent date-time
+        disposables.add(
+            readings.subscribe { readings ->
+                //Send data and update last sent date-time
 
-            publishReadingsUseCase?.let {
-                it.execute(readings)
-                    .subscribeOn(Schedulers.io())
-                    .flatMapIterable { it }
-                    .map {
-                        val data = it.getPublishData()
-                        data.lastTimeMillis = System.currentTimeMillis()
+                publishReadingsUseCase?.let { publishReadingUseCase ->
+                    publishReadingUseCase
+                        .execute(readings)
+                        .subscribeOn(Schedulers.io())
+                        .flatMapIterable { it }
+                        .map {
+                            val data = it.getPublishData()
+                            data.lastTimeMillis = System.currentTimeMillis()
 
-                        when (data) {
-                            is GooglePublish -> {
-                                updateGooglePublishUseCase.execute(data)
-                            }
-                            is RESTPublish -> {
-                                updateRESTPublishUserCase.execute(data)
-                            }
-                            is MqttPublish -> {
-                                updateMqttPublishUseCase.execute(data)
-                            }
-                            else -> {
-                                throw IllegalArgumentException("Illegal data provided.")
+                            when (data) {
+                                is GooglePublish -> {
+                                    updateGooglePublishUseCase.execute(data)
+                                }
+                                is RESTPublish -> {
+                                    updateRESTPublishUserCase.execute(data)
+                                }
+                                is MqttPublish -> {
+                                    updateMqttPublishUseCase.execute(data)
+                                }
+                                else -> {
+                                    throw IllegalArgumentException("Illegal data provided.")
+                                }
                             }
                         }
-                    }
-                    .subscribe {
-                        it.subscribeOn(Schedulers.io()).subscribe()
-                    }
+                        .subscribe {
+                            it.subscribeOn(Schedulers.io()).subscribe()
+                        }
+                }
             }
-        }
+        )
     }
 
     private fun handleInputsForActions() {
-        readings
-            .concatMap { readingToInputUseCase.execute(it).toFlowable() }
-            .flatMapIterable { it }
-            .concatMap {
-                inputToOutcomesUseCase.execute(it)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .toFlowable()
-            }
-            .flatMapIterable { it }
-            .subscribe {
-                runOutcomeUseCase.execute(it)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe()
-            }
+        disposables.add(
+            readings
+                .concatMap { readingToInputUseCase.execute(it).toFlowable() }
+                .flatMapIterable { it }
+                .concatMap {
+                    inputToOutcomesUseCase.execute(it)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .toFlowable()
+                }
+                .flatMapIterable { it }
+                .subscribe {
+                    runOutcomeUseCase.execute(it)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe()
+                }
+        )
     }
 
     fun stopScanning() {
@@ -248,34 +257,37 @@ class BluetoothScanningService : Service() {
     }
 
     private fun startLogging() {
-        readings.subscribe {
-            logReadingsUseCase.execute(it)
-        }
+        disposables.add(
+            readings.subscribe {
+                logReadingsUseCase.execute(it)
+            }
+        )
     }
 
     private fun initPublishers() {
-        Observable.merge(
-            getGooglePublisherObservable(),
-            getRestPublisherObservable(),
-            getMqttPublisherObservable()
-        )
-            .toList()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                Consumer {
-                    publishers = if (it.size < 1) {
-                        null
-                    } else {
-                        it
-                    }
-
-                    if (publishers != null) {
-                        publishReadingsUseCase = PublishReadingsUseCase(publishers!!)
-                        closeConnectionUseCase = CloseConnectionUseCase(publishers!!)
-                    }
-                }
+        disposables.add(
+            Observable.merge(
+                getGooglePublisherObservable(),
+                getRestPublisherObservable(),
+                getMqttPublisherObservable()
             )
+                .toList()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    Consumer {
+                        publishers = if (it.size < 1) {
+                            null
+                        } else {
+                            it
+                        }
 
+                        if (publishers != null) {
+                            publishReadingsUseCase = PublishReadingsUseCase(publishers!!)
+                            closeConnectionUseCase = CloseConnectionUseCase(publishers!!)
+                        }
+                    }
+                )
+        )
     }
 
     private fun getGooglePublisherObservable(): Observable<Publisher> {
@@ -340,6 +352,11 @@ class BluetoothScanningService : Service() {
                     it.second
                 ) as Publisher
             }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.clear()
     }
 
     companion object {

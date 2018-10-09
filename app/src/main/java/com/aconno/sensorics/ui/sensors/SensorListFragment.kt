@@ -189,7 +189,7 @@ class SensorListFragment : Fragment() {
     }
 
     private fun displaySensorValues(values: Map<String, Number>?) {
-        values?.let {
+        values?.let { _ ->
             val temperatureLabel = getString(R.string.temperature)
             val lightLabel = getString(R.string.light)
             val humidityLabel = getString(R.string.humidity)

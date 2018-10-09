@@ -8,9 +8,9 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp">
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="8dp">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/edit_projectid"
@@ -25,9 +25,9 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp">
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/edit_region"
@@ -42,9 +42,9 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp">
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/edit_deviceregistry"
@@ -59,9 +59,9 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp">
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/edit_device"
@@ -76,22 +76,22 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="-5dp"
-        android:layout_marginEnd="13dp"
         android:layout_marginStart="13dp"
         android:layout_marginTop="12dp"
+        android:layout_marginEnd="13dp"
+        android:layout_marginBottom="-5dp"
         android:ems="10"
         android:text="@string/private_key"
         android:textColor="#a6a6a6"
-        android:textSize="10sp" />
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/edit_privatekey"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="32dp"
         android:background="?android:attr/editTextBackground"
         android:gravity="center_vertical"
         android:hint="@string/private_key_click"

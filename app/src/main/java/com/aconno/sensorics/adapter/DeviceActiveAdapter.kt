@@ -73,14 +73,14 @@ class DeviceActiveAdapter(
             view.setOnClickListener { itemClickListener.onItemClick(device) }
             view.btn_connect.visibility = if (device.device.connectable) View.VISIBLE else View.GONE
             view.btn_connect.setOnClickListener { connectClickListener.onItemClick(device) }
-            longItemClickListener?.let {
+            longItemClickListener?.let { _ ->
                 view.setOnLongClickListener {
                     longItemClickListener?.onLongClick(device)
                     true
                 }
             }
 
-            longItemClickListener?.let {
+            longItemClickListener?.let { _ ->
                 view.setOnLongClickListener {
                     longItemClickListener?.onLongClick(device)
                     true

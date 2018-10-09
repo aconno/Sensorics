@@ -23,6 +23,7 @@ import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_action_list.*
 import javax.inject.Inject
@@ -40,6 +41,8 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
 
     @Inject
     lateinit var deleteActionUseCase: DeleteActionUseCase
+
+    private val disposables = CompositeDisposable()
 
     private val actionListComponent: ActionListComponent by lazy {
         val sensoricsApplication: SensoricsApplication? =
@@ -72,8 +75,8 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
             )
         )
 
-        context?.let {
-            val swipeToDeleteCallback = object : SwipeToDeleteCallback(it) {
+        context?.let { context ->
+            val swipeToDeleteCallback = object : SwipeToDeleteCallback(context) {
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
@@ -118,10 +121,17 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
 
     override fun onResume() {
         super.onResume()
-        getAllActionsUseCase.execute()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { actions -> initActionList(actions) }
+        disposables.add(
+            getAllActionsUseCase.execute()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { actions -> initActionList(actions) }
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        disposables.clear()
     }
 
     private fun initActionList(actions: List<Action>) {

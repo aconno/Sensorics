@@ -60,8 +60,6 @@
     <string name="condition_dialog_set">Set</string>
     <string name="condition_dialog_cancel">Cancel</string>
 
-    <string name="phone_notification">Phone Notification</string>
-    <string name="sms_message">SMS Message</string>
     <string name="vibration">Vibration</string>
 
     <string name="sensor_card_image_content_description">Sensor card image</string>

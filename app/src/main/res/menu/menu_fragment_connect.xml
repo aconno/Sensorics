@@ -5,6 +5,6 @@
         android:id="@+id/action_toggle_connect"
         android:checkable="true"
         android:checked="true"
-        android:title="DISCONNECT"
+        android:title="@string/disconnect"
         app:showAsAction="ifRoom" />
 </menu>

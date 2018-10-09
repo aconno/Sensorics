@@ -1,5 +1,6 @@
 package com.aconno.sensorics
 
+import android.annotation.SuppressLint
 import android.app.Application
 import com.aconno.sensorics.dagger.application.AppComponent
 import com.aconno.sensorics.dagger.application.AppModule
@@ -14,6 +15,7 @@ class SensoricsApplication : Application() {
 
     lateinit var appComponent: AppComponent
 
+    @SuppressLint("CheckResult")
     override fun onCreate() {
         super.onCreate()
         if (LeakCanary.isInAnalyzerProcess(this)) {
@@ -28,10 +30,14 @@ class SensoricsApplication : Application() {
         val mapper = AdvertisementFormatMapper()
         val reader = AdvertisementFormatReader()
         reader.readFlowable(this)
-            .subscribe {
+            .subscribe { genericFormats ->
                 appComponent = DaggerAppComponent
                     .builder()
-                    .appModule(AppModule(this, it.map { mapper.toAdvertisementFormat(it) }))
+                    .appModule(
+                        AppModule(
+                            this,
+                            genericFormats.map { mapper.toAdvertisementFormat(it) })
+                    )
                     .build()
             }
     }

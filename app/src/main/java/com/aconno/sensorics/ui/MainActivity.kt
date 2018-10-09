@@ -153,8 +153,9 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     private fun onScanStart() {
-        mainMenu?.let {
-            val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
+        mainMenu?.let { mainMenu ->
+            val menuItem: MenuItem? = mainMenu
+                .findItem(R.id.action_toggle_scan)
             menuItem?.let {
                 it.isChecked = true
                 it.setTitle(getString(R.string.stop_scan))
@@ -163,8 +164,8 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     }
 
     private fun onScanStop() {
-        mainMenu?.let {
-            val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
+        mainMenu?.let { mainMenu ->
+            val menuItem: MenuItem? = mainMenu.findItem(R.id.action_toggle_scan)
             menuItem?.let {
                 it.isChecked = false
                 it.setTitle(getString(R.string.start_scan))

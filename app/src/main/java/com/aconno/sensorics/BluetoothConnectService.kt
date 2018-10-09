@@ -38,10 +38,6 @@ class BluetoothConnectService : Service() {
         return super.onUnbind(intent)
     }
 
-    fun readCharacteristic(serviceUUID: UUID, characteristicUUID: UUID): Boolean {
-        return bluetooth.readCharacteristic(serviceUUID, characteristicUUID)
-    }
-
     fun writeCharacteristic(
         serviceUUID: UUID,
         characteristicUUID: UUID,

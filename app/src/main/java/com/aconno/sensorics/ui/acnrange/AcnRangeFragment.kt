@@ -66,7 +66,7 @@ class AcnRangeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        frame_fragment.setOnClickListener {
+        frame_fragment.setOnClickListener { _ ->
             context?.let { LiveGraphActivity.start(it, macAddress, "Range") }
         }
     }

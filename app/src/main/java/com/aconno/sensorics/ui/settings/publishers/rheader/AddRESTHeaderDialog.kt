@@ -90,8 +90,8 @@ class AddRESTHeaderDialog : DialogFragment() {
     }
 
     private fun isNotEmpty(vararg array: String): Boolean {
-        array.forEach {
-            it.trim().let {
+        array.forEach { item ->
+            item.trim().let {
                 if (it.isBlank()) {
                     return false
                 }
