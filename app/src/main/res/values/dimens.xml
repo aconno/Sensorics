@@ -24,14 +24,18 @@
 
     <!-- Dialog -->
     <dimen name="dialog_min_width">280dp</dimen>
+    <dimen name="dialog_title_height">64dp</dimen>
+    <dimen name="dialog_title_padding_left_right">16dp</dimen>
+    <dimen name="dialog_body_padding_left_right">16dp</dimen>
+    <dimen name="dialog_button_margin">4dp</dimen>
     <dimen name="dialog_padding">24dp</dimen>
     <dimen name="dialog_padding_title_body">20dp</dimen>
     <dimen name="dialog_padding_conditions">4dp</dimen>
     <dimen name="dialog_padding_content">8dp</dimen>
-    <dimen name="dialog_button_margin">8dp</dimen>
     <dimen name="dialog_button_height">36dp</dimen>
 
     <!-- Graph -->
     <dimen name="graph_line_width">1dp</dimen>
     <dimen name="graph_circle_radius">1dp</dimen>
+    <dimen name="border_height">1dp</dimen>
 </resources>

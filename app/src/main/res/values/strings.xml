@@ -188,4 +188,5 @@
     <string name="status_txt">Status : %s</string>
     <string name="connect">CONNECT</string>
     <string name="disconnect">DISCONNECT</string>
+    <string name="dialog_add_nearby_devices_title">Add nearby devices</string>
 </resources>

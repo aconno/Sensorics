@@ -10,16 +10,16 @@
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginStart="@dimen/screen_edge_left_right_margin"
-        android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+        android:layout_height="@dimen/dialog_title_height"
         android:gravity="start|center_vertical"
-        android:text="Add nearby devices"
+        android:paddingStart="@dimen/dialog_title_padding_left_right"
+        android:paddingEnd="@dimen/dialog_title_padding_left_right"
+        android:text="@string/dialog_add_nearby_devices_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/border_height"
         android:background="@color/border" />
 
     <FrameLayout
@@ -35,12 +35,12 @@
 
         <TextView
             android:id="@+id/text_empty"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            android:gravity="start|center_vertical"
             android:minHeight="@dimen/list_item_height"
-            android:padding="16dp"
+            android:padding="@dimen/dialog_body_padding_left_right"
             android:textColor="@color/primaryTextColor"
             android:textSize="@dimen/message_text_size"
             tools:text="@string/message_no_scanned_devices" />
@@ -49,7 +49,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/border_height"
         android:background="@color/border" />
 
     <Button
@@ -58,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_margin="4dp"
+        android:layout_margin="@dimen/dialog_button_margin"
         android:text="@string/condition_dialog_cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
