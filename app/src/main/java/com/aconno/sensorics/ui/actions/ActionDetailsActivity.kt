@@ -19,6 +19,7 @@ import com.aconno.sensorics.dagger.action_details.DaggerActionDetailsComponent
 import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.repository.Settings
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -31,6 +32,9 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
 
     @Inject
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
+
+    @Inject
+    lateinit var settings: Settings
 
     private val deviceSpinnerAdapter = DeviceSpinnerAdapter()
 
@@ -58,7 +62,7 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
 
         observeActionLiveData()
 
-        if (intent.hasExtra(ACTION_ID_EXTRA)) {
+        if (actionExists()) {
             val actionId = intent.getLongExtra(ACTION_ID_EXTRA, 0L)
             actionDetailsViewModel.setActionId(actionId)
         }
@@ -75,9 +79,29 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
             actionDetailsViewModel.getDevices()
                 .subscribe({ devices ->
                     deviceSpinnerAdapter.setDevices(devices)
+                    if (!actionExists()) setDefaultDevice()
                 }, {
                     showSnackbarMessage(getString(R.string.message_no_devices))
                 })
+        )
+    }
+
+    private fun setDefaultDevice() {
+        disposables.add(
+            settings.getLastClickedDeviceMac()
+                .subscribe(
+                    { defaultDeviceMac ->
+                        val defaultPosition =
+                            deviceSpinnerAdapter.getDevices()
+                                .indexOfFirst { it.macAddress == defaultDeviceMac }
+                        if (defaultPosition != -1) {
+                            spinner_devices.setSelection(defaultPosition)
+                        }
+                    },
+                    { throwable ->
+                        Timber.d(throwable)
+                    }
+                )
         )
     }
 
@@ -268,6 +292,8 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
         super.onDestroy()
         disposables.clear()
     }
+
+    private fun actionExists() = intent.hasExtra(ACTION_ID_EXTRA)
 
     companion object {
 

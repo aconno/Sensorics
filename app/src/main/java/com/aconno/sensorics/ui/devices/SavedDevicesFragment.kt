@@ -22,6 +22,7 @@ import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
 import com.aconno.sensorics.adapter.ItemClickListener
 import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.repository.Settings
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.ActionListActivity
@@ -29,6 +30,7 @@ import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceViewModel
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import java.util.*
@@ -43,6 +45,9 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
 
+    @Inject
+    lateinit var settings: Settings
+
     private lateinit var deviceAdapter: DeviceActiveAdapter
 
     private lateinit var listener: SavedDevicesFragmentListener
@@ -52,6 +57,8 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
     private var dontObserveQueue: Queue<Boolean> = ArrayDeque<Boolean>()
 
     private var snackbar: Snackbar? = null
+
+    private val disposables = CompositeDisposable()
 
     private val onConnectClickListener = object : ItemClickListener<DeviceActive> {
         override fun onItemClick(item: DeviceActive) {
@@ -209,10 +216,25 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
     }
 
     override fun onItemClick(item: DeviceActive) {
+        saveClickedDeviceMacAddress(item.device.macAddress)
         activity?.let {
             val mainActivity = it as MainActivity
             mainActivity.showSensorValues(item.device)
         }
+    }
+
+    private fun saveClickedDeviceMacAddress(macAddress: String) {
+        disposables.add(
+            settings.setClickedDeviceMac(macAddress)
+                .subscribe(
+                    {
+                        Timber.d("Mac address saved for clicked device, mac: $macAddress")
+                    },
+                    { throwable ->
+                        Timber.d(throwable)
+                    }
+                )
+        )
     }
 
     override fun onDialogDismissed() {
@@ -253,5 +275,10 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
             snackbar?.setActionTextColor(Color.YELLOW)
             snackbar?.show()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.clear()
     }
 }

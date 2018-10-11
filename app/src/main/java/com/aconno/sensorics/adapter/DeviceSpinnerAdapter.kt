@@ -14,6 +14,8 @@ class DeviceSpinnerAdapter : SpinnerAdapter, BaseAdapter() {
 
     private val devices = mutableListOf<Device>()
 
+    fun getDevices(): List<Device> = devices
+
     fun setDevices(devices: List<Device>) {
         this.devices.clear()
         this.devices.addAll(devices)
