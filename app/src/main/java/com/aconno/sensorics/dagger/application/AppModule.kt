@@ -8,7 +8,6 @@ import android.support.v4.content.LocalBroadcastManager
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.IntentProviderImpl
 import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.data.mapper.*
 import com.aconno.sensorics.data.repository.InMemoryRepositoryImpl
 import com.aconno.sensorics.data.repository.SensoricsDatabase
@@ -19,6 +18,7 @@ import com.aconno.sensorics.data.repository.gpublish.GooglePublishRepositoryImpl
 import com.aconno.sensorics.data.repository.mpublish.MqttPublishRepositoryImpl
 import com.aconno.sensorics.data.repository.pdjoin.PublishDeviceJoinRepositoryImpl
 import com.aconno.sensorics.data.repository.rpublish.RESTPublishRepositoryImpl
+import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.device.SmsSenderImpl
 import com.aconno.sensorics.device.TextToSpeechPlayerImpl
 import com.aconno.sensorics.device.VibratorImpl
@@ -299,8 +299,7 @@ class AppModule(
         bluetooth: Bluetooth,
         filterByFormatUseCase: FilterByFormatUseCase
     ): Flowable<ScanResult> {
-        return bluetooth.getScanResults()
-            .concatMap { filterByFormatUseCase.execute(it).toFlowable() }
+        return bluetooth.getScanResults().filter { filterByFormatUseCase.execute(it) }
     }
 
     @Provides
