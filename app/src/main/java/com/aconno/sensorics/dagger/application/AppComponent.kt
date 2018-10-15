@@ -27,7 +27,7 @@ import dagger.Component
 import io.reactivex.Flowable
 import javax.inject.Singleton
 
-@Component(modules = [AppModule::class, DataModule::class])
+@Component(modules = [AppModule::class, DataModule::class, FormatModule::class])
 @Singleton
 interface AppComponent {
 
