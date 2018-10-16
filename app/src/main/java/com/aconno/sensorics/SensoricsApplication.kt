@@ -18,6 +18,7 @@ class SensoricsApplication : Application() {
     @SuppressLint("CheckResult")
     override fun onCreate() {
         super.onCreate()
+
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
@@ -30,15 +31,15 @@ class SensoricsApplication : Application() {
         val mapper = AdvertisementFormatMapper()
         val reader = AdvertisementFormatReader()
         reader.readFlowable(this)
-            .subscribe { genericFormats ->
-                appComponent = DaggerAppComponent
-                    .builder()
-                    .appModule(
-                        AppModule(
-                            this,
-                            genericFormats.map { mapper.toAdvertisementFormat(it) })
-                    )
-                    .build()
-            }
+                .subscribe { genericFormats ->
+                    appComponent = DaggerAppComponent
+                            .builder()
+                            .appModule(
+                                    AppModule(
+                                            this,
+                                            genericFormats.map { mapper.toAdvertisementFormat(it) })
+                            )
+                            .build()
+                }
     }
 }
