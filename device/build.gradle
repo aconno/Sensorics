@@ -37,6 +37,8 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxkotlin:$rx_kotlin_version"
 
     implementation "com.jakewharton.timber:timber:$timber_version"
+    api "com.squareup.retrofit2:retrofit:$retrofit_version"
+    api "com.squareup.retrofit2:converter-scalars:$retrofit_version"
 
     compileOnly "javax.annotation:jsr250-api:$javax_annotation_version"
     implementation "javax.inject:javax.inject:$javax_inject_version"
