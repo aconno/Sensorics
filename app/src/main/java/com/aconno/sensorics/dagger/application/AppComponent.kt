@@ -21,6 +21,7 @@ import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.repository.Settings
 import com.aconno.sensorics.domain.scanning.Bluetooth
+import com.aconno.sensorics.ui.SplashActivity
 import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import dagger.Component
@@ -69,12 +70,6 @@ interface AppComponent {
 
     fun readingToInputUseCase(): ReadingToInputUseCase
 
-    fun inject(scannedDevicesDialog: ScannedDevicesDialog)
-
-    fun inject(bluetoothConnectService: BluetoothConnectService)
-
-    fun inject(acnFrightFragment: AcnFreightFragment)
-
     fun publishDeviceJoinRepository(): PublishDeviceJoinRepository
 
     fun readingsStream(): Flowable<List<Reading>>
@@ -86,4 +81,12 @@ interface AppComponent {
     fun formatMatcher(): FormatMatcher
 
     fun settings(): Settings
+
+    fun inject(scannedDevicesDialog: ScannedDevicesDialog)
+
+    fun inject(bluetoothConnectService: BluetoothConnectService)
+
+    fun inject(acnFrightFragment: AcnFreightFragment)
+
+    fun inject(splashActivity: SplashActivity)
 }

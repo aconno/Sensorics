@@ -32,7 +32,6 @@ import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.ActionsRepository
-import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinderImpl
 import com.aconno.sensorics.domain.format.FormatMatcher
@@ -48,6 +47,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.model.ScanResult
+import com.aconno.sensorics.domain.repository.AdvertisementFormatRepository
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
@@ -62,8 +62,7 @@ import javax.inject.Singleton
 
 @Module
 class AppModule(
-    private val sensoricsApplication: SensoricsApplication,
-    private val supportedFormats: List<AdvertisementFormat>
+    private val sensoricsApplication: SensoricsApplication
 ) {
 
     @Provides
@@ -123,8 +122,10 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideConnectionCharacteristicsFinder(): ConnectionCharacteristicsFinder {
-        return ConnectionCharacteristicsFinderImpl(supportedFormats)
+    fun provideConnectionCharacteristicsFinder(
+        advertisementFormatRepository: AdvertisementFormatRepository
+    ): ConnectionCharacteristicsFinder {
+        return ConnectionCharacteristicsFinderImpl(advertisementFormatRepository)
     }
 
     @Provides
@@ -263,10 +264,6 @@ class AppModule(
             publishDeviceJoinJoinMapper
         )
     }
-
-    @Provides
-    @Singleton
-    fun provideFormatMatcher() = FormatMatcher(supportedFormats)
 
     @Provides
     @Singleton

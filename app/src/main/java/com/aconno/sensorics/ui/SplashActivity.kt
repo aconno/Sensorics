@@ -5,46 +5,43 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import com.aconno.sensorics.R
-import com.aconno.sensorics.device.format.RemoteAdvertisementFormatRepository
-import com.aconno.sensorics.device.format.RetrofitAdvertisementFormatApi
-import com.aconno.sensorics.domain.interactor.format.GetRemoteFormatsUseCase
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.aconno.sensorics.SensoricsApplication
+import com.aconno.sensorics.domain.repository.AdvertisementFormatRepository
 import io.reactivex.schedulers.Schedulers
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import timber.log.Timber
+import javax.inject.Inject
 
 class SplashActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var advertisementFormatRepository: AdvertisementFormatRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loadRemoteFormats()
-    }
-
-    override fun onStart() {
-        super.onStart()
         setContentView(R.layout.activity_splash)
-        Handler().postDelayed({
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }, SPLASH_TIMEOUT)
+        (application as SensoricsApplication).appComponent.inject(this)
+
+        advertisementFormatRepository.updateAdvertisementFormats()
+            .subscribeOn(Schedulers.io())
+            .subscribe(
+                { onFormatsUpdateComplete() },
+                { onFormatsUpdateError(it) }
+            )
     }
 
-    private fun loadRemoteFormats() {
-        val retrofit = Retrofit.Builder()
-                .baseUrl("http://playground.simvelop.de:8095")
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .build()
+    private fun onFormatsUpdateComplete() {
+        Timber.e(advertisementFormatRepository.getSupportedAdvertisementFormats().toString())
+        runOnUiThread {
+            Handler().postDelayed({
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }, SPLASH_TIMEOUT)
+        }
+    }
 
-        val api = retrofit.create(RetrofitAdvertisementFormatApi::class.java)
-
-        val repository = RemoteAdvertisementFormatRepository(api)
-
-        val getRemoteFormatsUseCase = GetRemoteFormatsUseCase(repository)
-
-        getRemoteFormatsUseCase.execute()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { result -> Timber.e("Result of: $result") }
+    private fun onFormatsUpdateError(throwable: Throwable) {
+        Timber.e(throwable)
+        //TODO: Display error dialog.
     }
 
     companion object {

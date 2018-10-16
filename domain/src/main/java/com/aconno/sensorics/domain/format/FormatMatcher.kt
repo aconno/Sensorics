@@ -1,8 +1,12 @@
 package com.aconno.sensorics.domain.format
 
+import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
+
 class FormatMatcher(
-    private val supportedFormats: List<AdvertisementFormat>
+    private val getFormatsUseCase: GetFormatsUseCase
 ) {
+    private val supportedFormats
+        get() = getFormatsUseCase.execute()
 
     fun matches(rawData: List<Byte>): Boolean {
         supportedFormats.forEach {
