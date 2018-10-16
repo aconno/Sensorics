@@ -8,6 +8,7 @@ class AdvertisementFormatMapper {
 
     fun toAdvertisementFormat(genericFormatModel: GenericFormatModel): AdvertisementFormat {
         return GenericFormat(
+            genericFormatModel.id,
             genericFormatModel.name,
             genericFormatModel.icon,
             genericFormatModel.format.map { toByteFormat(it) },

@@ -53,6 +53,8 @@ import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.serialization.Deserializer
 import com.aconno.sensorics.domain.serialization.DeserializerImpl
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
@@ -319,4 +321,11 @@ class AppModule(
     ): Flowable<List<Reading>> {
         return filteredScanResult.concatMap { generateReadingsUseCase.execute(it).toFlowable() }
     }
+
+    @Provides
+    @Singleton
+    fun provideGson() =
+        GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create()
 }

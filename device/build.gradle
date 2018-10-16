@@ -41,6 +41,8 @@ dependencies {
     compileOnly "javax.annotation:jsr250-api:$javax_annotation_version"
     implementation "javax.inject:javax.inject:$javax_inject_version"
 
+    implementation "com.google.code.gson:gson:$gson_version"
+
     testImplementation "junit:junit:$junit_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
