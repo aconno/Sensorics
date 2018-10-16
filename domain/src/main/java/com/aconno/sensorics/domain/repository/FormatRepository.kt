@@ -12,5 +12,7 @@ interface FormatRepository {
 
     fun getLastUpdateTimestamp(formatId: String): Single<Long>
 
-    fun addOrReplaceFormat(formatId: String, formatJson: String): Completable
+    fun addOrReplaceFormat(formatId: String, timestamp: Long, formatJson: String): Completable
+
+    fun deleteFormat(formatId: String): Completable
 }

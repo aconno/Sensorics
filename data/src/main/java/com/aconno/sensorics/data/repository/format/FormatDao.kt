@@ -1,6 +1,9 @@
 package com.aconno.sensorics.data.repository.format
 
-import android.arch.persistence.room.*
+import android.arch.persistence.room.Dao
+import android.arch.persistence.room.Insert
+import android.arch.persistence.room.OnConflictStrategy
+import android.arch.persistence.room.Query
 import io.reactivex.Single
 
 @Dao
@@ -18,6 +21,6 @@ interface FormatDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(formatEntity: FormatEntity)
 
-    @Delete
-    fun delete(formatEntity: FormatEntity)
+    @Query("DELETE FROM formats WHERE id = :formatId")
+    fun delete(formatId: String)
 }

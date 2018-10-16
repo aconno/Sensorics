@@ -27,14 +27,24 @@ class FormatRepositoryImpl(
         return formatDao.getTimestamp(formatId)
     }
 
-    override fun addOrReplaceFormat(formatId: String, formatJson: String): Completable {
+    override fun addOrReplaceFormat(
+        formatId: String,
+        timestamp: Long,
+        formatJson: String
+    ): Completable {
         return Completable.fromAction {
             val formatEntity = FormatEntity(
                 id = formatId,
-                timestamp = System.currentTimeMillis(), //TODO: fix this
+                timestamp = timestamp,
                 contentJson = formatJson
             )
             formatDao.insertOrReplace(formatEntity)
+        }
+    }
+
+    override fun deleteFormat(formatId: String): Completable {
+        return Completable.fromAction {
+            formatDao.delete(formatId)
         }
     }
 }
