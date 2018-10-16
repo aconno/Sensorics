@@ -31,15 +31,15 @@ class SensoricsApplication : Application() {
         val mapper = AdvertisementFormatMapper()
         val reader = AdvertisementFormatReader()
         reader.readFlowable(this)
-                .subscribe { genericFormats ->
-                    appComponent = DaggerAppComponent
-                            .builder()
-                            .appModule(
-                                    AppModule(
-                                            this,
-                                            genericFormats.map { mapper.toAdvertisementFormat(it) })
-                            )
-                            .build()
-                }
+            .subscribe { genericFormats ->
+                appComponent = DaggerAppComponent
+                    .builder()
+                    .appModule(
+                        AppModule(
+                            this,
+                            genericFormats.map { mapper.toAdvertisementFormat(it) })
+                    )
+                    .build()
+            }
     }
 }
