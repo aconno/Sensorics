@@ -38,7 +38,7 @@ class FormatJsonConverterImpl(
         return ByteFormatRequired(
             byteFormatRequiredJsonModel.name,
             byteFormatRequiredJsonModel.index,
-            byteFormatRequiredJsonModel.value.replace("0x", "", true).toByte(16)
+            byteFormatRequiredJsonModel.value.replace("0x", "", true).toInt(16).toByte()
         )
     }
 
