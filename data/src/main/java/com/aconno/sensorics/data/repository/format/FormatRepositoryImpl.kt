@@ -19,6 +19,10 @@ class FormatRepositoryImpl(
         }
     }
 
+    override fun getAllFormatIds(): Single<List<String>> {
+        return formatDao.getAllFormatIds()
+    }
+
     override fun getLastUpdateTimestamp(formatId: String): Single<Long> {
         return formatDao.getTimestamp(formatId)
     }
