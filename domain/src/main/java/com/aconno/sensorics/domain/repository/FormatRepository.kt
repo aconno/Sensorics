@@ -10,7 +10,7 @@ interface FormatRepository {
 
     fun getAllFormatIds(): Single<List<String>>
 
-    fun getLastUpdateTimestamp(formatId: String): Single<Long>
+    fun getLastUpdateTimestamp(formatId: String): Long
 
     fun addOrReplaceFormat(formatId: String, timestamp: Long, formatJson: String): Completable
 

@@ -16,7 +16,7 @@ interface FormatDao {
     fun getAllFormatIds(): Single<List<String>>
 
     @Query("SELECT timestamp FROM formats WHERE id = :formatId")
-    fun getTimestamp(formatId: String): Single<Long>
+    fun getTimestamp(formatId: String): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrReplace(formatEntity: FormatEntity)

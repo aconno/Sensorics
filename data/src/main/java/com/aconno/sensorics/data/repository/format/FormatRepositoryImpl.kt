@@ -23,7 +23,7 @@ class FormatRepositoryImpl(
         return formatDao.getAllFormatIds()
     }
 
-    override fun getLastUpdateTimestamp(formatId: String): Single<Long> {
+    override fun getLastUpdateTimestamp(formatId: String): Long {
         return formatDao.getTimestamp(formatId)
     }
 
