@@ -47,6 +47,10 @@ class GenericReadingListFragment : Fragment() {
                     ActionListActivity.start(context)
                     return true
                 }
+                R.id.action_start_usecases_activity -> {
+                    (activity as MainActivity).onUseCaseClicked(macAddress, getDeviceName())
+                    return true
+                }
                 else -> {
                     //Do nothing
                 }

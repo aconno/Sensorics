@@ -133,4 +133,5 @@
     <string name="connect">VERBINDEN</string>
     <string name="disconnect">TRENNEN</string>
     <string name="dialog_add_nearby_devices_title">Geräte hinzufügen</string>
+    <string name="usecases">Anwendungsfälle</string>
 </resources>

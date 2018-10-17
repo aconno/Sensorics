@@ -324,4 +324,14 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
     override fun showRationale(actionCode: Int) {
         //TODO: Show rationale
     }
+
+    fun onUseCaseClicked(macAddress: String, deviceName: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(
+                content_container.id,
+                UseCasesFragment.newInstance(macAddress, deviceName)
+            )
+            .addToBackStack(null)
+            .commit()
+    }
 }
