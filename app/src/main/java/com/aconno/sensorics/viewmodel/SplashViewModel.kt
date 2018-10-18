@@ -13,13 +13,13 @@ class SplashViewModel(
 
     private var updateFormatsDisposable: Disposable? = null
 
-    private val updateCompleteEvent = SingleLiveEvent<Unit>()
+    private val mutableUpdateCompleteEvent = SingleLiveEvent<Unit>()
 
-    fun getUpdateCompleteEvent(): LiveData<Unit> = updateCompleteEvent
+    val updateCompleteEvent: LiveData<Unit> = mutableUpdateCompleteEvent
 
-    private val updateErrorEvent = SingleLiveEvent<String>()
+    private val mutableUpdateErrorEvent = SingleLiveEvent<Throwable>()
 
-    fun getUpdateErrorEvent(): LiveData<String> = updateErrorEvent
+    val updateErrorEvent: LiveData<Throwable> = mutableUpdateErrorEvent
 
     fun updateAdvertisementFormats() {
         updateFormatsDisposable = advertisementFormatRepository.updateAdvertisementFormats()
@@ -31,11 +31,11 @@ class SplashViewModel(
     }
 
     private fun onFormatsUpdateComplete() {
-        updateCompleteEvent.postValue(Unit)
+        mutableUpdateCompleteEvent.postValue(Unit)
     }
 
     private fun onFormatsUpdateError(throwable: Throwable) {
-        updateErrorEvent.postValue(throwable.message)
+        mutableUpdateErrorEvent.postValue(throwable)
     }
 
     override fun onCleared() {

@@ -1,36 +1,56 @@
 package com.aconno.sensorics.ui
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import com.aconno.sensorics.R
 import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.domain.repository.AdvertisementFormatRepository
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
+import com.aconno.sensorics.viewmodel.SplashViewModel
+import com.aconno.sensorics.viewmodel.factory.SplashViewModelFactory
 import javax.inject.Inject
 
 class SplashActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var advertisementFormatRepository: AdvertisementFormatRepository
+    lateinit var splashViewModelFactory: SplashViewModelFactory
+
+    private lateinit var splashViewModel: SplashViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (application as SensoricsApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        (application as SensoricsApplication).appComponent.inject(this)
 
-        advertisementFormatRepository.updateAdvertisementFormats()
-            .subscribeOn(Schedulers.io())
-            .subscribe(
-                { onFormatsUpdateComplete() },
-                { onFormatsUpdateError(it) }
-            )
+        splashViewModel = ViewModelProviders.of(this, splashViewModelFactory)
+            .get(SplashViewModel::class.java)
+
+        connectViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        splashViewModel.updateAdvertisementFormats()
+    }
+
+    private fun connectViewModel() {
+        //TODO: Replace Observer with LiveDataObserver.
+        splashViewModel.updateCompleteEvent.observe(
+            this,
+            Observer { event -> event?.let { onFormatsUpdateComplete() } }
+        )
+
+        //TODO: Replace Observer with LiveDataObserver.
+        splashViewModel.updateErrorEvent.observe(
+            this,
+            Observer { error -> error?.let { onFormatsUpdateError() } }
+        )
     }
 
     private fun onFormatsUpdateComplete() {
-        Timber.e(advertisementFormatRepository.getSupportedAdvertisementFormats().toString())
         runOnUiThread {
             Handler().postDelayed({
                 val intent = Intent(this, MainActivity::class.java)
@@ -39,9 +59,17 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun onFormatsUpdateError(throwable: Throwable) {
-        Timber.e(throwable)
-        //TODO: Display error dialog.
+    private fun onFormatsUpdateError() {
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(getString(R.string.formats_download_error_dialog_title))
+        builder.setMessage(getString(R.string.formats_download_error_dialog_message))
+        builder.setNeutralButton(getString(R.string.formats_download_error_dialog_dismiss_message))
+        { _, _ -> }
+
+        val dialog = builder.create()
+
+        dialog.show()
     }
 
     companion object {

@@ -12,6 +12,7 @@ import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
 import com.aconno.sensorics.domain.repository.AdvertisementFormatRepository
 import com.aconno.sensorics.domain.repository.FormatRepository
+import com.aconno.sensorics.viewmodel.factory.SplashViewModelFactory
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -22,6 +23,11 @@ import javax.inject.Singleton
 @Module
 class FormatModule {
 
+    @Provides
+    @Singleton
+    fun provideSplashViewModelFactory(
+        advertisementFormatRepository: AdvertisementFormatRepository
+    ): SplashViewModelFactory = SplashViewModelFactory(advertisementFormatRepository)
 
     @Provides
     @Singleton
