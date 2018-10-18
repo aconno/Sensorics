@@ -190,4 +190,8 @@
     <string name="disconnect">DISCONNECT</string>
     <string name="dialog_add_nearby_devices_title">Add nearby devices</string>
     <string name="usecases">Use Cases</string>
+
+    <string name="formats_download_error_dialog_title">Error</string>
+    <string name="formats_download_error_dialog_message">Could not download formats from server.</string>
+    <string name="formats_download_error_dialog_dismiss_message">@android:string/ok</string>
 </resources>

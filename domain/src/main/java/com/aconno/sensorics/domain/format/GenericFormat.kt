@@ -1,6 +1,7 @@
 package com.aconno.sensorics.domain.format
 
 data class GenericFormat(
+    override val id: String,
     private val formatName: String,
     private val icon: String,
     private val format: List<ByteFormat>,

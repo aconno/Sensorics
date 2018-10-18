@@ -1,5 +1,6 @@
 package com.aconno.sensorics.domain.format
 
+import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
 import com.aconno.sensorics.domain.model.Device
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,7 +24,7 @@ class ConnectionCharacteristicsFinderTest {
 
         val device = mockDevice("Name", true)
 
-        val finder = ConnectionCharacteristicsFinderImpl(supportedFormats)
+        val finder = ConnectionCharacteristicsFinderImpl(mockGetFormatsUseCase())
 
         Mockito.verify(supportedFormats).add(mockedConnection)
         assertTrue(finder.hasCharacteristics(device))
@@ -37,7 +38,7 @@ class ConnectionCharacteristicsFinderTest {
 
         val device = mockDevice("Name", false)
 
-        val finder = ConnectionCharacteristicsFinderImpl(supportedFormats)
+        val finder = ConnectionCharacteristicsFinderImpl(mockGetFormatsUseCase())
 
         Mockito.verify(supportedFormats).add(mockedConnection)
         assertFalse(finder.hasCharacteristics(device))
@@ -54,7 +55,7 @@ class ConnectionCharacteristicsFinderTest {
 
         var device = mockDevice("Name 8", true)
 
-        val finder = ConnectionCharacteristicsFinderImpl(supportedFormats)
+        val finder = ConnectionCharacteristicsFinderImpl(mockGetFormatsUseCase())
         device = finder.addCharacteristicsToDevice(device)
 
         assertNotNull(device.connectionReadList)
@@ -72,12 +73,23 @@ class ConnectionCharacteristicsFinderTest {
 
         var device = mockDevice("Name 8", false)
 
-        val finder = ConnectionCharacteristicsFinderImpl(supportedFormats)
+        val finder = ConnectionCharacteristicsFinderImpl(mockGetFormatsUseCase())
         device = finder.addCharacteristicsToDevice(device)
 
         assertNull(device.connectionReadList)
         assertNull(device.connectionWriteList)
     }
+
+    private fun mockGetFormatsUseCase(): GetFormatsUseCase {
+        val mockAdvertisementFormat = Mockito.mock(AdvertisementFormat::class.java)
+
+        val mockedGetFormatsUseCase = Mockito.mock(GetFormatsUseCase::class.java)
+        Mockito.`when`(mockedGetFormatsUseCase.execute())
+            .thenReturn(listOf(mockAdvertisementFormat))
+
+        return mockedGetFormatsUseCase
+    }
+
 
     private fun mockDevice(name: String, connectable: Boolean): Device {
         return Device(name, "", "", connectable = connectable)

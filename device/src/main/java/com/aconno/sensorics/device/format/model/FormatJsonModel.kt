@@ -1,9 +1,9 @@
-package com.aconno.sensorics.model
+package com.aconno.sensorics.device.format.model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class GenericFormatModel(
+class FormatJsonModel(
     @SerializedName("id")
     @Expose
     var id: String,
@@ -15,17 +15,17 @@ data class GenericFormatModel(
     var icon: String,
     @SerializedName("format")
     @Expose
-    var format: List<ByteFormatModel>,
+    var format: List<ByteFormatJsonModel>,
     @SerializedName("format_required")
     @Expose
-    var formatRequired: List<ByteFormatRequiredModel>,
+    var formatRequired: List<ByteFormatRequiredJsonModel>,
     @SerializedName("connectable")
     @Expose
     var connectible: Boolean,
     @SerializedName("connection_write")
     @Expose
-    var connectionWriteList: List<ConnectionWriteModel>?,
+    var connectionWriteList: List<ConnectionWriteJsonModel>?,
     @SerializedName("connection_read")
     @Expose
-    var connectionReadList: List<ConnectionReadModel>?
+    var connectionReadList: List<ConnectionReadJsonModel>?
 )

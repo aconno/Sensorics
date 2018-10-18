@@ -32,7 +32,6 @@ import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.ActionsRepository
-import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinderImpl
 import com.aconno.sensorics.domain.format.FormatMatcher
@@ -42,6 +41,7 @@ import com.aconno.sensorics.domain.interactor.consolidation.GenerateScanDeviceUs
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.model.Device
@@ -53,6 +53,8 @@ import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.serialization.Deserializer
 import com.aconno.sensorics.domain.serialization.DeserializerImpl
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
@@ -60,8 +62,7 @@ import javax.inject.Singleton
 
 @Module
 class AppModule(
-    private val sensoricsApplication: SensoricsApplication,
-    private val supportedFormats: List<AdvertisementFormat>
+    private val sensoricsApplication: SensoricsApplication
 ) {
 
     @Provides
@@ -121,8 +122,10 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideConnectionCharacteristicsFinder(): ConnectionCharacteristicsFinder {
-        return ConnectionCharacteristicsFinderImpl(supportedFormats)
+    fun provideConnectionCharacteristicsFinder(
+        getFormatsUseCase: GetFormatsUseCase
+    ): ConnectionCharacteristicsFinder {
+        return ConnectionCharacteristicsFinderImpl(getFormatsUseCase)
     }
 
     @Provides
@@ -264,10 +267,6 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideFormatMatcher() = FormatMatcher(supportedFormats)
-
-    @Provides
-    @Singleton
     fun provideDeserializer(): Deserializer = DeserializerImpl()
 
     @Provides
@@ -319,4 +318,11 @@ class AppModule(
     ): Flowable<List<Reading>> {
         return filteredScanResult.concatMap { generateReadingsUseCase.execute(it).toFlowable() }
     }
+
+    @Provides
+    @Singleton
+    fun provideGson() =
+        GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create()
 }
