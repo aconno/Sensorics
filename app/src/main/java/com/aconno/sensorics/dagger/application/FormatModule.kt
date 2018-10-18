@@ -3,11 +3,9 @@ package com.aconno.sensorics.dagger.application
 import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.data.repository.format.FormatRepositoryImpl
 import com.aconno.sensorics.device.format.FormatJsonConverterImpl
-import com.aconno.sensorics.device.format.FormatLocatorUseCaseImpl
 import com.aconno.sensorics.device.format.RemoteAdvertisementFormatRepository
 import com.aconno.sensorics.device.format.RetrofitAdvertisementFormatApi
 import com.aconno.sensorics.domain.format.AdvertisementFormatJsonConverter
-import com.aconno.sensorics.domain.format.FormatLocatorUseCase
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
 import com.aconno.sensorics.domain.repository.AdvertisementFormatRepository
@@ -59,12 +57,6 @@ class FormatModule {
         advertisementFormatRepository: AdvertisementFormatRepository
     ): GetFormatsUseCase =
         GetFormatsUseCase(advertisementFormatRepository)
-
-    @Provides
-    @Singleton
-    fun provideFormatLocatorUseCase(
-        formatRepository: FormatRepository
-    ): FormatLocatorUseCase = FormatLocatorUseCaseImpl(formatRepository)
 
     @Provides
     @Singleton
