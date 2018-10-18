@@ -1,11 +1,11 @@
 package com.aconno.sensorics.domain.interactor.format
 
 import com.aconno.sensorics.domain.format.AdvertisementFormat
-import com.aconno.sensorics.domain.repository.AdvertisementFormatRepository
+import com.aconno.sensorics.domain.repository.RemoteFormatRepository
 
 class GetFormatsUseCase(
-    private val remoteAdvertisementFormatRepository: AdvertisementFormatRepository
+    private val remoteRemoteFormatRepository: RemoteFormatRepository
 ) {
     fun execute(): List<AdvertisementFormat> =
-        remoteAdvertisementFormatRepository.getSupportedAdvertisementFormats()
+        remoteRemoteFormatRepository.getSupportedAdvertisementFormats()
 }

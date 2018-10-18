@@ -2,16 +2,16 @@ package com.aconno.sensorics.device.format
 
 import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.format.RemoteAdvertisementFormat
-import com.aconno.sensorics.domain.repository.AdvertisementFormatRepository
-import com.aconno.sensorics.domain.repository.FormatRepository
+import com.aconno.sensorics.domain.repository.LocalFormatRepository
+import com.aconno.sensorics.domain.repository.RemoteFormatRepository
 import io.reactivex.Completable
 import java.text.SimpleDateFormat
 import java.util.*
 
-class RemoteAdvertisementFormatRepository(
+class RemoteFormatRepositoryImpl(
     private val retrofitAdvertisementFormatApi: RetrofitAdvertisementFormatApi,
-    private val formatRepository: FormatRepository
-) : AdvertisementFormatRepository {
+    private val localFormatRepository: LocalFormatRepository
+) : RemoteFormatRepository {
 
     private val cachedFormats = mutableListOf<AdvertisementFormat>()
 
@@ -26,7 +26,7 @@ class RemoteAdvertisementFormatRepository(
                 removeUnusedFormats(names)
                 names.forEach { updateFormat(it) }
 
-                cachedFormats.addAll(formatRepository.getAllFormats())
+                cachedFormats.addAll(localFormatRepository.getAllFormats())
 
             } else {
                 throw IllegalStateException("There are no formats on the server.")
@@ -37,8 +37,8 @@ class RemoteAdvertisementFormatRepository(
     override fun getSupportedAdvertisementFormats(): List<AdvertisementFormat> = cachedFormats
 
     private fun removeUnusedFormats(formatIds: List<String>) {
-        formatRepository.getAllFormatIds().filter { it !in formatIds }
-            .forEach { formatRepository.deleteFormat(it) }
+        localFormatRepository.getAllFormatIds().filter { it !in formatIds }
+            .forEach { localFormatRepository.deleteFormat(it) }
     }
 
     private fun updateFormat(formatName: String) {
@@ -49,7 +49,7 @@ class RemoteAdvertisementFormatRepository(
     }
 
     private fun storeFormat(format: RemoteAdvertisementFormat) {
-        formatRepository.addOrReplaceFormat(format.id, format.serverTimestamp, format.format)
+        localFormatRepository.addOrReplaceFormat(format.id, format.serverTimestamp, format.format)
     }
 
     private fun needsToUpdate(formatName: String): Boolean {
@@ -57,7 +57,7 @@ class RemoteAdvertisementFormatRepository(
             retrofitAdvertisementFormatApi.getLastModifiedDate(formatName).execute().headers()
                 .get("Last-Modified")
         if (remoteModified != null) {
-            val localModified = formatRepository.getLastUpdateTimestamp(formatName)
+            val localModified = localFormatRepository.getLastUpdateTimestamp(formatName)
 
             return convertDateStringToTimestamp(remoteModified) > localModified
         } else {

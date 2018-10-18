@@ -3,12 +3,12 @@ package com.aconno.sensorics.viewmodel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.SingleLiveEvent
-import com.aconno.sensorics.domain.repository.AdvertisementFormatRepository
+import com.aconno.sensorics.domain.repository.RemoteFormatRepository
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class SplashViewModel(
-    private val advertisementFormatRepository: AdvertisementFormatRepository
+    private val remoteFormatRepository: RemoteFormatRepository
 ) : ViewModel() {
 
     private var updateFormatsDisposable: Disposable? = null
@@ -22,7 +22,7 @@ class SplashViewModel(
     val updateErrorEvent: LiveData<Throwable> = mutableUpdateErrorEvent
 
     fun updateAdvertisementFormats() {
-        updateFormatsDisposable = advertisementFormatRepository.updateAdvertisementFormats()
+        updateFormatsDisposable = remoteFormatRepository.updateAdvertisementFormats()
             .subscribeOn(Schedulers.io())
             .subscribe(
                 { onFormatsUpdateComplete() },
