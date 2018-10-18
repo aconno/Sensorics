@@ -93,7 +93,7 @@ class RemoteFormatRepositoryImpl(
         if (modified != null && format != null) {
 
             val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
-            dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+            dateFormat.timeZone = TimeZone.getTimeZone("UTC")
             val timestamp = dateFormat.parse(modified).time
 
             return RemoteAdvertisementFormat(sensorId, timestamp, format)
