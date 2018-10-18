@@ -6,6 +6,8 @@ import com.aconno.sensorics.data.repository.action.ActionDao
 import com.aconno.sensorics.data.repository.action.ActionEntity
 import com.aconno.sensorics.data.repository.devices.DeviceDao
 import com.aconno.sensorics.data.repository.devices.DeviceEntity
+import com.aconno.sensorics.data.repository.format.FormatDao
+import com.aconno.sensorics.data.repository.format.FormatEntity
 import com.aconno.sensorics.data.repository.gpublish.GooglePublishDao
 import com.aconno.sensorics.data.repository.gpublish.GooglePublishEntity
 import com.aconno.sensorics.data.repository.mpublish.MqttPublishDao
@@ -20,20 +22,33 @@ import com.aconno.sensorics.data.repository.rpublish.RESTPublishDao
 import com.aconno.sensorics.data.repository.rpublish.RESTPublishEntity
 
 @Database(
-    entities = [ActionEntity::class, DeviceEntity::class, GooglePublishEntity::class, RESTPublishEntity::class, GooglePublishDeviceJoinEntity::class, RestPublishDeviceJoinEntity::class, RESTHeaderEntity::class, MqttPublishEntity::class, MqttPublishDeviceJoinEntity::class, RESTHttpGetParamEntity::class],
-    version = 4
+    entities = [
+        ActionEntity::class,
+        DeviceEntity::class,
+        FormatEntity::class,
+        GooglePublishDeviceJoinEntity::class,
+        GooglePublishEntity::class,
+        MqttPublishDeviceJoinEntity::class,
+        MqttPublishEntity::class,
+        RESTHeaderEntity::class,
+        RESTHttpGetParamEntity::class,
+        RestPublishDeviceJoinEntity::class,
+        RESTPublishEntity::class],
+    version = 5
 )
 abstract class SensoricsDatabase : RoomDatabase() {
+
+    abstract fun actionDao(): ActionDao
+
+    abstract fun deviceDao(): DeviceDao
+
+    abstract fun formatDao(): FormatDao
+
+    abstract fun googlePublishDao(): GooglePublishDao
 
     abstract fun mqttPublishDao(): MqttPublishDao
 
     abstract fun publishDeviceJoinDao(): PublishDeviceJoinDao
-
-    abstract fun deviceDao(): DeviceDao
-
-    abstract fun actionDao(): ActionDao
-
-    abstract fun googlePublishDao(): GooglePublishDao
 
     abstract fun restPublishDao(): RESTPublishDao
 }

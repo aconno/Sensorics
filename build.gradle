@@ -77,4 +77,6 @@ ext {
 
     javax_annotation_version = '1.0'
     javax_inject_version = '1'
+
+    retrofit_version = '2.4.0'
 }
