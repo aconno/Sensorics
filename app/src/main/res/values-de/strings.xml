@@ -133,6 +133,7 @@
     <string name="connect">VERBINDEN</string>
     <string name="disconnect">TRENNEN</string>
     <string name="dialog_add_nearby_devices_title">Geräte hinzufügen</string>
+    <string name="usecases">Anwendungsfälle</string>
 
     <string name="formats_download_error_dialog_title">Fehler</string>
     <string name="formats_download_error_dialog_message">Die Formate konnten nicht heruntergeladen werden.</string>

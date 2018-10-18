@@ -16,10 +16,7 @@ import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
 import com.aconno.sensorics.ui.readings.ReadingListViewModelFactory
 import com.aconno.sensorics.viewmodel.*
-import com.aconno.sensorics.viewmodel.factory.BluetoothScanningViewModelFactory
-import com.aconno.sensorics.viewmodel.factory.BluetoothViewModelFactory
-import com.aconno.sensorics.viewmodel.factory.DeviceListViewModelFactory
-import com.aconno.sensorics.viewmodel.factory.SensorListViewModelFactory
+import com.aconno.sensorics.viewmodel.factory.*
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
@@ -152,4 +149,20 @@ class MainActivityModule(private val mainActivity: MainActivity) {
         return ViewModelProviders.of(mainActivity, deviceListViewModelFactory)
             .get(DeviceViewModel::class.java)
     }
+
+    @Provides
+    @MainActivityScope
+    fun provideUseCasesViewModel(useCasesViewModelFactory: UseCasesViewModelFactory) =
+        ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
+            .get(UseCasesViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideUseCasesViewModelFactory(
+        readingsStream: Flowable<List<Reading>>,
+        filterByMacUseCase: FilterByMacUseCase
+    ) = UseCasesViewModelFactory(
+        readingsStream,
+        filterByMacUseCase
+    )
 }

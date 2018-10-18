@@ -6,4 +6,9 @@
         android:id="@+id/action_start_actions_activity"
         android:title="@string/actions"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_start_usecases_activity"
+        android:title="@string/usecases"
+        app:showAsAction="never" />
 </menu>
