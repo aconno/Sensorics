@@ -1,14 +1,14 @@
 package com.aconno.sensorics.domain.format
 
+import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
 import com.aconno.sensorics.domain.model.Device
-import com.aconno.sensorics.domain.repository.AdvertisementFormatRepository
 
 class ConnectionCharacteristicsFinderImpl(
-    private val advertisementFormatRepository: AdvertisementFormatRepository
+    private val getFormatsUseCase: GetFormatsUseCase
 ) : ConnectionCharacteristicsFinder {
 
     private val supportedFormats
-        get() = advertisementFormatRepository.getSupportedAdvertisementFormats()
+        get() = getFormatsUseCase.execute()
 
     private val filteredConnections = supportedFormats.filter { it.isConnectible() }
 

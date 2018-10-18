@@ -2,7 +2,7 @@ package com.aconno.sensorics.domain.repository
 
 import com.aconno.sensorics.domain.format.AdvertisementFormat
 
-interface FormatRepository {
+interface LocalFormatRepository {
 
     fun getAllFormats(): List<AdvertisementFormat>
 

@@ -39,7 +39,7 @@ class Util {
             0x0F.toByte() //29
         )
 
-        val REQUIRED_FORMAT_BYTES = BEACON_BYTES.subList(0, 10)
+        val REQUIRED_FORMAT_BYTES = BEACON_BYTES.subList(5, 29)
 
         val TEMPERATURE_FORMAT = ByteFormat(
             "Temperature",

@@ -1,6 +1,5 @@
 package com.aconno.sensorics
 
-import android.annotation.SuppressLint
 import android.app.Application
 import com.aconno.sensorics.dagger.application.AppComponent
 import com.aconno.sensorics.dagger.application.AppModule
@@ -14,7 +13,6 @@ class SensoricsApplication : Application() {
 
     lateinit var appComponent: AppComponent
 
-    @SuppressLint("CheckResult")
     override fun onCreate() {
         super.onCreate()
 

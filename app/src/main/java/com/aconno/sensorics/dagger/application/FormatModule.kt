@@ -1,17 +1,16 @@
 package com.aconno.sensorics.dagger.application
 
 import com.aconno.sensorics.data.repository.SensoricsDatabase
-import com.aconno.sensorics.data.repository.format.FormatRepositoryImpl
+import com.aconno.sensorics.data.repository.format.LocalFormatRepositoryImpl
 import com.aconno.sensorics.device.format.FormatJsonConverterImpl
-import com.aconno.sensorics.device.format.FormatLocatorUseCaseImpl
-import com.aconno.sensorics.device.format.RemoteAdvertisementFormatRepository
+import com.aconno.sensorics.device.format.RemoteFormatRepositoryImpl
 import com.aconno.sensorics.device.format.RetrofitAdvertisementFormatApi
 import com.aconno.sensorics.domain.format.AdvertisementFormatJsonConverter
-import com.aconno.sensorics.domain.format.FormatLocatorUseCase
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
-import com.aconno.sensorics.domain.repository.AdvertisementFormatRepository
-import com.aconno.sensorics.domain.repository.FormatRepository
+import com.aconno.sensorics.domain.repository.LocalFormatRepository
+import com.aconno.sensorics.domain.repository.RemoteFormatRepository
+import com.aconno.sensorics.viewmodel.factory.SplashViewModelFactory
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -22,6 +21,11 @@ import javax.inject.Singleton
 @Module
 class FormatModule {
 
+    @Provides
+    @Singleton
+    fun provideSplashViewModelFactory(
+        remoteFormatRepository: RemoteFormatRepository
+    ): SplashViewModelFactory = SplashViewModelFactory(remoteFormatRepository)
 
     @Provides
     @Singleton
@@ -43,30 +47,24 @@ class FormatModule {
     @Singleton
     fun provideRemoteAdvertisementRepository(
         retrofitAdvertisementFormatApi: RetrofitAdvertisementFormatApi,
-        formatRepository: FormatRepository
-    ): AdvertisementFormatRepository =
-        RemoteAdvertisementFormatRepository(retrofitAdvertisementFormatApi, formatRepository)
+        localFormatRepository: LocalFormatRepository
+    ): RemoteFormatRepository =
+        RemoteFormatRepositoryImpl(retrofitAdvertisementFormatApi, localFormatRepository)
 
     @Provides
     @Singleton
     fun provideGetFormatsUseCase(
-        advertisementFormatRepository: AdvertisementFormatRepository
+        remoteFormatRepository: RemoteFormatRepository
     ): GetFormatsUseCase =
-        GetFormatsUseCase(advertisementFormatRepository)
-
-    @Provides
-    @Singleton
-    fun provideFormatLocatorUseCase(
-        formatRepository: FormatRepository
-    ): FormatLocatorUseCase = FormatLocatorUseCaseImpl(formatRepository)
+        GetFormatsUseCase(remoteFormatRepository)
 
     @Provides
     @Singleton
     fun provideFormatRepository(
         sensoricsDatabase: SensoricsDatabase,
         advertisementFormatJsonConverter: AdvertisementFormatJsonConverter
-    ): FormatRepository =
-        FormatRepositoryImpl(sensoricsDatabase.formatDao(), advertisementFormatJsonConverter)
+    ): LocalFormatRepository =
+        LocalFormatRepositoryImpl(sensoricsDatabase.formatDao(), advertisementFormatJsonConverter)
 
     @Provides
     @Singleton

@@ -2,12 +2,12 @@ package com.aconno.sensorics.data.repository.format
 
 import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.format.AdvertisementFormatJsonConverter
-import com.aconno.sensorics.domain.repository.FormatRepository
+import com.aconno.sensorics.domain.repository.LocalFormatRepository
 
-class FormatRepositoryImpl(
+class LocalFormatRepositoryImpl(
     private val formatDao: FormatDao,
     private val advertisementFormatJsonConverter: AdvertisementFormatJsonConverter
-) : FormatRepository {
+) : LocalFormatRepository {
 
     override fun getAllFormats(): List<AdvertisementFormat> {
         return formatDao.getAllFormats().map { jsonString ->
