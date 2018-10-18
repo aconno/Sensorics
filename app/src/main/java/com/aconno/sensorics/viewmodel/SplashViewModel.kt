@@ -22,12 +22,14 @@ class SplashViewModel(
     val updateErrorEvent: LiveData<Throwable> = mutableUpdateErrorEvent
 
     fun updateAdvertisementFormats() {
-        updateFormatsDisposable = remoteFormatRepository.updateAdvertisementFormats()
-            .subscribeOn(Schedulers.io())
-            .subscribe(
-                { onFormatsUpdateComplete() },
-                { onFormatsUpdateError(it) }
-            )
+        if (updateFormatsDisposable == null) {
+            updateFormatsDisposable = remoteFormatRepository.updateAdvertisementFormats()
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                    { onFormatsUpdateComplete() },
+                    { onFormatsUpdateError(it) }
+                )
+        }
     }
 
     private fun onFormatsUpdateComplete() {
