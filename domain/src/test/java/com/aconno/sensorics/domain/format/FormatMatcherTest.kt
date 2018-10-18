@@ -1,6 +1,7 @@
 package com.aconno.sensorics.domain.format
 
 import com.aconno.sensorics.domain.Util
+import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,7 +38,7 @@ class FormatMatcherTest {
             mockRequiredFormat(true)
         )
 
-        formatMatcher = FormatMatcher(listOf(mockAdvertisementFormat))
+        formatMatcher = FormatMatcher(mockGetFormatsUseCase(mockAdvertisementFormat))
         assertTrue(formatMatcher.matches(Util.BEACON_BYTES))
 
         val foundFormat = formatMatcher.findFormat(bytes)!!
@@ -51,7 +52,7 @@ class FormatMatcherTest {
             mockRequiredFormat(false)
         )
 
-        formatMatcher = FormatMatcher(listOf(mockAdvertisementFormat))
+        formatMatcher = FormatMatcher(mockGetFormatsUseCase(mockAdvertisementFormat))
         assertFalse(formatMatcher.matches(bytes))
 
         assertNull(formatMatcher.findFormat(bytes))
@@ -65,6 +66,14 @@ class FormatMatcherTest {
         Mockito.`when`(mockedAdvertisementFormat.getRequiredFormat()).thenReturn(requiredFormat)
 
         return mockedAdvertisementFormat
+    }
+
+    private fun mockGetFormatsUseCase(mockAdvertisementFormat: AdvertisementFormat): GetFormatsUseCase {
+        val mockedGetFormatsUseCase = Mockito.mock(GetFormatsUseCase::class.java)
+        Mockito.`when`(mockedGetFormatsUseCase.execute())
+            .thenReturn(listOf(mockAdvertisementFormat))
+
+        return mockedGetFormatsUseCase
     }
 
     private fun mockFormat(): Map<String, ByteFormat> {
