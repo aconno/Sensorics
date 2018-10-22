@@ -5,30 +5,57 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.repository.RemoteUseCaseRepository
 import com.aconno.sensorics.domain.serialization.JavascriptCallGenerator
 import io.reactivex.Flowable
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import org.json.JSONObject
 import timber.log.Timber
 
 class UseCasesViewModel(
     private val readingsStream: Flowable<List<Reading>>,
-    private val filterByMacUseCase: FilterByMacUseCase
+    private val filterByMacUseCase: FilterByMacUseCase,
+    private val remoteUseCaseRepository: RemoteUseCaseRepository
 ) : ViewModel() {
 
     private val mutableUrl = MutableLiveData<String>()
     val url: LiveData<String> = mutableUrl
+    val mutableProgress = MutableLiveData<Boolean>()
 
     private var macAddress: String? = null
     private var name: String? = null
     private var disposable: Disposable? = null
+    private var htmlDisposable: Disposable? = null
 
     fun initViewModel(macAddress: String, name: String) {
         this.macAddress = macAddress
         this.name = name
 
-        mutableUrl.postValue("http://aconno.de/sensorics/${name.toLowerCase()}.html?ts=${System.currentTimeMillis()}")
+        mutableProgress.postValue(true)
+        htmlDisposable = remoteUseCaseRepository.updateUseCases(name)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    mutableProgress.postValue(false)
+
+                    if (it.isNullOrBlank()) {
+                        Timber.d("File not found in cache directory.")
+                        mutableUrl.postValue("Error")
+                    } else {
+                        Timber.d(it)
+                        mutableUrl.postValue("file:///$it")
+                    }
+                }, {
+                    Timber.d(it)
+                    mutableUrl.postValue("Error")
+                    mutableProgress.postValue(false)
+                }
+            )
+//        mutableUrl.postValue("http://aconno.de/sensorics/${name.toLowerCase()}.html?ts=${System.currentTimeMillis()}")
     }
 
     fun subscribe() {
@@ -42,6 +69,7 @@ class UseCasesViewModel(
 
     fun unsubscribe() {
         disposable?.dispose()
+        htmlDisposable?.dispose()
     }
 
     private fun processSensorValues(values: List<Reading>) {
