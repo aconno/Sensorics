@@ -12,13 +12,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import com.aconno.sensorics.R
-import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.dagger.gcloudpublisher.DaggerGoogleCloudPublisherComponent
-import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherComponent
-import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
-import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.PublisherIntervalConverter
+import com.aconno.sensorics.R
+import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
@@ -82,20 +78,9 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         }
     }
 
-    private val googleCloudPublisherComponent: GoogleCloudPublisherComponent by lazy {
-        val sensoricsApplication: SensoricsApplication? = application as? SensoricsApplication
-
-        DaggerGoogleCloudPublisherComponent
-            .builder()
-            .appComponent(sensoricsApplication?.appComponent)
-            .googleCloudPublisherModule(GoogleCloudPublisherModule(this))
-            .build()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_google_cloud_publisher)
-        googleCloudPublisherComponent.inject(this)
 
         setSupportActionBar(custom_toolbar)
         supportActionBar!!.setDisplayShowTitleEnabled(true)
@@ -316,7 +301,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         }
 
         val id = if (googlePublishModel == null) 0 else googlePublishModel!!.id
-        val timeMillis = PublisherIntervalConverter.calculateMillis(this,timeCount, timeType)
+        val timeMillis = PublisherIntervalConverter.calculateMillis(this, timeCount, timeType)
         val lastTimeMillis =
             if (googlePublishModel == null) 0 else googlePublishModel!!.lastTimeMillis
         return GooglePublishModel(

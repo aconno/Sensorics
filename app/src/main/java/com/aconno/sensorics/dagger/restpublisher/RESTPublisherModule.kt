@@ -15,11 +15,12 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class RESTPublisherModule(private val restPublisherActivity: RESTPublisherActivity) {
+class RESTPublisherModule {
 
     @Provides
     @RESTPublisherScope
     fun provideRestPublisherViewModel(
+        restPublisherActivity: RESTPublisherActivity,
         restPublisherViewModelFactory: RestPublisherViewModelFactory
     ) = ViewModelProviders.of(restPublisherActivity, restPublisherViewModelFactory)
         .get(RestPublisherViewModel::class.java)
@@ -52,61 +53,73 @@ class RESTPublisherModule(private val restPublisherActivity: RESTPublisherActivi
 
     @Provides
     @RESTPublisherScope
-    fun provideAddRESTPublishUseCase(restPublishRepository: RESTPublishRepository): AddRESTPublishUseCase {
+    fun provideAddRESTPublishUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): AddRESTPublishUseCase {
         return AddRESTPublishUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
-    fun provideSavePublishDeviceJoinUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): SavePublishDeviceJoinUseCase {
+    fun provideSavePublishDeviceJoinUseCase(
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
+    ): SavePublishDeviceJoinUseCase {
         return SavePublishDeviceJoinUseCase(publishDeviceJoinRepository)
     }
 
     @Provides
     @RESTPublisherScope
-    fun provideDeletePublishDeviceJoinUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): DeletePublishDeviceJoinUseCase {
+    fun provideDeletePublishDeviceJoinUseCase(
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
+    ): DeletePublishDeviceJoinUseCase {
         return DeletePublishDeviceJoinUseCase(publishDeviceJoinRepository)
     }
 
     @Provides
     @RESTPublisherScope
-    fun provideGetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithRESTPublishUseCase {
-        return GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @RESTPublisherScope
-    fun provideSaveRESTHeaderUseCase(restPublishRepository: RESTPublishRepository): SaveRESTHeaderUseCase {
+    fun provideSaveRESTHeaderUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): SaveRESTHeaderUseCase {
         return SaveRESTHeaderUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
-    fun provideSaveRESTHttpGetParamUseCase(restPublishRepository: RESTPublishRepository): SaveRESTHttpGetParamUseCase {
+    fun provideSaveRESTHttpGetParamUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): SaveRESTHttpGetParamUseCase {
         return SaveRESTHttpGetParamUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
-    fun provideDeleteRESTHeaderUseCase(restPublishRepository: RESTPublishRepository): DeleteRESTHeaderUseCase {
+    fun provideDeleteRESTHeaderUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): DeleteRESTHeaderUseCase {
         return DeleteRESTHeaderUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
-    fun provideDeleteRESTHttpGetParamUseCase(restPublishRepository: RESTPublishRepository): DeleteRESTHttpGetParamUseCase {
+    fun provideDeleteRESTHttpGetParamUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): DeleteRESTHttpGetParamUseCase {
         return DeleteRESTHttpGetParamUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
-    fun provideGetRESTHeadersByIdUseCase(restPublishRepository: RESTPublishRepository): GetRESTHeadersByIdUseCase {
+    fun provideGetRESTHeadersByIdUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): GetRESTHeadersByIdUseCase {
         return GetRESTHeadersByIdUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
-    fun provideGetRESTHttpGetParamsByIdUseCase(restPublishRepository: RESTPublishRepository): GetRESTHttpGetParamsByIdUseCase {
+    fun provideGetRESTHttpGetParamsByIdUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): GetRESTHttpGetParamsByIdUseCase {
         return GetRESTHttpGetParamsByIdUseCase(restPublishRepository)
     }
 }

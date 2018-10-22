@@ -8,7 +8,6 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -30,6 +29,7 @@ import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceViewModel
+import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
@@ -37,7 +37,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
+class SavedDevicesFragment : DaggerFragment(), ItemClickListener<DeviceActive>,
     ScannedDevicesDialogListener,
     LongItemClickListener<DeviceActive>,
     DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener {
@@ -81,8 +81,6 @@ class SavedDevicesFragment : Fragment(), ItemClickListener<DeviceActive>,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainActivity: MainActivity? = activity as MainActivity
-        mainActivity?.mainActivityComponent?.inject(this)
         setHasOptionsMenu(true)
     }
 

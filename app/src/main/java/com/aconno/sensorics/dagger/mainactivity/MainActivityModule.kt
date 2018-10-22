@@ -22,11 +22,14 @@ import dagger.Provides
 import io.reactivex.Flowable
 
 @Module
-class MainActivityModule(private val mainActivity: MainActivity) {
+class MainActivityModule {
 
     @Provides
     @MainActivityScope
-    fun provideSensorListViewModel(sensorListViewModelFactory: SensorListViewModelFactory) =
+    fun provideSensorListViewModel(
+        mainActivity: MainActivity,
+        sensorListViewModelFactory: SensorListViewModelFactory
+    ) =
         ViewModelProviders.of(mainActivity, sensorListViewModelFactory)
             .get(SensorListViewModel::class.java)
 
@@ -42,7 +45,10 @@ class MainActivityModule(private val mainActivity: MainActivity) {
 
     @Provides
     @MainActivityScope
-    fun provideReadingListViewModel(readingListViewModelFactory: ReadingListViewModelFactory) =
+    fun provideReadingListViewModel(
+        mainActivity: MainActivity,
+        readingListViewModelFactory: ReadingListViewModelFactory
+    ) =
         ViewModelProviders.of(mainActivity, readingListViewModelFactory)
             .get(ReadingListViewModel::class.java)
 
@@ -59,6 +65,7 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     @Provides
     @MainActivityScope
     fun provideBluetoothScanningViewModel(
+        mainActivity: MainActivity,
         bluetoothScanningViewModelFactory: BluetoothScanningViewModelFactory
     ) = ViewModelProviders.of(mainActivity, bluetoothScanningViewModelFactory)
         .get(BluetoothScanningViewModel::class.java)
@@ -75,11 +82,7 @@ class MainActivityModule(private val mainActivity: MainActivity) {
 
     @Provides
     @MainActivityScope
-    fun provideMainActivity() = mainActivity
-
-    @Provides
-    @MainActivityScope
-    fun providePermissionsViewModel(): PermissionViewModel {
+    fun providePermissionsViewModel(mainActivity: MainActivity): PermissionViewModel {
         val permissionAction = PermissionActionFactory.getPermissionAction(mainActivity)
         return PermissionViewModel(permissionAction, mainActivity)
     }
@@ -87,6 +90,7 @@ class MainActivityModule(private val mainActivity: MainActivity) {
     @Provides
     @MainActivityScope
     fun provideBluetoothViewModelFactory(
+        mainActivity: MainActivity,
         bluetooth: Bluetooth,
         bluetoothStateReceiver: BluetoothStateReceiver
     ) =
@@ -94,7 +98,9 @@ class MainActivityModule(private val mainActivity: MainActivity) {
 
     @Provides
     @MainActivityScope
-    fun provideBluetoothViewModel(bluetoothViewModelFactory: BluetoothViewModelFactory) =
+    fun provideBluetoothViewModel(
+        mainActivity: MainActivity, bluetoothViewModelFactory: BluetoothViewModelFactory
+    ) =
         ViewModelProviders.of(
             mainActivity,
             bluetoothViewModelFactory
@@ -126,6 +132,35 @@ class MainActivityModule(private val mainActivity: MainActivity) {
 
     @Provides
     @MainActivityScope
+    fun provideUseCasesViewModel(
+        mainActivity: MainActivity,
+        useCasesViewModelFactory: UseCasesViewModelFactory
+    ) =
+        ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
+            .get(UseCasesViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideUseCasesViewModelFactory(
+        readingsStream: Flowable<List<Reading>>,
+        filterByMacUseCase: FilterByMacUseCase
+    ) = UseCasesViewModelFactory(
+        readingsStream,
+        filterByMacUseCase
+    )
+
+    @Provides
+    @MainActivityScope
+    fun provideDeviceListViewModel(
+        mainActivity: MainActivity,
+        deviceListViewModelFactory: DeviceListViewModelFactory
+    ): DeviceViewModel {
+        return ViewModelProviders.of(mainActivity, deviceListViewModelFactory)
+            .get(DeviceViewModel::class.java)
+    }
+
+    @Provides
+    @MainActivityScope
     fun provideDeviceListViewModelFactory(
         scanDeviceStream: Flowable<ScanDevice>,
         getSavedDevicesUseCase: GetSavedDevicesUseCase,
@@ -140,29 +175,4 @@ class MainActivityModule(private val mainActivity: MainActivity) {
             deleteDeviceUseCase
         )
     }
-
-    @Provides
-    @MainActivityScope
-    fun provideDeviceListViewModel(
-        deviceListViewModelFactory: DeviceListViewModelFactory
-    ): DeviceViewModel {
-        return ViewModelProviders.of(mainActivity, deviceListViewModelFactory)
-            .get(DeviceViewModel::class.java)
-    }
-
-    @Provides
-    @MainActivityScope
-    fun provideUseCasesViewModel(useCasesViewModelFactory: UseCasesViewModelFactory) =
-        ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
-            .get(UseCasesViewModel::class.java)
-
-    @Provides
-    @MainActivityScope
-    fun provideUseCasesViewModelFactory(
-        readingsStream: Flowable<List<Reading>>,
-        filterByMacUseCase: FilterByMacUseCase
-    ) = UseCasesViewModelFactory(
-        readingsStream,
-        filterByMacUseCase
-    )
 }

@@ -6,11 +6,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.R
-import com.aconno.sensorics.dagger.deviceselect.DaggerDeviceSelectComponent
-import com.aconno.sensorics.dagger.deviceselect.DeviceSelectComponent
-import com.aconno.sensorics.dagger.deviceselect.DeviceSelectModule
 import com.aconno.sensorics.model.*
 import com.aconno.sensorics.ui.base.BaseFragment
 import com.aconno.sensorics.viewmodel.DeviceSelectViewModel
@@ -37,19 +33,8 @@ class DeviceSelectFragment : BaseFragment() {
         }
     }
 
-    private val actionListComponent: DeviceSelectComponent by lazy {
-        val sensoricsApplication: SensoricsApplication? =
-            context?.applicationContext as? SensoricsApplication
-
-        DaggerDeviceSelectComponent.builder()
-            .appComponent(sensoricsApplication?.appComponent)
-            .deviceSelectModule(DeviceSelectModule(this))
-            .build()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionListComponent.inject(this)
         if (arguments != null && arguments!!.containsKey(DEVICE_SELECT_FRAGMENT_KEY)) {
             basePublishModel = arguments!!.getParcelable(DEVICE_SELECT_FRAGMENT_KEY)
         }

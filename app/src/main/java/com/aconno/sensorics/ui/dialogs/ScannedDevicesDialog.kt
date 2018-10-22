@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import com.aconno.sensorics.R
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.adapter.ScanDeviceAdapter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanDevice
@@ -37,8 +36,6 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        val sensoricsApplication = activity?.application as SensoricsApplication
-        sensoricsApplication.appComponent.inject(this)
 
         try {
             listener = context as ScannedDevicesDialogListener

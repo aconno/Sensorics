@@ -1,10 +1,10 @@
 package com.aconno.sensorics.ui.base
 
-import android.support.v7.app.AppCompatActivity
+import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity : DaggerAppCompatActivity() {
     private var compositeDisposable: CompositeDisposable? = null
 
     override fun onStop() {

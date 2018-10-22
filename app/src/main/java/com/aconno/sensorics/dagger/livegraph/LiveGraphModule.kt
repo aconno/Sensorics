@@ -10,12 +10,13 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
+class LiveGraphModule {
 
     @Provides
     @LiveGraphScope
     fun provideLiveGraphViewModelFactory(
-        getReadingsUseCase: GetReadingsUseCase
+        getReadingsUseCase: GetReadingsUseCase,
+        liveGraphActivity: LiveGraphActivity
     ) = LiveGraphViewModelFactory(
         getReadingsUseCase,
         liveGraphActivity.application
@@ -23,7 +24,10 @@ class LiveGraphModule(private val liveGraphActivity: LiveGraphActivity) {
 
     @Provides
     @LiveGraphScope
-    fun provideLiveGraphViewModel(liveGraphViewModelFactory: LiveGraphViewModelFactory) =
+    fun provideLiveGraphViewModel(
+        liveGraphViewModelFactory: LiveGraphViewModelFactory,
+        liveGraphActivity: LiveGraphActivity
+    ) =
         ViewModelProviders.of(
             liveGraphActivity,
             liveGraphViewModelFactory

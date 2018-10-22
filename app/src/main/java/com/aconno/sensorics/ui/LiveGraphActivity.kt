@@ -4,34 +4,21 @@ import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.R
-import com.aconno.sensorics.dagger.livegraph.DaggerLiveGraphComponent
-import com.aconno.sensorics.dagger.livegraph.LiveGraphComponent
-import com.aconno.sensorics.dagger.livegraph.LiveGraphModule
 import com.aconno.sensorics.ui.graph.BleGraph
 import com.aconno.sensorics.viewmodel.LiveGraphViewModel
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_graph.*
 import javax.inject.Inject
 
-class LiveGraphActivity : AppCompatActivity() {
+class LiveGraphActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var liveGraphViewModel: LiveGraphViewModel
 
-    private val liveGraphComponent: LiveGraphComponent by lazy {
-        val sensoricsApplication: SensoricsApplication? = application as? SensoricsApplication
-        DaggerLiveGraphComponent.builder()
-            .appComponent(sensoricsApplication?.appComponent)
-            .liveGraphModule(LiveGraphModule(this)).build()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_graph)
-
-        liveGraphComponent.inject(this)
     }
 
     override fun onResume() {
