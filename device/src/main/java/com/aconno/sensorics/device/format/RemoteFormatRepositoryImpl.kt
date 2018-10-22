@@ -1,6 +1,7 @@
 package com.aconno.sensorics.device.format
 
 import com.aconno.sensorics.domain.format.AdvertisementFormat
+import com.aconno.sensorics.domain.format.AdvertisementFormatJsonConverter
 import com.aconno.sensorics.domain.format.RemoteAdvertisementFormat
 import com.aconno.sensorics.domain.repository.LocalFormatRepository
 import com.aconno.sensorics.domain.repository.RemoteFormatRepository
@@ -10,28 +11,45 @@ import java.util.*
 
 class RemoteFormatRepositoryImpl(
     private val retrofitAdvertisementFormatApi: RetrofitAdvertisementFormatApi,
-    private val localFormatRepository: LocalFormatRepository
+    private val localFormatRepository: LocalFormatRepository,
+    private val advertisementFormatReader: AdvertisementFormatReader,
+    private val advertisementJsonConverter: AdvertisementFormatJsonConverter
 ) : RemoteFormatRepository {
 
     private val cachedFormats = mutableListOf<AdvertisementFormat>()
 
     override fun updateAdvertisementFormats(): Completable {
         return Completable.fromAction {
-            val formatsListingCall = retrofitAdvertisementFormatApi.getFormatsListing()
-            val formatsListing = formatsListingCall.execute().body()
-
-            if (formatsListing != null) {
-                val names = listingsToNames(formatsListing)
-
-                removeUnusedFormats(names)
-                names.forEach { updateFormat(it) }
-
-                cachedFormats.addAll(localFormatRepository.getAllFormats())
-
-            } else {
-                throw IllegalStateException("There are no formats on the server.")
+            try {
+                loadFormatsRemotely()
+            } catch (e: Exception) {
+                loadFormatsFromAssets()
             }
         }
+    }
+
+    private fun loadFormatsRemotely() {
+        val formatsListingCall = retrofitAdvertisementFormatApi.getFormatsListing()
+        val formatsListing = formatsListingCall.execute().body()
+
+        if (formatsListing != null) {
+            val names = listingsToNames(formatsListing)
+
+            removeUnusedFormats(names)
+            names.forEach { updateFormat(it) }
+
+            cachedFormats.addAll(localFormatRepository.getAllFormats())
+
+        } else {
+            throw IllegalStateException("There are no formats on the server.")
+        }
+    }
+
+    private fun loadFormatsFromAssets() {
+        val formats = advertisementFormatReader.getPreloadedFormats()
+        cachedFormats.clear()
+        val output = formats.map { advertisementJsonConverter.toAdvertisementFormat(it) }
+        cachedFormats.addAll(output)
     }
 
     override fun getSupportedAdvertisementFormats(): List<AdvertisementFormat> = cachedFormats
@@ -79,7 +97,7 @@ class RemoteFormatRepositoryImpl(
 
     private fun convertDateStringToTimestamp(date: String): Long {
         val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
-        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         return dateFormat.parse(date).time
     }
 
