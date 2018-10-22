@@ -28,17 +28,19 @@ class LocalUseCaseRepositoryImpl(
     }
 
     override fun getFilePathFor(sensorName: String): String {
-        return "$sensoricsFilesPath/${sensorName.toLowerCase()}.html"
+        val file = File("$sensoricsFilesPath/${sensorName.toLowerCase()}.html")
+        return if (file.exists()) {
+            "$sensoricsFilesPath/${sensorName.toLowerCase()}.html"
+        } else {
+            ""
+        }
     }
 
     override fun getLastUpdateTimestamp(sensorName: String): Long? {
         val find = sensoricsFolder.listFiles()
             .find { it.name.startsWith(sensorName) }
-        if (find != null) {
-            return find.lastModified()
-        }
 
-        return 0
+        return find?.lastModified() ?: 0
     }
 
     override fun getAllUseCaseNames(): List<String> {

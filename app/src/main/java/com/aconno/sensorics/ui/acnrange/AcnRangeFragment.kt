@@ -92,17 +92,11 @@ class AcnRangeFragment : DaggerFragment() {
     }
 
     private fun getDeviceAlias(): String {
-        arguments?.let {
-            return it.getString(DEVICE_ALIAS_EXTRA) ?: ""
-        }
-        return ""
+        return arguments?.getString(DEVICE_ALIAS_EXTRA) ?: ""
     }
 
     private fun getDeviceName(): String {
-        arguments?.let {
-            return it.getString(DEVICE_NAME_EXTRA) ?: ""
-        }
-        return ""
+        return arguments?.getString(DEVICE_NAME_EXTRA) ?: ""
     }
 
     companion object {

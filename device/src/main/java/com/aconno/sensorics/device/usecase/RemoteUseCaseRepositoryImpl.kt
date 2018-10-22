@@ -6,6 +6,8 @@ import com.aconno.sensorics.domain.repository.RemoteUseCaseRepository
 import io.reactivex.Maybe
 import timber.log.Timber
 import java.lang.Exception
+import java.lang.IllegalArgumentException
+import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -21,10 +23,15 @@ class RemoteUseCaseRepositoryImpl(
             try {
                 updateFormat(sensorName)
             } catch (ex: Exception) {
-                localUseCaseRepository.getFilePathFor(sensorName)
+                //No-Op
             }
 
-            localUseCaseRepository.getFilePathFor(sensorName)
+            val filePath = localUseCaseRepository.getFilePathFor(sensorName)
+            if (filePath.isBlank()) {
+                throw NullPointerException("There are no UseCase file defined.")
+            }
+
+            filePath
         }
     }
 

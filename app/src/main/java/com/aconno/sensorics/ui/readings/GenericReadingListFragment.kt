@@ -9,6 +9,7 @@ import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.sensors.SensorListFragment
 import kotlinx.android.synthetic.main.fragment_generic_reading_list.*
 import kotlinx.android.synthetic.main.item_reading.view.*
 import javax.inject.Inject
@@ -99,17 +100,11 @@ class GenericReadingListFragment : Fragment() {
     }
 
     private fun getDeviceAlias(): String {
-        arguments?.let {
-            return it.getString(DEVICE_ALIAS_EXTRA) ?: ""
-        }
-        return ""
+        return arguments?.getString(DEVICE_ALIAS_EXTRA) ?: ""
     }
 
     private fun getDeviceName(): String {
-        arguments?.let {
-            return it.getString(DEVICE_NAME_EXTRA) ?: ""
-        }
-        return ""
+        return arguments?.getString(DEVICE_NAME_EXTRA) ?: ""
     }
 
     companion object {
