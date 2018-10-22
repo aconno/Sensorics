@@ -3,6 +3,8 @@ package com.aconno.sensorics.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,8 +49,16 @@ class UseCasesFragment : Fragment() {
 
             mViewModel.url.observe(this, LiveDataObserver { loadUrl(it) })
 
+            mViewModel.mutableProgress.observe(this, LiveDataObserver { progressVisibility(it) })
+
             mViewModel.initViewModel(macAddress, name)
         }
+    }
+
+    private fun progressVisibility(it: Boolean) {
+        progressbar.visibility = if (it) View.VISIBLE else View.GONE
+        status_view.visibility = if (it) View.VISIBLE else View.GONE
+        activity_usecases_webview.visibility = if (it) View.GONE else View.VISIBLE
     }
 
     override fun onDetach() {
@@ -57,7 +67,21 @@ class UseCasesFragment : Fragment() {
     }
 
     private fun loadUrl(url: String) {
-        activity_usecases_webview.loadUrl(url)
+        if (url == "Error") {
+            context?.let {
+                val builder = AlertDialog.Builder(it)
+                builder.setMessage("There are no UseCase files defined.")
+                    .setNeutralButton("Ok") { _, _ ->
+                        (context as AppCompatActivity).supportFragmentManager.popBackStack()
+                    }
+
+                builder.create()
+                    .show()
+            } ?: throw IllegalStateException("Activity cannot be null")
+
+        } else {
+            activity_usecases_webview.loadUrl(url)
+        }
     }
 
     override fun onResume() {
