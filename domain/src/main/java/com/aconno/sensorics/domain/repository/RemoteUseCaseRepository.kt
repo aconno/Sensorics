@@ -1,7 +1,7 @@
 package com.aconno.sensorics.domain.repository
 
-import io.reactivex.Completable
+import io.reactivex.Maybe
 
 interface RemoteUseCaseRepository {
-    fun updateUseCases(): Completable
+    fun updateUseCases(sensorName: String): Maybe<String>
 }
