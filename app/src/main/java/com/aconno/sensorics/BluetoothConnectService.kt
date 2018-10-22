@@ -1,28 +1,23 @@
 package com.aconno.sensorics
 
-import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
+import dagger.android.DaggerService
 import io.reactivex.Flowable
 import java.util.*
 import javax.inject.Inject
 
 
-class BluetoothConnectService : Service() {
+class BluetoothConnectService : DaggerService() {
 
     @Inject
     lateinit var bluetooth: Bluetooth
 
 
     private val mBinder = LocalBinder()
-
-    override fun onCreate() {
-        super.onCreate()
-        (applicationContext as SensoricsApplication).appComponent.inject(this)
-    }
 
     inner class LocalBinder : Binder() {
         fun getService(): BluetoothConnectService {

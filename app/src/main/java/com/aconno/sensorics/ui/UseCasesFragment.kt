@@ -2,7 +2,6 @@ package com.aconno.sensorics.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
@@ -12,20 +11,15 @@ import android.webkit.WebViewClient
 import com.aconno.sensorics.LiveDataObserver
 import com.aconno.sensorics.R
 import com.aconno.sensorics.viewmodel.UseCasesViewModel
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_use_cases.*
 import javax.inject.Inject
 
 
-class UseCasesFragment : Fragment() {
+class UseCasesFragment : DaggerFragment() {
 
     @Inject
     lateinit var mViewModel: UseCasesViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val mainActivity: MainActivity? = activity as? MainActivity
-        mainActivity?.mainActivityComponent?.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

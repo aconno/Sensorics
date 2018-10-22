@@ -2,18 +2,18 @@ package com.aconno.sensorics.ui.sensors
 
 import android.arch.lifecycle.Observer
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.*
 import com.aconno.sensorics.R
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.viewmodel.SensorListViewModel
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_sensor_list.*
 import kotlinx.android.synthetic.main.view_sensor_card.view.*
 import javax.inject.Inject
 
-class SensorListFragment : Fragment() {
+class SensorListFragment : DaggerFragment() {
 
     private var macAddress: String = ""
 
@@ -22,8 +22,6 @@ class SensorListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainActivity: MainActivity? = activity as MainActivity
-        mainActivity?.mainActivityComponent?.inject(this)
 
         setHasOptionsMenu(true)
 

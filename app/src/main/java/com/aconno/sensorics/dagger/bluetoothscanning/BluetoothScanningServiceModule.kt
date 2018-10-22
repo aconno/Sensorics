@@ -6,7 +6,6 @@ import android.content.IntentFilter
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BluetoothScanningServiceReceiver
 import com.aconno.sensorics.R
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.device.storage.FileStorageImpl
@@ -23,24 +22,20 @@ import com.aconno.sensorics.domain.interactor.ifttt.mpublish.GetAllEnabledMqttPu
 import com.aconno.sensorics.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.rpublish.GetAllEnabledRESTPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
-import com.aconno.sensorics.domain.interactor.repository.*
+import com.aconno.sensorics.domain.interactor.repository.GetRESTHeadersByIdUseCase
+import com.aconno.sensorics.domain.interactor.repository.GetRESTHttpGetParamsByIdUseCase
+import com.aconno.sensorics.domain.interactor.repository.SaveSensorReadingsUseCase
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import dagger.Module
 import dagger.Provides
 
 @Module
-class BluetoothScanningServiceModule(
-    private val bluetoothScanningService: BluetoothScanningService
-) {
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideBluetoothScanningService() = bluetoothScanningService
+class BluetoothScanningServiceModule {
 
     @Provides
     @BluetoothScanningServiceScope
     fun provideNotification(
-        sensoricsApplication: SensoricsApplication,
+        bluetoothScanningService: BluetoothScanningService,
         intentProvider: IntentProvider
     ): Notification {
         val notificationFactory = NotificationFactory()
@@ -48,7 +43,7 @@ class BluetoothScanningServiceModule(
         val content = bluetoothScanningService.getString(R.string.service_notification_content)
         return notificationFactory.makeForegroundServiceNotification(
             bluetoothScanningService,
-            intentProvider.getSensoricsContentIntent(sensoricsApplication),
+            intentProvider.getSensoricsContentIntent(bluetoothScanningService),
             title,
             content
         )
@@ -56,7 +51,9 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideBluetoothScanningServiceReceiver(): BroadcastReceiver =
+    fun provideBluetoothScanningServiceReceiver(
+        bluetoothScanningService: BluetoothScanningService
+    ): BroadcastReceiver =
         BluetoothScanningServiceReceiver(bluetoothScanningService)
 
     @Provides
@@ -73,7 +70,9 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideLogReadingsUseCase(): LogReadingUseCase {
+    fun provideLogReadingsUseCase(
+        bluetoothScanningService: BluetoothScanningService
+    ): LogReadingUseCase {
         return LogReadingUseCase(FileStorageImpl(bluetoothScanningService))
     }
 
@@ -107,7 +106,9 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideGetAllEnabledGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): GetAllEnabledGooglePublishUseCase {
+    fun provideGetAllEnabledGooglePublishUseCase(
+        googlePublishRepository: GooglePublishRepository
+    ): GetAllEnabledGooglePublishUseCase {
         return GetAllEnabledGooglePublishUseCase(
             googlePublishRepository
         )
@@ -115,7 +116,9 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideGetAllEnabledRESTPublishUseCase(restPublishRepository: RESTPublishRepository): GetAllEnabledRESTPublishUseCase {
+    fun provideGetAllEnabledRESTPublishUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): GetAllEnabledRESTPublishUseCase {
         return GetAllEnabledRESTPublishUseCase(
             restPublishRepository
         )
@@ -123,7 +126,9 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideGetAllEnabledMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): GetAllEnabledMqttPublishUseCase {
+    fun provideGetAllEnabledMqttPublishUseCase(
+        mqttPublishRepository: MqttPublishRepository
+    ): GetAllEnabledMqttPublishUseCase {
         return GetAllEnabledMqttPublishUseCase(
             mqttPublishRepository
         )
@@ -131,7 +136,9 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideUpdateRESTPublishUseCase(restPublishRepository: RESTPublishRepository): UpdateRESTPublishUserCase {
+    fun provideUpdateRESTPublishUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): UpdateRESTPublishUserCase {
         return UpdateRESTPublishUserCase(
             restPublishRepository
         )
@@ -139,7 +146,9 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideUpdateGooglePublishUseCase(restPublishRepository: GooglePublishRepository): UpdateGooglePublishUseCase {
+    fun provideUpdateGooglePublishUseCase(
+        restPublishRepository: GooglePublishRepository
+    ): UpdateGooglePublishUseCase {
         return UpdateGooglePublishUseCase(
             restPublishRepository
         )
@@ -147,39 +156,28 @@ class BluetoothScanningServiceModule(
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideUpdateMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): UpdateMqttPublishUseCase {
+    fun provideUpdateMqttPublishUseCase(
+        mqttPublishRepository: MqttPublishRepository
+    ): UpdateMqttPublishUseCase {
         return UpdateMqttPublishUseCase(
             mqttPublishRepository
         )
     }
 
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideGetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithGooglePublishUseCase {
-        return GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository)
-    }
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideGetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithRESTPublishUseCase {
-        return GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideGetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithMqttPublishUseCase {
-        return GetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideGetRESTHeadersByIdUseCase(restPublishRepository: RESTPublishRepository): GetRESTHeadersByIdUseCase {
+    fun provideGetRESTHeadersByIdUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): GetRESTHeadersByIdUseCase {
         return GetRESTHeadersByIdUseCase(restPublishRepository)
     }
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideGetRESTHttpGetParamsByIdUseCase(restPublishRepository: RESTPublishRepository): GetRESTHttpGetParamsByIdUseCase {
+    fun provideGetRESTHttpGetParamsByIdUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): GetRESTHttpGetParamsByIdUseCase {
         return GetRESTHttpGetParamsByIdUseCase(restPublishRepository)
     }
 }

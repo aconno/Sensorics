@@ -1,7 +1,6 @@
 package com.aconno.sensorics
 
 import android.app.Notification
-import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,9 +8,6 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
-import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceComponent
-import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceModule
-import com.aconno.sensorics.dagger.bluetoothscanning.DaggerBluetoothScanningServiceComponent
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.data.publisher.RESTPublisher
@@ -33,6 +29,7 @@ import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.scanning.Bluetooth
+import dagger.android.DaggerService
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,7 +42,7 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 
-class BluetoothScanningService : Service() {
+class BluetoothScanningService : DaggerService() {
 
     @Inject
     lateinit var bluetooth: Bluetooth
@@ -120,23 +117,10 @@ class BluetoothScanningService : Service() {
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
     private var publishers: MutableList<Publisher>? = null
 
-    private val bluetoothScanningServiceComponent: BluetoothScanningServiceComponent by lazy {
-        val sensoricsApplication: SensoricsApplication? = application as? SensoricsApplication
-        DaggerBluetoothScanningServiceComponent.builder()
-            .appComponent(sensoricsApplication?.appComponent)
-            .bluetoothScanningServiceModule(BluetoothScanningServiceModule(this))
-            .build()
-    }
-
     private val disposables = CompositeDisposable()
 
     override fun onBind(intent: Intent): IBinder? {
         return null
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        bluetoothScanningServiceComponent.inject(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

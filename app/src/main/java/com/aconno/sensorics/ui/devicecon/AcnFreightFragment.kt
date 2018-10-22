@@ -7,10 +7,13 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.*
-import com.aconno.sensorics.*
+import com.aconno.sensorics.BluetoothConnectService
+import com.aconno.sensorics.R
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.getRealName
+import com.aconno.sensorics.toHexByte
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.base.BaseFragment
 import com.google.gson.Gson
@@ -113,7 +116,6 @@ class AcnFreightFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (context!!.applicationContext as SensoricsApplication).appComponent.inject(this)
         setHasOptionsMenu(true)
         getParams()
     }

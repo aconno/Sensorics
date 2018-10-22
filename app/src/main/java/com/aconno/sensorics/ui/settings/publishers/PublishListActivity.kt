@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import com.aconno.sensorics.R
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.GooglePublishModel
@@ -13,13 +12,14 @@ import com.aconno.sensorics.model.RESTPublishModel
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RESTPublisherActivity
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_publish_list.*
 
 
 /**
  * @author aconno
  */
-class PublishListActivity : AppCompatActivity(),
+class PublishListActivity : DaggerAppCompatActivity(),
     PublishListFragment.OnListFragmentInteractionListener {
 
 

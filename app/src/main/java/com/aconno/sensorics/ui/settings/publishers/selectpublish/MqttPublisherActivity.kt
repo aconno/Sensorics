@@ -11,13 +11,9 @@ import android.view.View
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
-import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.R
-import com.aconno.sensorics.dagger.mqttpublisher.DaggerMqttPublisherComponent
-import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherComponent
-import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherModule
-import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.PublisherIntervalConverter
+import com.aconno.sensorics.R
+import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
@@ -79,21 +75,9 @@ class MqttPublisherActivity : BaseActivity() {
         }
     }
 
-    private val mqttPublisherComponent: MqttPublisherComponent by lazy {
-        val sensoricsApplication: SensoricsApplication? = application as? SensoricsApplication
-
-        DaggerMqttPublisherComponent
-            .builder()
-            .appComponent(sensoricsApplication?.appComponent)
-            .mqttPublisherModule(MqttPublisherModule(this))
-            .build()
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mqtt_publisher)
-        mqttPublisherComponent.inject(this)
 
         setSupportActionBar(custom_toolbar)
         supportActionBar!!.setDisplayShowTitleEnabled(true)
@@ -315,7 +299,7 @@ class MqttPublisherActivity : BaseActivity() {
         }
 
         val id = if (mqttPublishModel == null) 0 else mqttPublishModel!!.id
-        val timeMillis = PublisherIntervalConverter.calculateMillis(this,timeCount, timeType)
+        val timeMillis = PublisherIntervalConverter.calculateMillis(this, timeCount, timeType)
         val lastTimeMillis = if (mqttPublishModel == null) 0 else mqttPublishModel!!.lastTimeMillis
         return MqttPublishModel(
             id,

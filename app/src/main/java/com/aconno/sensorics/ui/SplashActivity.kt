@@ -6,14 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import com.aconno.sensorics.R
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.viewmodel.SplashViewModel
 import com.aconno.sensorics.viewmodel.factory.SplashViewModelFactory
+import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var splashViewModelFactory: SplashViewModelFactory
@@ -21,7 +20,6 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var splashViewModel: SplashViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (application as SensoricsApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 

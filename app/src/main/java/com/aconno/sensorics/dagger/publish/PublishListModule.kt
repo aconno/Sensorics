@@ -14,7 +14,7 @@ import com.aconno.sensorics.domain.interactor.ifttt.rpublish.DeleteRestPublishUs
 import com.aconno.sensorics.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
 import com.aconno.sensorics.model.mapper.*
-import com.aconno.sensorics.ui.settings.publishers.PublishListFragment
+import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.viewmodel.PublishListViewModel
 import com.aconno.sensorics.viewmodel.factory.PublishListViewModelFactory
 import dagger.Module
@@ -24,11 +24,13 @@ import dagger.Provides
  * @author aconno
  */
 @Module
-class PublishListModule(private val publishListFragment: PublishListFragment) {
+class PublishListModule {
 
     @Provides
     @PublishListScope
-    fun provideGetAllGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): GetAllGooglePublishUseCase {
+    fun provideGetAllGooglePublishUseCase(
+        googlePublishRepository: GooglePublishRepository
+    ): GetAllGooglePublishUseCase {
         return GetAllGooglePublishUseCase(
             googlePublishRepository
         )
@@ -36,7 +38,9 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
-    fun provideGetAllRESTPublishUseCase(restPublishRepository: RESTPublishRepository): GetAllRESTPublishUseCase {
+    fun provideGetAllRESTPublishUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): GetAllRESTPublishUseCase {
         return GetAllRESTPublishUseCase(
             restPublishRepository
         )
@@ -44,7 +48,9 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
-    fun provideGetAllMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): GetAllMqttPublishUseCase {
+    fun provideGetAllMqttPublishUseCase(
+        mqttPublishRepository: MqttPublishRepository
+    ): GetAllMqttPublishUseCase {
         return GetAllMqttPublishUseCase(
             mqttPublishRepository
         )
@@ -52,7 +58,9 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
-    fun provideUpdateGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): UpdateGooglePublishUseCase {
+    fun provideUpdateGooglePublishUseCase(
+        googlePublishRepository: GooglePublishRepository
+    ): UpdateGooglePublishUseCase {
         return UpdateGooglePublishUseCase(
             googlePublishRepository
         )
@@ -60,7 +68,9 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
-    fun provideUpdateRESTPublishUseCase(restPublishRepository: RESTPublishRepository): UpdateRESTPublishUserCase {
+    fun provideUpdateRESTPublishUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): UpdateRESTPublishUserCase {
         return UpdateRESTPublishUserCase(
             restPublishRepository
         )
@@ -68,7 +78,9 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
-    fun provideUpdateMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): UpdateMqttPublishUseCase {
+    fun provideUpdateMqttPublishUseCase(
+        mqttPublishRepository: MqttPublishRepository
+    ): UpdateMqttPublishUseCase {
         return UpdateMqttPublishUseCase(
             mqttPublishRepository
         )
@@ -76,7 +88,9 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
-    fun provideDeleteGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): DeleteGooglePublishUseCase {
+    fun provideDeleteGooglePublishUseCase(
+        googlePublishRepository: GooglePublishRepository
+    ): DeleteGooglePublishUseCase {
         return DeleteGooglePublishUseCase(
             googlePublishRepository
         )
@@ -84,7 +98,9 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
-    fun provideDeleteRESTPublishUseCase(restPublishRepository: RESTPublishRepository): DeleteRestPublishUseCase {
+    fun provideDeleteRESTPublishUseCase(
+        restPublishRepository: RESTPublishRepository
+    ): DeleteRestPublishUseCase {
         return DeleteRestPublishUseCase(
             restPublishRepository
         )
@@ -92,7 +108,9 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
 
     @Provides
     @PublishListScope
-    fun provideDeleteMqttPublishUseCase(mqttPublishRepository: MqttPublishRepository): DeleteMqttPublishUseCase {
+    fun provideDeleteMqttPublishUseCase(
+        mqttPublishRepository: MqttPublishRepository
+    ): DeleteMqttPublishUseCase {
         return DeleteMqttPublishUseCase(
             mqttPublishRepository
         )
@@ -101,8 +119,9 @@ class PublishListModule(private val publishListFragment: PublishListFragment) {
     @Provides
     @PublishListScope
     fun providePublishListViewModel(
+        activity: PublishListActivity,
         publishViewModelFactory: PublishListViewModelFactory
-    ) = ViewModelProviders.of(publishListFragment, publishViewModelFactory)
+    ) = ViewModelProviders.of(activity, publishViewModelFactory)
         .get(PublishListViewModel::class.java)
 
     @Provides
