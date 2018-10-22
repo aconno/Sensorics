@@ -210,9 +210,21 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     private fun getReadingListFragment(device: Device): Fragment {
         return when (device.name) {
-            "AcnSensa" -> SensorListFragment.newInstance(device.macAddress, device.getRealName())
-            "AcnRange" -> AcnRangeFragment.newInstance(device.macAddress, device.getRealName())
-            else -> GenericReadingListFragment.newInstance(device.macAddress, device.getRealName())
+            "AcnSensa" -> SensorListFragment.newInstance(
+                device.macAddress,
+                device.getRealName(),
+                device.name
+            )
+            "AcnRange" -> AcnRangeFragment.newInstance(
+                device.macAddress,
+                device.getRealName(),
+                device.name
+            )
+            else -> GenericReadingListFragment.newInstance(
+                device.macAddress,
+                device.getRealName(),
+                device.name
+            )
         }
     }
 

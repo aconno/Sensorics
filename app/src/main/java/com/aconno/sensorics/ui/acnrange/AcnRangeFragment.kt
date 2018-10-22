@@ -25,7 +25,7 @@ class AcnRangeFragment : Fragment() {
         super.onAttach(context)
         val mainActivity = activity as MainActivity
         mainActivity.mainActivityComponent.inject(this)
-        mainActivity.supportActionBar?.title = getDeviceName()
+        mainActivity.supportActionBar?.title = getDeviceAlias()
 
         setHasOptionsMenu(true)
 
@@ -92,6 +92,13 @@ class AcnRangeFragment : Fragment() {
         }
     }
 
+    private fun getDeviceAlias(): String {
+        arguments?.let {
+            return it.getString(DEVICE_ALIAS_EXTRA) ?: ""
+        }
+        return ""
+    }
+
     private fun getDeviceName(): String {
         arguments?.let {
             return it.getString(DEVICE_NAME_EXTRA) ?: ""
@@ -102,11 +109,17 @@ class AcnRangeFragment : Fragment() {
     companion object {
 
         private const val MAC_ADDRESS_EXTRA = "mac_address"
+        private const val DEVICE_ALIAS_EXTRA = "device_alias"
         private const val DEVICE_NAME_EXTRA = "device_name"
 
-        fun newInstance(macAddress: String, deviceName: String): AcnRangeFragment {
+        fun newInstance(
+            macAddress: String,
+            deviceAlias: String,
+            deviceName: String
+        ): AcnRangeFragment {
             val bundle = Bundle()
             bundle.putString(MAC_ADDRESS_EXTRA, macAddress)
+            bundle.putString(DEVICE_ALIAS_EXTRA, deviceAlias)
             bundle.putString(DEVICE_NAME_EXTRA, deviceName)
             val fragment = AcnRangeFragment()
             fragment.arguments = bundle

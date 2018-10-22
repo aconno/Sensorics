@@ -64,7 +64,7 @@ class SensorListFragment : Fragment() {
         initValues()
 
         val mainActivity: MainActivity? = context as MainActivity
-        mainActivity?.supportActionBar?.title = getDeviceName()
+        mainActivity?.supportActionBar?.title = getDeviceAlias()
         mainActivity?.supportActionBar?.subtitle = macAddress
     }
 
@@ -316,6 +316,13 @@ class SensorListFragment : Fragment() {
         }
     }
 
+    private fun getDeviceAlias(): String {
+        arguments?.let {
+            return it.getString(DEVICE_ALIAS_EXTRA) ?: ""
+        }
+        return ""
+    }
+
     private fun getDeviceName(): String {
         arguments?.let {
             return it.getString(DEVICE_NAME_EXTRA) ?: ""
@@ -323,15 +330,20 @@ class SensorListFragment : Fragment() {
         return ""
     }
 
-
     companion object {
 
         private const val MAC_ADDRESS_EXTRA = "mac_address"
+        private const val DEVICE_ALIAS_EXTRA = "device_alias"
         private const val DEVICE_NAME_EXTRA = "device_name"
 
-        fun newInstance(macAddress: String, deviceName: String): SensorListFragment {
+        fun newInstance(
+            macAddress: String,
+            deviceAlias: String,
+            deviceName: String
+        ): SensorListFragment {
             val bundle = Bundle()
             bundle.putString(MAC_ADDRESS_EXTRA, macAddress)
+            bundle.putString(DEVICE_ALIAS_EXTRA, deviceAlias)
             bundle.putString(DEVICE_NAME_EXTRA, deviceName)
             val fragment = SensorListFragment()
             fragment.arguments = bundle
