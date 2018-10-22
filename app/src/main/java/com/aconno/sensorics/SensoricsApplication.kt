@@ -3,7 +3,6 @@ package com.aconno.sensorics
 import android.app.Activity
 import android.app.Application
 import android.app.Service
-import com.aconno.sensorics.dagger.application.AppComponent
 import com.aconno.sensorics.dagger.application.DaggerAppComponent
 import com.crashlytics.android.Crashlytics
 import com.squareup.leakcanary.LeakCanary
@@ -22,8 +21,6 @@ class SensoricsApplication : Application(), HasActivityInjector, HasServiceInjec
 
     @Inject
     lateinit var dispatchingServiceInjector: DispatchingAndroidInjector<Service>
-
-    lateinit var appComponent: AppComponent
 
     override fun onCreate() {
         super.onCreate()

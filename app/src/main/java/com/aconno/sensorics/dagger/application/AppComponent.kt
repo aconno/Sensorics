@@ -15,6 +15,8 @@ import com.aconno.sensorics.dagger.deviceselect.DeviceSelectModule
 import com.aconno.sensorics.dagger.deviceselect.DeviceSelectScope
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherScope
+import com.aconno.sensorics.dagger.livegraph.LiveGraphModule
+import com.aconno.sensorics.dagger.livegraph.LiveGraphScope
 import com.aconno.sensorics.dagger.mainactivity.MainActivityModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityScope
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherModule
@@ -138,6 +140,9 @@ interface AppComponent : AndroidInjector<SensoricsApplication> {
 @Module
 abstract class ActivityBuilder {
     @ContributesAndroidInjector
+    abstract fun bindAcnFreightFragment(): AcnFreightFragment
+
+    @ContributesAndroidInjector
     abstract fun bindSplashActivity(): SplashActivity
 
     @MainActivityScope
@@ -147,6 +152,9 @@ abstract class ActivityBuilder {
     @BluetoothScanningServiceScope
     @ContributesAndroidInjector(modules = [BluetoothScanningServiceModule::class])
     abstract fun bindBluetoothScanningService(): BluetoothScanningService
+
+    @ContributesAndroidInjector
+    abstract fun bindBluetoothConnectService(): BluetoothConnectService
 
     @PublishListScope
     @ContributesAndroidInjector(modules = [PublishListModule::class, PublishListFragmentsModule::class])
@@ -171,6 +179,10 @@ abstract class ActivityBuilder {
     @RESTPublisherScope
     @ContributesAndroidInjector(modules = [RESTPublisherModule::class, DeviceSelectionModule::class])
     abstract fun bindRestPublisherActivity(): RESTPublisherActivity
+
+    @LiveGraphScope
+    @ContributesAndroidInjector(modules = [LiveGraphModule::class])
+    abstract fun bindLiveGraphActivity(): LiveGraphActivity
 }
 
 @Module
