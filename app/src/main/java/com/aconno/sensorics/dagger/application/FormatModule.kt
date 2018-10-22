@@ -1,7 +1,10 @@
 package com.aconno.sensorics.dagger.application
 
+import com.aconno.sensorics.AdvertisementFormatReaderImpl
+import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.data.repository.format.LocalFormatRepositoryImpl
+import com.aconno.sensorics.device.format.AdvertisementFormatReader
 import com.aconno.sensorics.device.format.FormatJsonConverterImpl
 import com.aconno.sensorics.device.format.RemoteFormatRepositoryImpl
 import com.aconno.sensorics.device.format.RetrofitAdvertisementFormatApi
@@ -47,9 +50,20 @@ class FormatModule {
     @Singleton
     fun provideRemoteAdvertisementRepository(
         retrofitAdvertisementFormatApi: RetrofitAdvertisementFormatApi,
-        localFormatRepository: LocalFormatRepository
+        localFormatRepository: LocalFormatRepository,
+        advertisementFormatReader: AdvertisementFormatReader,
+        advertisementFormatJsonConverter: AdvertisementFormatJsonConverter
     ): RemoteFormatRepository =
-        RemoteFormatRepositoryImpl(retrofitAdvertisementFormatApi, localFormatRepository)
+        RemoteFormatRepositoryImpl(
+            retrofitAdvertisementFormatApi,
+            localFormatRepository, advertisementFormatReader, advertisementFormatJsonConverter
+        )
+
+    @Provides
+    @Singleton
+    fun provideAdvertisementFormatReader(
+        sensoricsApplication: SensoricsApplication
+    ): AdvertisementFormatReader = AdvertisementFormatReaderImpl(sensoricsApplication)
 
     @Provides
     @Singleton
