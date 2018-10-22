@@ -8,7 +8,7 @@ class LocalUseCaseRepositoryImpl(
     context: Context
 ) : LocalUseCaseRepository {
 
-    private val sensoricsFilesPath = context.cacheDir.absolutePath + "SensoricsFiles"
+    private val sensoricsFilesPath = context.cacheDir.absolutePath + "/" + "SensoricsFiles"
     private val sensoricsFolder = File(sensoricsFilesPath)
 
     init {
@@ -27,9 +27,18 @@ class LocalUseCaseRepositoryImpl(
         }
     }
 
+    override fun getFilePathFor(sensorName: String): String {
+        return "$sensoricsFilesPath/${sensorName.toLowerCase()}.html"
+    }
+
     override fun getLastUpdateTimestamp(sensorName: String): Long? {
-        return sensoricsFolder.listFiles()
-            .find { it.name.startsWith(sensorName) }?.lastModified()
+        val find = sensoricsFolder.listFiles()
+            .find { it.name.startsWith(sensorName) }
+        if (find != null) {
+            return find.lastModified()
+        }
+
+        return 0
     }
 
     override fun getAllUseCaseNames(): List<String> {
