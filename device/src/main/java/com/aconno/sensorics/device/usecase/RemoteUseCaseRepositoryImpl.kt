@@ -59,7 +59,7 @@ class RemoteUseCaseRepositoryImpl(
 
     private fun convertDateStringToTimestamp(date: String): Long {
         val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
-        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         return dateFormat.parse(date).time
     }
 
@@ -92,7 +92,4 @@ class RemoteUseCaseRepositoryImpl(
         }
 
     }
-
-    private fun listingToIdName(listing: String) = listing.split(Regex("\\s+")).last()
-
 }
