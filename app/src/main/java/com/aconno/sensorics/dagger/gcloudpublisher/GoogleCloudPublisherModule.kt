@@ -5,7 +5,6 @@ import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
 import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.interactor.ifttt.gpublish.AddGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import com.aconno.sensorics.model.mapper.GooglePublishModelDataMapper
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
@@ -15,11 +14,12 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class GoogleCloudPublisherModule(private val googleCloudPublisherActivity: GoogleCloudPublisherActivity) {
+class GoogleCloudPublisherModule {
 
     @Provides
     @GoogleCloudPublisherScope
     fun provideGoogleCloudPublisherViewModel(
+        googleCloudPublisherActivity: GoogleCloudPublisherActivity,
         googleCloudPublisherViewModelFactory: GoogleCloudPublisherViewModelFactory
     ) = ViewModelProviders.of(googleCloudPublisherActivity, googleCloudPublisherViewModelFactory)
         .get(GoogleCloudPublisherViewModel::class.java)
@@ -40,7 +40,9 @@ class GoogleCloudPublisherModule(private val googleCloudPublisherActivity: Googl
 
     @Provides
     @GoogleCloudPublisherScope
-    fun provideAddGooglePublishUseCase(googlePublishRepository: GooglePublishRepository): AddGooglePublishUseCase {
+    fun provideAddGooglePublishUseCase(
+        googlePublishRepository: GooglePublishRepository
+    ): AddGooglePublishUseCase {
         return AddGooglePublishUseCase(
             googlePublishRepository
         )
@@ -48,19 +50,17 @@ class GoogleCloudPublisherModule(private val googleCloudPublisherActivity: Googl
 
     @Provides
     @GoogleCloudPublisherScope
-    fun provideSavePublishDeviceJoinUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): SavePublishDeviceJoinUseCase {
+    fun provideSavePublishDeviceJoinUseCase(
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
+    ): SavePublishDeviceJoinUseCase {
         return SavePublishDeviceJoinUseCase(publishDeviceJoinRepository)
     }
 
     @Provides
     @GoogleCloudPublisherScope
-    fun provideDeletePublishDeviceJoinUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): DeletePublishDeviceJoinUseCase {
+    fun provideDeletePublishDeviceJoinUseCase(
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
+    ): DeletePublishDeviceJoinUseCase {
         return DeletePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @GoogleCloudPublisherScope
-    fun provideGetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithGooglePublishUseCase {
-        return GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository)
     }
 }

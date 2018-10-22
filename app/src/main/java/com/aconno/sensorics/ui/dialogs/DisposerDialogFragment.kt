@@ -1,10 +1,11 @@
 package com.aconno.sensorics.ui.dialogs
 
-import android.support.v4.app.DialogFragment
+
+import dagger.android.support.DaggerAppCompatDialogFragment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-abstract class DisposerDialogFragment : DialogFragment() {
+abstract class DisposerDialogFragment : DaggerAppCompatDialogFragment() {
 
     private val compositeDisposable = CompositeDisposable()
 

@@ -7,16 +7,15 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import com.aconno.sensorics.*
-import com.aconno.sensorics.dagger.mainactivity.DaggerMainActivityComponent
-import com.aconno.sensorics.dagger.mainactivity.MainActivityComponent
-import com.aconno.sensorics.dagger.mainactivity.MainActivityModule
+import com.aconno.sensorics.BluetoothScanningService
+import com.aconno.sensorics.BuildConfig
+import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanEvent
 import com.aconno.sensorics.domain.scanning.BluetoothState
+import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
 import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
@@ -29,10 +28,11 @@ import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.PermissionViewModel
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_toolbar.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallbacks,
+class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCallbacks,
     ScannedDevicesDialogListener, SavedDevicesFragmentListener {
 
     @Inject
@@ -50,19 +50,9 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     private var filterByDevice: Boolean = true
 
-    val mainActivityComponent: MainActivityComponent by lazy {
-        val sensoricsApplication: SensoricsApplication? = application as? SensoricsApplication
-        DaggerMainActivityComponent.builder()
-            .appComponent(sensoricsApplication?.appComponent)
-            .mainActivityModule(MainActivityModule(this))
-            .build()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar)
-
-        mainActivityComponent.inject(this)
 
         snackbar =
                 Snackbar.make(content_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
@@ -299,7 +289,6 @@ class MainActivity : AppCompatActivity(), PermissionViewModel.PermissionCallback
 
     override fun permissionAccepted(actionCode: Int) {
         if (actionCode == SensoricsPermission.ACCESS_FINE_LOCATION.code) {
-            // TODO: Why do we need READ_EXTERNAL_STORAGE for scanning??? @Sergio
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
             bluetoothScanningViewModel.startScanning(filterByDevice)

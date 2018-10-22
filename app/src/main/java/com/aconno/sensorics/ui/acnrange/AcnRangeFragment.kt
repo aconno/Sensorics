@@ -3,7 +3,6 @@ package com.aconno.sensorics.ui.acnrange
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.*
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Reading
@@ -11,10 +10,11 @@ import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_acnrange.*
 import javax.inject.Inject
 
-class AcnRangeFragment : Fragment() {
+class AcnRangeFragment : DaggerFragment() {
 
     private var macAddress: String = ""
 
@@ -24,7 +24,6 @@ class AcnRangeFragment : Fragment() {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         val mainActivity = activity as MainActivity
-        mainActivity.mainActivityComponent.inject(this)
         mainActivity.supportActionBar?.title = getDeviceName()
 
         setHasOptionsMenu(true)

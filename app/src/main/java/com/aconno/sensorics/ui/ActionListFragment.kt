@@ -3,7 +3,6 @@ package com.aconno.sensorics.ui
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.RecyclerView
@@ -12,16 +11,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.sensorics.R
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.adapter.ActionAdapter
 import com.aconno.sensorics.adapter.ItemClickListener
-import com.aconno.sensorics.dagger.actionlist.ActionListComponent
-import com.aconno.sensorics.dagger.actionlist.ActionListModule
-import com.aconno.sensorics.dagger.actionlist.DaggerActionListComponent
 import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
+import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -31,7 +27,7 @@ import javax.inject.Inject
 /**
  * @author aconno
  */
-class ActionListFragment : Fragment(), ItemClickListener<Action> {
+class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
 
     private lateinit var actionAdapter: ActionAdapter
     private var snackbar: Snackbar? = null
@@ -44,16 +40,6 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
 
     private val disposables = CompositeDisposable()
 
-    private val actionListComponent: ActionListComponent by lazy {
-        val sensoricsApplication: SensoricsApplication? =
-            context?.applicationContext as? SensoricsApplication
-
-        DaggerActionListComponent.builder()
-            .appComponent(sensoricsApplication?.appComponent)
-            .actionListModule(ActionListModule())
-            .build()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -63,7 +49,6 @@ class ActionListFragment : Fragment(), ItemClickListener<Action> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        actionListComponent.inject(this)
         actionAdapter = ActionAdapter(mutableListOf(), this)
         action_list.adapter = actionAdapter
 

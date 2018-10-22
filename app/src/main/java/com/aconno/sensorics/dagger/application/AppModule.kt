@@ -42,8 +42,7 @@ import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
+import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
@@ -61,13 +60,11 @@ import io.reactivex.Flowable
 import javax.inject.Singleton
 
 @Module
-class AppModule(
-    private val sensoricsApplication: SensoricsApplication
-) {
+class AppModule {
 
     @Provides
     @Singleton
-    fun provideLocalBroadcastManager() =
+    fun provideLocalBroadcastManager(sensoricsApplication: SensoricsApplication) =
         LocalBroadcastManager.getInstance(sensoricsApplication.applicationContext)
 
     @Provides
@@ -82,6 +79,7 @@ class AppModule(
     @Provides
     @Singleton
     fun provideBluetooth(
+        sensoricsApplication: SensoricsApplication,
         sharedPreferences: SharedPreferences,
         bluetoothAdapter: BluetoothAdapter,
         bluetoothPermission: BluetoothPermission,
@@ -107,16 +105,12 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideSensoricsApplication(): SensoricsApplication = sensoricsApplication
-
-    @Provides
-    @Singleton
     fun provideInMemoryRepository(): InMemoryRepository = InMemoryRepositoryImpl()
 
 
     @Provides
     @Singleton
-    fun provideSharedPreferences(): SharedPreferences {
+    fun provideSharedPreferences(sensoricsApplication: SensoricsApplication): SharedPreferences {
         return PreferenceManager.getDefaultSharedPreferences(sensoricsApplication)
     }
 
@@ -130,7 +124,7 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideVibrator(): Vibrator {
+    fun provideVibrator(sensoricsApplication: SensoricsApplication): Vibrator {
         return VibratorImpl(sensoricsApplication.applicationContext)
     }
 
@@ -142,7 +136,7 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideTextToSpeechPlayer(): TextToSpeechPlayer {
+    fun provideTextToSpeechPlayer(sensoricsApplication: SensoricsApplication): TextToSpeechPlayer {
         return TextToSpeechPlayerImpl(sensoricsApplication)
     }
 
@@ -200,7 +194,7 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideSensoricsDatabase(): SensoricsDatabase {
+    fun provideSensoricsDatabase(sensoricsApplication: SensoricsApplication): SensoricsDatabase {
         return Room.databaseBuilder(
             sensoricsApplication,
             SensoricsDatabase::class.java,
@@ -212,7 +206,10 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideNotificationDisplay(intentProvider: IntentProvider): NotificationDisplay {
+    fun provideNotificationDisplay(
+        sensoricsApplication: SensoricsApplication,
+        intentProvider: IntentProvider
+    ): NotificationDisplay {
         return NotificationDisplayImpl(
             NotificationFactory(), intentProvider, sensoricsApplication
         )
@@ -243,7 +240,9 @@ class AppModule(
 
     @Provides
     @Singleton
-    fun provideGetSavedDevicesMaybeUseCase(deviceRepository: DeviceRepository): GetSavedDevicesMaybeUseCase {
+    fun provideGetSavedDevicesMaybeUseCase(
+        deviceRepository: DeviceRepository
+    ): GetSavedDevicesMaybeUseCase {
         return GetSavedDevicesMaybeUseCase(deviceRepository)
     }
 
@@ -325,4 +324,28 @@ class AppModule(
         GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create()
+
+    @Provides
+    @Singleton
+    fun provideGetDevicesThatConnectedWithGooglePublishUseCase(
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
+    ): GetDevicesThatConnectedWithGooglePublishUseCase {
+        return GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetDevicesThatConnectedWithRESTPublishUseCase(
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
+    ): GetDevicesThatConnectedWithRESTPublishUseCase {
+        return GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetDevicesThatConnectedWithMqttPublishUseCase(
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
+    ): GetDevicesThatConnectedWithMqttPublishUseCase {
+        return GetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository)
+    }
 }

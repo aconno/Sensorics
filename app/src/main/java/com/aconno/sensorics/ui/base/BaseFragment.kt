@@ -1,10 +1,10 @@
 package com.aconno.sensorics.ui.base
 
-import android.support.v4.app.Fragment
+import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment : DaggerFragment() {
 
     private var compositeDisposable: CompositeDisposable? = null
 

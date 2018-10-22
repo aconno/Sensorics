@@ -1,7 +1,6 @@
 package com.aconno.sensorics.dagger.action_details
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
@@ -15,18 +14,16 @@ import dagger.Provides
 import io.reactivex.Flowable
 
 @Module
-class ActionDetailsModule(private val actionDetailsActivity: ActionDetailsActivity) {
+class ActionDetailsModule {
 
     @Provides
     @ActionDetailsActivityScope
     fun provideActionDetailsViewModelFactory(
-        sensoricsApplication: SensoricsApplication,
         savedDevicesStream: Flowable<List<Device>>,
         formatMatcher: FormatMatcher,
         getActionByIdUseCase: GetActionByIdUseCase,
         addActionUseCase: AddActionUseCase
     ) = ActionDetailsViewModelFactory(
-        sensoricsApplication,
         savedDevicesStream,
         formatMatcher,
         getActionByIdUseCase,
@@ -36,6 +33,7 @@ class ActionDetailsModule(private val actionDetailsActivity: ActionDetailsActivi
     @Provides
     @ActionDetailsActivityScope
     fun provideActionDetailsViewModel(
+        actionDetailsActivity: ActionDetailsActivity,
         actionDetailsViewModelFactory: ActionDetailsViewModelFactory
     ) = ViewModelProviders.of(actionDetailsActivity, actionDetailsViewModelFactory)
         .get(ActionDetailsViewModel::class.java)

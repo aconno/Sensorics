@@ -12,13 +12,9 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.Toast
-import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.R
-import com.aconno.sensorics.dagger.restpublisher.DaggerRESTPublisherComponent
-import com.aconno.sensorics.dagger.restpublisher.RESTPublisherComponent
-import com.aconno.sensorics.dagger.restpublisher.RESTPublisherModule
-import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.PublisherIntervalConverter
+import com.aconno.sensorics.R
+import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.publisher.RESTPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
@@ -89,17 +85,9 @@ class RESTPublisherActivity : BaseActivity() {
         }
     }
 
-    private val restPublisherComponent: RESTPublisherComponent by lazy {
-        val sensoricsApplication: SensoricsApplication? = application as? SensoricsApplication
-
-        DaggerRESTPublisherComponent.builder().appComponent(sensoricsApplication?.appComponent)
-            .rESTPublisherModule(RESTPublisherModule(this)).build()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_restpublisher)
-        restPublisherComponent.inject(this)
 
         setSupportActionBar(custom_toolbar)
         supportActionBar!!.setDisplayShowTitleEnabled(true)

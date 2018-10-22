@@ -1,7 +1,6 @@
 package com.aconno.sensorics.dagger.deviceselect
 
 import android.arch.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
@@ -14,11 +13,12 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class DeviceSelectModule(private val deviceSelectFragment: DeviceSelectFragment) {
+class DeviceSelectModule {
 
     @Provides
     @DeviceSelectScope
     fun provideGoogleCloudPublisherViewModel(
+        deviceSelectFragment: DeviceSelectFragment,
         deviceSelectViewModelFactory: DeviceSelectViewModelFactory
     ) = ViewModelProviders.of(deviceSelectFragment, deviceSelectViewModelFactory)
         .get(DeviceSelectViewModel::class.java)
@@ -38,22 +38,4 @@ class DeviceSelectModule(private val deviceSelectFragment: DeviceSelectFragment)
         getDevicesThatConnectedWithMqttPublishUseCase,
         deviceRelationModelMapper
     )
-
-    @Provides
-    @DeviceSelectScope
-    fun provideGetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithGooglePublishUseCase {
-        return GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @DeviceSelectScope
-    fun provideGetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithRESTPublishUseCase {
-        return GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @DeviceSelectScope
-    fun provideGetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository: PublishDeviceJoinRepository): GetDevicesThatConnectedWithMqttPublishUseCase {
-        return GetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository)
-    }
 }

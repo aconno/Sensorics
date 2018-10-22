@@ -25,7 +25,6 @@ class GenericReadingListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val mainActivity = activity as MainActivity
-        mainActivity.mainActivityComponent.inject(this)
 
         setHasOptionsMenu(true)
 

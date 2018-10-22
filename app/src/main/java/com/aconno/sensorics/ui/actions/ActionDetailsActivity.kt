@@ -5,21 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.CheckedTextView
 import com.aconno.sensorics.R
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.adapter.DeviceSpinnerAdapter
-import com.aconno.sensorics.dagger.action_details.ActionDetailsComponent
-import com.aconno.sensorics.dagger.action_details.ActionDetailsModule
-import com.aconno.sensorics.dagger.action_details.DaggerActionDetailsComponent
 import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.Settings
+import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -28,7 +24,7 @@ import kotlinx.android.synthetic.main.item_chip.view.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
+class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener {
 
     @Inject
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
@@ -40,18 +36,9 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
 
     private val disposables = CompositeDisposable()
 
-    private val actionDetailsComponent: ActionDetailsComponent by lazy {
-        val sensoricsApplication = application as SensoricsApplication
-        DaggerActionDetailsComponent.builder()
-            .appComponent(sensoricsApplication.appComponent)
-            .actionDetailsModule(ActionDetailsModule(this))
-            .build()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_action_details)
-        actionDetailsComponent.inject(this)
 
         setDevicesSpinnerAdapter()
         setDevicesSelectListener()
@@ -277,7 +264,7 @@ class ActionDetailsActivity : AppCompatActivity(), ConditionDialogListener {
             val message = edittext_message.text.toString()
             val phoneNumber = edittext_phone_number.text.toString()
             val name = edittext_name.text.toString()
-            actionDetailsViewModel.saveAction(name, message, phoneNumber)
+            actionDetailsViewModel.saveAction(application, name, message, phoneNumber)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({

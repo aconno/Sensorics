@@ -11,12 +11,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.LongItemClickListener
-import com.aconno.sensorics.dagger.publish.DaggerPublishListComponent
-import com.aconno.sensorics.dagger.publish.PublishListComponent
-import com.aconno.sensorics.dagger.publish.PublishListModule
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.MqttPublishModel
@@ -61,16 +57,6 @@ class PublishListFragment : BaseFragment(),
             }
         }
 
-    private val publishListComponent: PublishListComponent by lazy {
-        val sensoricsApplication: SensoricsApplication? =
-            context?.applicationContext as? SensoricsApplication
-
-        DaggerPublishListComponent.builder()
-            .appComponent(sensoricsApplication?.appComponent)
-            .publishListModule(PublishListModule(this))
-            .build()
-    }
-
     private val checkedChangeListener: PublishRecyclerViewAdapter.OnCheckedChangeListener = object :
         PublishRecyclerViewAdapter.OnCheckedChangeListener {
         override fun onCheckedChange(checked: Boolean, position: Int) {
@@ -114,11 +100,6 @@ class PublishListFragment : BaseFragment(),
         }
 
         return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        publishListComponent.inject(this)
     }
 
     override fun onAttach(context: Context) {

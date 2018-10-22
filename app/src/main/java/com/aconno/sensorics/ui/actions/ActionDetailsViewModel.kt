@@ -1,9 +1,9 @@
 package com.aconno.sensorics.ui.actions
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.actions.GeneralAction
 import com.aconno.sensorics.domain.actions.outcomes.Outcome
@@ -20,12 +20,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class ActionDetailsViewModel(
-    application: Application,
     private val savedDevicesStream: Flowable<List<Device>>,
     private val formatMatcher: FormatMatcher,
     private val getActionByIdUseCase: GetActionByIdUseCase,
     private val addActionUseCase: AddActionUseCase
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private val disposables = CompositeDisposable()
 
@@ -156,22 +155,39 @@ class ActionDetailsViewModel(
         return formatMatcher.getReadingTypes(device.name)
     }
 
-    fun saveAction(name: String, message: String, phoneNumber: String): Completable {
+    fun saveAction(
+        application: Application,
+        name: String,
+        message: String,
+        phoneNumber: String
+    ): Completable {
         val id = actionLiveData.value?.id ?: 0L
         if (name.isBlank()) {
-            return getCompletableIllegalArgumentError(R.string.message_action_name_blank)
+            return getCompletableIllegalArgumentError(
+                application,
+                R.string.message_action_name_blank
+            )
         }
         val device = actionLiveData.value?.device
         val condition = actionLiveData.value?.condition
         val outcome = actionLiveData.value?.outcome
         if (device == null) {
-            return getCompletableIllegalArgumentError(R.string.message_action_device_not_selected)
+            return getCompletableIllegalArgumentError(
+                application,
+                R.string.message_action_device_not_selected
+            )
         }
         if (condition == null) {
-            return getCompletableIllegalArgumentError(R.string.message_action_condition_not_selected)
+            return getCompletableIllegalArgumentError(
+                application,
+                R.string.message_action_condition_not_selected
+            )
         }
         if (outcome == null) {
-            return getCompletableIllegalArgumentError(R.string.message_action_outcome_not_selected)
+            return getCompletableIllegalArgumentError(
+                application,
+                R.string.message_action_outcome_not_selected
+            )
         }
         val parameters = hashMapOf<String, String>()
         parameters[Outcome.PHONE_NUMBER] = phoneNumber
@@ -187,8 +203,11 @@ class ActionDetailsViewModel(
         return addActionUseCase.execute(action)
     }
 
-    private fun getCompletableIllegalArgumentError(messageResourceId: Int): Completable {
-        val message = getApplication<Application>().getString(messageResourceId)
+    private fun getCompletableIllegalArgumentError(
+        application: Application,
+        messageResourceId: Int
+    ): Completable {
+        val message = application.getString(messageResourceId)
         return Completable.error(IllegalArgumentException(message))
     }
 
