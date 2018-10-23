@@ -18,6 +18,7 @@ import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
+import com.aconno.sensorics.ui.dashboard.DashboardFragment
 import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
@@ -324,6 +325,16 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     override fun showRationale(actionCode: Int) {
         //TODO: Show rationale
+    }
+
+    fun onDashboardClicked() {
+        supportFragmentManager.beginTransaction()
+            .replace(
+                content_container.id,
+                DashboardFragment.newInstance()
+            )
+            .addToBackStack(null)
+            .commit()
     }
 
     fun onUseCaseClicked(macAddress: String, deviceName: String) {
