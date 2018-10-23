@@ -3,6 +3,7 @@ apply plugin: 'kotlin'
 buildscript {
     repositories {
         mavenCentral()
+        maven { url "https://kotlin.bintray.com/kotlin-eap" }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -11,6 +12,7 @@ buildscript {
 
 repositories {
     mavenCentral()
+    maven { url "https://kotlin.bintray.com/kotlin-eap" }
 }
 
 compileKotlin {
