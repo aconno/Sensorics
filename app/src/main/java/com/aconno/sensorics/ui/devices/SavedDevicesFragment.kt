@@ -104,6 +104,10 @@ class SavedDevicesFragment : DaggerFragment(), ItemClickListener<DeviceActive>,
                     }
                     return true
                 }
+                R.id.action_start_dashboard -> {
+                    (activity as MainActivity).onDashboardClicked()
+                    return true
+                }
                 else -> {
                     //Do nothing
                 }

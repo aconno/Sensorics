@@ -211,4 +211,21 @@ class MainActivityModule {
         context: SensoricsApplication
     ): LocalUseCaseRepository =
         LocalUseCaseRepositoryImpl(context)
+
+    @Provides
+    @MainActivityScope
+    fun provideDashboardViewModel(
+        mainActivity: MainActivity,
+        useCasesViewModelFactory: DashboardViewModelFactory
+    ) =
+        ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
+            .get(DashboardViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideDashboardViewModelFactory(
+        readingsStream: Flowable<List<Reading>>
+    ) = DashboardViewModelFactory(
+        readingsStream
+    )
 }

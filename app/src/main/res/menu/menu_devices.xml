@@ -6,4 +6,9 @@
         android:id="@+id/action_start_actions_activity"
         android:title="@string/actions"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_start_dashboard"
+        android:title="@string/dashboard"
+        app:showAsAction="never" />
 </menu>
