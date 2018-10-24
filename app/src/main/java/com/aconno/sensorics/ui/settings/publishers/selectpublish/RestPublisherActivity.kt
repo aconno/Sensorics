@@ -18,6 +18,7 @@ import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.publisher.RestPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.model.RestHeaderModel
 import com.aconno.sensorics.model.RestHttpGetParamModel
 import com.aconno.sensorics.model.RestPublishModel
@@ -47,6 +48,9 @@ class RestPublisherActivity : BaseActivity() {
 
     @Inject
     lateinit var restPublisherViewModel: RestPublisherViewModel
+
+    @Inject
+    lateinit var syncRepository: SyncRepository
 
     private var restPublishModel: RestPublishModel? = null
     private var isTestingAlreadyRunning: Boolean = false
@@ -463,7 +467,8 @@ class RestPublisherActivity : BaseActivity() {
             RESTPublishModelDataMapper().transform(toRestPublishModel),
             listOf(Device("TestDevice", "Name", "Mac")),
             RESTHeaderModelMapper().toRESTHeaderList(restHeaderList),
-            RESTHttpGetParamModelMapper().toRESTHttpGetParamList(restHttpGetParamList)
+            RESTHttpGetParamModelMapper().toRESTHttpGetParamList(restHttpGetParamList),
+            syncRepository
         )
 
         testConnectionCallback.onConnectionStart()

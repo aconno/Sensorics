@@ -18,6 +18,8 @@ import com.aconno.sensorics.data.repository.googlepublish.GooglePublishRepositor
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishRepositoryImpl
 import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinRepositoryImpl
 import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
+import com.aconno.sensorics.data.repository.sync.SyncDao
+import com.aconno.sensorics.data.repository.sync.SyncRepositoryImpl
 import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.device.SmsSenderImpl
 import com.aconno.sensorics.device.TextToSpeechPlayerImpl
@@ -50,6 +52,7 @@ import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
+import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.serialization.Deserializer
 import com.aconno.sensorics.domain.serialization.DeserializerImpl
@@ -358,4 +361,12 @@ class AppModule {
         restPublishRepository: RestPublishRepository
     ): UpdatePublishUseCase =
         UpdatePublishUseCase(googlePublishRepository, mqttPublishRepository, restPublishRepository)
+
+    @Provides
+    @Singleton
+    fun provideSyncDao(database: SensoricsDatabase): SyncDao = database.syncDao()
+
+    @Provides
+    @Singleton
+    fun provideSyncRepository(dao: SyncDao): SyncRepository = SyncRepositoryImpl(dao)
 }

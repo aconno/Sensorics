@@ -20,6 +20,8 @@ import com.aconno.sensorics.data.repository.restpublish.RESTPublishDao
 import com.aconno.sensorics.data.repository.restpublish.RestHeaderEntity
 import com.aconno.sensorics.data.repository.restpublish.RestHttpGetParamEntity
 import com.aconno.sensorics.data.repository.restpublish.RestPublishEntity
+import com.aconno.sensorics.data.repository.sync.SyncDao
+import com.aconno.sensorics.data.repository.sync.SyncEntity
 
 @Database(
     entities = [
@@ -33,8 +35,10 @@ import com.aconno.sensorics.data.repository.restpublish.RestPublishEntity
         RestHeaderEntity::class,
         RestHttpGetParamEntity::class,
         RestPublishDeviceJoinEntity::class,
-        RestPublishEntity::class],
-    version = 5
+        RestPublishEntity::class,
+        SyncEntity::class
+    ],
+    version = 6
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 
@@ -51,4 +55,6 @@ abstract class SensoricsDatabase : RoomDatabase() {
     abstract fun publishDeviceJoinDao(): PublishDeviceJoinDao
 
     abstract fun restPublishDao(): RESTPublishDao
+
+    abstract fun syncDao(): SyncDao
 }

@@ -8,6 +8,8 @@ import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.GooglePublish
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.model.Sync
+import com.aconno.sensorics.domain.repository.SyncRepository
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -21,9 +23,15 @@ import java.util.*
 class GoogleCloudPublisher(
     context: Context,
     private val googlePublish: GooglePublish,
-    private val listDevices: List<Device>
+    private val listDevices: List<Device>,
+    private val syncRepository: SyncRepository
 ) : Publisher {
-    private val lastSyncs: MutableMap<Pair<String, String>, Long> = mutableMapOf()
+
+    private val lastSyncs: MutableMap<Pair<String, String>, Long> =
+        syncRepository.getSync("google" + googlePublish.id)
+            .map { Pair(it.macAddress, it.advertisementId) to it.lastSyncTimestamp }
+            .toMap()
+            .toMutableMap()
 
     //TODO: Refactor
     private val mqttAndroidClient: MqttAndroidClient
@@ -112,8 +120,16 @@ class GoogleCloudPublisher(
             }
 
             val reading = readings.first()
-            lastSyncs[Pair(reading.device.macAddress, reading.advertismentId)] =
-                    System.currentTimeMillis()
+            val time = System.currentTimeMillis()
+            syncRepository.save(
+                Sync(
+                    "google" + googlePublish.id,
+                    reading.device.macAddress,
+                    reading.advertismentId,
+                    time
+                )
+            )
+            lastSyncs[Pair(reading.device.macAddress, reading.advertismentId)] = time
         }
     }
 

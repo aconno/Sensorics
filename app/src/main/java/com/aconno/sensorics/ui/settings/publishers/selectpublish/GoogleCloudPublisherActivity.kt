@@ -18,6 +18,7 @@ import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.mapper.GooglePublishModelDataMapper
 import com.aconno.sensorics.ui.base.BaseActivity
@@ -42,6 +43,9 @@ class GoogleCloudPublisherActivity : BaseActivity() {
 
     @Inject
     lateinit var googleViewModel: GoogleCloudPublisherViewModel
+
+    @Inject
+    lateinit var syncRepository: SyncRepository
 
     private var googlePublishModel: GooglePublishModel? = null
     private var isTestingAlreadyRunning: Boolean = false
@@ -397,7 +401,8 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         val publisher = GoogleCloudPublisher(
             applicationContext,
             GooglePublishModelDataMapper().transform(toGooglePublishModel),
-            listOf(Device("TestDevice", "Name", "Mac"))
+            listOf(Device("TestDevice", "Name", "Mac")),
+            syncRepository
         )
 
         testConnectionCallback.onConnectionStart()

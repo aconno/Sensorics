@@ -26,6 +26,7 @@ import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import dagger.android.DaggerService
 import io.reactivex.Flowable
@@ -107,6 +108,9 @@ class BluetoothScanningService : DaggerService() {
 
     @Inject
     lateinit var getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase
+
+    @Inject
+    lateinit var syncRepository: SyncRepository
 
     private var closeConnectionUseCase: CloseConnectionUseCase? = null
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
@@ -260,7 +264,8 @@ class BluetoothScanningService : DaggerService() {
                 GoogleCloudPublisher(
                     this,
                     it.first,
-                    it.second
+                    it.second,
+                    syncRepository
                 ) as Publisher
             }
     }
@@ -282,7 +287,8 @@ class BluetoothScanningService : DaggerService() {
                             t1,
                             t2,
                             t3,
-                            t4
+                            t4,
+                            syncRepository
                         )
                     }
                 )
@@ -304,7 +310,8 @@ class BluetoothScanningService : DaggerService() {
                 MqttPublisher(
                     this,
                     it.first,
-                    it.second
+                    it.second,
+                    syncRepository
                 ) as Publisher
             }
     }

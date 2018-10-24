@@ -17,6 +17,7 @@ import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.model.MqttPublishModel
 import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
 import com.aconno.sensorics.ui.base.BaseActivity
@@ -39,6 +40,9 @@ class MqttPublisherActivity : BaseActivity() {
 
     @Inject
     lateinit var mqttPublisherViewModel: MqttPublisherViewModel
+
+    @Inject
+    lateinit var syncRepository: SyncRepository
 
     private var mqttPublishModel: MqttPublishModel? = null
     private var isTestingAlreadyRunning: Boolean = false
@@ -348,7 +352,8 @@ class MqttPublisherActivity : BaseActivity() {
         val publisher = MqttPublisher(
             applicationContext,
             MqttPublishModelDataMapper().toMqttPublish(toMqttPublishModel),
-            listOf(Device("TestDevice", "Name", "Mac"))
+            listOf(Device("TestDevice", "Name", "Mac")),
+            syncRepository
         )
 
         testConnectionCallback.onConnectionStart()

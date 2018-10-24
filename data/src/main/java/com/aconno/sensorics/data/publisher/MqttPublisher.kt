@@ -7,6 +7,8 @@ import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.MqttPublish
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.model.Sync
+import com.aconno.sensorics.domain.repository.SyncRepository
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import timber.log.Timber
@@ -16,10 +18,15 @@ import java.util.*
 class MqttPublisher(
     context: Context,
     private val mqttPublish: MqttPublish,
-    private val listDevices: List<Device>
+    private val listDevices: List<Device>,
+    private val syncRepository: SyncRepository
 ) : Publisher {
 
-    private val lastSyncs: MutableMap<Pair<String, String>, Long> = mutableMapOf()
+    private val lastSyncs: MutableMap<Pair<String, String>, Long> =
+        syncRepository.getSync("mqtt" + mqttPublish.id)
+            .map { Pair(it.macAddress, it.advertisementId) to it.lastSyncTimestamp }
+            .toMap()
+            .toMutableMap()
 
     private val mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(
         context,
@@ -77,9 +84,22 @@ class MqttPublisher(
             }
 
             val reading = readings.first()
-
-            lastSyncs[Pair(reading.device.macAddress, reading.advertismentId)] =
-                    System.currentTimeMillis()
+            val time = System.currentTimeMillis()
+            Timber.e(
+                "Sync done at: ${Pair(
+                    reading.device.macAddress,
+                    reading.advertismentId
+                )} $time"
+            )
+            syncRepository.save(
+                Sync(
+                    "mqtt" + mqttPublish.id,
+                    reading.device.macAddress,
+                    reading.advertismentId,
+                    time
+                )
+            )
+            lastSyncs[Pair(reading.device.macAddress, reading.advertismentId)] = time
         }
     }
 

@@ -5,6 +5,8 @@ import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.model.Sync
+import com.aconno.sensorics.domain.repository.SyncRepository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
@@ -18,9 +20,14 @@ class RestPublisher(
     private val restPublish: RestPublish,
     private val listDevices: List<Device>,
     private val listHeaders: List<RestHeader>,
-    private val listHttpGetParams: List<RestHttpGetParam>
+    private val listHttpGetParams: List<RestHttpGetParam>,
+    private val syncRepository: SyncRepository
 ) : Publisher {
-    private val lastSyncs: MutableMap<Pair<String, String>, Long> = mutableMapOf()
+    private val lastSyncs: MutableMap<Pair<String, String>, Long> =
+        syncRepository.getSync("rest" + restPublish.id)
+            .map { Pair(it.macAddress, it.advertisementId) to it.lastSyncTimestamp }
+            .toMap()
+            .toMutableMap()
 
     private val httpClient: OkHttpClient
     private val readingToStringParser: DataStringConverter
@@ -51,8 +58,16 @@ class RestPublisher(
                 }
 
             val reading = readings.first()
-            lastSyncs[Pair(reading.device.macAddress, reading.advertismentId)] =
-                    System.currentTimeMillis()
+            val time = System.currentTimeMillis()
+            syncRepository.save(
+                Sync(
+                    "rest" + restPublish.id,
+                    reading.device.macAddress,
+                    reading.advertismentId,
+                    time
+                )
+            )
+            lastSyncs[Pair(reading.device.macAddress, reading.advertismentId)] = time
         }
 
     }
