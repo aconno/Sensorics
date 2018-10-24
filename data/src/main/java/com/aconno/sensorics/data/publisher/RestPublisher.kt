@@ -20,6 +20,7 @@ class RestPublisher(
     private val listHeaders: List<RestHeader>,
     private val listHttpGetParams: List<RestHttpGetParam>
 ) : Publisher {
+    private val lastSyncs: MutableMap<Pair<String, String>, Long> = mutableMapOf()
 
     private val httpClient: OkHttpClient
     private val readingToStringParser: DataStringConverter
@@ -39,14 +40,20 @@ class RestPublisher(
     }
 
     override fun publish(readings: List<Reading>) {
-        Timber.tag("Publisher HTTP")
-            .d("${restPublish.name} publishes from ${readings[0].device}")
-        getRequestObservable(readings)
-            .flatMapIterable { it }
-            .map { it }
-            .subscribe {
-                Timber.d(it.body().toString())
-            }
+        if (readings.isNotEmpty() && isPublishable(readings)) {
+            Timber.tag("Publisher HTTP")
+                .d("${restPublish.name} publishes from ${readings[0].device}")
+            getRequestObservable(readings)
+                .flatMapIterable { it }
+                .map { it }
+                .subscribe {
+                    Timber.d(it.body().toString())
+                }
+
+            val reading = readings.first()
+            lastSyncs[Pair(reading.device.macAddress, reading.advertismentId)] =
+                    System.currentTimeMillis()
+        }
 
     }
 
@@ -55,7 +62,8 @@ class RestPublisher(
             System.currentTimeMillis(),
             Device("TestDevice", "Name", "MA:CA:DD:RE:SS:11"),
             1,
-            "Temperature"
+            "Temperature",
+            "AdvertismentId"
         )
 
         getRequestObservable(listOf(reading))
@@ -190,9 +198,13 @@ class RestPublisher(
         return restPublish
     }
 
-    override fun isPublishable(device: Device): Boolean {
-        return System.currentTimeMillis() > (restPublish.lastTimeMillis + restPublish.timeMillis)
-                && listDevices.contains(device)
+    private fun isPublishable(readings: List<Reading>): Boolean {
+        val reading = readings.firstOrNull()
+        val latestTimestamp =
+            lastSyncs[Pair(reading?.device?.macAddress, reading?.advertismentId)] ?: 0
+
+        return System.currentTimeMillis() - latestTimestamp > this.restPublish.timeMillis
+                && reading != null && listDevices.contains(reading.device)
     }
 
     override fun closeConnection() {

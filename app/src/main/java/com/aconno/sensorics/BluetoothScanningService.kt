@@ -160,14 +160,7 @@ class BluetoothScanningService : DaggerService() {
                 readings.subscribe { readings ->
                     //Send data and update last sent date-time
 
-                    publishReadingsUseCase?.let {
-                        it.execute(readings).forEach { publisher ->
-                            val data = publisher.getPublishData()
-                            data.lastTimeMillis = System.currentTimeMillis()
-
-                            updatePublishUseCase.execute(data)
-                        }
-                    }
+                    publishReadingsUseCase?.execute(readings)
                 }
             )
         }

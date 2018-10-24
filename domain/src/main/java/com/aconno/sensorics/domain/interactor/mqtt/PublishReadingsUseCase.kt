@@ -13,7 +13,7 @@ class PublishReadingsUseCase(
         listPublisher
             .forEach {
 
-                if (parameter.isNotEmpty() && it.isPublishable(parameter[0].device)) {
+                if (parameter.isNotEmpty()) {
                     it.publish(parameter)
                     publishedPublishers.add(it)
                 }

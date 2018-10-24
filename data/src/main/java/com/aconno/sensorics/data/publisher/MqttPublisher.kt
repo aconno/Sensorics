@@ -19,6 +19,8 @@ class MqttPublisher(
     private val listDevices: List<Device>
 ) : Publisher {
 
+    private val lastSyncs: MutableMap<Pair<String, String>, Long> = mutableMapOf()
+
     private val mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(
         context,
         mqttPublish.url, mqttPublish.clientId
@@ -63,13 +65,9 @@ class MqttPublisher(
         return mqttPublish
     }
 
-    override fun isPublishable(device: Device): Boolean {
-        return System.currentTimeMillis() > (mqttPublish.lastTimeMillis + mqttPublish.timeMillis)
-                && listDevices.contains(device)
-    }
-
     override fun publish(readings: List<Reading>) {
-        if (readings.isNotEmpty()) {
+        if (readings.isNotEmpty() && isPublishable(readings)) {
+
             Timber.d("size is ${readings.size}")
             val messages = dataStringConverter.convert(readings)
             for (message in messages) {
@@ -77,7 +75,21 @@ class MqttPublisher(
                     .d("${mqttPublish.name} publishes from ${readings[0].device}")
                 publish(message)
             }
+
+            val reading = readings.first()
+
+            lastSyncs[Pair(reading.device.macAddress, reading.advertismentId)] =
+                    System.currentTimeMillis()
         }
+    }
+
+    private fun isPublishable(readings: List<Reading>): Boolean {
+        val reading = readings.firstOrNull()
+        val latestTimestamp =
+            lastSyncs[Pair(reading?.device?.macAddress, reading?.advertismentId)] ?: 0
+
+        return System.currentTimeMillis() - latestTimestamp > this.mqttPublish.timeMillis
+                && reading != null && listDevices.contains(reading.device)
     }
 
     private fun publish(message: String) {
