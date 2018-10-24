@@ -1,19 +1,19 @@
 package com.aconno.sensorics.model.mapper
 
-import com.aconno.sensorics.domain.ifttt.GeneralRESTPublish
-import com.aconno.sensorics.domain.ifttt.RESTPublish
-import com.aconno.sensorics.model.RESTPublishModel
+import com.aconno.sensorics.domain.ifttt.GeneralRestPublish
+import com.aconno.sensorics.domain.ifttt.RestPublish
+import com.aconno.sensorics.model.RestPublishModel
 import javax.inject.Inject
 
 class RESTPublishModelDataMapper @Inject constructor() {
     /**
-     * Transform a [RESTPublishModel] into an [RESTPublish].
+     * Transform a [RestPublishModel] into an [RestPublish].
      *
      * @param restPublishModel Object to be transformed.
-     * @return [GeneralRESTPublish]
+     * @return [GeneralRestPublish]
      */
-    fun transform(restPublishModel: RESTPublishModel): RESTPublish {
-        return GeneralRESTPublish(
+    fun transform(restPublishModel: RestPublishModel): RestPublish {
+        return GeneralRestPublish(
             restPublishModel.id,
             restPublishModel.name,
             restPublishModel.url,

@@ -3,16 +3,16 @@ package com.aconno.sensorics.dagger.publish
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
 import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
-import com.aconno.sensorics.domain.ifttt.RESTPublishRepository
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.DeleteGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.GetAllGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.DeleteRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
+import com.aconno.sensorics.domain.ifttt.RestPublishRepository
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.UpdateGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.UpdateMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.UpdateRestPublishUserCase
 import com.aconno.sensorics.model.mapper.*
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.viewmodel.PublishListViewModel
@@ -39,9 +39,9 @@ class PublishListModule {
     @Provides
     @PublishListScope
     fun provideGetAllRESTPublishUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): GetAllRESTPublishUseCase {
-        return GetAllRESTPublishUseCase(
+        restPublishRepository: RestPublishRepository
+    ): GetAllRestPublishUseCase {
+        return GetAllRestPublishUseCase(
             restPublishRepository
         )
     }
@@ -69,9 +69,9 @@ class PublishListModule {
     @Provides
     @PublishListScope
     fun provideUpdateRESTPublishUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): UpdateRESTPublishUserCase {
-        return UpdateRESTPublishUserCase(
+        restPublishRepository: RestPublishRepository
+    ): UpdateRestPublishUserCase {
+        return UpdateRestPublishUserCase(
             restPublishRepository
         )
     }
@@ -99,7 +99,7 @@ class PublishListModule {
     @Provides
     @PublishListScope
     fun provideDeleteRESTPublishUseCase(
-        restPublishRepository: RESTPublishRepository
+        restPublishRepository: RestPublishRepository
     ): DeleteRestPublishUseCase {
         return DeleteRestPublishUseCase(
             restPublishRepository
@@ -128,9 +128,9 @@ class PublishListModule {
     @PublishListScope
     fun providePublishListViewModelFactory(
         getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
-        getAllRESTPublishUseCase: GetAllRESTPublishUseCase,
+        getAllRestPublishUseCase: GetAllRestPublishUseCase,
         updateGooglePublishUseCase: UpdateGooglePublishUseCase,
-        updateRESTPublishUserCase: UpdateRESTPublishUserCase,
+        updateRestPublishUserCase: UpdateRestPublishUserCase,
         googlePublishDataMapper: GooglePublishDataMapper,
         googlePublishModelDataMapper: GooglePublishModelDataMapper,
         restPublishDataMapper: RESTPublishDataMapper,
@@ -145,9 +145,9 @@ class PublishListModule {
     ) =
         PublishListViewModelFactory(
             getAllGooglePublishUseCase,
-            getAllRESTPublishUseCase,
+            getAllRestPublishUseCase,
             updateGooglePublishUseCase,
-            updateRESTPublishUserCase,
+            updateRestPublishUserCase,
             googlePublishDataMapper,
             googlePublishModelDataMapper,
             restPublishDataMapper,

@@ -1,14 +1,14 @@
 package com.aconno.sensorics.data.mapper
 
-import com.aconno.sensorics.data.repository.pdjoin.GooglePublishDeviceJoinEntity
-import com.aconno.sensorics.data.repository.pdjoin.MqttPublishDeviceJoinEntity
-import com.aconno.sensorics.data.repository.pdjoin.RestPublishDeviceJoinEntity
+import com.aconno.sensorics.data.repository.publishdevicejoin.GooglePublishDeviceJoinEntity
+import com.aconno.sensorics.data.repository.publishdevicejoin.MqttPublishDeviceJoinEntity
+import com.aconno.sensorics.data.repository.publishdevicejoin.RestPublishDeviceJoinEntity
 import com.aconno.sensorics.domain.ifttt.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PublishPublishDeviceJoinJoinMapper @Inject constructor() {
+class PublishDeviceJoinMapper @Inject constructor() {
 
     fun toGooglePublishDeviceJoin(googlePublishDeviceJoinEntity: GooglePublishDeviceJoinEntity): GooglePublishDeviceJoin {
         return GeneralGooglePublishDeviceJoin(

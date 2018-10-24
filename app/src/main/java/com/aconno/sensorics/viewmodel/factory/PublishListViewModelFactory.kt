@@ -1,23 +1,23 @@
 package com.aconno.sensorics.viewmodel.factory
 
 import android.arch.lifecycle.ViewModel
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.DeleteGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.GetAllGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.DeleteRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.UpdateGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.UpdateMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.UpdateRestPublishUserCase
 import com.aconno.sensorics.model.mapper.*
 import com.aconno.sensorics.viewmodel.PublishListViewModel
 
 class PublishListViewModelFactory(
     private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
-    private val getAllRESTPublishUseCase: GetAllRESTPublishUseCase,
+    private val getAllRestPublishUseCase: GetAllRestPublishUseCase,
     private val updateGooglePublishUseCase: UpdateGooglePublishUseCase,
-    private val updateRESTPublishUserCase: UpdateRESTPublishUserCase,
+    private val updateRestPublishUserCase: UpdateRestPublishUserCase,
     private val googlePublishDataMapper: GooglePublishDataMapper,
     private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
     private val restPublishDataMapper: RESTPublishDataMapper,
@@ -33,9 +33,9 @@ class PublishListViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = PublishListViewModel(
             getAllGooglePublishUseCase,
-            getAllRESTPublishUseCase,
+            getAllRestPublishUseCase,
             updateGooglePublishUseCase,
-            updateRESTPublishUserCase,
+            updateRestPublishUserCase,
             googlePublishDataMapper,
             googlePublishModelDataMapper,
             restPublishDataMapper,

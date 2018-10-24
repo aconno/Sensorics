@@ -2,11 +2,11 @@ package com.aconno.sensorics.viewmodel
 
 import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.domain.ifttt.GeneralRestPublishDeviceJoin
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
-import com.aconno.sensorics.model.RESTHeaderModel
-import com.aconno.sensorics.model.RESTHttpGetParamModel
-import com.aconno.sensorics.model.RESTPublishModel
+import com.aconno.sensorics.model.RestHeaderModel
+import com.aconno.sensorics.model.RestHttpGetParamModel
+import com.aconno.sensorics.model.RestPublishModel
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
 import com.aconno.sensorics.model.mapper.RESTHttpGetParamModelMapper
 import com.aconno.sensorics.model.mapper.RESTPublishModelDataMapper
@@ -15,24 +15,24 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 
 class RestPublisherViewModel(
-    private val addRESTPublishUseCase: AddRESTPublishUseCase,
+    private val addRestPublishUseCase: AddRestPublishUseCase,
     private val restPublishModelDataMapper: RESTPublishModelDataMapper,
     private val savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
     private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-    private val saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
-    private val getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
+    private val saveRestHeaderUseCase: SaveRestHeaderUseCase,
+    private val getRestHeadersByIdUseCase: GetRestHeadersByIdUseCase,
     private val restHeaderModelMapper: RESTHeaderModelMapper,
-    private val saveRESTHttpGetParamUseCase: SaveRESTHttpGetParamUseCase,
-    private val getRESTHttpGetParamsByIdUseCase: GetRESTHttpGetParamsByIdUseCase,
+    private val saveRestHttpGetParamUseCase: SaveRestHttpGetParamUseCase,
+    private val getRestHttpGetParamsByIdUseCase: GetRestHttpGetParamsByIdUseCase,
     private val restHttpGetParamModelMapper: RESTHttpGetParamModelMapper
 ) : ViewModel() {
 
     fun save(
-        restPublishModel: RESTPublishModel
+        restPublishModel: RestPublishModel
     ): Single<Long> {
 
         val transform = restPublishModelDataMapper.transform(restPublishModel)
-        return addRESTPublishUseCase.execute(transform)
+        return addRestPublishUseCase.execute(transform)
     }
 
     fun addOrUpdateRestRelation(
@@ -60,30 +60,30 @@ class RestPublisherViewModel(
     }
 
     fun addRESTHeader(
-        list: List<RESTHeaderModel>,
+        list: List<RestHeaderModel>,
         it: Long
     ): Completable {
-        return saveRESTHeaderUseCase.execute(
+        return saveRestHeaderUseCase.execute(
             restHeaderModelMapper.toRESTHeaderListByRESTPublishId(list, it)
         )
     }
 
     fun addRESTHttpGetParams(
-        list: List<RESTHttpGetParamModel>,
+        list: List<RestHttpGetParamModel>,
         it: Long
     ): Completable {
-        return saveRESTHttpGetParamUseCase.execute(
+        return saveRestHttpGetParamUseCase.execute(
             restHttpGetParamModelMapper.toRESTHttpGetParamListByRESTPublishId(list, it)
         )
     }
 
-    fun getRESTHeadersById(rId: Long): Maybe<List<RESTHeaderModel>> {
-        return getRESTHeadersByIdUseCase.execute(rId)
+    fun getRESTHeadersById(rId: Long): Maybe<List<RestHeaderModel>> {
+        return getRestHeadersByIdUseCase.execute(rId)
             .map(restHeaderModelMapper::toRESTHeaderModelList)
     }
 
-    fun getRESTHttpGetParamsById(rId: Long): Maybe<List<RESTHttpGetParamModel>> {
-        return getRESTHttpGetParamsByIdUseCase.execute(rId)
+    fun getRESTHttpGetParamsById(rId: Long): Maybe<List<RestHttpGetParamModel>> {
+        return getRestHttpGetParamsByIdUseCase.execute(rId)
             .map(restHttpGetParamModelMapper::toRESTHttpGetParamModelList)
     }
 

@@ -8,18 +8,18 @@ import com.aconno.sensorics.data.repository.devices.DeviceDao
 import com.aconno.sensorics.data.repository.devices.DeviceEntity
 import com.aconno.sensorics.data.repository.format.FormatDao
 import com.aconno.sensorics.data.repository.format.FormatEntity
-import com.aconno.sensorics.data.repository.gpublish.GooglePublishDao
-import com.aconno.sensorics.data.repository.gpublish.GooglePublishEntity
-import com.aconno.sensorics.data.repository.mpublish.MqttPublishDao
-import com.aconno.sensorics.data.repository.mpublish.MqttPublishEntity
-import com.aconno.sensorics.data.repository.pdjoin.GooglePublishDeviceJoinEntity
-import com.aconno.sensorics.data.repository.pdjoin.MqttPublishDeviceJoinEntity
-import com.aconno.sensorics.data.repository.pdjoin.PublishDeviceJoinDao
-import com.aconno.sensorics.data.repository.pdjoin.RestPublishDeviceJoinEntity
-import com.aconno.sensorics.data.repository.rpublish.RESTHeaderEntity
-import com.aconno.sensorics.data.repository.rpublish.RESTHttpGetParamEntity
-import com.aconno.sensorics.data.repository.rpublish.RESTPublishDao
-import com.aconno.sensorics.data.repository.rpublish.RESTPublishEntity
+import com.aconno.sensorics.data.repository.googlepublish.GooglePublishDao
+import com.aconno.sensorics.data.repository.googlepublish.GooglePublishEntity
+import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishDao
+import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishEntity
+import com.aconno.sensorics.data.repository.publishdevicejoin.GooglePublishDeviceJoinEntity
+import com.aconno.sensorics.data.repository.publishdevicejoin.MqttPublishDeviceJoinEntity
+import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinDao
+import com.aconno.sensorics.data.repository.publishdevicejoin.RestPublishDeviceJoinEntity
+import com.aconno.sensorics.data.repository.restpublish.RESTPublishDao
+import com.aconno.sensorics.data.repository.restpublish.RestHeaderEntity
+import com.aconno.sensorics.data.repository.restpublish.RestHttpGetParamEntity
+import com.aconno.sensorics.data.repository.restpublish.RestPublishEntity
 
 @Database(
     entities = [
@@ -30,10 +30,10 @@ import com.aconno.sensorics.data.repository.rpublish.RESTPublishEntity
         GooglePublishEntity::class,
         MqttPublishDeviceJoinEntity::class,
         MqttPublishEntity::class,
-        RESTHeaderEntity::class,
-        RESTHttpGetParamEntity::class,
+        RestHeaderEntity::class,
+        RestHttpGetParamEntity::class,
         RestPublishDeviceJoinEntity::class,
-        RESTPublishEntity::class],
+        RestPublishEntity::class],
     version = 5
 )
 abstract class SensoricsDatabase : RoomDatabase() {

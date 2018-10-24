@@ -33,7 +33,7 @@ import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
-import com.aconno.sensorics.ui.settings.publishers.selectpublish.RESTPublisherActivity
+import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -90,7 +90,7 @@ abstract class ActivityBuilder {
     @ContributesAndroidInjector(
         modules = [RESTPublisherModule::class, DeviceSelectionFragmentsModule::class]
     )
-    abstract fun bindRestPublisherActivity(): RESTPublisherActivity
+    abstract fun bindRestPublisherActivity(): RestPublisherActivity
 
     @LiveGraphScope
     @ContributesAndroidInjector(modules = [LiveGraphModule::class])

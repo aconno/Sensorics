@@ -14,10 +14,10 @@ import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.data.repository.action.ActionsRepositoryImpl
 import com.aconno.sensorics.data.repository.devices.DeviceMapper
 import com.aconno.sensorics.data.repository.devices.DeviceRepositoryImpl
-import com.aconno.sensorics.data.repository.gpublish.GooglePublishRepositoryImpl
-import com.aconno.sensorics.data.repository.mpublish.MqttPublishRepositoryImpl
-import com.aconno.sensorics.data.repository.pdjoin.PublishDeviceJoinRepositoryImpl
-import com.aconno.sensorics.data.repository.rpublish.RESTPublishRepositoryImpl
+import com.aconno.sensorics.data.repository.googlepublish.GooglePublishRepositoryImpl
+import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishRepositoryImpl
+import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinRepositoryImpl
+import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
 import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.device.SmsSenderImpl
 import com.aconno.sensorics.device.TextToSpeechPlayerImpl
@@ -166,12 +166,12 @@ class AppModule {
     @Singleton
     fun provideRESTPublishRepository(
         sensoricsDatabase: SensoricsDatabase,
-        restPublishEntityDataMapper: RESTPublishEntityDataMapper,
-        restPublishDataMapper: RESTPublishDataMapper,
-        restHeaderDataMapper: RESTHeaderDataMapper,
-        restHttpGetParamDataMapper: RESTHttpGetParamDataMapper
-    ): RESTPublishRepository {
-        return RESTPublishRepositoryImpl(
+        restPublishEntityDataMapper: RestPublishEntityDataMapper,
+        restPublishDataMapper: RestPublishDataMapper,
+        restHeaderDataMapper: RestHeaderDataMapper,
+        restHttpGetParamDataMapper: RestHttpGetParamDataMapper
+    ): RestPublishRepository {
+        return RestPublishRepositoryImpl(
             sensoricsDatabase.restPublishDao(),
             restPublishEntityDataMapper,
             restPublishDataMapper,
@@ -255,12 +255,12 @@ class AppModule {
     fun providePublishDeviceJoinRepository(
         sensoricsDatabase: SensoricsDatabase,
         deviceMapper: DeviceMapper,
-        publishDeviceJoinJoinMapper: PublishPublishDeviceJoinJoinMapper
+        publishDeviceJoinMapper: PublishDeviceJoinMapper
     ): PublishDeviceJoinRepository {
         return PublishDeviceJoinRepositoryImpl(
             sensoricsDatabase.publishDeviceJoinDao(),
             deviceMapper,
-            publishDeviceJoinJoinMapper
+            publishDeviceJoinMapper
         )
     }
 
@@ -337,8 +337,8 @@ class AppModule {
     @Singleton
     fun provideGetDevicesThatConnectedWithRESTPublishUseCase(
         publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): GetDevicesThatConnectedWithRESTPublishUseCase {
-        return GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository)
+    ): GetDevicesThatConnectedWithRestPublishUseCase {
+        return GetDevicesThatConnectedWithRestPublishUseCase(publishDeviceJoinRepository)
     }
 
     @Provides

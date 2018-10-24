@@ -1,6 +1,6 @@
 package com.aconno.sensorics.data.mapper
 
-import com.aconno.sensorics.data.repository.mpublish.MqttPublishEntity
+import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishEntity
 import com.aconno.sensorics.domain.ifttt.GeneralMqttPublish
 import com.aconno.sensorics.domain.ifttt.MqttPublish
 import javax.inject.Inject

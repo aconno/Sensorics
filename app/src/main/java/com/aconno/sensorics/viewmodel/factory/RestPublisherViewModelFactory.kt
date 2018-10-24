@@ -1,7 +1,7 @@
 package com.aconno.sensorics.viewmodel.factory
 
 import android.arch.lifecycle.ViewModel
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
 import com.aconno.sensorics.model.mapper.RESTHttpGetParamModelMapper
@@ -9,28 +9,28 @@ import com.aconno.sensorics.model.mapper.RESTPublishModelDataMapper
 import com.aconno.sensorics.viewmodel.RestPublisherViewModel
 
 class RestPublisherViewModelFactory(
-    private val addRESTPublishUseCase: AddRESTPublishUseCase,
+    private val addRestPublishUseCase: AddRestPublishUseCase,
     private val restPublishModelDataMapper: RESTPublishModelDataMapper,
     private val savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
     private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-    private val saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
-    private val getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
+    private val saveRestHeaderUseCase: SaveRestHeaderUseCase,
+    private val getRestHeadersByIdUseCase: GetRestHeadersByIdUseCase,
     private val restHeaderModelMapper: RESTHeaderModelMapper,
-    private val saveRESTHttpGetParamUseCase: SaveRESTHttpGetParamUseCase,
-    private val getRESTHttpGetParamsByIdUseCase: GetRESTHttpGetParamsByIdUseCase,
+    private val saveRestHttpGetParamUseCase: SaveRestHttpGetParamUseCase,
+    private val getRestHttpGetParamsByIdUseCase: GetRestHttpGetParamsByIdUseCase,
     private val restHttpGetParamModelMapper: RESTHttpGetParamModelMapper
 ) : BaseViewModelFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = RestPublisherViewModel(
-            addRESTPublishUseCase,
+            addRestPublishUseCase,
             restPublishModelDataMapper,
             savePublishDeviceJoinUseCase,
             deletePublishDeviceJoinUseCase,
-            saveRESTHeaderUseCase,
-            getRESTHeadersByIdUseCase,
+            saveRestHeaderUseCase,
+            getRestHeadersByIdUseCase,
             restHeaderModelMapper,
-            saveRESTHttpGetParamUseCase,
-            getRESTHttpGetParamsByIdUseCase,
+            saveRestHttpGetParamUseCase,
+            getRestHttpGetParamsByIdUseCase,
             restHttpGetParamModelMapper
         )
         return getViewModel(viewModel, modelClass)

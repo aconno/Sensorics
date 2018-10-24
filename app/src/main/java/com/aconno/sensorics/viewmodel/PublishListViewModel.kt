@@ -3,20 +3,20 @@ package com.aconno.sensorics.viewmodel
 import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.domain.ifttt.GooglePublish
 import com.aconno.sensorics.domain.ifttt.MqttPublish
-import com.aconno.sensorics.domain.ifttt.RESTPublish
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.DeleteGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.GetAllGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.DeleteMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.GetAllMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.DeleteRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.GetAllRESTPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
+import com.aconno.sensorics.domain.ifttt.RestPublish
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.UpdateGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.UpdateMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.UpdateRestPublishUserCase
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.MqttPublishModel
-import com.aconno.sensorics.model.RESTPublishModel
+import com.aconno.sensorics.model.RestPublishModel
 import com.aconno.sensorics.model.mapper.*
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -26,9 +26,9 @@ import io.reactivex.schedulers.Schedulers
 
 class PublishListViewModel(
     private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
-    private val getAllRESTPublishUseCase: GetAllRESTPublishUseCase,
+    private val getAllRestPublishUseCase: GetAllRestPublishUseCase,
     private val updateGooglePublishUseCase: UpdateGooglePublishUseCase,
-    private val updateRESTPublishUserCase: UpdateRESTPublishUserCase,
+    private val updateRestPublishUserCase: UpdateRestPublishUserCase,
     private val googlePublishDataMapper: GooglePublishDataMapper,
     private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
     private val restPublishDataMapper: RESTPublishDataMapper,
@@ -50,10 +50,10 @@ class PublishListViewModel(
             .subscribe()
     }
 
-    fun update(restPublish: RESTPublishModel): Disposable {
+    fun update(restPublish: RestPublishModel): Disposable {
         val generalRESTPublish = restPublishModelDataMapper.transform(restPublish)
 
-        return updateRESTPublishUserCase.execute(generalRESTPublish)
+        return updateRestPublishUserCase.execute(generalRESTPublish)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe()
@@ -71,7 +71,7 @@ class PublishListViewModel(
     fun getAllPublish(): Flowable<List<BasePublishModel>> {
         return Single.merge(
             getAllGooglePublishUseCase.execute(),
-            getAllRESTPublishUseCase.execute(),
+            getAllRestPublishUseCase.execute(),
             getAllMqttPublishUseCase.execute()
         ).flatMapIterable { it }
             .map {
@@ -80,7 +80,7 @@ class PublishListViewModel(
                         val transform = googlePublishDataMapper.transform(it)
                         transform
                     }
-                    is RESTPublish -> {
+                    is RestPublish -> {
                         val transform = restPublishDataMapper.transform(it)
                         transform
                     }
@@ -102,7 +102,7 @@ class PublishListViewModel(
             .subscribe()
     }
 
-    fun delete(restPublishModel: RESTPublishModel): Disposable {
+    fun delete(restPublishModel: RestPublishModel): Disposable {
         val restPublish = restPublishModelDataMapper.transform(restPublishModel)
 
         return deleteRestPublishUseCase.execute(restPublish)

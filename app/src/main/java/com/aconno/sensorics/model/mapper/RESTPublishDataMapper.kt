@@ -1,14 +1,14 @@
 package com.aconno.sensorics.model.mapper
 
-import com.aconno.sensorics.domain.ifttt.RESTPublish
-import com.aconno.sensorics.model.RESTPublishModel
+import com.aconno.sensorics.domain.ifttt.RestPublish
+import com.aconno.sensorics.model.RestPublishModel
 import javax.inject.Inject
 
 class RESTPublishDataMapper @Inject constructor() {
 
 
-    fun transform(restPublish: RESTPublish): RESTPublishModel {
-        return RESTPublishModel(
+    fun transform(restPublish: RestPublish): RestPublishModel {
+        return RestPublishModel(
             restPublish.id,
             restPublish.name,
             restPublish.url,
@@ -21,8 +21,8 @@ class RESTPublishDataMapper @Inject constructor() {
         )
     }
 
-    fun transform(restPublishCollection: Collection<RESTPublish>): List<RESTPublishModel> {
-        val restPublishModelList = mutableListOf<RESTPublishModel>()
+    fun transform(restPublishCollection: Collection<RestPublish>): List<RestPublishModel> {
+        val restPublishModelList = mutableListOf<RestPublishModel>()
         for (restPublish in restPublishCollection) {
             val user = transform(restPublish)
             restPublishModelList.add(user)
