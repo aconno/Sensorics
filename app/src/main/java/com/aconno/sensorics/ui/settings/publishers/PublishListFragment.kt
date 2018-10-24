@@ -63,11 +63,7 @@ class PublishListFragment : BaseFragment(),
             val item = listBasePublish[position]
             item.enabled = checked
 
-            when (item) {
-                is GooglePublishModel -> addDisposable(publishListViewModel.update(item))
-                is RestPublishModel -> addDisposable(publishListViewModel.update(item))
-                is MqttPublishModel -> addDisposable(publishListViewModel.update(item))
-            }
+            addDisposable(publishListViewModel.update(item))
         }
     }
 

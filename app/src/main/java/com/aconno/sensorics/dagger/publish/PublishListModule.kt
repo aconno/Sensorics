@@ -4,15 +4,13 @@ import android.arch.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
 import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
 import com.aconno.sensorics.domain.ifttt.RestPublishRepository
+import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.UpdateGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.UpdateMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.UpdateRestPublishUserCase
 import com.aconno.sensorics.model.mapper.*
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.viewmodel.PublishListViewModel
@@ -52,36 +50,6 @@ class PublishListModule {
         mqttPublishRepository: MqttPublishRepository
     ): GetAllMqttPublishUseCase {
         return GetAllMqttPublishUseCase(
-            mqttPublishRepository
-        )
-    }
-
-    @Provides
-    @PublishListScope
-    fun provideUpdateGooglePublishUseCase(
-        googlePublishRepository: GooglePublishRepository
-    ): UpdateGooglePublishUseCase {
-        return UpdateGooglePublishUseCase(
-            googlePublishRepository
-        )
-    }
-
-    @Provides
-    @PublishListScope
-    fun provideUpdateRESTPublishUseCase(
-        restPublishRepository: RestPublishRepository
-    ): UpdateRestPublishUserCase {
-        return UpdateRestPublishUserCase(
-            restPublishRepository
-        )
-    }
-
-    @Provides
-    @PublishListScope
-    fun provideUpdateMqttPublishUseCase(
-        mqttPublishRepository: MqttPublishRepository
-    ): UpdateMqttPublishUseCase {
-        return UpdateMqttPublishUseCase(
             mqttPublishRepository
         )
     }
@@ -129,8 +97,6 @@ class PublishListModule {
     fun providePublishListViewModelFactory(
         getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
         getAllRestPublishUseCase: GetAllRestPublishUseCase,
-        updateGooglePublishUseCase: UpdateGooglePublishUseCase,
-        updateRestPublishUserCase: UpdateRestPublishUserCase,
         googlePublishDataMapper: GooglePublishDataMapper,
         googlePublishModelDataMapper: GooglePublishModelDataMapper,
         restPublishDataMapper: RESTPublishDataMapper,
@@ -138,16 +104,13 @@ class PublishListModule {
         deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
         deleteRestPublishUseCase: DeleteRestPublishUseCase,
         getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
-        updateMqttPublishUseCase: UpdateMqttPublishUseCase,
         mqttPublishModelDataMapper: MqttPublishModelDataMapper,
-        deleteMqttPublishUseCase: DeleteMqttPublishUseCase
-
+        deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
+        updatePublishUseCase: UpdatePublishUseCase
     ) =
         PublishListViewModelFactory(
             getAllGooglePublishUseCase,
             getAllRestPublishUseCase,
-            updateGooglePublishUseCase,
-            updateRestPublishUserCase,
             googlePublishDataMapper,
             googlePublishModelDataMapper,
             restPublishDataMapper,
@@ -155,8 +118,8 @@ class PublishListModule {
             deleteGooglePublishUseCase,
             deleteRestPublishUseCase,
             getAllMqttPublishUseCase,
-            updateMqttPublishUseCase,
             mqttPublishModelDataMapper,
-            deleteMqttPublishUseCase
+            deleteMqttPublishUseCase,
+            updatePublishUseCase
         )
 }

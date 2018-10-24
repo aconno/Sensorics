@@ -17,11 +17,8 @@ import com.aconno.sensorics.domain.ifttt.outcome.*
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllEnabledGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.UpdateGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllEnabledMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.UpdateMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllEnabledRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.UpdateRestPublishUserCase
 import com.aconno.sensorics.domain.interactor.repository.GetRestHeadersByIdUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetRestHttpGetParamsByIdUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveSensorReadingsUseCase
@@ -133,37 +130,6 @@ class BluetoothScanningServiceModule {
             mqttPublishRepository
         )
     }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideUpdateRESTPublishUseCase(
-        restPublishRepository: RestPublishRepository
-    ): UpdateRestPublishUserCase {
-        return UpdateRestPublishUserCase(
-            restPublishRepository
-        )
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideUpdateGooglePublishUseCase(
-        restPublishRepository: GooglePublishRepository
-    ): UpdateGooglePublishUseCase {
-        return UpdateGooglePublishUseCase(
-            restPublishRepository
-        )
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideUpdateMqttPublishUseCase(
-        mqttPublishRepository: MqttPublishRepository
-    ): UpdateMqttPublishUseCase {
-        return UpdateMqttPublishUseCase(
-            mqttPublishRepository
-        )
-    }
-
 
     @Provides
     @BluetoothScanningServiceScope
