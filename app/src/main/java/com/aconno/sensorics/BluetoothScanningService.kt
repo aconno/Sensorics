@@ -28,7 +28,6 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import dagger.android.DaggerService
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -38,6 +37,9 @@ import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function4
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -153,27 +155,23 @@ class BluetoothScanningService : DaggerService() {
     }
 
     private fun startSyncing() {
-        disposables.add(
-            readings.subscribe { readings ->
-                //Send data and update last sent date-time
+        GlobalScope.launch(Dispatchers.Default) {
+            disposables.add(
+                readings.subscribe { readings ->
+                    //Send data and update last sent date-time
 
-                publishReadingsUseCase?.let { publishReadingUseCase ->
-                    publishReadingUseCase
-                        .execute(readings)
-                        .subscribeOn(Schedulers.io())
-                        .flatMapIterable { it }
-                        .map {
-                            val data = it.getPublishData()
+                    publishReadingsUseCase?.let {
+                        it.execute(readings).forEach { publisher ->
+                            val data = publisher.getPublishData()
                             data.lastTimeMillis = System.currentTimeMillis()
 
-                            Completable.fromAction { updatePublishUseCase.execute(data) }
+                            updatePublishUseCase.execute(data)
                         }
-                        .subscribe {
-                            it.subscribeOn(Schedulers.io()).subscribe()
-                        }
+                    }
                 }
-            }
-        )
+            )
+        }
+
     }
 
     private fun handleInputsForActions() {
