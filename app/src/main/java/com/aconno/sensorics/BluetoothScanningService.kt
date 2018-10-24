@@ -17,12 +17,10 @@ import com.aconno.sensorics.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllEnabledGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.UpdateGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllEnabledMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.UpdateMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllEnabledRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.UpdateRestPublishUserCase
 import com.aconno.sensorics.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
@@ -30,6 +28,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import dagger.android.DaggerService
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -69,13 +68,7 @@ class BluetoothScanningService : DaggerService() {
     lateinit var getAllEnabledMqttPublishUseCase: GetAllEnabledMqttPublishUseCase
 
     @Inject
-    lateinit var updateRestPublishUserCase: UpdateRestPublishUserCase
-
-    @Inject
-    lateinit var updateGooglePublishUseCase: UpdateGooglePublishUseCase
-
-    @Inject
-    lateinit var updateMqttPublishUseCase: UpdateMqttPublishUseCase
+    lateinit var updatePublishUseCase: UpdatePublishUseCase
 
     @Inject
     lateinit var getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase
@@ -173,20 +166,7 @@ class BluetoothScanningService : DaggerService() {
                             val data = it.getPublishData()
                             data.lastTimeMillis = System.currentTimeMillis()
 
-                            when (data) {
-                                is GooglePublish -> {
-                                    updateGooglePublishUseCase.execute(data)
-                                }
-                                is RestPublish -> {
-                                    updateRestPublishUserCase.execute(data)
-                                }
-                                is MqttPublish -> {
-                                    updateMqttPublishUseCase.execute(data)
-                                }
-                                else -> {
-                                    throw IllegalArgumentException("Illegal data provided.")
-                                }
-                            }
+                            Completable.fromAction { updatePublishUseCase.execute(data) }
                         }
                         .subscribe {
                             it.subscribeOn(Schedulers.io()).subscribe()

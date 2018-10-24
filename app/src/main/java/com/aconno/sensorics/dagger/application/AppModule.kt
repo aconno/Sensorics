@@ -42,6 +42,7 @@ import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
@@ -348,4 +349,13 @@ class AppModule {
     ): GetDevicesThatConnectedWithMqttPublishUseCase {
         return GetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideUpdatePublishUseCase(
+        googlePublishRepository: GooglePublishRepository,
+        mqttPublishRepository: MqttPublishRepository,
+        restPublishRepository: RestPublishRepository
+    ): UpdatePublishUseCase =
+        UpdatePublishUseCase(googlePublishRepository, mqttPublishRepository, restPublishRepository)
 }
