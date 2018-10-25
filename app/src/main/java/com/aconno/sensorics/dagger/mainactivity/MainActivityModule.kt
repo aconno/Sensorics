@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModelProviders
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.permissons.PermissionActionFactory
-import com.aconno.sensorics.device.usecase.LocalUseCaseRepositoryImpl
 import com.aconno.sensorics.device.usecase.RemoteUseCaseRepositoryImpl
 import com.aconno.sensorics.device.usecase.RetrofitUseCaseApi
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
@@ -204,13 +203,6 @@ class MainActivityModule {
         localUseCaseRepository: LocalUseCaseRepository
     ): RemoteUseCaseRepository =
         RemoteUseCaseRepositoryImpl(retrofitUseCaseApi, localUseCaseRepository)
-
-    @Provides
-    @MainActivityScope
-    fun provideUseCaseRepository(
-        context: SensoricsApplication
-    ): LocalUseCaseRepository =
-        LocalUseCaseRepositoryImpl(context)
 
     @Provides
     @MainActivityScope

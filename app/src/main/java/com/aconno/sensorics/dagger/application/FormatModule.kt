@@ -8,10 +8,12 @@ import com.aconno.sensorics.device.format.AdvertisementFormatReader
 import com.aconno.sensorics.device.format.FormatJsonConverterImpl
 import com.aconno.sensorics.device.format.RemoteFormatRepositoryImpl
 import com.aconno.sensorics.device.format.RetrofitAdvertisementFormatApi
+import com.aconno.sensorics.device.usecase.LocalUseCaseRepositoryImpl
 import com.aconno.sensorics.domain.format.AdvertisementFormatJsonConverter
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
 import com.aconno.sensorics.domain.repository.LocalFormatRepository
+import com.aconno.sensorics.domain.repository.LocalUseCaseRepository
 import com.aconno.sensorics.domain.repository.RemoteFormatRepository
 import com.aconno.sensorics.viewmodel.factory.SplashViewModelFactory
 import com.google.gson.Gson
@@ -27,8 +29,10 @@ class FormatModule {
     @Provides
     @Singleton
     fun provideSplashViewModelFactory(
-        remoteFormatRepository: RemoteFormatRepository
-    ): SplashViewModelFactory = SplashViewModelFactory(remoteFormatRepository)
+        remoteFormatRepository: RemoteFormatRepository,
+        localUseCaseRepository: LocalUseCaseRepository
+    ): SplashViewModelFactory =
+        SplashViewModelFactory(remoteFormatRepository, localUseCaseRepository)
 
     @Provides
     @Singleton
@@ -84,4 +88,11 @@ class FormatModule {
     @Singleton
     fun provideAdvertisementFormatJsonConverter(gson: Gson): AdvertisementFormatJsonConverter =
         FormatJsonConverterImpl(gson)
+
+    @Provides
+    @Singleton
+    fun provideUseCaseRepository(
+        context: SensoricsApplication
+    ): LocalUseCaseRepository =
+        LocalUseCaseRepositoryImpl(context)
 }
