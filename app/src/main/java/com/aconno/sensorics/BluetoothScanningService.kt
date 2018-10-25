@@ -17,7 +17,6 @@ import com.aconno.sensorics.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllEnabledGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllEnabledMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllEnabledRestPublishUseCase
@@ -69,9 +68,6 @@ class BluetoothScanningService : DaggerService() {
 
     @Inject
     lateinit var getAllEnabledMqttPublishUseCase: GetAllEnabledMqttPublishUseCase
-
-    @Inject
-    lateinit var updatePublishUseCase: UpdatePublishUseCase
 
     @Inject
     lateinit var getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase
@@ -224,29 +220,32 @@ class BluetoothScanningService : DaggerService() {
     }
 
     private fun initPublishers() {
-        disposables.add(
-            Observable.merge(
-                getGooglePublisherObservable(),
-                getRestPublisherObservable(),
-                getMqttPublisherObservable()
-            )
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    Consumer {
-                        publishers = if (it.size < 1) {
-                            null
-                        } else {
-                            it
-                        }
-
-                        if (publishers != null) {
-                            publishReadingsUseCase = PublishReadingsUseCase(publishers!!)
-                            closeConnectionUseCase = CloseConnectionUseCase(publishers!!)
-                        }
-                    }
+        GlobalScope.launch(Dispatchers.Default) {
+            disposables.add(
+                Observable.merge(
+                    getGooglePublisherObservable(),
+                    getRestPublisherObservable(),
+                    getMqttPublishers()
                 )
-        )
+                    .toList()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        Consumer {
+                            publishers = if (it.size < 1) {
+                                null
+                            } else {
+                                it
+                            }
+
+                            if (publishers != null) {
+                                publishReadingsUseCase = PublishReadingsUseCase(publishers!!)
+                                closeConnectionUseCase = CloseConnectionUseCase(publishers!!)
+                            }
+                        }
+                    )
+            )
+
+        }
     }
 
     private fun getGooglePublisherObservable(): Observable<Publisher> {
@@ -295,25 +294,17 @@ class BluetoothScanningService : DaggerService() {
             }
     }
 
-    private fun getMqttPublisherObservable(): Observable<Publisher> {
-        return getAllEnabledMqttPublishUseCase.execute()
-            .subscribeOn(Schedulers.io())
-            .toObservable()
-            .flatMapIterable { it }
-            .map { it as MqttPublish }
-            .flatMap {
-                Observable.just(it).zipWith(
-                    getDevicesThatConnectedWithMqttPublishUseCase.execute(it.id)
-                        .toObservable()
-                )
-            }.map {
-                MqttPublisher(
-                    this,
-                    it.first,
-                    it.second,
-                    syncRepository
-                ) as Publisher
-            }
+    private fun getMqttPublishers(): Observable<Publisher> {
+        return Observable.fromIterable(
+            getAllEnabledMqttPublishUseCase.execute().map(this::basePublishToMqttPublisher)
+        )
+    }
+
+    private fun basePublishToMqttPublisher(basePublish: BasePublish): Publisher {
+        val devices = getDevicesThatConnectedWithMqttPublishUseCase.execute(basePublish.id)
+            ?: listOf()
+
+        return MqttPublisher(this, basePublish as MqttPublish, devices, syncRepository)
     }
 
     override fun onDestroy() {

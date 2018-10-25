@@ -24,9 +24,9 @@ class PublishDeviceJoinRepositoryImpl(
             .map(deviceMapper::toDeviceList)
     }
 
-    override fun getDevicesThatConnectedWithMqttPublish(mqttPublishId: Long): Maybe<List<Device>> {
+    override fun getDevicesThatConnectedWithMqttPublish(mqttPublishId: Long): List<Device>? {
         return publishDeviceJoinDao.getDevicesThatConnectedWithMqttPublish(mqttPublishId)
-            .map(deviceMapper::toDeviceList)
+            ?.map(deviceMapper::toDevice)
     }
 
     override fun addGooglePublishDeviceJoin(googlePublishDeviceJoin: GooglePublishDeviceJoin) {
