@@ -14,6 +14,9 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_devices.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -62,37 +65,40 @@ class DeviceSelectFragment : BaseFragment() {
     }
 
     private fun queryDevices() {
-        val single: Single<List<DeviceRelationModel>>
+        GlobalScope.launch(Dispatchers.Default) {
 
-        if (basePublishModel == null) {
-            single = deviceSelectViewModel.getAllDevices()
-        } else {
-            single = when (basePublishModel) {
-                is GooglePublishModel -> deviceSelectViewModel.getAllDevicesWithGoogleRelation(
-                    basePublishModel!!.id
-                )
-                is RestPublishModel -> deviceSelectViewModel.getAllDevicesWithRESTRelation(
-                    basePublishModel!!.id
-                )
-                is MqttPublishModel -> deviceSelectViewModel.getAllDevicesWithMqttRelation(
-                    basePublishModel!!.id
-                )
-                else -> throw IllegalArgumentException()
-            }.firstOrError()
-        }
+            val single: Single<List<DeviceRelationModel>>
 
-        val subscribe = single.filter { !it.isEmpty() }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                empty_view.visibility = View.GONE
-                deviceList.clear()
-                deviceList.addAll(it)
-                adapter.notifyDataSetChanged()
-                Timber.d("${it.size}")
+            if (basePublishModel == null) {
+                single = deviceSelectViewModel.getAllDevices()
+            } else {
+                single = when (basePublishModel) {
+                    is GooglePublishModel -> deviceSelectViewModel.getAllDevicesWithGoogleRelation(
+                        basePublishModel!!.id
+                    )
+                    is RestPublishModel -> deviceSelectViewModel.getAllDevicesWithRESTRelation(
+                        basePublishModel!!.id
+                    )
+                    is MqttPublishModel -> deviceSelectViewModel.getAllDevicesWithMqttRelation(
+                        basePublishModel!!.id
+                    )
+                    else -> throw IllegalArgumentException()
+                }.firstOrError()
             }
 
-        addDisposable(subscribe)
+            val subscribe = single.filter { !it.isEmpty() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    empty_view.visibility = View.GONE
+                    deviceList.clear()
+                    deviceList.addAll(it)
+                    adapter.notifyDataSetChanged()
+                    Timber.d("${it.size}")
+                }
+
+            addDisposable(subscribe)
+        }
     }
 
     fun getDevices(): MutableList<DeviceRelationModel> {
