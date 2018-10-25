@@ -3,7 +3,7 @@ package com.aconno.sensorics.dagger.gcloudpublisher
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
 import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.AddGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import com.aconno.sensorics.model.mapper.GooglePublishModelDataMapper

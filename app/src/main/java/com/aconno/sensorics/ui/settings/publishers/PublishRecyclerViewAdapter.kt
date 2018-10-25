@@ -12,7 +12,7 @@ import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.MqttPublishModel
-import com.aconno.sensorics.model.RESTPublishModel
+import com.aconno.sensorics.model.RestPublishModel
 
 
 import com.aconno.sensorics.ui.settings.publishers.PublishListFragment.OnListFragmentInteractionListener
@@ -65,7 +65,7 @@ class PublishRecyclerViewAdapter(
 
         when (item) {
             is GooglePublishModel -> holder.mImageView.setImageResource(R.drawable.google_logo)
-            is RESTPublishModel -> holder.mImageView.setImageResource(R.drawable.uplaod_cloud)
+            is RestPublishModel -> holder.mImageView.setImageResource(R.drawable.uplaod_cloud)
             is MqttPublishModel -> holder.mImageView.setImageResource(R.drawable.mqtt_logo)
         }
 

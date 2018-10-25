@@ -23,7 +23,7 @@ class SelectPublisherActivity : AppCompatActivity() {
         }
 
         http_backend.setOnClickListener {
-            RESTPublisherActivity.start(
+            RestPublisherActivity.start(
                 this@SelectPublisherActivity
             )
         }

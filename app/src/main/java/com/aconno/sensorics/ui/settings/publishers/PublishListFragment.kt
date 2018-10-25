@@ -16,7 +16,7 @@ import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.MqttPublishModel
-import com.aconno.sensorics.model.RESTPublishModel
+import com.aconno.sensorics.model.RestPublishModel
 import com.aconno.sensorics.ui.base.BaseFragment
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.SelectPublisherActivity
 import com.aconno.sensorics.viewmodel.PublishListViewModel
@@ -63,11 +63,7 @@ class PublishListFragment : BaseFragment(),
             val item = listBasePublish[position]
             item.enabled = checked
 
-            when (item) {
-                is GooglePublishModel -> addDisposable(publishListViewModel.update(item))
-                is RESTPublishModel -> addDisposable(publishListViewModel.update(item))
-                is MqttPublishModel -> addDisposable(publishListViewModel.update(item))
-            }
+            addDisposable(publishListViewModel.update(item))
         }
     }
 
@@ -144,9 +140,9 @@ class PublishListFragment : BaseFragment(),
                         publishListViewModel.delete(selectedItem as GooglePublishModel)
                     )
                 }
-                is RESTPublishModel -> {
+                is RestPublishModel -> {
                     addDisposable(
-                        publishListViewModel.delete(selectedItem as RESTPublishModel)
+                        publishListViewModel.delete(selectedItem as RestPublishModel)
                     )
                 }
                 is MqttPublishModel -> {

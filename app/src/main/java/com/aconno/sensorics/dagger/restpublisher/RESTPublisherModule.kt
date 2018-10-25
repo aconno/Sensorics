@@ -2,13 +2,13 @@ package com.aconno.sensorics.dagger.restpublisher
 
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
-import com.aconno.sensorics.domain.ifttt.RESTPublishRepository
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.AddRESTPublishUseCase
+import com.aconno.sensorics.domain.ifttt.RestPublishRepository
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
 import com.aconno.sensorics.model.mapper.RESTHttpGetParamModelMapper
 import com.aconno.sensorics.model.mapper.RESTPublishModelDataMapper
-import com.aconno.sensorics.ui.settings.publishers.selectpublish.RESTPublisherActivity
+import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
 import com.aconno.sensorics.viewmodel.RestPublisherViewModel
 import com.aconno.sensorics.viewmodel.factory.RestPublisherViewModelFactory
 import dagger.Module
@@ -20,7 +20,7 @@ class RESTPublisherModule {
     @Provides
     @RESTPublisherScope
     fun provideRestPublisherViewModel(
-        restPublisherActivity: RESTPublisherActivity,
+        restPublisherActivity: RestPublisherActivity,
         restPublisherViewModelFactory: RestPublisherViewModelFactory
     ) = ViewModelProviders.of(restPublisherActivity, restPublisherViewModelFactory)
         .get(RestPublisherViewModel::class.java)
@@ -28,35 +28,35 @@ class RESTPublisherModule {
     @Provides
     @RESTPublisherScope
     fun provideRestPublisherViewModelFactory(
-        addRESTPublishUseCase: AddRESTPublishUseCase,
+        addRestPublishUseCase: AddRestPublishUseCase,
         restPublishModelDataMapper: RESTPublishModelDataMapper,
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-        saveRESTHeaderUseCase: SaveRESTHeaderUseCase,
-        getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase,
+        saveRestHeaderUseCase: SaveRestHeaderUseCase,
+        getRestHeadersByIdUseCase: GetRestHeadersByIdUseCase,
         restHeaderModelMapper: RESTHeaderModelMapper,
-        saveRESTHttpGetParamUseCase: SaveRESTHttpGetParamUseCase,
-        getRESTHttpGetParamsByIdUseCase: GetRESTHttpGetParamsByIdUseCase,
+        saveRestHttpGetParamUseCase: SaveRestHttpGetParamUseCase,
+        getRestHttpGetParamsByIdUseCase: GetRestHttpGetParamsByIdUseCase,
         restHttpGetParamModelMapper: RESTHttpGetParamModelMapper
     ) = RestPublisherViewModelFactory(
-        addRESTPublishUseCase,
+        addRestPublishUseCase,
         restPublishModelDataMapper,
         savePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase,
-        saveRESTHeaderUseCase,
-        getRESTHeadersByIdUseCase,
+        saveRestHeaderUseCase,
+        getRestHeadersByIdUseCase,
         restHeaderModelMapper,
-        saveRESTHttpGetParamUseCase,
-        getRESTHttpGetParamsByIdUseCase,
+        saveRestHttpGetParamUseCase,
+        getRestHttpGetParamsByIdUseCase,
         restHttpGetParamModelMapper
     )
 
     @Provides
     @RESTPublisherScope
     fun provideAddRESTPublishUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): AddRESTPublishUseCase {
-        return AddRESTPublishUseCase(restPublishRepository)
+        restPublishRepository: RestPublishRepository
+    ): AddRestPublishUseCase {
+        return AddRestPublishUseCase(restPublishRepository)
     }
 
     @Provides
@@ -78,48 +78,48 @@ class RESTPublisherModule {
     @Provides
     @RESTPublisherScope
     fun provideSaveRESTHeaderUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): SaveRESTHeaderUseCase {
-        return SaveRESTHeaderUseCase(restPublishRepository)
+        restPublishRepository: RestPublishRepository
+    ): SaveRestHeaderUseCase {
+        return SaveRestHeaderUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
     fun provideSaveRESTHttpGetParamUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): SaveRESTHttpGetParamUseCase {
-        return SaveRESTHttpGetParamUseCase(restPublishRepository)
+        restPublishRepository: RestPublishRepository
+    ): SaveRestHttpGetParamUseCase {
+        return SaveRestHttpGetParamUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
     fun provideDeleteRESTHeaderUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): DeleteRESTHeaderUseCase {
-        return DeleteRESTHeaderUseCase(restPublishRepository)
+        restPublishRepository: RestPublishRepository
+    ): DeleteRestHeaderUseCase {
+        return DeleteRestHeaderUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
     fun provideDeleteRESTHttpGetParamUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): DeleteRESTHttpGetParamUseCase {
-        return DeleteRESTHttpGetParamUseCase(restPublishRepository)
+        restPublishRepository: RestPublishRepository
+    ): DeleteRestHttpGetParamUseCase {
+        return DeleteRestHttpGetParamUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
     fun provideGetRESTHeadersByIdUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): GetRESTHeadersByIdUseCase {
-        return GetRESTHeadersByIdUseCase(restPublishRepository)
+        restPublishRepository: RestPublishRepository
+    ): GetRestHeadersByIdUseCase {
+        return GetRestHeadersByIdUseCase(restPublishRepository)
     }
 
     @Provides
     @RESTPublisherScope
     fun provideGetRESTHttpGetParamsByIdUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): GetRESTHttpGetParamsByIdUseCase {
-        return GetRESTHttpGetParamsByIdUseCase(restPublishRepository)
+        restPublishRepository: RestPublishRepository
+    ): GetRestHttpGetParamsByIdUseCase {
+        return GetRestHttpGetParamsByIdUseCase(restPublishRepository)
     }
 }

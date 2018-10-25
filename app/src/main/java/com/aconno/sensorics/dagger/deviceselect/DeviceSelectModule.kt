@@ -3,7 +3,7 @@ package com.aconno.sensorics.dagger.deviceselect
 import android.arch.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithRESTPublishUseCase
+import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
@@ -28,13 +28,13 @@ class DeviceSelectModule {
     fun provideDeviceSelectViewModelFactory(
         getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
         getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
-        getDevicesThatConnectedWithRESTPublishUseCase: GetDevicesThatConnectedWithRESTPublishUseCase,
+        getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase,
         getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase,
         deviceRelationModelMapper: DeviceRelationModelMapper
     ) = DeviceSelectViewModelFactory(
         getSavedDevicesMaybeUseCase,
         getDevicesThatConnectedWithGooglePublishUseCase,
-        getDevicesThatConnectedWithRESTPublishUseCase,
+        getDevicesThatConnectedWithRestPublishUseCase,
         getDevicesThatConnectedWithMqttPublishUseCase,
         deviceRelationModelMapper
     )

@@ -1,8 +1,8 @@
 package com.aconno.sensorics.data
 
 import com.aconno.sensorics.data.converter.DataStringConverter
-import com.aconno.sensorics.domain.ifttt.GeneralRESTHttpGetParam
-import com.aconno.sensorics.domain.ifttt.RESTHttpGetParam
+import com.aconno.sensorics.domain.ifttt.GeneralRestHttpGetParam
+import com.aconno.sensorics.domain.ifttt.RestHttpGetParam
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.google.gson.Gson
@@ -13,10 +13,10 @@ import org.junit.Test
 class DataStringConverterTest {
 
     private lateinit var list: List<Reading>
-    private lateinit var nameValueList: List<RESTHttpGetParam>
-    private lateinit var temperatureLightList: List<RESTHttpGetParam>
-    private lateinit var temperatureNameValueList: List<RESTHttpGetParam>
-    private lateinit var withoutNameTemperatureList: List<RESTHttpGetParam>
+    private lateinit var nameValueList: List<RestHttpGetParam>
+    private lateinit var temperatureLightList: List<RestHttpGetParam>
+    private lateinit var temperatureNameValueList: List<RestHttpGetParam>
+    private lateinit var withoutNameTemperatureList: List<RestHttpGetParam>
 
     @Before
     fun setUp() {
@@ -32,24 +32,24 @@ class DataStringConverterTest {
 
         list = listOf(reading1, reading2, reading3)
 
-        val param1 = GeneralRESTHttpGetParam(1, 1, "\$name", "\$value")
-        val param2 = GeneralRESTHttpGetParam(1, 1, "\$name", "\$value")
+        val param1 = GeneralRestHttpGetParam(1, 1, "\$name", "\$value")
+        val param2 = GeneralRestHttpGetParam(1, 1, "\$name", "\$value")
 
         nameValueList = listOf(param1, param2)
 
-        val param3 = GeneralRESTHttpGetParam(1, 1, "Temperature", "\$temperature")
-        val param4 = GeneralRESTHttpGetParam(1, 1, "Light", "\$light")
+        val param3 = GeneralRestHttpGetParam(1, 1, "Temperature", "\$temperature")
+        val param4 = GeneralRestHttpGetParam(1, 1, "Light", "\$light")
 
         temperatureLightList = listOf(param3, param4)
 
 
-        val param5 = GeneralRESTHttpGetParam(1, 1, "Name", "\$name")
-        val param6 = GeneralRESTHttpGetParam(1, 1, "Temperature", "\$temperature")
+        val param5 = GeneralRestHttpGetParam(1, 1, "Name", "\$name")
+        val param6 = GeneralRestHttpGetParam(1, 1, "Temperature", "\$temperature")
 
         temperatureNameValueList = listOf(param5, param6)
 
-        val param7 = GeneralRESTHttpGetParam(1, 1, "Name", "Blabla")
-        val param8 = GeneralRESTHttpGetParam(1, 1, "Temperature", "Blabla")
+        val param7 = GeneralRestHttpGetParam(1, 1, "Name", "Blabla")
+        val param8 = GeneralRestHttpGetParam(1, 1, "Temperature", "Blabla")
 
         withoutNameTemperatureList = listOf(param7, param8)
     }
@@ -111,9 +111,9 @@ class DataStringConverterTest {
         val message1 = newDataStringConverter1.convert(list, json1)
         println(message1)
 
-        val httpGetType = object : TypeToken<List<GeneralRESTHttpGetParam>>() {}.type
+        val httpGetType = object : TypeToken<List<GeneralRestHttpGetParam>>() {}.type
         val httpGetParamList1 =
-            Gson().fromJson<List<GeneralRESTHttpGetParam>>(message1[0], httpGetType)
+            Gson().fromJson<List<GeneralRestHttpGetParam>>(message1[0], httpGetType)
         println(httpGetParamList1[0].key + " " + httpGetParamList1[0].value)
 
         println(" -----  2nd Test Starts -----")

@@ -17,6 +17,7 @@ import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.model.MqttPublishModel
 import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
 import com.aconno.sensorics.ui.base.BaseActivity
@@ -31,6 +32,9 @@ import kotlinx.android.synthetic.main.activity_mqtt_publisher.*
 import kotlinx.android.synthetic.main.layout_datastring.*
 import kotlinx.android.synthetic.main.layout_mqtt.*
 import kotlinx.android.synthetic.main.layout_publisher_header.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -40,38 +44,47 @@ class MqttPublisherActivity : BaseActivity() {
     @Inject
     lateinit var mqttPublisherViewModel: MqttPublisherViewModel
 
+    @Inject
+    lateinit var syncRepository: SyncRepository
+
     private var mqttPublishModel: MqttPublishModel? = null
     private var isTestingAlreadyRunning: Boolean = false
 
     private val testConnectionCallback = object : Publisher.TestConnectionCallback {
         override fun onConnectionStart() {
-            progressbar.visibility = View.VISIBLE
-            isTestingAlreadyRunning = false
-            Toast.makeText(
-                this@MqttPublisherActivity,
-                getString(R.string.testings_started),
-                Toast.LENGTH_SHORT
-            ).show()
+            GlobalScope.launch(Dispatchers.Main) {
+                progressbar.visibility = View.VISIBLE
+                isTestingAlreadyRunning = false
+                Toast.makeText(
+                    this@MqttPublisherActivity,
+                    getString(R.string.testings_started),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         override fun onConnectionSuccess() {
-            progressbar.visibility = View.INVISIBLE
-            isTestingAlreadyRunning = false
-            Toast.makeText(
-                this@MqttPublisherActivity,
-                getString(R.string.test_succeeded),
-                Toast.LENGTH_SHORT
-            ).show()
+            GlobalScope.launch(Dispatchers.Main) {
+                progressbar.visibility = View.INVISIBLE
+                isTestingAlreadyRunning = false
+                Toast.makeText(
+                    this@MqttPublisherActivity,
+                    getString(R.string.test_succeeded),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         override fun onConnectionFail() {
-            progressbar.visibility = View.INVISIBLE
-            isTestingAlreadyRunning = false
-            Toast.makeText(
-                this@MqttPublisherActivity,
-                getString(R.string.test_failed),
-                Toast.LENGTH_SHORT
-            ).show()
+            GlobalScope.launch(Dispatchers.Main) {
+                progressbar.visibility = View.INVISIBLE
+                isTestingAlreadyRunning = false
+                Toast.makeText(
+                    this@MqttPublisherActivity,
+                    getString(R.string.test_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -345,14 +358,19 @@ class MqttPublisherActivity : BaseActivity() {
     }
 
     private fun testMqttConnection(toMqttPublishModel: MqttPublishModel) {
-        val publisher = MqttPublisher(
-            applicationContext,
-            MqttPublishModelDataMapper().toMqttPublish(toMqttPublishModel),
-            listOf(Device("TestDevice", "Name", "Mac"))
-        )
+        GlobalScope.launch(Dispatchers.Default) {
 
-        testConnectionCallback.onConnectionStart()
-        publisher.test(testConnectionCallback)
+            val publisher = MqttPublisher(
+                applicationContext,
+                MqttPublishModelDataMapper().toMqttPublish(toMqttPublishModel),
+                listOf(Device("TestDevice", "Name", "Mac")),
+                syncRepository
+            )
+
+            testConnectionCallback.onConnectionStart()
+
+            publisher.test(testConnectionCallback)
+        }
     }
 
 

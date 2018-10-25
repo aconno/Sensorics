@@ -37,6 +37,7 @@ class BluetoothScanningViewModel(
 
     fun startScanning(filterByDevice: Boolean) {
         Timber.d("startScanning")
+
         BluetoothScanningService.start(getApplication(), filterByDevice)
     }
 

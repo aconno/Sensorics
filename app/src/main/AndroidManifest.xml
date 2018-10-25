@@ -42,20 +42,20 @@
             android:name=".ui.settings.publishers.PublishListActivity"
             android:label="@string/title_publish_list" />
         <activity
-            android:name=".ui.settings.publishers.rheader.RESTHeadersActivity"
+            android:name=".ui.settings.publishers.restheader.RestHeadersActivity"
             android:label="@string/title_activity_rest_header"
-            android:parentActivityName=".ui.settings.publishers.selectpublish.RESTPublisherActivity" />
+            android:parentActivityName=".ui.settings.publishers.selectpublish.RestPublisherActivity" />
         <activity
-            android:name=".ui.settings.publishers.rhttpgetparams.RESTHttpGetParamsActivity"
+            android:name=".ui.settings.publishers.resthttpgetparams.RestHttpGetParamsActivity"
             android:label="@string/title_activity_rest_http_get_params"
-            android:parentActivityName=".ui.settings.publishers.selectpublish.RESTPublisherActivity" />
+            android:parentActivityName=".ui.settings.publishers.selectpublish.RestPublisherActivity" />
         <activity
             android:name=".ui.settings.publishers.selectpublish.SelectPublisherActivity"
             android:label="@string/title_select_publish"
             android:noHistory="true"
             android:theme="@style/SelectPublisherTheme" />
         <activity
-            android:name=".ui.settings.publishers.selectpublish.RESTPublisherActivity"
+            android:name=".ui.settings.publishers.selectpublish.RestPublisherActivity"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity"

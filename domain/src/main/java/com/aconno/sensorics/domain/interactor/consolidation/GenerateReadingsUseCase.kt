@@ -32,7 +32,8 @@ class GenerateReadingsUseCase(
                             msd,
                             byteFormat
                         ).toFloat() * 0.00014,
-                        name
+                        name,
+                        format.id
                     )
                     sensorReadings.add(reading)
                 }
@@ -49,7 +50,8 @@ class GenerateReadingsUseCase(
                                 msd,
                                 scaleFactorFormat
                             ).toFloat() / 65536,
-                            name
+                            name,
+                            format.id
                         )
                         sensorReadings.add(reading)
                     }
@@ -62,7 +64,8 @@ class GenerateReadingsUseCase(
                             msd,
                             byteFormat
                         ).toFloat() * 245 / 32768,
-                        name
+                        name,
+                        format.id
                     )
                     sensorReadings.add(reading)
                 }
@@ -71,7 +74,8 @@ class GenerateReadingsUseCase(
                         parameter.timestamp,
                         device,
                         deserializer.deserializeNumber(msd, byteFormat),
-                        name
+                        name,
+                        format.id
                     )
                     sensorReadings.add(reading)
                 }

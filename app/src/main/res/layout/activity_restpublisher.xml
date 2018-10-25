@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.settings.publishers.selectpublish.RESTPublisherActivity">
+    tools:context=".ui.settings.publishers.selectpublish.RestPublisherActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/custom_toolbar"

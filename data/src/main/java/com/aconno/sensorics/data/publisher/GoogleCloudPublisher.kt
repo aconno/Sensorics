@@ -8,6 +8,8 @@ import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.GooglePublish
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.model.Sync
+import com.aconno.sensorics.domain.repository.SyncRepository
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -21,8 +23,15 @@ import java.util.*
 class GoogleCloudPublisher(
     context: Context,
     private val googlePublish: GooglePublish,
-    private val listDevices: List<Device>
+    private val listDevices: List<Device>,
+    private val syncRepository: SyncRepository
 ) : Publisher {
+
+    private val lastSyncs: MutableMap<Pair<String, String>, Long> =
+        syncRepository.getSync("google" + googlePublish.id)
+            .map { Pair(it.macAddress, it.advertisementId) to it.lastSyncTimestamp }
+            .toMap()
+            .toMutableMap()
 
     //TODO: Refactor
     private val mqttAndroidClient: MqttAndroidClient
@@ -92,30 +101,37 @@ class GoogleCloudPublisher(
         return googlePublish
     }
 
-    override fun isPublishable(device: Device): Boolean {
-        return System.currentTimeMillis() > (googlePublish.lastTimeMillis + googlePublish.timeMillis)
-                && listDevices.contains(device)
+    private fun isPublishable(readings: List<Reading>): Boolean {
+        val reading = readings.firstOrNull()
+        val latestTimestamp =
+            lastSyncs[Pair(reading?.device?.macAddress, reading?.advertismentId)] ?: 0
+
+        return System.currentTimeMillis() - latestTimestamp > this.googlePublish.timeMillis
+                && reading != null && listDevices.contains(reading.device)
     }
 
     override fun publish(readings: List<Reading>) {
-        if (readings.isNotEmpty()) {
+        if (readings.isNotEmpty() && isPublishable(readings)) {
             val messages = dataStringConverter.convert(readings)
             for (message in messages) {
                 Timber.tag("Publisher Google Cloud ")
                     .d("${googlePublish.name} publishes from ${readings[0].device}")
                 publish(message)
             }
+
+            val reading = readings.first()
+            val time = System.currentTimeMillis()
+            syncRepository.save(
+                Sync(
+                    "google" + googlePublish.id,
+                    reading.device.macAddress,
+                    reading.advertismentId,
+                    time
+                )
+            )
+            lastSyncs[Pair(reading.device.macAddress, reading.advertismentId)] = time
         }
     }
-
-//    override fun publish(reading: Reading) {
-//        val messages = dataStringConverter.convert(reading) ?: return
-//        for (message in messages) {
-//            Timber.tag("Publisher Google")
-//                .d("${googlePublish.name} publishes from ${reading.device}")
-//            publish(message)
-//        }
-//    }
 
     private fun publish(message: String) {
         if (mqttAndroidClient.isConnected) {

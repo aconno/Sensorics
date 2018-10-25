@@ -4,7 +4,7 @@
     android:id="@+id/dialog"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:context=".ui.settings.publishers.rheader.AddRESTHeaderDialog">
+    tools:context=".ui.settings.publishers.restheader.AddRestHeaderDialog">
 
     <LinearLayout
         android:layout_width="300dp"

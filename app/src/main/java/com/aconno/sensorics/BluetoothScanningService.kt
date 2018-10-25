@@ -10,24 +10,23 @@ import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.data.publisher.MqttPublisher
-import com.aconno.sensorics.data.publisher.RESTPublisher
+import com.aconno.sensorics.data.publisher.RestPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.GetAllEnabledGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.GetAllEnabledMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.GetAllEnabledRESTPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
+import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllEnabledGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllEnabledMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllEnabledRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import dagger.android.DaggerService
 import io.reactivex.Flowable
@@ -39,6 +38,9 @@ import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function4
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -63,34 +65,28 @@ class BluetoothScanningService : DaggerService() {
     lateinit var getAllEnabledGooglePublishUseCase: GetAllEnabledGooglePublishUseCase
 
     @Inject
-    lateinit var getAllEnabledRESTPublishUseCase: GetAllEnabledRESTPublishUseCase
+    lateinit var getAllEnabledRestPublishUseCase: GetAllEnabledRestPublishUseCase
 
     @Inject
     lateinit var getAllEnabledMqttPublishUseCase: GetAllEnabledMqttPublishUseCase
 
     @Inject
-    lateinit var updateRESTPublishUserCase: UpdateRESTPublishUserCase
-
-    @Inject
-    lateinit var updateGooglePublishUseCase: UpdateGooglePublishUseCase
-
-    @Inject
-    lateinit var updateMqttPublishUseCase: UpdateMqttPublishUseCase
+    lateinit var updatePublishUseCase: UpdatePublishUseCase
 
     @Inject
     lateinit var getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase
 
     @Inject
-    lateinit var getDevicesThatConnectedWithRESTPublishUseCase: GetDevicesThatConnectedWithRESTPublishUseCase
+    lateinit var getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase
 
     @Inject
     lateinit var getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase
 
     @Inject
-    lateinit var getRESTHeadersByIdUseCase: GetRESTHeadersByIdUseCase
+    lateinit var getRestHeadersByIdUseCase: GetRestHeadersByIdUseCase
 
     @Inject
-    lateinit var getRESTHttpGetParamsByIdUseCase: GetRESTHttpGetParamsByIdUseCase
+    lateinit var getRestHttpGetParamsByIdUseCase: GetRestHttpGetParamsByIdUseCase
 
     @Inject
     lateinit var runOutcomeUseCase: RunOutcomeUseCase
@@ -112,6 +108,9 @@ class BluetoothScanningService : DaggerService() {
 
     @Inject
     lateinit var getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase
+
+    @Inject
+    lateinit var syncRepository: SyncRepository
 
     private var closeConnectionUseCase: CloseConnectionUseCase? = null
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
@@ -160,40 +159,16 @@ class BluetoothScanningService : DaggerService() {
     }
 
     private fun startSyncing() {
-        disposables.add(
-            readings.subscribe { readings ->
-                //Send data and update last sent date-time
+        GlobalScope.launch(Dispatchers.Default) {
+            disposables.add(
+                readings.subscribe { readings ->
+                    //Send data and update last sent date-time
 
-                publishReadingsUseCase?.let { publishReadingUseCase ->
-                    publishReadingUseCase
-                        .execute(readings)
-                        .subscribeOn(Schedulers.io())
-                        .flatMapIterable { it }
-                        .map {
-                            val data = it.getPublishData()
-                            data.lastTimeMillis = System.currentTimeMillis()
-
-                            when (data) {
-                                is GooglePublish -> {
-                                    updateGooglePublishUseCase.execute(data)
-                                }
-                                is RESTPublish -> {
-                                    updateRESTPublishUserCase.execute(data)
-                                }
-                                is MqttPublish -> {
-                                    updateMqttPublishUseCase.execute(data)
-                                }
-                                else -> {
-                                    throw IllegalArgumentException("Illegal data provided.")
-                                }
-                            }
-                        }
-                        .subscribe {
-                            it.subscribeOn(Schedulers.io()).subscribe()
-                        }
+                    publishReadingsUseCase?.execute(readings)
                 }
-            }
-        )
+            )
+        }
+
     }
 
     private fun handleInputsForActions() {
@@ -289,29 +264,31 @@ class BluetoothScanningService : DaggerService() {
                 GoogleCloudPublisher(
                     this,
                     it.first,
-                    it.second
+                    it.second,
+                    syncRepository
                 ) as Publisher
             }
     }
 
     private fun getRestPublisherObservable(): Observable<Publisher> {
-        return getAllEnabledRESTPublishUseCase.execute()
+        return getAllEnabledRestPublishUseCase.execute()
             .subscribeOn(Schedulers.io())
             .toObservable()
             .flatMapIterable { it }
-            .map { it as RESTPublish }
+            .map { it as RestPublish }
             .flatMap {
                 Observable.zip(
                     Observable.just(it),
-                    getDevicesThatConnectedWithRESTPublishUseCase.execute(it.id).toObservable(),
-                    getRESTHeadersByIdUseCase.execute(it.id).toObservable(),
-                    getRESTHttpGetParamsByIdUseCase.execute(it.id).toObservable(),
-                    Function4<RESTPublish, List<Device>, List<RESTHeader>, List<RESTHttpGetParam>, Publisher> { t1, t2, t3, t4 ->
-                        RESTPublisher(
+                    getDevicesThatConnectedWithRestPublishUseCase.execute(it.id).toObservable(),
+                    getRestHeadersByIdUseCase.execute(it.id).toObservable(),
+                    getRestHttpGetParamsByIdUseCase.execute(it.id).toObservable(),
+                    Function4<RestPublish, List<Device>, List<RestHeader>, List<RestHttpGetParam>, Publisher> { t1, t2, t3, t4 ->
+                        RestPublisher(
                             t1,
                             t2,
                             t3,
-                            t4
+                            t4,
+                            syncRepository
                         )
                     }
                 )
@@ -333,7 +310,8 @@ class BluetoothScanningService : DaggerService() {
                 MqttPublisher(
                     this,
                     it.first,
-                    it.second
+                    it.second,
+                    syncRepository
                 ) as Publisher
             }
     }

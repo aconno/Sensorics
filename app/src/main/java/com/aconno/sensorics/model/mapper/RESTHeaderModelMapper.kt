@@ -1,14 +1,14 @@
 package com.aconno.sensorics.model.mapper
 
-import com.aconno.sensorics.domain.ifttt.GeneralRESTHeader
-import com.aconno.sensorics.domain.ifttt.RESTHeader
-import com.aconno.sensorics.model.RESTHeaderModel
+import com.aconno.sensorics.domain.ifttt.GeneralRestHeader
+import com.aconno.sensorics.domain.ifttt.RestHeader
+import com.aconno.sensorics.model.RestHeaderModel
 import javax.inject.Inject
 
 class RESTHeaderModelMapper @Inject constructor() {
 
-    private fun toRESTHeaderModel(restHeader: RESTHeader): RESTHeaderModel {
-        return RESTHeaderModel(
+    private fun toRESTHeaderModel(restHeader: RestHeader): RestHeaderModel {
+        return RestHeaderModel(
             restHeader.id,
             restHeader.rId,
             restHeader.key,
@@ -16,8 +16,8 @@ class RESTHeaderModelMapper @Inject constructor() {
         )
     }
 
-    fun toRESTHeaderModelList(googlePublishCollection: Collection<RESTHeader>): List<RESTHeaderModel> {
-        val restHeaderModelList = mutableListOf<RESTHeaderModel>()
+    fun toRESTHeaderModelList(googlePublishCollection: Collection<RestHeader>): List<RestHeaderModel> {
+        val restHeaderModelList = mutableListOf<RestHeaderModel>()
         for (restHeader in googlePublishCollection) {
             val user = toRESTHeaderModel(restHeader)
             restHeaderModelList.add(user)
@@ -25,8 +25,8 @@ class RESTHeaderModelMapper @Inject constructor() {
         return restHeaderModelList
     }
 
-    private fun toRESTHeader(restHeaderModel: RESTHeaderModel): RESTHeader {
-        return GeneralRESTHeader(
+    private fun toRESTHeader(restHeaderModel: RestHeaderModel): RestHeader {
+        return GeneralRestHeader(
             restHeaderModel.id,
             restHeaderModel.rId,
             restHeaderModel.key,
@@ -34,8 +34,11 @@ class RESTHeaderModelMapper @Inject constructor() {
         )
     }
 
-    private fun toRESTHeaderByRESTPublishId(restHeaderModel: RESTHeaderModel, rId: Long): RESTHeader {
-        return GeneralRESTHeader(
+    private fun toRESTHeaderByRESTPublishId(
+        restHeaderModel: RestHeaderModel,
+        rId: Long
+    ): RestHeader {
+        return GeneralRestHeader(
             restHeaderModel.id,
             rId,
             restHeaderModel.key,
@@ -44,10 +47,10 @@ class RESTHeaderModelMapper @Inject constructor() {
     }
 
     fun toRESTHeaderListByRESTPublishId(
-        googlePublishCollection: Collection<RESTHeaderModel>,
+        googlePublishCollection: Collection<RestHeaderModel>,
         rId: Long
-    ): List<RESTHeader> {
-        val restHeaderList = mutableListOf<RESTHeader>()
+    ): List<RestHeader> {
+        val restHeaderList = mutableListOf<RestHeader>()
         for (restHeader in googlePublishCollection) {
             val user = toRESTHeaderByRESTPublishId(restHeader, rId)
             restHeaderList.add(user)
@@ -55,8 +58,8 @@ class RESTHeaderModelMapper @Inject constructor() {
         return restHeaderList
     }
 
-    fun toRESTHeaderList(googlePublishCollection: Collection<RESTHeaderModel>): List<RESTHeader> {
-        val restHeaderList = mutableListOf<RESTHeader>()
+    fun toRESTHeaderList(googlePublishCollection: Collection<RestHeaderModel>): List<RestHeader> {
+        val restHeaderList = mutableListOf<RestHeader>()
         for (restHeader in googlePublishCollection) {
             val user = toRESTHeader(restHeader)
             restHeaderList.add(user)

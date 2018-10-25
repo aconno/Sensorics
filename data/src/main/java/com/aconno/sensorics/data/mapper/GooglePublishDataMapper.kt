@@ -1,6 +1,6 @@
 package com.aconno.sensorics.data.mapper
 
-import com.aconno.sensorics.data.repository.gpublish.GooglePublishEntity
+import com.aconno.sensorics.data.repository.googlepublish.GooglePublishEntity
 import com.aconno.sensorics.domain.ifttt.GooglePublish
 import javax.inject.Inject
 import javax.inject.Singleton

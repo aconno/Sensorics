@@ -16,14 +16,11 @@ import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.ifttt.outcome.*
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.GetAllEnabledGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.gpublish.UpdateGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.GetAllEnabledMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mpublish.UpdateMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.GetAllEnabledRESTPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.rpublish.UpdateRESTPublishUserCase
-import com.aconno.sensorics.domain.interactor.repository.GetRESTHeadersByIdUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetRESTHttpGetParamsByIdUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllEnabledGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllEnabledMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllEnabledRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.repository.GetRestHeadersByIdUseCase
+import com.aconno.sensorics.domain.interactor.repository.GetRestHttpGetParamsByIdUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveSensorReadingsUseCase
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import dagger.Module
@@ -117,9 +114,9 @@ class BluetoothScanningServiceModule {
     @Provides
     @BluetoothScanningServiceScope
     fun provideGetAllEnabledRESTPublishUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): GetAllEnabledRESTPublishUseCase {
-        return GetAllEnabledRESTPublishUseCase(
+        restPublishRepository: RestPublishRepository
+    ): GetAllEnabledRestPublishUseCase {
+        return GetAllEnabledRestPublishUseCase(
             restPublishRepository
         )
     }
@@ -136,48 +133,17 @@ class BluetoothScanningServiceModule {
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideUpdateRESTPublishUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): UpdateRESTPublishUserCase {
-        return UpdateRESTPublishUserCase(
-            restPublishRepository
-        )
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideUpdateGooglePublishUseCase(
-        restPublishRepository: GooglePublishRepository
-    ): UpdateGooglePublishUseCase {
-        return UpdateGooglePublishUseCase(
-            restPublishRepository
-        )
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideUpdateMqttPublishUseCase(
-        mqttPublishRepository: MqttPublishRepository
-    ): UpdateMqttPublishUseCase {
-        return UpdateMqttPublishUseCase(
-            mqttPublishRepository
-        )
-    }
-
-
-    @Provides
-    @BluetoothScanningServiceScope
     fun provideGetRESTHeadersByIdUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): GetRESTHeadersByIdUseCase {
-        return GetRESTHeadersByIdUseCase(restPublishRepository)
+        restPublishRepository: RestPublishRepository
+    ): GetRestHeadersByIdUseCase {
+        return GetRestHeadersByIdUseCase(restPublishRepository)
     }
 
     @Provides
     @BluetoothScanningServiceScope
     fun provideGetRESTHttpGetParamsByIdUseCase(
-        restPublishRepository: RESTPublishRepository
-    ): GetRESTHttpGetParamsByIdUseCase {
-        return GetRESTHttpGetParamsByIdUseCase(restPublishRepository)
+        restPublishRepository: RestPublishRepository
+    ): GetRestHttpGetParamsByIdUseCase {
+        return GetRestHttpGetParamsByIdUseCase(restPublishRepository)
     }
 }

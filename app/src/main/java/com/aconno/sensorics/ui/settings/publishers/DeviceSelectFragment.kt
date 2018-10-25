@@ -71,7 +71,7 @@ class DeviceSelectFragment : BaseFragment() {
                 is GooglePublishModel -> deviceSelectViewModel.getAllDevicesWithGoogleRelation(
                     basePublishModel!!.id
                 )
-                is RESTPublishModel -> deviceSelectViewModel.getAllDevicesWithRESTRelation(
+                is RestPublishModel -> deviceSelectViewModel.getAllDevicesWithRESTRelation(
                     basePublishModel!!.id
                 )
                 is MqttPublishModel -> deviceSelectViewModel.getAllDevicesWithMqttRelation(

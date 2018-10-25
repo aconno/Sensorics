@@ -14,10 +14,12 @@ import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.data.repository.action.ActionsRepositoryImpl
 import com.aconno.sensorics.data.repository.devices.DeviceMapper
 import com.aconno.sensorics.data.repository.devices.DeviceRepositoryImpl
-import com.aconno.sensorics.data.repository.gpublish.GooglePublishRepositoryImpl
-import com.aconno.sensorics.data.repository.mpublish.MqttPublishRepositoryImpl
-import com.aconno.sensorics.data.repository.pdjoin.PublishDeviceJoinRepositoryImpl
-import com.aconno.sensorics.data.repository.rpublish.RESTPublishRepositoryImpl
+import com.aconno.sensorics.data.repository.googlepublish.GooglePublishRepositoryImpl
+import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishRepositoryImpl
+import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinRepositoryImpl
+import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
+import com.aconno.sensorics.data.repository.sync.SyncDao
+import com.aconno.sensorics.data.repository.sync.SyncRepositoryImpl
 import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.device.SmsSenderImpl
 import com.aconno.sensorics.device.TextToSpeechPlayerImpl
@@ -42,6 +44,7 @@ import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
@@ -49,6 +52,7 @@ import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
+import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.serialization.Deserializer
 import com.aconno.sensorics.domain.serialization.DeserializerImpl
@@ -166,12 +170,12 @@ class AppModule {
     @Singleton
     fun provideRESTPublishRepository(
         sensoricsDatabase: SensoricsDatabase,
-        restPublishEntityDataMapper: RESTPublishEntityDataMapper,
-        restPublishDataMapper: RESTPublishDataMapper,
-        restHeaderDataMapper: RESTHeaderDataMapper,
-        restHttpGetParamDataMapper: RESTHttpGetParamDataMapper
-    ): RESTPublishRepository {
-        return RESTPublishRepositoryImpl(
+        restPublishEntityDataMapper: RestPublishEntityDataMapper,
+        restPublishDataMapper: RestPublishDataMapper,
+        restHeaderDataMapper: RestHeaderDataMapper,
+        restHttpGetParamDataMapper: RestHttpGetParamDataMapper
+    ): RestPublishRepository {
+        return RestPublishRepositoryImpl(
             sensoricsDatabase.restPublishDao(),
             restPublishEntityDataMapper,
             restPublishDataMapper,
@@ -255,12 +259,12 @@ class AppModule {
     fun providePublishDeviceJoinRepository(
         sensoricsDatabase: SensoricsDatabase,
         deviceMapper: DeviceMapper,
-        publishDeviceJoinJoinMapper: PublishPublishDeviceJoinJoinMapper
+        publishDeviceJoinMapper: PublishDeviceJoinMapper
     ): PublishDeviceJoinRepository {
         return PublishDeviceJoinRepositoryImpl(
             sensoricsDatabase.publishDeviceJoinDao(),
             deviceMapper,
-            publishDeviceJoinJoinMapper
+            publishDeviceJoinMapper
         )
     }
 
@@ -337,8 +341,8 @@ class AppModule {
     @Singleton
     fun provideGetDevicesThatConnectedWithRESTPublishUseCase(
         publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): GetDevicesThatConnectedWithRESTPublishUseCase {
-        return GetDevicesThatConnectedWithRESTPublishUseCase(publishDeviceJoinRepository)
+    ): GetDevicesThatConnectedWithRestPublishUseCase {
+        return GetDevicesThatConnectedWithRestPublishUseCase(publishDeviceJoinRepository)
     }
 
     @Provides
@@ -348,4 +352,21 @@ class AppModule {
     ): GetDevicesThatConnectedWithMqttPublishUseCase {
         return GetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideUpdatePublishUseCase(
+        googlePublishRepository: GooglePublishRepository,
+        mqttPublishRepository: MqttPublishRepository,
+        restPublishRepository: RestPublishRepository
+    ): UpdatePublishUseCase =
+        UpdatePublishUseCase(googlePublishRepository, mqttPublishRepository, restPublishRepository)
+
+    @Provides
+    @Singleton
+    fun provideSyncDao(database: SensoricsDatabase): SyncDao = database.syncDao()
+
+    @Provides
+    @Singleton
+    fun provideSyncRepository(dao: SyncDao): SyncRepository = SyncRepositoryImpl(dao)
 }

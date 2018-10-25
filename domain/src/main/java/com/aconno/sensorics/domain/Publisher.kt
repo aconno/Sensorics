@@ -2,13 +2,10 @@ package com.aconno.sensorics.domain
 
 import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.model.Reading
-import com.aconno.sensorics.domain.model.Device
 
 interface Publisher {
 
     fun publish(readings: List<Reading>)
-
-    fun isPublishable(device: Device): Boolean
 
     fun closeConnection()
 
