@@ -82,7 +82,6 @@ class UseCasesViewModel(
     private fun callJavaScript(methodName: String, jsonParams: String) {
         val generator = JavascriptCallGenerator()
         val call = generator.generateCall(methodName, jsonParams)
-        Timber.i("callJavaScript: call=$call")
         mutableUrl.postValue(call)
     }
 }
