@@ -213,6 +213,14 @@ class SavedDevicesFragment : DaggerFragment(), ItemClickListener<DeviceActive>,
             .show()
     }
 
+    fun onBluetoothOn() {
+        button_add_device.show()
+    }
+
+    fun onBluetoothOff() {
+        button_add_device.hide()
+    }
+
     override fun onDevicesDialogItemClick(item: Device) {
         deviceViewModel.saveDevice(item)
     }

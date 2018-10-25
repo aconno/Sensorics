@@ -98,6 +98,14 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             menuItem?.setVisible(false)
         }
         snackbar?.show()
+
+        //Hide FAB
+        val fragment = supportFragmentManager.findFragmentById(content_container.id)
+        fragment?.let {
+            if (it is SavedDevicesFragment) {
+                it.onBluetoothOff()
+            }
+        }
     }
 
     private fun onBluetoothOn() {
@@ -106,6 +114,14 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             menuItem?.setVisible(true)
         }
         snackbar?.dismiss()
+
+        //Show FAB
+        val fragment = supportFragmentManager.findFragmentById(content_container.id)
+        fragment?.let {
+            if (it is SavedDevicesFragment) {
+                it.onBluetoothOn()
+            }
+        }
     }
 
     private fun handleScanEvent(scanEvent: ScanEvent?) {
