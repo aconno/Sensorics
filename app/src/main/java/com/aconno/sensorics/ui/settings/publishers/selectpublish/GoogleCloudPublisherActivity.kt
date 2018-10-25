@@ -33,6 +33,9 @@ import kotlinx.android.synthetic.main.activity_google_cloud_publisher.*
 import kotlinx.android.synthetic.main.layout_datastring.*
 import kotlinx.android.synthetic.main.layout_google.*
 import kotlinx.android.synthetic.main.layout_publisher_header.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
 import java.text.SimpleDateFormat
@@ -52,33 +55,39 @@ class GoogleCloudPublisherActivity : BaseActivity() {
 
     private val testConnectionCallback = object : Publisher.TestConnectionCallback {
         override fun onConnectionStart() {
-            progressbar.visibility = View.VISIBLE
-            isTestingAlreadyRunning = false
-            Toast.makeText(
-                this@GoogleCloudPublisherActivity,
-                getString(R.string.testings_started),
-                Toast.LENGTH_SHORT
-            ).show()
+            GlobalScope.launch(Dispatchers.Main) {
+                progressbar.visibility = View.VISIBLE
+                isTestingAlreadyRunning = false
+                Toast.makeText(
+                    this@GoogleCloudPublisherActivity,
+                    getString(R.string.testings_started),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         override fun onConnectionSuccess() {
-            progressbar.visibility = View.INVISIBLE
-            isTestingAlreadyRunning = false
-            Toast.makeText(
-                this@GoogleCloudPublisherActivity,
-                getString(R.string.test_succeeded),
-                Toast.LENGTH_SHORT
-            ).show()
+            GlobalScope.launch(Dispatchers.Main) {
+                progressbar.visibility = View.INVISIBLE
+                isTestingAlreadyRunning = false
+                Toast.makeText(
+                    this@GoogleCloudPublisherActivity,
+                    getString(R.string.test_succeeded),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         override fun onConnectionFail() {
-            progressbar.visibility = View.INVISIBLE
-            isTestingAlreadyRunning = false
-            Toast.makeText(
-                this@GoogleCloudPublisherActivity,
-                getString(R.string.test_failed),
-                Toast.LENGTH_SHORT
-            ).show()
+            GlobalScope.launch(Dispatchers.Main) {
+                progressbar.visibility = View.INVISIBLE
+                isTestingAlreadyRunning = false
+                Toast.makeText(
+                    this@GoogleCloudPublisherActivity,
+                    getString(R.string.test_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -361,10 +370,10 @@ class GoogleCloudPublisherActivity : BaseActivity() {
 
     private fun isFileValidPKCS8(byteArray: ByteArray): Boolean {
         val spec = PKCS8EncodedKeySpec(byteArray)
-        val kf = KeyFactory.getInstance("RSA")
+        val keyFactory = KeyFactory.getInstance("RSA")
 
         try {
-            kf.generatePrivate(spec)
+            keyFactory.generatePrivate(spec)
         } catch (e: Exception) {
             return false
         }
@@ -375,10 +384,10 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         val uri = Uri.parse(privateKey)
         val stream = contentResolver.openInputStream(uri)
 
-        val size = stream.available()
+        val size = stream?.available() ?: 0
         val buffer = ByteArray(size)
-        stream.read(buffer)
-        stream.close()
+        stream?.read(buffer)
+        stream?.close()
         return buffer
     }
 
@@ -398,15 +407,19 @@ class GoogleCloudPublisherActivity : BaseActivity() {
     }
 
     private fun testGoogleConnection(toGooglePublishModel: GooglePublishModel) {
-        val publisher = GoogleCloudPublisher(
-            applicationContext,
-            GooglePublishModelDataMapper().transform(toGooglePublishModel),
-            listOf(Device("TestDevice", "Name", "Mac")),
-            syncRepository
-        )
+        GlobalScope.launch(Dispatchers.Default) {
 
-        testConnectionCallback.onConnectionStart()
-        publisher.test(testConnectionCallback)
+            val publisher = GoogleCloudPublisher(
+                applicationContext,
+                GooglePublishModelDataMapper().transform(toGooglePublishModel),
+                listOf(Device("TestDevice", "Name", "Mac")),
+                syncRepository
+            )
+
+            testConnectionCallback.onConnectionStart()
+
+            publisher.test(testConnectionCallback)
+        }
     }
 
     companion object {
