@@ -195,4 +195,5 @@
     <string name="formats_download_error_dialog_message">Could not download formats from server.</string>
     <string name="formats_download_error_dialog_dismiss_message">@android:string/ok</string>
     <string name="dashboard">Dashboard</string>
+    <string name="keep_screen_on">Keep Screen On</string>
 </resources>
