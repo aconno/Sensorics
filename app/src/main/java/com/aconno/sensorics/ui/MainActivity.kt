@@ -58,11 +58,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (sharedPreferences.getBoolean("keep_screen_on", false)) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        }
-
         setContentView(R.layout.activity_toolbar)
 
         snackbar =
@@ -83,6 +78,15 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     override fun onResume() {
         super.onResume()
+
+        val keepScreenOn = sharedPreferences.getBoolean("keep_screen_on", false)
+        if (keepScreenOn) {
+            //Enable Keep Screen On
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            //Disable Keep Screen On
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
 
         bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
         bluetoothViewModel.observeBluetoothState()
