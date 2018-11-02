@@ -3,20 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/list_item_height"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/list_item_height"
+    android:paddingStart="@dimen/screen_edge_left_right_margin"
     android:paddingEnd="@dimen/screen_edge_left_right_margin"
-    android:paddingStart="@dimen/screen_edge_left_right_margin">
+    tools:layout_editor_absoluteY="25dp">
 
     <TextView
         android:id="@+id/text_name"
         style="@style/ListItemText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/text_mac_address"
-        app:layout_constraintEnd_toStartOf="@id/text_condition"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_mac_address"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
         tools:text="Name of the Action" />
 
     <TextView
@@ -24,11 +27,10 @@
         style="@style/ListItemSecondaryText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/list_item_text_padding"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/text_outcome"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_name"
         tools:text="MA:CA:DD:RE:SS:00" />
 
     <TextView
@@ -36,10 +38,14 @@
         style="@style/ListItemText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:gravity="end"
-        app:layout_constraintBaseline_toBaselineOf="@id/text_name"
+        app:layout_constraintBottom_toTopOf="@+id/text_outcome"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_name"
+        app:layout_constraintStart_toEndOf="@+id/text_name"
+        app:layout_constraintTop_toTopOf="@+id/text_name"
         tools:text="Temperature > 4.0" />
 
     <TextView
@@ -47,10 +53,11 @@
         style="@style/ListItemSecondaryText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:gravity="end"
-        app:layout_constraintBaseline_toBaselineOf="@id/text_mac_address"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_mac_address"
         tools:text="Notification" />
 
 </android.support.constraint.ConstraintLayout>
