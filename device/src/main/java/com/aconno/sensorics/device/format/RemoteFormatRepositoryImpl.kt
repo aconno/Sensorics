@@ -6,6 +6,7 @@ import com.aconno.sensorics.domain.format.RemoteAdvertisementFormat
 import com.aconno.sensorics.domain.repository.LocalFormatRepository
 import com.aconno.sensorics.domain.repository.RemoteFormatRepository
 import io.reactivex.Completable
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -61,7 +62,9 @@ class RemoteFormatRepositoryImpl(
 
     private fun updateFormat(formatName: String) {
         if (needsToUpdate(formatName)) {
+            Timber.d("Updating $formatName")
             val format = getRemoteAdvertisementFormat(formatName)
+            Timber.d("Storing $formatName")
             storeFormat(format)
         }
     }

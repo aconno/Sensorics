@@ -6,4 +6,5 @@ interface LocalUseCaseRepository {
     fun getAllUseCaseNames(): List<String>
     fun deleteUseCase(sensorName: String)
     fun getFilePathFor(sensorName: String): String
+    fun moveUsecasesFromAssetsToCache()
 }
