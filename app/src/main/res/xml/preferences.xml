@@ -11,4 +11,9 @@
         android:entryValues="@array/SettingsScanModeValues"
         android:key="scan_mode"
         android:title="Scan Mode" />
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="keep_screen_on"
+        android:title="@string/keep_screen_on" />
 </PreferenceScreen>

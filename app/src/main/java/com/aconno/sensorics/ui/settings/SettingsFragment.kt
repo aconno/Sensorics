@@ -51,7 +51,10 @@ class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceChangeList
     private fun initSummaries() {
         val scanMode = preferenceManager
             .sharedPreferences.getString("scan_mode", "3")
-        setScanModeSummarize(scanMode)
+
+        scanMode?.let {
+            setScanModeSummarize(scanMode)
+        }
     }
 
     private fun setScanModeSummarize(scanMode: String) {

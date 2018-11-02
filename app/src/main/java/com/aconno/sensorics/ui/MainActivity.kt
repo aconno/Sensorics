@@ -2,6 +2,7 @@ package com.aconno.sensorics.ui
 
 import android.arch.lifecycle.Observer
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowManager
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
@@ -45,6 +47,9 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     @Inject
     lateinit var permissionViewModel: PermissionViewModel
 
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
     private var mainMenu: Menu? = null
 
     private var snackbar: Snackbar? = null
@@ -73,6 +78,15 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     override fun onResume() {
         super.onResume()
+
+        val keepScreenOn = sharedPreferences.getBoolean("keep_screen_on", false)
+        if (keepScreenOn) {
+            //Enable Keep Screen On
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            //Disable Keep Screen On
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
 
         bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
         bluetoothViewModel.observeBluetoothState()

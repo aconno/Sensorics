@@ -3,7 +3,9 @@ package com.aconno.sensorics.ui
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.WindowManager
 import com.aconno.sensorics.R
 import com.aconno.sensorics.ui.graph.BleGraph
 import com.aconno.sensorics.viewmodel.LiveGraphViewModel
@@ -16,8 +18,15 @@ class LiveGraphActivity : DaggerAppCompatActivity() {
     @Inject
     lateinit var liveGraphViewModel: LiveGraphViewModel
 
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (sharedPreferences.getBoolean("keep_screen_on", false)) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
         setContentView(R.layout.activity_graph)
     }
 
