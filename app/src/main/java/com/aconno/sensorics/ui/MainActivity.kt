@@ -19,6 +19,7 @@ import com.aconno.sensorics.domain.model.ScanEvent
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.SensoricsPermission
+import com.aconno.sensorics.ui.acnact.AcnActFragment
 import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
 import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
@@ -237,6 +238,11 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
                 device.name
             )
             "AcnRange" -> AcnRangeFragment.newInstance(
+                device.macAddress,
+                device.getRealName(),
+                device.name
+            )
+            "AcnAct" -> AcnActFragment.newInstance(
                 device.macAddress,
                 device.getRealName(),
                 device.name
