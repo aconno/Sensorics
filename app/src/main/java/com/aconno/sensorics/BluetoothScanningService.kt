@@ -111,7 +111,6 @@ class BluetoothScanningService : DaggerService() {
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
     private var publishers: MutableList<Publisher>? = null
 
-    private val ANDROID_N_MAX_SCAN_DURATION = 30 * 60 * 1000L // 30 minutes
     private lateinit var scanTimerDisposable: Job
 
     private val disposables = CompositeDisposable()
@@ -344,6 +343,7 @@ class BluetoothScanningService : DaggerService() {
     }
 
     companion object {
+        private const val ANDROID_N_MAX_SCAN_DURATION = 30 * 60 * 1000L // 30 minutes
 
         fun start(context: Context, filterByDevice: Boolean = true) {
             val intent = Intent(context, BluetoothScanningService::class.java)
