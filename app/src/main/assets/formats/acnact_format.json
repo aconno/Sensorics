@@ -4,7 +4,28 @@
   "icon": "ic_sensa",
   "format": [
     {
-      "name": "Counter",
+      "name": "MagnetoState",
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 6,
+      "reversed": false,
+      "data_type": "BYTE"
+    },
+    {
+      "name": "LightState",
+      "start_index_inclusive": 6,
+      "end_index_exclusive": 10,
+      "reversed": true,
+      "data_type": "FLOAT"
+    },
+    {
+      "name": "ButtonState",
+      "start_index_inclusive": 10,
+      "end_index_exclusive": 11,
+      "reversed": false,
+      "data_type": "BYTE"
+    },
+    {
+      "name": "ButtonCounter",
       "start_index_inclusive": 11,
       "end_index_exclusive": 12,
       "reversed": false,
