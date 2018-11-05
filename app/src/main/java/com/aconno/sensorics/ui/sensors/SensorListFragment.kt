@@ -3,6 +3,7 @@ package com.aconno.sensorics.ui.sensors
 import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.view.*
+import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.LiveGraphActivity
@@ -34,6 +35,7 @@ class SensorListFragment : DaggerFragment() {
     override fun onPrepareOptionsMenu(menu: Menu?) {
         super.onPrepareOptionsMenu(menu)
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
+        menu?.findItem(R.id.action_start_usecases_activity)?.isVisible = BuildConfig.FLAVOR == "dev"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

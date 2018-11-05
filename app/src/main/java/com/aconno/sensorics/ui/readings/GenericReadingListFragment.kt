@@ -4,12 +4,12 @@ import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.*
+import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
-import com.aconno.sensorics.ui.sensors.SensorListFragment
 import kotlinx.android.synthetic.main.fragment_generic_reading_list.*
 import kotlinx.android.synthetic.main.item_reading.view.*
 import javax.inject.Inject
@@ -38,6 +38,7 @@ class GenericReadingListFragment : Fragment() {
     override fun onPrepareOptionsMenu(menu: Menu?) {
         super.onPrepareOptionsMenu(menu)
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
+        menu?.findItem(R.id.action_start_usecases_activity)?.isVisible = BuildConfig.FLAVOR == "dev"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
