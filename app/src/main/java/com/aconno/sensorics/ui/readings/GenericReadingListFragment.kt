@@ -9,12 +9,13 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
+import dagger.android.support.DaggerFragment
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import kotlinx.android.synthetic.main.fragment_generic_reading_list.*
 import kotlinx.android.synthetic.main.item_reading.view.*
 import javax.inject.Inject
 
-class GenericReadingListFragment : Fragment() {
+class GenericReadingListFragment : DaggerFragment() {
 
     @Inject
     lateinit var readingListViewModel: ReadingListViewModel
