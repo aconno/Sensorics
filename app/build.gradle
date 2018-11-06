@@ -104,7 +104,6 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-inline:$mockito_inline_version"
 
     androidTestImplementation "com.android.support.test:runner:$test_runner_version"
-    androidTestImplementation "com.android.support.test:testing-support-lib:$testing_support_library_version"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"

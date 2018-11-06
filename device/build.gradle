@@ -49,7 +49,6 @@ dependencies {
 
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_version"
     androidTestImplementation "com.android.support.test:runner:$test_runner_version"
-    androidTestImplementation "com.android.support.test:testing-support-lib:$testing_support_library_version"
 }
 
 apply plugin: 'kotlin-android-extensions'

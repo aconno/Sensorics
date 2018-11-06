@@ -5,5 +5,6 @@ data class ByteFormat(
     val startIndexInclusive: Int,
     val endIndexExclusive: Int,
     val isReversed: Boolean,
-    val dataType: String
+    val dataType: String,
+    var formula: String?
 )

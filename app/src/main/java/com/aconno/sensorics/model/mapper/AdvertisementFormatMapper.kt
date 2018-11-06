@@ -58,7 +58,8 @@ class AdvertisementFormatMapper {
             byteFormatModel.startIndexInclusive,
             byteFormatModel.endIndexExclusive,
             byteFormatModel.reversed,
-            byteFormatModel.dataType
+            byteFormatModel.dataType,
+            byteFormatModel.formula
         )
     }
 }

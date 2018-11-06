@@ -28,7 +28,8 @@ class FormatJsonConverterImpl(
             byteFormatJsonModel.startIndexInclusive,
             byteFormatJsonModel.endIndexExclusive,
             byteFormatJsonModel.reversed,
-            byteFormatJsonModel.dataType
+            byteFormatJsonModel.dataType,
+            byteFormatJsonModel.formula
         )
     }
 

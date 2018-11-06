@@ -18,5 +18,8 @@ class ByteFormatJsonModel(
     var reversed: Boolean,
     @SerializedName("data_type")
     @Expose
-    var dataType: String
+    var dataType: String,
+    @SerializedName("formula")
+    @Expose
+    var formula: String?
 )
