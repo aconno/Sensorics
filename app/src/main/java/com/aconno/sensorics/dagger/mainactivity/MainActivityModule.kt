@@ -8,11 +8,13 @@ import com.aconno.sensorics.device.usecase.RemoteUseCaseRepositoryImpl
 import com.aconno.sensorics.device.usecase.RetrofitUseCaseApi
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
+import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.repository.DeviceRepository
+import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.repository.LocalUseCaseRepository
 import com.aconno.sensorics.domain.repository.RemoteUseCaseRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
@@ -220,4 +222,31 @@ class MainActivityModule {
     ) = DashboardViewModelFactory(
         readingsStream
     )
+
+    @Provides
+    @MainActivityScope
+    fun provideLiveGraphViewModelFactory(
+        getReadingsUseCase: GetReadingsUseCase,
+        mainActivity: MainActivity
+    ) = LiveGraphViewModelFactory(
+        getReadingsUseCase,
+        mainActivity.application
+    )
+
+    @Provides
+    @MainActivityScope
+    fun provideLiveGraphViewModel(
+        liveGraphViewModelFactory: LiveGraphViewModelFactory,
+        mainActivity: MainActivity
+    ) =
+        ViewModelProviders.of(
+            mainActivity,
+            liveGraphViewModelFactory
+        ).get(LiveGraphViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideGetSensorReadingsUseCase(
+        inMemoryRepository: InMemoryRepository
+    ) = GetReadingsUseCase(inMemoryRepository)
 }
