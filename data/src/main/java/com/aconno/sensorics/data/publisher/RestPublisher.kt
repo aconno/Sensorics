@@ -1,5 +1,6 @@
 package com.aconno.sensorics.data.publisher
 
+import android.annotation.SuppressLint
 import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.ifttt.*
@@ -43,9 +44,10 @@ class RestPublisher(
     }
 
     companion object {
-        private val JSON = MediaType.parse("application/json; charset=utf-8")
+        private val JSON = MediaType.parse("application/json")
     }
 
+    @SuppressLint("CheckResult")
     override fun publish(readings: List<Reading>) {
         if (readings.isNotEmpty() && isPublishable(readings)) {
             Timber.tag("Publisher HTTP")
@@ -53,9 +55,13 @@ class RestPublisher(
             getRequestObservable(readings)
                 .flatMapIterable { it }
                 .map { it }
-                .subscribe {
-                    Timber.d(it.body().toString())
-                }
+                .subscribe(
+                    {
+                        Timber.d(it.body().toString())
+                    }, {
+                        //No-Op
+                    }
+                )
 
             val reading = readings.first()
             val time = System.currentTimeMillis()
@@ -72,6 +78,7 @@ class RestPublisher(
 
     }
 
+    @SuppressLint("CheckResult")
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
         val reading = Reading(
             System.currentTimeMillis(),
@@ -139,7 +146,7 @@ class RestPublisher(
                     convert.forEach {
                         val body = RequestBody.create(
                             getMediaType(),
-                            it
+                            it.toByteArray()
                         )
 
                         val builder = Request.Builder()
