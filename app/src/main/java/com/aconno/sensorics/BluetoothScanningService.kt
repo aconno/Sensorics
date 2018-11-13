@@ -147,7 +147,7 @@ class BluetoothScanningService : DaggerService() {
     }
 
 
-    /**
+    /**ss
      * Restart scanning before Android BLE Scanning Timeout
      * https://github.com/aconno/Sensorics/issues/12
      */
