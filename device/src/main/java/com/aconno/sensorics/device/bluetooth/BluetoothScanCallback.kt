@@ -24,7 +24,7 @@ class BluetoothScanCallback(
         val timestamp = System.currentTimeMillis()
         val macAddress = result.device.address
         val rssi = result.rssi
-        val bytes = result.scanRecord.bytes.toList()
+        val bytes = result.scanRecord!!.bytes
         return ScanResult(timestamp, macAddress, rssi, bytes)
     }
 

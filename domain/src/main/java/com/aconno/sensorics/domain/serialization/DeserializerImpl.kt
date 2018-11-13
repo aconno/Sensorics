@@ -6,7 +6,7 @@ import java.nio.ByteBuffer
 
 class DeserializerImpl : Deserializer {
 
-    override fun deserializeNumber(rawData: List<Byte>, byteFormat: ByteFormat): Number {
+    override fun deserializeNumber(rawData: ByteArray, byteFormat: ByteFormat): Number {
         return when (byteFormat.dataType) {
             SupportedTypes.BYTE -> deserializeByte(rawData, byteFormat)
             SupportedTypes.SHORT -> deserializeShort(rawData, byteFormat)
@@ -16,40 +16,44 @@ class DeserializerImpl : Deserializer {
         }
     }
 
-    private fun deserializeByte(rawData: List<Byte>, byteFormat: ByteFormat): Byte {
-        val bytes = rawData.subList(byteFormat.startIndexInclusive, byteFormat.endIndexExclusive)
+    private fun deserializeByte(rawData: ByteArray, byteFormat: ByteFormat): Byte {
+        val bytes =
+            rawData.copyOfRange(byteFormat.startIndexInclusive, byteFormat.endIndexExclusive)
         return bytes[0]
     }
 
-    private fun deserializeShort(rawData: List<Byte>, byteFormat: ByteFormat): Short {
-        var bytes = rawData.subList(byteFormat.startIndexInclusive, byteFormat.endIndexExclusive)
+    private fun deserializeShort(rawData: ByteArray, byteFormat: ByteFormat): Short {
+        val bytes =
+            rawData.copyOfRange(byteFormat.startIndexInclusive, byteFormat.endIndexExclusive)
         if (byteFormat.isReversed) {
-            bytes = bytes.reversed()
+            bytes.reverse()
         }
-        val byteBuffer = ByteBuffer.wrap(bytes.toByteArray())
+        val byteBuffer = ByteBuffer.wrap(bytes)
         return byteBuffer.getShort(0)
     }
 
-    private fun deserializeUnsignedShort(rawData: List<Byte>, byteFormat: ByteFormat): Int {
-        var bytes = rawData.subList(byteFormat.startIndexInclusive, byteFormat.endIndexExclusive)
+    private fun deserializeUnsignedShort(rawData: ByteArray, byteFormat: ByteFormat): Int {
+        val bytes =
+            rawData.copyOfRange(byteFormat.startIndexInclusive, byteFormat.endIndexExclusive)
         if (byteFormat.isReversed) {
-            bytes = bytes.reversed()
+            bytes.reverse()
         }
-        val byteBuffer = ByteBuffer.wrap(bytes.toByteArray())
+        val byteBuffer = ByteBuffer.wrap(bytes)
         val signed = byteBuffer.getShort(0)
-        if (signed < 0) {
-            return signed.toInt() + 65536
+        return if (signed < 0) {
+            signed.toInt() + 65536
         } else {
-            return signed.toInt()
+            signed.toInt()
         }
     }
 
-    private fun deserializeFloat(rawData: List<Byte>, byteFormat: ByteFormat): Float {
-        var bytes = rawData.subList(byteFormat.startIndexInclusive, byteFormat.endIndexExclusive)
+    private fun deserializeFloat(rawData: ByteArray, byteFormat: ByteFormat): Float {
+        val bytes =
+            rawData.copyOfRange(byteFormat.startIndexInclusive, byteFormat.endIndexExclusive)
         if (byteFormat.isReversed) {
-            bytes = bytes.reversed()
+            bytes.reverse()
         }
-        val byteBuffer = ByteBuffer.wrap(bytes.toByteArray())
+        val byteBuffer = ByteBuffer.wrap(bytes)
         return byteBuffer.getFloat(0)
     }
 }
