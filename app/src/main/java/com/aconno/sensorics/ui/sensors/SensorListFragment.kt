@@ -200,7 +200,7 @@ class SensorListFragment : DaggerFragment() {
     }
 
     private fun displaySensorValues(values: Map<String, Number>?) {
-        values?.let { _ ->
+        values?.let {
             val temperatureLabel = getString(R.string.temperature)
             val lightLabel = getString(R.string.light)
             val humidityLabel = getString(R.string.humidity)
