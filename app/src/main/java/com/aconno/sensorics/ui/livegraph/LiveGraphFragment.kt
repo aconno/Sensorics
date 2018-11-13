@@ -28,7 +28,7 @@ class LiveGraphFragment : DaggerFragment() {
         super.onCreate(savedInstanceState)
 
         if (arguments == null) {
-            throw NullPointerException("Arguments cannot be null")
+            throw IllegalArgumentException("Arguments cannot be null")
         }
 
         arguments?.let {
