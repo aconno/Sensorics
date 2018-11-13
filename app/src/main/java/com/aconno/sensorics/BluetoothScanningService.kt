@@ -168,19 +168,15 @@ class BluetoothScanningService : DaggerService() {
 
         if (deviceList == null) {
             bluetooth.startScanning()
-            running = true
-            startRecording()
-            startLogging()
-            startSyncing()
-            handleInputsForActions()
+
         } else {
             bluetooth.startScanning(deviceList)
-            running = true
-            startRecording()
-            startLogging()
-            startSyncing()
-            handleInputsForActions()
         }
+        running = true
+        startRecording()
+        startLogging()
+        startSyncing()
+        handleInputsForActions()
     }
 
     private fun startSyncing() {
