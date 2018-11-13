@@ -220,7 +220,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun getConnectableFragment(device: Device): Fragment {
         return when (device.name) {
-            "ACN Freight" -> AcnFreightFragment.newInstance(
+            "AcnFreight" -> AcnFreightFragment.newInstance(
                 device
             )
             else -> {
