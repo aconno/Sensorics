@@ -83,7 +83,7 @@
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="value">Wert</string>
-    <string name="values_connot_empty">Wert kann nicht leer sein</string>
+    <string name="values_cannot_empty">Wert kann nicht leer sein</string>
     <string name="quality_of_service">QoS</string>
     <string name="publisher_info_title">Information</string>
     <string name="topic">Topic</string>
@@ -108,7 +108,7 @@
     <string name="rest_headers_title">Headers</string>
     <string name="title_activity_rest_http_get_params">REST HTTP Get Params.</string>
     <string name="title_activity_rest_header">REST Header</string>
-    <string name="httpget_params">HTTP Get Params (%d)</string>
+    <string name="http_get_params">HTTP Get Params (%d)</string>
     <string name="headers">Headers (%d)</string>
     <string name="message_no_saved_devices_cannot_open_actions">Bitte zuerst ein Gerät hinzufügen</string>
     <string name="title_device_list">Geräte</string>
