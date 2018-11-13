@@ -8,7 +8,6 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.serialization.Deserializer
-import com.udojava.evalex.Expression
 import io.reactivex.Single
 import java.math.BigDecimal
 
@@ -46,11 +45,11 @@ class GenerateReadingsUseCase(
         )
 
         //If there is no formula,Don't do anything.
-        return if (byteFormat.formula == null || byteFormat.formula!!.isBlank()) {
+        return if (byteFormat.formula == null) {
             deserializedNumber
         } else {
             //Evaluete expression
-            Expression(byteFormat.formula).with(
+            byteFormat.formula.with(
                 "x", BigDecimal(
                     deserializedNumber.toString()
                 )

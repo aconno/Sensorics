@@ -3,6 +3,7 @@ package com.aconno.sensorics.device.format
 import com.aconno.sensorics.device.format.model.*
 import com.aconno.sensorics.domain.format.*
 import com.google.gson.Gson
+import com.udojava.evalex.Expression
 
 class FormatJsonConverterImpl(
     private val gson: Gson
@@ -29,8 +30,16 @@ class FormatJsonConverterImpl(
             byteFormatJsonModel.endIndexExclusive,
             byteFormatJsonModel.reversed,
             byteFormatJsonModel.dataType,
-            byteFormatJsonModel.formula
+            getFormulaExpression(byteFormatJsonModel.formula)
         )
+    }
+
+    private fun getFormulaExpression(formula: String?): Expression? {
+        if (formula != null && !formula.isBlank()) {
+            return Expression(formula)
+        }
+
+        return null
     }
 
     private fun toByteFormatRequired(
