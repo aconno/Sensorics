@@ -1,7 +1,6 @@
 package com.aconno.sensorics.ui.livegraph
 
 import android.arch.lifecycle.Observer
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

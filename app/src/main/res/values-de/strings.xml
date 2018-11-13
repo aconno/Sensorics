@@ -83,7 +83,6 @@
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="value">Wert</string>
-    <string name="values_cannot_empty">Wert kann nicht leer sein</string>
     <string name="quality_of_service">QoS</string>
     <string name="publisher_info_title">Information</string>
     <string name="topic">Topic</string>

@@ -129,7 +129,6 @@
     <string name="key">Key</string>
     <string name="close">Close</string>
     <string name="done">Done</string>
-    <string name="values_cannot_empty">Values cannot be empty</string>
     <string name="clientId">Client Id</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
