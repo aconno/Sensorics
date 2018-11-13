@@ -38,8 +38,7 @@ class MainActivityModule {
     fun provideSensorListViewModel(
         mainActivity: MainActivity,
         sensorListViewModelFactory: SensorListViewModelFactory
-    ) =
-        ViewModelProviders.of(mainActivity, sensorListViewModelFactory)
+    ) = ViewModelProviders.of(mainActivity, sensorListViewModelFactory)
             .get(SensorListViewModel::class.java)
 
     @Provides
@@ -57,8 +56,7 @@ class MainActivityModule {
     fun provideReadingListViewModel(
         mainActivity: MainActivity,
         readingListViewModelFactory: ReadingListViewModelFactory
-    ) =
-        ViewModelProviders.of(mainActivity, readingListViewModelFactory)
+    ) = ViewModelProviders.of(mainActivity, readingListViewModelFactory)
             .get(ReadingListViewModel::class.java)
 
     @Provides
@@ -102,15 +100,13 @@ class MainActivityModule {
         mainActivity: MainActivity,
         bluetooth: Bluetooth,
         bluetoothStateReceiver: BluetoothStateReceiver
-    ) =
-        BluetoothViewModelFactory(bluetooth, bluetoothStateReceiver, mainActivity.application)
+    ) = BluetoothViewModelFactory(bluetooth, bluetoothStateReceiver, mainActivity.application)
 
     @Provides
     @MainActivityScope
     fun provideBluetoothViewModel(
         mainActivity: MainActivity, bluetoothViewModelFactory: BluetoothViewModelFactory
-    ) =
-        ViewModelProviders.of(
+    ) = ViewModelProviders.of(
             mainActivity,
             bluetoothViewModelFactory
         ).get(BluetoothViewModel::class.java)
@@ -144,8 +140,7 @@ class MainActivityModule {
     fun provideUseCasesViewModel(
         mainActivity: MainActivity,
         useCasesViewModelFactory: UseCasesViewModelFactory
-    ) =
-        ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
+    ) = ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
             .get(UseCasesViewModel::class.java)
 
     @Provides
@@ -211,8 +206,7 @@ class MainActivityModule {
     fun provideDashboardViewModel(
         mainActivity: MainActivity,
         useCasesViewModelFactory: DashboardViewModelFactory
-    ) =
-        ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
+    ) = ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
             .get(DashboardViewModel::class.java)
 
     @Provides
@@ -238,8 +232,7 @@ class MainActivityModule {
     fun provideLiveGraphViewModel(
         liveGraphViewModelFactory: LiveGraphViewModelFactory,
         mainActivity: MainActivity
-    ) =
-        ViewModelProviders.of(
+    ) = ViewModelProviders.of(
             mainActivity,
             liveGraphViewModelFactory
         ).get(LiveGraphViewModel::class.java)
