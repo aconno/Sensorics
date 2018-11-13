@@ -85,22 +85,17 @@ class GenerateReadingsUseCase(
     }
 
     private fun isolateMsd(rawData: List<Byte>): List<Byte> {
-        var length: Byte = 0
-        var type: Byte? = null
-        rawData.forEachIndexed { i, byte ->
-            if (length == 0x00.toByte()) {
-                length = byte
-                type = null
+        var index = 0
+        while (index < rawData.size) {
+            val length = rawData[index]
+            val type = rawData[index + 1]
+            if (type == 0xFF.toByte()) {
+                return rawData.subList(index + 2, index + 1 + length)
             } else {
-                if (type == null) type = byte
-                else {
-                    if (type == 0xFF.toByte()) return rawData.toByteArray()
-                        .copyOfRange(i, i + length).toList()
-                }
-                length--
+                index += length + 1
             }
         }
-        return rawData
+        return rawData // If there is no MSD, return raw data
     }
 
     private fun generateDevice(
