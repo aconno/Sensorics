@@ -25,6 +25,8 @@ import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
+import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
+import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.ui.readings.GenericReadingListFragment
 import com.aconno.sensorics.ui.sensors.SensorListFragment
 import com.aconno.sensorics.ui.settings.SettingsActivity
@@ -36,7 +38,7 @@ import kotlinx.android.synthetic.main.activity_toolbar.*
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCallbacks,
-    ScannedDevicesDialogListener, SavedDevicesFragmentListener {
+    ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener {
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
@@ -146,6 +148,13 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             ScanEvent.SCAN_START -> onScanStart()
             ScanEvent.SCAN_STOP -> onScanStop()
         }
+    }
+
+    override fun openLiveGraph(macAddress: String, sensorName: String) {
+        supportFragmentManager?.beginTransaction()?.replace(
+            content_container.id,
+            LiveGraphFragment.newInstance(macAddress, sensorName)
+        )?.addToBackStack(null)?.commit()
     }
 
     override fun onFABClicked() {

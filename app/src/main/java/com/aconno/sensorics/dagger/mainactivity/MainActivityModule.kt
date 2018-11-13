@@ -8,11 +8,13 @@ import com.aconno.sensorics.device.usecase.RemoteUseCaseRepositoryImpl
 import com.aconno.sensorics.device.usecase.RetrofitUseCaseApi
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
+import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.repository.DeviceRepository
+import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.repository.LocalUseCaseRepository
 import com.aconno.sensorics.domain.repository.RemoteUseCaseRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
@@ -36,8 +38,7 @@ class MainActivityModule {
     fun provideSensorListViewModel(
         mainActivity: MainActivity,
         sensorListViewModelFactory: SensorListViewModelFactory
-    ) =
-        ViewModelProviders.of(mainActivity, sensorListViewModelFactory)
+    ) = ViewModelProviders.of(mainActivity, sensorListViewModelFactory)
             .get(SensorListViewModel::class.java)
 
     @Provides
@@ -55,8 +56,7 @@ class MainActivityModule {
     fun provideReadingListViewModel(
         mainActivity: MainActivity,
         readingListViewModelFactory: ReadingListViewModelFactory
-    ) =
-        ViewModelProviders.of(mainActivity, readingListViewModelFactory)
+    ) = ViewModelProviders.of(mainActivity, readingListViewModelFactory)
             .get(ReadingListViewModel::class.java)
 
     @Provides
@@ -100,15 +100,13 @@ class MainActivityModule {
         mainActivity: MainActivity,
         bluetooth: Bluetooth,
         bluetoothStateReceiver: BluetoothStateReceiver
-    ) =
-        BluetoothViewModelFactory(bluetooth, bluetoothStateReceiver, mainActivity.application)
+    ) = BluetoothViewModelFactory(bluetooth, bluetoothStateReceiver, mainActivity.application)
 
     @Provides
     @MainActivityScope
     fun provideBluetoothViewModel(
         mainActivity: MainActivity, bluetoothViewModelFactory: BluetoothViewModelFactory
-    ) =
-        ViewModelProviders.of(
+    ) = ViewModelProviders.of(
             mainActivity,
             bluetoothViewModelFactory
         ).get(BluetoothViewModel::class.java)
@@ -142,8 +140,7 @@ class MainActivityModule {
     fun provideUseCasesViewModel(
         mainActivity: MainActivity,
         useCasesViewModelFactory: UseCasesViewModelFactory
-    ) =
-        ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
+    ) = ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
             .get(UseCasesViewModel::class.java)
 
     @Provides
@@ -209,8 +206,7 @@ class MainActivityModule {
     fun provideDashboardViewModel(
         mainActivity: MainActivity,
         useCasesViewModelFactory: DashboardViewModelFactory
-    ) =
-        ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
+    ) = ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
             .get(DashboardViewModel::class.java)
 
     @Provides
@@ -220,4 +216,30 @@ class MainActivityModule {
     ) = DashboardViewModelFactory(
         readingsStream
     )
+
+    @Provides
+    @MainActivityScope
+    fun provideLiveGraphViewModelFactory(
+        getReadingsUseCase: GetReadingsUseCase,
+        mainActivity: MainActivity
+    ) = LiveGraphViewModelFactory(
+        getReadingsUseCase,
+        mainActivity.application
+    )
+
+    @Provides
+    @MainActivityScope
+    fun provideLiveGraphViewModel(
+        liveGraphViewModelFactory: LiveGraphViewModelFactory,
+        mainActivity: MainActivity
+    ) = ViewModelProviders.of(
+            mainActivity,
+            liveGraphViewModelFactory
+        ).get(LiveGraphViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideGetSensorReadingsUseCase(
+        inMemoryRepository: InMemoryRepository
+    ) = GetReadingsUseCase(inMemoryRepository)
 }

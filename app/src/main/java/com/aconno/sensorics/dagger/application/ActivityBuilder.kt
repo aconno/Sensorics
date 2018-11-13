@@ -12,8 +12,6 @@ import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceSco
 import com.aconno.sensorics.dagger.deviceselect.DeviceSelectionFragmentsModule
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherScope
-import com.aconno.sensorics.dagger.livegraph.LiveGraphModule
-import com.aconno.sensorics.dagger.livegraph.LiveGraphScope
 import com.aconno.sensorics.dagger.mainactivity.MainActivityFragmentsModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityScope
@@ -25,7 +23,6 @@ import com.aconno.sensorics.dagger.publish.PublishListScope
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherModule
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherScope
 import com.aconno.sensorics.ui.ActionListActivity
-import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.SplashActivity
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
@@ -91,8 +88,4 @@ abstract class ActivityBuilder {
         modules = [RESTPublisherModule::class, DeviceSelectionFragmentsModule::class]
     )
     abstract fun bindRestPublisherActivity(): RestPublisherActivity
-
-    @LiveGraphScope
-    @ContributesAndroidInjector(modules = [LiveGraphModule::class])
-    abstract fun bindLiveGraphActivity(): LiveGraphActivity
 }

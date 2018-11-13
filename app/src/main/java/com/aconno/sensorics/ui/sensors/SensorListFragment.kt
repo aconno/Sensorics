@@ -6,8 +6,8 @@ import android.view.*
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.ui.ActionListActivity
-import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.viewmodel.SensorListViewModel
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_sensor_list.*
@@ -27,7 +27,7 @@ class SensorListFragment : DaggerFragment() {
         setHasOptionsMenu(true)
 
         arguments?.let {
-            macAddress = it.getString(MAC_ADDRESS_EXTRA)
+            macAddress = it.getString(MAC_ADDRESS_EXTRA, "")
             sensorListViewModel.setMacAddress(macAddress)
         }
     }
@@ -85,47 +85,54 @@ class SensorListFragment : DaggerFragment() {
     private fun setClickListeners() {
         context?.let { context ->
             sensor_temperature.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Temperature")
+
+                openLiveGraph(macAddress, "Temperature")
             }
             sensor_light.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Light")
+                openLiveGraph(macAddress, "Light")
             }
             sensor_humidity.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Humidity")
+                openLiveGraph(macAddress, "Humidity")
             }
             sensor_pressure.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Pressure")
+                openLiveGraph(macAddress, "Pressure")
             }
             sensor_magnetometer_x.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Magnetometer")
+                openLiveGraph(macAddress, "Magnetometer")
             }
             sensor_magnetometer_y.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Magnetometer")
+                openLiveGraph(macAddress, "Magnetometer")
             }
             sensor_magnetometer_z.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Magnetometer")
+                openLiveGraph(macAddress, "Magnetometer")
             }
             sensor_accelerometer_x.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Accelerometer")
+                openLiveGraph(macAddress, "Accelerometer")
             }
             sensor_accelerometer_y.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Accelerometer")
+                openLiveGraph(macAddress, "Accelerometer")
             }
             sensor_accelerometer_z.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Accelerometer")
+                openLiveGraph(macAddress, "Accelerometer")
             }
             sensor_gyroscope_x.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Gyroscope")
+                openLiveGraph(macAddress, "Gyroscope")
             }
             sensor_gyroscope_y.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Gyroscope")
+                openLiveGraph(macAddress, "Gyroscope")
             }
             sensor_gyroscope_z.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Gyroscope")
+                openLiveGraph(macAddress, "Gyroscope")
             }
             sensor_battery_level.setOnClickListener {
-                LiveGraphActivity.start(context, macAddress, "Battery Level")
+                openLiveGraph(macAddress, "Battery Level")
             }
+        }
+    }
+
+    private fun openLiveGraph(macAddress: String, sensorName: String) {
+        if (activity is LiveGraphOpener) {
+            (activity as LiveGraphOpener).openLiveGraph(macAddress, sensorName)
         }
     }
 
