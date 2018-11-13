@@ -37,9 +37,8 @@ import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function4
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -112,6 +111,8 @@ class BluetoothScanningService : DaggerService() {
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
     private var publishers: MutableList<Publisher>? = null
 
+    private lateinit var scanTimerDisposable: Job
+
     private val disposables = CompositeDisposable()
 
     override fun onBind(intent: Intent): IBinder? {
@@ -135,23 +136,47 @@ class BluetoothScanningService : DaggerService() {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
-                        bluetooth.startScanning(it)
-                        running = true
-                        startRecording()
-                        startLogging()
-                        startSyncing()
-                        handleInputsForActions()
+                        startScan(it)
                     }
             )
         } else {
-            bluetooth.startScanning()
-            running = true
-            startRecording()
-            startLogging()
-            startSyncing()
-            handleInputsForActions()
+            startScan()
         }
+
         return START_STICKY
+    }
+
+
+    /**
+     * Restart scanning before Android BLE Scanning Timeout
+     * https://github.com/aconno/Sensorics/issues/12
+     */
+    private fun startTimer(deviceList: List<Device>? = null) {
+        //Launches non-blocking coroutine
+        scanTimerDisposable = GlobalScope.launch(context = Dispatchers.Main) {
+            delay(ANDROID_N_MAX_SCAN_DURATION - 60 * 1000)
+            Timber.tag("Sensorics - BLE").d("Stopping")
+            stopScanning()
+            Timber.tag("Sensorics - BLE").d("Restarting")
+            startScan(deviceList)
+        }
+    }
+
+    private fun startScan(deviceList: List<Device>? = null) {
+        startTimer(deviceList)
+        Timber.tag("Sensorics - BLE").d("Started")
+
+        if (deviceList == null) {
+            bluetooth.startScanning()
+
+        } else {
+            bluetooth.startScanning(deviceList)
+        }
+        running = true
+        startRecording()
+        startLogging()
+        startSyncing()
+        handleInputsForActions()
     }
 
     private fun startSyncing() {
@@ -189,6 +214,7 @@ class BluetoothScanningService : DaggerService() {
     }
 
     fun stopScanning() {
+        scanTimerDisposable.cancel()
         stopRecording()
         closeConnectionUseCase?.execute()
         bluetooth.stopScanning()
@@ -313,6 +339,7 @@ class BluetoothScanningService : DaggerService() {
     }
 
     companion object {
+        private const val ANDROID_N_MAX_SCAN_DURATION = 30 * 60 * 1000L // 30 minutes
 
         fun start(context: Context, filterByDevice: Boolean = true) {
             val intent = Intent(context, BluetoothScanningService::class.java)

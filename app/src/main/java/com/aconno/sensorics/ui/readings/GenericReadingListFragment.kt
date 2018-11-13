@@ -8,9 +8,9 @@ import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
-import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
 import dagger.android.support.DaggerFragment
+import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import kotlinx.android.synthetic.main.fragment_generic_reading_list.*
 import kotlinx.android.synthetic.main.item_reading.view.*
 import javax.inject.Inject
@@ -86,11 +86,13 @@ class GenericReadingListFragment : DaggerFragment() {
                 val newView =
                     LayoutInflater.from(context)
                         .inflate(R.layout.item_reading, list_readings, false)
-                context?.let { context ->
-                    newView.setOnClickListener {
-                        LiveGraphActivity.start(context, macAddress, reading.name)
+
+                newView.setOnClickListener {
+                    if (activity is LiveGraphOpener) {
+                        (activity as LiveGraphOpener).openLiveGraph(macAddress, reading.name)
                     }
                 }
+
                 newView.text_reading_name.text = reading.name
                 newView.text_reading_value.text = String.format("%.2f", reading.value.toFloat())
                 list_readings.addView(newView)
