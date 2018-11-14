@@ -3,9 +3,7 @@ package com.aconno.sensorics.domain.interactor.repository
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito

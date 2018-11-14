@@ -282,7 +282,7 @@ class RestPublisherActivity : BaseActivity() {
     }
 
     private fun updateHttpGetParamText() {
-        text_http_get_params.text = getString(R.string.httpget_params, restHttpGetParamList.size)
+        text_http_get_params.text = getString(R.string.http_get_params, restHttpGetParamList.size)
     }
 
     private fun millisToFormattedDateString(millis: Long): String {

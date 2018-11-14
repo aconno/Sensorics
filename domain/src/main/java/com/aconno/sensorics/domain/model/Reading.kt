@@ -5,7 +5,7 @@ data class Reading(
     val device: Device,
     val value: Number,
     val name: String,
-    val advertismentId: String
+    val advertisementId: String
 ) {
 
     fun toCsvString(): String {

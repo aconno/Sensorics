@@ -37,10 +37,10 @@ class DeserializerImpl : Deserializer {
         }
         val byteBuffer = ByteBuffer.wrap(bytes.toByteArray())
         val signed = byteBuffer.getShort(0)
-        if (signed < 0) {
-            return signed.toInt() + 65536
+        return if (signed < 0) {
+            signed.toInt() + 65536
         } else {
-            return signed.toInt()
+            signed.toInt()
         }
     }
 

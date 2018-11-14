@@ -14,7 +14,7 @@ class DeviceTest {
         const val FAKE_ICON = "Icon"
     }
 
-    lateinit var device: Device
+    private lateinit var device: Device
 
     @Before
     fun setUp() {

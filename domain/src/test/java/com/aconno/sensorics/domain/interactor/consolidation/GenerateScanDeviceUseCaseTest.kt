@@ -4,8 +4,6 @@ import com.aconno.sensorics.domain.Util
 import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.model.ScanResult
-import com.aconno.sensorics.domain.serialization.Deserializer
-import com.aconno.sensorics.domain.serialization.DeserializerImpl
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
