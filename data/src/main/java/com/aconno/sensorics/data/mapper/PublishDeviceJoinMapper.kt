@@ -10,28 +10,6 @@ import javax.inject.Singleton
 @Singleton
 class PublishDeviceJoinMapper @Inject constructor() {
 
-    fun toGooglePublishDeviceJoin(googlePublishDeviceJoinEntity: GooglePublishDeviceJoinEntity): GooglePublishDeviceJoin {
-        return GeneralGooglePublishDeviceJoin(
-            googlePublishDeviceJoinEntity.gId,
-            googlePublishDeviceJoinEntity.dId
-        )
-    }
-
-    fun toRestPublishDeviceJoin(restPublishDeviceJoinEntity: RestPublishDeviceJoinEntity): GeneralRestPublishDeviceJoin {
-        return GeneralRestPublishDeviceJoin(
-            restPublishDeviceJoinEntity.rId,
-            restPublishDeviceJoinEntity.dId
-        )
-    }
-
-    fun toMqttPublishDeviceJoin(mqttPublishDeviceJoinEntity: MqttPublishDeviceJoinEntity): GeneralMqttPublishDeviceJoin {
-        return GeneralMqttPublishDeviceJoin(
-            mqttPublishDeviceJoinEntity.mId,
-            mqttPublishDeviceJoinEntity.dId
-        )
-    }
-
-
     fun toGooglePublishDeviceJoinEntity(publishDeviceJoin: GooglePublishDeviceJoin): GooglePublishDeviceJoinEntity {
         return GooglePublishDeviceJoinEntity(
             publishDeviceJoin.gId,
