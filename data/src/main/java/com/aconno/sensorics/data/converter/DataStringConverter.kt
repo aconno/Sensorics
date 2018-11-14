@@ -1,6 +1,8 @@
 package com.aconno.sensorics.data.converter
 
 import com.aconno.sensorics.domain.model.Reading
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.regex.Pattern
 
 class DataStringConverter(
@@ -11,6 +13,7 @@ class DataStringConverter(
         private const val VALUE = "value"
         private const val NAME = "name"
         private const val TS = "ts"
+        private const val DATE = "date"
         private const val DEVICE = "device"
 
         private const val NOT_VALID = -1
@@ -18,11 +21,14 @@ class DataStringConverter(
         private const val CHUNK = 2
     }
 
+    private val mdyFormat = SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.GERMAN)
     private val list: MutableList<String> = mutableListOf()
     private val pattern = Pattern.compile("\\$\\s*(\\w+)")
     private var type: Int = 0
 
     init {
+        mdyFormat.timeZone = TimeZone.getDefault()
+
         if (!userDataString.isEmpty()) {
             parseAndValidateDataString(userDataString)
         }
@@ -40,7 +46,8 @@ class DataStringConverter(
     }
 
     private fun checkDataStringValid(): Int {
-        val filteredList = list.filter { it != TS && it != DEVICE } as MutableList<String>
+        val filteredList =
+            list.filter { it != TS && it != DEVICE && it != DATE } as MutableList<String>
 
         return if (filteredList.contains(VALUE) || filteredList.contains(NAME)) {
             filteredList.removeAll { it == VALUE || it == NAME }
@@ -91,6 +98,9 @@ class DataStringConverter(
                     TS -> {
                         newDataString.replace("\$$it", reading.timestamp.toString())
                     }
+                    DATE -> {
+                        newDataString.replace("\$$it", getTimestampWithTimeZone(reading.timestamp))
+                    }
                     DEVICE -> {
                         newDataString.replace("\$$it", reading.device.macAddress)
                     }
@@ -121,6 +131,12 @@ class DataStringConverter(
                 TS -> {
                     newDataString = newDataString.replace("\$$TS", readings[0].timestamp.toString())
                 }
+                DATE -> {
+                    newDataString = newDataString.replace(
+                        "\$$DATE",
+                        getTimestampWithTimeZone(readings[0].timestamp)
+                    )
+                }
                 DEVICE -> {
                     newDataString =
                             newDataString.replace("\$$DEVICE", readings[0].device.macAddress)
@@ -142,5 +158,10 @@ class DataStringConverter(
         }
 
         return newDataString
+    }
+
+    private fun getTimestampWithTimeZone(timeMillis: Long): String {
+        //Prepare it for the GMT not for CET
+        return mdyFormat.format(Date(timeMillis))
     }
 }

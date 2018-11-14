@@ -4,5 +4,5 @@ import com.aconno.sensorics.domain.format.ByteFormat
 
 interface Deserializer {
 
-    fun deserializeNumber(rawData: List<Byte>, byteFormat: ByteFormat): Number
+    fun deserializeNumber(rawData: ByteArray, byteFormat: ByteFormat): Number
 }

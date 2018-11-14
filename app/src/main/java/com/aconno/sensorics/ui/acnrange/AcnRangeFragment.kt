@@ -8,8 +8,8 @@ import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
-import com.aconno.sensorics.ui.LiveGraphActivity
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_acnrange.*
@@ -30,7 +30,7 @@ class AcnRangeFragment : DaggerFragment() {
         setHasOptionsMenu(true)
 
         arguments?.let {
-            macAddress = it.getString(MAC_ADDRESS_EXTRA)
+            macAddress = it.getString(MAC_ADDRESS_EXTRA, "")
             readingListViewModel.init(macAddress)
             mainActivity.supportActionBar?.subtitle = macAddress
         }
@@ -71,8 +71,10 @@ class AcnRangeFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        frame_fragment.setOnClickListener { _ ->
-            context?.let { LiveGraphActivity.start(it, macAddress, "Range") }
+        frame_fragment.setOnClickListener {
+            if (activity is LiveGraphOpener) {
+                (activity as LiveGraphOpener).openLiveGraph(macAddress, "Range")
+            }
         }
     }
 

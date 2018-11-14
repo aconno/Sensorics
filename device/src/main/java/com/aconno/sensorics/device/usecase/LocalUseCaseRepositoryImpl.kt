@@ -28,10 +28,10 @@ class LocalUseCaseRepositoryImpl(
                 val fileData = getFileData(assetManager, "$assetPath/$it")
 
                 val file = File("$sensoricsFilesPath/$it")
-                file.setLastModified(timestampOfUseCases)
                 file.printWriter().use { out ->
                     out.print(fileData)
                 }
+                file.setLastModified(timestampOfUseCases)
             }
         }
     }

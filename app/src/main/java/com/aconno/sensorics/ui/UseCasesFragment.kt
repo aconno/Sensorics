@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
 import com.aconno.sensorics.LiveDataObserver
 import com.aconno.sensorics.R
@@ -39,8 +40,12 @@ class UseCasesFragment : DaggerFragment() {
         if (macAddress != null && name != null) {
 
             activity_usecases_webview.apply {
+                webChromeClient = WebChromeClient()
                 webViewClient = WebViewClient()
                 settings.javaScriptEnabled = true
+                settings.loadWithOverviewMode = true
+                settings.builtInZoomControls = true
+                settings.displayZoomControls = false
             }
 
             mViewModel.url.observe(this, LiveDataObserver { loadUrl(it) })
