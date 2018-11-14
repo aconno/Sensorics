@@ -1,5 +1,6 @@
 package com.aconno.sensorics.domain.interactor.consolidation
 
+import com.aconno.sensorics.domain.ByteOperations
 import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.type.SingleUseCaseWithParameter
@@ -16,7 +17,7 @@ class GenerateReadingsUseCase(
 
     override fun execute(parameter: ScanResult): Single<List<Reading>> {
         val sensorReadings = mutableListOf<Reading>()
-        val msd = isolateMsd(parameter.rawData)
+        val msd = ByteOperations.isolateMsd(parameter.rawData)
         val format = formatMatcher.findFormat(parameter.rawData)
             ?: throw IllegalArgumentException("No format for scan result: $parameter")
         format.getFormat().forEach {
@@ -82,20 +83,6 @@ class GenerateReadingsUseCase(
             }
         }
         return Single.just(sensorReadings)
-    }
-
-    private fun isolateMsd(rawData: List<Byte>): List<Byte> {
-        var index = 0
-        while (index < rawData.size) {
-            val length = rawData[index]
-            val type = rawData[index + 1]
-            if (type == 0xFF.toByte()) {
-                return rawData.subList(index + 2, index + 1 + length)
-            } else {
-                index += length + 1
-            }
-        }
-        return rawData // If there is no MSD, return raw data
     }
 
     private fun generateDevice(
