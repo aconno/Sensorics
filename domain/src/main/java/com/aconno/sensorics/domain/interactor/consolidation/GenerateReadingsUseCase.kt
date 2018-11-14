@@ -39,7 +39,7 @@ class GenerateReadingsUseCase(
         return Single.just(sensorReadings)
     }
 
-    private fun evaluateFormula(byteFormat: ByteFormat, msd: List<Byte>): Number {
+    private fun evaluateFormula(byteFormat: ByteFormat, msd: ByteArray): Number {
         val deserializedNumber = deserializer.deserializeNumber(
             msd,
             byteFormat
