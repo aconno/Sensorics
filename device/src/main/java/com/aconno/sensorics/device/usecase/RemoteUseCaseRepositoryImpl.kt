@@ -5,9 +5,8 @@ import com.aconno.sensorics.domain.repository.LocalUseCaseRepository
 import com.aconno.sensorics.domain.repository.RemoteUseCaseRepository
 import io.reactivex.Maybe
 import timber.log.Timber
+import java.io.FileNotFoundException
 import java.lang.Exception
-import java.lang.IllegalArgumentException
-import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,7 +27,7 @@ class RemoteUseCaseRepositoryImpl(
 
             val filePath = localUseCaseRepository.getFilePathFor(sensorName)
             if (filePath.isBlank()) {
-                throw NullPointerException("There are no UseCase file defined.")
+                throw FileNotFoundException("There are no UseCase file defined.")
             }
 
             filePath
@@ -92,7 +91,7 @@ class RemoteUseCaseRepositoryImpl(
         } else if (execute.code() == 404) {
             localUseCaseRepository.deleteUseCase(sensorName)
             Timber.d("UseCase removed from remote, removing it from local too..")
-            throw IllegalStateException("File Not Found")
+            throw FileNotFoundException("File Not Found")
 
         } else {
             throw IllegalStateException("Network issue")
