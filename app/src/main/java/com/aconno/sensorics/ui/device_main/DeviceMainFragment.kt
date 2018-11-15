@@ -23,10 +23,10 @@ import javax.inject.Inject
 class DeviceMainFragment : DaggerFragment() {
 
     @Inject
-    lateinit var sensorReadingFlow: Flowable<List<Reading>>
+    lateinit var sensorReadingFlow: Flowable<List<Reading>> //TODO: Move this to the view model
     private var sensorReadingFlowDisposable: Disposable? = null
 
-    //@Inject
+    @Inject
     lateinit var mainResourceViewModel: MainResourceViewModel
     private var getResourceDisposable: Disposable? = null
 
