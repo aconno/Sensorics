@@ -9,10 +9,12 @@ import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import dagger.android.support.DaggerFragment
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_device_main.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -24,20 +26,54 @@ class DeviceMainFragment : DaggerFragment() {
     lateinit var sensorReadingFlow: Flowable<List<Reading>>
     private var sensorReadingFlowDisposable: Disposable? = null
 
+    //@Inject
+    lateinit var mainResourceViewModel: MainResourceViewModel
+    private var getResourceDisposable: Disposable? = null
+
+    private lateinit var deviceName: String
+    private lateinit var macAddress: String
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        loadArguments()
         return inflater.inflate(R.layout.fragment_device_main, container, false)
     }
 
+    private fun loadArguments() {
+        deviceName = arguments?.getString(DEVICE_NAME_EXTRA) ?:
+                throw IllegalArgumentException("Device name is not defined")
+        macAddress = arguments?.getString(MAC_ADDRESS_EXTRA) ?:
+                throw IllegalArgumentException("Device mac address is not defined")
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupWebView()
+        subscribeOnSensorReadings()
+    }
+
+    private fun setupWebView() {
         web_view.webChromeClient = WebChromeClient()
         web_view.webViewClient = WebViewClient()
         web_view.settings.javaScriptEnabled = true
-        web_view.loadUrl("file:///android_asset/device_screens/acnsensa/acnsensa.html")
 
+        getResourceDisposable = mainResourceViewModel.getResourcePath(deviceName)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { resourcePath ->
+                    text_error_message.visibility = View.INVISIBLE
+                    web_view.loadUrl(resourcePath)
+                },
+                { throwable ->
+                    text_error_message.visibility = View.VISIBLE
+                    text_error_message.text = throwable.message
+                })
+    }
+
+    private fun subscribeOnSensorReadings() {
         sensorReadingFlowDisposable = sensorReadingFlow
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
@@ -50,6 +86,7 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        getResourceDisposable?.dispose()
         sensorReadingFlowDisposable?.dispose()
     }
 
