@@ -69,11 +69,11 @@ class RestPublisher(
                 Sync(
                     "rest" + restPublish.id,
                     reading.device.macAddress,
-                    reading.advertismentId,
+                    reading.advertisementId,
                     time
                 )
             )
-            lastSyncs[Pair(reading.device.macAddress, reading.advertismentId)] = time
+            lastSyncs[Pair(reading.device.macAddress, reading.advertisementId)] = time
         }
 
     }
@@ -223,7 +223,7 @@ class RestPublisher(
     private fun isPublishable(readings: List<Reading>): Boolean {
         val reading = readings.firstOrNull()
         val latestTimestamp =
-            lastSyncs[Pair(reading?.device?.macAddress, reading?.advertismentId)] ?: 0
+            lastSyncs[Pair(reading?.device?.macAddress, reading?.advertisementId)] ?: 0
 
         return System.currentTimeMillis() - latestTimestamp > this.restPublish.timeMillis
                 && reading != null && listDevices.contains(reading.device)
