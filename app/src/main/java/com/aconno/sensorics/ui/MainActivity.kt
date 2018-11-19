@@ -21,6 +21,7 @@ import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
+import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
@@ -28,7 +29,6 @@ import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.ui.readings.GenericReadingListFragment
-import com.aconno.sensorics.ui.sensors.SensorListFragment
 import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
@@ -240,10 +240,9 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun getReadingListFragment(device: Device): Fragment {
         return when (device.name) {
-            "AcnSensa" -> SensorListFragment.newInstance(
-                device.macAddress,
+            "AcnSensa" -> DeviceMainFragment.newInstance(
                 device.getRealName(),
-                device.name
+                device.macAddress
             )
             "AcnRange" -> AcnRangeFragment.newInstance(
                 device.macAddress,
