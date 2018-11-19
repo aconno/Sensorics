@@ -1,6 +1,10 @@
 package com.aconno.sensorics.ui
 
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import android.arch.lifecycle.Observer
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -14,6 +18,7 @@ import android.view.WindowManager
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
+import com.aconno.sensorics.device.sync.SyncConfigurationService
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanEvent
 import com.aconno.sensorics.domain.scanning.BluetoothState
@@ -76,6 +81,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         if (savedInstanceState == null) {
             showSavedDevicesFragment()
         }
+        scheduleJob()
     }
 
     override fun onResume() {
@@ -384,5 +390,18 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             )
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun scheduleJob() {
+        val jobSchedule: JobScheduler =
+            this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+        val serviceComponents = ComponentName(this, SyncConfigurationService::class.java)
+        val jobInfo: JobInfo = JobInfo.Builder(1, serviceComponents)
+            .setPeriodic(15 * 60 * 1000)
+            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+            .setPersisted(true)
+            .build()
+        jobSchedule.schedule(jobInfo)
+
     }
 }
