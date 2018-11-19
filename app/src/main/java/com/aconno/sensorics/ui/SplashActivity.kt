@@ -1,16 +1,22 @@
 package com.aconno.sensorics.ui
 
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AlertDialog
 import com.aconno.sensorics.R
+import com.aconno.sensorics.SyncConfigurationService
 import com.aconno.sensorics.viewmodel.SplashViewModel
 import com.aconno.sensorics.viewmodel.factory.SplashViewModelFactory
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
+
 
 class SplashActivity : DaggerAppCompatActivity() {
 
@@ -27,6 +33,7 @@ class SplashActivity : DaggerAppCompatActivity() {
             .get(SplashViewModel::class.java)
 
         connectViewModel()
+        scheduleJob()
     }
 
     override fun onResume() {
@@ -70,8 +77,20 @@ class SplashActivity : DaggerAppCompatActivity() {
         dialog.show()
     }
 
-    companion object {
+    private fun scheduleJob() {
+        val jobSchedule: JobScheduler =
+            this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+        val serviceComponents = ComponentName(this, SyncConfigurationService::class.java)
+        val jobInfo: JobInfo = JobInfo.Builder(1, serviceComponents)
+            .setPeriodic(15 * 60 * 1000)
+            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+            .setPersisted(true)
+            .build()
+        jobSchedule.schedule(jobInfo)
 
+    }
+
+    companion object {
         private const val SPLASH_TIMEOUT = 2000L
     }
 }
