@@ -12,6 +12,7 @@ import javax.inject.Singleton
         AppModule::class,
         DataModule::class,
         FormatModule::class,
+        ResourcesModule::class,
         ActivityBuilder::class
     ]
 )

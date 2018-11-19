@@ -1,18 +1,60 @@
 package com.aconno.sensorics.data.api
 
 import com.aconno.sensorics.data.repository.resources.LatestVersionJsonModel
-import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import com.google.gson.Gson
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.io.InputStream
 
 
-interface ResourcesApi {
+class ResourcesApi(
+    private val gson: Gson,
+    private val okHttpClient: OkHttpClient
+) {
 
-    @GET("/sensorics/api/getLatestVersion.php")
-    fun getLatestVersion(@Query("version") version: Long): Call<LatestVersionJsonModel>
+    fun getLatestVersion(version: Long): LatestVersionJsonModel {
+
+        HttpUrl.parse("http://6e4998d8.ngrok.io/Desktop/sensorics/api/getLatestVersion.php")
+            ?.let {
+                val httpBuilder = it.newBuilder()
+
+                httpBuilder.addQueryParameter("version", version.toString())
 
 
-    @GET("/sensorics/{filePath}")
-    fun downloadFile(@Path("filePath") filePath: String): String
+                val request = Request.Builder()
+                    .url(httpBuilder.build())
+                    .build()
+
+                val response = okHttpClient.newCall(request).execute()
+
+                response.body()?.let {
+                    val stringRepresentations = it.string()
+                    return gson.fromJson<LatestVersionJsonModel>(
+                        stringRepresentations,
+                        LatestVersionJsonModel::class.java
+                    )
+                }
+            }
+
+        throw IllegalArgumentException("Could not get/parse response from server!")
+    }
+
+    fun downloadFile(filePath: String): InputStream {
+        val url = "http://6e4998d8.ngrok.io/Desktop/sensorics$filePath"
+
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        val response = okHttpClient.newCall(request).execute()
+
+        response.body()?.let {
+            return it.byteStream()
+        }
+
+
+        throw IllegalArgumentException("Could not get response from server!")
+    }
+
 }

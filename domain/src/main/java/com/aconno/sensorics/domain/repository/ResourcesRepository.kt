@@ -1,8 +1,5 @@
 package com.aconno.sensorics.domain.repository
 
-interface ResourcesRepository {
-
-    fun sync()
-
-
+interface ResourcesRepository : ConfigRepository, FormatRepository, UseCaseRepository,
+    MainScreenRepository {
 }

@@ -17,7 +17,7 @@ data class LatestVersionJsonModel(
     data class FilesToBeUpdatedJsonModel(
         @SerializedName("file_last_modified_date")
         @Expose
-        val fileLastModifiedDate: Int,
+        val fileLastModifiedDate: Long,
         @SerializedName("file_name")
         @Expose
         val fileName: String
