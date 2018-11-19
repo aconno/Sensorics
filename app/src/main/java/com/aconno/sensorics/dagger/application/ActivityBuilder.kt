@@ -2,6 +2,7 @@ package com.aconno.sensorics.dagger.application
 
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BluetoothScanningService
+import com.aconno.sensorics.SyncConfigurationService
 import com.aconno.sensorics.dagger.action_details.ActionDetailsActivityScope
 import com.aconno.sensorics.dagger.action_details.ActionDetailsModule
 import com.aconno.sensorics.dagger.actionlist.ActionListFragmentsModule
@@ -22,6 +23,8 @@ import com.aconno.sensorics.dagger.publish.PublishListModule
 import com.aconno.sensorics.dagger.publish.PublishListScope
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherModule
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherScope
+import com.aconno.sensorics.dagger.sync.SyncConfigurationServiceModule
+import com.aconno.sensorics.dagger.sync.SyncConfigurationServiceScope
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.SplashActivity
@@ -88,4 +91,8 @@ abstract class ActivityBuilder {
         modules = [RESTPublisherModule::class, DeviceSelectionFragmentsModule::class]
     )
     abstract fun bindRestPublisherActivity(): RestPublisherActivity
+
+    @SyncConfigurationServiceScope
+    @ContributesAndroidInjector(modules = [SyncConfigurationServiceModule::class])
+    abstract fun bindSyncConfigurationService(): SyncConfigurationService
 }
