@@ -76,12 +76,6 @@ class FormatMatcherTest {
         return mockedGetFormatsUseCase
     }
 
-    private fun mockFormat(): Map<String, ByteFormat> {
-        val mockedMap = Mockito.spy(mapOf<String, ByteFormat>())
-        Mockito.`when`(mockedMap.keys).thenReturn(setOf())
-        return mockedMap
-    }
-
     private fun mockRequiredFormat(isSuitable: Boolean): List<ByteFormatRequired> {
         return if (isSuitable) {
             getSuitableList()

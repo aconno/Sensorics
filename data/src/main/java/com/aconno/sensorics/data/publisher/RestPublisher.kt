@@ -85,7 +85,7 @@ class RestPublisher(
             Device("TestDevice", "Name", "MA:CA:DD:RE:SS:11"),
             1,
             "Temperature",
-            "AdvertismentId"
+                "AdvertisementId"
         )
 
         getRequestObservable(listOf(reading))

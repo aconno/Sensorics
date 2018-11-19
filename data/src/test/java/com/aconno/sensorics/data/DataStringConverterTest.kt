@@ -26,9 +26,9 @@ class DataStringConverterTest {
             "MA:CA:DD:RE:SS"
         )
 
-        val reading1 = Reading(System.currentTimeMillis(), device, 30, "Temperature")
-        val reading2 = Reading(System.currentTimeMillis(), device, 40, "Light")
-        val reading3 = Reading(System.currentTimeMillis(), device, 50, "Accelerometer X")
+        val reading1 = Reading(System.currentTimeMillis(), device, 30, "Temperature", "CF00")
+        val reading2 = Reading(System.currentTimeMillis(), device, 40, "Light", "CF00")
+        val reading3 = Reading(System.currentTimeMillis(), device, 50, "Accelerometer X", "CF00")
 
         list = listOf(reading1, reading2, reading3)
 
