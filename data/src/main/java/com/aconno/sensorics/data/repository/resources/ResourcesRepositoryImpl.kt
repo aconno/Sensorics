@@ -1,12 +1,13 @@
 package com.aconno.sensorics.data.repository.resources
 
+import com.aconno.sensorics.data.api.ResourcesApi
 import com.aconno.sensorics.domain.repository.*
 
-class ResourcesRepositoryImpl(val cacheFilePath: String, val api: Retrofit) : ResourcesRepository,
+class ResourcesRepositoryImpl(val cacheFilePath: String, val api: ResourcesApi) :
+    ResourcesRepository,
     ConfigRepository, FormatRepository, MainScreenRepository, UseCaseRepository {
 
     override fun sync() {
-
 
     }
 
