@@ -2,8 +2,9 @@ package com.aconno.sensorics.data.repository.resources
 
 import com.aconno.sensorics.data.api.ResourcesApi
 import com.aconno.sensorics.domain.repository.*
+import java.io.File
 
-class ResourcesRepositoryImpl(val cacheFilePath: String, val api: ResourcesApi) :
+class ResourcesRepositoryImpl(val cacheFilePath: File, val api: ResourcesApi) :
     ResourcesRepository,
     ConfigRepository, FormatRepository, MainScreenRepository, UseCaseRepository {
 
