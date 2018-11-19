@@ -19,6 +19,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import timber.log.Timber
 import java.util.*
 
 //TODO: This needs refactoring.
@@ -35,11 +36,14 @@ class BluetoothImpl(
     private val connectGattResults: PublishSubject<GattCallbackPayload> = PublishSubject.create()
     private val scanEvents: PublishSubject<ScanEvent> = PublishSubject.create()
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvents)
-    private val gattCallback: BluetoothGattCallback = BluetoothGattCallback(connectGattResults,bluetoothCharacteristicValueConverter)
+    private val gattCallback: BluetoothGattCallback =
+        BluetoothGattCallback(connectGattResults, bluetoothCharacteristicValueConverter)
     private var lastConnectedDeviceAddress: String? = null
     private var lastConnectedGatt: BluetoothGatt? = null
 
-    private fun getScanSettings(devices: List<Device>? = null): Pair<List<ScanFilter>?, ScanSettings> {
+    private fun getScanSettings(
+        devices: List<Device>? = null
+    ): Pair<List<ScanFilter>?, ScanSettings> {
         val settingsBuilder = ScanSettings.Builder()
 
         val scanMode = sharedPrefs.getString("scan_mode", "3").toInt()
@@ -159,6 +163,7 @@ class BluetoothImpl(
     }
 
     override fun startScanning(devices: List<Device>) {
+        Timber.i("Start Bluetooth scanning, devices: $devices")
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         if (bluetoothPermission.isGranted) {
             scanEvents.onNext(
@@ -173,7 +178,7 @@ class BluetoothImpl(
     }
 
     override fun startScanning() {
-
+        Timber.i("Start Bluetooth scanning")
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         if (bluetoothPermission.isGranted) {
             scanEvents.onNext(

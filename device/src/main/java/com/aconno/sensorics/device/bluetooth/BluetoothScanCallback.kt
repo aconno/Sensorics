@@ -6,14 +6,13 @@ import com.aconno.sensorics.domain.model.ScanResult
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
-//TODO: This needs refactoring.
 class BluetoothScanCallback(
     private val scanResults: PublishSubject<ScanResult>,
     private val scanEvents: PublishSubject<ScanEvent>
 ) : ScanCallback() {
 
     override fun onScanResult(callbackType: Int, result: android.bluetooth.le.ScanResult?) {
-        super.onScanResult(callbackType, result)
+        Timber.i("Bluetooth scan result, mac: ${result?.device?.address}")
         result?.let {
             val scanResult = createScanResult(result)
             scanResults.onNext(scanResult)
@@ -29,8 +28,7 @@ class BluetoothScanCallback(
     }
 
     override fun onScanFailed(errorCode: Int) {
-        super.onScanFailed(errorCode)
-        Timber.e("Scan failed with error code %d", errorCode)
+        Timber.e("Bluetooth scan failed, error code: $errorCode")
         when (errorCode) {
             SCAN_FAILED_ALREADY_STARTED ->
                 scanEvents.onNext(
