@@ -21,11 +21,12 @@ class SyncConfigurationService : JobService() {
     }
 
     override fun onStartJob(params: JobParameters?): Boolean {
-        job = GlobalScope.async {
-            syncUseCase.execute()
-        }
 
         GlobalScope.launch(Dispatchers.Main) {
+            job = GlobalScope.async {
+                syncUseCase.execute()
+            }
+
             broadcastUpdatingFinished()
         }
 
