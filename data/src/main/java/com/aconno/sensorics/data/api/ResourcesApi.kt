@@ -15,7 +15,7 @@ class ResourcesApi(
 
     fun getLatestVersion(version: Long): LatestVersionJsonModel {
 
-        HttpUrl.parse("http://6e4998d8.ngrok.io/Desktop/sensorics/api/getLatestVersion.php")
+        HttpUrl.parse("$SERVER_URL/sensorics/api/getLatestVersion.php")
             ?.let {
                 val httpBuilder = it.newBuilder()
 
@@ -41,7 +41,7 @@ class ResourcesApi(
     }
 
     fun downloadFile(filePath: String): InputStream {
-        val url = "http://6e4998d8.ngrok.io/Desktop/sensorics$filePath"
+        val url = "$SERVER_URL$filePath"
 
         val request = Request.Builder()
             .url(url)
@@ -55,6 +55,10 @@ class ResourcesApi(
 
 
         throw IllegalArgumentException("Could not get response from server!")
+    }
+
+    companion object {
+        const val SERVER_URL = "http://b5f61558.ngrok.io/Desktop"
     }
 
 }
