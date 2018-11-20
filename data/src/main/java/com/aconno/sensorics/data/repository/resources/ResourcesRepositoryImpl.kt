@@ -71,10 +71,10 @@ class ResourcesRepositoryImpl(
     }
 
     companion object {
-        const val CONFIGS_FILE_PATH = "/configs/"
-        const val FORMATS_FILE_PATH = "/formats/"
-        const val ICONS_FILE_PATH = "/icons/"
-        const val MAIN_SCREEN_FILE_PATH = "/device_screens/"
-        const val USECASE_SCREEN_FILE_PATH = "/usecase_screens/"
+        const val CONFIGS_FILE_PATH = "/sensorics/configs/"
+        const val FORMATS_FILE_PATH = "/sensorics/formats/"
+        const val ICONS_FILE_PATH = "/sensorics/icons/"
+        const val MAIN_SCREEN_FILE_PATH = "/sensorics/device_screens/"
+        const val USECASE_SCREEN_FILE_PATH = "/sensorics/usecase_screens/"
     }
 }

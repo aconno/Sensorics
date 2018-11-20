@@ -23,6 +23,8 @@ import com.aconno.sensorics.dagger.publish.PublishListModule
 import com.aconno.sensorics.dagger.publish.PublishListScope
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherModule
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherScope
+import com.aconno.sensorics.dagger.splash.SplashActivityModule
+import com.aconno.sensorics.dagger.splash.SplashActivityScope
 import com.aconno.sensorics.dagger.sync.SyncConfigurationServiceModule
 import com.aconno.sensorics.dagger.sync.SyncConfigurationServiceScope
 import com.aconno.sensorics.ui.ActionListActivity
@@ -41,9 +43,6 @@ import dagger.android.ContributesAndroidInjector
 abstract class ActivityBuilder {
     @ContributesAndroidInjector
     abstract fun bindAcnFreightFragment(): AcnFreightFragment
-
-    @ContributesAndroidInjector
-    abstract fun bindSplashActivity(): SplashActivity
 
     @MainActivityScope
     @ContributesAndroidInjector(
@@ -95,4 +94,10 @@ abstract class ActivityBuilder {
     @SyncConfigurationServiceScope
     @ContributesAndroidInjector(modules = [SyncConfigurationServiceModule::class])
     abstract fun bindSyncConfigurationService(): SyncConfigurationService
+
+    @SplashActivityScope
+    @ContributesAndroidInjector(
+        modules = [SplashActivityModule::class]
+    )
+    abstract fun bindSplashActivity(): SplashActivity
 }
