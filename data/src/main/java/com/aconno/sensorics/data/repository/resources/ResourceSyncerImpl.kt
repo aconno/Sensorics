@@ -11,7 +11,7 @@ class ResourceSyncerImpl(
     private val sharedPreferences: SharedPreferences
 ) : ResourceSyncer {
 
-    private var latestVersion = sharedPreferences.getLong(LATEST_VERSION, 0)
+    private var latestVersion = sharedPreferences.getLong(LATEST_VERSION, LATEST_ASSETS_VERSION)
 
     override fun sync(): Boolean {
         val latestVersionJsonModel = api.getLatestVersion(latestVersion)
@@ -64,5 +64,6 @@ class ResourceSyncerImpl(
 
     companion object {
         const val LATEST_VERSION = "LATEST_VERSION"
+        const val LATEST_ASSETS_VERSION = 1542711814L
     }
 }
