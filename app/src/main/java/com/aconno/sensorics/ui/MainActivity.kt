@@ -15,8 +15,8 @@ import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Device
-import com.aconno.sensorics.domain.model.ScanEvent
 import com.aconno.sensorics.domain.scanning.BluetoothState
+import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
@@ -35,6 +35,7 @@ import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.PermissionViewModel
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_toolbar.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCallbacks,
@@ -76,6 +77,8 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         if (savedInstanceState == null) {
             showSavedDevicesFragment()
         }
+
+        observeScanEvents()
     }
 
     override fun onResume() {
@@ -89,8 +92,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             //Disable Keep Screen On
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-
-        bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
         bluetoothViewModel.observeBluetoothState()
         bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
 
@@ -140,16 +141,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    private fun handleScanEvent(scanEvent: ScanEvent?) {
-        val eventType: Int? = scanEvent?.type
-        when (eventType) {
-            ScanEvent.SCAN_FAILED_ALREADY_STARTED -> onScanFailedAlreadyStarted()
-            ScanEvent.SCAN_FAILED -> onScanFailed()
-            ScanEvent.SCAN_START -> onScanStart()
-            ScanEvent.SCAN_STOP -> onScanStop()
-        }
-    }
-
     override fun openLiveGraph(macAddress: String, sensorName: String) {
         supportFragmentManager?.beginTransaction()?.replace(
             content_container.id,
@@ -174,18 +165,24 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    private fun onScanFailedAlreadyStarted() {
-        //Do nothing.
+    private fun observeScanEvents() {
+        bluetoothScanningViewModel.getScanEvent()
+            .observe(this, Observer { handleScanEvent(it) })
     }
 
-    private fun onScanFailed() {
-        onScanStop()
+    private fun handleScanEvent(scanEvent: ScanEvent?) {
+        Timber.i("Scan event, message: ${scanEvent?.message}")
+        when (scanEvent?.type) {
+            ScanEvent.SCAN_START -> onScanStart()
+            ScanEvent.SCAN_STOP -> onScanStop()
+            ScanEvent.SCAN_FAILED_ALREADY_STARTED -> onScanFailedAlreadyStarted()
+            ScanEvent.SCAN_FAILED -> onScanFailed()
+        }
     }
 
     private fun onScanStart() {
         mainMenu?.let { mainMenu ->
-            val menuItem: MenuItem? = mainMenu
-                .findItem(R.id.action_toggle_scan)
+            val menuItem = mainMenu.findItem(R.id.action_toggle_scan)
             menuItem?.let {
                 it.isChecked = true
                 it.setTitle(getString(R.string.stop_scan))
@@ -195,12 +192,20 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun onScanStop() {
         mainMenu?.let { mainMenu ->
-            val menuItem: MenuItem? = mainMenu.findItem(R.id.action_toggle_scan)
+            val menuItem = mainMenu.findItem(R.id.action_toggle_scan)
             menuItem?.let {
                 it.isChecked = false
                 it.setTitle(getString(R.string.start_scan))
             }
         }
+    }
+
+    private fun onScanFailedAlreadyStarted() {
+        // Do nothing TODO: Check if this is right
+    }
+
+    private fun onScanFailed() {
+        onScanStop()
     }
 
     fun showSensorValues(device: Device) {

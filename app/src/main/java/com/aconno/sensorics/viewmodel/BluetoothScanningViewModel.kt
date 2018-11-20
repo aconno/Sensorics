@@ -1,37 +1,36 @@
 package com.aconno.sensorics.viewmodel
 
 import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Intent
 import android.support.v4.content.LocalBroadcastManager
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.domain.model.ScanEvent
 import com.aconno.sensorics.domain.scanning.Bluetooth
-import io.reactivex.Flowable
+import com.aconno.sensorics.domain.scanning.ScanEvent
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 
-//TODO: This needs refactoring.
-/**
- * @aconno
- */
 class BluetoothScanningViewModel(
-    private val bluetooth: Bluetooth, application: SensoricsApplication
+    application: SensoricsApplication,
+    private val bluetooth: Bluetooth
 ) : AndroidViewModel(application) {
 
-    private val result: MutableLiveData<ScanEvent> = MutableLiveData()
+    private val scanEvent = MutableLiveData<ScanEvent>()
+
+    fun getScanEvent(): LiveData<ScanEvent> = scanEvent
 
     private val disposables = CompositeDisposable()
 
     init {
-        subscribe()
+        subscribeToScanEvents()
     }
 
-    private fun subscribe() {
-        val observable: Flowable<ScanEvent> = bluetooth.getScanEvents()
+    private fun subscribeToScanEvents() {
         disposables.add(
-            observable.subscribe { result.value = it }
+            bluetooth.getScanEvent()
+                .subscribe { scanEvent.postValue(it) }
         )
     }
 
@@ -46,10 +45,6 @@ class BluetoothScanningViewModel(
 
         val localBroadcastManager = LocalBroadcastManager.getInstance(getApplication())
         localBroadcastManager.sendBroadcast(Intent("com.aconno.sensorics.STOP"))
-    }
-
-    fun getResult(): MutableLiveData<ScanEvent> {
-        return result
     }
 
     override fun onCleared() {

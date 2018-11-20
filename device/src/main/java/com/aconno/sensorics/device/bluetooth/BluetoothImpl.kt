@@ -10,7 +10,7 @@ import android.content.SharedPreferences
 import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
-import com.aconno.sensorics.domain.model.ScanEvent
+import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothState
@@ -34,8 +34,14 @@ class BluetoothImpl(
 
     private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
     private val connectGattResults: PublishSubject<GattCallbackPayload> = PublishSubject.create()
-    private val scanEvents: PublishSubject<ScanEvent> = PublishSubject.create()
-    private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvents)
+
+    private val scanEvent = PublishSubject.create<ScanEvent>()
+
+    override fun getScanEvent(): Flowable<ScanEvent> =
+        scanEvent.toFlowable(BackpressureStrategy.BUFFER)
+
+    private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
+
     private val gattCallback: BluetoothGattCallback =
         BluetoothGattCallback(connectGattResults, bluetoothCharacteristicValueConverter)
     private var lastConnectedDeviceAddress: String? = null
@@ -166,11 +172,8 @@ class BluetoothImpl(
         Timber.i("Start Bluetooth scanning, devices: $devices")
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         if (bluetoothPermission.isGranted) {
-            scanEvents.onNext(
-                ScanEvent(ScanEvent.SCAN_START, "Scan start at ${System.currentTimeMillis()}")
-            )
-
             val scanSettings = getScanSettings(devices)
+            scanEvent.onNext(ScanEvent.start())
             bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
         } else {
             throw BluetoothException("Bluetooth permission not granted")
@@ -181,11 +184,8 @@ class BluetoothImpl(
         Timber.i("Start Bluetooth scanning")
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         if (bluetoothPermission.isGranted) {
-            scanEvents.onNext(
-                ScanEvent(ScanEvent.SCAN_START, "Scan start at ${System.currentTimeMillis()}")
-            )
-
             val scanSettings = getScanSettings()
+            scanEvent.onNext(ScanEvent.start())
             bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
         } else {
             throw BluetoothException("Bluetooth permission not granted")
@@ -194,9 +194,7 @@ class BluetoothImpl(
 
     override fun stopScanning() {
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
-        scanEvents.onNext(
-            ScanEvent(ScanEvent.SCAN_STOP, "Scan stop at ${System.currentTimeMillis()}")
-        )
+        scanEvent.onNext(ScanEvent.stop())
         bluetoothLeScanner.stopScan(scanCallback)
     }
 
@@ -206,10 +204,6 @@ class BluetoothImpl(
 
     override fun getScanResults(): Flowable<ScanResult> {
         return scanResults.toFlowable(BackpressureStrategy.LATEST).observeOn(Schedulers.io())
-    }
-
-    override fun getScanEvents(): Flowable<ScanEvent> {
-        return scanEvents.toFlowable(BackpressureStrategy.BUFFER)
     }
 
     override fun getStateEvents(): Flowable<BluetoothState> {
