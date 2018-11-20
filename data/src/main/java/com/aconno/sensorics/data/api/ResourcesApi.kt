@@ -57,7 +57,7 @@ class ResourcesApi(
     }
 
     companion object {
-        const val SERVER_URL = "http://b5f61558.ngrok.io/Desktop"
+        const val SERVER_URL = "http://playground.simvelop.de:8095"
     }
 
 }
