@@ -28,6 +28,7 @@ class ResourcesInitializerImpl(
         moveFolder("icons")
         moveFolder("device_screens")
         moveFolder("usecase_screens")
+        moveFolder("html_resources")
     }
 
     private fun moveFolder(folderName: String) {

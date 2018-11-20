@@ -2,11 +2,9 @@ package com.aconno.sensorics.dagger.application
 
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.usecase.LocalUseCaseRepositoryImpl
-import com.aconno.sensorics.domain.ConfigListManager
 import com.aconno.sensorics.domain.FormatListManager
 import com.aconno.sensorics.domain.format.FormatMatcher
-import com.aconno.sensorics.domain.interactor.format.GetConfigsUseCase
-import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
 import com.aconno.sensorics.domain.repository.LocalUseCaseRepository
 import dagger.Module
 import dagger.Provides
@@ -26,13 +24,6 @@ class FormatModule {
         formatListManager: FormatListManager
     ): GetFormatsUseCase =
         GetFormatsUseCase(formatListManager)
-
-    @Provides
-    @Singleton
-    fun provideGetConfigsUseCase(
-        configsListManager: ConfigListManager
-    ): GetConfigsUseCase =
-        GetConfigsUseCase(configsListManager)
 
     @Provides
     @Singleton

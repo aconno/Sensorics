@@ -1,7 +1,7 @@
 package com.aconno.sensorics.domain.format
 
 import com.aconno.sensorics.domain.ByteOperations
-import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
 
 class FormatMatcher(
     private val getFormatsUseCase: GetFormatsUseCase

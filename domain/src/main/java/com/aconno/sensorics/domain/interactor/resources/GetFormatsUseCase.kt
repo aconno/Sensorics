@@ -1,4 +1,4 @@
-package com.aconno.sensorics.domain.interactor.format
+package com.aconno.sensorics.domain.interactor.resources
 
 import com.aconno.sensorics.domain.FormatListManager
 import com.aconno.sensorics.domain.format.AdvertisementFormat

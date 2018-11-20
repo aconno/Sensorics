@@ -19,7 +19,6 @@ import com.aconno.sensorics.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
-import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
 import com.aconno.sensorics.ui.dashboard.DashboardFragment

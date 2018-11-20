@@ -16,7 +16,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_device_main.*
-import timber.log.Timber
 import javax.inject.Inject
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -78,7 +77,6 @@ class DeviceMainFragment : DaggerFragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
                 readings.forEach {
-                    Timber.d("Reading, mac: ${it.device.macAddress}, name: ${it.name}, value: ${it.value}")
                     web_view.loadUrl("javascript:onSensorReading('${it.name}', '${it.value}')")
                 }
             }

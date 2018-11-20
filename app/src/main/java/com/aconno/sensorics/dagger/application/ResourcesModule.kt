@@ -6,6 +6,7 @@ import com.aconno.sensorics.data.mapper.FormatJsonConverter
 import com.aconno.sensorics.data.repository.resources.ResourcesRepositoryImpl
 import com.aconno.sensorics.domain.ConfigListManager
 import com.aconno.sensorics.domain.FormatListManager
+import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.repository.*
 import com.google.gson.Gson
 import dagger.Module
@@ -63,5 +64,17 @@ class ResourcesModule {
         configRepository: ConfigRepository
     ): ConfigListManager {
         return ConfigListManager(configRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetMainResourceUseCase(
+        configListManager: ConfigListManager,
+        application: SensoricsApplication
+    ): GetMainResourceUseCase {
+        return GetMainResourceUseCase(
+            configListManager,
+            application.cacheDir.absolutePath
+        )
     }
 }

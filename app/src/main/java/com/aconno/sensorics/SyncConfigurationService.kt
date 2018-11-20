@@ -33,7 +33,7 @@ class SyncConfigurationService : JobService() {
 
         GlobalScope.launch(Dispatchers.Main) {
 
-            delay(1 * 60 * 1000)
+            //            delay(1 * 60 * 1000)
 
             job = GlobalScope.async {
                 syncUseCase.execute()

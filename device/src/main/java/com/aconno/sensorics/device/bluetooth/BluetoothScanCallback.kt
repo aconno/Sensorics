@@ -1,8 +1,8 @@
 package com.aconno.sensorics.device.bluetooth
 
 import android.bluetooth.le.ScanCallback
-import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.domain.model.ScanResult
+import com.aconno.sensorics.domain.scanning.ScanEvent
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import timber.log.Timber
@@ -13,7 +13,6 @@ class BluetoothScanCallback(
 ) : ScanCallback() {
 
     override fun onScanResult(callbackType: Int, result: android.bluetooth.le.ScanResult?) {
-        Timber.i("Bluetooth scan result, mac: ${result?.device?.address}")
         result?.let {
             val scanResult = createScanResult(result)
             scanResults.onNext(scanResult)
