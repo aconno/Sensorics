@@ -26,20 +26,31 @@ class ResourceSyncerImpl(
     private fun updateFiles(
         filesToBeUpdated: List<LatestVersionJsonModel.FilesToBeUpdatedJsonModel>
     ) {
+
+        var isDownloadFailed = false
+
         filesToBeUpdated.forEach { model ->
             val downloadedContentInputStream = api.downloadFile(model.fileName)
 
-            val fileToBeSaved =
-                File(cacheFilePath.absolutePath + model.fileName)
-            if (!fileToBeSaved.parentFile.exists()) {
-                fileToBeSaved.parentFile.mkdir()
+            if (downloadedContentInputStream != null) {
+                val fileToBeSaved =
+                    File(cacheFilePath.absolutePath + model.fileName)
+                if (!fileToBeSaved.parentFile.exists()) {
+                    fileToBeSaved.parentFile.mkdir()
+                }
+
+                //Saving IS into the file
+                fileToBeSaved.outputStream().use { downloadedContentInputStream.copyTo(it) }
+
+                //If a download failed stop updating LastModified date
+                //So next time it can start from where it failed.
+                if (isDownloadFailed) {
+                    //Successfully saved update Version in SharedPref
+                    updateVersion(model.fileLastModifiedDate)
+                }
+            } else {
+                isDownloadFailed = true
             }
-
-            //Saving IS into the file
-            fileToBeSaved.outputStream().use { downloadedContentInputStream.copyTo(it) }
-
-            //Successfully saved update Version in SharedPref
-            updateVersion(model.fileLastModifiedDate)
         }
     }
 

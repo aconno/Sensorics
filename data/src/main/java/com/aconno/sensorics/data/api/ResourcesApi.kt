@@ -40,7 +40,7 @@ class ResourcesApi(
         throw IllegalArgumentException("Could not get/parse response from server!")
     }
 
-    fun downloadFile(filePath: String): InputStream {
+    fun downloadFile(filePath: String): InputStream? {
         val url = "$SERVER_URL$filePath"
 
         val request = Request.Builder()
@@ -49,12 +49,11 @@ class ResourcesApi(
 
         val response = okHttpClient.newCall(request).execute()
 
-        response.body()?.let {
-            return it.byteStream()
+        return if (response.isSuccessful) {
+            response.body()?.byteStream()
+        } else {
+            null
         }
-
-
-        throw IllegalArgumentException("Could not get response from server!")
     }
 
     companion object {
