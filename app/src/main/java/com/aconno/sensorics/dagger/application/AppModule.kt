@@ -43,10 +43,9 @@ import com.aconno.sensorics.domain.interactor.consolidation.GenerateScanDeviceUs
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
-import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
@@ -62,7 +61,6 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
-import io.reactivex.Single
 import javax.inject.Singleton
 
 @Module
@@ -371,19 +369,4 @@ class AppModule {
     @Provides
     @Singleton
     fun provideSyncRepository(dao: SyncDao): SyncRepository = SyncRepositoryImpl(dao)
-
-    @Provides
-    @Singleton
-    fun provideGetMainResourceUseCase(): GetMainResourceUseCase {
-        return object : GetMainResourceUseCase { //TODO: Implement use case
-
-            override fun execute(deviceName: String): Single<String> {
-                return when (deviceName) {
-                    "AcnSensa" -> Single.just("file:///android_asset/device_screens/acnsensa/acnsensa.html")
-                    "AcnRange" -> Single.just("file:///android_asset/device_screens/acnsensa/acnrange.html")
-                    else -> Single.error(Exception("Unknown device"))
-                }
-            }
-        }
-    }
 }

@@ -10,10 +10,10 @@ import android.content.SharedPreferences
 import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
-import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothState
+import com.aconno.sensorics.domain.scanning.ScanEvent
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable

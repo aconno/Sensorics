@@ -1,0 +1,234 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min.css">
+    <style type="text/css">
+    body {
+      font-family: 'Rubik', sans-serif;
+    }
+
+
+    </style>
+    <script src="../html_resources/materialize_min.js"></script>
+    <script>
+    function onSensorReading(name, value) {
+      if (name == "Temperature") {
+        var temperature_value = document.getElementById("temperature_value");
+        temperature_value.innerHTML = value
+      } else if (name == "Light") {
+        var light_value = document.getElementById("light_value")
+        light_value.innerHTML = value
+      } else if (name == "Pressure") {
+        var pressure_value = document.getElementById("pressure_value")
+        pressure_value.innerHTML = value
+      } else if (name == "Humidity") {
+        var humidity_value = document.getElementById("humidity_value")
+        humidity_value.innerHTML = value
+      } else if (name == "Accelerometer X") {
+        var accelerometer_x_value = document.getElementById("accelerometer_x_value")
+        accelerometer_x_value.innerHTML = value
+      } else if (name == "Accelerometer Y") {
+        var accelerometer_y_value = document.getElementById("accelerometer_y_value")
+        accelerometer_y_value.innerHTML = value
+      } else if (name == "Accelerometer Z") {
+        var accelerometer_z_value = document.getElementById("accelerometer_z_value")
+        accelerometer_z_value.innerHTML = value
+      } else if (name == "Magnetometer X") {
+        var magnetometer_x_value = document.getElementById("magnetometer_x_value")
+        magnetometer_x_value.innerHTML = value
+      } else if (name == "Magnetometer Y") {
+        var magnetometer_y_value = document.getElementById("magnetometer_y_value")
+        magnetometer_y_value.innerHTML = value
+      } else if (name == "Magnetometer Z") {
+        var magnetometer_z_value = document.getElementById("magnetometer_z_value")
+        magnetometer_z_value.innerHTML = value
+      } else if (name == "Gyroscope X") {
+        var gyroscope_x_value = document.getElementById("gyroscope_x_value")
+        gyroscope_x_value.innerHTML = value
+      } else if (name == "Gyroscope Y") {
+        var gyroscope_y_value = document.getElementById("gyroscope_y_value")
+        gyroscope_y_value.innerHTML = value
+      } else if (name == "Gyroscope Z") {
+        var gyroscope_z_value = document.getElementById("gyroscope_z_value")
+        gyroscope_z_value.innerHTML = value
+      } else if (name == "Battery Level") {
+        var battery_level_value = document.getElementById("battery_level_value")
+        battery_level_value.innerHTML = value
+      }
+    }
+
+
+    </script>
+</head>
+<body>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_light.png"/>
+            </div>
+            <div class="card-content">
+                <p>Light</p>
+                <p id="light_value">No data</p>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_temperature.png"/>
+            </div>
+            <div class="card-content">
+                <p>Temperature</p>
+                <p id="temperature_value">No data</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_humidity.png"/>
+            </div>
+            <div class="card-content">
+                <p>Humidity</p>
+                <p id="humidity_value">No data</p>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_pressure.png"/>
+            </div>
+            <div class="card-content">
+                <p>Pressure</p>
+                <p id="pressure_value">No data</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_acc.png"/>
+            </div>
+            <div class="card-content">
+                <p>Accelerometer Y</p>
+                <p id="accelerometer_y_value">No data</p>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_acc.png"/>
+            </div>
+            <div class="card-content">
+                <p>Accelerometer X</p>
+                <p id="accelerometer_x_value">No data</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_compass.png"/>
+            </div>
+            <div class="card-content">
+                <p>Magnetometer X</p>
+                <p id="magnetometer_x_value">No data</p>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_acc.png"/>
+            </div>
+            <div class="card-content">
+                <p>Accelerometer Z</p>
+                <p id="accelerometer_z_value">No data</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_compass.png"/>
+            </div>
+            <div class="card-content">
+                <p>Magnetometer Z</p>
+                <p id="magnetometer_z_value">No data</p>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_compass.png"/>
+            </div>
+            <div class="card-content">
+                <p>Magnetometer Y</p>
+                <p id="magnetometer_y_value">No data</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_gyro.png"/>
+            </div>
+            <div class="card-content">
+                <p>Gyroscope Y</p>
+                <p id="gyroscope_y_value">No data</p>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_gyro.png"/>
+            </div>
+            <div class="card-content">
+                <p>Gyroscope X</p>
+                <p id="gyroscope_x_value">No data</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_pressure.png"/>
+            </div>
+            <div class="card-content">
+                <p>Battery Level</p>
+                <p id="battery_level_value">No data</p>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card">
+            <div class="card-image">
+                <img src="../icons/ic_gyro.png"/>
+            </div>
+            <div class="card-content">
+                <p>Gyroscope Z</p>
+                <p id="gyroscope_z_value">No data</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

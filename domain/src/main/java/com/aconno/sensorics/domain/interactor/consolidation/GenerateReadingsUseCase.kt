@@ -49,12 +49,18 @@ class GenerateReadingsUseCase(
         return if (byteFormat.formula == null) {
             deserializedNumber
         } else {
-            //Evaluete expression
-            byteFormat.formula.with(
-                "x", BigDecimal(
-                    deserializedNumber.toString()
-                )
-            ).eval()
+            try {
+                //Evaluete expression
+                byteFormat.formula.with(
+                    "x", BigDecimal(
+                        deserializedNumber.toString()
+                    )
+                ).eval()
+            } catch (ex: Exception) {
+                //TODO Known Bug
+                //Attempt to read from field 'java.util.TreeMap$TreeMapEntry java.util.TreeMap$TreeMapEntry.left' on a null object reference
+                deserializedNumber
+            }
         }
     }
 

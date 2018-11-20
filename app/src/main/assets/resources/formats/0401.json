@@ -1,0 +1,62 @@
+{
+  "id": "0401",
+  "name": "AcnAct",
+  "icon": "ic_act",
+  "format": [
+    {
+      "name": "MagnetoState",
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 6,
+      "reversed": false,
+      "data_type": "BYTE"
+    },
+    {
+      "name": "LightState",
+      "start_index_inclusive": 6,
+      "end_index_exclusive": 10,
+      "reversed": true,
+      "data_type": "FLOAT"
+    },
+    {
+      "name": "ButtonState",
+      "start_index_inclusive": 10,
+      "end_index_exclusive": 11,
+      "reversed": false,
+      "data_type": "BYTE"
+    },
+    {
+      "name": "ButtonCounter",
+      "start_index_inclusive": 11,
+      "end_index_exclusive": 12,
+      "reversed": false,
+      "data_type": "BYTE"
+    }
+  ],
+  "format_required": [
+    {
+      "name": "Vendor ID 1",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Vendor ID 2",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "App ID 1",
+      "index": 2,
+      "value": "0x69"
+    },
+    {
+      "name": "App ID 2",
+      "index": 3,
+      "value": "0x04"
+    },
+    {
+      "name": "Advertisement Type",
+      "index": 4,
+      "value": "0x01"
+    }
+  ]
+}
