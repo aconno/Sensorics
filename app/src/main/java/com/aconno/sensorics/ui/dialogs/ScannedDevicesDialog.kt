@@ -55,7 +55,7 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
 
     private fun removeTitleSpacing() {
         // Required for Lollipop (maybe others too) devices
-        dialog.window.requestFeature(Window.FEATURE_NO_TITLE)
+        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
