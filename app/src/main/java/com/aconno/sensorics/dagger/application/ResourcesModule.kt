@@ -6,6 +6,8 @@ import com.aconno.sensorics.data.mapper.FormatJsonConverter
 import com.aconno.sensorics.data.repository.resources.ResourcesRepositoryImpl
 import com.aconno.sensorics.domain.ConfigListManager
 import com.aconno.sensorics.domain.FormatListManager
+import com.aconno.sensorics.domain.format.FormatMatcher
+import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
 import com.aconno.sensorics.domain.repository.*
@@ -30,6 +32,18 @@ class ResourcesModule {
             FormatJsonConverter()
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideFormatMatcher(getFormatsUseCase: GetFormatsUseCase) =
+        FormatMatcher(getFormatsUseCase)
+
+    @Provides
+    @Singleton
+    fun provideGetFormatsUseCase(
+        formatListManager: FormatListManager
+    ): GetFormatsUseCase =
+        GetFormatsUseCase(formatListManager)
 
     @Provides
     @Singleton
