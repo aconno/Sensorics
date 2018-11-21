@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_device_with_connect.view.*
 import timber.log.Timber
 
 
-class DeviceActiveAdapter() : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>() {
+class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>() {
 
     private val devices = mutableListOf<DeviceActive>()
 
@@ -76,9 +76,7 @@ class DeviceActiveAdapter() : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolde
     }
 
     fun setIcon(icons: HashMap<String, String>) {
-
         iconsMap = icons
-
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
