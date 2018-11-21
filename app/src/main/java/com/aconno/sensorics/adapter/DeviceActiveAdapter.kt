@@ -1,5 +1,6 @@
 package com.aconno.sensorics.adapter
 
+import android.graphics.drawable.Drawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -16,9 +17,11 @@ import kotlinx.android.synthetic.main.item_device_with_connect.view.*
 import timber.log.Timber
 
 
-class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>() {
+class DeviceActiveAdapter() : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>() {
 
     private val devices = mutableListOf<DeviceActive>()
+
+    var iconsMap: HashMap<String, String> = hashMapOf<String, String>()
 
     fun setDevices(devices: List<DeviceActive>) {
         this.devices.clear()
@@ -72,6 +75,12 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
         notifyItemInserted(position)
     }
 
+    fun setIcon(icons: HashMap<String, String>) {
+
+        iconsMap = icons
+
+    }
+
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         private var viewBackground: RelativeLayout? = null
@@ -79,12 +88,10 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
 
         fun bind(device: DeviceActive) {
             Timber.d("Bind device to view, name: ${device.device.getRealName()}, mac: ${device.device.macAddress}, icon: ${device.device.icon}")
-            val iconId = view.context.resources.getIdentifier(
-                device.device.icon,
-                "drawable",
-                view.context.packageName
-            )
-            view.image_icon.setImageResource(iconId)
+
+            val iconPath = iconsMap.get(device.device.name)
+            val icon = Drawable.createFromPath(iconPath)
+            view.image_icon.setImageDrawable(icon)
             view.name.text = device.device.getRealName()
             view.mac_address.text = device.device.macAddress
 
