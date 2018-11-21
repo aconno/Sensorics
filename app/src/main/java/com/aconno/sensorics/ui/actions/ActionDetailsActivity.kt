@@ -15,6 +15,8 @@ import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.Settings
+import com.aconno.sensorics.model.DeviceActive
+import com.aconno.sensorics.ui.IconInfo
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -22,9 +24,11 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_action_details.*
 import kotlinx.android.synthetic.main.item_chip.view.*
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
-class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener {
+class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener, IconInfo {
+
 
     @Inject
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
@@ -63,32 +67,32 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
     private fun setDevicesSpinnerAdapter() {
         spinner_devices.adapter = deviceSpinnerAdapter
         disposables.add(
-            actionDetailsViewModel.getDevices()
-                .subscribe({ devices ->
-                    deviceSpinnerAdapter.setDevices(devices)
-                    if (!actionExists()) setDefaultDevice()
-                }, {
-                    showSnackbarMessage(getString(R.string.message_no_devices))
-                })
+                actionDetailsViewModel.getDevices()
+                        .subscribe({ devices ->
+                            deviceSpinnerAdapter.setDevices(devices)
+                            if (!actionExists()) setDefaultDevice()
+                        }, {
+                            showSnackbarMessage(getString(R.string.message_no_devices))
+                        })
         )
     }
 
     private fun setDefaultDevice() {
         disposables.add(
-            settings.getLastClickedDeviceMac()
-                .subscribe(
-                    { defaultDeviceMac ->
-                        val defaultPosition =
-                            deviceSpinnerAdapter.getDevices()
-                                .indexOfFirst { it.macAddress == defaultDeviceMac }
-                        if (defaultPosition != -1) {
-                            spinner_devices.setSelection(defaultPosition)
-                        }
-                    },
-                    { throwable ->
-                        Timber.d(throwable)
-                    }
-                )
+                settings.getLastClickedDeviceMac()
+                        .subscribe(
+                                { defaultDeviceMac ->
+                                    val defaultPosition =
+                                            deviceSpinnerAdapter.getDevices()
+                                                    .indexOfFirst { it.macAddress == defaultDeviceMac }
+                                    if (defaultPosition != -1) {
+                                        spinner_devices.setSelection(defaultPosition)
+                                    }
+                                },
+                                { throwable ->
+                                    Timber.d(throwable)
+                                }
+                        )
         )
     }
 
@@ -100,10 +104,10 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
             }
 
             override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
             ) {
                 Timber.d("Item selected, position: $position")
                 val device = deviceSpinnerAdapter.getDevice(position)
@@ -127,7 +131,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
             val view = container_conditions.getChildAt(index)
             if (view == null) {
                 val newView = LayoutInflater.from(this)
-                    .inflate(R.layout.item_chip, container_conditions, false)
+                        .inflate(R.layout.item_chip, container_conditions, false)
                 newView.text_title.text = readingType
                 newView.setOnClickListener {
                     val dialog = ConditionDialog.newInstance(readingType)
@@ -173,12 +177,12 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         val message = edittext_message.text.toString()
         val phoneNumber = edittext_phone_number.text.toString()
         actionDetailsViewModel.setCondition(
-            readingType,
-            value,
-            constraint,
-            name,
-            message,
-            phoneNumber
+                readingType,
+                value,
+                constraint,
+                name,
+                message,
+                phoneNumber
         )
     }
 
@@ -265,13 +269,14 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
             val phoneNumber = edittext_phone_number.text.toString()
             val name = edittext_name.text.toString()
             actionDetailsViewModel.saveAction(application, name, message, phoneNumber)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    finish()
-                }, {
-                    showSnackbarMessage(it.message ?: getString(R.string.message_save_unsuccessful))
-                })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        finish()
+                    }, {
+                        showSnackbarMessage(it.message
+                                ?: getString(R.string.message_save_unsuccessful))
+                    })
         }
     }
 
@@ -296,5 +301,18 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
             intent.putExtra(ACTION_ID_EXTRA, actionId)
             context.startActivity(intent)
         }
+    }
+
+    override fun getIconInfo(deviceNames: List<DeviceActive>): HashMap<String, String> {
+
+        val hashMap: HashMap<String, String> = hashMapOf()
+
+        deviceNames.forEach { device ->
+            if (!hashMap.containsKey(device.device.name))
+                actionDetailsViewModel.getIconPath(device.device.name)?.let {
+                    hashMap[device.device.name] = it
+                }
+        }
+        return hashMap
     }
 }

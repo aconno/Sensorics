@@ -21,7 +21,7 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
 
     private val devices = mutableListOf<DeviceActive>()
 
-    var iconsMap: HashMap<String, String> = hashMapOf<String, String>()
+    var iconsMap: HashMap<String, String> = hashMapOf()
 
     fun setDevices(devices: List<DeviceActive>) {
         this.devices.clear()
