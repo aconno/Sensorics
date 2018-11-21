@@ -319,8 +319,8 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
     }
 
     override fun getIconInfoForActiveDevices(deviceNames: List<DeviceActive>): HashMap<String, String> {
-        val hashMap: HashMap<String, String> = hashMapOf()
-        return hashMap
+        //this method is not used
+        return hashMapOf()
     }
 
 }

@@ -323,8 +323,8 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun getIconInfoForDevices(deviceNames: List<Device>): HashMap<String, String> {
-        val hashMap: HashMap<String, String> = hashMapOf()
-        return hashMap
+        //This method is not used.
+        return hashMapOf()
     }
 
 
