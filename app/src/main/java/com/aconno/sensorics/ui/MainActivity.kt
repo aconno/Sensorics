@@ -262,8 +262,9 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     private fun getReadingListFragment(device: Device): Fragment {
         return when (device.name) {
             "AcnSensa" -> DeviceMainFragment.newInstance(
+                device.macAddress,
                 device.getRealName(),
-                device.macAddress
+                device.name
             )
             "AcnRange" -> AcnRangeFragment.newInstance(
                 device.macAddress,
