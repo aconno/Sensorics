@@ -38,7 +38,7 @@ import javax.inject.Inject
 
 
 class SavedDevicesFragment : DaggerFragment(),
-    ScannedDevicesDialogListener,
+        ScannedDevicesDialogListener,
         DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener, IconInfo {
 
     @Inject
@@ -86,9 +86,9 @@ class SavedDevicesFragment : DaggerFragment(),
                         ActionListActivity.start(context)
                     } else {
                         Snackbar.make(
-                            container_fragment,
-                            R.string.message_no_saved_devices_cannot_open_actions,
-                            Snackbar.LENGTH_LONG
+                                container_fragment,
+                                R.string.message_no_saved_devices_cannot_open_actions,
+                                Snackbar.LENGTH_LONG
                         ).show()
                     }
                     return true
@@ -106,9 +106,9 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_saved_devices, container, false)
     }
@@ -121,33 +121,33 @@ class SavedDevicesFragment : DaggerFragment(),
         list_devices.adapter = deviceAdapter
 
         disposables.addAll(
-            deviceAdapter.getOnConnectClickEvents()
-                .subscribe {
-                    activity?.let { activity ->
-                        val mainActivity = activity as MainActivity
-                        mainActivity.connect(it.device)
-                    }
-                },
-            deviceAdapter.getOnItemClickEvents()
-                .subscribe {
-                    onItemClick(it)
-                },
-            deviceAdapter.getOnItemLongClickEvents()
-                .subscribe {
-                    onLongClick(it)
-                }
+                deviceAdapter.getOnConnectClickEvents()
+                        .subscribe {
+                            activity?.let { activity ->
+                                val mainActivity = activity as MainActivity
+                                mainActivity.connect(it.device)
+                            }
+                        },
+                deviceAdapter.getOnItemClickEvents()
+                        .subscribe {
+                            onItemClick(it)
+                        },
+                deviceAdapter.getOnItemLongClickEvents()
+                        .subscribe {
+                            onLongClick(it)
+                        }
         )
 
         list_devices.itemAnimator = DefaultItemAnimator()
         list_devices.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                DividerItemDecoration.VERTICAL
-            )
+                DividerItemDecoration(
+                        context,
+                        DividerItemDecoration.VERTICAL
+                )
         )
 
         val itemTouchHelperCallback =
-            DeviceSwipeToDismissHelper(0, ItemTouchHelper.LEFT, this)
+                DeviceSwipeToDismissHelper(0, ItemTouchHelper.LEFT, this)
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(list_devices)
 
         deviceViewModel.getSavedDevicesLiveData().observe(this, Observer {
@@ -195,30 +195,30 @@ class SavedDevicesFragment : DaggerFragment(),
         input.setText(param.device.getRealName())
 
         val dialogClickListener: DialogInterface.OnClickListener =
-            DialogInterface.OnClickListener { dialog, which ->
-                when (which) {
-                    DialogInterface.BUTTON_POSITIVE -> {
-                        val text = input.text.toString()
+                DialogInterface.OnClickListener { dialog, which ->
+                    when (which) {
+                        DialogInterface.BUTTON_POSITIVE -> {
+                            val text = input.text.toString()
 
-                        if (!text.isBlank()) {
-                            deviceViewModel.updateDevice(param.device, text)
+                            if (!text.isBlank()) {
+                                deviceViewModel.updateDevice(param.device, text)
+                            }
+
+                            dialog.dismiss()
                         }
 
-                        dialog.dismiss()
-                    }
-
-                    DialogInterface.BUTTON_NEGATIVE -> {
-                        dialog.dismiss()
+                        DialogInterface.BUTTON_NEGATIVE -> {
+                            dialog.dismiss()
+                        }
                     }
                 }
-            }
 
         builder
-            .setView(inflate)
-            .setTitle("Rename Beacon")
-            .setPositiveButton(getString(R.string.yes), dialogClickListener)
-            .setNegativeButton(getString(R.string.no), dialogClickListener)
-            .show()
+                .setView(inflate)
+                .setTitle("Rename Beacon")
+                .setPositiveButton(getString(R.string.yes), dialogClickListener)
+                .setNegativeButton(getString(R.string.no), dialogClickListener)
+                .show()
     }
 
     fun onBluetoothOn() {
@@ -243,15 +243,15 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private fun saveClickedDeviceMacAddress(macAddress: String) {
         disposables.add(
-            settings.setClickedDeviceMac(macAddress)
-                .subscribe(
-                    {
-                        Timber.d("Mac address saved for clicked device, mac: $macAddress")
-                    },
-                    { throwable ->
-                        Timber.d(throwable)
-                    }
-                )
+                settings.setClickedDeviceMac(macAddress)
+                        .subscribe(
+                                {
+                                    Timber.d("Mac address saved for clicked device, mac: $macAddress")
+                                },
+                                { throwable ->
+                                    Timber.d(throwable)
+                                }
+                        )
         )
     }
 
@@ -271,7 +271,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
             // showing snack bar with Undo option
             snackbar = Snackbar
-                .make(container_fragment, "$name removed!", Snackbar.LENGTH_LONG)
+                    .make(container_fragment, "$name removed!", Snackbar.LENGTH_LONG)
             snackbar?.setAction("UNDO") {
                 // undo is selected, restore the deleted item
                 deviceAdapter.restoreItem(deletedItem, position)
@@ -280,9 +280,9 @@ class SavedDevicesFragment : DaggerFragment(),
             snackbar?.addCallback(object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
-                        || event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
-                        || event == Snackbar.Callback.DISMISS_EVENT_SWIPE
-                        || event == Snackbar.Callback.DISMISS_EVENT_MANUAL
+                            || event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
+                            || event == Snackbar.Callback.DISMISS_EVENT_SWIPE
+                            || event == Snackbar.Callback.DISMISS_EVENT_MANUAL
                     ) {
                         //delete device from db if undo snackbar timeout.
                         deviceViewModel.deleteDevice(deletedItem.device)
@@ -312,11 +312,13 @@ class SavedDevicesFragment : DaggerFragment(),
 
     override fun getIconInfo(deviceNames: List<DeviceActive>): HashMap<String, String> {
 
-        var hashMap: HashMap<String, String> = hashMapOf<String, String>()
+        val hashMap: HashMap<String, String> = hashMapOf()
 
-        deviceNames?.forEach {
-            if (!hashMap.containsKey(it.device.name))
-                hashMap.put(it.device.name, deviceViewModel.getIconPath(it.device.name)!!)
+        deviceNames.forEach { device ->
+            if (!hashMap.containsKey(device.device.name))
+                deviceViewModel.getIconPath(device.device.name)?.let {
+                    hashMap[device.device.name] = it
+                }
         }
         return hashMap
     }

@@ -4,5 +4,5 @@ import com.aconno.sensorics.model.DeviceActive
 
 interface IconInfo {
 
-    fun getIconInfo(deviceName: List<DeviceActive>): HashMap<String, String>
+    fun getIconInfo(deviceNames: List<DeviceActive>): HashMap<String, String>
 }
