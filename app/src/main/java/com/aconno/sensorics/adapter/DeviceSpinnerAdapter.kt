@@ -38,6 +38,9 @@ class DeviceSpinnerAdapter : SpinnerAdapter, BaseAdapter() {
         return devices[position]
     }
 
+    fun setIcons(icons: HashMap<String, String>) {
+        iconsMap = icons
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val device = devices[position]

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.Window
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.ScanDeviceAdapter
+import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanDevice
 import io.reactivex.Flowable
@@ -20,13 +21,16 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ScannedDevicesDialog() : DisposerDialogFragment() {
+class ScannedDevicesDialog : DisposerDialogFragment() {
 
     @Inject
     lateinit var scanDeviceStream: Flowable<ScanDevice>
 
     @Inject
     lateinit var savedDevicesUseCase: Flowable<List<Device>>
+
+    @Inject
+    lateinit var getIconUseCase: GetIconUseCase
 
     private val adapter = ScanDeviceAdapter()
 
@@ -104,6 +108,7 @@ class ScannedDevicesDialog() : DisposerDialogFragment() {
                 .subscribe {
                     text_empty.visibility = View.INVISIBLE
                     adapter.addScanDevice(it)
+                    adapter.setIcon(getIconUseCase.execute(it.device.name).toString())
                 }
         )
     }
@@ -117,4 +122,9 @@ class ScannedDevicesDialog() : DisposerDialogFragment() {
         super.onDetach()
         listener = null
     }
+
+    fun getIconsForDevices() {
+
+    }
+
 }

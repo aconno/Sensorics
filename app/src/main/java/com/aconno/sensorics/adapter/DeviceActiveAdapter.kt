@@ -75,7 +75,7 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
         notifyItemInserted(position)
     }
 
-    fun setIcon(icons: HashMap<String, String>) {
+    fun setIcons(icons: HashMap<String, String>) {
         iconsMap = icons
     }
 

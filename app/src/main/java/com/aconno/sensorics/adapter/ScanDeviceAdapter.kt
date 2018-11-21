@@ -1,5 +1,6 @@
 package com.aconno.sensorics.adapter
 
+import android.graphics.drawable.Drawable
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
 
     private val devices = mutableListOf<ScanDevice>()
     private val clickedDeviceStream = PublishSubject.create<ScanDevice>()
+    lateinit var iconPath: String
 
     fun addScanDevice(scanDevice: ScanDevice) {
         val index = devices.indexOf(scanDevice)
@@ -24,6 +26,10 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
             devices[index] = scanDevice
             notifyItemChanged(index)
         }
+    }
+
+    fun setIcon(icon: String) {
+        this.iconPath = icon
     }
 
     fun removeScanDevice(scanDevice: ScanDevice) {
@@ -53,12 +59,14 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(scanDevice: ScanDevice) {
-            val iconId = view.context.resources.getIdentifier(
-                scanDevice.device.icon,
-                "drawable",
-                view.context.packageName
-            )
-            view.image_icon.setImageResource(iconId)
+
+            if (iconPath == null) {
+                view.image_icon.setImageResource(R.drawable.ic_sensa)
+            } else {
+                val icon = Drawable.createFromPath(iconPath)
+                view.image_icon.setImageDrawable(icon)
+            }
+
             view.text_name.text = scanDevice.device.name
             view.text_mac_address.text = scanDevice.device.macAddress
             view.text_rssi.text = scanDevice.rssi.toString()
