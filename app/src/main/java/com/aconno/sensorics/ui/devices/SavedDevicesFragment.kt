@@ -326,6 +326,5 @@ class SavedDevicesFragment : DaggerFragment(),
         //This method is not used.
         return hashMapOf()
     }
-
-
+    
 }

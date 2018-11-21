@@ -39,21 +39,21 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
     private val onItemClickEvents = PublishSubject.create<DeviceActive>()
 
     fun getOnItemClickEvents(): Flowable<DeviceActive> =
-            onItemClickEvents.toFlowable(BackpressureStrategy.LATEST)
+        onItemClickEvents.toFlowable(BackpressureStrategy.LATEST)
 
     private val onItemLongClickEvents = PublishSubject.create<DeviceActive>()
 
     fun getOnItemLongClickEvents(): Flowable<DeviceActive> =
-            onItemLongClickEvents.toFlowable(BackpressureStrategy.LATEST)
+        onItemLongClickEvents.toFlowable(BackpressureStrategy.LATEST)
 
     private val onConnectClickEvents = PublishSubject.create<DeviceActive>()
 
     fun getOnConnectClickEvents(): Flowable<DeviceActive> =
-            onConnectClickEvents.toFlowable(BackpressureStrategy.LATEST)
+        onConnectClickEvents.toFlowable(BackpressureStrategy.LATEST)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_device_with_connect, parent, false)
+            .inflate(R.layout.item_device_with_connect, parent, false)
         return ViewHolder(view)
     }
 

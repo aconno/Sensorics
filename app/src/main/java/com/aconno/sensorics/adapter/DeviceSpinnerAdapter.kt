@@ -49,7 +49,7 @@ class DeviceSpinnerAdapter : SpinnerAdapter, BaseAdapter() {
 
         if (convertView == null) {
             val newView =
-                    LayoutInflater.from(context).inflate(R.layout.item_spinner_device, parent, false)
+                LayoutInflater.from(context).inflate(R.layout.item_spinner_device, parent, false)
 
             if (iconPath == null) {
                 newView.image_icon.setImageResource(R.drawable.ic_sensa)
