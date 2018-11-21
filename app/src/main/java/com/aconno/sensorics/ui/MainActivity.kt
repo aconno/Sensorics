@@ -93,8 +93,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             .setPersisted(true)
             .build()
         jobSchedule.schedule(jobInfo)
-
-
     }
 
     override fun onResume() {
@@ -165,20 +163,12 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun onFABClicked() {
-        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
-            if (!it.isChecked) {
-                toggleScan(it)
-                filterByDevice = false
-            }
-        }
+        stopScanning()
+        startScanning(false)
     }
 
     override fun onDialogDismissed() {
-        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
-            if (it.isChecked) {
-                toggleScan(it)
-            }
-        }
+        stopScanning()
     }
 
     private fun observeScanEvents() {
@@ -313,7 +303,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id: Int? = item?.itemId
         when (id) {
-            R.id.action_toggle_scan -> toggleScan(item)
+            R.id.action_toggle_scan -> toggleScanFromMenuItem(item)
             R.id.action_start_settings_activity -> startSettingsActivity()
         }
 
@@ -332,14 +322,21 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    private fun toggleScan(item: MenuItem?) {
-        item?.let {
-            if (item.isChecked) {
-                bluetoothScanningViewModel.stopScanning()
-            } else {
-                permissionViewModel.requestAccessFineLocation()
-            }
+    private fun toggleScanFromMenuItem(item: MenuItem) {
+        if (item.isChecked) {
+            stopScanning()
+        } else {
+            startScanning()
         }
+    }
+
+    private fun startScanning(filterByDevice: Boolean = true) {
+        this.filterByDevice = filterByDevice
+        permissionViewModel.requestAccessFineLocation()
+    }
+
+    private fun stopScanning() {
+        bluetoothScanningViewModel.stopScanning()
     }
 
     private fun setScanMenuLabel(menuItem: MenuItem) {
