@@ -86,13 +86,22 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     private fun scheduleJob() {
         val jobSchedule: JobScheduler =
             this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        val serviceComponents = ComponentName(this, SyncConfigurationService::class.java)
-        val jobInfo: JobInfo = JobInfo.Builder(1, serviceComponents)
-            .setPeriodic(15 * 60 * 1000)
-            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-            .setPersisted(true)
-            .build()
-        jobSchedule.schedule(jobInfo)
+
+        val pendingJob = jobSchedule.allPendingJobs
+            .find {
+                it.id == 1
+            }
+
+        //If pending job still in progress no need to re-schedule..
+        if (pendingJob == null) {
+            val serviceComponents = ComponentName(this, SyncConfigurationService::class.java)
+            val jobInfo: JobInfo = JobInfo.Builder(1, serviceComponents)
+                .setPeriodic(15 * 60 * 1000)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPersisted(true)
+                .build()
+            jobSchedule.schedule(jobInfo)
+        }
     }
 
     override fun onResume() {
