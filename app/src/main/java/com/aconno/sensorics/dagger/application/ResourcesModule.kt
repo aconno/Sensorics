@@ -6,6 +6,7 @@ import com.aconno.sensorics.data.mapper.FormatJsonConverter
 import com.aconno.sensorics.data.repository.resources.ResourcesRepositoryImpl
 import com.aconno.sensorics.domain.ConfigListManager
 import com.aconno.sensorics.domain.FormatListManager
+import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.repository.*
 import com.google.gson.Gson
@@ -75,6 +76,18 @@ class ResourcesModule {
         return GetMainResourceUseCase(
             configListManager,
             application.cacheDir.absolutePath
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetIconUseCase(
+            configListManager: ConfigListManager,
+            application: SensoricsApplication
+    ): GetIconUseCase {
+        return GetIconUseCase(
+                configListManager,
+                application.cacheDir.absolutePath
         )
     }
 }

@@ -11,6 +11,7 @@ import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
@@ -159,17 +160,19 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideDeviceListViewModelFactory(
-        scanDeviceStream: Flowable<ScanDevice>,
-        getSavedDevicesUseCase: GetSavedDevicesUseCase,
-        saveDeviceUseCase: SaveDeviceUseCase,
-        deleteDeviceUseCase: DeleteDeviceUseCase
+            scanDeviceStream: Flowable<ScanDevice>,
+            getSavedDevicesUseCase: GetSavedDevicesUseCase,
+            saveDeviceUseCase: SaveDeviceUseCase,
+            deleteDeviceUseCase: DeleteDeviceUseCase,
+            getIconUseCase: GetIconUseCase
     ): DeviceListViewModelFactory {
         val deviceStream = scanDeviceStream.map { it.device }
         return DeviceListViewModelFactory(
             deviceStream,
             getSavedDevicesUseCase,
             saveDeviceUseCase,
-            deleteDeviceUseCase
+                deleteDeviceUseCase,
+                getIconUseCase
         )
     }
 
