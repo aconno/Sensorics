@@ -65,7 +65,7 @@ class PublishRecyclerViewAdapter(
 
         when (item) {
             is GooglePublishModel -> holder.mImageView.setImageResource(R.drawable.google_logo)
-            is RestPublishModel -> holder.mImageView.setImageResource(R.drawable.uplaod_cloud)
+            is RestPublishModel -> holder.mImageView.setImageResource(R.drawable.upload_cloud)
             is MqttPublishModel -> holder.mImageView.setImageResource(R.drawable.mqtt_logo)
         }
 

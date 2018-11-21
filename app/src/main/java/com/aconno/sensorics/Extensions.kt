@@ -17,7 +17,3 @@ fun String.toHexByte(): Byte {
         16
     ) and 0xff).toByte()
 }
-
-fun List<Byte>.toHexString(): String {
-    return joinToString(separator = " ") { String.format("%02X", it) }
-}

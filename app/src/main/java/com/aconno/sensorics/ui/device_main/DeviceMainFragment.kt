@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
@@ -91,12 +92,11 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupWebView()
-        subscribeOnSensorReadings()
     }
 
     private fun setupWebView() {
         web_view.webChromeClient = WebChromeClient()
-        web_view.webViewClient = WebViewClient()
+        web_view.webViewClient = MyWebViewClient()
         web_view.settings.javaScriptEnabled = true
 
         getResourceDisposable = mainResourceViewModel.getResourcePath(deviceName)
@@ -127,6 +127,14 @@ class DeviceMainFragment : DaggerFragment() {
         super.onDestroyView()
         getResourceDisposable?.dispose()
         sensorReadingFlowDisposable?.dispose()
+    }
+
+    inner class MyWebViewClient : WebViewClient() {
+
+        override fun onPageFinished(view: WebView?, url: String?) {
+            super.onPageFinished(view, url)
+            subscribeOnSensorReadings()
+        }
     }
 
     companion object {

@@ -40,12 +40,5 @@ class LimitCondition(
             }
         }
 
-        fun typeFromInt(type: Int): String {
-            return when (type) {
-                LESS_THAN -> "<"
-                MORE_THAN -> ">"
-                else -> throw IllegalArgumentException("Invalid constraint type: $type")
-            }
-        }
     }
 }

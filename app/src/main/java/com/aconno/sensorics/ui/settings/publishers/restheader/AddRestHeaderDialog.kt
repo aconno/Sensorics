@@ -71,7 +71,7 @@ class AddRestHeaderDialog : DialogFragment() {
 
                 this.dismiss()
             } else {
-                Toast.makeText(context, getString(R.string.values_connot_empty), Toast.LENGTH_SHORT)
+                Toast.makeText(context, getString(R.string.values_cannot_empty), Toast.LENGTH_SHORT)
                     .show()
             }
         }

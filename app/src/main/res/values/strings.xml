@@ -117,7 +117,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="headers">Headers (%d)</string>
-    <string name="httpget_params">HTTP Get Params (%d)</string>
+    <string name="http_get_params">HTTP Get Params (%d)</string>
     <string name="title_activity_rest_header">REST Header</string>
     <string name="title_activity_rest_http_get_params">REST HTTP Get Params</string>
 
@@ -129,7 +129,7 @@
     <string name="key">Key</string>
     <string name="close">Close</string>
     <string name="done">Done</string>
-    <string name="values_connot_empty">Values cannot be empty</string>
+    <string name="values_cannot_empty">Values cannot be empty</string>
     <string name="clientId">Client Id</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
@@ -196,4 +196,5 @@
     <string name="formats_download_error_dialog_dismiss_message">@android:string/ok</string>
     <string name="dashboard">Dashboard</string>
     <string name="keep_screen_on">Keep Screen On</string>
+    <string name="loading_message">Loading..</string>
 </resources>
