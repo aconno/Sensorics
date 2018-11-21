@@ -5,8 +5,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.SingleLiveEvent
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
 import com.aconno.sensorics.domain.model.Reading
-import com.aconno.sensorics.domain.repository.RemoteUseCaseRepository
 import com.aconno.sensorics.domain.serialization.JavascriptCallGenerator
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -18,7 +18,7 @@ import timber.log.Timber
 class UseCasesViewModel(
     private val readingsStream: Flowable<List<Reading>>,
     private val filterByMacUseCase: FilterByMacUseCase,
-    private val remoteUseCaseRepository: RemoteUseCaseRepository
+    private val getUseCaseResourceUseCase: GetUseCaseResourceUseCase
 ) : ViewModel() {
 
     private val mutableUrl = MutableLiveData<String>()
@@ -38,7 +38,7 @@ class UseCasesViewModel(
         this.name = name
 
         mutableShowProgress.postValue(Unit)
-        htmlDisposable = remoteUseCaseRepository.updateUseCases(name)
+        htmlDisposable = getUseCaseResourceUseCase.execute(name)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::success, ::error)
@@ -47,7 +47,7 @@ class UseCasesViewModel(
     private fun success(localUrl: String?) {
         Timber.d(localUrl)
         mutableHideProgress.postValue(Unit)
-        mutableUrl.postValue("file://$localUrl")
+        mutableUrl.postValue(localUrl)
     }
 
     private fun error(error: Throwable?) {

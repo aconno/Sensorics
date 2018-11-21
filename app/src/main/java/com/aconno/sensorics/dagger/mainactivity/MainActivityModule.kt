@@ -12,6 +12,7 @@ import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.repository.DeviceRepository
@@ -178,11 +179,11 @@ class MainActivityModule {
     fun provideUseCasesViewModelFactory(
         readingsStream: Flowable<List<Reading>>,
         filterByMacUseCase: FilterByMacUseCase,
-        remoteUseCaseRepository: RemoteUseCaseRepository
+        getUseCaseResourceUseCase: GetUseCaseResourceUseCase
     ) = UseCasesViewModelFactory(
         readingsStream,
         filterByMacUseCase,
-        remoteUseCaseRepository
+        getUseCaseResourceUseCase
     )
 
     @Provides
