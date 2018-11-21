@@ -1,6 +1,10 @@
 package com.aconno.sensorics.ui
 
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import android.arch.lifecycle.Observer
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -11,16 +15,14 @@ import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
-import com.aconno.sensorics.BluetoothScanningService
-import com.aconno.sensorics.BuildConfig
-import com.aconno.sensorics.R
+import com.aconno.sensorics.*
 import com.aconno.sensorics.domain.model.Device
-import com.aconno.sensorics.domain.model.ScanEvent
 import com.aconno.sensorics.domain.scanning.BluetoothState
-import com.aconno.sensorics.getRealName
+import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
+import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
@@ -28,13 +30,13 @@ import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.ui.readings.GenericReadingListFragment
-import com.aconno.sensorics.ui.sensors.SensorListFragment
 import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.PermissionViewModel
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_toolbar.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCallbacks,
@@ -76,6 +78,23 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         if (savedInstanceState == null) {
             showSavedDevicesFragment()
         }
+
+        scheduleJob()
+        observeScanEvents()
+    }
+
+    private fun scheduleJob() {
+        val jobSchedule: JobScheduler =
+            this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+        val serviceComponents = ComponentName(this, SyncConfigurationService::class.java)
+        val jobInfo: JobInfo = JobInfo.Builder(1, serviceComponents)
+            .setPeriodic(15 * 60 * 1000)
+            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+            .setPersisted(true)
+            .build()
+        jobSchedule.schedule(jobInfo)
+
+
     }
 
     override fun onResume() {
@@ -89,8 +108,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             //Disable Keep Screen On
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-
-        bluetoothScanningViewModel.getResult().observe(this, Observer { handleScanEvent(it) })
         bluetoothViewModel.observeBluetoothState()
         bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
 
@@ -140,16 +157,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    private fun handleScanEvent(scanEvent: ScanEvent?) {
-        val eventType: Int? = scanEvent?.type
-        when (eventType) {
-            ScanEvent.SCAN_FAILED_ALREADY_STARTED -> onScanFailedAlreadyStarted()
-            ScanEvent.SCAN_FAILED -> onScanFailed()
-            ScanEvent.SCAN_START -> onScanStart()
-            ScanEvent.SCAN_STOP -> onScanStop()
-        }
-    }
-
     override fun openLiveGraph(macAddress: String, sensorName: String) {
         supportFragmentManager?.beginTransaction()?.replace(
             content_container.id,
@@ -174,18 +181,24 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    private fun onScanFailedAlreadyStarted() {
-        //Do nothing.
+    private fun observeScanEvents() {
+        bluetoothScanningViewModel.getScanEvent()
+            .observe(this, Observer { handleScanEvent(it) })
     }
 
-    private fun onScanFailed() {
-        onScanStop()
+    private fun handleScanEvent(scanEvent: ScanEvent?) {
+        Timber.i("Scan event, message: ${scanEvent?.message}")
+        when (scanEvent?.type) {
+            ScanEvent.SCAN_START -> onScanStart()
+            ScanEvent.SCAN_STOP -> onScanStop()
+            ScanEvent.SCAN_FAILED_ALREADY_STARTED -> onScanFailedAlreadyStarted()
+            ScanEvent.SCAN_FAILED -> onScanFailed()
+        }
     }
 
     private fun onScanStart() {
         mainMenu?.let { mainMenu ->
-            val menuItem: MenuItem? = mainMenu
-                .findItem(R.id.action_toggle_scan)
+            val menuItem = mainMenu.findItem(R.id.action_toggle_scan)
             menuItem?.let {
                 it.isChecked = true
                 it.setTitle(getString(R.string.stop_scan))
@@ -195,12 +208,20 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun onScanStop() {
         mainMenu?.let { mainMenu ->
-            val menuItem: MenuItem? = mainMenu.findItem(R.id.action_toggle_scan)
+            val menuItem = mainMenu.findItem(R.id.action_toggle_scan)
             menuItem?.let {
                 it.isChecked = false
                 it.setTitle(getString(R.string.start_scan))
             }
         }
+    }
+
+    private fun onScanFailedAlreadyStarted() {
+        // Do nothing TODO: Check if this is right
+    }
+
+    private fun onScanFailed() {
+        onScanStop()
     }
 
     fun showSensorValues(device: Device) {
@@ -240,7 +261,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun getReadingListFragment(device: Device): Fragment {
         return when (device.name) {
-            "AcnSensa" -> SensorListFragment.newInstance(
+            "AcnSensa" -> DeviceMainFragment.newInstance(
                 device.macAddress,
                 device.getRealName(),
                 device.name

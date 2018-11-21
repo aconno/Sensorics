@@ -1,6 +1,6 @@
 package com.aconno.sensorics.domain.format
 
-import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
 import com.aconno.sensorics.domain.model.Device
 
 class ConnectionCharacteristicsFinderImpl(

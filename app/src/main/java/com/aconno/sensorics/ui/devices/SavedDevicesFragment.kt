@@ -19,8 +19,6 @@ import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceActiveAdapter
 import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
-import com.aconno.sensorics.adapter.ItemClickListener
-import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.Settings
 import com.aconno.sensorics.getRealName
@@ -38,9 +36,8 @@ import java.util.*
 import javax.inject.Inject
 
 
-class SavedDevicesFragment : DaggerFragment(), ItemClickListener<DeviceActive>,
+class SavedDevicesFragment : DaggerFragment(),
     ScannedDevicesDialogListener,
-    LongItemClickListener<DeviceActive>,
     DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener {
 
     @Inject
@@ -49,26 +46,15 @@ class SavedDevicesFragment : DaggerFragment(), ItemClickListener<DeviceActive>,
     @Inject
     lateinit var settings: Settings
 
-    private lateinit var deviceAdapter: DeviceActiveAdapter
+    private val deviceAdapter = DeviceActiveAdapter()
 
     private lateinit var listener: SavedDevicesFragmentListener
-
-    private var devices: MutableList<DeviceActive> = mutableListOf()
 
     private var dontObserveQueue: Queue<Boolean> = ArrayDeque<Boolean>()
 
     private var snackbar: Snackbar? = null
 
     private val disposables = CompositeDisposable()
-
-    private val onConnectClickListener = object : ItemClickListener<DeviceActive> {
-        override fun onItemClick(item: DeviceActive) {
-            activity?.let {
-                val mainActivity = it as MainActivity
-                mainActivity.connect(item.device)
-            }
-        }
-    }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -128,10 +114,28 @@ class SavedDevicesFragment : DaggerFragment(), ItemClickListener<DeviceActive>,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Timber.i("View created")
 
         list_devices.layoutManager = LinearLayoutManager(context)
-        deviceAdapter = DeviceActiveAdapter(devices, this, onConnectClickListener, this)
         list_devices.adapter = deviceAdapter
+
+        disposables.addAll(
+            deviceAdapter.getOnConnectClickEvents()
+                .subscribe {
+                    activity?.let { activity ->
+                        val mainActivity = activity as MainActivity
+                        mainActivity.connect(it.device)
+                    }
+                },
+            deviceAdapter.getOnItemClickEvents()
+                .subscribe {
+                    onItemClick(it)
+                },
+            deviceAdapter.getOnItemLongClickEvents()
+                .subscribe {
+                    onLongClick(it)
+                }
+        )
 
         list_devices.itemAnimator = DefaultItemAnimator()
         list_devices.addItemDecoration(
@@ -181,7 +185,7 @@ class SavedDevicesFragment : DaggerFragment(), ItemClickListener<DeviceActive>,
     }
 
     @SuppressLint("InflateParams")
-    override fun onLongClick(param: DeviceActive) {
+    private fun onLongClick(param: DeviceActive) {
         val builder = AlertDialog.Builder(context)
 
         val inflate = layoutInflater.inflate(R.layout.layout_rename, null)
@@ -227,7 +231,7 @@ class SavedDevicesFragment : DaggerFragment(), ItemClickListener<DeviceActive>,
         deviceViewModel.saveDevice(item)
     }
 
-    override fun onItemClick(item: DeviceActive) {
+    private fun onItemClick(item: DeviceActive) {
         saveClickedDeviceMacAddress(item.device.macAddress)
         activity?.let {
             val mainActivity = it as MainActivity
@@ -257,7 +261,7 @@ class SavedDevicesFragment : DaggerFragment(), ItemClickListener<DeviceActive>,
         if (viewHolder is DeviceActiveAdapter.ViewHolder) {
             // get the removed item name to display it in snack bar and backup for undo
 
-            val deletedItem = devices[position]
+            val deletedItem = deviceAdapter.getDevice(position)
             val name = deletedItem.device.getRealName()
 
             // remove the item from recycler view
@@ -289,8 +293,17 @@ class SavedDevicesFragment : DaggerFragment(), ItemClickListener<DeviceActive>,
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Timber.i("Destroy view")
+        disposables.clear()
+        list_devices.adapter = null
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        Timber.i("Destroy")
         disposables.clear()
+        list_devices.adapter = null
     }
 }

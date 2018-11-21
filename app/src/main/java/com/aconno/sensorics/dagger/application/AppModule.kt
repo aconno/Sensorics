@@ -43,9 +43,9 @@ import com.aconno.sensorics.domain.interactor.consolidation.GenerateScanDeviceUs
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.sensorics.domain.interactor.format.GetFormatsUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
+import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice

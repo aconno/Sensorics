@@ -10,15 +10,16 @@ import android.content.SharedPreferences
 import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
-import com.aconno.sensorics.domain.model.ScanEvent
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothState
+import com.aconno.sensorics.domain.scanning.ScanEvent
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import timber.log.Timber
 import java.util.*
 
 //TODO: This needs refactoring.
@@ -33,13 +34,22 @@ class BluetoothImpl(
 
     private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
     private val connectGattResults: PublishSubject<GattCallbackPayload> = PublishSubject.create()
-    private val scanEvents: PublishSubject<ScanEvent> = PublishSubject.create()
-    private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvents)
-    private val gattCallback: BluetoothGattCallback = BluetoothGattCallback(connectGattResults,bluetoothCharacteristicValueConverter)
+
+    private val scanEvent = PublishSubject.create<ScanEvent>()
+
+    override fun getScanEvent(): Flowable<ScanEvent> =
+        scanEvent.toFlowable(BackpressureStrategy.BUFFER)
+
+    private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
+
+    private val gattCallback: BluetoothGattCallback =
+        BluetoothGattCallback(connectGattResults, bluetoothCharacteristicValueConverter)
     private var lastConnectedDeviceAddress: String? = null
     private var lastConnectedGatt: BluetoothGatt? = null
 
-    private fun getScanSettings(devices: List<Device>? = null): Pair<List<ScanFilter>?, ScanSettings> {
+    private fun getScanSettings(
+        devices: List<Device>? = null
+    ): Pair<List<ScanFilter>?, ScanSettings> {
         val settingsBuilder = ScanSettings.Builder()
 
         val scanMode = sharedPrefs.getString("scan_mode", "3").toInt()
@@ -159,13 +169,11 @@ class BluetoothImpl(
     }
 
     override fun startScanning(devices: List<Device>) {
+        Timber.i("Start Bluetooth scanning, devices: $devices")
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         if (bluetoothPermission.isGranted) {
-            scanEvents.onNext(
-                ScanEvent(ScanEvent.SCAN_START, "Scan start at ${System.currentTimeMillis()}")
-            )
-
             val scanSettings = getScanSettings(devices)
+            scanEvent.onNext(ScanEvent.start())
             bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
         } else {
             throw BluetoothException("Bluetooth permission not granted")
@@ -173,14 +181,11 @@ class BluetoothImpl(
     }
 
     override fun startScanning() {
-
+        Timber.i("Start Bluetooth scanning")
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         if (bluetoothPermission.isGranted) {
-            scanEvents.onNext(
-                ScanEvent(ScanEvent.SCAN_START, "Scan start at ${System.currentTimeMillis()}")
-            )
-
             val scanSettings = getScanSettings()
+            scanEvent.onNext(ScanEvent.start())
             bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
         } else {
             throw BluetoothException("Bluetooth permission not granted")
@@ -189,9 +194,7 @@ class BluetoothImpl(
 
     override fun stopScanning() {
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
-        scanEvents.onNext(
-            ScanEvent(ScanEvent.SCAN_STOP, "Scan stop at ${System.currentTimeMillis()}")
-        )
+        scanEvent.onNext(ScanEvent.stop())
         bluetoothLeScanner.stopScan(scanCallback)
     }
 
@@ -201,10 +204,6 @@ class BluetoothImpl(
 
     override fun getScanResults(): Flowable<ScanResult> {
         return scanResults.toFlowable(BackpressureStrategy.LATEST).observeOn(Schedulers.io())
-    }
-
-    override fun getScanEvents(): Flowable<ScanEvent> {
-        return scanEvents.toFlowable(BackpressureStrategy.BUFFER)
     }
 
     override fun getStateEvents(): Flowable<BluetoothState> {

@@ -127,18 +127,24 @@ class BluetoothScanningService : DaggerService() {
         val filterByDevice =
             intent?.getBooleanExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, false) ?: false
 
-        if (filterByDevice && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (filterByDevice) {
             //send values only while scanning with device filter
             initPublishers()
 
-            disposables.add(
-                getSavedDevicesMaybeUseCase.execute()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        startScan(it)
-                    }
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                disposables.add(
+                    getSavedDevicesMaybeUseCase.execute()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe {
+                            startScan(it)
+                        }
+                )
+            } else {
+                //If Lower Than M Ignore Filtering By Mac Address
+                startScan()
+            }
+
         } else {
             startScan()
         }
@@ -189,7 +195,6 @@ class BluetoothScanningService : DaggerService() {
                 }
             )
         }
-
     }
 
     private fun handleInputsForActions() {

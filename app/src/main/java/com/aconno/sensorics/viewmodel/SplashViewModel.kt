@@ -1,53 +1,37 @@
 package com.aconno.sensorics.viewmodel
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.SingleLiveEvent
-import com.aconno.sensorics.domain.repository.LocalUseCaseRepository
-import com.aconno.sensorics.domain.repository.RemoteFormatRepository
-import io.reactivex.Completable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import com.aconno.sensorics.domain.ResourcesInitializer
+import kotlinx.coroutines.*
 
 class SplashViewModel(
-    private val remoteFormatRepository: RemoteFormatRepository,
-    private val localUseCaseRepository: LocalUseCaseRepository
+    private val resourcesInitializer: ResourcesInitializer
 ) : ViewModel() {
 
-    private var updateFormatsDisposable: Disposable? = null
+    val initializationLiveEvent = SingleLiveEvent<Boolean>()
 
-    private val mutableUpdateCompleteEvent = SingleLiveEvent<Unit>()
+    fun initApp() {
+        GlobalScope.launch(Dispatchers.Main) {
 
-    val updateCompleteEvent: LiveData<Unit> = mutableUpdateCompleteEvent
+            GlobalScope.async {
 
-    private val mutableUpdateErrorEvent = SingleLiveEvent<Throwable>()
+                //This will make sure Splash will stay 2000 ms
+                val currMillis = System.currentTimeMillis()
 
-    val updateErrorEvent: LiveData<Throwable> = mutableUpdateErrorEvent
+                //do Work
+                resourcesInitializer.init()
 
-    fun updateAdvertisementFormats() {
-        if (updateFormatsDisposable == null) {
-            updateFormatsDisposable = remoteFormatRepository.updateAdvertisementFormats()
-                .mergeWith(Completable.fromAction { localUseCaseRepository.moveUsecasesFromAssetsToCache() })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { onFormatsUpdateComplete() },
-                    { onFormatsUpdateError(it) }
-                )
+                //This will make sure Splash will stay 2000 ms
+                val diff = System.currentTimeMillis() - currMillis - 2000
+                if (diff < 0) {
+                    //If initializer work took shorter time than 2000ms
+                    //Delay coroutine to fill rest
+                    delay(-diff)
+                }
+            }.await()
+
+            initializationLiveEvent.postValue(true)
         }
-    }
-
-    private fun onFormatsUpdateComplete() {
-        mutableUpdateCompleteEvent.postValue(Unit)
-    }
-
-    private fun onFormatsUpdateError(throwable: Throwable) {
-        mutableUpdateErrorEvent.postValue(throwable)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        updateFormatsDisposable?.dispose()
     }
 }

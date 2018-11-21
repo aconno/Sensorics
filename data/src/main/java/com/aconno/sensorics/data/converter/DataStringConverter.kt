@@ -21,7 +21,7 @@ class DataStringConverter(
         private const val CHUNK = 2
     }
 
-    private val mdyFormat = SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.GERMAN)
+    private val mdyFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.GERMAN)
     private val list: MutableList<String> = mutableListOf()
     private val pattern = Pattern.compile("\\$\\s*(\\w+)")
     private var type: Int = 0

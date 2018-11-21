@@ -1,99 +1,29 @@
 {
-  "id": "0302",
-  "name": "ACN Freight",
-  "icon": "ic_sensa",
+  "id": "18CF",
+  "name": "AcnFreight",
+  "icon": "ic_freight",
   "format": [
-    {
-      "name": "Temperature",
-      "start_index_inclusive": 10,
-      "end_index_exclusive": 14,
-      "reversed": true,
-      "data_type": "FLOAT"
-    },
-    {
-      "name": "Humidity",
-      "start_index_inclusive": 14,
-      "end_index_exclusive": 18,
-      "reversed": true,
-      "data_type": "FLOAT"
-    },
-    {
-      "name": "Pressure",
-      "start_index_inclusive": 18,
-      "end_index_exclusive": 22,
-      "reversed": true,
-      "data_type": "FLOAT"
-    },
-    {
-      "name": "Light",
-      "start_index_inclusive": 22,
-      "end_index_exclusive": 26,
-      "reversed": true,
-      "data_type": "FLOAT"
-    },
-    {
-      "name": "Battery Level",
-      "start_index_inclusive": 26,
-      "end_index_exclusive": 27,
-      "reversed": false,
-      "data_type": "BYTE"
-    }
   ],
   "format_required": [
     {
       "name": "Flags Length",
       "index": 0,
-      "value": "0x02"
+      "value": "0x59"
     },
     {
       "name": "Flags Type",
       "index": 1,
-      "value": "0x01"
+      "value": "0x00"
     },
     {
       "name": "Flags",
       "index": 2,
-      "value": "0x04"
+      "value": "0x18"
     },
     {
       "name": "Content Length",
       "index": 3,
-      "value": "0x1A"
-    },
-    {
-      "name": "Content Type",
-      "index": 4,
-      "value": "0xFF"
-    },
-    {
-      "name": "Vendor ID 1",
-      "index": 5,
-      "value": "0x59"
-    },
-    {
-      "name": "Vendor ID 2",
-      "index": 6,
-      "value": "0x00"
-    },
-    {
-      "name": "App ID 1",
-      "index": 7,
-      "value": "0x17"
-    },
-    {
-      "name": "App ID 2",
-      "index": 8,
       "value": "0xCF"
-    },
-    {
-      "name": "Advertisement Type",
-      "index": 9,
-      "value": "0x44"
-    },
-    {
-      "name": "Freight Type",
-      "index": 10,
-      "value": "0x55"
     }
   ],
   "connectable": true,

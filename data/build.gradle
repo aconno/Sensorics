@@ -52,6 +52,8 @@ dependencies {
 
     implementation "io.reactivex.rxjava2:rxandroid:$rx_android_version"
 
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+
     implementation "com.squareup.okhttp3:okhttp:3.10.0"
     implementation "com.squareup.okhttp3:logging-interceptor:3.9.0"
 
@@ -67,5 +69,4 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-inline:$mockito_inline_version"
     androidTestImplementation "org.robolectric:robolectric:3.1.1"
     androidTestImplementation "com.android.support.test:runner:$test_runner_version"
-    androidTestImplementation "com.android.support.test:testing-support-lib:$testing_support_library_version"
 }
