@@ -24,6 +24,7 @@ import com.aconno.sensorics.domain.repository.Settings
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.ActionListActivity
+import com.aconno.sensorics.ui.IconInfo
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -38,7 +39,7 @@ import javax.inject.Inject
 
 class SavedDevicesFragment : DaggerFragment(),
     ScannedDevicesDialogListener,
-    DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener {
+        DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener, IconInfo {
 
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
@@ -173,6 +174,7 @@ class SavedDevicesFragment : DaggerFragment(),
             } else {
                 empty_view.visibility = View.INVISIBLE
                 deviceAdapter.setDevices(preferredDevices)
+                deviceAdapter.setIcon(getIconInfo(preferredDevices))
             }
         }
     }
@@ -306,4 +308,17 @@ class SavedDevicesFragment : DaggerFragment(),
         disposables.clear()
         list_devices.adapter = null
     }
+
+
+    override fun getIconInfo(deviceNames: List<DeviceActive>): HashMap<String, String> {
+
+        var hashMap: HashMap<String, String> = hashMapOf<String, String>()
+
+        deviceNames?.forEach {
+            if (!hashMap.containsKey(it.device.name))
+                hashMap.put(it.device.name, deviceViewModel.getIconPath(it.device.name)!!)
+        }
+        return hashMap
+    }
+
 }
