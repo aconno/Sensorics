@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.aconno.sensorics.LiveDataObserver
 import com.aconno.sensorics.R
@@ -41,7 +42,7 @@ class UseCasesFragment : DaggerFragment() {
 
             activity_usecases_webview.apply {
                 webChromeClient = WebChromeClient()
-                webViewClient = WebViewClient()
+                webViewClient = MyWebViewClient()
                 settings.javaScriptEnabled = true
                 settings.loadWithOverviewMode = true
                 settings.builtInZoomControls = true
@@ -92,9 +93,12 @@ class UseCasesFragment : DaggerFragment() {
         activity_usecases_webview.loadUrl(url)
     }
 
-    override fun onResume() {
-        super.onResume()
-        mViewModel.subscribe()
+    inner class MyWebViewClient : WebViewClient() {
+
+        override fun onPageFinished(view: WebView?, url: String?) {
+            super.onPageFinished(view, url)
+            mViewModel.subscribe()
+        }
     }
 
     companion object {
