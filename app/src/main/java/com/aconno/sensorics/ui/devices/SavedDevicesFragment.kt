@@ -2,7 +2,6 @@ package com.aconno.sensorics.ui.devices
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
@@ -51,11 +50,11 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private var listener: SavedDevicesFragmentListener? = null
 
-    private var dontObserveQueue: Queue<Boolean> = ArrayDeque<Boolean>()
-
     private var snackbar: Snackbar? = null
 
-    private lateinit var deletedItem: DeviceActive
+    private var dontObserveQueue: Queue<Boolean> = ArrayDeque<Boolean>()
+
+    private var deletedItems = ArrayDeque<DeviceActive>()
 
     private lateinit var compositeDisposable: CompositeDisposable
 
@@ -66,8 +65,10 @@ class SavedDevicesFragment : DaggerFragment(),
                 || event == Snackbar.Callback.DISMISS_EVENT_SWIPE
                 || event == Snackbar.Callback.DISMISS_EVENT_MANUAL
             ) {
-                //delete device from db if undo snackbar timeout.
+                val deletedItem = deletedItems.poll()
+
                 dontObserveQueue.add(true)
+                //delete device from db if undo snackbar timeout.
                 deviceViewModel.deleteDevice(deletedItem.device)
             }
         }
@@ -169,15 +170,16 @@ class SavedDevicesFragment : DaggerFragment(),
             DeviceSwipeToDismissHelper(0, ItemTouchHelper.LEFT, this)
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(list_devices)
 
-        deviceViewModel.getSavedDevicesLiveData().observe(this, Observer {
-            if (it != null) {
-                if (dontObserveQueue.isEmpty()) {
-                    displayPreferredDevices(it)
-                } else {
-                    dontObserveQueue.poll()
+        addDisposable(
+            deviceViewModel.getSavedDevicesFlowable()
+                .subscribe {
+                    if (dontObserveQueue.isEmpty()) {
+                        displayPreferredDevices(it)
+                    } else {
+                        dontObserveQueue.poll()
+                    }
                 }
-            }
-        })
+        )
 
         button_add_device.setOnClickListener {
             snackbar?.dismiss()
@@ -287,20 +289,28 @@ class SavedDevicesFragment : DaggerFragment(),
         if (viewHolder is DeviceActiveAdapter.ViewHolder) {
             // get the removed item name to display it in snack bar and backup for undo
 
-            val deletedItem = deviceAdapter.getDevice(position)
-            val name = deletedItem.device.getRealName()
+            deletedItems.add(deviceAdapter.getDevice(position))
+            val name = deletedItems.peek().device.getRealName()
 
             // remove the item from recycler view
             deviceAdapter.removeItem(position)
-            this.deletedItem = deletedItem
+            if (deviceAdapter.itemCount == 0) {
+                displayPreferredDevices(listOf())
+            }
 
             // showing snack bar with Undo option
             snackbar = Snackbar
                 .make(container_fragment, "$name removed!", Snackbar.LENGTH_LONG)
             snackbar?.setAction("UNDO") {
+                //Prevent it to be removed from snackbarCallback
+                snackbar?.removeCallback(snackbarCallback)
+
                 // undo is selected, restore the deleted item
-                deviceAdapter.restoreItem(deletedItem, position)
+                val lastDevice = deletedItems.last
+                deviceAdapter.restoreItem(lastDevice, position)
+                deletedItems.remove(lastDevice)
             }
+
             snackbar?.addCallback(snackbarCallback)
             snackbar?.setActionTextColor(Color.YELLOW)
             snackbar?.show()

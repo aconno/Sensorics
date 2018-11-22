@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 class DeviceViewModel(
     deviceStream: Flowable<Device>,
-    getSavedDevicesUseCase: GetSavedDevicesUseCase,
+    private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
     private val saveDeviceUseCase: SaveDeviceUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase
 ) : ViewModel() {
@@ -62,18 +62,15 @@ class DeviceViewModel(
                     }
                 }
         )
-        disposables.add(
-            getSavedDevicesUseCase.execute()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { devices ->
-                    savedDevicesLiveData.value = devices.map { DeviceActive(it, false) }
-                }
-        )
     }
 
-    fun getSavedDevicesLiveData(): MutableLiveData<List<DeviceActive>> {
-        return savedDevicesLiveData
+    fun getSavedDevicesFlowable(): Flowable<List<DeviceActive>> {
+        return getSavedDevicesUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map {
+                it.map { DeviceActive(it, false) }
+            }
     }
 
     fun saveDevice(device: Device) {
