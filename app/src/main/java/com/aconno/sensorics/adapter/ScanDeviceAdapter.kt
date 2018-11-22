@@ -28,8 +28,10 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
 
     fun removeScanDevice(scanDevice: ScanDevice) {
         val index = devices.indexOf(scanDevice)
-        devices.removeAt(index)
-        notifyItemRemoved(index)
+        if (index >= 0 && index < devices.size) {
+            devices.removeAt(index)
+            notifyItemRemoved(index)
+        }
     }
 
     fun getClickedDeviceStream(): Observable<ScanDevice> {
