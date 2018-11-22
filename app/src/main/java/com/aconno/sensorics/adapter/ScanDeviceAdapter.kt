@@ -15,7 +15,7 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
 
     private val devices = mutableListOf<ScanDevice>()
     private val clickedDeviceStream = PublishSubject.create<ScanDevice>()
-    lateinit var iconPath: String
+    private val iconPathHashMap = hashMapOf<String, String>()
 
     fun addScanDevice(scanDevice: ScanDevice) {
         val index = devices.indexOf(scanDevice)
@@ -28,8 +28,12 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
         }
     }
 
-    fun setIcon(icon: String) {
-        this.iconPath = icon
+    fun hasIconPath(deviceName: String): Boolean {
+        return iconPathHashMap.containsKey(deviceName)
+    }
+
+    fun addIconPath(deviceName: String, iconPath: String) {
+        iconPathHashMap[deviceName] = iconPath
     }
 
     fun removeScanDevice(scanDevice: ScanDevice) {
@@ -60,10 +64,10 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
 
         fun bind(scanDevice: ScanDevice) {
 
-            if (iconPath == null) {
+            if (!hasIconPath(scanDevice.device.name)) {
                 view.image_icon.setImageResource(R.drawable.ic_sensa)
             } else {
-                val icon = Drawable.createFromPath(iconPath)
+                val icon = Drawable.createFromPath(iconPathHashMap[scanDevice.device.name])
                 view.image_icon.setImageDrawable(icon)
             }
 

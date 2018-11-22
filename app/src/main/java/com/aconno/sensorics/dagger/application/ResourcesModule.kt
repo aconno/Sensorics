@@ -6,9 +6,9 @@ import com.aconno.sensorics.data.mapper.FormatJsonConverter
 import com.aconno.sensorics.data.repository.resources.ResourcesRepositoryImpl
 import com.aconno.sensorics.domain.ConfigListManager
 import com.aconno.sensorics.domain.FormatListManager
-import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
 import com.aconno.sensorics.domain.repository.*

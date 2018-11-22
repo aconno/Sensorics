@@ -105,10 +105,19 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
                 .flatMap { it }
                 .filter { !savedDevices.contains(it.device) }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
+                .subscribe { scanDevice ->
+                    //If it does not have icon get it from cache
+                    if (!adapter.hasIconPath(scanDevice.device.name)) {
+                        getIconUseCase.execute(scanDevice.device.name)?.let {
+                            adapter.addIconPath(
+                                scanDevice.device.name,
+                                it
+                            )
+                        }
+                    }
+
                     text_empty.visibility = View.INVISIBLE
-                    adapter.addScanDevice(it)
-                    adapter.setIcon(getIconUseCase.execute(it.device.name).toString())
+                    adapter.addScanDevice(scanDevice)
                 }
         )
     }

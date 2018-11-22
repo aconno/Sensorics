@@ -46,7 +46,7 @@ class DeviceViewModel(
         )
         disposables.add(
                 Observable.interval(10, TimeUnit.SECONDS)
-                        .subscribe {
+                    .subscribe {
                             var refresh = false
                             savedDevicesLiveData.value?.forEach {
                                 val lastSeenTimestamp = timestamps[it.device] ?: 0L
