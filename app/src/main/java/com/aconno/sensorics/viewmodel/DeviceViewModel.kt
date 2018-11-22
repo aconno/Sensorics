@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceActive
 import io.reactivex.Flowable
@@ -16,10 +17,11 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class DeviceViewModel(
-    deviceStream: Flowable<Device>,
-    getSavedDevicesUseCase: GetSavedDevicesUseCase,
-    private val saveDeviceUseCase: SaveDeviceUseCase,
-    private val deleteDeviceUseCase: DeleteDeviceUseCase
+        deviceStream: Flowable<Device>,
+        getSavedDevicesUseCase: GetSavedDevicesUseCase,
+        private val saveDeviceUseCase: SaveDeviceUseCase,
+        private val deleteDeviceUseCase: DeleteDeviceUseCase,
+        private val getIconUseCase: GetIconUseCase
 ) : ViewModel() {
 
     private val savedDevicesLiveData = MutableLiveData<List<DeviceActive>>()
@@ -43,24 +45,24 @@ class DeviceViewModel(
             }
         )
         disposables.add(
-            Observable.interval(10, TimeUnit.SECONDS)
-                .subscribe {
-                    var refresh = false
-                    savedDevicesLiveData.value?.forEach {
-                        val lastSeenTimestamp = timestamps[it.device] ?: 0L
-                        val timestampDiff = System.currentTimeMillis() - lastSeenTimestamp
-                        if (timestampDiff < 10000) {
-                            refresh = !it.active
-                            it.active = true
-                        } else {
-                            refresh = it.active
-                            it.active = false
+                Observable.interval(10, TimeUnit.SECONDS)
+                    .subscribe {
+                            var refresh = false
+                            savedDevicesLiveData.value?.forEach {
+                                val lastSeenTimestamp = timestamps[it.device] ?: 0L
+                                val timestampDiff = System.currentTimeMillis() - lastSeenTimestamp
+                                if (timestampDiff < 10000) {
+                                    refresh = !it.active
+                                    it.active = true
+                                } else {
+                                    refresh = it.active
+                                    it.active = false
+                                }
+                            }
+                            if (refresh) {
+                                savedDevicesLiveData.postValue(savedDevicesLiveData.value)
+                            }
                         }
-                    }
-                    if (refresh) {
-                        savedDevicesLiveData.postValue(savedDevicesLiveData.value)
-                    }
-                }
         )
         disposables.add(
             getSavedDevicesUseCase.execute()
@@ -99,6 +101,10 @@ class DeviceViewModel(
         deleteDeviceUseCase.execute(device)
             .subscribeOn(Schedulers.io())
             .subscribe()
+    }
+
+    fun getIconPath(deviceName: String): String? {
+        return getIconUseCase.execute(deviceName)
     }
 
     override fun onCleared() {

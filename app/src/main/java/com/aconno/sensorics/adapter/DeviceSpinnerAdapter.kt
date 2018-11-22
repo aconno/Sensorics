@@ -1,5 +1,6 @@
 package com.aconno.sensorics.adapter
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import kotlinx.android.synthetic.main.item_spinner_device.view.*
 class DeviceSpinnerAdapter : SpinnerAdapter, BaseAdapter() {
 
     private val devices = mutableListOf<Device>()
+    private var iconsMap: HashMap<String, String> = hashMapOf()
 
     fun getDevices(): List<Device> = devices
 
@@ -36,22 +38,36 @@ class DeviceSpinnerAdapter : SpinnerAdapter, BaseAdapter() {
         return devices[position]
     }
 
+    fun setIcons(icons: HashMap<String, String>) {
+        iconsMap = icons
+    }
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val device = devices[position]
         val context = parent.context
+        val iconPath = iconsMap[device.name]
+
         if (convertView == null) {
             val newView =
                 LayoutInflater.from(context).inflate(R.layout.item_spinner_device, parent, false)
-            val iconId =
-                context.resources.getIdentifier(device.icon, "drawable", context.packageName)
-            newView.image_icon.setImageResource(iconId)
+
+            if (iconPath == null) {
+                newView.image_icon.setImageResource(R.drawable.ic_sensa)
+            } else {
+                val icon = Drawable.createFromPath(iconPath)
+                newView.image_icon.setImageDrawable(icon)
+            }
+
             newView.text_name.text = device.getRealName()
             newView.text_mac_address.text = device.macAddress
             return newView
         } else {
-            val iconId =
-                context.resources.getIdentifier(device.icon, "drawable", context.packageName)
-            convertView.image_icon.setImageResource(iconId)
+            if (iconPath == null) {
+                convertView.image_icon.setImageResource(R.drawable.ic_sensa)
+            } else {
+                val icon = Drawable.createFromPath(iconPath)
+                convertView.image_icon.setImageDrawable(icon)
+            }
             convertView.text_name.text = device.getRealName()
             convertView.text_mac_address.text = device.macAddress
             return convertView

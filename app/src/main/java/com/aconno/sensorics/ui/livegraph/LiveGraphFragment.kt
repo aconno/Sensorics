@@ -17,8 +17,6 @@ class LiveGraphFragment : DaggerFragment() {
     @Inject
     lateinit var liveGraphViewModel: LiveGraphViewModel
 
-
-
     private lateinit var macAddress: String
     private lateinit var graphName: String
 

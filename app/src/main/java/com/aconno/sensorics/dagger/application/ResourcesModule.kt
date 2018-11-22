@@ -8,6 +8,7 @@ import com.aconno.sensorics.domain.ConfigListManager
 import com.aconno.sensorics.domain.FormatListManager
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
 import com.aconno.sensorics.domain.repository.*
@@ -102,6 +103,18 @@ class ResourcesModule {
         return GetUseCaseResourceUseCase(
             configListManager,
             application.cacheDir.absolutePath
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetIconUseCase(
+            configListManager: ConfigListManager,
+            application: SensoricsApplication
+    ): GetIconUseCase {
+        return GetIconUseCase(
+                configListManager,
+                application.cacheDir.absolutePath
         )
     }
 }
