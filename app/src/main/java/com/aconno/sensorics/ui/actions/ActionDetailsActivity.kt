@@ -15,6 +15,8 @@ import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.Settings
+import com.aconno.sensorics.model.DeviceActive
+import com.aconno.sensorics.ui.IconInfo
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -24,7 +26,8 @@ import kotlinx.android.synthetic.main.item_chip.view.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener {
+class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener, IconInfo {
+
 
     @Inject
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
@@ -66,6 +69,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
             actionDetailsViewModel.getDevices()
                 .subscribe({ devices ->
                     deviceSpinnerAdapter.setDevices(devices)
+                    deviceSpinnerAdapter.setIcons(getIconInfoForDevices(devices))
                     if (!actionExists()) setDefaultDevice()
                 }, {
                     showSnackbarMessage(getString(R.string.message_no_devices))
@@ -270,7 +274,10 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
                 .subscribe({
                     finish()
                 }, {
-                    showSnackbarMessage(it.message ?: getString(R.string.message_save_unsuccessful))
+                    showSnackbarMessage(
+                        it.message
+                            ?: getString(R.string.message_save_unsuccessful)
+                    )
                 })
         }
     }
@@ -297,4 +304,23 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
             context.startActivity(intent)
         }
     }
+
+    override fun getIconInfoForDevices(deviceNames: List<Device>): HashMap<String, String> {
+
+        val hashMap: HashMap<String, String> = hashMapOf()
+
+        deviceNames.forEach { device ->
+            if (!hashMap.containsKey(device.name))
+                actionDetailsViewModel.getIconPath(device.name)?.let {
+                    hashMap[device.name] = it
+                }
+        }
+        return hashMap
+    }
+
+    override fun getIconInfoForActiveDevices(deviceNames: List<DeviceActive>): HashMap<String, String> {
+        //this method is not used
+        return hashMapOf()
+    }
+
 }
