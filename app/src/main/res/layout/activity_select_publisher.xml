@@ -52,7 +52,7 @@
             android:layout_height="40dp"
             android:layout_marginStart="@dimen/screen_edge_left_right_margin"
             android:contentDescription="@string/contentDescriptionUseless"
-            android:src="@drawable/uplaod_cloud" />
+            android:src="@drawable/upload_cloud" />
 
         <TextView
             style="@style/ListItemText"

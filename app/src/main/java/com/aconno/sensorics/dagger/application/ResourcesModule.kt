@@ -7,7 +7,10 @@ import com.aconno.sensorics.data.repository.resources.ResourcesRepositoryImpl
 import com.aconno.sensorics.domain.ConfigListManager
 import com.aconno.sensorics.domain.FormatListManager
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
+import com.aconno.sensorics.domain.format.FormatMatcher
+import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
 import com.aconno.sensorics.domain.repository.*
 import com.google.gson.Gson
 import dagger.Module
@@ -30,6 +33,18 @@ class ResourcesModule {
             FormatJsonConverter()
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideFormatMatcher(getFormatsUseCase: GetFormatsUseCase) =
+        FormatMatcher(getFormatsUseCase)
+
+    @Provides
+    @Singleton
+    fun provideGetFormatsUseCase(
+        formatListManager: FormatListManager
+    ): GetFormatsUseCase =
+        GetFormatsUseCase(formatListManager)
 
     @Provides
     @Singleton
@@ -74,6 +89,18 @@ class ResourcesModule {
         application: SensoricsApplication
     ): GetMainResourceUseCase {
         return GetMainResourceUseCase(
+            configListManager,
+            application.cacheDir.absolutePath
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetUseCaseResourceUseCase(
+        configListManager: ConfigListManager,
+        application: SensoricsApplication
+    ): GetUseCaseResourceUseCase {
+        return GetUseCaseResourceUseCase(
             configListManager,
             application.cacheDir.absolutePath
         )

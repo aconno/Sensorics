@@ -22,24 +22,5 @@ class Outcome(val parameters: Map<String, String>, val type: Int) {
         const val TEXT_MESSAGE = "textMessage"
         const val PHONE_NUMBER = "phoneNumber"
 
-        fun typeFromString(type: String): Int {
-            return when (type) {
-                "Notification" -> 0
-                "SMS" -> 1
-                "Text to Speech" -> 2
-                "Vibration" -> 3
-                else -> throw IllegalArgumentException("Invalid outcome type: $type")
-            }
-        }
-
-        fun typeFromInt(type: Int): String {
-            return when (type) {
-                0 -> "Notification"
-                1 -> "SMS"
-                2 -> "Text to Speech"
-                3 -> "Vibration"
-                else -> throw IllegalArgumentException("Invalid outcome type: $type")
-            }
-        }
     }
 }

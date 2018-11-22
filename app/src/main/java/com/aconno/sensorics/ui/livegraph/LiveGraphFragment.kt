@@ -1,7 +1,6 @@
 package com.aconno.sensorics.ui.livegraph
 
 import android.arch.lifecycle.Observer
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,8 +17,7 @@ class LiveGraphFragment : DaggerFragment() {
     @Inject
     lateinit var liveGraphViewModel: LiveGraphViewModel
 
-    @Inject
-    lateinit var sharedPreferences: SharedPreferences
+
 
     private lateinit var macAddress: String
     private lateinit var graphName: String

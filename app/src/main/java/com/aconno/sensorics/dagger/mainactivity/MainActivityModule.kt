@@ -4,8 +4,6 @@ import android.arch.lifecycle.ViewModelProviders
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.permissons.PermissionActionFactory
-import com.aconno.sensorics.device.usecase.RemoteUseCaseRepositoryImpl
-import com.aconno.sensorics.device.usecase.RetrofitUseCaseApi
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
@@ -13,12 +11,11 @@ import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
-import com.aconno.sensorics.domain.repository.LocalUseCaseRepository
-import com.aconno.sensorics.domain.repository.RemoteUseCaseRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
@@ -30,8 +27,6 @@ import com.aconno.sensorics.viewmodel.resources.MainResourceViewModelFactory
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 
 @Module
@@ -181,31 +176,12 @@ class MainActivityModule {
     fun provideUseCasesViewModelFactory(
         readingsStream: Flowable<List<Reading>>,
         filterByMacUseCase: FilterByMacUseCase,
-        remoteUseCaseRepository: RemoteUseCaseRepository
+        getUseCaseResourceUseCase: GetUseCaseResourceUseCase
     ) = UseCasesViewModelFactory(
         readingsStream,
         filterByMacUseCase,
-        remoteUseCaseRepository
+        getUseCaseResourceUseCase
     )
-
-    @Provides
-    @MainActivityScope
-    fun provideRetrofitUseCaseApi(): RetrofitUseCaseApi {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://playground.simvelop.de:8095")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-
-        return retrofit.create(RetrofitUseCaseApi::class.java)
-    }
-
-    @Provides
-    @MainActivityScope
-    fun provideRemoteUseCaseRepository(
-        retrofitUseCaseApi: RetrofitUseCaseApi,
-        localUseCaseRepository: LocalUseCaseRepository
-    ): RemoteUseCaseRepository =
-        RemoteUseCaseRepositoryImpl(retrofitUseCaseApi, localUseCaseRepository)
 
     @Provides
     @MainActivityScope

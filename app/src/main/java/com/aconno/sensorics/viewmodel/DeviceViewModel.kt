@@ -14,7 +14,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-
 import java.util.concurrent.TimeUnit
 
 class DeviceViewModel(
@@ -33,21 +32,21 @@ class DeviceViewModel(
 
     init {
         disposables.add(
-                deviceStream.subscribe { scannedDevice ->
-                    timestamps[scannedDevice] = System.currentTimeMillis()
-                    val savedDevices = savedDevicesLiveData.value
-                    savedDevices?.forEach {
-                        if (scannedDevice == it.device && !it.active) {
-                            it.active = true
-                            savedDevicesLiveData.postValue(savedDevicesLiveData.value)
-                            return@forEach
-                        }
+            deviceStream.subscribe { scannedDevice ->
+                timestamps[scannedDevice] = System.currentTimeMillis()
+                val savedDevices = savedDevicesLiveData.value
+                savedDevices?.forEach {
+                    if (scannedDevice == it.device && !it.active) {
+                        it.active = true
+                        savedDevicesLiveData.postValue(savedDevicesLiveData.value)
+                        return@forEach
                     }
                 }
+            }
         )
         disposables.add(
                 Observable.interval(10, TimeUnit.SECONDS)
-                        .subscribe { _ ->
+                        .subscribe {
                             var refresh = false
                             savedDevicesLiveData.value?.forEach {
                                 val lastSeenTimestamp = timestamps[it.device] ?: 0L
@@ -66,12 +65,12 @@ class DeviceViewModel(
                         }
         )
         disposables.add(
-                getSavedDevicesUseCase.execute()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe { devices ->
-                            savedDevicesLiveData.value = devices.map { DeviceActive(it, false) }
-                        }
+            getSavedDevicesUseCase.execute()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { devices ->
+                    savedDevicesLiveData.value = devices.map { DeviceActive(it, false) }
+                }
         )
     }
 
@@ -81,27 +80,27 @@ class DeviceViewModel(
 
     fun saveDevice(device: Device) {
         saveDeviceUseCase.execute(device)
-                .subscribeOn(Schedulers.io())
-                .subscribe()
+            .subscribeOn(Schedulers.io())
+            .subscribe()
     }
 
     fun updateDevice(device: Device, alias: String) {
         val newDevice = Device(
-                device.name,
-                alias,
-                device.macAddress,
-                device.icon
+            device.name,
+            alias,
+            device.macAddress,
+            device.icon
         )
 
         saveDeviceUseCase.execute(newDevice)
-                .subscribeOn(Schedulers.io())
-                .subscribe()
+            .subscribeOn(Schedulers.io())
+            .subscribe()
     }
 
     fun deleteDevice(device: Device) {
         deleteDeviceUseCase.execute(device)
-                .subscribeOn(Schedulers.io())
-                .subscribe()
+            .subscribeOn(Schedulers.io())
+            .subscribe()
     }
 
     fun getIconPath(deviceName: String): String? {

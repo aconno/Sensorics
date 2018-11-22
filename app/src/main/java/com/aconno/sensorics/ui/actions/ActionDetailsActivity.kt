@@ -264,7 +264,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
     }
 
     private fun setSaveButtonListener() {
-        button_save.setOnClickListener { _ ->
+        button_save.setOnClickListener {
             val message = edittext_message.text.toString()
             val phoneNumber = edittext_phone_number.text.toString()
             val name = edittext_name.text.toString()

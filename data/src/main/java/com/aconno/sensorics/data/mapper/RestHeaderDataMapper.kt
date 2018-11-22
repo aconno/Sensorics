@@ -27,7 +27,7 @@ class RestHeaderDataMapper @Inject constructor() {
         return restPublishList
     }
 
-    fun toRESTHeader(restHeaderEntity: RestHeaderEntity): RestHeader {
+    private fun toRESTHeader(restHeaderEntity: RestHeaderEntity): RestHeader {
         return GeneralRestHeader(
             restHeaderEntity.id,
             restHeaderEntity.rId,

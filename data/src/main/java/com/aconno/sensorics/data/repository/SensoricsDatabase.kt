@@ -6,8 +6,6 @@ import com.aconno.sensorics.data.repository.action.ActionDao
 import com.aconno.sensorics.data.repository.action.ActionEntity
 import com.aconno.sensorics.data.repository.devices.DeviceDao
 import com.aconno.sensorics.data.repository.devices.DeviceEntity
-import com.aconno.sensorics.data.repository.format.FormatDao
-import com.aconno.sensorics.data.repository.format.FormatEntity
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishDao
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishEntity
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishDao
@@ -27,7 +25,6 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
     entities = [
         ActionEntity::class,
         DeviceEntity::class,
-        FormatEntity::class,
         GooglePublishDeviceJoinEntity::class,
         GooglePublishEntity::class,
         MqttPublishDeviceJoinEntity::class,
@@ -38,15 +35,13 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
         RestPublishEntity::class,
         SyncEntity::class
     ],
-    version = 6
+    version = 7
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 
     abstract fun actionDao(): ActionDao
 
     abstract fun deviceDao(): DeviceDao
-
-    abstract fun formatDao(): FormatDao
 
     abstract fun googlePublishDao(): GooglePublishDao
 

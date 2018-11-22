@@ -10,8 +10,8 @@ import javax.inject.Singleton
     modules = [
         AndroidSupportInjectionModule::class,
         AppModule::class,
+        BluetoothModule::class,
         DataModule::class,
-        FormatModule::class,
         ResourcesModule::class,
         ActivityBuilder::class
     ]

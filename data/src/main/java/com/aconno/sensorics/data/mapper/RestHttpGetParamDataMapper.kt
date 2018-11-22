@@ -27,7 +27,7 @@ class RestHttpGetParamDataMapper @Inject constructor() {
         return restPublishList
     }
 
-    fun toRESTHttpGetParam(restHttpGetParamEntity: RestHttpGetParamEntity): RestHttpGetParam {
+    private fun toRESTHttpGetParam(restHttpGetParamEntity: RestHttpGetParamEntity): RestHttpGetParam {
         return GeneralRestHttpGetParam(
             restHttpGetParamEntity.id,
             restHttpGetParamEntity.rId,
