@@ -13,8 +13,8 @@ abstract class BaseFragment : DaggerFragment() {
         super.onDetach()
     }
 
-    protected fun addDisposable(disposable: Disposable) {
-        getDisposable().add(disposable)
+    protected open fun addDisposable(vararg disposable: Disposable) {
+        getDisposable().addAll(*disposable)
     }
 
     private fun clearCompositeDisposable() {

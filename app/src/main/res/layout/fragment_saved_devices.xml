@@ -6,7 +6,7 @@
     android:id="@+id/container_fragment"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <com.aconno.sensorics.ui.devices.NotLeakingRecyclerView
         android:id="@+id/list_devices"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

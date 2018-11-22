@@ -30,6 +30,7 @@ import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceViewModel
 import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import java.util.*
@@ -46,15 +47,31 @@ class SavedDevicesFragment : DaggerFragment(),
     @Inject
     lateinit var settings: Settings
 
-    private val deviceAdapter = DeviceActiveAdapter()
+    private lateinit var deviceAdapter: DeviceActiveAdapter
 
-    private lateinit var listener: SavedDevicesFragmentListener
+    private var listener: SavedDevicesFragmentListener? = null
 
     private var dontObserveQueue: Queue<Boolean> = ArrayDeque<Boolean>()
 
     private var snackbar: Snackbar? = null
 
-    private val disposables = CompositeDisposable()
+    private lateinit var deletedItem: DeviceActive
+
+    private lateinit var compositeDisposable: CompositeDisposable
+
+    private val snackbarCallback = object : Snackbar.Callback() {
+        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+            if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
+                || event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
+                || event == Snackbar.Callback.DISMISS_EVENT_SWIPE
+                || event == Snackbar.Callback.DISMISS_EVENT_MANUAL
+            ) {
+                //delete device from db if undo snackbar timeout.
+                dontObserveQueue.add(true)
+                deviceViewModel.deleteDevice(deletedItem.device)
+            }
+        }
+    }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -64,6 +81,27 @@ class SavedDevicesFragment : DaggerFragment(),
         } else {
             throw RuntimeException("$context must implement ${SavedDevicesFragmentListener::class}")
         }
+
+        compositeDisposable = CompositeDisposable()
+
+        deviceAdapter = DeviceActiveAdapter()
+
+        addDisposable(
+            deviceAdapter.getOnConnectClickEvents()
+                .subscribe {
+                    activity?.let { activity ->
+                        (activity as MainActivity).connect(it.device)
+                    }
+                },
+            deviceAdapter.getOnItemClickEvents()
+                .subscribe {
+                    onItemClick(it)
+                },
+            deviceAdapter.getOnItemLongClickEvents()
+                .subscribe {
+                    onLongClick(it)
+                }
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,24 +157,6 @@ class SavedDevicesFragment : DaggerFragment(),
         list_devices.layoutManager = LinearLayoutManager(context)
         list_devices.adapter = deviceAdapter
 
-        disposables.addAll(
-            deviceAdapter.getOnConnectClickEvents()
-                .subscribe {
-                    activity?.let { activity ->
-                        val mainActivity = activity as MainActivity
-                        mainActivity.connect(it.device)
-                    }
-                },
-            deviceAdapter.getOnItemClickEvents()
-                .subscribe {
-                    onItemClick(it)
-                },
-            deviceAdapter.getOnItemLongClickEvents()
-                .subscribe {
-                    onLongClick(it)
-                }
-        )
-
         list_devices.itemAnimator = DefaultItemAnimator()
         list_devices.addItemDecoration(
             DividerItemDecoration(
@@ -151,18 +171,24 @@ class SavedDevicesFragment : DaggerFragment(),
 
         deviceViewModel.getSavedDevicesLiveData().observe(this, Observer {
             if (it != null) {
-                if (!(dontObserveQueue.size > 0 && dontObserveQueue.poll()) || it.isEmpty()) {
+                if (dontObserveQueue.isEmpty()) {
                     displayPreferredDevices(it)
+                } else {
+                    dontObserveQueue.poll()
                 }
             }
         })
 
         button_add_device.setOnClickListener {
             snackbar?.dismiss()
-            listener.onFABClicked()
+            listener?.onFABClicked()
             Timber.d("Button add device clicked")
             ScannedDevicesDialog().show(activity?.supportFragmentManager, "devices_dialog")
         }
+    }
+
+    fun addDisposable(vararg disposable: Disposable) {
+        compositeDisposable.addAll(*disposable)
     }
 
     private fun displayPreferredDevices(preferredDevices: List<DeviceActive>?) {
@@ -240,7 +266,7 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     private fun saveClickedDeviceMacAddress(macAddress: String) {
-        disposables.add(
+        addDisposable(
             settings.setClickedDeviceMac(macAddress)
                 .subscribe(
                     {
@@ -266,6 +292,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
             // remove the item from recycler view
             deviceAdapter.removeItem(position)
+            this.deletedItem = deletedItem
 
             // showing snack bar with Undo option
             snackbar = Snackbar
@@ -274,36 +301,16 @@ class SavedDevicesFragment : DaggerFragment(),
                 // undo is selected, restore the deleted item
                 deviceAdapter.restoreItem(deletedItem, position)
             }
-
-            snackbar?.addCallback(object : Snackbar.Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
-                        || event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
-                        || event == Snackbar.Callback.DISMISS_EVENT_SWIPE
-                        || event == Snackbar.Callback.DISMISS_EVENT_MANUAL
-                    ) {
-                        //delete device from db if undo snackbar timeout.
-                        deviceViewModel.deleteDevice(deletedItem.device)
-                        dontObserveQueue.add(true)
-                    }
-                }
-            })
+            snackbar?.addCallback(snackbarCallback)
             snackbar?.setActionTextColor(Color.YELLOW)
             snackbar?.show()
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Timber.i("Destroy view")
-        disposables.clear()
-        list_devices.adapter = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Timber.i("Destroy")
-        disposables.clear()
-        list_devices.adapter = null
+    override fun onDetach() {
+        listener = null
+        compositeDisposable.dispose()
+        snackbar?.removeCallback(snackbarCallback)
+        super.onDetach()
     }
 }
