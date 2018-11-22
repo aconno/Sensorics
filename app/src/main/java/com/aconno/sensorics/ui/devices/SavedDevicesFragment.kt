@@ -309,6 +309,10 @@ class SavedDevicesFragment : DaggerFragment(),
                 val lastDevice = deletedItems.last
                 deviceAdapter.restoreItem(lastDevice, position)
                 deletedItems.remove(lastDevice)
+
+                if (position == 0) {
+                    empty_view.visibility = View.INVISIBLE
+                }
             }
 
             snackbar?.addCallback(snackbarCallback)
