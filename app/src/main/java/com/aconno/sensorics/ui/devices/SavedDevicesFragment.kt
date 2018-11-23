@@ -29,6 +29,7 @@ import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceViewModel
 import dagger.android.support.DaggerFragment
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
@@ -181,11 +182,25 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
         )
 
+        addDisposable(
+            deviceViewModel.deviceActiveObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    updateActiveorDeactiveDevices(it)
+                }
+        )
+
         button_add_device.setOnClickListener {
             snackbar?.dismiss()
             listener?.onFABClicked()
             Timber.d("Button add device clicked")
             ScannedDevicesDialog().show(activity?.supportFragmentManager, "devices_dialog")
+        }
+    }
+
+    private fun updateActiveorDeactiveDevices(changedDevices: List<DeviceActive>) {
+        if (dontObserveQueue.isEmpty()) {
+            deviceAdapter.updateActiveDevices(changedDevices)
         }
     }
 
@@ -197,7 +212,7 @@ class SavedDevicesFragment : DaggerFragment(),
         preferredDevices?.let {
             if (preferredDevices.isEmpty()) {
                 empty_view.visibility = View.VISIBLE
-                deviceAdapter.clearDevices()
+                deviceAdapter.setDevices(listOf())
             } else {
                 empty_view.visibility = View.INVISIBLE
                 deviceAdapter.setDevices(preferredDevices)
@@ -347,5 +362,4 @@ class SavedDevicesFragment : DaggerFragment(),
         //This method is not used.
         return hashMapOf()
     }
-    
 }

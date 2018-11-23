@@ -1,6 +1,5 @@
 package com.aconno.sensorics.viewmodel
 
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
@@ -13,6 +12,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -24,7 +24,9 @@ class DeviceViewModel(
     private val getIconUseCase: GetIconUseCase
 ) : ViewModel() {
 
-    private val savedDevicesLiveData = MutableLiveData<List<DeviceActive>>()
+    val deviceActiveObservable: PublishSubject<List<DeviceActive>> =
+        PublishSubject.create<List<DeviceActive>>()
+    private var deviceList: List<DeviceActive>? = null
 
     private val timestamps = hashMapOf<Device, Long>()
 
@@ -34,33 +36,37 @@ class DeviceViewModel(
         disposables.add(
             deviceStream.subscribe { scannedDevice ->
                 timestamps[scannedDevice] = System.currentTimeMillis()
-                val savedDevices = savedDevicesLiveData.value
+                val savedDevices = deviceList
                 savedDevices?.forEach {
                     if (scannedDevice == it.device && !it.active) {
                         it.active = true
-                        savedDevicesLiveData.postValue(savedDevicesLiveData.value)
+                        deviceActiveObservable.onNext(savedDevices)
                         return@forEach
                     }
                 }
             }
         )
+
         disposables.add(
             Observable.interval(10, TimeUnit.SECONDS)
                 .subscribe {
                     var refresh = false
-                    savedDevicesLiveData.value?.forEach {
-                        val lastSeenTimestamp = timestamps[it.device] ?: 0L
-                        val timestampDiff = System.currentTimeMillis() - lastSeenTimestamp
-                        if (timestampDiff < 10000) {
-                            refresh = !it.active
-                            it.active = true
-                        } else {
-                            refresh = it.active
-                            it.active = false
+                    deviceList?.let {
+                        it.forEach {
+                            val lastSeenTimestamp = timestamps[it.device] ?: 0L
+                            val timestampDiff = System.currentTimeMillis() - lastSeenTimestamp
+                            if (timestampDiff < 10000) {
+                                refresh = !it.active
+                                it.active = true
+                            } else {
+                                refresh = it.active
+                                it.active = false
+                            }
                         }
-                    }
-                    if (refresh) {
-                        savedDevicesLiveData.postValue(savedDevicesLiveData.value)
+
+                        if (refresh) {
+                            deviceActiveObservable.onNext(it)
+                        }
                     }
                 }
         )
@@ -71,7 +77,8 @@ class DeviceViewModel(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map {
-                it.map { DeviceActive(it, false) }
+                deviceList = it.map { DeviceActive(it, false) }
+                deviceList
             }
     }
 
