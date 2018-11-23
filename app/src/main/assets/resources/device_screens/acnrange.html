@@ -1,0 +1,41 @@
+<html>
+<head>
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <style type="text/css">
+    body {
+      font-family: 'Rubik', sans-serif;
+    }
+
+    .vertical-center {
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+     }
+
+    </style>
+
+    <script>
+    function onSensorReading(name, value) {
+      if (name == "Range") {
+        var range_value = document.getElementById("range_value");
+        range_value.innerHTML = value + ' mm';
+      }
+    }
+
+    </script>
+</head>
+<body>
+<div class="vertical-center" style="text-align: center;">
+    <div>
+        <img src="../icons/ic_range.png"/>
+    </div>
+    <div>
+        <p>Range</p>
+        <p id="range_value">No data</p>
+    </div>
+</div>
+</body>
+</html>
