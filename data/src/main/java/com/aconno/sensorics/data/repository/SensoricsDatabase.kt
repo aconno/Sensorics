@@ -35,7 +35,7 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
         RestPublishEntity::class,
         SyncEntity::class
     ],
-    version = 7
+    version = 8
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 

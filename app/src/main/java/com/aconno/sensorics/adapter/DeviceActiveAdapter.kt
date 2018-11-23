@@ -2,6 +2,7 @@ package com.aconno.sensorics.adapter
 
 import android.graphics.drawable.Drawable
 import android.support.constraint.ConstraintLayout
+import android.support.v7.recyclerview.extensions.AsyncListDiffer
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -10,31 +11,43 @@ import android.widget.RelativeLayout
 import com.aconno.sensorics.R
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
+import com.aconno.sensorics.ui.devices.DeviceActiveDiffUtil
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_device_with_connect.view.*
 import timber.log.Timber
+import java.util.*
 
 
 class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>() {
 
-    private val devices = mutableListOf<DeviceActive>()
+    private val asyncListDiffer = AsyncListDiffer<DeviceActive>(this, DeviceActiveDiffUtil())
+    private lateinit var devices: MutableList<DeviceActive>
+
+    init {
+        asyncListDiffer.submitList(listOf())
+    }
 
     var iconsMap: HashMap<String, String> = hashMapOf()
 
-    fun setDevices(devices: List<DeviceActive>) {
-        this.devices.clear()
-        this.devices.addAll(devices)
-        notifyDataSetChanged()
+    fun setDevices(newList: List<DeviceActive>) {
+        devices = mutableListOf()
+        devices.addAll(newList)
+        asyncListDiffer.submitList(devices)
     }
 
-    fun clearDevices() {
-        devices.clear()
-        notifyDataSetChanged()
+    fun updateActiveDevices(activeList: List<DeviceActive>) {
+        activeList.forEachIndexed { index, deviceActive ->
+            asyncListDiffer.currentList.find { deviceActive == it }
+                ?.let {
+                    it.active = deviceActive.active
+                    notifyItemChanged(index)
+                }
+        }
     }
 
-    fun getDevice(position: Int) = devices[position]
+    fun getDevice(position: Int) = asyncListDiffer.currentList[position]
 
     private val onItemClickEvents = PublishSubject.create<DeviceActive>()
 
@@ -58,11 +71,11 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
     }
 
     override fun getItemCount(): Int {
-        return devices.size
+        return asyncListDiffer.currentList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(devices[position])
+        holder.bind(asyncListDiffer.currentList[position])
     }
 
     fun removeItem(position: Int) {

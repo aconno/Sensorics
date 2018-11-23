@@ -10,20 +10,20 @@ import com.aconno.sensorics.viewmodel.factory.BaseViewModelFactory
 import io.reactivex.Flowable
 
 class ActionDetailsViewModelFactory(
-        private val savedDevicesStream: Flowable<List<Device>>,
-        private val formatMatcher: FormatMatcher,
-        private val getActionByIdUseCase: GetActionByIdUseCase,
-        private val addActionUseCase: AddActionUseCase,
-        private val getIconUseCase: GetIconUseCase
+    private val savedDevicesStream: Flowable<List<Device>>,
+    private val formatMatcher: FormatMatcher,
+    private val getActionByIdUseCase: GetActionByIdUseCase,
+    private val addActionUseCase: AddActionUseCase,
+    private val getIconUseCase: GetIconUseCase
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = ActionDetailsViewModel(
-                savedDevicesStream,
-                formatMatcher,
-                getActionByIdUseCase,
-                addActionUseCase,
-                getIconUseCase
+            savedDevicesStream,
+            formatMatcher,
+            getActionByIdUseCase,
+            addActionUseCase,
+            getIconUseCase
         )
         return getViewModel(viewModel, modelClass)
     }

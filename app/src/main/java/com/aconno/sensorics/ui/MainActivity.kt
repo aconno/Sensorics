@@ -20,7 +20,6 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.model.SensoricsPermission
-import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
 import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
@@ -29,7 +28,6 @@ import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
-import com.aconno.sensorics.ui.readings.GenericReadingListFragment
 import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
@@ -86,15 +84,22 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     private fun scheduleJob() {
         val jobSchedule: JobScheduler =
             this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        val serviceComponents = ComponentName(this, SyncConfigurationService::class.java)
-        val jobInfo: JobInfo = JobInfo.Builder(1, serviceComponents)
-            .setPeriodic(15 * 60 * 1000)
-            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-            .setPersisted(true)
-            .build()
-        jobSchedule.schedule(jobInfo)
 
+        val pendingJob = jobSchedule.allPendingJobs
+            .find {
+                it.id == 1
+            }
 
+        //If pending job still in progress no need to re-schedule..
+        if (pendingJob == null) {
+            val serviceComponents = ComponentName(this, SyncConfigurationService::class.java)
+            val jobInfo: JobInfo = JobInfo.Builder(1, serviceComponents)
+                .setPeriodic(15 * 60 * 1000)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPersisted(true)
+                .build()
+            jobSchedule.schedule(jobInfo)
+        }
     }
 
     override fun onResume() {
@@ -165,20 +170,12 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun onFABClicked() {
-        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
-            if (!it.isChecked) {
-                toggleScan(it)
-                filterByDevice = false
-            }
-        }
+        stopScanning()
+        startScanning(false)
     }
 
     override fun onDialogDismissed() {
-        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
-            if (it.isChecked) {
-                toggleScan(it)
-            }
-        }
+        stopScanning()
     }
 
     private fun observeScanEvents() {
@@ -260,23 +257,11 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     private fun getReadingListFragment(device: Device): Fragment {
-        return when (device.name) {
-            "AcnSensa" -> DeviceMainFragment.newInstance(
-                device.macAddress,
-                device.getRealName(),
-                device.name
-            )
-            "AcnRange" -> AcnRangeFragment.newInstance(
-                device.macAddress,
-                device.getRealName(),
-                device.name
-            )
-            else -> GenericReadingListFragment.newInstance(
-                device.macAddress,
-                device.getRealName(),
-                device.name
-            )
-        }
+        return DeviceMainFragment.newInstance(
+            device.macAddress,
+            device.getRealName(),
+            device.name
+        )
     }
 
     private fun showSavedDevicesFragment() {
@@ -313,7 +298,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id: Int? = item?.itemId
         when (id) {
-            R.id.action_toggle_scan -> toggleScan(item)
+            R.id.action_toggle_scan -> toggleScanFromMenuItem(item)
             R.id.action_start_settings_activity -> startSettingsActivity()
         }
 
@@ -332,14 +317,21 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    private fun toggleScan(item: MenuItem?) {
-        item?.let {
-            if (item.isChecked) {
-                bluetoothScanningViewModel.stopScanning()
-            } else {
-                permissionViewModel.requestAccessFineLocation()
-            }
+    private fun toggleScanFromMenuItem(item: MenuItem) {
+        if (item.isChecked) {
+            stopScanning()
+        } else {
+            startScanning()
         }
+    }
+
+    private fun startScanning(filterByDevice: Boolean = true) {
+        this.filterByDevice = filterByDevice
+        permissionViewModel.requestAccessFineLocation()
+    }
+
+    private fun stopScanning() {
+        bluetoothScanningViewModel.stopScanning()
     }
 
     private fun setScanMenuLabel(menuItem: MenuItem) {

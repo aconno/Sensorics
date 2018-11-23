@@ -22,6 +22,16 @@
         android:layout_height="@dimen/border_height"
         android:background="@color/border" />
 
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-7dp"
+        android:backgroundTint="@color/white"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/progress_indicator"
+        android:max="100" />
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

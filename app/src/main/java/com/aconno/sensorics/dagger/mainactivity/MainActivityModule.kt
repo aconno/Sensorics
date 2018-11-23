@@ -155,19 +155,19 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideDeviceListViewModelFactory(
-            scanDeviceStream: Flowable<ScanDevice>,
-            getSavedDevicesUseCase: GetSavedDevicesUseCase,
-            saveDeviceUseCase: SaveDeviceUseCase,
-            deleteDeviceUseCase: DeleteDeviceUseCase,
-            getIconUseCase: GetIconUseCase
+        scanDeviceStream: Flowable<ScanDevice>,
+        getSavedDevicesUseCase: GetSavedDevicesUseCase,
+        saveDeviceUseCase: SaveDeviceUseCase,
+        deleteDeviceUseCase: DeleteDeviceUseCase,
+        getIconUseCase: GetIconUseCase
     ): DeviceListViewModelFactory {
         val deviceStream = scanDeviceStream.map { it.device }
         return DeviceListViewModelFactory(
             deviceStream,
             getSavedDevicesUseCase,
             saveDeviceUseCase,
-                deleteDeviceUseCase,
-                getIconUseCase
+            deleteDeviceUseCase,
+            getIconUseCase
         )
     }
 

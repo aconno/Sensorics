@@ -20,36 +20,36 @@ class ActionDetailsModule {
     @Provides
     @ActionDetailsActivityScope
     fun provideActionDetailsViewModelFactory(
-            savedDevicesStream: Flowable<List<Device>>,
-            formatMatcher: FormatMatcher,
-            getActionByIdUseCase: GetActionByIdUseCase,
-            addActionUseCase: AddActionUseCase,
-            getIconUseCase: GetIconUseCase
+        savedDevicesStream: Flowable<List<Device>>,
+        formatMatcher: FormatMatcher,
+        getActionByIdUseCase: GetActionByIdUseCase,
+        addActionUseCase: AddActionUseCase,
+        getIconUseCase: GetIconUseCase
     ) = ActionDetailsViewModelFactory(
-            savedDevicesStream,
-            formatMatcher,
-            getActionByIdUseCase,
-            addActionUseCase,
-            getIconUseCase
+        savedDevicesStream,
+        formatMatcher,
+        getActionByIdUseCase,
+        addActionUseCase,
+        getIconUseCase
     )
 
     @Provides
     @ActionDetailsActivityScope
     fun provideActionDetailsViewModel(
-            actionDetailsActivity: ActionDetailsActivity,
-            actionDetailsViewModelFactory: ActionDetailsViewModelFactory
+        actionDetailsActivity: ActionDetailsActivity,
+        actionDetailsViewModelFactory: ActionDetailsViewModelFactory
     ) = ViewModelProviders.of(actionDetailsActivity, actionDetailsViewModelFactory)
-            .get(ActionDetailsViewModel::class.java)
+        .get(ActionDetailsViewModel::class.java)
 
     @Provides
     @ActionDetailsActivityScope
     fun provideGetActionByIdUseCase(
-            actionsRepository: ActionsRepository
+        actionsRepository: ActionsRepository
     ) = GetActionByIdUseCase(actionsRepository)
 
     @Provides
     @ActionDetailsActivityScope
     fun provideAddActionUseCase(
-            actionsRepository: ActionsRepository
+        actionsRepository: ActionsRepository
     ) = AddActionUseCase(actionsRepository)
 }
