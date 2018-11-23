@@ -25,7 +25,7 @@ class NotificationFactory {
             context,
             NotificationChannelFactory.CHANNEL_ID
         )
-            .setSmallIcon(R.drawable.ic_droid)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(contentText)
             .setContentIntent(contentIntent)
@@ -58,7 +58,7 @@ class NotificationFactory {
         return NotificationCompat.Builder(context, NotificationChannelFactory.ALERTS_CHANNEL_ID)
             .setContentTitle("Sensorics")
             .setContentText(message)
-            .setSmallIcon(R.drawable.ic_droid)
+            .setSmallIcon(R.drawable.ic_notification)
             .setAutoCancel(true)
             .setDeleteIntent(deleteIntent)
             .setContentIntent(contentIntent)
