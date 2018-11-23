@@ -21,11 +21,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class ActionDetailsViewModel(
-        private val savedDevicesStream: Flowable<List<Device>>,
-        private val formatMatcher: FormatMatcher,
-        private val getActionByIdUseCase: GetActionByIdUseCase,
-        private val addActionUseCase: AddActionUseCase,
-        private val getIconUseCase: GetIconUseCase
+    private val savedDevicesStream: Flowable<List<Device>>,
+    private val formatMatcher: FormatMatcher,
+    private val getActionByIdUseCase: GetActionByIdUseCase,
+    private val addActionUseCase: AddActionUseCase,
+    private val getIconUseCase: GetIconUseCase
 ) : ViewModel() {
 
     private val disposables = CompositeDisposable()
@@ -39,19 +39,19 @@ class ActionDetailsViewModel(
 
     fun setActionId(actionId: Long) {
         disposables.add(
-                getActionByIdUseCase.execute(actionId)
-                        .subscribeOn(Schedulers.io())
-                        .subscribe { action ->
-                            actionLiveData.postValue(
-                                    ActionViewModel(
-                                            action.id,
-                                            action.name,
-                                            action.device,
-                                            action.condition,
-                                            action.outcome
-                                    )
-                            )
-                        }
+            getActionByIdUseCase.execute(actionId)
+                .subscribeOn(Schedulers.io())
+                .subscribe { action ->
+                    actionLiveData.postValue(
+                        ActionViewModel(
+                            action.id,
+                            action.name,
+                            action.device,
+                            action.condition,
+                            action.outcome
+                        )
+                    )
+                }
         )
     }
 
@@ -59,8 +59,8 @@ class ActionDetailsViewModel(
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
             actionLiveData.value = ActionViewModel(
-                    name = name,
-                    device = device
+                name = name,
+                device = device
             )
         } else {
             actionViewModel.name = name
@@ -78,29 +78,29 @@ class ActionDetailsViewModel(
     }
 
     fun setCondition(
-            readingType: String,
-            limitValue: String,
-            constraintType: String,
-            name: String,
-            message: String,
-            phoneNumber: String
+        readingType: String,
+        limitValue: String,
+        constraintType: String,
+        name: String,
+        message: String,
+        phoneNumber: String
     ) {
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
             actionLiveData.value = ActionViewModel(
-                    name = name,
-                    condition = LimitCondition(
-                            readingType,
-                            limitValue.toFloat(),
-                            LimitCondition.typeFromString(constraintType)
-                    )
+                name = name,
+                condition = LimitCondition(
+                    readingType,
+                    limitValue.toFloat(),
+                    LimitCondition.typeFromString(constraintType)
+                )
             )
         } else {
             actionViewModel.name = name
             actionViewModel.condition = LimitCondition(
-                    readingType,
-                    limitValue.toFloat(),
-                    LimitCondition.typeFromString(constraintType)
+                readingType,
+                limitValue.toFloat(),
+                LimitCondition.typeFromString(constraintType)
             )
             val outcome = actionViewModel.outcome
             if (outcome != null) {
@@ -118,7 +118,7 @@ class ActionDetailsViewModel(
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
             actionLiveData.value = ActionViewModel(
-                    name = name
+                name = name
             )
         } else {
             actionViewModel.name = name
@@ -143,8 +143,8 @@ class ActionDetailsViewModel(
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
             actionLiveData.value = ActionViewModel(
-                    name = name,
-                    outcome = outcome
+                name = name,
+                outcome = outcome
             )
         } else {
             actionViewModel.name = name
@@ -158,16 +158,16 @@ class ActionDetailsViewModel(
     }
 
     fun saveAction(
-            application: Application,
-            name: String,
-            message: String,
-            phoneNumber: String
+        application: Application,
+        name: String,
+        message: String,
+        phoneNumber: String
     ): Completable {
         val id = actionLiveData.value?.id ?: 0L
         if (name.isBlank()) {
             return getCompletableIllegalArgumentError(
-                    application,
-                    R.string.message_action_name_blank
+                application,
+                R.string.message_action_name_blank
             )
         }
         val device = actionLiveData.value?.device
@@ -175,20 +175,20 @@ class ActionDetailsViewModel(
         val outcome = actionLiveData.value?.outcome
         if (device == null) {
             return getCompletableIllegalArgumentError(
-                    application,
-                    R.string.message_action_device_not_selected
+                application,
+                R.string.message_action_device_not_selected
             )
         }
         if (condition == null) {
             return getCompletableIllegalArgumentError(
-                    application,
-                    R.string.message_action_condition_not_selected
+                application,
+                R.string.message_action_condition_not_selected
             )
         }
         if (outcome == null) {
             return getCompletableIllegalArgumentError(
-                    application,
-                    R.string.message_action_outcome_not_selected
+                application,
+                R.string.message_action_outcome_not_selected
             )
         }
         val parameters = hashMapOf<String, String>()
@@ -196,18 +196,18 @@ class ActionDetailsViewModel(
         parameters[Outcome.TEXT_MESSAGE] = message
         val newOutcome = Outcome(parameters, outcome.type)
         val action = GeneralAction(
-                id,
-                name,
-                device,
-                condition,
-                newOutcome
+            id,
+            name,
+            device,
+            condition,
+            newOutcome
         )
         return addActionUseCase.execute(action)
     }
 
     private fun getCompletableIllegalArgumentError(
-            application: Application,
-            messageResourceId: Int
+        application: Application,
+        messageResourceId: Int
     ): Completable {
         val message = application.getString(messageResourceId)
         return Completable.error(IllegalArgumentException(message))
@@ -219,11 +219,11 @@ class ActionDetailsViewModel(
     }
 
     inner class ActionViewModel(
-            var id: Long = 0L,
-            var name: String = "",
-            var device: Device? = null,
-            var condition: Condition? = null,
-            var outcome: Outcome? = null
+        var id: Long = 0L,
+        var name: String = "",
+        var device: Device? = null,
+        var condition: Condition? = null,
+        var outcome: Outcome? = null
     )
 
     fun getIconPath(deviceName: String): String? {

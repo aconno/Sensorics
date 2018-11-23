@@ -10,11 +10,11 @@ import com.aconno.sensorics.viewmodel.DeviceViewModel
 import io.reactivex.Flowable
 
 class DeviceListViewModelFactory(
-        private val deviceStream: Flowable<Device>,
-        private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
-        private val saveDevicesUseCase: SaveDeviceUseCase,
-        private val deleteDeviceUseCase: DeleteDeviceUseCase,
-        private val getIconUseCase: GetIconUseCase
+    private val deviceStream: Flowable<Device>,
+    private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
+    private val saveDevicesUseCase: SaveDeviceUseCase,
+    private val deleteDeviceUseCase: DeleteDeviceUseCase,
+    private val getIconUseCase: GetIconUseCase
 
 ) : BaseViewModelFactory() {
 
@@ -23,8 +23,8 @@ class DeviceListViewModelFactory(
             deviceStream,
             getSavedDevicesUseCase,
             saveDevicesUseCase,
-                deleteDeviceUseCase,
-                getIconUseCase
+            deleteDeviceUseCase,
+            getIconUseCase
         )
         return getViewModel(viewModel, modelClass)
     }

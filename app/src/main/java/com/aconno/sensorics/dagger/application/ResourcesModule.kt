@@ -109,12 +109,12 @@ class ResourcesModule {
     @Provides
     @Singleton
     fun provideGetIconUseCase(
-            configListManager: ConfigListManager,
-            application: SensoricsApplication
+        configListManager: ConfigListManager,
+        application: SensoricsApplication
     ): GetIconUseCase {
         return GetIconUseCase(
-                configListManager,
-                application.cacheDir.absolutePath
+            configListManager,
+            application.cacheDir.absolutePath
         )
     }
 }
