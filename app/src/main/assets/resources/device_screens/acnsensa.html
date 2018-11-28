@@ -1,12 +1,16 @@
+
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <link href="../html_resources/Rubik.css" rel="stylesheet">
-    <link rel="stylesheet" href="../html_resources/materialize_min.css">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+
+
     <style type="text/css">
     body {
       font-family: 'Rubik', sans-serif;
     }
+
 
 
     </style>
@@ -15,73 +19,80 @@
     function onSensorReading(name, value) {
       if (name == "Temperature") {
         var temperature_value = document.getElementById("temperature_value");
-        temperature_value.innerHTML = value
+        temperature_value.innerHTML = parseFloat(value).toFixed(2)+"Â°C"
       } else if (name == "Light") {
         var light_value = document.getElementById("light_value")
-        light_value.innerHTML = value
+        light_value.innerHTML = parseFloat(value).toFixed(2)+"%"
       } else if (name == "Pressure") {
         var pressure_value = document.getElementById("pressure_value")
-        pressure_value.innerHTML = value
+        pressure_value.innerHTML = parseFloat(value).toFixed(2)+"hPa"
       } else if (name == "Humidity") {
         var humidity_value = document.getElementById("humidity_value")
-        humidity_value.innerHTML = value
+        humidity_value.innerHTML = parseFloat(value).toFixed(2)+"%"
       } else if (name == "Accelerometer X") {
         var accelerometer_x_value = document.getElementById("accelerometer_x_value")
-        accelerometer_x_value.innerHTML = value
+        accelerometer_x_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
       } else if (name == "Accelerometer Y") {
         var accelerometer_y_value = document.getElementById("accelerometer_y_value")
-        accelerometer_y_value.innerHTML = value
+        accelerometer_y_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
       } else if (name == "Accelerometer Z") {
         var accelerometer_z_value = document.getElementById("accelerometer_z_value")
-        accelerometer_z_value.innerHTML = value
+        accelerometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
       } else if (name == "Magnetometer X") {
         var magnetometer_x_value = document.getElementById("magnetometer_x_value")
-        magnetometer_x_value.innerHTML = value
+        magnetometer_x_value.innerHTML = parseFloat(value).toFixed(2)+"ÂµT"
       } else if (name == "Magnetometer Y") {
         var magnetometer_y_value = document.getElementById("magnetometer_y_value")
-        magnetometer_y_value.innerHTML = value
+        magnetometer_y_value.innerHTML = parseFloat(value).toFixed(2)+"ÂµT"
       } else if (name == "Magnetometer Z") {
         var magnetometer_z_value = document.getElementById("magnetometer_z_value")
-        magnetometer_z_value.innerHTML = value
+        magnetometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"ÂµT"
       } else if (name == "Gyroscope X") {
         var gyroscope_x_value = document.getElementById("gyroscope_x_value")
-        gyroscope_x_value.innerHTML = value
+        gyroscope_x_value.innerHTML = parseFloat(value).toFixed(2)+ "dps"
       } else if (name == "Gyroscope Y") {
         var gyroscope_y_value = document.getElementById("gyroscope_y_value")
-        gyroscope_y_value.innerHTML = value
+        gyroscope_y_value.innerHTML = parseFloat(value).toFixed(2)+"dps"
       } else if (name == "Gyroscope Z") {
         var gyroscope_z_value = document.getElementById("gyroscope_z_value")
-        gyroscope_z_value.innerHTML = value
+        gyroscope_z_value.innerHTML = parseFloat(value).toFixed(2)+"dps"
       } else if (name == "Battery Level") {
         var battery_level_value = document.getElementById("battery_level_value")
-        battery_level_value.innerHTML = value
+        battery_level_value.innerHTML = parseFloat(value).toFixed(2)+"%"
       }
     }
 
 
+
     </script>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
 </head>
-<body>
+
+<body style="background-color:#fafafa">
 <div class="row">
     <div class="col s6 push-s6">
         <div class="card" onclick="app.openLiveGraph('Light');">
-            <div class="card-image">
-                <img src="../icons/ic_light.png"/>
-            </div>
-            <div class="card-content">
-                <p>Light</p>
-                <p id="light_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_light.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Light</p>
+                    <p id="light_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
     <div class="col s6 pull-s6">
         <div class="card" onclick="app.openLiveGraph('Temperature');">
-            <div class="card-image">
-                <img src="../icons/ic_temperature.png"/>
-            </div>
-            <div class="card-content">
-                <p>Temperature</p>
-                <p id="temperature_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_temperature.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Temperature</p>
+                    <p id="temperature_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
@@ -89,23 +100,27 @@
 <div class="row">
     <div class="col s6 push-s6">
         <div class="card" onclick="app.openLiveGraph('Humidity');">
-            <div class="card-image">
-                <img src="../icons/ic_humidity.png"/>
-            </div>
-            <div class="card-content">
-                <p>Humidity</p>
-                <p id="humidity_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_humidity.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Humidity</p>
+                    <p id="humidity_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
     <div class="col s6 pull-s6">
         <div class="card" onclick="app.openLiveGraph('Pressure');">
-            <div class="card-image">
-                <img src="../icons/ic_pressure.png"/>
-            </div>
-            <div class="card-content">
-                <p>Pressure</p>
-                <p id="pressure_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_pressure.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Pressure</p>
+                    <p id="pressure_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
@@ -113,23 +128,27 @@
 <div class="row">
     <div class="col s6 push-s6">
         <div class="card" onclick="app.openLiveGraph('Accelerometer');">
-            <div class="card-image">
-                <img src="../icons/ic_acc.png"/>
-            </div>
-            <div class="card-content">
-                <p>Accelerometer Y</p>
-                <p id="accelerometer_y_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_acc.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Accelerometer Y</p>
+                    <p id="accelerometer_y_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
     <div class="col s6 pull-s6">
         <div class="card" onclick="app.openLiveGraph('Accelerometer');">
-            <div class="card-image">
-                <img src="../icons/ic_acc.png"/>
-            </div>
-            <div class="card-content">
-                <p>Accelerometer X</p>
-                <p id="accelerometer_x_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_acc.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Accelerometer X</p>
+                    <p id="accelerometer_x_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
@@ -137,23 +156,27 @@
 <div class="row">
     <div class="col s6 push-s6">
         <div class="card" onclick="app.openLiveGraph('Magnetometer');">
-            <div class="card-image">
-                <img src="../icons/ic_compass.png"/>
-            </div>
-            <div class="card-content">
-                <p>Magnetometer X</p>
-                <p id="magnetometer_x_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_compass.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Magnetometer X</p>
+                    <p id="magnetometer_x_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
     <div class="col s6 pull-s6">
         <div class="card" onclick="app.openLiveGraph('Accelerometer');">
-            <div class="card-image">
-                <img src="../icons/ic_acc.png"/>
-            </div>
-            <div class="card-content">
-                <p>Accelerometer Z</p>
-                <p id="accelerometer_z_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_acc.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Accelerometer Z</p>
+                    <p id="accelerometer_z_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
@@ -161,23 +184,27 @@
 <div class="row">
     <div class="col s6 push-s6">
         <div class="card" onclick="app.openLiveGraph('Magnetometer');">
-            <div class="card-image">
-                <img src="../icons/ic_compass.png"/>
-            </div>
-            <div class="card-content">
-                <p>Magnetometer Z</p>
-                <p id="magnetometer_z_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_compass.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Magnetometer Z</p>
+                    <p id="magnetometer_z_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
     <div class="col s6 pull-s6">
         <div class="card" onclick="app.openLiveGraph('Magnetometer');">
-            <div class="card-image">
-                <img src="../icons/ic_compass.png"/>
-            </div>
-            <div class="card-content">
-                <p>Magnetometer Y</p>
-                <p id="magnetometer_y_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_compass.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Magnetometer Y</p>
+                    <p id="magnetometer_y_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
@@ -185,23 +212,27 @@
 <div class="row">
     <div class="col s6 push-s6">
         <div class="card" onclick="app.openLiveGraph('Gyroscope');">
-            <div class="card-image">
-                <img src="../icons/ic_gyro.png"/>
-            </div>
-            <div class="card-content">
-                <p>Gyroscope Y</p>
-                <p id="gyroscope_y_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_gyro.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Gyroscope Y</p>
+                    <p id="gyroscope_y_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
     <div class="col s6 pull-s6">
         <div class="card" onclick="app.openLiveGraph('Gyroscope');">
-            <div class="card-image">
-                <img src="../icons/ic_gyro.png"/>
-            </div>
-            <div class="card-content">
-                <p>Gyroscope X</p>
-                <p id="gyroscope_x_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_gyro.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Gyroscope X</p>
+                    <p id="gyroscope_x_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
@@ -209,23 +240,27 @@
 <div class="row">
     <div class="col s6 push-s6">
         <div class="card" onclick="app.openLiveGraph('Battery Level');">
-            <div class="card-image">
-                <img src="../icons/ic_pressure.png"/>
-            </div>
-            <div class="card-content">
-                <p>Battery Level</p>
-                <p id="battery_level_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_pressure.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Battery Level</p>
+                    <p id="battery_level_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>
     <div class="col s6 pull-s6">
         <div class="card" onclick="app.openLiveGraph('Gyroscope');">
-            <div class="card-image">
-                <img src="../icons/ic_gyro.png"/>
-            </div>
-            <div class="card-content">
-                <p>Gyroscope Z</p>
-                <p id="gyroscope_z_value">No data</p>
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_gyro.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Gyroscope Z</p>
+                    <p id="gyroscope_z_value" class="value">No data</p>
+                </div>
             </div>
         </div>
     </div>

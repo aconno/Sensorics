@@ -22,6 +22,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_device_main.*
 import javax.inject.Inject
 
+
 @SuppressLint("SetJavaScriptEnabled")
 class DeviceMainFragment : DaggerFragment() {
 
@@ -37,9 +38,12 @@ class DeviceMainFragment : DaggerFragment() {
     private lateinit var macAddress: String
     private lateinit var deviceAlias: String
 
+    private var webViewBundle: Bundle? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        retainInstance = true
     }
 
     override fun onCreateView(
@@ -102,18 +106,23 @@ class DeviceMainFragment : DaggerFragment() {
         web_view.addJavascriptInterface(WebViewJavaScriptInterface(), "app")
         web_view.settings.javaScriptEnabled = true
 
-        getResourceDisposable = mainResourceViewModel.getResourcePath(deviceName)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { resourcePath ->
-                    text_error_message.visibility = View.INVISIBLE
-                    web_view.loadUrl(resourcePath)
-                },
-                { throwable ->
-                    text_error_message.visibility = View.VISIBLE
-                    text_error_message.text = throwable.message
-                })
+        if (webViewBundle != null) {
+            web_view.restoreState(webViewBundle)
+        } else {
+            getResourceDisposable = mainResourceViewModel.getResourcePath(deviceName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { resourcePath ->
+                        text_error_message.visibility = View.INVISIBLE
+                        web_view.loadUrl(resourcePath)
+                    },
+                    { throwable ->
+                        text_error_message.visibility = View.VISIBLE
+                        text_error_message.text = throwable.message
+                    })
+        }
+
     }
 
     private fun subscribeOnSensorReadings() {
@@ -127,6 +136,9 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     override fun onDestroyView() {
+        webViewBundle = Bundle()
+        web_view.saveState(webViewBundle)
+
         super.onDestroyView()
         getResourceDisposable?.dispose()
         sensorReadingFlowDisposable?.dispose()

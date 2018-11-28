@@ -163,7 +163,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun openLiveGraph(macAddress: String, sensorName: String) {
-        supportFragmentManager?.beginTransaction()?.replace(
+        supportFragmentManager?.beginTransaction()?.add(
             content_container.id,
             LiveGraphFragment.newInstance(macAddress, sensorName)
         )?.addToBackStack(null)?.commit()
@@ -246,7 +246,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun getConnectableFragment(device: Device): Fragment {
         return when (device.name) {
-            "ACN Freight" -> AcnFreightFragment.newInstance(
+            "AcnFreight" -> AcnFreightFragment.newInstance(
                 device
             )
             else -> {
