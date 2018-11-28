@@ -20,39 +20,27 @@ import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
-import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 class RestPublisher(
-    private val restPublish: RestPublish,
-    private val listDevices: List<Device>,
-    private val listHeaders: List<RestHeader>,
-    private val listHttpGetParams: List<RestHttpGetParam>,
-    private val syncRepository: SyncRepository
+        private val restPublish: RestPublish,
+        private val listDevices: List<Device>,
+        private val listHeaders: List<RestHeader>,
+        private val listHttpGetParams: List<RestHttpGetParam>,
+        private val syncRepository: SyncRepository
 ) : Publisher {
     private val lastSyncs: MutableMap<Pair<String, String>, Long> =
-        syncRepository.getSync("rest" + restPublish.id)
-            .map { Pair(it.macAddress, it.advertisementId) to it.lastSyncTimestamp }
-            .toMap()
-            .toMutableMap()
+            syncRepository.getSync("rest" + restPublish.id)
+                    .map { Pair(it.macAddress, it.advertisementId) to it.lastSyncTimestamp }
+                    .toMap()
+                    .toMutableMap()
 
     private val httpClient: OkHttpClient
     private val readingToStringParser: DataStringConverter
 
     init {
 
-        val logging = HttpLoggingInterceptor()
-        logging.level = HttpLoggingInterceptor.Level.BODY
-        httpClient = OkHttpClient.Builder()
-            .socketFactory(getUnsafeSSLSocketFactory())
-            .addInterceptor(logging)
-            .build()
-
-        readingToStringParser = DataStringConverter()
-    }
-
-    private fun getUnsafeSSLSocketFactory(): SSLSocketFactory {
         // Create a trust manager that does not validate certificate chains
         val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
 
@@ -62,15 +50,15 @@ class RestPublisher(
 
             @Throws(CertificateException::class)
             override fun checkClientTrusted(
-                chain: Array<X509Certificate>,
-                authType: String
+                    chain: Array<X509Certificate>,
+                    authType: String
             ) {
             }
 
             @Throws(CertificateException::class)
             override fun checkServerTrusted(
-                chain: Array<X509Certificate>,
-                authType: String
+                    chain: Array<X509Certificate>,
+                    authType: String
             ) {
             }
         })
@@ -79,8 +67,17 @@ class RestPublisher(
         val sslContext = SSLContext.getInstance("SSL")
         sslContext.init(null, trustAllCerts, SecureRandom())
         // Create an ssl socket factory with our all-trusting manager
-        val sslSocketFactory = sslContext.socketFactory
-        return sslSocketFactory
+        val socketFactory = sslContext.socketFactory
+
+
+        val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BODY
+        httpClient = OkHttpClient.Builder()
+                .sslSocketFactory(socketFactory, trustAllCerts[0] as X509TrustManager)
+                .addInterceptor(logging)
+                .build()
+
+        readingToStringParser = DataStringConverter()
     }
 
     companion object {
@@ -91,27 +88,27 @@ class RestPublisher(
     override fun publish(readings: List<Reading>) {
         if (readings.isNotEmpty() && isPublishable(readings)) {
             Timber.tag("Publisher HTTP")
-                .d("${restPublish.name} publishes from ${readings[0].device}")
+                    .d("${restPublish.name} publishes from ${readings[0].device}")
             getRequestObservable(readings)
-                .flatMapIterable { it }
-                .map { it }
-                .subscribe(
-                    {
-                        Timber.d(it.body().toString())
-                    }, {
+                    .flatMapIterable { it }
+                    .map { it }
+                    .subscribe(
+                            {
+                                Timber.d(it.body().toString())
+                            }, {
                         //No-Op
                     }
-                )
+                    )
 
             val reading = readings.first()
             val time = System.currentTimeMillis()
             syncRepository.save(
-                Sync(
-                    "rest" + restPublish.id,
-                    reading.device.macAddress,
-                    reading.advertisementId,
-                    time
-                )
+                    Sync(
+                            "rest" + restPublish.id,
+                            reading.device.macAddress,
+                            reading.advertisementId,
+                            time
+                    )
             )
             lastSyncs[Pair(reading.device.macAddress, reading.advertisementId)] = time
         }
@@ -121,29 +118,34 @@ class RestPublisher(
     @SuppressLint("CheckResult")
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
         val reading = Reading(
-            System.currentTimeMillis(),
-            Device("TestDevice", "Name", "MA:CA:DD:RE:SS:11"),
-            1,
-            "Temperature",
-            "AdvertisementId"
+                System.currentTimeMillis(),
+                Device("TestDevice", "Name", "MA:CA:DD:RE:SS:11"),
+                1,
+                "Temperature",
+                "AdvertisementId"
         )
 
         getRequestObservable(listOf(reading))
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .flatMapIterable {
-                it
-            }
-            .map {
-                it
-            }
-            .subscribe {
-                if (it.isSuccessful) {
-                    testConnectionCallback.onConnectionSuccess()
-                } else {
-                    testConnectionCallback.onConnectionFail()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMapIterable {
+                    it
                 }
-            }
+                .map {
+                    it
+                }
+                .subscribe(
+                        {
+                            if (it.isSuccessful) {
+                                testConnectionCallback.onConnectionSuccess()
+                            } else {
+                                testConnectionCallback.onConnectionFail()
+                            }
+                        },
+                        {
+                            testConnectionCallback.onConnectionFail()
+                        }
+                )
     }
 
     private fun getRequestObservable(message: List<Reading>): Observable<List<Response>> {
@@ -157,15 +159,15 @@ class RestPublisher(
 
                     convert.forEach { it ->
                         val httpGetType =
-                            object : TypeToken<List<GeneralRestHttpGetParam>>() {}.type
+                                object : TypeToken<List<GeneralRestHttpGetParam>>() {}.type
                         val list = Gson().fromJson<List<GeneralRestHttpGetParam>>(it, httpGetType)
 
                         val httpBuilder = HttpUrl.parse(restPublish.url)!!.newBuilder()
 
                         list.forEach {
                             httpBuilder.addQueryParameter(
-                                it.key,
-                                it.value
+                                    it.key,
+                                    it.value
                             )
                         }
 
@@ -175,7 +177,7 @@ class RestPublisher(
                         val request = builder.url(httpBuilder.build()).build()
 
                         responseList.add(
-                            httpClient.newCall(request).execute()
+                                httpClient.newCall(request).execute()
                         )
                     }
 
@@ -185,20 +187,20 @@ class RestPublisher(
 
                     convert.forEach {
                         val body = RequestBody.create(
-                            getMediaType(),
-                            it.toByteArray()
+                                getMediaType(),
+                                it.toByteArray()
                         )
 
                         val builder = Request.Builder()
                         addHeaders(builder, message[0])
 
                         val request = builder
-                            .url(restPublish.url)
-                            .post(body)
-                            .build()
+                                .url(restPublish.url)
+                                .post(body)
+                                .build()
 
                         responseList.add(
-                            httpClient.newCall(request).execute()
+                                httpClient.newCall(request).execute()
                         )
                     }
 
@@ -208,20 +210,20 @@ class RestPublisher(
 
                     convert.forEach {
                         val body = RequestBody.create(
-                            getMediaType(),
-                            it
+                                getMediaType(),
+                                it
                         )
 
                         val builder = Request.Builder()
                         addHeaders(builder, message[0])
 
                         val request = builder
-                            .url(restPublish.url)
-                            .put(body)
-                            .build()
+                                .url(restPublish.url)
+                                .put(body)
+                                .build()
 
                         responseList.add(
-                            httpClient.newCall(request).execute()
+                                httpClient.newCall(request).execute()
                         )
                     }
 
@@ -245,13 +247,13 @@ class RestPublisher(
     }
 
     private fun addHeaders(
-        builder: Request.Builder,
-        message: Reading
+            builder: Request.Builder,
+            message: Reading
     ) {
         listHeaders.forEach {
             builder.addHeader(
-                readingToStringParser.convertDeviceAndTS(message, it.key),
-                readingToStringParser.convertDeviceAndTS(message, it.value)
+                    readingToStringParser.convertDeviceAndTS(message, it.key),
+                    readingToStringParser.convertDeviceAndTS(message, it.value)
             )
         }
     }
@@ -263,7 +265,7 @@ class RestPublisher(
     private fun isPublishable(readings: List<Reading>): Boolean {
         val reading = readings.firstOrNull()
         val latestTimestamp =
-            lastSyncs[Pair(reading?.device?.macAddress, reading?.advertisementId)] ?: 0
+                lastSyncs[Pair(reading?.device?.macAddress, reading?.advertisementId)] ?: 0
 
         return System.currentTimeMillis() - latestTimestamp > this.restPublish.timeMillis
                 && reading != null && listDevices.contains(reading.device)
