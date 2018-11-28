@@ -19,7 +19,7 @@
     function onSensorReading(name, value) {
       if (name == "Temperature") {
         var temperature_value = document.getElementById("temperature_value");
-        temperature_value.innerHTML = parseFloat(value).toFixed(2)+"Â°C"
+        temperature_value.innerHTML = parseFloat(value).toFixed(2)+"°C"
       } else if (name == "Light") {
         var light_value = document.getElementById("light_value")
         light_value.innerHTML = parseFloat(value).toFixed(2)+"%"
@@ -40,13 +40,13 @@
         accelerometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
       } else if (name == "Magnetometer X") {
         var magnetometer_x_value = document.getElementById("magnetometer_x_value")
-        magnetometer_x_value.innerHTML = parseFloat(value).toFixed(2)+"ÂµT"
+        magnetometer_x_value.innerHTML = parseFloat(value).toFixed(2)+"µT"
       } else if (name == "Magnetometer Y") {
         var magnetometer_y_value = document.getElementById("magnetometer_y_value")
-        magnetometer_y_value.innerHTML = parseFloat(value).toFixed(2)+"ÂµT"
+        magnetometer_y_value.innerHTML = parseFloat(value).toFixed(2)+"µT"
       } else if (name == "Magnetometer Z") {
         var magnetometer_z_value = document.getElementById("magnetometer_z_value")
-        magnetometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"ÂµT"
+        magnetometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"µT"
       } else if (name == "Gyroscope X") {
         var gyroscope_x_value = document.getElementById("gyroscope_x_value")
         gyroscope_x_value.innerHTML = parseFloat(value).toFixed(2)+ "dps"
