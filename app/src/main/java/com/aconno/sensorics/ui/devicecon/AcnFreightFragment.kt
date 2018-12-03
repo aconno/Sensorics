@@ -169,11 +169,21 @@ class AcnFreightFragment : BaseFragment() {
 
         btn_color_picker.setOnClickListener {
             createColorPickerDialog()
+
         }
         btn_buzzer.setOnClickListener {
             it.isSelected = !it.isSelected
             toggleBuzzerCharacteristic(it.isSelected)
         }
+
+        btn_disconnect.setOnClickListener {
+            if (lbl_status.text.equals("Status : " + getString(R.string.discovered)) || lbl_status.text == "Status : " + getString(
+                    R.string.discovered
+                )
+            )
+                writeColorCharacteristic(0)
+        }
+
 
         Timber.d("Bind Service")
         context!!.bindService(
@@ -227,6 +237,7 @@ class AcnFreightFragment : BaseFragment() {
                     item.isChecked = false
 
                     //stop
+
                     serviceConnect?.disconnect()
                     item.title = getString(R.string.connect)
                     true
@@ -239,47 +250,117 @@ class AcnFreightFragment : BaseFragment() {
                     item.title = getString(R.string.disconnect)
                     true
                 }
+
+            
+            R.id.close -> {
+                if (lbl_status.text.equals("Status : " + getString(R.string.discovered)) || lbl_status.text == "Status : " + getString(
+                        R.string.discovered
+                    )
+                )
+                    writeColorCharacteristic(0)
+                true
+            }
+
             else -> {
                 false
             }
+
         }
+
+
     }
 
     private fun writeColorCharacteristic(color: Int) {
         val hex = Integer.toHexString(color)
+        Timber.i("hex value $color hex $hex")
+        var red: Byte
+        var green: Byte
+        var blue: Byte
+        if (hex.length >= 8) {
 
-        val red = "0x${hex.subSequence(2, 4)}".toHexByte()
-        val green = "0x${hex.subSequence(4, 6)}".toHexByte()
-        val blue = "0x${hex.subSequence(6, 8)}".toHexByte()
-
-        var deviceWrite = mDevice.connectionWriteList!![1]
-
-
-        addWriteCommand(
-            UUID.fromString(deviceWrite.serviceUUID),
-            UUID.fromString(deviceWrite.characteristicUUID),
-            deviceWrite.values[1].type,
-            byteArrayOf(red)
-        )
-
-        deviceWrite = mDevice.connectionWriteList!![2]
+            red = "0x${hex.subSequence(2, 4)}".toHexByte()
+            green = "0x${hex.subSequence(4, 6)}".toHexByte()
+            blue = "0x${hex.subSequence(6, 8)}".toHexByte()
+        } else {
+            red = "0x00".toHexByte()
+            green = "0x00".toHexByte()
+            blue = "0x00".toHexByte()
+        }
 
 
-        addWriteCommand(
-            UUID.fromString(deviceWrite.serviceUUID),
-            UUID.fromString(deviceWrite.characteristicUUID),
-            deviceWrite.values[1].type,
-            byteArrayOf(green)
-        )
+        var deviceWrite = mDevice.connectionWriteList?.get(1)
+        deviceWrite?.let {
 
-        deviceWrite = mDevice.connectionWriteList!![3]
+            if (it.serviceUUID != null && it.characteristicUUID != null && it.values[1].type != null) {
+                Timber.i("Service UUId is ${it.serviceUUID}")
 
-        addWriteCommand(
-            UUID.fromString(deviceWrite.serviceUUID),
-            UUID.fromString(deviceWrite.characteristicUUID),
-            deviceWrite.values[1].type,
-            byteArrayOf(blue)
-        )
+                val serviceUUID: UUID = UUID.fromString(it.serviceUUID)
+                val charUUID: UUID = UUID.fromString(it.characteristicUUID)
+
+                val type: String = it.values[1].type
+                val value: ByteArray = byteArrayOf(red)
+
+                if (serviceUUID != null && charUUID != null && type != null && value != null) {
+                    addWriteCommand(
+                        serviceUUID,
+                        charUUID,
+                        type,
+                        value
+                    )
+                }
+
+            }
+
+        }
+
+
+        deviceWrite = mDevice.connectionWriteList?.get(2)
+        deviceWrite?.let {
+            if (it.serviceUUID != null && it.characteristicUUID != null && it.values[1].type != null) {
+
+                val serviceUUID: UUID = UUID.fromString(it.serviceUUID)
+                val charUUID: UUID = UUID.fromString(it.characteristicUUID)
+
+                val type: String = it.values[1].type
+                val value: ByteArray = byteArrayOf(green)
+
+                if (serviceUUID != null && charUUID != null && type != null && value != null) {
+                    addWriteCommand(
+                        serviceUUID,
+                        charUUID,
+                        type,
+                        value
+                    )
+                }
+
+            }
+
+        }
+
+
+
+        deviceWrite = mDevice.connectionWriteList?.get(3)
+        deviceWrite?.let {
+            if (it.serviceUUID != null && it.characteristicUUID != null && it.values[1].type != null) {
+                val serviceUUID: UUID = UUID.fromString(it.serviceUUID)
+                val charUUID: UUID = UUID.fromString(it.characteristicUUID)
+
+                val type: String = it.values[1].type
+                val value: ByteArray = byteArrayOf(blue)
+
+                if (serviceUUID != null && charUUID != null && type != null && value != null) {
+                    addWriteCommand(
+                        serviceUUID,
+                        charUUID,
+                        type,
+                        value
+                    )
+                }
+            }
+
+        }
+
+
     }
 
     private fun getParams() {
@@ -291,9 +372,15 @@ class AcnFreightFragment : BaseFragment() {
         mDevice = connectionCharacteristicsFinder.addCharacteristicsToDevice(device)
     }
 
+    override fun onStop() {
+        super.onStop()
+        //writeColorCharacteristic(0)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         Timber.d("Destroy")
+
         connectResultDisposable?.dispose()
         context?.unbindService(serviceConnection)
         serviceConnect = null

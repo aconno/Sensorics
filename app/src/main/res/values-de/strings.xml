@@ -126,7 +126,7 @@
     <string name="device_not_found">GERÄT NICHT GEFUNDEN</string>
     <string name="connecting">VERBINDEN</string>
     <string name="connected">VERBUNDEN</string>
-    <string name="discovered">ENTDECKT</string>
+    <string name="discovered">VERBUNDEN</string>
     <string name="disconnected">GETRENNT</string>
     <string name="error">ERROR</string>
     <string name="status_txt">Status : %s</string>

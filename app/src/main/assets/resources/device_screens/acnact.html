@@ -1,9 +1,8 @@
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css"/>
     <link href="../html_resources/Rubik.css" rel="stylesheet">
     <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
-   
+
 
     <style type="text/css">
     body {
@@ -12,42 +11,51 @@
 
 
     </style>
-    <script src="../html_resources/materialize_min.js"></script>
+
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+
     <script>
+    var readingState = -2
+    var readingCounter = 0
+    var latestAdvId = -1234
+
+    function onSensorReading(json){
+
+        document.getElementById("count").innerHTML = json;
+
+    }
     function onSensorReading(name, value) {
-    if (name == "Accelerometer X") {
-        var accelerometer_x_value = document.getElementById("accelerometer_x_value")
-        accelerometer_x_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
-      } else if (name == "Accelerometer Y") {
-        var accelerometer_y_value = document.getElementById("accelerometer_y_value")
-        accelerometer_y_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
-      } else if (name == "Accelerometer Z") {
-        var accelerometer_z_value = document.getElementById("accelerometer_z_value")
-        accelerometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
-      }
+
+        if(name == "ButtonCounter"){
+            if(latestAdvId != value){
+                latestAdvId = value;
+                document.getElementById("count").innerHTML = ++readingCounter;
+                document.getElementById("btn").style.backgroundColor = "rgb(211,211,211)";
+            }
+            else{
+                 document.getElementById("btn").style.backgroundColor = "rgb(253,155,39)";
+            }
+        }
+
     }
 
 
     </script>
-     <link rel="stylesheet" href="../html_resources/newStyles.css">
 </head>
 
 <body style="background-color:#fafafa">
 
 <div class="acnact">
-        <p>
-            <span class="value">Count: </span>
-            <span id="count" class="value">No data</span>
-        <p>
-    </div>
-       
+    <p>
+        <span class="acnact-value">Count: </span>
+        <span id="count" class="acnact-value">No data</span>
+    <p>
 </div>
-   
-</div>
+
 <div class="acnact">
-        <div class="acnact-btn">
-    
-        </div>
+    <input type="button" id="btn" class="acnact-btn" value="">
+
 </div>
+
 </body>
 </html>

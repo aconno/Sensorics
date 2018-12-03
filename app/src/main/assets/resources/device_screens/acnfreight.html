@@ -11,11 +11,12 @@
     }
 
 
-
     </style>
     <script src="../html_resources/materialize_min.js"></script>
     <script>
     function onSensorReading(name, value) {
+    console.log(name +" value: "+value)
+
     if (name == "Accelerometer X") {
         var accelerometer_x_value = document.getElementById("accelerometer_x_value")
         accelerometer_x_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
@@ -27,7 +28,6 @@
         accelerometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
       }
     }
-
 
 
     </script>

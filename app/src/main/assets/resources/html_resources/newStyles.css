@@ -1,13 +1,11 @@
 .value{
-
-	font-size: 5vw;
+	font-size: 4vw;
 	font-weight: bold;
 
 }
 
 .label{
-	font-size: 5vw;
-	margin:0
+	font-size: 3vw;
 }
 
 .aligntext{
@@ -21,7 +19,7 @@
 .imageSize{
     padding-top:15px;
 	width: 40%;
-
+	
 }
 
 .center {
@@ -38,4 +36,32 @@
 	margin:auto;
    	align-content:center;
    	text-align:center;
+}
+
+.acnact-btn{
+	height: 24vw;
+    width: 24vw;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 25%;
+    align-content: center;
+    border-radius: 12vw;
+    background-color: rgb(253,155,39);
+    transition: box-shadow .25s, -webkit-box-shadow .25s;
+    bottom: 0;
+    outline:0;
+}
+
+.acnact{
+	margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-top: 40%;
+
+}
+
+
+acnact-value{
+	font-size: 16vw;
+	font-weight: bold;
 }

@@ -76,7 +76,6 @@ dependencies {
 
     implementation "io.reactivex.rxjava2:rxandroid:$rx_android_version"
     implementation "io.reactivex.rxjava2:rxkotlin:$rx_kotlin_version"
-
     implementation "com.github.PhilJay:MPAndroidChart:v3.0.3"
 
     implementation "android.arch.lifecycle:extensions:$android_arch_version"

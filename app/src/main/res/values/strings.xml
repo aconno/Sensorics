@@ -182,7 +182,7 @@
     <string name="device_not_found">DEVICE NOT FOUND</string>
     <string name="connecting">CONNECTING</string>
     <string name="connected">CONNECTED</string>
-    <string name="discovered">DISCOVERED</string>
+    <string name="discovered">CONNECTED</string>
     <string name="disconnected">DISCONNECTED</string>
     <string name="error">ERROR</string>
     <string name="status_txt">Status : %s</string>

@@ -9,6 +9,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
+import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
@@ -20,6 +21,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_device_main.*
+import org.json.JSONArray
+import org.json.JSONObject
 import javax.inject.Inject
 
 
@@ -28,6 +31,10 @@ class DeviceMainFragment : DaggerFragment() {
 
     @Inject
     lateinit var sensorReadingFlow: Flowable<List<Reading>> //TODO: Move this to the view model
+
+    @Inject
+    lateinit var filterByMacUseCase: FilterByMacUseCase
+
     private var sensorReadingFlowDisposable: Disposable? = null
 
     @Inject
@@ -127,12 +134,25 @@ class DeviceMainFragment : DaggerFragment() {
 
     private fun subscribeOnSensorReadings() {
         sensorReadingFlowDisposable = sensorReadingFlow
+            .concatMap { filterByMacUseCase.execute(it, macAddress).toFlowable() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
                 readings.forEach {
                     web_view.loadUrl("javascript:onSensorReading('${it.name}', '${it.value}')")
                 }
             }
+    }
+
+    private fun generateJsonArray(readings: List<Reading>?): String {
+        val array = JSONArray()
+
+        readings?.forEach {
+            val jsonObject = JSONObject()
+            jsonObject.put(it.name, it.value)
+            array.put(jsonObject)
+        }
+
+        return array.toString()
     }
 
     override fun onDestroyView() {

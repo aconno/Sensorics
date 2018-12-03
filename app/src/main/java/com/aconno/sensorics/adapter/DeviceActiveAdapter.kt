@@ -113,8 +113,8 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
 
             view.setOnClickListener { onItemClickEvents.onNext(device) }
 
-            view.btn_connect.visibility = if (device.device.connectable) View.VISIBLE else View.GONE
-            view.btn_connect.setOnClickListener { onConnectClickEvents.onNext(device) }
+            //view.btn_connect.visibility = if (device.device.connectable) View.VISIBLE else View.GONE
+            //view.btn_connect.setOnClickListener { onConnectClickEvents.onNext(device) }
 
             view.setOnLongClickListener {
                 onItemLongClickEvents.onNext(device)
@@ -125,12 +125,12 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
                 view.image_icon.alpha = 1f
                 view.name.alpha = 1f
                 view.mac_address.alpha = 1f
-                view.btn_connect.isEnabled = true
+                //view.btn_connect.isEnabled = true
             } else {
                 view.image_icon.alpha = 0.5f
                 view.name.alpha = 0.5f
                 view.mac_address.alpha = 0.5f
-                view.btn_connect.isEnabled = false
+                //view.btn_connect.isEnabled = false
             }
 
             viewBackground = view.view_background
