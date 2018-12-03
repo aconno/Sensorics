@@ -1,0 +1,53 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+   
+
+    <style type="text/css">
+    body {
+      font-family: 'Rubik', sans-serif;
+    }
+
+
+    </style>
+    <script src="../html_resources/materialize_min.js"></script>
+    <script>
+    function onSensorReading(name, value) {
+    if (name == "Accelerometer X") {
+        var accelerometer_x_value = document.getElementById("accelerometer_x_value")
+        accelerometer_x_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
+      } else if (name == "Accelerometer Y") {
+        var accelerometer_y_value = document.getElementById("accelerometer_y_value")
+        accelerometer_y_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
+      } else if (name == "Accelerometer Z") {
+        var accelerometer_z_value = document.getElementById("accelerometer_z_value")
+        accelerometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
+      }
+    }
+
+
+    </script>
+     <link rel="stylesheet" href="../html_resources/newStyles.css">
+</head>
+
+<body style="background-color:#fafafa">
+
+<div class="acnact">
+        <p>
+            <span class="value">Count: </span>
+            <span id="count" class="value">No data</span>
+        <p>
+    </div>
+       
+</div>
+   
+</div>
+<div class="acnact">
+        <div class="acnact-btn">
+    
+        </div>
+</div>
+</body>
+</html>

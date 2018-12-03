@@ -113,6 +113,9 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+
+    implementation 'com.github.QuadFlask:colorpicker:0.0.13'
+
 }
 
 repositories {

@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
 import android.view.*
@@ -16,6 +17,8 @@ import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.toHexByte
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.base.BaseFragment
+import com.flask.colorpicker.ColorPickerView
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import com.google.gson.Gson
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -37,18 +40,27 @@ class AcnFreightFragment : BaseFragment() {
 
     private var isServicesDiscovered = false
 
+    private val writeCommandQueue: Queue<WriteCommand> = ArrayDeque<WriteCommand>()
+    private var latestColor = Color.RED
+
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
+            Timber.d("Disconnected")
             connectResultDisposable?.dispose()
             serviceConnect = null
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             serviceConnect = (service as BluetoothConnectService.LocalBinder).getService()
+            Timber.d("Connected")
 
             connectResultDisposable = serviceConnect!!.getConnectResults()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
+                    if (!isAdded) {
+                        return@subscribe
+                    }
+
                     Timber.d(it.action)
                     val text: String
 
@@ -80,6 +92,11 @@ class AcnFreightFragment : BaseFragment() {
                             isServicesDiscovered = false
                             text = getString(R.string.error)
                         }
+                        it.action == BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
+                            writeCommandQueue.poll()
+                            writeCharacteristics(writeCommandQueue.peek())
+                            text = getString(R.string.connected)
+                        }
                         else -> {
                             return@subscribe
                         }
@@ -93,25 +110,38 @@ class AcnFreightFragment : BaseFragment() {
         }
     }
 
+    private fun disableToggleViews() {
+        btn_buzzer.isEnabled = false
+        btn_color_picker.isEnabled = false
+    }
+
+    private fun enableToggleViews() {
+        btn_buzzer.isEnabled = true
+        btn_color_picker.isEnabled = true
+    }
+
+    private fun writeCharacteristics(cmd: WriteCommand?) {
+        cmd?.let {
+            serviceConnect!!.writeCharacteristic(
+                it.serviceUUID,
+                it.charUUID,
+                it.type,
+                it.value
+            )
+        }
+    }
+
+    private fun addWriteCommand(serviceUUID: UUID, charUUID: UUID, type: String, value: ByteArray) {
+        val writeCommand = WriteCommand(serviceUUID, charUUID, type, value)
+        writeCommandQueue.add(writeCommand)
+        writeCharacteristics(writeCommandQueue.peek())
+    }
+
     override fun onResume() {
         super.onResume()
         val mainActivity: MainActivity? = context as MainActivity
         mainActivity?.supportActionBar?.title = mDevice.getRealName()
         mainActivity?.supportActionBar?.subtitle = mDevice.macAddress
-    }
-
-    private fun enableToggleViews() {
-        btn_buzzer?.isEnabled = true
-        btn_redLight?.isEnabled = true
-        btn_greenLight?.isEnabled = true
-        btn_blueLight?.isEnabled = true
-    }
-
-    private fun disableToggleViews() {
-        btn_buzzer?.isEnabled = false
-        btn_redLight?.isEnabled = false
-        btn_greenLight?.isEnabled = false
-        btn_blueLight?.isEnabled = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -135,26 +165,53 @@ class AcnFreightFragment : BaseFragment() {
             context, BluetoothConnectService::class.java
         )
 
+        disableToggleViews()
+
+        btn_color_picker.setOnClickListener {
+            createColorPickerDialog()
+        }
+        btn_buzzer.setOnClickListener {
+            it.isSelected = !it.isSelected
+            toggleBuzzerCharacteristic(it.isSelected)
+        }
+
+        Timber.d("Bind Service")
         context!!.bindService(
             gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE
         )
+    }
 
-        btn_buzzer.setOnCheckedChangeListener { _, isChecked ->
-            toggleCharacteristic(0, isChecked)
-        }
+    private fun toggleBuzzerCharacteristic(turnOn: Boolean) {
+        val deviceWrite = mDevice.connectionWriteList!![0]
+        val turnOnIndex = if (turnOn) 0 else 1
 
-        btn_redLight.setOnCheckedChangeListener { _, isChecked ->
-            toggleCharacteristic(1, isChecked)
+        addWriteCommand(
+            UUID.fromString(deviceWrite.serviceUUID),
+            UUID.fromString(deviceWrite.characteristicUUID),
+            deviceWrite.values[turnOnIndex].type,
+            byteArrayOf(deviceWrite.values[turnOnIndex].value.toHexByte())
+        )
+    }
 
-        }
-
-        btn_greenLight.setOnCheckedChangeListener { _, isChecked ->
-            toggleCharacteristic(2, isChecked)
-        }
-
-        btn_blueLight.setOnCheckedChangeListener { _, isChecked ->
-            toggleCharacteristic(3, isChecked)
-        }
+    private fun createColorPickerDialog() {
+        ColorPickerDialogBuilder
+            .with(context)
+            .setTitle("Choose color")
+            .initialColor(latestColor)
+            .wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
+            .density(12)
+            .setPositiveButton(
+                "ok"
+            ) { _, selectedColor, _ ->
+                latestColor = selectedColor
+                btn_color_picker.setBackgroundColor(selectedColor)
+                writeColorCharacteristic(selectedColor)
+            }
+            .setNegativeButton(
+                "cancel"
+            ) { _, _ -> }
+            .build()
+            .show()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
@@ -188,15 +245,40 @@ class AcnFreightFragment : BaseFragment() {
         }
     }
 
-    private fun toggleCharacteristic(index: Int, turnOn: Boolean) {
-        val deviceWrite = mDevice.connectionWriteList!![index]
-        val turnOnIndex = if (turnOn) 0 else 1
+    private fun writeColorCharacteristic(color: Int) {
+        val hex = Integer.toHexString(color)
 
-        serviceConnect!!.writeCharacteristic(
+        val red = "0x${hex.subSequence(2, 4)}".toHexByte()
+        val green = "0x${hex.subSequence(4, 6)}".toHexByte()
+        val blue = "0x${hex.subSequence(6, 8)}".toHexByte()
+
+        var deviceWrite = mDevice.connectionWriteList!![1]
+
+
+        addWriteCommand(
             UUID.fromString(deviceWrite.serviceUUID),
             UUID.fromString(deviceWrite.characteristicUUID),
-            deviceWrite.values[turnOnIndex].type,
-            byteArrayOf(deviceWrite.values[turnOnIndex].value.toHexByte())
+            deviceWrite.values[1].type,
+            byteArrayOf(red)
+        )
+
+        deviceWrite = mDevice.connectionWriteList!![2]
+
+
+        addWriteCommand(
+            UUID.fromString(deviceWrite.serviceUUID),
+            UUID.fromString(deviceWrite.characteristicUUID),
+            deviceWrite.values[1].type,
+            byteArrayOf(green)
+        )
+
+        deviceWrite = mDevice.connectionWriteList!![3]
+
+        addWriteCommand(
+            UUID.fromString(deviceWrite.serviceUUID),
+            UUID.fromString(deviceWrite.characteristicUUID),
+            deviceWrite.values[1].type,
+            byteArrayOf(blue)
         )
     }
 
@@ -211,6 +293,8 @@ class AcnFreightFragment : BaseFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Timber.d("Destroy")
+        connectResultDisposable?.dispose()
         context?.unbindService(serviceConnection)
         serviceConnect = null
     }

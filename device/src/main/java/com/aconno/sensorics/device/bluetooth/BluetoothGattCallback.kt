@@ -18,8 +18,20 @@ class BluetoothGattCallback(
         const val ACTION_GATT_DEVICE_NOT_FOUND = "com.aconno.sensorics.ACTION_GATT_DEVICE_NOT_FOUND"
         const val ACTION_GATT_CONNECTED = "com.aconno.sensorics.ACTION_GATT_CONNECTED"
         const val ACTION_GATT_DISCONNECTED = "com.aconno.sensorics.ACTION_GATT_DISCONNECTED"
-        const val ACTION_GATT_SERVICES_DISCOVERED = "com.aconno.sensorics.ACTION_GATT_SERVICES_DISCOVERED"
+        const val ACTION_GATT_SERVICES_DISCOVERED =
+            "com.aconno.sensorics.ACTION_GATT_SERVICES_DISCOVERED"
         const val ACTION_DATA_AVAILABLE = "com.aconno.sensorics.ACTION_DATA_AVAILABLE"
+        const val ACTION_GATT_CHAR_WRITE = "com.aconno.sensorics.ACTION_GATT_CHAR_WRITE"
+    }
+
+    override fun onCharacteristicWrite(
+        gatt: BluetoothGatt?,
+        characteristic: BluetoothGattCharacteristic?,
+        status: Int
+    ) {
+        if (status == BluetoothGatt.GATT_SUCCESS) {
+            broadcastUpdate(ACTION_GATT_CHAR_WRITE, gatt?.services)
+        }
     }
 
     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
