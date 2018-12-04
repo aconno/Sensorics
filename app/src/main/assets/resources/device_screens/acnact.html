@@ -15,15 +15,44 @@
     <link rel="stylesheet" href="../html_resources/newStyles.css">
 
     <script>
-    var readingState = -2
-    var readingCounter = 0
-    var latestAdvId = -1234
+    var readingState = -2;
+    var buttonCounter = 0;
+    var latestAdvId = -1234;
+    var BUTTON_PRESSED = 1;
+    var BUTTON_NOT_PRESSED = 0;
 
-    function onSensorReading(json){
+  function onSensorReadings(json_values){
+        var readingState = null;
+        var readingCounter = null;
 
-        document.getElementById("count").innerHTML = json;
+        JSON.parse(json_values, function (key, value) {
+            if( key == "ButtonState"){
+                 readingState = parseInt(value);
+            }
+            if( key == "ButtonCounter") {
+                readingCounter = parseInt(value);
+            }
 
-    }
+        });
+
+        if( readingState != null && readingCounter != null){
+            if(latestAdvId != readingCounter && readingState == BUTTON_PRESSED){
+                latestAdvId = readingCounter
+                document.getElementById("count").innerHTML = ++buttonCounter;
+                document.getElementById("btn").style.backgroundColor = "rgb(211,211,211)";
+            }
+
+            else if( latestAdvId == readingCounter && readingState == BUTTON_NOT_PRESSED){
+                document.getElementById("btn").style.backgroundColor = "rgb(253,155,39)";
+
+            }
+
+            else{
+            }
+        }
+
+  }
+
     function onSensorReading(name, value) {
 
         if(name == "ButtonCounter"){

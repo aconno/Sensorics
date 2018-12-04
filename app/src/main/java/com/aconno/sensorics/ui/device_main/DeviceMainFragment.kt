@@ -22,7 +22,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_device_main.*
-import org.json.JSONArray
 import org.json.JSONObject
 import timber.log.Timber
 import javax.inject.Inject
@@ -144,23 +143,28 @@ class DeviceMainFragment : DaggerFragment() {
             .concatMap { filterByMacUseCase.execute(it, macAddress).toFlowable() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
-                Timber.i("Values in Json ${generateJsonArray(readings)}")
-                readings.forEach {
+                var json_values = generateJsonArray(readings)
+                //values = "acnsensa"
+                Timber.i("Values in Json $json_values")
+
+                web_view.loadUrl("javascript:onSensorReadings('$json_values')")
+                /*readings.forEach {
                     web_view.loadUrl("javascript:onSensorReading('${it.name}', '${it.value}')")
-                }
+                }*/
             }
     }
 
     private fun generateJsonArray(readings: List<Reading>?): String {
-        val array = JSONArray()
 
+        val jsonObject = JSONObject()
         readings?.forEach {
-            val jsonObject = JSONObject()
+
             jsonObject.put(it.name, it.value)
-            array.put(jsonObject)
+
         }
 
-        return array.toString()
+
+        return jsonObject.toString()
     }
 
     override fun onDestroyView() {
