@@ -42,6 +42,7 @@ class AcnFreightFragment : BaseFragment() {
 
     private val writeCommandQueue: Queue<WriteCommand> = ArrayDeque<WriteCommand>()
     private var latestColor = Color.RED
+    var menu: Menu? = null
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -66,21 +67,41 @@ class AcnFreightFragment : BaseFragment() {
 
                     when {
                         it.action == BluetoothGattCallback.ACTION_GATT_DEVICE_NOT_FOUND -> {
+                            if (menu != null) {
+                                var item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
+                                item.title = getString(R.string.disconnect)
+                            }
                             text = getString(R.string.device_not_found)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
+                            if (menu != null) {
+                                var item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
+                                item.title = getString(R.string.disconnect)
+                            }
                             text = getString(R.string.connecting)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
+                            if (menu != null) {
+                                var item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
+                                item.title = getString(R.string.disconnect)
+                            }
                             text = getString(R.string.connected)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_SERVICES_DISCOVERED -> {
+                            if (menu != null) {
+                                var item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
+                                item.title = getString(R.string.disconnect)
+                            }
                             isServicesDiscovered = true
                             progressbar?.visibility = View.INVISIBLE
                             enableToggleViews()
                             text = getString(R.string.discovered)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
+                            if (menu != null) {
+                                var item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
+                                item.title = getString(R.string.connect)
+                            }
                             isServicesDiscovered = false
                             progressbar?.visibility = View.INVISIBLE
                             disableToggleViews()
@@ -227,7 +248,9 @@ class AcnFreightFragment : BaseFragment() {
     override fun onPrepareOptionsMenu(menu: Menu?) {
         super.onPrepareOptionsMenu(menu)
         menu?.clear()
+
         activity?.menuInflater?.inflate(R.menu.menu_fragment_connect, menu)
+        this.menu = menu
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -251,15 +274,6 @@ class AcnFreightFragment : BaseFragment() {
                     true
                 }
 
-            
-            R.id.close -> {
-                if (lbl_status.text.equals("Status : " + getString(R.string.discovered)) || lbl_status.text == "Status : " + getString(
-                        R.string.discovered
-                    )
-                )
-                    writeColorCharacteristic(0)
-                true
-            }
 
             else -> {
                 false

@@ -1,5 +1,6 @@
 package com.aconno.sensorics.ui.acnact
 
+import android.app.AlertDialog
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.os.Bundle
@@ -23,6 +24,7 @@ class AcnActFragment : DaggerFragment() {
 
     private var buttonCounter = 0
     private var latestAdvId = -1234
+    var menu: Menu? = null
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -73,6 +75,13 @@ class AcnActFragment : DaggerFragment() {
 
     override fun onResume() {
         super.onResume()
+        val mainActivity = activity as MainActivity
+
+        if (!mainActivity.isScanning()) {
+            showAlertDialog(mainActivity)
+
+        }
+
         readingListViewModel.getReadingsLiveData()
             .observe(this, Observer {
                 if (it != null) {
@@ -134,4 +143,36 @@ class AcnActFragment : DaggerFragment() {
             return fragment
         }
     }
+
+    private fun showAlertDialog(mainActivity: MainActivity) {
+
+        val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(
+            mainActivity
+        )
+
+        // set title
+        alertDialogBuilder.setTitle(resources.getString(R.string.start_scan_popup))
+
+        // set dialog message
+        alertDialogBuilder
+            .setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
+
+                mainActivity.startScanOperation()
+                dialog.cancel()
+
+            }
+            .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
+
+                dialog.cancel()
+            }
+
+
+        // create alert dialog
+        val alertDialog = alertDialogBuilder.create()
+
+        // show it
+        alertDialog.show()
+    }
+
+
 }

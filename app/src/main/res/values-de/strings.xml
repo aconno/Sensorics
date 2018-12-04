@@ -141,4 +141,7 @@
     <string name="dashboard">Instrumententafel</string>
     <string name="keep_screen_on">Bildschirm anbehalten</string>
     <string name="loading_message">Wird geladen..</string>
+
+    <string name="start_scan_popup">"Scan des ausgewählten Gerätes starten ?"</string>
+
 </resources>

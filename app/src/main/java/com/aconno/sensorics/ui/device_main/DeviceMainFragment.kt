@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui.device_main
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
 import android.webkit.JavascriptInterface
@@ -23,6 +24,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_device_main.*
 import org.json.JSONArray
 import org.json.JSONObject
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -73,9 +75,14 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onResume() {
         super.onResume()
-        val mainActivity: MainActivity? = context as MainActivity
+        val mainActivity: MainActivity = context as MainActivity
+
         mainActivity?.supportActionBar?.title = deviceAlias
         mainActivity?.supportActionBar?.subtitle = macAddress
+        if (!mainActivity.isScanning()) {
+            showAlertDialog(mainActivity)
+
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
@@ -137,6 +144,7 @@ class DeviceMainFragment : DaggerFragment() {
             .concatMap { filterByMacUseCase.execute(it, macAddress).toFlowable() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
+                Timber.i("Values in Json ${generateJsonArray(readings)}")
                 readings.forEach {
                     web_view.loadUrl("javascript:onSensorReading('${it.name}', '${it.value}')")
                 }
@@ -205,4 +213,35 @@ class DeviceMainFragment : DaggerFragment() {
             return deviceMainFragment
         }
     }
+
+    private fun showAlertDialog(mainActivity: MainActivity) {
+
+        val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(
+            mainActivity
+        )
+
+        // set title
+        alertDialogBuilder.setTitle(resources.getString(R.string.start_scan_popup))
+
+        // set dialog message
+        alertDialogBuilder
+            .setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
+
+                mainActivity.startScanOperation()
+                dialog.cancel()
+
+            }
+            .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
+
+                dialog.cancel()
+            }
+
+
+        // create alert dialog
+        val alertDialog = alertDialogBuilder.create()
+
+        // show it
+        alertDialog.show()
+    }
+
 }

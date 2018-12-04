@@ -9,9 +9,4 @@
         app:showAsAction="ifRoom" />
 
 
-    <item
-        android:id="@+id/close"
-
-        android:title="close"
-        app:showAsAction="ifRoom" />
 </menu>

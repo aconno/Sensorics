@@ -339,7 +339,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    private fun startScanning(filterByDevice: Boolean = true) {
+    fun startScanning(filterByDevice: Boolean = true) {
         this.filterByDevice = filterByDevice
         permissionViewModel.requestAccessFineLocation()
     }
@@ -412,4 +412,21 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             .addToBackStack(null)
             .commit()
     }
+
+    //called from the fragments AcnAct, AcnRange
+    fun isScanning(): Boolean {
+        return BluetoothScanningService.isRunning()
+    }
+
+    fun startScanOperation() {
+
+        mainMenu.let {
+            val menuItem: MenuItem = it!!.findItem(R.id.action_toggle_scan)
+            toggleScanFromMenuItem(menuItem)
+        }
+
+
+    }
+
+
 }
