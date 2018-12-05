@@ -61,7 +61,40 @@
 }
 
 
-acnact-value{
+.acnact-value{
 	font-size: 16vw;
 	font-weight: bold;
 }
+
+
+.acnfreight-margin{
+    margin: 50px;
+}
+
+
+.acnfreight-btn{
+    margin: 50px;
+    padding: 10px;
+    background-color: rgb(253,155,39);
+}
+
+
+
+#primary_color{
+    border-radius: 100%;
+    height: 80px;
+    width: 80px;
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+#primary_color::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+#primary_color::-webkit-color-swatch {
+    border: none;
+    border-radius: 100%;
+}
+
+

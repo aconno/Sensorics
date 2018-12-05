@@ -28,7 +28,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class AcnFreightFragment : BaseFragment() {
+class AcnFreightFragmentNew : BaseFragment() {
 
     @Inject
     lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
@@ -131,6 +131,8 @@ class AcnFreightFragment : BaseFragment() {
         }
     }
 
+
+    // should be done in html
     private fun disableToggleViews() {
         btn_buzzer.isEnabled = false
         btn_color_picker.isEnabled = false
@@ -140,6 +142,7 @@ class AcnFreightFragment : BaseFragment() {
         btn_buzzer.isEnabled = true
         btn_color_picker.isEnabled = true
     }
+
 
     private fun writeCharacteristics(cmd: WriteCommand?) {
         cmd?.let {
@@ -363,10 +366,6 @@ class AcnFreightFragment : BaseFragment() {
         mDevice = connectionCharacteristicsFinder.addCharacteristicsToDevice(device)
     }
 
-    override fun onStop() {
-        super.onStop()
-        //writeColorCharacteristic(0)
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -380,12 +379,12 @@ class AcnFreightFragment : BaseFragment() {
     companion object {
         private const val KEY_DEVICE = "KEY_DEVICE"
 
-        fun newInstance(device: Device): AcnFreightFragment {
+        fun newInstance(device: Device): AcnFreightFragmentNew {
 
             val bundle = Bundle()
             bundle.putString(KEY_DEVICE, Gson().toJson(device))
 
-            val fragment = AcnFreightFragment()
+            val fragment = AcnFreightFragmentNew()
             fragment.arguments = bundle
 
             return fragment

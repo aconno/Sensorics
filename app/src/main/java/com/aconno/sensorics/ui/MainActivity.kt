@@ -21,7 +21,7 @@ import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
-import com.aconno.sensorics.ui.device_main.DeviceMainFragment
+import com.aconno.sensorics.ui.device_main.DeviceMainFragmentNew
 import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
@@ -221,18 +221,19 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         onScanStop()
     }
 
+    //call the html page
     fun showSensorValues(device: Device) {
-        if (device.name == "AcnFreight") {
-            connect(device)
-        } else {
-            supportFragmentManager.beginTransaction()
-                .replace(
-                    content_container.id,
-                    getReadingListFragment(device)
-                )
-                .addToBackStack(null)
-                .commit()
-        }
+        /*  if (device.name == "AcnFreight") {
+              connect(device)
+          } else {*/
+        supportFragmentManager.beginTransaction()
+            .replace(
+                content_container.id,
+                getReadingListFragment(device)
+            )
+            .addToBackStack(null)
+            .commit()
+        //}
 
     }
 
@@ -270,10 +271,12 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             )
 
         }*/
-        return DeviceMainFragment.newInstance(
+
+        return DeviceMainFragmentNew.newInstance(
             device.macAddress,
             device.getRealName(),
-            device.name
+            device.name,
+            device
         )
     }
 

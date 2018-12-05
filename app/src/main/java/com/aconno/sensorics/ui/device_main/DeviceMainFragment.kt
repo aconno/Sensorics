@@ -196,6 +196,7 @@ class DeviceMainFragment : DaggerFragment() {
         }
     }
 
+
     companion object {
 
         private const val DEVICE_NAME_EXTRA = "device_name"

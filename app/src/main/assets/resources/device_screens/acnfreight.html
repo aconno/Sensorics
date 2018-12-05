@@ -4,7 +4,7 @@
     <link href="../html_resources/Rubik.css" rel="stylesheet">
     <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
 
-
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
     <style type="text/css">
     body {
       font-family: 'Rubik', sans-serif;
@@ -13,20 +13,46 @@
 
     </style>
     <script src="../html_resources/materialize_min.js"></script>
-    <script>
-    function onSensorReading(name, value) {
-    console.log(name +" value: "+value)
 
-    if (name == "Accelerometer X") {
-        var accelerometer_x_value = document.getElementById("accelerometer_x_value")
-        accelerometer_x_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
-      } else if (name == "Accelerometer Y") {
-        var accelerometer_y_value = document.getElementById("accelerometer_y_value")
-        accelerometer_y_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
-      } else if (name == "Accelerometer Z") {
-        var accelerometer_z_value = document.getElementById("accelerometer_z_value")
-        accelerometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
-      }
+
+    <script>
+    var isChecked=0;
+
+    function onStatusReading(text){
+        document.getElementById("status").innerHTML = text;
+        if(text.localeCompare("CONNECTED") ==0 || text.localeCompare("VERBUNDEN") ==0){
+            document.getElementById("speaker").setAttribute("disabled", false);
+
+            document.getElementById("close").disabled = false;
+
+        }
+        else{
+            document.getElementById("speaker").setAttribute("disabled", true);
+            document.getElementById("close").disabled = true;
+            document.getElementById("primary_color").setAttribute("disabled", true);
+
+
+        }
+    }
+    function connect() {
+        if(isChecked == 0){
+
+            app.buzzerPlay(true);
+            isChecked =1;
+            document.getElementById("speaker").src = "../icons/speaker_on.png";
+        }
+
+        else{
+             app.buzzerPlay(false);
+             isChecked = 0;
+              document.getElementById("speaker").src = "../icons/speaker_off.png";
+        }
+    }
+
+    function colorPicked(value) {
+        if(value=='0')
+            document.querySelector('input[type="color"]').value = '#000000';
+        app.changeColorOfFreight(value);
     }
 
 
@@ -34,51 +60,28 @@
     <link rel="stylesheet" href="../html_resources/newStyles.css">
 </head>
 
-<body style="background-color:#fafafa">
-<div class="row">
-    <div class="col s6 push-s6">
-        <div class="card" onclick="app.openLiveGraph('Accelerometer');">
-            <div class="container">
-                <div class="card-image">
-                    <img class="imageSize center" src="../icons/ic_acc.png"/>
-                </div>
-                <div class="card-content aligntext">
-                    <p class="label">Accelerometer Y</p>
-                    <p id="accelerometer_y_value" class="value">No data</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col s6 pull-s6">
-        <div class="card" onclick="app.openLiveGraph('Accelerometer');">
-            <div class="container">
-                <div class="card-image">
-                    <img class="imageSize center" src="../icons/ic_acc.png"/>
-                </div>
-                <div class="card-content aligntext">
-                    <p class="label">Accelerometer X</p>
-                    <p id="accelerometer_x_value" class="value">No data</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<body style="background-color:#fafafa; margin: 50px;" class="aligntext">
+
+<div>
+    <p class="label">
+        <span>Status: </span>
+        <span id="status">DISCONNECTED</span>
+    </p>
 </div>
-<div class="row">
-    <div class="col s6">
-        <div class="card" onclick="app.openLiveGraph('Accelerometer');">
-            <div class="container">
-                <div class="card-image">
-                    <img class="imageSize center" src="../icons/ic_acc.png"/>
-                </div>
-                <div class="card-content aligntext">
-                    <p class="label">Accelerometer Z</p>
-                    <p id="accelerometer_z_value" class="value">No data</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col s6 pull-s6">
-    </div>
+
+<div class="acnfreight-margin">
+    <img src="../icons/speaker_off.png" id="speaker" onclick="connect();"/>
 </div>
+
+<div class="acnfreight-margin">
+    <p><input type="color" id="primary_color" class="field-radio"
+              onchange="colorPicked(this.value);"></p>
+</div>
+
+<div>
+    <input type="submit" class="acnfreight-btn" id="close" value="Close LED"
+           onclick="colorPicked('0');">
+</div>
+
 </body>
 </html>
