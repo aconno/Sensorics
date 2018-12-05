@@ -272,6 +272,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
         }*/
 
+
         return DeviceMainFragmentNew.newInstance(
             device.macAddress,
             device.getRealName(),
