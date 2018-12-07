@@ -151,17 +151,16 @@ class DeviceMainFragmentNew : DaggerFragment() {
                         }
                     }
                     web_view.loadUrl("javascript:onStatusReading('$text')")
-                    //lbl_status?.text = getString(R.string.status_txt, text)
                 }
 
             serviceConnect?.connect(mDevice.macAddress)
-            //progressbar?.visibility = View.VISIBLE
+
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setHasOptionsMenu(true)
         getParams()
         retainInstance = true
@@ -188,10 +187,10 @@ class DeviceMainFragmentNew : DaggerFragment() {
     override fun onResume() {
         super.onResume()
         val mainActivity: MainActivity = context as MainActivity
-
         mainActivity?.supportActionBar?.title = deviceAlias
         mainActivity?.supportActionBar?.subtitle = macAddress
-        if (!mainActivity.isScanning()) {
+
+        if (!mainActivity.isScanning() && !mDevice.connectable) {
             showAlertDialog(mainActivity)
 
         }
@@ -199,13 +198,29 @@ class DeviceMainFragmentNew : DaggerFragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
         super.onPrepareOptionsMenu(menu)
+        if (mDevice.connectable)
+            menu?.clear()
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
         menu?.findItem(R.id.action_start_usecases_activity)?.isVisible = BuildConfig.FLAVOR == "dev"
+        menu?.findItem(R.id.action_toggle_connect)?.isVisible = mDevice.connectable
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         context?.let { context ->
             when (item.itemId) {
+                R.id.action_toggle_connect ->
+                    if (item.isChecked) {
+                        item.isChecked = false
+                        serviceConnect?.disconnect()
+                        item.title = getString(R.string.connect)
+                        true
+                    } else {
+                        item.isChecked = true
+                        serviceConnect?.connect(mDevice.macAddress)
+                        item.title = getString(R.string.disconnect)
+                        true
+                    }
+
                 R.id.action_start_actions_activity -> {
                     ActionListActivity.start(context)
                     return true
@@ -264,7 +279,6 @@ class DeviceMainFragmentNew : DaggerFragment() {
             gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE
         )
     }
-
 
     private fun subscribeOnSensorReadings() {
         sensorReadingFlowDisposable = sensorReadingFlow

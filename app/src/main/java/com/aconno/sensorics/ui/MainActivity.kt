@@ -22,7 +22,6 @@ import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
 import com.aconno.sensorics.ui.device_main.DeviceMainFragmentNew
-import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -241,37 +240,22 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         bluetoothScanningViewModel.stopScanning()
         mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
 
-        supportFragmentManager.beginTransaction()
-            .replace(
-                content_container.id,
-                getConnectableFragment(device)
-            )
-            .addToBackStack(null)
-            .commit()
     }
 
-    private fun getConnectableFragment(device: Device): Fragment {
-        return when (device.name) {
-            "AcnFreight" -> AcnFreightFragment.newInstance(
-                device
-            )
-            else -> {
-                throw IllegalArgumentException()
-            }
-        }
+    private fun disableBluetooth() {
+        bluetoothScanningViewModel.stopScanning()
+        mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
 
     }
+
 
     private fun getReadingListFragment(device: Device): Fragment {
-        /*if (device.name == "AcnAct") {
-            return AcnActFragment.newInstance(
-                device.macAddress,
-                device.getRealName(),
-                device.name
-            )
 
-        }*/
-
+        if (device.connectable) {
+            Timber.i("Its acn freight")
+            disableBluetooth()
+            mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
+        }
 
         return DeviceMainFragmentNew.newInstance(
             device.macAddress,
@@ -393,7 +377,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun showRationale(actionCode: Int) {
-        //TODO: Show rationale
+
     }
 
     fun onDashboardClicked() {
