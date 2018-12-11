@@ -21,7 +21,7 @@ import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
-import com.aconno.sensorics.ui.device_main.DeviceMainFragmentNew
+import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -257,7 +257,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
         }
 
-        return DeviceMainFragmentNew.newInstance(
+        return DeviceMainFragment.newInstance(
             device.macAddress,
             device.getRealName(),
             device.name,

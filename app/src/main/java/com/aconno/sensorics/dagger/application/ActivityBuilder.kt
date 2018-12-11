@@ -31,7 +31,6 @@ import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.SplashActivity
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
-import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
@@ -41,8 +40,6 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class ActivityBuilder {
-    @ContributesAndroidInjector
-    abstract fun bindAcnFreightFragment(): AcnFreightFragment
 
     @MainActivityScope
     @ContributesAndroidInjector(
