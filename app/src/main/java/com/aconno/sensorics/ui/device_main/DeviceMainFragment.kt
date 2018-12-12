@@ -88,13 +88,15 @@ class DeviceMainFragment : DaggerFragment() {
 
                     when {
                         it.action == BluetoothGattCallback.ACTION_GATT_DEVICE_NOT_FOUND -> {
+                            Timber.i("Device not found")
                             if (menu != null) {
                                 val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
+                                item.title = getString(R.string.connect)
                             }
                             text = getString(R.string.device_not_found)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
+                            Timber.i("Device connecting")
                             if (menu != null) {
                                 val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
                                 item.title = getString(R.string.disconnect)
@@ -102,6 +104,8 @@ class DeviceMainFragment : DaggerFragment() {
                             text = getString(R.string.connecting)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
+                            Timber.i("Device connected")
+
                             if (menu != null) {
                                 val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
                                 item.title = getString(R.string.disconnect)
@@ -109,6 +113,7 @@ class DeviceMainFragment : DaggerFragment() {
                             text = getString(R.string.connected)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_SERVICES_DISCOVERED -> {
+                            Timber.i("Device discovered")
                             if (menu != null) {
                                 val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
                                 item.title = getString(R.string.disconnect)
@@ -119,6 +124,7 @@ class DeviceMainFragment : DaggerFragment() {
                             text = getString(R.string.discovered)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
+                            Timber.i("Device disconnected")
                             if (menu != null) {
                                 val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
                                 item.title = getString(R.string.connect)
@@ -131,10 +137,20 @@ class DeviceMainFragment : DaggerFragment() {
                             serviceConnect?.close()
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_ERROR -> {
+                            Timber.i("Device Error")
+                            if (menu != null) {
+                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
+                                item.title = getString(R.string.connect)
+                            }
                             isServicesDiscovered = false
                             text = getString(R.string.error)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
+                            Timber.i("Device write")
+                            if (menu != null) {
+                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
+                                item.title = getString(R.string.disconnect)
+                            }
                             writeCommandQueue.poll()
                             writeCharacteristics(writeCommandQueue.peek())
                             text = getString(R.string.connected)
@@ -186,8 +202,11 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
         super.onPrepareOptionsMenu(menu)
-        if (mDevice.connectable)
+        if (mDevice.connectable) {
             menu?.clear()
+            this.menu = menu
+        }
+
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
         menu?.findItem(R.id.action_start_usecases_activity)?.isVisible = BuildConfig.FLAVOR == "dev"
         menu?.findItem(R.id.action_toggle_connect)?.isVisible = mDevice.connectable
