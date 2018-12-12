@@ -15,7 +15,10 @@ import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
-import com.aconno.sensorics.*
+import com.aconno.sensorics.BluetoothScanningService
+import com.aconno.sensorics.BuildConfig
+import com.aconno.sensorics.R
+import com.aconno.sensorics.SyncConfigurationService
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
@@ -222,9 +225,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     //call the html page
     fun showSensorValues(device: Device) {
-        /*  if (device.name == "AcnFreight") {
-              connect(device)
-          } else {*/
         supportFragmentManager.beginTransaction()
             .replace(
                 content_container.id,
@@ -232,35 +232,15 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             )
             .addToBackStack(null)
             .commit()
-        //}
-
     }
-
-    fun connect(device: Device) {
-        bluetoothScanningViewModel.stopScanning()
-        mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
-
-    }
-
-    private fun disableBluetooth() {
-        bluetoothScanningViewModel.stopScanning()
-        mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
-
-    }
-
 
     private fun getReadingListFragment(device: Device): Fragment {
-
         if (device.connectable) {
-            Timber.i("Its acn freight")
-            disableBluetooth()
+            stopScanning()
             mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
         }
 
         return DeviceMainFragment.newInstance(
-            device.macAddress,
-            device.getRealName(),
-            device.name,
             device
         )
     }
@@ -400,7 +380,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             .commit()
     }
 
-    //called from the fragments AcnAct, AcnRange
     fun isScanning(): Boolean {
         return BluetoothScanningService.isRunning()
     }
@@ -411,9 +390,5 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             val menuItem: MenuItem = it!!.findItem(R.id.action_toggle_scan)
             toggleScanFromMenuItem(menuItem)
         }
-
-
     }
-
-
 }
