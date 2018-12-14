@@ -23,7 +23,8 @@
             }
             if( key == "Light") {
                 var light_value = document.getElementById("light_value")
-                light_value.innerHTML = parseFloat(value).toFixed(2)+"%"
+
+                light_value.innerHTML = parseFloat(value).toFixed(2)+"lx"
             }
 
             if ( key == "Pressure") {
@@ -85,7 +86,7 @@
         temperature_value.innerHTML = parseFloat(value).toFixed(2)+"°C"
       } else if (name == "Light") {
         var light_value = document.getElementById("light_value")
-        light_value.innerHTML = parseFloat(value).toFixed(2)+"%"
+        light_value.innerHTML = parseFloat(value).toFixed(2)+"lx"
       } else if (name == "Pressure") {
         var pressure_value = document.getElementById("pressure_value")
         pressure_value.innerHTML = parseFloat(value).toFixed(2)+"hPa"

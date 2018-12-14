@@ -290,7 +290,9 @@ class DeviceMainFragment : DaggerFragment() {
             .concatMap { filterByMacUseCase.execute(it, mDevice.macAddress).toFlowable() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
-                val jsonValues = generateJsonArray(readings)
+
+                var jsonValues = generateJsonArray(readings)
+
                 web_view.loadUrl("javascript:onSensorReadings('$jsonValues')")
             }
     }
@@ -298,10 +300,16 @@ class DeviceMainFragment : DaggerFragment() {
     private fun generateJsonArray(readings: List<Reading>?): String {
 
         val jsonObject = JSONObject()
+
         readings?.forEach {
 
-            jsonObject.put(it.name, it.value)
+            if (!it.value.toDouble().isNaN()) {
+                jsonObject.put(it.name, it.value)
+            }
+
+
         }
+
         return jsonObject.toString()
     }
 
