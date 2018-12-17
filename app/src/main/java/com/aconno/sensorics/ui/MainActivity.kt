@@ -15,14 +15,16 @@ import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
-import com.aconno.sensorics.*
+import com.aconno.sensorics.BluetoothScanningService
+import com.aconno.sensorics.BuildConfig
+import com.aconno.sensorics.R
+import com.aconno.sensorics.SyncConfigurationService
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
 import com.aconno.sensorics.ui.device_main.DeviceMainFragment
-import com.aconno.sensorics.ui.devicecon.AcnFreightFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -221,6 +223,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         onScanStop()
     }
 
+    //call the html page
     fun showSensorValues(device: Device) {
         supportFragmentManager.beginTransaction()
             .replace(
@@ -231,36 +234,14 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             .commit()
     }
 
-    fun connect(device: Device) {
-        bluetoothScanningViewModel.stopScanning()
-        mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
-
-        supportFragmentManager.beginTransaction()
-            .replace(
-                content_container.id,
-                getConnectableFragment(device)
-            )
-            .addToBackStack(null)
-            .commit()
-    }
-
-    private fun getConnectableFragment(device: Device): Fragment {
-        return when (device.name) {
-            "AcnFreight" -> AcnFreightFragment.newInstance(
-                device
-            )
-            else -> {
-                throw IllegalArgumentException()
-            }
+    private fun getReadingListFragment(device: Device): Fragment {
+        if (device.connectable) {
+            stopScanning()
+            mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
         }
 
-    }
-
-    private fun getReadingListFragment(device: Device): Fragment {
         return DeviceMainFragment.newInstance(
-            device.macAddress,
-            device.getRealName(),
-            device.name
+            device
         )
     }
 
@@ -325,7 +306,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    private fun startScanning(filterByDevice: Boolean = true) {
+    fun startScanning(filterByDevice: Boolean = true) {
         this.filterByDevice = filterByDevice
         permissionViewModel.requestAccessFineLocation()
     }
@@ -376,7 +357,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun showRationale(actionCode: Int) {
-        //TODO: Show rationale
+
     }
 
     fun onDashboardClicked() {
@@ -397,5 +378,17 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             )
             .addToBackStack(null)
             .commit()
+    }
+
+    fun isScanning(): Boolean {
+        return BluetoothScanningService.isRunning()
+    }
+
+    fun startScanOperation() {
+
+        mainMenu.let {
+            val menuItem: MenuItem = it!!.findItem(R.id.action_toggle_scan)
+            toggleScanFromMenuItem(menuItem)
+        }
     }
 }

@@ -2,7 +2,6 @@ package com.aconno.sensorics.dagger.mainactivity
 
 import com.aconno.sensorics.dagger.application.FragmentScope
 import com.aconno.sensorics.ui.UseCasesFragment
-import com.aconno.sensorics.ui.acnrange.AcnRangeFragment
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
 import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
@@ -26,10 +25,6 @@ abstract class MainActivityFragmentsModule {
     @FragmentScope
     @ContributesAndroidInjector
     abstract fun bindScannedDevicesDialog(): ScannedDevicesDialog
-
-    @FragmentScope
-    @ContributesAndroidInjector
-    abstract fun bindAcnRangeFragment(): AcnRangeFragment
 
     @FragmentScope
     @ContributesAndroidInjector

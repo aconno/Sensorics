@@ -42,7 +42,7 @@ dependencies {
     implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") {
         exclude module: 'support-v4'
     }
-    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0"
+    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0"
 
     implementation "android.arch.persistence.room:runtime:$android_arch_version"
     kapt "android.arch.persistence.room:compiler:$android_arch_version"
@@ -54,7 +54,9 @@ dependencies {
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
 
-    implementation "com.squareup.okhttp3:okhttp:3.10.0"
+    implementation "com.udojava:EvalEx:2.1"
+
+    implementation "com.squareup.okhttp3:okhttp:3.12.0"
     implementation "com.squareup.okhttp3:logging-interceptor:3.9.0"
 
     compileOnly "javax.annotation:jsr250-api:$javax_annotation_version"
@@ -67,6 +69,6 @@ dependencies {
 
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_version"
     androidTestImplementation "org.mockito:mockito-inline:$mockito_inline_version"
-    androidTestImplementation "org.robolectric:robolectric:3.1.1"
+    androidTestImplementation "org.robolectric:robolectric:3.8"
     androidTestImplementation "com.android.support.test:runner:$test_runner_version"
 }

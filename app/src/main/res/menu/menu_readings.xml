@@ -12,4 +12,11 @@
         android:title="@string/usecases"
         android:visible="false"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_toggle_connect"
+        android:checkable="true"
+        android:checked="true"
+        android:title="@string/disconnect"
+        app:showAsAction="ifRoom" />
 </menu>

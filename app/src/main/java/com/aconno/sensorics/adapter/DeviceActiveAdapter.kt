@@ -15,7 +15,7 @@ import com.aconno.sensorics.ui.devices.DeviceActiveDiffUtil
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.item_device_with_connect.view.*
+import kotlinx.android.synthetic.main.item_device.view.*
 import timber.log.Timber
 import java.util.*
 
@@ -59,14 +59,9 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
     fun getOnItemLongClickEvents(): Flowable<DeviceActive> =
         onItemLongClickEvents.toFlowable(BackpressureStrategy.LATEST)
 
-    private val onConnectClickEvents = PublishSubject.create<DeviceActive>()
-
-    fun getOnConnectClickEvents(): Flowable<DeviceActive> =
-        onConnectClickEvents.toFlowable(BackpressureStrategy.LATEST)
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_device_with_connect, parent, false)
+            .inflate(R.layout.item_device, parent, false)
         return ViewHolder(view)
     }
 
@@ -113,9 +108,6 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
 
             view.setOnClickListener { onItemClickEvents.onNext(device) }
 
-            view.btn_connect.visibility = if (device.device.connectable) View.VISIBLE else View.GONE
-            view.btn_connect.setOnClickListener { onConnectClickEvents.onNext(device) }
-
             view.setOnLongClickListener {
                 onItemLongClickEvents.onNext(device)
                 true
@@ -125,12 +117,10 @@ class DeviceActiveAdapter : RecyclerView.Adapter<DeviceActiveAdapter.ViewHolder>
                 view.image_icon.alpha = 1f
                 view.name.alpha = 1f
                 view.mac_address.alpha = 1f
-                view.btn_connect.isEnabled = true
             } else {
                 view.image_icon.alpha = 0.5f
                 view.name.alpha = 0.5f
                 view.mac_address.alpha = 0.5f
-                view.btn_connect.isEnabled = false
             }
 
             viewBackground = view.view_background

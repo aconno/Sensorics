@@ -1,0 +1,92 @@
+<html>
+<head>
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+
+
+    <style type="text/css">
+    body {
+      font-family: 'Rubik', sans-serif;
+    }
+
+
+
+    </style>
+
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+
+    <script>
+    var readingState = -2;
+    var buttonCounter = 0;
+    var latestAdvId = -1234;
+    var BUTTON_PRESSED = 1;
+    var BUTTON_NOT_PRESSED = 0;
+
+  function onSensorReadings(json_values){
+        var readingState = null;
+        var readingCounter = null;
+
+        JSON.parse(json_values, function (key, value) {
+            if( key == "ButtonState"){
+                 readingState = parseInt(value);
+            }
+            if( key == "ButtonCounter") {
+                readingCounter = parseInt(value);
+            }
+
+        });
+
+        if( readingState != null && readingCounter != null){
+            if(latestAdvId != readingCounter && readingState == BUTTON_PRESSED){
+                latestAdvId = readingCounter
+                document.getElementById("count").innerHTML = ++buttonCounter;
+                document.getElementById("btn").style.backgroundColor = "rgb(211,211,211)";
+            }
+
+            else if( latestAdvId == readingCounter && readingState == BUTTON_NOT_PRESSED){
+                document.getElementById("btn").style.backgroundColor = "rgb(253,155,39)";
+
+            }
+
+            else{
+            }
+        }
+
+  }
+
+    function onSensorReading(name, value) {
+
+        if(name == "ButtonCounter"){
+            if(latestAdvId != value){
+                latestAdvId = value;
+                document.getElementById("count").innerHTML = ++readingCounter;
+                document.getElementById("btn").style.backgroundColor = "rgb(211,211,211)";
+            }
+            else{
+                 document.getElementById("btn").style.backgroundColor = "rgb(253,155,39)";
+            }
+        }
+
+    }
+
+
+
+    </script>
+</head>
+
+<body style="background-color:#fafafa">
+
+<div class="acnact">
+    <p>
+        <span style="display: block;" class="acnact-value">Count: </span>
+        <span id="count" class="acnact-value">No data</span>
+    <p>
+</div>
+
+<div class="acnact-btn-div">
+    <input type="button" id="btn" class="acnact-btn" value="">
+
+</div>
+
+</body>
+</html>

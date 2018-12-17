@@ -89,12 +89,6 @@ class SavedDevicesFragment : DaggerFragment(),
         deviceAdapter = DeviceActiveAdapter()
 
         addDisposable(
-            deviceAdapter.getOnConnectClickEvents()
-                .subscribe {
-                    activity?.let { activity ->
-                        (activity as MainActivity).connect(it.device)
-                    }
-                },
             deviceAdapter.getOnItemClickEvents()
                 .subscribe {
                     onItemClick(it)
