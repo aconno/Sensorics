@@ -154,6 +154,7 @@ class DeviceMainFragment : DaggerFragment() {
                             writeCommandQueue.poll()
                             writeCharacteristics(writeCommandQueue.peek())
                             text = getString(R.string.connected)
+
                         }
                         else -> {
                             return@subscribe

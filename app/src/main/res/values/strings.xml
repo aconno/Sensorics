@@ -71,7 +71,6 @@
     <string name="no_rest_httpgetparams">There are no HTTP Get Params. Press plus (+) to add a new HTTP Param.</string>
     <string name="text_to_speech">Text to Speech</string>
     <string name="notification">Notification</string>
-    <string name="sms">SMS</string>
 
     <string name="google_iot_cloud" translatable="false">Google IOT Cloud</string>
     <string name="http_backend" translatable="false">Http Backend</string>

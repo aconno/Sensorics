@@ -106,13 +106,6 @@
                         android:text="@string/notification" />
 
                     <CheckedTextView
-                        android:id="@+id/button_outcome_sms"
-                        style="@style/ChipView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/sms" />
-
-                    <CheckedTextView
                         android:id="@+id/button_outcome_vibration"
                         style="@style/ChipView"
                         android:layout_width="wrap_content"
@@ -128,17 +121,6 @@
 
                 </com.google.android.flexbox.FlexboxLayout>
 
-                <EditText
-                    android:id="@+id/edittext_phone_number"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
-                    android:layout_marginStart="@dimen/screen_edge_left_right_margin"
-                    android:layout_marginTop="@dimen/title_padding"
-                    android:hint="@string/phone_number"
-                    android:inputType="phone"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
 
                 <EditText
                     android:id="@+id/edittext_message"

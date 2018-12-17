@@ -21,28 +21,22 @@
 
     <string name="bt_disabled">Bluetooth ist deaktiviert</string>
     <string name="enable">Aktivieren</string>
-
     <string name="add">Hinzufügen</string>
     <string name="phone_number">Telefonnummer</string>
     <string name="message_hint">Nachricht</string>
     <string name="delete">Aktion löschen</string>
-
     <string name="condition_less">Kleiner</string>
     <string name="condition_more">Größer</string>
     <string name="condition_value_hint">Wert</string>
     <string name="condition_dialog_set">Festlegen</string>
     <string name="condition_dialog_cancel">Abbrechen</string>
-
     <string name="vibration">Vibration</string>
-
     <string name="sensor_card_image_content_description">Bild der Sensorkarte</string>
     <string name="service_notification_title">Sensorics</string>
     <string name="service_notification_content">Sensorics scannt</string>
-
     <string name="set_action_hint">Um eine Aktion festzulegen, drücken Sie die + Taste.</string>
     <string name="text_to_speech">Text zu Sprache</string>
     <string name="notification">Benachrichtigung</string>
-    <string name="sms">SMS</string>
     <string name="are_you_sure">Sind Sie sicher, dass Sie löschen möchten?</string>
     <string name="battery_level">Ladestand</string>
     <string name="clientId">Client Id</string>

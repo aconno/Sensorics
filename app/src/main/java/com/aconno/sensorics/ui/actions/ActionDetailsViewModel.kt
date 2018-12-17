@@ -55,7 +55,7 @@ class ActionDetailsViewModel(
         )
     }
 
-    fun setDevice(device: Device, name: String, message: String, phoneNumber: String) {
+    fun setDevice(device: Device, name: String, message: String) {
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
             actionLiveData.value = ActionViewModel(
@@ -68,7 +68,6 @@ class ActionDetailsViewModel(
             val outcome = actionViewModel.outcome
             if (outcome != null) {
                 val parameters = hashMapOf<String, String>()
-                parameters[Outcome.PHONE_NUMBER] = phoneNumber
                 parameters[Outcome.TEXT_MESSAGE] = message
                 val newOutcome = Outcome(parameters, outcome.type)
                 actionViewModel.outcome = newOutcome
@@ -82,8 +81,7 @@ class ActionDetailsViewModel(
         limitValue: String,
         constraintType: String,
         name: String,
-        message: String,
-        phoneNumber: String
+        message: String
     ) {
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
@@ -105,7 +103,6 @@ class ActionDetailsViewModel(
             val outcome = actionViewModel.outcome
             if (outcome != null) {
                 val parameters = hashMapOf<String, String>()
-                parameters[Outcome.PHONE_NUMBER] = phoneNumber
                 parameters[Outcome.TEXT_MESSAGE] = message
                 val newOutcome = Outcome(parameters, outcome.type)
                 actionViewModel.outcome = newOutcome
@@ -114,7 +111,7 @@ class ActionDetailsViewModel(
         }
     }
 
-    fun clearCondition(name: String, message: String, phoneNumber: String) {
+    fun clearCondition(name: String, message: String) {
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
             actionLiveData.value = ActionViewModel(
@@ -126,7 +123,6 @@ class ActionDetailsViewModel(
             val outcome = actionViewModel.outcome
             if (outcome != null) {
                 val parameters = hashMapOf<String, String>()
-                parameters[Outcome.PHONE_NUMBER] = phoneNumber
                 parameters[Outcome.TEXT_MESSAGE] = message
                 val newOutcome = Outcome(parameters, outcome.type)
                 actionViewModel.outcome = newOutcome
@@ -135,9 +131,8 @@ class ActionDetailsViewModel(
         }
     }
 
-    fun setOutcome(outcomeType: Int, message: String, phoneNumber: String, name: String) {
+    fun setOutcome(outcomeType: Int, message: String, name: String) {
         val parameters = hashMapOf<String, String>()
-        parameters[Outcome.PHONE_NUMBER] = phoneNumber
         parameters[Outcome.TEXT_MESSAGE] = message
         val outcome = Outcome(parameters, outcomeType)
         val actionViewModel = actionLiveData.value
@@ -160,8 +155,7 @@ class ActionDetailsViewModel(
     fun saveAction(
         application: Application,
         name: String,
-        message: String,
-        phoneNumber: String
+        message: String
     ): Completable {
         val id = actionLiveData.value?.id ?: 0L
         if (name.isBlank()) {
@@ -192,7 +186,7 @@ class ActionDetailsViewModel(
             )
         }
         val parameters = hashMapOf<String, String>()
-        parameters[Outcome.PHONE_NUMBER] = phoneNumber
+
         parameters[Outcome.TEXT_MESSAGE] = message
         val newOutcome = Outcome(parameters, outcome.type)
         val action = GeneralAction(
