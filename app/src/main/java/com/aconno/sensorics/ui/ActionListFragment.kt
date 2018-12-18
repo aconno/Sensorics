@@ -106,12 +106,14 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
 
     override fun onResume() {
         super.onResume()
+
         disposables.add(
             getAllActionsUseCase.execute()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { actions -> initActionList(actions) }
         )
+
     }
 
     override fun onPause() {

@@ -196,6 +196,7 @@ class ActionDetailsViewModel(
             condition,
             newOutcome
         )
+
         return addActionUseCase.execute(action)
     }
 

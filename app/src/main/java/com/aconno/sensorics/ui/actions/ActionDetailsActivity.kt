@@ -28,7 +28,6 @@ import javax.inject.Inject
 
 class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener, IconInfo {
 
-
     @Inject
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
 
@@ -202,6 +201,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
     private fun setDevice(device: Device?) {
         device?.let {
             val position = deviceSpinnerAdapter.getDevicePosition(device)
+            Timber.i("Position-------- $position")
             if (spinner_devices.selectedItemPosition != position) {
                 spinner_devices.setSelection(position)
             } else {
@@ -261,8 +261,8 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-
                     finish()
+
                 }, {
                     showSnackbarMessage(
                         it.message

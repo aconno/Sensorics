@@ -8,6 +8,7 @@ import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.model.Device
 import io.reactivex.Completable
 import io.reactivex.Single
+import timber.log.Timber
 
 class ActionsRepositoryImpl(
     private val actionDao: ActionDao
@@ -23,6 +24,7 @@ class ActionsRepositoryImpl(
 
     override fun addAction(action: Action): Completable {
         return Completable.fromAction {
+            Timber.i("Inserted Action")
             actionDao.insert(toEntity(action))
         }
     }
@@ -46,7 +48,6 @@ class ActionsRepositoryImpl(
             conditionType = action.condition.type,
             value = action.condition.limit,
             textMessage = action.outcome.parameters[Outcome.TEXT_MESSAGE] ?: "",
-            phoneNumber = action.outcome.parameters[Outcome.PHONE_NUMBER] ?: "",
             outcomeType = action.outcome.type
         )
     }
@@ -62,8 +63,7 @@ class ActionsRepositoryImpl(
             )
 
         val parameters = mapOf(
-            Pair(Outcome.TEXT_MESSAGE, actionEntity.textMessage),
-            Pair(Outcome.PHONE_NUMBER, actionEntity.phoneNumber)
+            Pair(Outcome.TEXT_MESSAGE, actionEntity.textMessage)
         )
 
         val outcome = Outcome(

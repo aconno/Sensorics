@@ -52,4 +52,5 @@ class ActionDetailsModule {
     fun provideAddActionUseCase(
         actionsRepository: ActionsRepository
     ) = AddActionUseCase(actionsRepository)
+
 }
