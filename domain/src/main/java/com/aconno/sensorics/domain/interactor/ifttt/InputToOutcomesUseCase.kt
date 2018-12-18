@@ -19,10 +19,7 @@ class InputToOutcomesUseCase(
             }
         return Single.fromObservable(observable)
     }
-
-    //private val previousConditions: MutableMap<Long, MutableMap<String, Boolean>> =
-    // mutableMapOf()
-
+    
     private fun actionsToOutcomes(actions: List<Action>, input: Input): List<Outcome> {
         val result = mutableListOf<Outcome>()
 
