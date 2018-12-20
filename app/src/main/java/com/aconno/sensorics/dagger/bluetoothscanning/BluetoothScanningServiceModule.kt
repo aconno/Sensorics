@@ -9,7 +9,6 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.device.storage.FileStorageImpl
-import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.ifttt.*
@@ -83,17 +82,14 @@ class BluetoothScanningServiceModule {
     @BluetoothScanningServiceScope
     fun provideRunOutcomeUseCase(
         notificationDisplay: NotificationDisplay,
-        smsSender: SmsSender,
         textToSpeechPlayer: TextToSpeechPlayer,
         vibrator: Vibrator
     ): RunOutcomeUseCase {
         val notificationOutcomeExecutor = NotificationOutcomeExecutor(notificationDisplay)
-        val smsOutcomeExecutor = SmsOutcomeExecutor(smsSender)
         val textToSpeechOutcomeExecutor = TextToSpeechOutcomeExecutor(textToSpeechPlayer)
         val vibrationOutcomeExecutor = VibrationOutcomeExecutor(vibrator)
         val outcomeExecutorSelector = OutcomeExecutorSelector(
             notificationOutcomeExecutor,
-            smsOutcomeExecutor,
             textToSpeechOutcomeExecutor,
             vibrationOutcomeExecutor
         )

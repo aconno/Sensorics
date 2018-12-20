@@ -198,9 +198,13 @@ class BluetoothScanningService : DaggerService() {
     }
 
     private fun handleInputsForActions() {
+        Timber.i("handle Action..... $readings")
+
         disposables.add(
             readings
-                .concatMap { readingToInputUseCase.execute(it).toFlowable() }
+                .concatMap {
+                    readingToInputUseCase.execute(it).toFlowable()
+                }
                 .flatMapIterable { it }
                 .concatMap {
                     inputToOutcomesUseCase.execute(it)
@@ -215,6 +219,7 @@ class BluetoothScanningService : DaggerService() {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe()
                 }
+
         )
     }
 

@@ -19,20 +19,17 @@ class RunOutcomeUseCase(
         val outcomeExecutor = outcomeExecutorSelector.selectOutcomeExecutor(outcome)
         outcomeExecutor.execute(outcome)
     }
-
-
 }
 
 class OutcomeExecutorSelector(
     private val notificationOutcomeExecutor: NotificationOutcomeExecutor,
-    private val smsOutcomeExecutor: SmsOutcomeExecutor,
     private val textToSpeechOutcomeExecutor: TextToSpeechOutcomeExecutor,
     private val vibrationOutcomeExecutor: VibrationOutcomeExecutor
 ) {
     fun selectOutcomeExecutor(outcome: Outcome): OutcomeExecutor {
         return when (outcome.type) {
+
             Outcome.OUTCOME_TYPE_NOTIFICATION -> notificationOutcomeExecutor
-            Outcome.OUTCOME_TYPE_SMS -> smsOutcomeExecutor
             Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH -> textToSpeechOutcomeExecutor
             Outcome.OUTCOME_TYPE_VIBRATION -> vibrationOutcomeExecutor
             else -> throw IllegalArgumentException("Invalid Outcome type.")

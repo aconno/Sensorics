@@ -28,7 +28,6 @@ import javax.inject.Inject
 
 class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener, IconInfo {
 
-
     @Inject
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
 
@@ -113,8 +112,8 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
                 val device = deviceSpinnerAdapter.getDevice(position)
                 val name = edittext_name.text.toString()
                 val message = edittext_message.text.toString()
-                val phoneNumber = edittext_phone_number.text.toString()
-                actionDetailsViewModel.setDevice(device, name, message, phoneNumber)
+
+                actionDetailsViewModel.setDevice(device, name, message)
             }
         }
     }
@@ -162,8 +161,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
             } else {
                 val name = edittext_name.text.toString()
                 val message = edittext_message.text.toString()
-                val phoneNumber = edittext_phone_number.text.toString()
-                actionDetailsViewModel.clearCondition(name, message, phoneNumber)
+                actionDetailsViewModel.clearCondition(name, message)
             }
         }
     }
@@ -175,14 +173,13 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
     override fun onSetClicked(readingType: String, constraint: String, value: String) {
         val name = edittext_name.text.toString()
         val message = edittext_message.text.toString()
-        val phoneNumber = edittext_phone_number.text.toString()
+
         actionDetailsViewModel.setCondition(
             readingType,
             value,
             constraint,
             name,
-            message,
-            phoneNumber
+            message
         )
     }
 
@@ -204,6 +201,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
     private fun setDevice(device: Device?) {
         device?.let {
             val position = deviceSpinnerAdapter.getDevicePosition(device)
+            Timber.i("Position-------- $position")
             if (spinner_devices.selectedItemPosition != position) {
                 spinner_devices.setSelection(position)
             } else {
@@ -216,9 +214,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         button_outcome_notification.setOnClickListener {
             setOutcomeData(Outcome.OUTCOME_TYPE_NOTIFICATION)
         }
-        button_outcome_sms.setOnClickListener {
-            setOutcomeData(Outcome.OUTCOME_TYPE_SMS)
-        }
+
         button_outcome_text_to_speech.setOnClickListener {
             setOutcomeData(Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH)
         }
@@ -229,29 +225,24 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
 
     private fun setOutcomeData(type: Int) {
         val message = edittext_message.text.toString()
-        val phoneNumber = edittext_phone_number.text.toString()
         val name = edittext_name.text.toString()
-        actionDetailsViewModel.setOutcome(type, message, phoneNumber, name)
+        actionDetailsViewModel.setOutcome(type, message, name)
     }
 
     private fun setOutcome(outcome: Outcome?) {
         button_outcome_notification.isChecked = false
-        button_outcome_sms.isChecked = false
+
         button_outcome_text_to_speech.isChecked = false
         button_outcome_vibration.isChecked = false
         edittext_message.visibility = View.GONE
-        edittext_phone_number.visibility = View.GONE
+
         outcome?.let {
             when (outcome.type) {
                 Outcome.OUTCOME_TYPE_NOTIFICATION -> {
                     button_outcome_notification.isChecked = true
                     edittext_message.visibility = View.VISIBLE
                 }
-                Outcome.OUTCOME_TYPE_SMS -> {
-                    button_outcome_sms.isChecked = true
-                    edittext_message.visibility = View.VISIBLE
-                    edittext_phone_number.visibility = View.VISIBLE
-                }
+
                 Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH -> {
                     button_outcome_text_to_speech.isChecked = true
                     edittext_message.visibility = View.VISIBLE
@@ -259,20 +250,19 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
                 Outcome.OUTCOME_TYPE_VIBRATION -> button_outcome_vibration.isChecked = true
             }
             edittext_message.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
-            edittext_phone_number.setText(outcome.parameters[Outcome.PHONE_NUMBER] ?: "")
         }
     }
 
     private fun setSaveButtonListener() {
         button_save.setOnClickListener {
             val message = edittext_message.text.toString()
-            val phoneNumber = edittext_phone_number.text.toString()
             val name = edittext_name.text.toString()
-            actionDetailsViewModel.saveAction(application, name, message, phoneNumber)
+            actionDetailsViewModel.saveAction(application, name, message)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     finish()
+
                 }, {
                     showSnackbarMessage(
                         it.message

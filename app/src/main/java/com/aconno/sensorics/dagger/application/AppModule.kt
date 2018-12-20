@@ -18,13 +18,11 @@ import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinR
 import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
 import com.aconno.sensorics.data.repository.sync.SyncDao
 import com.aconno.sensorics.data.repository.sync.SyncRepositoryImpl
-import com.aconno.sensorics.device.SmsSenderImpl
 import com.aconno.sensorics.device.TextToSpeechPlayerImpl
 import com.aconno.sensorics.device.VibratorImpl
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationDisplayImpl
 import com.aconno.sensorics.device.notification.NotificationFactory
-import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
@@ -82,12 +80,6 @@ class AppModule {
     @Singleton
     fun provideVibrator(sensoricsApplication: SensoricsApplication): Vibrator {
         return VibratorImpl(sensoricsApplication.applicationContext)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSmsSender(): SmsSender {
-        return SmsSenderImpl()
     }
 
     @Provides

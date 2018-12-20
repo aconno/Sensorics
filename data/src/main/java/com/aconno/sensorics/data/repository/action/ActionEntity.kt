@@ -25,6 +25,5 @@ data class ActionEntity(
     var conditionType: Int,
     var value: Float,
     var textMessage: String,
-    var outcomeType: Int,
-    var phoneNumber: String
+    var outcomeType: Int
 )
