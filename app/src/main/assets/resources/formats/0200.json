@@ -1,0 +1,33 @@
+{
+  "id": "0200",
+  "name": "acnBEACON",
+  "icon": "ic_sensa",
+  "format": [],
+  "format_required": [
+    {
+      "name": "Vendor ID 1",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Vendor ID 2",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "App ID 1",
+      "index": 2,
+      "value": "0x69"
+    },
+    {
+      "name": "App ID 2",
+      "index": 3,
+      "value": "0x02"
+    },
+    {
+      "name": "Advertisement Type",
+      "index": 4,
+      "value": "0x00"
+    }
+  ]
+}
