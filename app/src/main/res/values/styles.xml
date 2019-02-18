@@ -74,4 +74,18 @@
         <item name="android:textColor">@color/secondaryColor</item>
         <item name="android:textSize">@dimen/message_text_size</item>
     </style>
+
+    <style name="DefaultCard">
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <style name="TextAppearance.Tiny" parent="@android:style/TextAppearance.Small">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance.Tiny.Black" parent="@style/TextAppearance.Tiny">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">#060606</item>
+    </style>
 </resources>

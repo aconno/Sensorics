@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/DefaultCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:contentPadding="6dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/manufacturer_info"
+            android:textColor="@color/primaryColor"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TableLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:stretchColumns="*"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tv_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title">
+
+            <TableRow>
+
+                <TextView android:text="@string/manufacturer" />
+
+                <TextView
+                    android:id="@+id/tv_manufacturer"
+                    style="@style/TextAppearance.Tiny"
+                    android:gravity="end"
+                    tools:text="Aconno" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView android:text="@string/model" />
+
+                <TextView
+                    android:id="@+id/tv_model"
+                    style="@style/TextAppearance.Tiny"
+                    android:gravity="end"
+                    tools:text="Beacon++" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView android:text="@string/software_version" />
+
+                <TextView
+                    android:id="@+id/tv_sw_version"
+                    style="@style/TextAppearance.Tiny"
+                    android:gravity="end"
+                    tools:text="nRF52-SDK13.0" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView android:text="@string/hardware_version" />
+
+                <TextView
+                    android:id="@+id/tv_hw_version"
+                    style="@style/TextAppearance.Tiny"
+                    android:gravity="end"
+                    tools:text="MODEL_1" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView android:text="@string/firmware_version" />
+
+                <TextView
+                    android:id="@+id/tv_fw_version"
+                    style="@style/TextAppearance.Tiny"
+                    android:gravity="end"
+                    tools:text="2.1.45" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView android:text="@string/mac_address" />
+
+                <TextView
+                    android:id="@+id/tv_address"
+                    style="@style/TextAppearance.Tiny"
+                    android:gravity="end"
+                    tools:text="AA:BB:CC:DD:EE:FF" />
+            </TableRow>
+        </TableLayout>
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>

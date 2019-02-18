@@ -77,4 +77,8 @@
         <item>@string/publish_day</item>
     </string-array>
 
+    <string-array name="trigger_conditions">
+        <item>Button double tap</item>
+        <item>Button triple tap</item>
+    </string-array>
 </resources>

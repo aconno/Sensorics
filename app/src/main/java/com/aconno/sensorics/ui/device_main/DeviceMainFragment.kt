@@ -22,6 +22,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
@@ -239,12 +240,24 @@ class DeviceMainFragment : DaggerFragment() {
                     return true
                 }
                 R.id.action_start_config_activity -> {
-                    Snackbar.make(this.view!!, "Functionality coming soon.",Snackbar.LENGTH_SHORT).show()
-                    //TODO: Call function connect from module
+                    this.view?.let {
+                        Snackbar.make(it, "Functionality coming soon.", Snackbar.LENGTH_SHORT)
+                            .show()
+                    }
+
+                    getContext()?.let {
+                        ConfigureActivity.start(it, device = mDevice)
+                    }
                     return true
                 }
                 R.id.action_start_logging_activity -> {
-                    Snackbar.make(this.view!!, "Functionality coming soon.",Snackbar.LENGTH_SHORT).show()
+                    this.view?.let {
+                        Snackbar.make(
+                            it,
+                            "Functionality coming soon.",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                     //TODO: Implement Logger functionality
                     return true
                 }

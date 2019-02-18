@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:stretchColumns="*"
+    android:shrinkColumns="*">
+
+    <TableRow>
+
+        <TextView
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:text="Namespace ID" />
+
+        <EditText
+            android:id="@+id/et_namespace_id"
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:hint="Input a value" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:text="Instance ID" />
+
+        <EditText
+            android:id="@+id/et_instance_id"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:hint="Input a value"
+            style="@style/TextAppearance.Tiny.Black" />
+    </TableRow>
+</TableLayout>

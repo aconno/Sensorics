@@ -199,5 +199,53 @@
     <string name="start_scan_popup">"Do you want to start scanning the device?"</string>
     <string name="config">Config</string>
     <string name="logging">Logging</string>
+    <string name="title_configure">Configure</string>
+
+    //Not Translated
+    <string name="rssi_1m">Rssi @ 1m</string>
+    <string name="uuid">UUID</string>
+    <string name="major">Major</string>
+    <string name="minor">Minor</string>
+    <string name="item_beacon_latency_rssi"><![CDATA[%1$d ms <-> %2$d dBm]]></string>
+
+    <string-array name="url_prefixes">
+        <item>http://</item>
+        <item>https://</item>
+        <item>http://www.</item>
+        <item>https://www.</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="manufacturer">Manufacturer</string>
+    <string name="model">Model</string>
+    <string name="software_version">Software Version</string>
+    <string name="hardware_version">Hardware Version</string>
+    <string name="firmware_version">Firmware Version</string>
+    <string name="mac_address">Mac Address</string>
+    <string name="manufacturer_info">Manufacturer Info</string>
+    <string name="supported_tx_power">Supported Tx Power</string>
+    <string name="supported_slots">Supported Slots</string>
+    <string name="adv_feature">Adv Feature</string>
+    <string name="slot_amount">Slot Amount</string>
+    <string name="connectible">Connectible</string>
+    <string name="update_firmware">Update Firmware</string>
+    <string name="add_password">Add Password</string>
+    <string name="power_off">Power Off</string>
+    <string name="reset_factory">Reset Factory</string>
+    <string name="frame_type">Frame type</string>
+    <string name="trigger">Trigger</string>
+    <string name="type">Type</string>
+    <string name="base_parameters">Base Parameters</string>
+    <string name="advertising_interval">Advertising Interval</string>
+    <string name="radio_tx">Radio TX</string>
+    <string name="ms_format">%1$dms</string>
+    <string name="dbm_format">%1$ddBm</string>
+    <string name="advertising_content">Advertising Content</string>
+    <string name="input_a_value">Input a value</string>
+    <string name="save">Save</string>
+    <string name="custom">Custom</string>
+    <string name="title_activity_beacon_list">BeaconListActivity</string>
+    <string name="apply">Apply</string>
 
 </resources>

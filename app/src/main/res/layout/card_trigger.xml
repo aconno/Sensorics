@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/DefaultCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:contentPadding="6dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/trigger"
+            android:textColor="@color/primaryColor"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TableLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:measureWithLargestChild="true"
+            android:stretchColumns="*"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tv_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title">
+
+            <TableRow android:layout_weight="1">
+
+                <TextView
+                    style="@style/TextAppearance.Tiny"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/enable"
+                    android:textColor="@color/primaryColor" />
+
+                <Switch
+                    android:id="@+id/switch_trigger_enable"
+                    android:layout_gravity="start" />
+            </TableRow>
+
+            <TableRow android:layout_weight="1">
+
+                <TextView
+                    style="@style/TextAppearance.Tiny"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/type"
+                    android:textColor="@color/primaryColor" />
+
+                <Spinner
+                    android:id="@+id/spinner_trigger_type"
+                    android:layout_height="match_parent"
+                    android:entries="@array/trigger_conditions" />
+            </TableRow>
+        </TableLayout>
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>
