@@ -197,5 +197,7 @@
     <string name="keep_screen_on">Keep Screen On</string>
     <string name="loading_message">Loading..</string>
     <string name="start_scan_popup">"Do you want to start scanning the device?"</string>
+    <string name="config">Config</string>
+    <string name="logging">Logging</string>
 
 </resources>

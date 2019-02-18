@@ -137,5 +137,7 @@
     <string name="loading_message">Wird geladen..</string>
 
     <string name="start_scan_popup">"Scan des ausgewählten Gerätes starten ?"</string>
+    <string name="config">Konfigurieren</string>
+    <string name="logging">Logging</string>
 
 </resources>

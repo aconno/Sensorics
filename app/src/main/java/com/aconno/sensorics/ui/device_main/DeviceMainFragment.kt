@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.support.design.widget.Snackbar
 import android.view.*
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
@@ -235,6 +236,16 @@ class DeviceMainFragment : DaggerFragment() {
                 }
                 R.id.action_start_usecases_activity -> {
                     (activity as MainActivity).onUseCaseClicked(mDevice.macAddress, mDevice.name)
+                    return true
+                }
+                R.id.action_start_config_activity -> {
+                    Snackbar.make(this.view!!, "Functionality coming soon.",Snackbar.LENGTH_SHORT).show()
+                    //TODO: Call function connect from module
+                    return true
+                }
+                R.id.action_start_logging_activity -> {
+                    Snackbar.make(this.view!!, "Functionality coming soon.",Snackbar.LENGTH_SHORT).show()
+                    //TODO: Implement Logger functionality
                     return true
                 }
                 else -> {
