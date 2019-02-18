@@ -11,6 +11,7 @@ import android.os.IBinder
 import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import com.aconno.bluetooth.BluetoothDeviceService
 import com.aconno.bluetooth.TasksCompleteListener
@@ -25,6 +26,7 @@ import kotlinx.android.synthetic.main.activity_configure.*
 import kotlinx.android.synthetic.main.dialog_configure.*
 import timber.log.Timber
 import javax.inject.Inject
+
 
 class ConfigureActivity : DaggerAppCompatActivity(),
     BeaconGeneralFragment.OnBeaconGeneralFragmentInteractionListener {
@@ -85,6 +87,9 @@ class ConfigureActivity : DaggerAppCompatActivity(),
         dialog = showProgressDialog()
         vp_beacon.adapter = beaconPagerAdapter
         beaconPagerAdapter.notifyDataSetChanged()
+
+        // Bind the tabs to the ViewPager
+        tabs.setViewPager(vp_beacon)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -164,6 +169,8 @@ class ConfigureActivity : DaggerAppCompatActivity(),
                 runOnUiThread {
                     beaconViewModel.beacon.value = beacon
                     dialog.dismiss()
+
+                    tabs.visibility = View.VISIBLE
                 }
             }
 

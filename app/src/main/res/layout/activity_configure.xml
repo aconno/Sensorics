@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
@@ -10,17 +11,20 @@
         style="@style/Toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
+        android:elevation="0dp"
         tools:title="Title" />
+
+    <com.astuetz.PagerSlidingTabStrip
+        android:id="@+id/tabs"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:background="?attr/colorPrimary"
+        app:pstsTabTextColor="@color/primaryTextColor"
+        android:layout_height="?attr/actionBarSize" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_beacon"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v4.view.PagerTabStrip
-            android:id="@+id/pts_beacon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </android.support.v4.view.ViewPager>
+        android:layout_height="match_parent" />
 
 </LinearLayout>
