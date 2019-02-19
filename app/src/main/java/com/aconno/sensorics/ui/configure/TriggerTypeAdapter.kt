@@ -14,11 +14,11 @@ class TriggerTypeAdapter(context: Context, types: Array<TriggerType>) :
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View = convertView
             ?: LayoutInflater.from(context).inflate(
-                android.R.layout.simple_spinner_item,
+                android.R.layout.simple_spinner_dropdown_item,
                 parent,
                 false
             )
-        view.findViewById<TextView>(android.R.id.text1).text = getItem(position).triggerName
+        view.findViewById<TextView>(android.R.id.text1).text = getItem(position)?.triggerName ?: ""
         return view
     }
 
@@ -29,7 +29,7 @@ class TriggerTypeAdapter(context: Context, types: Array<TriggerType>) :
                 parent,
                 false
             )
-        view.findViewById<TextView>(android.R.id.text1).text = getItem(position).triggerName
+        view.findViewById<TextView>(android.R.id.text1).text = getItem(position)?.triggerName ?: ""
         return view
     }
 }

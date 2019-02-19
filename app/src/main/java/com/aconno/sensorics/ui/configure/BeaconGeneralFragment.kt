@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.card_beacon_configuration.view.*
 import kotlinx.android.synthetic.main.card_feature_info_configuration.view.*
 import kotlinx.android.synthetic.main.card_manufacturer_info_configuration.view.*
 
+
 class BeaconGeneralFragment : Fragment() {
     private var listener: OnBeaconGeneralFragmentInteractionListener? = null
 

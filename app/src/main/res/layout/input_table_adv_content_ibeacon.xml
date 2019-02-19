@@ -1,60 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:shrinkColumns="*"
+    android:stretchColumns="*">
 
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:shrinkColumns="*"
-        android:stretchColumns="*">
+    <TableRow>
 
-        <TableRow>
+        <TextView
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/uuid" />
 
-            <TextView
-                style="@style/TextAppearance.Tiny.Black"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="@string/uuid" />
+        <EditText
+            android:id="@+id/et_uuid"
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:hint="cc520000-0000-0000-0000-000000000000" />
+    </TableRow>
 
-            <EditText
-                android:id="@+id/et_uuid"
-                style="@style/TextAppearance.Tiny.Black"
-                android:layout_width="0dp"
-                android:layout_weight="5"
-                android:hint="cc520000-0000-0000-0000-000000000000" />
-        </TableRow>
+    <TableRow>
 
-        <TableRow>
+        <TextView
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/major" />
 
-            <TextView
-                style="@style/TextAppearance.Tiny.Black"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="@string/major" />
+        <EditText
+            android:id="@+id/et_major"
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:hint="0"
+            android:inputType="number" />
+    </TableRow>
 
-            <EditText
-                android:id="@+id/et_major"
-                style="@style/TextAppearance.Tiny.Black"
-                android:layout_width="0dp"
-                android:layout_weight="5"
-                android:hint="0"
-                android:inputType="number" />
-        </TableRow>
+    <TableRow>
 
-        <TableRow>
+        <TextView
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/minor" />
 
-            <TextView
-                style="@style/TextAppearance.Tiny.Black"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="@string/minor" />
-
-            <EditText
-                android:id="@+id/et_minor"
-                style="@style/TextAppearance.Tiny.Black"
-                android:layout_width="0dp"
-                android:layout_weight="5"
-                android:hint="0"
-                android:inputType="number" />
-        </TableRow>
-    </TableLayout>
-</layout>
+        <EditText
+            android:id="@+id/et_minor"
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:hint="0"
+            android:inputType="number" />
+    </TableRow>
+</TableLayout>

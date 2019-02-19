@@ -18,7 +18,8 @@
             style="@style/TextAppearance.Tiny.Black"
             android:layout_width="0dp"
             android:layout_weight="3"
-            android:hint="Input a value" />
+            android:hint="Input a value"
+            android:inputType="text" />
     </TableRow>
 
     <TableRow>
@@ -34,6 +35,7 @@
             android:layout_width="0dp"
             android:layout_weight="3"
             android:hint="Input a value"
-            style="@style/TextAppearance.Tiny.Black" />
+            style="@style/TextAppearance.Tiny.Black"
+            android:inputType="text" />
     </TableRow>
 </TableLayout>

@@ -1,10 +1,10 @@
 package com.aconno.sensorics.ui.configure
 
-import android.app.AlertDialog
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.TextInputEditText
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -36,59 +36,66 @@ class BeaconArbitraryDataFragment : Fragment() {
             view.rv_json_list.adapter = arbitraryDataAdapter
         }
         view.fab.setOnClickListener {
-            createInputDialog().show()
+            createInputDialog()?.show()
         }
         return view
     }
 
-    fun createInputDialog(): AlertDialog {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
-        val view: View = layoutInflater.inflate(R.layout.dialog_dual_generic_input, null)
-        val input1: TextInputEditText = view.et_input_1.apply {
-            hint = "Data Key"
-        }
-        val input2: TextInputEditText = view.et_input_2.apply {
-            hint = "Value"
-        }
-        builder.setTitle("Data Input")
-        builder.setView(view)
-        builder.setCancelable(true)
-        builder.setPositiveButton("Update") { dialog, _ ->
-            beaconViewModel.beacon.value?.let {
-                it.abstractDataMapped[input1.text.toString()] = input2.text.toString()
+    fun createInputDialog(): AlertDialog? {
+        context?.let {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(it)
+            val view: View = layoutInflater.inflate(R.layout.dialog_dual_generic_input, null)
+            val input1: TextInputEditText = view.et_input_1.apply {
+                hint = "Data Key"
             }
-            arbitraryDataAdapter.notifyDataSetChanged()
-            dialog.dismiss()
+            val input2: TextInputEditText = view.et_input_2.apply {
+                hint = "Value"
+            }
+            builder.setTitle("Data Input")
+            builder.setView(view)
+            builder.setCancelable(true)
+            builder.setPositiveButton("Update") { dialog, _ ->
+                beaconViewModel.beacon.value?.let {
+                    it.abstractDataMapped[input1.text.toString()] = input2.text.toString()
+                }
+                arbitraryDataAdapter.notifyDataSetChanged()
+                dialog.dismiss()
+            }
+            builder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            return builder.create()
         }
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-        return builder.create()
+
+        return null
     }
 
-    fun createEditDialog(key: String): AlertDialog {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
-        val view: View = layoutInflater.inflate(R.layout.dialog_generic_input, null)
-        val input: TextInputEditText = view.et_input
-        builder.setTitle("Data Edit")
-        builder.setView(view)
-        builder.setCancelable(true)
-        builder.setPositiveButton("Update") { dialog, _ ->
-            beaconViewModel.beacon.value?.let {
-                it.abstractDataMapped[key] = input.text.toString()
+    fun createEditDialog(key: String): AlertDialog? {
+        context?.let {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(it)
+            val view: View = layoutInflater.inflate(R.layout.dialog_generic_input, null)
+            val input: TextInputEditText = view.et_input
+            builder.setTitle("Data Edit")
+            builder.setView(view)
+            builder.setCancelable(true)
+            builder.setPositiveButton("Update") { dialog, _ ->
+                beaconViewModel.beacon.value?.let {
+                    it.abstractDataMapped[key] = input.text.toString()
+                }
+                arbitraryDataAdapter.notifyDataSetChanged()
+                dialog.dismiss()
             }
-            arbitraryDataAdapter.notifyDataSetChanged()
-            dialog.dismiss()
+            builder.setNeutralButton("Delete") { dialog, _ ->
+                beaconViewModel.beacon.value?.abstractDataMapped?.remove(key)
+                arbitraryDataAdapter.notifyDataSetChanged()
+                dialog.dismiss()
+            }
+            builder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            return builder.create()
         }
-        builder.setNeutralButton("Delete") { dialog, _ ->
-            beaconViewModel.beacon.value?.abstractDataMapped?.remove(key)
-            arbitraryDataAdapter.notifyDataSetChanged()
-            dialog.dismiss()
-        }
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-        return builder.create()
+        return null
     }
 
     companion object {

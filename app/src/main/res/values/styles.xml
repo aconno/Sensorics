@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- enable window content transitions -->
         <item name="android:windowActivityTransitions">true</item>
 
@@ -34,7 +34,7 @@
     </style>
 
     <!-- Settings application theme with ActionBar. -->
-    <style name="SettingsTheme" parent="Theme.AppCompat.Light">
+    <style name="SettingsTheme" parent="Theme.MaterialComponents.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
@@ -45,8 +45,8 @@
     <style name="Toolbar">
         <item name="android:background">@color/primaryColor</item>
         <item name="android:elevation">@dimen/toolbar_elevation</item>
-        <item name="android:theme">@style/ThemeOverlay.AppCompat.ActionBar</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:theme">@style/ThemeOverlay.MaterialComponents.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.MaterialComponents.Light</item>
     </style>
 
     <style name="ChipView">
@@ -73,11 +73,6 @@
     <style name="MessageText">
         <item name="android:textColor">@color/secondaryColor</item>
         <item name="android:textSize">@dimen/message_text_size</item>
-    </style>
-
-    <style name="DefaultCard">
-        <item name="android:layout_margin">4dp</item>
-        <item name="android:elevation">4dp</item>
     </style>
 
     <style name="TextAppearance.Tiny" parent="@android:style/TextAppearance.Small">

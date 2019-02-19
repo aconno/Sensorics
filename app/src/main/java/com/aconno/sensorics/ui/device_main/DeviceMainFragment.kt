@@ -1,7 +1,6 @@
 package com.aconno.sensorics.ui.device_main
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -9,6 +8,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.support.design.widget.Snackbar
+import android.support.v7.app.AlertDialog
 import android.view.*
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient

@@ -1,50 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.configure.BeaconGeneralFragment">
+    android:fillViewport="true"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
 
-        <include layout="@layout/card_frame_type" />
-
-        <android.support.v7.widget.CardView
-            style="@style/DefaultCard"
+        <include
+            layout="@layout/card_frame_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:contentPadding="6dp">
+            android:layout_marginTop="10dp" />
+
+        <android.support.design.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="7dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/tv_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="@string/advertising_content"
-                    android:textColor="@color/primaryColor"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <FrameLayout
                     android:id="@+id/fl_advertising_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>
+        </android.support.design.card.MaterialCardView>
 
+        <include
+            layout="@layout/card_base_params"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
 
-        </android.support.v7.widget.CardView>
-
-        <include layout="@layout/card_base_params" />
-
-        <include layout="@layout/card_trigger" />
+        <include
+            layout="@layout/card_trigger"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
     </LinearLayout>
+</ScrollView>
 
-</FrameLayout>

@@ -1,146 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/DefaultCard"
+<android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:contentPadding="6dp">
+    card_view:cardCornerRadius="7dp">
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Settings"
-            android:textColor="@color/primaryColor"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:text="@string/settings"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-        <TableLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:stretchColumns="*"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title">
+        <android.support.design.circularreveal.CircularRevealGridLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="10dp"
+            android:alignmentMode="alignBounds"
+            android:columnCount="3"
+            android:rowCount="2"
+            android:useDefaultMargins="true">
 
-            <TableRow>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:paddingTop="10dp"
+                android:orientation="vertical">
 
-                <android.support.v7.widget.CardView
+                <Switch
+                    android:id="@+id/switch_connectible"
                     android:layout_width="wrap_content"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    app:contentPadding="8dp">
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="0dp"
-                        android:orientation="vertical">
-
-                        <Switch
-                            android:id="@+id/switch_connectible"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:text="@string/connectible"
-                            android:textColor="@color/primaryColor" />
-                    </LinearLayout>
-                </android.support.v7.widget.CardView>
-
-                <android.support.v7.widget.CardView
-                    android:id="@+id/cv_button_update_firmware"
+                <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:contentPadding="8dp">
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="#000"
+                    android:gravity="center"
+                    android:text="@string/connectible" />
+            </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:text="@string/update_firmware"
-                        android:textColor="@color/primaryColor" />
-                </android.support.v7.widget.CardView>
+            <android.support.design.button.MaterialButton
+                android:id="@+id/cv_button_update_firmware"
+                android:layout_width="0dp"
+                android:textAllCaps="false"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:background="?attr/selectableItemBackground"
+                android:layout_gravity="fill"
+                android:gravity="center"
+                android:text="@string/update_firmware" />
 
-                <android.support.v7.widget.CardView
-                    android:id="@+id/cv_button_reset_factory"
-                    android:layout_width="wrap_content"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:contentPadding="8dp">
+            <android.support.design.button.MaterialButton
+                android:id="@+id/cv_button_reset_factory"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="?attr/selectableItemBackground"
+                android:layout_rowWeight="1"
+                android:textAllCaps="false"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:gravity="center"
+                android:text="@string/reset_factory" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:text="@string/reset_factory"
-                        android:textColor="@color/primaryColor" />
-                </android.support.v7.widget.CardView>
-            </TableRow>
+            <android.support.design.button.MaterialButton
+                android:id="@+id/cv_button_power_off"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:textAllCaps="false"
+                android:background="?attr/selectableItemBackground"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:gravity="center"
+                android:text="@string/power_off" />
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="74dp">
-
-                <android.support.v7.widget.CardView
-                    android:id="@+id/cv_button_power_off"
-                    android:layout_width="wrap_content"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:contentPadding="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:text="@string/power_off"
-                        android:textColor="@color/primaryColor" />
-                </android.support.v7.widget.CardView>
-
-                <android.support.v7.widget.CardView
-                    android:id="@+id/cv_button_add_password"
-                    android:layout_width="wrap_content"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:contentPadding="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:text="@string/add_password"
-                        android:textColor="@color/primaryColor" />
-                </android.support.v7.widget.CardView>
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp" />
-            </TableRow>
-        </TableLayout>
-    </android.support.constraint.ConstraintLayout>
-</android.support.v7.widget.CardView>
+            <android.support.design.button.MaterialButton
+                android:id="@+id/cv_button_add_password"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:textAllCaps="false"
+                android:background="?attr/selectableItemBackground"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:gravity="center"
+                android:text="@string/add_password" />
+        </android.support.design.circularreveal.CircularRevealGridLayout>
+    </LinearLayout>
+</android.support.design.card.MaterialCardView>

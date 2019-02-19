@@ -30,12 +30,7 @@ class BeaconParameterFragment : Fragment() {
         return view
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
     companion object {
-
         @JvmStatic
         fun newInstance() =
             BeaconParameterFragment()

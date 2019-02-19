@@ -1,77 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/DefaultCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:contentPadding="6dp">
+    card_view:cardCornerRadius="7dp">
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="Feature Info"
-            android:textColor="@color/primaryColor"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-        <TableLayout
-            android:layout_width="0dp"
+        <android.support.design.circularreveal.CircularRevealGridLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:stretchColumns="*"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tv_title"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title">
+            android:layout_marginTop="10dp"
+            android:alignmentMode="alignBounds"
+            android:columnCount="2"
+            android:rowCount="2"
+            android:useDefaultMargins="true">
 
-            <TableRow>
+            <!--Row 1-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:text="@string/supported_tx_power" />
 
-                <TextView android:text="@string/supported_tx_power" />
+            <TextView
+                android:id="@+id/tv_supported_tx_power"
+                style="@style/TextAppearance.Tiny"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:gravity="end"
+                tools:text="-40, -20, -16, -12, -8, -4, 0, 4" />
 
-                <TextView
-                    android:id="@+id/tv_supported_tx_power"
-                    style="@style/TextAppearance.Tiny"
-                    android:gravity="end"
-                    tools:text="-40, -20, -16, -12, -8, -4, 0, 4" />
-            </TableRow>
+            <!--Row 2-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:text="@string/supported_slots" />
 
-            <TableRow>
+            <TextView
+                android:id="@+id/tv_supported_slots"
+                style="@style/TextAppearance.Tiny"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:gravity="end"
+                tools:text="UID, URL, TLM, iBeacon, DeviceInfo" />
 
-                <TextView android:text="@string/supported_slots" />
+            <!--Row 3-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:text="@string/adv_feature" />
 
-                <TextView
-                    android:id="@+id/tv_supported_slots"
-                    style="@style/TextAppearance.Tiny"
-                    android:gravity="end"
-                    tools:text="UID, URL, TLM, iBeacon, DeviceInfo" />
-            </TableRow>
+            <TextView
+                android:id="@+id/tv_adv_feature"
+                style="@style/TextAppearance.Tiny"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:gravity="end"
+                tools:text="ADV_TX_POWER_SUPPORTED" />
 
-            <TableRow>
+            <!--Row 4-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:text="@string/slot_amount" />
 
-                <TextView android:text="@string/adv_feature" />
+            <TextView
+                android:id="@+id/tv_slot_amt"
+                style="@style/TextAppearance.Tiny"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:gravity="end"
+                tools:text="6" />
 
-                <TextView
-                    android:id="@+id/tv_adv_feature"
-                    style="@style/TextAppearance.Tiny"
-                    android:gravity="end"
-                    tools:text="ADV_TX_POWER_SUPPORTED" />
-            </TableRow>
-
-            <TableRow>
-
-                <TextView android:text="@string/slot_amount" />
-
-                <TextView
-                    android:id="@+id/tv_slot_amt"
-                    style="@style/TextAppearance.Tiny"
-                    android:gravity="end"
-                    tools:text="6" />
-            </TableRow>
-        </TableLayout>
-    </android.support.constraint.ConstraintLayout>
-</android.support.v7.widget.CardView>
+        </android.support.design.circularreveal.CircularRevealGridLayout>
+    </LinearLayout>
+</android.support.design.card.MaterialCardView>

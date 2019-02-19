@@ -14,11 +14,11 @@ class FrameTypeAdapter(context: Context, types: Array<Type>) :
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View = convertView
             ?: LayoutInflater.from(context).inflate(
-                android.R.layout.simple_spinner_item,
+                android.R.layout.simple_spinner_dropdown_item,
                 parent,
                 false
             )
-        view.findViewById<TextView>(android.R.id.text1).text = getItem(position).name
+        view.findViewById<TextView>(android.R.id.text1).text = getItem(position)?.name ?: ""
         return view
     }
 
@@ -29,7 +29,7 @@ class FrameTypeAdapter(context: Context, types: Array<Type>) :
                 parent,
                 false
             )
-        view.findViewById<TextView>(android.R.id.text1).text = getItem(position).name
+        view.findViewById<TextView>(android.R.id.text1).text = getItem(position)?.name ?: ""
         return view
     }
 }

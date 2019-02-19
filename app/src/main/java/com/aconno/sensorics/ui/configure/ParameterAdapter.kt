@@ -214,7 +214,7 @@ class ParameterAdapter(val beacon: Beacon) : RecyclerView.Adapter<ParameterAdapt
             itemView.sp_parameter.isEnabled = parameter.writable
             itemView.sp_parameter.adapter = ArrayAdapter<String>(
                 itemView.context,
-                android.R.layout.simple_spinner_item,
+                android.R.layout.simple_spinner_dropdown_item,
                 parameter.choices!!
             )
 

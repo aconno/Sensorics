@@ -79,6 +79,8 @@ class ConfigureActivity : DaggerAppCompatActivity(),
         }
 
         setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
 
         //Set titlebar
         supportActionBar?.title = device.getRealName()
@@ -100,6 +102,7 @@ class ConfigureActivity : DaggerAppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_save -> writeConfig()
+            android.R.id.home -> finish()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
