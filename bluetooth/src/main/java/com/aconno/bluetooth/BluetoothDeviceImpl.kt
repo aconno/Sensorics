@@ -6,23 +6,12 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattService
 import android.content.Context
+import com.aconno.bluetooth.tasks.ReadTask
+import com.aconno.bluetooth.tasks.Task
+import com.aconno.bluetooth.tasks.WriteTask
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.LinkedBlockingDeque
-
-const val GATT_FAILED_TO_REQUEST: Int = -4
-const val GATT_ERROR: Int = -3
-const val GATT_MAX_RETRIES: Int = -2
-const val GATT_NOT_CONNECTED: Int = -1
-const val GATT_SUCCESS: Int = 0
-
-const val MAX_PACKET_SIZE: Int = 20
-
-fun ByteArray.extendOrShorten(length: Int, init: (Int) -> Byte = { 0 }): ByteArray =
-    if (this.size < length) this + ByteArray(
-        length - this.size,
-        init
-    ) else if (this.size > length) this.copyOfRange(0, length) else this
 
 class BluetoothDeviceImpl(
     val context: Context,
@@ -166,6 +155,8 @@ class BluetoothDeviceImpl(
     }
 
     override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+        gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
+
         services = gatt.services
         gatt.services.flatMap { it.characteristics }
             .associateBy { it.uuid.toString() } // TODO: Get Real Characteristic Faster
@@ -252,40 +243,12 @@ class BluetoothDeviceImpl(
         }
     }
 
-    override fun onDescriptorRead(
-        gatt: BluetoothGatt?,
-        descriptor: BluetoothGattDescriptor?,
-        status: Int
-    ) {
-        super.onDescriptorRead(gatt, descriptor, status)
+    companion object {
+        const val GATT_FAILED_TO_REQUEST: Int = -4
+        const val GATT_ERROR: Int = -3
+        const val GATT_MAX_RETRIES: Int = -2
+        const val GATT_NOT_CONNECTED: Int = -1
+        const val GATT_SUCCESS: Int = 0
+        const val MAX_PACKET_SIZE: Int = 20
     }
-
-    override fun onDescriptorWrite(
-        gatt: BluetoothGatt?,
-        descriptor: BluetoothGattDescriptor?,
-        status: Int
-    ) {
-        super.onDescriptorWrite(gatt, descriptor, status)
-    }
-
-    override fun onReliableWriteCompleted(gatt: BluetoothGatt?, status: Int) {
-        super.onReliableWriteCompleted(gatt, status)
-    }
-
-    override fun onReadRemoteRssi(gatt: BluetoothGatt?, rssi: Int, status: Int) {
-        super.onReadRemoteRssi(gatt, rssi, status)
-    }
-
-    override fun onMtuChanged(gatt: BluetoothGatt?, mtu: Int, status: Int) {
-        super.onMtuChanged(gatt, mtu, status)
-    }
-
-    override fun onPhyRead(gatt: BluetoothGatt?, txPhy: Int, rxPhy: Int, status: Int) {
-        super.onPhyRead(gatt, txPhy, rxPhy, status)
-    }
-
-    override fun onPhyUpdate(gatt: BluetoothGatt?, txPhy: Int, rxPhy: Int, status: Int) {
-        super.onPhyUpdate(gatt, txPhy, rxPhy, status)
-    }
-
 }

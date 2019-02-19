@@ -22,6 +22,7 @@ class BluetoothDeviceService : Service() {
         bluetoothDeviceImpl?.connect(false, object : BluetoothGattCallback() {
             override fun onDeviceDisconnected(device: BluetoothDevice) {
                 Timber.wtf("Disconnected somehow")
+                loadingTasksUIInterface.onDisconnected()
             }
 
             override fun onServicesDiscovered(device: BluetoothDevice) {
@@ -75,6 +76,7 @@ class BluetoothDeviceService : Service() {
         fun onTaskComplete(tasksCompleted: Int, tasksTotal: Int)
         fun onTasksComplete(beacon: Beacon)
         fun onTasksCancelled()
+        fun onDisconnected()
     }
 
     inner class LocalBinder : Binder() {

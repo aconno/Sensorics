@@ -1,9 +1,9 @@
 package com.aconno.bluetooth.beacon
 
-import com.aconno.bluetooth.ReadTask
-import com.aconno.bluetooth.Task
 import com.aconno.bluetooth.UUIDProvider
-import com.aconno.bluetooth.WriteTask
+import com.aconno.bluetooth.tasks.ReadTask
+import com.aconno.bluetooth.tasks.Task
+import com.aconno.bluetooth.tasks.WriteTask
 import timber.log.Timber
 import java.nio.ByteOrder
 import java.nio.charset.Charset

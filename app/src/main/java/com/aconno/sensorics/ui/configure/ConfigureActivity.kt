@@ -158,6 +158,15 @@ class ConfigureActivity : DaggerAppCompatActivity(),
     private fun openConnection() {
         serviceConnect?.connectToBluetoothDevice(object :
             BluetoothDeviceService.LoadingTasksUIInterface {
+
+            override fun onDisconnected() {
+                runOnUiThread {
+                    Toast.makeText(this@ConfigureActivity, "Disconnected", Toast.LENGTH_SHORT)
+                        .show()
+                    finish()
+                }
+            }
+
             @SuppressLint("SetTextI18n")
             override fun onTaskComplete(tasksCompleted: Int, tasksTotal: Int) {
                 runOnUiThread {

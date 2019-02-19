@@ -2,6 +2,7 @@ package com.aconno.bluetooth
 
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattService
+import com.aconno.bluetooth.tasks.Task
 import java.util.*
 
 interface BluetoothDevice {

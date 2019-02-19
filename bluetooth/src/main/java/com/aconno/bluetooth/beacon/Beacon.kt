@@ -1,7 +1,13 @@
 package com.aconno.bluetooth.beacon
 
 import android.bluetooth.le.ScanResult
-import com.aconno.bluetooth.*
+import com.aconno.bluetooth.BluetoothDevice
+import com.aconno.bluetooth.DeviceSpec
+import com.aconno.bluetooth.UUIDProvider
+import com.aconno.bluetooth.tasks.ReadTask
+import com.aconno.bluetooth.tasks.Task
+import com.aconno.bluetooth.tasks.WriteTask
+import com.aconno.bluetooth.toHex
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
