@@ -83,6 +83,9 @@
             android:name=".ui.configure.ConfigureActivity"
             android:label="@string/title_configure" />
 
+        <activity android:name=".ui.logs.LoggingActivity"
+            android:label="@string/logging"/>
+
         <activity
             android:name=".ui.SplashActivity"
             android:noHistory="true"

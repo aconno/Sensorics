@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.aconno.sensorics.ui.logs.LogTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_log"
+    style="@style/LogTextAppearance"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textIsSelectable="true"
+    android:padding="@dimen/log_item_padding"
+    tools:text="Hello world" />

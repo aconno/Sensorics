@@ -25,6 +25,7 @@ import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
+import com.aconno.sensorics.ui.logs.LoggingActivity
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.gson.Gson
 import dagger.android.support.DaggerFragment
@@ -251,14 +252,9 @@ class DeviceMainFragment : DaggerFragment() {
                     return true
                 }
                 R.id.action_start_logging_activity -> {
-                    this.view?.let {
-                        Snackbar.make(
-                            it,
-                            "Functionality coming soon.",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
+                    getContext()?.let {
+                        LoggingActivity.start(it, mDevice)
                     }
-                    //TODO: Implement Logger functionality
                     return true
                 }
                 else -> {

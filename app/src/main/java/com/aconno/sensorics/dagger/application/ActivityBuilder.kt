@@ -15,6 +15,8 @@ import com.aconno.sensorics.dagger.configure.ConfigurationScope
 import com.aconno.sensorics.dagger.deviceselect.DeviceSelectionFragmentsModule
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherScope
+import com.aconno.sensorics.dagger.logging.LoggingModule
+import com.aconno.sensorics.dagger.logging.LoggingScope
 import com.aconno.sensorics.dagger.mainactivity.MainActivityFragmentsModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityScope
@@ -34,6 +36,7 @@ import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.SplashActivity
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.aconno.sensorics.ui.configure.ConfigureActivity
+import com.aconno.sensorics.ui.logs.LoggingActivity
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
@@ -104,4 +107,8 @@ abstract class ActivityBuilder {
     @ConfigurationScope
     @ContributesAndroidInjector(modules = [ConfigurationModule::class])
     abstract fun bindConfigureActivity(): ConfigureActivity
+
+    @LoggingScope
+    @ContributesAndroidInjector(modules = [LoggingModule::class])
+    abstract fun bindLoggingActivity(): LoggingActivity
 }

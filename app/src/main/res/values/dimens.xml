@@ -37,4 +37,5 @@
     <dimen name="graph_line_width">1dp</dimen>
     <dimen name="graph_circle_radius">1dp</dimen>
     <dimen name="border_height">1dp</dimen>
+    <dimen name="log_item_padding">8dp</dimen>
 </resources>
