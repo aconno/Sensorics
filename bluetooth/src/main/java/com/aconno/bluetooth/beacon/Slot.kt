@@ -136,14 +136,14 @@ class Slot(
         return object : ReadTask(UUIDProvider.provideFullUUID("B008")) {
             override fun onSuccess(value: ByteArray) {
                 // TODO: Domingo ne zna programirat
-                try {
-                    triggerType =
-                        TriggerType.values()[com.aconno.bluetooth.ValueConverter.UINT8.converter.deserialize(
-                            byteArrayOf(value[0])
-                        ).toString().toInt()]
+                triggerType = try {
+                    TriggerType.values()[com.aconno.bluetooth.ValueConverter.UINT8.converter.deserialize(
+                        byteArrayOf(value[0])
+                    ).toString().toInt()]
                 } catch (e: Exception) {
-                    triggerType = TriggerType.DOUBLE_TAP
+                    TriggerType.DOUBLE_TAP
                 }
+
             }
 
             override fun onError(error: Int) {
@@ -341,46 +341,88 @@ class Slot(
                 ).length).toByte()
             }
         }),
-        TLM("TLM", false),
-        I_BEACON("iBeacon", true, {
-            mutableMapOf<String, Any>().apply {
-                UUID.randomUUID()
-                put(KEY_ADVERTISING_CONTENT_IBEACON_UUID, bytesToUUID(it.copyOfRange(9, 25)))
-                put(
-                    KEY_ADVERTISING_CONTENT_IBEACON_MAJOR,
-                    ValueConverter.UINT16.converter.deserialize(it.copyOfRange(25, 27)) as Int
-                )
-                put(
-                    KEY_ADVERTISING_CONTENT_IBEACON_MINOR,
-                    ValueConverter.UINT16.converter.deserialize(it.copyOfRange(27, 29)) as Int
-                )
-            }
+
+        TLM("TLM", true, {
+            mutableMapOf<String, Any>()
         }, {
-            val uuid: UUID = it[KEY_ADVERTISING_CONTENT_IBEACON_UUID] as UUID
-            val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR] as Int
-            val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR] as Int
-            byteArrayOf(0x02, 0x01, 0x06, 0x1A, 0xFF.toByte(), 0x00, 0x4C, 0x02, 0x15) +
-                    uuid.toBytes() +
-                    ValueConverter.UINT16.converter.serialize(major) +
-                    ValueConverter.UINT16.converter.serialize(minor) +
-                    kotlin.byteArrayOf(0x01)
-        }),
+            // TODO: Embed parameter values in here, talk to Dominik
+            kotlin.byteArrayOf(
+                0x02,
+                0x01,
+                0x06,
+                0x03,
+                0x03,
+                0xAA.toByte(),
+                0xFE.toByte(),
+                0x03 + 0x03,
+                0x16,
+                0xAA.toByte(),
+                0xFE.toByte()
+            ) +
+                    kotlin.byteArrayOf(
+                        0x20,
+                        0x00,
+                        0x00,
+                        0x01,
+                        0x00,
+                        0x02,
+                        0x12,
+                        0x34,
+                        0x56,
+                        0x78,
+                        0x87.toByte(),
+                        0x65,
+                        0x43,
+                        0x21
+                    )
+        })
+        ,
+        I_BEACON("iBeacon", true,
+            {
+                mutableMapOf<String, Any>().apply {
+                    UUID.randomUUID()
+                    put(KEY_ADVERTISING_CONTENT_IBEACON_UUID, bytesToUUID(it.copyOfRange(9, 25)))
+                    put(
+                        KEY_ADVERTISING_CONTENT_IBEACON_MAJOR,
+                        ValueConverter.UINT16.converter.deserialize(it.copyOfRange(25, 27)) as Int
+                    )
+                    put(
+                        KEY_ADVERTISING_CONTENT_IBEACON_MINOR,
+                        ValueConverter.UINT16.converter.deserialize(it.copyOfRange(27, 29)) as Int
+                    )
+                }
+            },
+            {
+                val uuid: UUID = it[KEY_ADVERTISING_CONTENT_IBEACON_UUID] as UUID
+                val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR] as Int
+                val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR] as Int
+                byteArrayOf(0x02, 0x01, 0x06, 0x1A, 0xFF.toByte(), 0x00, 0x4C, 0x02, 0x15) +
+                        uuid.toBytes() +
+                        ValueConverter.UINT16.converter.serialize(major) +
+                        ValueConverter.UINT16.converter.serialize(minor) +
+                        kotlin.byteArrayOf(0x01)
+            }),
         DEVICE_INFO("DeviceInfo", false),
         EMPTY("-", false),
-        CUSTOM("Custom", true, {
-            mutableMapOf<String, Any>().apply {
-                put(
-                    KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM,
-                    it.copyOfRange(2, it.size).toString(charset = Charset.forName("ASCII")).trim(
-                        0x00.toChar()
+        CUSTOM("Custom", true,
+            {
+                mutableMapOf<String, Any>().apply {
+                    put(
+                        KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM,
+                        it.copyOfRange(
+                            2,
+                            it.size
+                        ).toString(charset = Charset.forName("ASCII")).trim(
+                            0x00.toChar()
+                        )
                     )
-                )
-            }
-        }, {
-            val msd =
-                (it[KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM] as String).toByteArray(Charset.defaultCharset())
-            byteArrayOf((0x01 + msd.size).toByte(), 0xFF.toByte()) + msd
-        })
+                }
+            },
+            {
+                val msd =
+                    (it[KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM] as String).toByteArray(Charset.defaultCharset())
+                byteArrayOf((0x01 + msd.size).toByte(), 0xFF.toByte()) + msd
+            })
     }
 
     enum class TriggerType(
