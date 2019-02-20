@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
-import android.widget.EditText
+import android.widget.Toast
 import com.aconno.bluetooth.beacon.Slot
 import com.aconno.bluetooth.beacon.Slot.Companion.EXTRA_BEACON_SLOT_POSITION
 import com.aconno.bluetooth.beacon.Slot.Companion.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM
@@ -27,7 +27,6 @@ import kotlinx.android.synthetic.main.input_table_adv_content_custom.view.*
 import kotlinx.android.synthetic.main.input_table_adv_content_ibeacon.view.*
 import kotlinx.android.synthetic.main.input_table_adv_content_uid.view.*
 import kotlinx.android.synthetic.main.input_table_adv_content_url.view.*
-import timber.log.Timber
 import java.util.*
 
 class AdvertisingContentFragment : Fragment(), TextWatcher, CompoundButton.OnCheckedChangeListener {
@@ -154,29 +153,39 @@ class AdvertisingContentFragment : Fragment(), TextWatcher, CompoundButton.OnChe
                                 editable.toString()
                             it.et_instance_id.id -> slot.slotAdvertisingContent[KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID] =
                                 editable.toString()
-                            else -> DEBUG_LISTENER(textView)
+                            else -> throw IllegalStateException("Other EditTexts should not exist on the UID Slot Type")
                         }
                     }
                     Slot.Type.URL -> {
                         when (textView.id) {
                             it.et_url.id -> slot.slotAdvertisingContent[KEY_ADVERTISING_CONTENT_URL_URL] =
                                 editable.toString()
-                            else -> DEBUG_LISTENER(textView)
+                            else -> throw IllegalStateException("Other EditTexts should not exist on the URL Slot Type")
                         }
                     }
                     Slot.Type.I_BEACON -> {
                         when (textView.id) {
                             it.et_uuid.id -> slot.slotAdvertisingContent[KEY_ADVERTISING_CONTENT_IBEACON_UUID] =
                                 try {
-                                    UUID.fromString(editable.toString())
+                                    val uuid: UUID =
+                                        UUID.fromString(editable.toString()) // TODO: Validity to TextInputLayout
+                                    Toast.makeText(context, "UUID is valid.", Toast.LENGTH_SHORT)
+                                        .show()
+                                    uuid
                                 } catch (e: Exception) {
-                                    ""
+                                    Toast.makeText(
+                                        context,
+                                        "Invalid UUID, zeroed UUID will be used.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    UUID.fromString("00000000-0000-0000-0000-000000000000")
+
                                 }
                             it.et_major.id -> slot.slotAdvertisingContent[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR] =
-                                editable.toString().toInt()
+                                editable.toString().toIntOrNull() ?: 0
                             it.et_minor.id -> slot.slotAdvertisingContent[KEY_ADVERTISING_CONTENT_IBEACON_MINOR] =
-                                editable.toString().toInt()
-                            else -> DEBUG_LISTENER(textView)
+                                editable.toString().toIntOrNull() ?: 0
+                            else -> throw IllegalStateException("Other EditTexts should not exist on the iBeacon Slot Type")
                         }
                     }
                     Slot.Type.CUSTOM -> {
@@ -187,7 +196,7 @@ class AdvertisingContentFragment : Fragment(), TextWatcher, CompoundButton.OnChe
                                     ENCODING_FOR_CUSTOM
                                 ) else this.et_custom.text.toString()
                             )
-                            else -> DEBUG_LISTENER(textView)
+                            else -> throw IllegalStateException("Other EditTexts should not exist on the Custom Slot Type")
                         }
                     }
                     else -> TODO()
@@ -195,12 +204,6 @@ class AdvertisingContentFragment : Fragment(), TextWatcher, CompoundButton.OnChe
 
             }
         }
-    }
-
-    private fun DEBUG_LISTENER(textView: View) {
-        Timber.e("Dominik me zeli zajebavat, ode nes u kurac, mozda on stisnuo.")
-        Timber.e((textView as EditText).text.toString())
-        Timber.e(textView.id.toString())
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

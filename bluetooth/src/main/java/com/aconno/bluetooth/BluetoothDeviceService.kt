@@ -16,7 +16,6 @@ class BluetoothDeviceService : Service() {
         loadingTasksUIInterface: LoadingTasksUIInterface,
         macAddress: String
     ) {
-        Timber.d("Called")
         val remoteDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(macAddress)
         bluetoothDeviceImpl = BluetoothDeviceImpl(this, remoteDevice)
         bluetoothDeviceImpl?.connect(false, object : BluetoothGattCallback() {
@@ -28,7 +27,7 @@ class BluetoothDeviceService : Service() {
             override fun onServicesDiscovered(device: BluetoothDevice) {
                 super.onServicesDiscovered(device)
 
-                val beacon = Beacon(device, address = macAddress, rssi = -1)
+                val beacon = Beacon(device, address = macAddress)
                 val taskListener = object : TasksCompleteListener() {
                     override fun onTaskComplete(tasksCompleted: Int, tasksTotal: Int) {
                         Timber.e("Task Complete")

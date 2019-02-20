@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattService
 import android.content.Context
+import android.os.RemoteException
 import com.aconno.bluetooth.tasks.ReadTask
 import com.aconno.bluetooth.tasks.Task
 import com.aconno.bluetooth.tasks.WriteTask
@@ -17,15 +18,14 @@ class BluetoothDeviceImpl(
     val context: Context,
     val device: android.bluetooth.BluetoothDevice
 ) : BluetoothDevice, android.bluetooth.BluetoothGattCallback() {
-    val BLE_TAG = Timber.tag("BLE-Status")
+    private val BLE_TAG = Timber.tag("BLE-Status")
     override fun disconnect() {
         gatt?.disconnect()
     }
 
-    var callbacks: MutableList<BluetoothGattCallback> = mutableListOf()
-    var listeners: MutableList<TasksCompleteListener> = mutableListOf()
+    private var callbacks: MutableList<BluetoothGattCallback> = mutableListOf()
+    private var listeners: MutableList<TasksCompleteListener> = mutableListOf()
     var gatt: BluetoothGatt? = null
-
 
     override var services: MutableList<BluetoothGattService> = mutableListOf()
     var connectionState = STATE_DISCONNECTED
@@ -101,6 +101,16 @@ class BluetoothDeviceImpl(
     }
 
     private fun processQueue() {
+        try {
+            processQueueInternal()
+        } catch (e: RemoteException) {
+            // This is here because otherwise we would have to listed to onBluetoothDown
+            // events and sometimes even they are not broadcasted as soon as bluetooth turns off
+            gatt?.disconnect()
+        }
+    }
+
+    private fun processQueueInternal() {
         queue.peek()?.let { task ->
             if (!task.active) gatt.let { gatt ->
                 if (connectionState == STATE_CONNECTED && gatt != null) {
@@ -109,7 +119,13 @@ class BluetoothDeviceImpl(
                         is ReadTask -> {
                             BLE_TAG.i("Reading from ${task.realCharacteristic.uuid}...")
                             if (!gatt.readCharacteristic(task.realCharacteristic)) {
-                                task.onError(GATT_FAILED_TO_REQUEST)
+                                try {
+                                    task.onError(GATT_FAILED_TO_REQUEST)
+                                } catch (ex: Exception) {
+                                    disconnect()
+                                    throw ex
+                                }
+
                                 queue.remove()
                                 processQueue()
                             }
@@ -124,7 +140,14 @@ class BluetoothDeviceImpl(
                                         ) else task.value
                                     writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
                                 })) {
-                                task.onError(GATT_FAILED_TO_REQUEST)
+
+                                try {
+                                    task.onError(GATT_FAILED_TO_REQUEST)
+                                } catch (e: Exception) {
+                                    disconnect()
+                                    throw e
+                                }
+
                                 queue.remove()
                                 processQueue()
                             }
@@ -190,7 +213,14 @@ class BluetoothDeviceImpl(
                 this.taskQueue.reversed().forEach { insertTask(it) }
             } else {
                 BLE_TAG.e("Reading failed for ${characteristic.uuid} with status $status!")
-                this.onError(status)
+
+                try {
+                    this.onError(status)
+                } catch (e: Exception) {
+                    disconnect()
+                    throw e
+                }
+
                 this.taskQueue.reversed().forEach { insertTask(it) }
             }
         }
@@ -213,7 +243,7 @@ class BluetoothDeviceImpl(
                         bytesWritten = bytesWritten + MAX_PACKET_SIZE
                     ) {
                         override fun onError(error: Int) {
-                            onError(error)
+                            this@with.onError(error)
                         }
 
                         override fun onSuccess() {
@@ -228,7 +258,13 @@ class BluetoothDeviceImpl(
             } else {
                 BLE_TAG.e("Writing failed for ${characteristic.uuid} with status $status!")
                 this.taskQueue.reversed().forEach { insertTask(it) }
-                this.onError(status)
+
+                try {
+                    this.onError(status)
+                } catch (e: Exception) {
+                    disconnect()
+                    throw e
+                }
             }
         }
         processQueue()

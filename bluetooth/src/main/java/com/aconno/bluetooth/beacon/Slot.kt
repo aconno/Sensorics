@@ -5,12 +5,26 @@ import com.aconno.bluetooth.tasks.ReadTask
 import com.aconno.bluetooth.tasks.Task
 import com.aconno.bluetooth.tasks.WriteTask
 import timber.log.Timber
+import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.Charset
+import java.util.*
 
 fun ByteArray.stringLength(offset: Int = 0): Int {
     for (i in offset until this.size) if (this[i] == 0x00.toByte()) return i - offset + 1
     return this.size - offset
+}
+
+fun UUID.toBytes(): ByteArray {
+    val bb = ByteBuffer.wrap(ByteArray(16))
+    bb.putLong(this.mostSignificantBits)
+    bb.putLong(this.leastSignificantBits)
+    return bb.array()
+}
+
+fun bytesToUUID(bytes: ByteArray): UUID {
+    val bb = ByteBuffer.wrap(bytes)
+    return UUID(bb.long, bb.long)
 }
 
 class Slot(
@@ -328,7 +342,29 @@ class Slot(
             }
         }),
         TLM("TLM", false),
-        I_BEACON("iBeacon", true),
+        I_BEACON("iBeacon", true, {
+            mutableMapOf<String, Any>().apply {
+                UUID.randomUUID()
+                put(KEY_ADVERTISING_CONTENT_IBEACON_UUID, bytesToUUID(it.copyOfRange(9, 25)))
+                put(
+                    KEY_ADVERTISING_CONTENT_IBEACON_MAJOR,
+                    ValueConverter.UINT16.converter.deserialize(it.copyOfRange(25, 27)) as Int
+                )
+                put(
+                    KEY_ADVERTISING_CONTENT_IBEACON_MINOR,
+                    ValueConverter.UINT16.converter.deserialize(it.copyOfRange(27, 29)) as Int
+                )
+            }
+        }, {
+            val uuid: UUID = it[KEY_ADVERTISING_CONTENT_IBEACON_UUID] as UUID
+            val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR] as Int
+            val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR] as Int
+            byteArrayOf(0x02, 0x01, 0x06, 0x1A, 0xFF.toByte(), 0x00, 0x4C, 0x02, 0x15) +
+                    uuid.toBytes() +
+                    ValueConverter.UINT16.converter.serialize(major) +
+                    ValueConverter.UINT16.converter.serialize(minor) +
+                    kotlin.byteArrayOf(0x01)
+        }),
         DEVICE_INFO("DeviceInfo", false),
         EMPTY("-", false),
         CUSTOM("Custom", true, {

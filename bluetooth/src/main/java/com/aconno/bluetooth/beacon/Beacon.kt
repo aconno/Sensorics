@@ -153,7 +153,7 @@ class Beacon(
 
     private fun writeAbstractData(incremental: Boolean): List<Task> {
         return gson.toJson(abstractDataMapped).let { json ->
-            if (json != abstractData || !incremental) (0 until 4).map {
+            if (json != abstractData || !incremental) (0 until ABSTRACT_DATA_CHUNK_COUNT).map {
                 object : WriteTask(
                     UUIDProvider.provideFullUUID("E001"),
                     json.toByteArray().extendOrShorten(200).copyOfRange(it * 50, it * 50 + 50)
