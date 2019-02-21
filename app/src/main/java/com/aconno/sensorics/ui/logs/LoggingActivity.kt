@@ -178,8 +178,8 @@ class LoggingActivity : DaggerAppCompatActivity() {
             @SuppressLint("SetTextI18n")
             override fun onTaskComplete(tasksCompleted: Int, tasksTotal: Int) {
                 runOnUiThread {
-                    val log = "Connection Progress Tasks Completed: $tasksCompleted/$tasksTotal"
-                    log(log)
+                    val info = "Connection Progress Tasks Completed: $tasksCompleted/$tasksTotal"
+                    log(info)
                 }
             }
 
