@@ -248,4 +248,9 @@
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
 
+    <!--Logging-->
+    <string name="disconnected">Disconnected</string>
+    <string name="tasks_completed_format">Tasks completed: %1$d/%2$d</string>
+    <string name="all_tasks_completed"></string>
+
 </resources>

@@ -61,7 +61,7 @@ class LoggingActivity : DaggerAppCompatActivity() {
     private val beaconObserver: Observer<Beacon> = Observer {
         val device = it?.device
         device?.apply {
-            val uuid = UUID.fromString("cc52a001-9adb-4c37-bc48-376f5fee8851")
+            val uuid = UUID.fromString(LOG_UUID)
             setCharacteristicNotification(uuid, true)
             addCharacteristicChangedListener(uuid, object : CharacteristicChangedListener {
                 override fun onCharacteristicChanged(characteristic: BluetoothGattCharacteristic, value: ByteArray) {
@@ -255,8 +255,9 @@ class LoggingActivity : DaggerAppCompatActivity() {
 
     companion object {
         private const val EXTRA_DEVICE = "EXTRA_DEVICE"
-        private const val LOG_DATE_FORMAT = "yyyy-MM-dd hh:mm:ss.S"
+        private const val LOG_DATE_FORMAT = "yyyy-MM-dd hh:mm:ss.SS"
         private const val LOG_FORMAT = "%s : %s"
+        private const val LOG_UUID = "cc52a001-9adb-4c37-bc48-376f5fee8851"
         fun start(context: Context, device: Device) {
             Intent(context, LoggingActivity::class.java).apply {
                 putExtra(EXTRA_DEVICE, Gson().toJson(device))
