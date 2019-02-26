@@ -1,0 +1,297 @@
+<html>
+
+<head>
+    <meta name=“viewport” content=“width=device-width,initial-scale=1.0" />
+    <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css" />
+    <style>
+        .margin-sides {
+            margin-left: 0.1em;
+            margin-right: 0.1em;
+        }
+        .label-description {
+            font-size: small;
+            font-weight: bold;
+            color: #666666
+        }
+        .div-text-right {
+            text-align: right
+        }
+        button.responsive-text {
+            font-size: 4.0vw;
+        }
+        label.responsive-text {
+            font-size: 3.0vw;
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="container-fluid">
+    <br/>
+    <h5>Settings</h5>
+    <br/>
+    <div class="row d-flex align-content-stretch flex-wrap">
+        <div align="center" class="col-md-4 col-sm-4 col-4 center">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="tglConnection">
+                <br/>
+                <label class="custom-control-label responsive-text" for="tglConnection">Connection</label>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-4 col-4">
+            <button class="responsive-text btn btn-primary btn-block">Update Firmware</button>
+        </div>
+        <div class="col-md-4 col-sm-4 col-4">
+            <button class="responsive-text btn btn-primary btn-block">Restart Factory</button>
+        </div>
+    </div>
+    <br />
+    <div class="row d-flex align-content-stretch flex-wrap">
+        <div class="col-md-4 col-sm-4 col-4">
+            <button class="responsive-text btn btn-primary btn-block">Power Off</button>
+        </div>
+        <div class="col-md-4 col-sm-4 col-4">
+            <button class="responsive-text btn btn-primary btn-block">Add Password</button>
+        </div>
+        <div class="col-md-4 col-sm-4 col-4"></div>
+    </div>
+    <br/>
+    <br/>
+    <h5>Manufacturer Info</h5>
+    <br/>
+    <div class="row">
+        <div class="col-10">
+            <label class="label-description">Manufacturer</label>
+        </div>
+        <div class="col-2 div-text-right">
+            <label id="lblManufacturer">-</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <label class="label-description">Model</label>
+        </div>
+        <div class="col-2 div-text-right">
+            <label id="lblModel" class="label-variable">-</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <label class="label-description">Software Version</label>
+        </div>
+        <div class="col-2 div-text-right">
+            <label id="lblSoftwareVersion" class="label-variable">-</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <label class="label-description">Hardware Version</label>
+        </div>
+        <div class="col-2 div-text-right">
+            <label id="lblHardwareVersion" class="label-variable">-</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <label class="label-description">Firmware Version</label>
+        </div>
+        <div class="col-2 div-text-right">
+            <label id="lblFirmwareVersion" class="label-variable">-</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <label class="label-description">Mac Address</label>
+        </div>
+        <div class="col-2 div-text-right">
+            <label id="lblMacAddress" class="label-variable">-</label>
+        </div>
+    </div>
+    <br/>
+    <br/>
+    <h5 class="card-title">Feature Info</h5>
+    <div class="row">
+        <div class="col-10">
+            <label class="label-description">Supported Tx Power</label>
+        </div>
+        <div class="col-2 div-text-right">
+            <label id="lblSupportedTxPower" class="label-variable">-</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <label class="label-description">Supported Slots</label>
+        </div>
+        <div class="col-2 div-text-right">
+            <label id="lblSupportedSlots" class="label-variable">-</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <label class="label-description">Adv Feature</label>
+        </div>
+        <div class="col-2 div-text-right">
+            <label id="lblAdvFeature" class="label-variable">-</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <label class="label-description">Slot Amount</label>
+        </div>
+        <div class="col-2 div-text-right">
+            <label id="lblSlotAmount" class="label-variable">-</label>
+        </div>
+    </div>
+</div>
+
+
+<!--<div class="row" style="margin-top: 2em;">-->
+<!--<div class="col-md-12">-->
+<!--<div class="card" >-->
+<!--<div class="card-body">-->
+<!--<h5 class="card-title">Settings</h5>-->
+<!--<div class="row">-->
+<!--<div align="center" class="col-md-4 col-sm-4 col-4 center">-->
+<!--<div class="custom-control custom-switch">-->
+<!--<input type="checkbox" class="custom-control-input" id="tglConnection">-->
+<!--<label class="custom-control-label responsive-text" for="tglConnection">Connection</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="col-md-4 col-sm-4 col-4">-->
+<!--<button class="responsive-text btn btn-primary btn-block">Update Firmware</button>-->
+<!--</div>-->
+<!--<div class="col-md-4 col-sm-4 col-4">-->
+<!--<button class="responsive-text btn btn-primary btn-block">Restart Factory</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--<br />-->
+<!--<div class="row">-->
+<!--<div class="col-md-4 col-sm-4 col-4">-->
+<!--<button class="responsive-text btn btn-primary btn-block">Power Off</button>-->
+<!--</div>-->
+<!--<div class="col-md-4 col-sm-4 col-4">-->
+<!--<button class="responsive-text btn btn-primary btn-block">Add Password</button>-->
+<!--</div>-->
+<!--<div class="col-md-4 col-sm-4 col-4"></div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--<br/>-->
+<!--<div class="row margin-sides">-->
+<!--<div class="col-md-12">-->
+<!--<div class="card">-->
+<!--<div class="card-body">-->
+<!--<h5 class="card-title">Manufacturer Info</h5>-->
+<!--<div class="row">-->
+<!--<div class="col-10">-->
+<!--<label class="label-description">Manufacturer</label>-->
+<!--</div>-->
+<!--<div class="col-2 div-text-right">-->
+<!--<label id="lblManufacturer">-</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="row">-->
+<!--<div class="col-10">-->
+<!--<label class="label-description">Model</label>-->
+<!--</div>-->
+<!--<div class="col-2 div-text-right">-->
+<!--<label id="lblModel" class="label-variable">-</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="row">-->
+<!--<div class="col-10">-->
+<!--<label class="label-description">Software Version</label>-->
+<!--</div>-->
+<!--<div class="col-2 div-text-right">-->
+<!--<label id="lblSoftwareVersion" class="label-variable">-</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="row">-->
+<!--<div class="col-10">-->
+<!--<label class="label-description">Hardware Version</label>-->
+<!--</div>-->
+<!--<div class="col-2 div-text-right">-->
+<!--<label id="lblHardwareVersion" class="label-variable">-</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="row">-->
+<!--<div class="col-10">-->
+<!--<label class="label-description">Firmware Version</label>-->
+<!--</div>-->
+<!--<div class="col-2 div-text-right">-->
+<!--<label id="lblFirmwareVersion" class="label-variable">-</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="row">-->
+<!--<div class="col-10">-->
+<!--<label class="label-description">Mac Address</label>-->
+<!--</div>-->
+<!--<div class="col-2 div-text-right">-->
+<!--<label id="lblMacAddress" class="label-variable">-</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--<br/>-->
+<!--<div class="row margin-sides">-->
+<!--<div class="col-md-12">-->
+<!--<div class="card">-->
+<!--<div class="card-body">-->
+<!--<h5 class="card-title">Feature Info</h5>-->
+<!--<div class="row">-->
+<!--<div class="col-10">-->
+<!--<label class="label-description">Supported Tx Power</label>-->
+<!--</div>-->
+<!--<div class="col-2 div-text-right">-->
+<!--<label id="lblSupportedTxPower" class="label-variable">-</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="row">-->
+<!--<div class="col-10">-->
+<!--<label class="label-description">Supported Slots</label>-->
+<!--</div>-->
+<!--<div class="col-2 div-text-right">-->
+<!--<label id="lblSupportedSlots" class="label-variable">-</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="row">-->
+<!--<div class="col-10">-->
+<!--<label class="label-description">Adv Feature</label>-->
+<!--</div>-->
+<!--<div class="col-2 div-text-right">-->
+<!--<label id="lblAdvFeature" class="label-variable">-</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="row">-->
+<!--<div class="col-10">-->
+<!--<label class="label-description">Slot Amount</label>-->
+<!--</div>-->
+<!--<div class="col-2 div-text-right">-->
+<!--<label id="lblSlotAmount" class="label-variable">-</label>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+
+
+<script src="General.js"></script>
+<script src="../../model/Beacon.js"></script>
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
+<script>
+        $(document).ready(function(){
+            var beacon = Beacon.getTestBeacon();
+            console.log(beacon);
+            GeneralView.Actions.setBeaconInformation(beacon);
+        });
+    </script>
+</body>
+
+</html>
