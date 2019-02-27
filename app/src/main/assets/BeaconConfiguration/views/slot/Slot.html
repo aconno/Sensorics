@@ -1,0 +1,168 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../commons/holo.css"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/css/bootstrap-slider.css"/>
+    <style>
+        .margin-sides {
+            margin-left: 0.1em;
+            margin-right: 0.1em;
+        }
+
+        .label-description {
+            font-size: small;
+            font-weight: bold;
+            color: #666666
+        }
+
+        .div-text-right {
+            text-align: right
+        }
+
+        #slider .slider-selection {
+            background: #BABABA;
+        }
+
+    </style>
+</head>
+
+<body style="background-color: #fafafa">
+<div class="row margin-sides" style="margin-top: 2em;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Frame Type</h5>
+
+                <div class="dropdown">
+                    <button id="btn_frame_type" class="btn btn-primary dropdown-toggle"
+                            style="width: 100%; text-align: left !important;" type="button"
+                            data-toggle="dropdown">Select
+                        <span class="caret"></span></button>
+                    <ul id="dropdown_frame_type" class="dropdown-menu" style="width: 100%;">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row margin-sides" style="margin-top: 1em;">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Advertising Content</h5>
+                <div id="advertising_content" class="panel-body">
+                    <!-- Content is generated -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row margin-sides" style="margin-top: 1em;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Base Parameters</h5>
+
+                <label for="advertising_interval">Advertising Interval</label>
+
+                <div class="row">
+                    <div class="col-8">
+                        <input id="advertising_interval" style="width: 100%;"
+                               data-slider-id='slider' type="text"
+                               data-slider-min="0" data-slider-max="100" data-slider-tooltip="hide"
+                               data-slider-step="1"/>
+                    </div>
+                    <div id="label_advertising_interval" align="right" style="width: 100%;"
+                         class="col-4">
+                        <label>1000ms</label>
+                    </div>
+                </div>
+
+                <label for="rssi_1m" style="margin-top: 1em;">Rssi at 1 meter</label>
+
+                <div class="row">
+                    <div class="col-8">
+                        <input id="rssi_1m" data-slider-id='slider' style="width: 100%;" type="text"
+                               data-slider-min="0" data-slider-max="120" data-slider-tooltip="hide"
+                               data-slider-step="1" data-slider-value="55"/></div>
+                    <div id="label_rssi_1m" align="right" style="width: 100%;" class="col-4">
+                        <label>-55</label>
+                    </div>
+                </div>
+
+                <label for="radio_tx" style="margin-top: 1em;">Radio Tx</label>
+
+                <div class="row">
+                    <div class="col-8">
+                        <input id="radio_tx" data-slider-id='slider' style="width: 100%;"
+                               type="text"
+                               data-slider-min="0" data-slider-max="120" data-slider-tooltip="hide"
+                               data-slider-step="1" data-slider-value="55"/>
+                    </div>
+                    <div id="label_radio_tx" align="right" style="width: 100%;" class="col-4">
+                        <label>-55</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row margin-sides" style="margin-top: 1em;">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Trigger</h5>
+
+                <div class="row">
+                    <div align="left" class="col-6">
+                        <label>Enable</label>
+                    </div>
+                    <div align="right" class="col-6">
+                        <div class="custom-control custom-switch">
+                            <input id="enable_cb" class="custom-control-input" type="checkbox">
+                            <label class="custom-control-label" for="enable_cb"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 1em;">
+                    <div align="left" class="col-6">
+                        <label>Type</label>
+                    </div>
+                    <div align="right" id="label_radio_tx" class="col-6">
+                        <div class="dropdown">
+                            <button id="dropdown_trigger_type"
+                                    class="btn btn-primary dropdown-toggle"
+                                    style="width: 100%;" type="button" data-toggle="dropdown">Select
+                                <span class="caret"></span></button>
+                            <ul style="width: 100%;" class="dropdown-menu">
+                                <li><a class="dropdown-item" id="btn_double_tap" href="#">Button
+                                    Double Tap</a></li>
+                                <li><a class="dropdown-item" id="btn_triple_tap" href="#">Button
+                                    Triple Tap</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../libs/popper.min.js"></script>
+<script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/bootstrap-slider.js"></script>
+<script src="../../model/Slot.js"></script>
+<script src="slot_generator.js"></script>
+<script src="slot_init.js"></script>
+</body>
+
+</html>

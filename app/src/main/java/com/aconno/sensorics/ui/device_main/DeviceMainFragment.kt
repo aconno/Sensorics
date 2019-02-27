@@ -245,7 +245,7 @@ class DeviceMainFragment : DaggerFragment() {
                             .show()
                     }
 
-                    getContext()?.let {
+                    activity?.let {
                         ConfigureActivity.start(it, device = mDevice)
                     }
                     return true
