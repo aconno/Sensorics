@@ -25,6 +25,7 @@ class BeaconGeneral2Fragment : Fragment() {
 
     private fun initiateWebView() {
         webview_general.settings.builtInZoomControls = false
+        webview_general.settings.javaScriptEnabled = true
         webview_general.settings.allowFileAccess = true
         webview_general.settings.allowFileAccessFromFileURLs = true
         webview_general.settings.allowUniversalAccessFromFileURLs = true
@@ -33,7 +34,9 @@ class BeaconGeneral2Fragment : Fragment() {
     }
 
     companion object {
-        const val HTML_FILE_PATH = "file:///android_asset/BeaconConfiguration/views/general/General.html"
+        //        const val HTML_FILE_PATH = "file:///android_asset/BeaconConfiguration/views/slot/Slot.html"
+        const val HTML_FILE_PATH =
+            "file:///android_asset/BeaconConfiguration/views/arbitrary/ArbitraryData.html"
 
         @JvmStatic
         fun newInstance() =
