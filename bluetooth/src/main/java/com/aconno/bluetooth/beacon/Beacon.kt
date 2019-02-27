@@ -14,6 +14,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import io.reactivex.functions.Predicate
 import timber.log.Timber
+import java.io.Serializable
 import java.lang.reflect.Type
 import java.nio.ByteOrder
 
@@ -37,7 +38,7 @@ class Beacon(
     val parameters: MutableMap<String, MutableList<Parameter>> = mutableMapOf(),
     var abstractData: String = "",
     var abstractDataMapped: MutableMap<String, String> = mutableMapOf()
-) : DeviceSpec(device) {
+) : DeviceSpec(device), Serializable {
     val ABSTRACT_DATA_CHUNK_COUNT = 1
     val ABSTRACT_DATA_CHUNK_SIZE = 50
 
