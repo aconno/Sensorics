@@ -48,3 +48,15 @@ fun ByteArray.prependOrShorten(length: Int, init: (Int) -> Byte = { 0 }): ByteAr
 
 fun ByteArray.rangeContentEquals(fromIndex: Int, toIndex: Int, content: ByteArray): Boolean =
     this.copyOfRange(fromIndex, toIndex).contentEquals(content)
+
+fun <T> Array<T>.chunked(size: Int): Array<Array<T>> = Array(
+    Math.ceil(this.size / size.toDouble()).toInt()
+) {
+    this.copyOfRange(it * size, (it + 1) * size)
+}
+
+fun ByteArray.chunked(size: Int): Array<ByteArray> = Array(
+    Math.ceil(this.size / size.toDouble()).toInt()
+) {
+    this.copyOfRange(it * size, (it + 1) * size)
+}

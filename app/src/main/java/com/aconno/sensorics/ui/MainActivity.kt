@@ -23,8 +23,8 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.model.SensoricsPermission
-import com.aconno.sensorics.ui.configure.BeaconGeneral2Fragment
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
+import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragmentListener
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -240,12 +240,12 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
         }
 
-        return BeaconGeneral2Fragment.newInstance()
+//        return BeaconGeneral2Fragment.newInstance()
 
 
-        /*DeviceMainFragment.newInstance(
+        return DeviceMainFragment.newInstance(
             device
-        )*/
+        )
     }
 
     private fun showSavedDevicesFragment() {
