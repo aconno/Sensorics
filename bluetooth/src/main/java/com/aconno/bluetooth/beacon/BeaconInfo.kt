@@ -37,7 +37,7 @@ class BeaconInfo: Serializable {
                 beaconInfo.slotAmount = currentBeacon.slotAmount
             }
             return beaconInfo
-            
+
         }
     }
 
