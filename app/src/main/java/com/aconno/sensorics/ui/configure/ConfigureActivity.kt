@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 
 class ConfigureActivity : DaggerAppCompatActivity(),
-    BeaconGeneralFragment.OnBeaconGeneralFragmentInteractionListener {
+    BeaconGeneralFragmentListener {
 
     @Inject
     lateinit var beaconViewModel: BeaconViewModel
@@ -233,15 +233,6 @@ class ConfigureActivity : DaggerAppCompatActivity(),
         }
     }
 
-    //BeaconGeneralFragment
-    override fun onDataUpdated(bundle: Bundle) {
-        bundle.keySet().forEach {
-            when (it) {
-                BeaconGeneralFragment.EXTRA_BEACON_CONNECTIBLE ->
-                    beaconViewModel.beacon.value?.connectible = bundle.getBoolean(it)
-            }
-        }
-    }
 
     override fun updateFirmware() {
         Toast.makeText(this, "This feature has not been implemented yet!", Toast.LENGTH_SHORT)
