@@ -27,7 +27,7 @@ fun bytesToUUID(bytes: ByteArray): UUID {
     return UUID(bb.long, bb.long)
 }
 
-class Slot(
+data class Slot(
     var type: Type = Type.EMPTY,
     val slotAdvertisingContent: MutableMap<String, Any> = mutableMapOf(),
     var advertisingInterval: Int = 0,
@@ -159,7 +159,7 @@ class Slot(
             readRadioTx(),
             readRssi1m(),
             readTriggerType(),
-            readTriggerType()
+            readTriggerEnabled()
         )
     }
 
@@ -356,9 +356,9 @@ class Slot(
                 )
             }
         }, {
-            val uuid: UUID = it[KEY_ADVERTISING_CONTENT_IBEACON_UUID] as UUID
-            val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR] as Int
-            val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR] as Int
+            val uuid: UUID = UUID.fromString(it[KEY_ADVERTISING_CONTENT_IBEACON_UUID].toString())
+            val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR].toString().toInt()
+            val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR].toString().toInt()
             byteArrayOf(0x02, 0x01, 0x06, 0x1A, 0xFF.toByte(), 0x00, 0x4C, 0x02, 0x15) +
                     uuid.toBytes() +
                     ValueConverter.UINT16.converter.serialize(major) +

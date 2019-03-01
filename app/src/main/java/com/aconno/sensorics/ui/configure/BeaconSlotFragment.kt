@@ -61,7 +61,7 @@ class BeaconSlotFragment : Fragment(), SeekBar.OnSeekBarChangeListener,
             view.sb_rssi_1m.progress = slot.rssi1m
             view.sb_rssi_1m.setOnSeekBarChangeListener(this)
 
-//            view.sb_radio_tx.min = 0
+//            view.sb_radio_tx.min = 0A
             view.sb_radio_tx.max = 120
             view.sb_radio_tx.progress = slot.radioTx
             view.sb_radio_tx.setOnSeekBarChangeListener(this)

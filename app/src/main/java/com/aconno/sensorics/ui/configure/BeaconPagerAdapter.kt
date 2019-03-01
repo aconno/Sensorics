@@ -17,8 +17,8 @@ class BeaconPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
         return when (position) {
             0 -> BeaconGeneral2Fragment.newInstance()
             1 -> BeaconParameter2Fragment.newInstance()
-            2 -> BeaconArbitraryDataFragment.newInstance()
-            else -> BeaconSlotFragment.newInstance(position - 3)
+            2 -> BeaconArbitraryDataHtmlFragment.newInstance()
+            else -> BeaconSlotHtmlFragment.newInstance(position - 3)
         }
     }
 
