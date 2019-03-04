@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.annotation.UiThread
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.accessibility.AccessibilityEventCompat.setAction
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -30,6 +31,7 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
     private lateinit var scrollListener: RecyclerView.OnScrollListener
     private var bluetoothDevice: BluetoothDevice? = null
     private var scrollToBottom: Boolean = true
+    private var lastVisiblePosition = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,6 +95,17 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
         rvLogs.adapter = logAdapter
 
         rvLogs.addOnScrollListener(scrollListener)
+        rvLogs.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                (recyclerView.layoutManager as LinearLayoutManager)
+                        .findLastVisibleItemPosition().also {
+                            if (it != -1) lastVisiblePosition = it
+                        }
+
+                Timber.d("Last visible position: $lastVisiblePosition")
+            }
+        })
 
         btnClearAll.setOnClickListener { clear() }
         btnScrollToBottom.setOnCheckedChangeListener { _, isChecked ->
@@ -119,13 +132,11 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
                 bluetoothDevice = BluetoothDeviceImpl(this, sr.device)
                 bluetooth.connect(bluetoothDevice!!, object : BluetoothGattCallback() {
                     override fun onDeviceConnected(device: BluetoothDevice) {
-                        Timber.d("connected")
                         log("Connected")
                         bluetooth.stopScan()
                     }
 
                     override fun onDeviceConnecting(device: BluetoothDevice) {
-                        Timber.i("connecting")
                         logWarning("Connecting...")
                     }
 
@@ -158,7 +169,6 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
                 })
                 bluetooth.stopScan()
             })
-            Timber.d("Started scanning")
             logWarning("Started scanning...")
         }
     }
@@ -197,16 +207,16 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
 
     @UiThread
     private fun clear() {
-        val scrollX = rvLogs.scrollX
-        val scrollY = rvLogs.scrollY
         logAdapter.clear()
-        Snackbar.make(layoutRoot, "Cleared log list", Snackbar.LENGTH_LONG).also { snack ->
-            snack.setAction("Undo") {
+        Snackbar.make(layoutRoot, "Cleared log list", Snackbar.LENGTH_LONG).apply {
+            setAction("Undo") {
                 logAdapter.undoClear()
-                rvLogs.scrollTo(scrollX, scrollY)
-                snack.dismiss()
+                if (lastVisiblePosition != -1) {
+                    rvLogs.scrollToPosition(lastVisiblePosition)
+                }
+                dismiss()
             }
-            snack.setActionTextColor(ContextCompat.getColor(applicationContext, R.color.primaryColor))
+            setActionTextColor(ContextCompat.getColor(applicationContext, R.color.primaryColor))
         }.show()
     }
 
