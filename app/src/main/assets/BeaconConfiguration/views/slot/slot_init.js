@@ -169,13 +169,10 @@ $(document).ready(function () {
     $('#enable_cb').change(function () {
         getUpdatedSlot();
     });
-
 });
 
 function init(slotJson) {
-    Android.onError("BEFORE = " + slotJson);
     slot = JSON.parse(slotJson);
-    Android.onError("AFTER = " + JSON.stringify(slot));
 
     //Selected FrameType, assume empty is selected.
     switch (slot.frameType) {

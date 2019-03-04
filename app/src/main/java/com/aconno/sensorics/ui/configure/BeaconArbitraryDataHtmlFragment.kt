@@ -81,7 +81,7 @@ class BeaconArbitraryDataHtmlFragment : Fragment() {
         }?.takeIf {
             it.isNotEmpty()
         }?.let {
-            Gson().toJson(this)
+            Gson().toJson(it)
         }
     }
 
