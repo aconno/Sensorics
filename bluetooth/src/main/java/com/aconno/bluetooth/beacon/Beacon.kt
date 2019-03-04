@@ -18,24 +18,24 @@ import java.lang.reflect.Type
 import java.nio.ByteOrder
 
 class Beacon(
-        val paramDevice: BluetoothDevice,
-        var name: String? = "",
-        val address: String = "00:00:00:00:00:00",
-        var connectible: Boolean = true,
-        var rssi: Int = 0,
-        var manufacturer: String = "Aconno",
-        var model: String = "V1",
-        val softwareVersion: String = "1",
-        var hardwareVersion: String = "1",
-        var firmwareVersion: String = "1",
-        var advFeature: String = "N/A",
-        var supportedTxPower: Array<Int> = arrayOf(),
-        var supportedSlots: Array<Slot.Type> = arrayOf(),
-        var slotAmount: Int = 0,
-        var slots: MutableList<Slot?> = mutableListOf(),
-        val parameters: MutableMap<String, MutableList<Parameter>> = mutableMapOf(),
-        var abstractData: String = "",
-        var abstractDataMapped: MutableMap<String, String> = mutableMapOf()
+    val paramDevice: BluetoothDevice,
+    var name: String? = "",
+    val address: String = "00:00:00:00:00:00",
+    var connectible: Boolean = true,
+    var rssi: Int = 0,
+    var manufacturer: String = "Aconno",
+    var model: String = "V1",
+    val softwareVersion: String = "1",
+    var hardwareVersion: String = "1",
+    var firmwareVersion: String = "1",
+    var advFeature: String = "N/A",
+    var supportedTxPower: Array<Int> = arrayOf(),
+    var supportedSlots: Array<Slot.Type> = arrayOf(),
+    var slotAmount: Int = 0,
+    var slots: MutableList<Slot?> = mutableListOf(),
+    val parameters: MutableMap<String, MutableList<Parameter>> = mutableMapOf(),
+    var abstractData: String = "",
+    var abstractDataMapped: MutableMap<String, String> = mutableMapOf()
 ) : DeviceSpec(paramDevice) {
     val ABSTRACT_DATA_CHUNK_COUNT = 1
     val ABSTRACT_DATA_CHUNK_SIZE = 50
@@ -272,10 +272,10 @@ class Beacon(
     }
 
     class PasswordWriteTask(
-            private val bluetoothDevice: BluetoothDevice,
-            private val password: String,
-            private val checkCallback: LockStateTask.LockStateRequestTaskCallback? = null,
-            private val checkValid: Boolean = true
+        private val bluetoothDevice: BluetoothDevice,
+        private val password: String,
+        private val checkCallback: LockStateTask.LockStateRequestTaskCallback? = null,
+        private val checkValid: Boolean = true
     ) : WriteTask(UUIDProvider.provideFullUUID("D001"), password.toByteArray()) {
         override fun onSuccess() {
             Timber.e("Wrote password")

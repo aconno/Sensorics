@@ -2,7 +2,7 @@ package com.aconno.bluetooth.beacon
 
 import java.io.Serializable
 
-class BeaconInfo: Serializable {
+class BeaconInfo : Serializable {
     var name: String? = ""
     var address: String = "00:00:00:00:00:00"
     var connectible: Boolean = true
@@ -18,7 +18,7 @@ class BeaconInfo: Serializable {
     var slotAmount: Int = 0
 
 
-    class Builder{
+    class Builder {
         fun build(beacon: Beacon?): BeaconInfo {
             val beaconInfo = BeaconInfo()
             beacon?.let { currentBeacon ->
@@ -33,7 +33,8 @@ class BeaconInfo: Serializable {
                 beaconInfo.firmwareVersion = currentBeacon.firmwareVersion
                 beaconInfo.advFeature = currentBeacon.advFeature
                 beaconInfo.supportedTxPower = currentBeacon.supportedTxPower.joinToString(", ")
-                beaconInfo.supportedSlots = currentBeacon.supportedSlots.joinToString(", "){it.name}
+                beaconInfo.supportedSlots =
+                    currentBeacon.supportedSlots.joinToString(", ") { it.name }
                 beaconInfo.slotAmount = currentBeacon.slotAmount
             }
             return beaconInfo

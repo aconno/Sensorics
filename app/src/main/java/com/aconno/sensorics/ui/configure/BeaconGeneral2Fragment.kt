@@ -1,7 +1,6 @@
 package com.aconno.sensorics.ui.configure
 
 
-import android.annotation.SuppressLint
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
@@ -28,7 +27,8 @@ class BeaconGeneral2Fragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        beaconInfo = BeaconInfo.Builder().build(beaconViewModel.beacon.value) //beaconViewModel.beacon.value
+        beaconInfo =
+            BeaconInfo.Builder().build(beaconViewModel.beacon.value) //beaconViewModel.beacon.value
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_beacon_general2, container, false)
@@ -47,7 +47,7 @@ class BeaconGeneral2Fragment : Fragment() {
         webview_general.settings.allowUniversalAccessFromFileURLs = true
         webview_general.settings.allowContentAccess = true
         webview_general.loadUrl(HTML_FILE_PATH)
-        webview_general.addJavascriptInterface(this,"native")
+        webview_general.addJavascriptInterface(this, "native")
     }
 
     @JavascriptInterface
@@ -59,27 +59,27 @@ class BeaconGeneral2Fragment : Fragment() {
     }
 
     @JavascriptInterface
-    fun updateFirmware(){
+    fun updateFirmware() {
         listener?.updateFirmware()
     }
 
     @JavascriptInterface
-    fun factoryReset(){
+    fun factoryReset() {
         listener?.resetFactory()
     }
 
     @JavascriptInterface
-    fun addPassword(){
+    fun addPassword() {
         listener?.addPassword()
     }
 
     @JavascriptInterface
-    fun powerOff(){
+    fun powerOff() {
         listener?.powerOff()
     }
 
     @JavascriptInterface
-    fun changeConnectible(checked: Boolean){
+    fun changeConnectible(checked: Boolean) {
         beaconViewModel.beacon.value?.connectible = checked
     }
 

@@ -12,7 +12,6 @@ import com.aconno.bluetooth.beacon.Parameter
 import com.aconno.sensorics.R
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_parameter2.*
-import timber.log.Timber
 
 class BeaconParameter2Fragment : Fragment() {
 
@@ -23,8 +22,10 @@ class BeaconParameter2Fragment : Fragment() {
     private var standartParameters: List<Parameter>? = null
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         standartParameters = beaconViewModel.beacon.value?.parameters?.flatMap { x -> x.value }
         return inflater.inflate(R.layout.fragment_beacon_parameter2, container, false)
@@ -43,43 +44,43 @@ class BeaconParameter2Fragment : Fragment() {
         webview_parameters.settings.allowUniversalAccessFromFileURLs = true
         webview_parameters.settings.allowContentAccess = true
         webview_parameters.loadUrl(BeaconParameter2Fragment.HTML_FILE_PATH)
-        webview_parameters.addJavascriptInterface(this,"native")
+        webview_parameters.addJavascriptInterface(this, "native")
     }
 
     @JavascriptInterface
-    fun getParameters(): String{
+    fun getParameters(): String {
         standartParameters?.let { parameters ->
-            val defaultParameters = parameters.map { DefaultParameter.Builder().buildFromParameter(it) }
+            val defaultParameters =
+                parameters.map { DefaultParameter.Builder().buildFromParameter(it) }
             return Gson().toJson(defaultParameters)
         }
         return ""
     }
 
     @JavascriptInterface
-    fun setDropDown(id: Int, value: String, position: Int , index: Int){
+    fun setDropDown(id: Int, value: String, position: Int, index: Int) {
         standartParameters?.get(index)?.value = position
     }
 
     @JavascriptInterface
-    fun setTextEdit(id: Int, value: String, index: Int){
+    fun setTextEdit(id: Int, value: String, index: Int) {
         standartParameters?.get(index)?.value = value
     }
 
     @JavascriptInterface
-    fun setTextNumber(id: Int, value: Int, index: Int){
+    fun setTextNumber(id: Int, value: Int, index: Int) {
         standartParameters?.get(index)?.value = value
     }
 
 
     companion object {
         const val HTML_FILE_PATH =
-                "file:///android_asset/BeaconConfiguration/views/parameters/Parameters.html"
+            "file:///android_asset/BeaconConfiguration/views/parameters/Parameters.html"
 
         @JvmStatic
         fun newInstance() =
-                BeaconParameter2Fragment()
+            BeaconParameter2Fragment()
     }
-
 
 
 }

@@ -28,8 +28,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-class ConfigureActivity : DaggerAppCompatActivity(),
-    BeaconGeneralFragment.OnBeaconGeneralFragmentInteractionListener,
+class ConfigureActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentListener,
     ViewPagerSlider {
 
     @Inject
@@ -238,16 +237,6 @@ class ConfigureActivity : DaggerAppCompatActivity(),
                 putExtra(EXTRA_DEVICE, Gson().toJson(device))
             }.also {
                 context.startActivity(it)
-            }
-        }
-    }
-
-    //BeaconGeneralFragment
-    override fun onDataUpdated(bundle: Bundle) {
-        bundle.keySet().forEach {
-            when (it) {
-                BeaconGeneralFragment.EXTRA_BEACON_CONNECTIBLE ->
-                    beaconViewModel.beacon.value?.connectible = bundle.getBoolean(it)
             }
         }
     }

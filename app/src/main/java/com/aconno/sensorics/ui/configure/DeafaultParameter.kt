@@ -4,7 +4,7 @@ import com.aconno.bluetooth.beacon.Parameter
 import com.aconno.bluetooth.beacon.ValueConverter
 import java.io.Serializable
 
-data class DefaultParameter(val name: String, val type: String): Serializable{
+data class DefaultParameter(val name: String, val type: String) : Serializable {
     var min: Int = -1
     var max: Int = -1
     var unit: String = ""
@@ -13,7 +13,7 @@ data class DefaultParameter(val name: String, val type: String): Serializable{
     var value: Any? = null
     var choices: List<String>? = null
 
-    class Builder{
+    class Builder {
         fun buildFromParameter(parameter: Parameter): DefaultParameter {
             val defaultParameter = DefaultParameter(parameter.name, getLocalType(parameter.type))
             defaultParameter.min = parameter.min
@@ -26,7 +26,7 @@ data class DefaultParameter(val name: String, val type: String): Serializable{
             return defaultParameter
         }
 
-        private fun getLocalType(type: ValueConverter): String{
+        private fun getLocalType(type: ValueConverter): String {
             return when (type) {
                 ValueConverter.BOOLEAN -> "TYPE_PARAMETER_BOOLEAN"
                 ValueConverter.UTF8STRING -> "TYPE_PARAMETER_TEXT"
