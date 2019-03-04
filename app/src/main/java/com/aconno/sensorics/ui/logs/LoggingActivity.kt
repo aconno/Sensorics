@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.annotation.UiThread
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.MenuItem
@@ -130,10 +131,9 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
 
                     override fun onDeviceDisconnected(device: BluetoothDevice) {
                         this@LoggingActivity.bluetoothDevice = null
-                        logError("Disconnected")
-                        showSnackBar("Disconnected")
                         device.removeBluetoothGattCallback(this)
-                        finish()
+                        logError("Disconnected")
+                        showDisconnectionAlertDialog()
                     }
 
                     override fun onServicesDiscovered(device: BluetoothDevice) {
@@ -210,13 +210,23 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
         }.show()
     }
 
-    @UiThread
-    private fun showSnackBar(message: String) {
-        Snackbar.make(layoutRoot, message, Snackbar.LENGTH_LONG).show()
+    private fun showDisconnectionAlertDialog() {
+        runOnUiThread {
+            AlertDialog.Builder(this)
+                    .setOnCancelListener { finish() }
+                    .setTitle("Disconnected!")
+                    .setMessage("The device: ${device.name} has disconnected, returning to scanner")
+                    .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
+                    .create().also {
+                        if (!isFinishing or !isDestroyed) {
+                            it.show()
+                        }
+                    }
+        }
     }
 
     override fun onBluetoothRequestActivityResult() {
-
+        //no-op
     }
 
     companion object {
