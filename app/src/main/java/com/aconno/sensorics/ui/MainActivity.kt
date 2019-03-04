@@ -23,6 +23,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.model.SensoricsPermission
+import com.aconno.sensorics.ui.configure.BeaconGeneral2Fragment
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
 import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
@@ -239,9 +240,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             stopScanning()
             mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
         }
-
-//        return BeaconGeneral2Fragment.newInstance()
-
 
         return DeviceMainFragment.newInstance(
             device

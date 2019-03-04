@@ -15,9 +15,8 @@ class BeaconPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
         return when (position) {
-            //0 -> BeaconGeneralFragment.newInstance(beacon!!)
-            0 -> BeaconGeneralFragment.newInstance(beacon!!)
-            1 -> BeaconParameterFragment.newInstance()
+            0 -> BeaconGeneral2Fragment.newInstance()
+            1 -> BeaconParameter2Fragment.newInstance()
             2 -> BeaconArbitraryDataHtmlFragment.newInstance()
             else -> BeaconSlotHtmlFragment.newInstance(position - 3)
         }
