@@ -138,8 +138,13 @@ $(document).ready(function () {
         }
     });
 
+    $('#advertising_interval').slider().on('slideStart', function (ev) {
+        Android.stopViewPager();
+    });
+
     $('#advertising_interval').slider().on('slideStop', function (ev) {
         getUpdatedSlot();
+        Android.startViewPager();
     });
 
     $('#rssi_1m').slider({
@@ -152,6 +157,11 @@ $(document).ready(function () {
 
     $('#rssi_1m').slider().on('slideStop', function (ev) {
         getUpdatedSlot();
+        Android.startViewPager();
+    });
+
+    $('#rssi_1m').slider().on('slideStart', function (ev) {
+        Android.stopViewPager();
     });
 
     $('#radio_tx').slider({
@@ -164,6 +174,11 @@ $(document).ready(function () {
 
     $('#radio_tx').slider().on('slideStop', function (ev) {
         getUpdatedSlot();
+        Android.startViewPager();
+    });
+
+    $('#radio_tx').slider().on('slideStart', function (ev) {
+        Android.stopViewPager();
     });
 
     $('#enable_cb').change(function () {
@@ -265,5 +280,5 @@ function getUpdatedSlot() {
     }
 
     //console.log(slot);
-    Android.onDataChanged(JSON.stringify(slot));
+    //Android.onDataChanged(JSON.stringify(slot));
 }

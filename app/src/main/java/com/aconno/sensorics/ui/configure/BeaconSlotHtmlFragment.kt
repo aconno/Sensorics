@@ -42,6 +42,9 @@ class BeaconSlotHtmlFragment : Fragment() {
         webview_general.webViewClient = WebAppClient()
         webview_general.loadUrl(HTML_FILE_PATH)
         WebView.setWebContentsDebuggingEnabled(true)
+
+        webview_general.scrollTo(1, 0);
+        webview_general.scrollTo(0, 0);
     }
 
     private fun callJavaScript(methodName: String, vararg params: Any) {
@@ -184,6 +187,24 @@ class BeaconSlotHtmlFragment : Fragment() {
                 Slot.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM
             )
             return convertedJson
+        }
+
+        @JavascriptInterface
+        fun stopViewPager() {
+            activity?.let {
+                it as ViewPagerSlider
+            }?.let {
+                it.stopViewPager()
+            }
+        }
+
+        @JavascriptInterface
+        fun startViewPager() {
+            activity?.let {
+                it as ViewPagerSlider
+            }?.let {
+                it.startViewPager()
+            }
         }
 
         @JavascriptInterface

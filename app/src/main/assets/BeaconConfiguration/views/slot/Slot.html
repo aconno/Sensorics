@@ -4,8 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="../../commons/holo.css"/>
-    <link rel="stylesheet"
-          href="../../libs/bootstrap-slider/bootstrap-slider.min.css"/>
+    <link rel="stylesheet" href="../../libs/bootstrap-slider/bootstrap-slider.min.css"/>
     <style>
         .margin-sides {
             margin-left: 0.1em;
@@ -25,7 +24,6 @@
         #slider .slider-selection {
             background: #BABABA;
         }
-
     </style>
 </head>
 
@@ -71,8 +69,8 @@
                 <label for="advertising_interval">Advertising Interval</label>
 
                 <div class="row">
-                    <div class="col-8">
-                        <input id="advertising_interval" style="width: 100%;"
+                    <div id="advertising_div" class="col-8">
+                        <input id="advertising_interval" class="span2" style="width: 100%;"
                                data-slider-id='slider' type="text"
                                data-slider-min="0" data-slider-max="100" data-slider-tooltip="hide"
                                data-slider-step="1"/>
@@ -87,7 +85,8 @@
 
                 <div class="row">
                     <div class="col-8">
-                        <input id="rssi_1m" data-slider-id='slider' style="width: 100%;" type="text"
+                        <input id="rssi_1m" class="span2" data-slider-id='slider'
+                               style="width: 100%;" type="text"
                                data-slider-min="0" data-slider-max="120" data-slider-tooltip="hide"
                                data-slider-step="1" data-slider-value="55"/></div>
                     <div id="label_rssi_1m" align="right" style="width: 100%;" class="col-4">
@@ -99,8 +98,8 @@
 
                 <div class="row">
                     <div class="col-8">
-                        <input id="radio_tx" data-slider-id='slider' style="width: 100%;"
-                               type="text"
+                        <input id="radio_tx" class="span2" data-slider-id='slider'
+                               style="width: 100%;" type="text"
                                data-slider-min="0" data-slider-max="120" data-slider-tooltip="hide"
                                data-slider-step="1" data-slider-value="55"/>
                     </div>

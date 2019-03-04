@@ -29,7 +29,8 @@ import javax.inject.Inject
 
 
 class ConfigureActivity : DaggerAppCompatActivity(),
-    BeaconGeneralFragment.OnBeaconGeneralFragmentInteractionListener {
+    BeaconGeneralFragment.OnBeaconGeneralFragmentInteractionListener,
+    ViewPagerSlider {
 
     @Inject
     lateinit var beaconViewModel: BeaconViewModel
@@ -219,6 +220,14 @@ class ConfigureActivity : DaggerAppCompatActivity(),
     private fun closeConnection() {
         Timber.e("Close Connection")
         serviceConnect?.disconnect()
+    }
+
+    override fun stopViewPager() {
+        vp_beacon.isPagingEnabled = false
+    }
+
+    override fun startViewPager() {
+        vp_beacon.isPagingEnabled = true
     }
 
     companion object {
