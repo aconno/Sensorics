@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui.configure
 
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
@@ -39,6 +40,7 @@ class BeaconGeneral2Fragment : Fragment() {
         initiateWebView()
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun initiateWebView() {
         webview_general.settings.builtInZoomControls = false
         webview_general.settings.javaScriptEnabled = true
@@ -94,7 +96,7 @@ class BeaconGeneral2Fragment : Fragment() {
 
     companion object {
         const val HTML_FILE_PATH =
-            "file:///android_asset/BeaconConfiguration/views/general/General.html"
+            "file:///android_asset/resources/settings/views/general/General.html"
 
         @JvmStatic
         fun newInstance() =

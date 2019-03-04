@@ -132,7 +132,7 @@ class BeaconArbitraryDataHtmlFragment : Fragment() {
 
     companion object {
         const val HTML_FILE_PATH =
-            "file:///android_asset/BeaconConfiguration/views/arbitrary/ArbitraryData.html"
+            "file:///android_asset/resources/settings/views/arbitrary/ArbitraryData.html"
 
         @JvmStatic
         fun newInstance() =

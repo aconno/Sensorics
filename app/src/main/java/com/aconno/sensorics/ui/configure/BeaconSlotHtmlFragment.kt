@@ -215,7 +215,7 @@ class BeaconSlotHtmlFragment : Fragment() {
 
     companion object {
         const val HTML_FILE_PATH =
-            "file:///android_asset/BeaconConfiguration/views/slot/Slot.html"
+            "file:///android_asset/resources/settings/views/slot/Slot.html"
 
         const val FRAGMENT_TAG_SLOT = "com.aconno.beaconapp.FRAGMENT_SLOT"
         private const val EXTRA_BEACON_SLOT_POSITION = "com.aconno.beaconapp.BEACON_SLOT_POSITION"

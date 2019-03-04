@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui.configure
 
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -36,6 +37,7 @@ class BeaconParameter2Fragment : Fragment() {
         initiateWebView()
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun initiateWebView() {
         webview_parameters.settings.builtInZoomControls = false
         webview_parameters.settings.javaScriptEnabled = true
@@ -75,7 +77,7 @@ class BeaconParameter2Fragment : Fragment() {
 
     companion object {
         const val HTML_FILE_PATH =
-            "file:///android_asset/BeaconConfiguration/views/parameters/Parameters.html"
+            "file:///android_asset/resources/settings/views/parameters/Parameters.html"
 
         @JvmStatic
         fun newInstance() =
