@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
+import android.widget.ProgressBar
 import com.aconno.sensorics.R
 import com.aconno.sensorics.model.javascript.ArbitraryDataJS
 import com.google.gson.Gson
@@ -32,6 +33,10 @@ class BeaconArbitraryDataHtmlFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (savedInstanceState != null)
+            webview_general.restoreState(savedInstanceState)
+
         initiateWebView()
     }
 
@@ -42,6 +47,11 @@ class BeaconArbitraryDataHtmlFragment : Fragment() {
         webview_general.webViewClient = WebAppClient()
         webview_general.webChromeClient = WebAppChromeClient()
         webview_general.loadUrl(HTML_FILE_PATH)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        webview_general.saveState(outState)
+        super.onSaveInstanceState(outState)
     }
 
     private fun callJavaScript(methodName: String, vararg params: Any) {
@@ -108,6 +118,17 @@ class BeaconArbitraryDataHtmlFragment : Fragment() {
     }
 
     inner class WebAppChromeClient : WebChromeClient() {
+        override fun onProgressChanged(view: WebView?, newProgress: Int) {
+            if (newProgress < 100 && progress_page.visibility == ProgressBar.GONE) {
+                progress_page.visibility = ProgressBar.VISIBLE
+            }
+
+            progress_page.progress = newProgress;
+            if (newProgress == 100) {
+                progress_page.visibility = ProgressBar.GONE
+            }
+        }
+
         override fun onJsAlert(
             view: WebView?,
             url: String?,

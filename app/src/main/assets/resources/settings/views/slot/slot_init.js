@@ -1,7 +1,12 @@
 //GLOBAL Slot object
 let slot;
+let inited = false
 
 $(document).ready(function () {
+    
+    if (inited) {
+        return;
+    }
 
     let emptyMenuItem = generateFrameTypeMenuItem("EMPTY");
     //let uidMenuItem = generateFrameTypeMenuItem("UID"); //Not supported yet
@@ -184,6 +189,8 @@ $(document).ready(function () {
     $('#enable_cb').change(function () {
         getUpdatedSlot();
     });
+
+    inited = true;
 });
 
 function init(slotJson) {
@@ -280,5 +287,5 @@ function getUpdatedSlot() {
     }
 
     //console.log(slot);
-    //Android.onDataChanged(JSON.stringify(slot));
+    Android.onDataChanged(JSON.stringify(slot));
 }

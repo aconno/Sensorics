@@ -17,6 +17,7 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 import timber.log.Timber
 
+
 class BeaconSlotHtmlFragment : Fragment() {
 
     private val beaconViewModel: BeaconViewModel by lazy {
@@ -32,6 +33,9 @@ class BeaconSlotHtmlFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (savedInstanceState != null)
+            webview_general.restoreState(savedInstanceState)
+
         initiateWebView()
     }
 
@@ -41,10 +45,11 @@ class BeaconSlotHtmlFragment : Fragment() {
         webview_general.addJavascriptInterface(WebAppInterface(), "Android")
         webview_general.webViewClient = WebAppClient()
         webview_general.loadUrl(HTML_FILE_PATH)
-        WebView.setWebContentsDebuggingEnabled(true)
+    }
 
-        webview_general.scrollTo(1, 0);
-        webview_general.scrollTo(0, 0);
+    override fun onSaveInstanceState(outState: Bundle) {
+        webview_general.saveState(outState)
+        super.onSaveInstanceState(outState)
     }
 
     private fun callJavaScript(methodName: String, vararg params: Any) {
@@ -68,15 +73,11 @@ class BeaconSlotHtmlFragment : Fragment() {
     }
 
     //Prevent running twice or more
-    var inited = false
-
     inner class WebAppClient : WebViewClient() {
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
 
-            if (!inited && isAdded) {
-                inited = true
-
+            if (isAdded) {
                 getSlotJson()?.let {
                     callJavaScript("init", it)
                 }
