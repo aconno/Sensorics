@@ -24,35 +24,34 @@ import java.util.*
 
 //TODO: This needs refactoring.
 class BluetoothImpl(
-    private val context: Context,
-    private val sharedPrefs: SharedPreferences,
-    private val bluetoothAdapter: BluetoothAdapter,
-    private val bluetoothPermission: BluetoothPermission,
-    private val bluetoothStateListener: BluetoothStateListener,
-    private val bluetoothCharacteristicValueConverter: BluetoothCharacteristicValueConverter
+        private val context: Context,
+        private val sharedPrefs: SharedPreferences,
+        private val bluetoothAdapter: BluetoothAdapter,
+        private val bluetoothPermission: BluetoothPermission,
+        private val bluetoothStateListener: BluetoothStateListener,
+        private val bluetoothCharacteristicValueConverter: BluetoothCharacteristicValueConverter
 ) : Bluetooth {
-
     private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
     private val connectGattResults: PublishSubject<GattCallbackPayload> = PublishSubject.create()
 
     private val scanEvent = PublishSubject.create<ScanEvent>()
 
     override fun getScanEvent(): Flowable<ScanEvent> =
-        scanEvent.toFlowable(BackpressureStrategy.BUFFER)
+            scanEvent.toFlowable(BackpressureStrategy.BUFFER)
 
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
 
     private val gattCallback: BluetoothGattCallback =
-        BluetoothGattCallback(connectGattResults, bluetoothCharacteristicValueConverter)
+            BluetoothGattCallback(connectGattResults, bluetoothCharacteristicValueConverter)
     private var lastConnectedDeviceAddress: String? = null
     private var lastConnectedGatt: BluetoothGatt? = null
 
     private fun getScanSettings(
-        devices: List<Device>? = null
+            devices: List<Device>? = null
     ): Pair<List<ScanFilter>?, ScanSettings> {
         val settingsBuilder = ScanSettings.Builder()
 
-        val scanMode = sharedPrefs.getString("scan_mode", "3").toInt()
+        val scanMode = sharedPrefs.getString("scan_mode", "3")?: "3".toInt()
         when (scanMode) {
             1 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
             2 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_BALANCED)
@@ -68,18 +67,18 @@ class BluetoothImpl(
             devices.forEach {
                 scanFilterBuilder.setDeviceAddress(it.macAddress)
                 scanFilterList.add(
-                    scanFilterBuilder.build()
+                        scanFilterBuilder.build()
                 )
             }
         } else {
             scanFilterList.add(
-                scanFilterBuilder.build()
+                    scanFilterBuilder.build()
             )
         }
 
         return Pair<List<ScanFilter>?, ScanSettings>(
-            scanFilterList,
-            settingsBuilder.build()
+                scanFilterList,
+                settingsBuilder.build()
         )
     }
 
@@ -102,7 +101,7 @@ class BluetoothImpl(
     override fun readCharacteristic(serviceUUID: UUID, characteristicUUID: UUID): Boolean {
         return lastConnectedGatt?.let {
             val characteristic = it.getService(serviceUUID)
-                .getCharacteristic(characteristicUUID)
+                    .getCharacteristic(characteristicUUID)
 
             if (characteristic != null) {
                 it.readCharacteristic(characteristic)
@@ -114,14 +113,14 @@ class BluetoothImpl(
     }
 
     override fun writeCharacteristic(
-        serviceUUID: UUID,
-        characteristicUUID: UUID,
-        type: String,
-        value: Any
+            serviceUUID: UUID,
+            characteristicUUID: UUID,
+            type: String,
+            value: Any
     ): Boolean {
         return lastConnectedGatt?.let {
             val characteristic = it.getService(serviceUUID)
-                .getCharacteristic(characteristicUUID)
+                    .getCharacteristic(characteristicUUID)
 
             bluetoothCharacteristicValueConverter.setValue(characteristic, type, value)
             if (characteristic != null) {
@@ -136,7 +135,7 @@ class BluetoothImpl(
     override fun connect(address: String) {
 
         if (lastConnectedDeviceAddress != null && address == lastConnectedDeviceAddress
-            && lastConnectedGatt != null
+                && lastConnectedGatt != null
         ) {
             if (lastConnectedGatt!!.connect()) {
                 gattCallback.updateConnecting()
@@ -216,6 +215,15 @@ class BluetoothImpl(
         }
 
         return currentState.mergeWith(bluetoothStateListener.getBluetoothStates())
-            .toFlowable(BackpressureStrategy.LATEST)
+                .toFlowable(BackpressureStrategy.LATEST)
+    }
+
+    override fun setCharacteristicNotification(characteristicUUID: UUID, enable: Boolean) {
+        lastConnectedGatt?.let { gatt ->
+            val characteristic = gatt.services?.flatMap { service -> service.characteristics }?.find { it.uuid == characteristicUUID }
+            if (characteristic != null) {
+                gatt.setCharacteristicNotification(characteristic, enable)
+            }
+        }
     }
 }

@@ -243,7 +243,6 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
         private const val EXTRA_DEVICE = "EXTRA_DEVICE"
         private const val LOG_DATE_FORMAT = "yyyy-MM-dd hh:mm:ss.SS"
         private const val LOG_FORMAT = "%s : %s"
-        private const val LOG_UUID = "cc52a001-9adb-4c37-bc48-376f5fee8851"
         fun start(context: Context, device: Device) {
             Intent(context, LoggingActivity::class.java).apply {
                 putExtra(EXTRA_DEVICE, Gson().toJson(device))

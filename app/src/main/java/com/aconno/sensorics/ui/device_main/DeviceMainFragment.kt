@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui.device_main
 
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothGattCharacteristic
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -19,6 +20,7 @@ import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
@@ -36,6 +38,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_device_main.*
 import org.json.JSONObject
 import timber.log.Timber
+import java.nio.charset.Charset
 import java.util.*
 import javax.inject.Inject
 
@@ -122,6 +125,7 @@ class DeviceMainFragment : DaggerFragment() {
                                 item.title = getString(R.string.disconnect)
                             }
                             isServicesDiscovered = true
+                            serviceConnect?.enableLogging()
                             //progressbar?.visibility = View.INVISIBLE
                             //enableToggleViews()
                             text = getString(R.string.discovered)
@@ -158,6 +162,10 @@ class DeviceMainFragment : DaggerFragment() {
                             writeCharacteristics(writeCommandQueue.peek())
                             text = getString(R.string.connected)
 
+                        }
+                        it.action == BluetoothGattCallback.ACTION_DATA_AVAILABLE -> {
+                            evaluateLog(it)
+                            text = getString(R.string.connected)
                         }
                         else -> {
                             return@subscribe
@@ -507,6 +515,15 @@ class DeviceMainFragment : DaggerFragment() {
                 it.type,
                 it.value
             )
+        }
+    }
+
+    private fun evaluateLog(gattCallbackPayload: GattCallbackPayload) {
+        val characteristic = gattCallbackPayload.payload as BluetoothGattCharacteristic?
+        characteristic?.let {
+            if(it.uuid.compareTo(UUID.fromString(MainActivity.LOG_UUID)) == 0) {
+                it.value.toString(Charset.defaultCharset())
+            }
         }
     }
 

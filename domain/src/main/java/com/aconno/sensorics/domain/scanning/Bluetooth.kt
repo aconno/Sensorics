@@ -43,4 +43,6 @@ interface Bluetooth {
         type: String,
         value: Any
     ): Boolean
+
+    fun setCharacteristicNotification(characteristicUUID: UUID, enable: Boolean)
 }
