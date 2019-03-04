@@ -191,5 +191,8 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
+    <string name="log_device_disconnected">Getrennt</string>
+    <string name="tasks_completed_format">Aufgaben abgeschlossen: %1$d/%2$d</string>
+    <string name="all_tasks_completed">Alle Aufgaben sind erledigt</string>
 
 </resources>

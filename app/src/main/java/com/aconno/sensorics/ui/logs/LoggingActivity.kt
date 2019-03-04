@@ -1,77 +1,34 @@
 package com.aconno.sensorics.ui.logs
 
-import android.annotation.SuppressLint
-import android.arch.lifecycle.Observer
 import android.bluetooth.BluetoothGattCharacteristic
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.support.annotation.UiThread
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.MenuItem
-import com.aconno.bluetooth.BluetoothDeviceService
-import com.aconno.bluetooth.CharacteristicChangedListener
-import com.aconno.bluetooth.beacon.Beacon
+import com.aconno.bluetooth.*
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.getRealName
-import com.aconno.sensorics.ui.configure.BeaconViewModel
 import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
-import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_logging.*
 import timber.log.Timber
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.inject.Inject
 
-class LoggingActivity : DaggerAppCompatActivity() {
-
-    @Inject
-    lateinit var beaconViewModel: BeaconViewModel
+class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnableRequestListener {
     private lateinit var device: Device
     private lateinit var logAdapter: LoggingAdapter
     private lateinit var scrollListener: RecyclerView.OnScrollListener
-    private var serviceConnect: BluetoothDeviceService? = null
-    private var connectResultDisposable: Disposable? = null
+    private var bluetoothDevice: BluetoothDevice? = null
     private var scrollToBottom: Boolean = true
-
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceDisconnected(name: ComponentName?) {
-            Timber.d("Disconnected")
-            connectResultDisposable?.dispose()
-            beaconViewModel.beacon.removeObserver(beaconObserver)
-            serviceConnect = null
-        }
-
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            serviceConnect = (service as BluetoothDeviceService.LocalBinder).getService()
-            Timber.d("Connected")
-            openConnection()
-        }
-    }
-
-    private val beaconObserver: Observer<Beacon> = Observer {
-        val device = it?.device
-        device?.apply {
-            val uuid = UUID.fromString(LOG_UUID)
-            setCharacteristicNotification(uuid, true)
-            addCharacteristicChangedListener(uuid, object : CharacteristicChangedListener {
-                override fun onCharacteristicChanged(characteristic: BluetoothGattCharacteristic, value: ByteArray) {
-                    runOnUiThread {
-                        log(value.toString(Charset.defaultCharset()))
-                    }
-                }
-            })
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,21 +45,12 @@ class LoggingActivity : DaggerAppCompatActivity() {
         if (savedInstanceState == null) {
             initViews()
         }
+        startScan()
     }
 
-    override fun onStart() {
-        super.onStart()
-        Intent(this, BluetoothDeviceService::class.java).also {
-            bindService(
-                    it, serviceConnection, Context.BIND_AUTO_CREATE
-            )
-        }
-    }
-
-    override fun onStop() {
-        unbindService(serviceConnection)
-        closeConnection()
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
+        bluetoothDevice?.disconnect()
     }
 
     private fun initViews() {
@@ -163,39 +111,56 @@ class LoggingActivity : DaggerAppCompatActivity() {
         return true
     }
 
-    private fun openConnection() {
-        log(getString(R.string.connecting))
-        serviceConnect?.connectToBluetoothDevice(object :
-                BluetoothDeviceService.LoadingTasksUIInterface {
+    private fun startScan() {
+        BluetoothImpl(this).let { bluetooth ->
+            bluetooth.startScanForDevice(device.macAddress, Consumer { sr ->
+                if (bluetoothDevice != null) return@Consumer
+                bluetoothDevice = BluetoothDeviceImpl(this, sr.device)
+                bluetooth.connect(bluetoothDevice!!, object : BluetoothGattCallback() {
+                    override fun onDeviceConnected(device: BluetoothDevice) {
+                        Timber.d("connected")
+                        log("Connected")
+                        bluetooth.stopScan()
+                    }
 
-            override fun onDisconnected() {
-                runOnUiThread {
-                    showSnackBar("Disconnected")
-                    logError("Disconnected")
-                }
-            }
+                    override fun onDeviceConnecting(device: BluetoothDevice) {
+                        Timber.i("connecting")
+                        logWarning("Connecting...")
+                    }
 
-            @SuppressLint("SetTextI18n")
-            override fun onTaskComplete(tasksCompleted: Int, tasksTotal: Int) {
-                runOnUiThread {
-                    val info = "Connection Progress Tasks Completed: $tasksCompleted/$tasksTotal"
-                    log(info)
-                }
-            }
+                    override fun onDeviceDisconnected(device: BluetoothDevice) {
+                        this@LoggingActivity.bluetoothDevice = null
+                        logError("Disconnected")
+                        showSnackBar("Disconnected")
+                        device.removeBluetoothGattCallback(this)
+                        finish()
+                    }
 
-            override fun onTasksComplete(beacon: Beacon) {
-                runOnUiThread {
-                    log("All connection tasks completed")
-                    beaconViewModel.beacon.value = beacon
-                    beaconViewModel.beacon.observe(this@LoggingActivity,
-                            beaconObserver)
-                }
-            }
+                    override fun onServicesDiscovered(device: BluetoothDevice) {
+                        super.onServicesDiscovered(device)
 
-            override fun onTasksCancelled() {
-                logWarning("Terminating connection, going back to the scanner!")
-            }
-        }, device.macAddress)
+                        log("${device.services.size} services discovered")
+                        device.services.flatMap { it.characteristics }.forEach {
+                            log("Characteristic with UUID: ${it.uuid} with value: ${it.value
+                                    ?: "null"} from service: ${it.service.uuid}")
+                        }
+
+                        val uuid = UUID.fromString(LOG_UUID)
+                        device.setCharacteristicNotification(uuid, true)
+                        device.addCharacteristicChangedListener(uuid, object : CharacteristicChangedListener {
+                            override fun onCharacteristicChanged(characteristic: BluetoothGattCharacteristic, value: ByteArray) {
+                                runOnUiThread {
+                                    log(value.toString(Charset.defaultCharset()))
+                                }
+                            }
+                        })
+                    }
+                })
+                bluetooth.stopScan()
+            })
+            Timber.d("Started scanning")
+            logWarning("Started scanning...")
+        }
     }
 
     @UiThread
@@ -216,9 +181,11 @@ class LoggingActivity : DaggerAppCompatActivity() {
     @UiThread
     private fun log(info: String, loggingLevel: LoggingAdapter.LoggingLevel) {
         val log = getFormattedLog(info)
-        logAdapter.addLog(log, loggingLevel)
-        if (scrollToBottom) {
-            rvLogs.smoothScrollToPosition(logAdapter.itemCount - 1)
+        runOnUiThread {
+            logAdapter.addLog(log, loggingLevel)
+            if (scrollToBottom) {
+                rvLogs.smoothScrollToPosition(logAdapter.itemCount - 1)
+            }
         }
     }
 
@@ -248,9 +215,8 @@ class LoggingActivity : DaggerAppCompatActivity() {
         Snackbar.make(layoutRoot, message, Snackbar.LENGTH_LONG).show()
     }
 
-    private fun closeConnection() {
-        Timber.d("Close Connection")
-        serviceConnect?.disconnect()
+    override fun onBluetoothRequestActivityResult() {
+
     }
 
     companion object {

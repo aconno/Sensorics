@@ -249,8 +249,8 @@
     <string name="apply">Apply</string>
 
     <!--Logging-->
-    <string name="disconnected">Disconnected</string>
+    <string name="log_device_disconnected">Disconnected</string>
     <string name="tasks_completed_format">Tasks completed: %1$d/%2$d</string>
-    <string name="all_tasks_completed"></string>
+    <string name="all_tasks_completed">All tasks completed</string>
 
 </resources>
