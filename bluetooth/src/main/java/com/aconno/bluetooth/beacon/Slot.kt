@@ -255,6 +255,7 @@ data class Slot(
         )
     }
 
+
     enum class Type(
         val tabName: String,
         val hasAdvertisingContent: Boolean = false,
@@ -356,9 +357,13 @@ data class Slot(
                 )
             }
         }, {
-            val uuid: UUID = UUID.fromString(it[KEY_ADVERTISING_CONTENT_IBEACON_UUID].toString())
-            val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR].toString().toInt()
-            val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR].toString().toInt()
+            val uuid: UUID = try {
+                UUID.fromString(it[KEY_ADVERTISING_CONTENT_IBEACON_UUID].toString())
+            } catch (ex: java.lang.Exception) {
+                defaultUUID
+            }
+            val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR].toString().toIntOrNull() ?: 0
+            val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR].toString().toIntOrNull() ?: 0
             byteArrayOf(0x02, 0x01, 0x06, 0x1A, 0xFF.toByte(), 0x00, 0x4C, 0x02, 0x15) +
                     uuid.toBytes() +
                     ValueConverter.UINT16.converter.serialize(major) +
@@ -392,6 +397,8 @@ data class Slot(
     }
 
     companion object {
+        val defaultUUID = UUID.fromString("00000000-0000-0000-0000-000000000000")!!
+
         const val EXTRA_BEACON_SLOT_POSITION = "com.aconno.beaconapp.BEACON_SLOT_POSITION"
         const val KEY_ADVERTISING_CONTENT_IBEACON_UUID =
             "com.aconno.beaconapp.ADVERTISING_CONTENT_IBEACON_UUID"
