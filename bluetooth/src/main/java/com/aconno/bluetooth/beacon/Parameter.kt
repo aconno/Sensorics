@@ -1,5 +1,6 @@
 package com.aconno.bluetooth.beacon
 
+import com.aconno.bluetooth.BluetoothDevice
 import com.aconno.bluetooth.beacon.Beacon.Companion.PARAMETER_DATA_UUID
 import com.aconno.bluetooth.beacon.Beacon.Companion.PARAMETER_INDEX_UUID
 import com.aconno.bluetooth.tasks.CharacteristicWriteTask
@@ -83,16 +84,16 @@ class Parameter(
                         dirty = false
                     }
 
-                    override fun onError(e: Exception) {
+                    override fun onError(device: BluetoothDevice, e: Exception) {
                         Timber.e("Error writing parameter $id data!")
-                        TODO("not implemented")
+                        super.onError(device, e)
                     }
                 })
             }
 
-            override fun onError(e: Exception) {
+            override fun onError(device: BluetoothDevice, e: Exception) {
                 Timber.e("Error writing parameter id for id $id!")
-                TODO("not implemented")
+                super.onError(device, e)
             }
         }
     }

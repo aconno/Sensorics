@@ -65,10 +65,6 @@ data class Slot(
                     slotAdvertisingContent.putAll(it(value))
                 }
             }
-
-            override fun onError(e: Exception) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
         }
     }
 
@@ -83,10 +79,6 @@ data class Slot(
                         )
                     ).toString().toInt()
             }
-
-            override fun onError(e: Exception) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
         }
     }
 
@@ -99,10 +91,6 @@ data class Slot(
                         2
                     )
                 ).toString().toInt()
-            }
-
-            override fun onError(e: Exception) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
     }
@@ -117,10 +105,6 @@ data class Slot(
                     )
                 ).toString().toInt()
             }
-
-            override fun onError(e: Exception) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
         }
     }
 
@@ -130,10 +114,6 @@ data class Slot(
                 triggerEnabled = com.aconno.bluetooth.ValueConverter.BOOLEAN.converter.deserialize(
                     byteArrayOf(value[0])
                 ).toString().toBoolean()
-            }
-
-            override fun onError(e: Exception) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
     }
@@ -149,10 +129,6 @@ data class Slot(
                 } catch (e: Exception) {
                     TriggerType.DOUBLE_TAP
                 }
-            }
-
-            override fun onError(e: Exception) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
     }
@@ -180,10 +156,6 @@ data class Slot(
                 override fun onSuccess() {
                     Timber.i("Written Slot Type")
                 }
-
-                override fun onError(e: Exception) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
             },
             object : CharacteristicWriteTask(
                 characteristicUUID = SLOT_DATA_UUID,
@@ -191,10 +163,6 @@ data class Slot(
             ) {
                 override fun onSuccess() {
                     Timber.i("Written Slot Contents")
-                }
-
-                override fun onError(e: Exception) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             },
             object : CharacteristicWriteTask(
@@ -204,10 +172,6 @@ data class Slot(
                 override fun onSuccess() {
                     Timber.i("Written Slot Advertising Interval")
                 }
-
-                override fun onError(e: Exception) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
             },
             object : CharacteristicWriteTask(
                 characteristicUUID = SLOT_RSSI_1M_UUID,
@@ -215,10 +179,6 @@ data class Slot(
             ) {
                 override fun onSuccess() {
                     Timber.i("Written Slot RSSI")
-                }
-
-                override fun onError(e: Exception) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             },
             object : CharacteristicWriteTask(
@@ -228,10 +188,6 @@ data class Slot(
                 override fun onSuccess() {
                     Timber.i("Written Slot Radio TX")
                 }
-
-                override fun onError(e: Exception) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
             },
             object : CharacteristicWriteTask(
                 characteristicUUID = SLOT_TRIGGER_ENABLE_UUID,
@@ -240,10 +196,6 @@ data class Slot(
                 override fun onSuccess() {
                     Timber.i("Written Slot Trigger Enabled")
                 }
-
-                override fun onError(e: Exception) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
             },
             object : CharacteristicWriteTask(
                 characteristicUUID = SLOT_TRIGGER_TYPE_UUID,
@@ -251,10 +203,6 @@ data class Slot(
             ) {
                 override fun onSuccess() {
                     Timber.i("Written Slot Trigger Type")
-                }
-
-                override fun onError(e: Exception) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             }
         )

@@ -191,7 +191,7 @@ class BluetoothDeviceImpl(
 
                 if (task is GenericTask) {
                     try {
-                        if (!success) task.onError(task.internalException)
+                        if (!success) task.onError(this, task.internalException)
                         queue.remove()
                         processQueue()
                     } catch (e: Exception) {
@@ -200,7 +200,7 @@ class BluetoothDeviceImpl(
                 } else {
                     if (!success) {
                         try {
-                            task.onError(GattRequestFailedException())
+                            task.onError(this, GattRequestFailedException())
                             queue.remove()
                             processQueue()
                         } catch (e: Exception) {
@@ -225,7 +225,7 @@ class BluetoothDeviceImpl(
                 gatt?.setCharacteristicNotification(this.descriptor!!.characteristic, enable)
             }
 
-            override fun onError(e: Exception) {
+            override fun onError(device: BluetoothDevice, e: Exception) {
                 TODO("not implemented")
             }
         })
@@ -264,7 +264,7 @@ class BluetoothDeviceImpl(
                 BLE_TAG.e("Failed to read characteristic ${characteristic.uuid} with status $status")
 
                 try {
-                    this.onError(GattErrorException(status))
+                    this.onError(this@BluetoothDeviceImpl, GattErrorException(status))
                 } catch (e: Exception) {
                     disconnect()
                 }
@@ -291,8 +291,8 @@ class BluetoothDeviceImpl(
                         totalBytes = totalBytes,
                         bytesWritten = bytesWritten + MAX_PACKET_SIZE
                     ) {
-                        override fun onError(e: Exception) {
-                            this@with.onError(e)
+                        override fun onError(device: BluetoothDevice, e: Exception) {
+                            this@with.onError(this@BluetoothDeviceImpl, e)
                         }
 
                         override fun onSuccess() {
@@ -308,7 +308,7 @@ class BluetoothDeviceImpl(
             } else {
                 BLE_TAG.e("Failed to write to characteristic ${characteristic.uuid} with status $status!")
                 try {
-                    this.onError(GattErrorException(status))
+                    this.onError(this@BluetoothDeviceImpl, GattErrorException(status))
                     listeners.forEach { it.onTaskComplete(queue.size) }
                     taskQueue.reversed().forEach { insertTask(it) }
                     processQueue()
@@ -341,7 +341,7 @@ class BluetoothDeviceImpl(
             } else {
                 BLE_TAG.e("Failed to read descriptor ${descriptor.uuid} on characteristic ${descriptor.characteristic} with status $status")
                 try {
-                    this.onError(GattErrorException(status))
+                    this.onError(this@BluetoothDeviceImpl, GattErrorException(status))
                 } catch (e: Exception) {
                     disconnect()
                     throw e
@@ -366,7 +366,7 @@ class BluetoothDeviceImpl(
             } else {
                 BLE_TAG.e("Failed to write to descriptor ${descriptor.uuid} on characteristic ${descriptor.characteristic} with status $status")
                 try {
-                    this.onError(GattErrorException(status))
+                    this.onError(this@BluetoothDeviceImpl, GattErrorException(status))
                 } catch (e: Exception) {
                     disconnect()
                     throw e

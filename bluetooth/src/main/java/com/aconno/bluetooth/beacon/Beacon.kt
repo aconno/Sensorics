@@ -66,10 +66,6 @@ class Beacon(
                 slots = MutableList(slotAmount) { Slot() }
                 device.queueTasks(readSlots())
             }
-
-            override fun onError(e: Exception) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
         }) + readAbstractData())
     }
 
@@ -97,10 +93,6 @@ class Beacon(
                         }
                     }
                 }
-
-                override fun onError(e: Exception) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
             }
         }
     }
@@ -123,10 +115,6 @@ class Beacon(
             override fun onSuccess() {
                 Timber.i("Finalized Write of Parameters")
             }
-
-            override fun onError(e: Exception) {
-                TODO("Not implemented")
-            }
         })
     }
 
@@ -141,9 +129,9 @@ class Beacon(
                     slot.write().reversed().forEach { taskQueue.offer(it) }
                 }
 
-                override fun onError(e: Exception) {
+                override fun onError(device: BluetoothDevice, e: Exception) {
                     Timber.e("Failed to write slot id $slotIndex")
-                    throw IllegalStateException("Handle this state")
+                    super.onError(device, e)
                 }
             }
         }.toList() + listOf(object : CharacteristicWriteTask(
@@ -152,10 +140,6 @@ class Beacon(
         ) {
             override fun onSuccess() {
                 Timber.i("Finalized Write of Slots")
-            }
-
-            override fun onError(e: Exception) {
-                TODO("Not implemented")
             }
         })
     }
@@ -171,10 +155,6 @@ class Beacon(
                     ) {
                         override fun onSuccess() {
                             Timber.i("Wrote part $i out of $ABSTRACT_DATA_CHUNK_TOTAL_SIZE for arbitrary data")
-                        }
-
-                        override fun onError(e: Exception) {
-                            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                         }
                     }
                 }.toList()
@@ -194,16 +174,16 @@ class Beacon(
                     }
                 }
 
-                override fun onError(e: Exception) {
+                override fun onError(device: BluetoothDevice, e: Exception) {
                     Timber.e("Failed to read slot type for slot $slotIndex")
-                    TODO("not implemented")
+                    super.onError(device, e)
                 }
             })
         }
 
-        override fun onError(e: Exception) {
+        override fun onError(device: BluetoothDevice, e: Exception) {
             Timber.e("Failed to write slot id $slotIndex")
-            TODO("not implemented")
+            super.onError(device, e)
         }
     }
 
@@ -218,9 +198,9 @@ class Beacon(
             }
         }
 
-        override fun onError(e: Exception) {
+        override fun onError(device: BluetoothDevice, e: Exception) {
             Timber.e("Failed to read parameter count")
-            TODO("not implemented")
+            super.onError(device, e)
         }
 
         class ParameterReadTask(val beacon: Beacon, val i: Int) : CharacteristicWriteTask(
@@ -245,29 +225,30 @@ class Beacon(
                                 }.add(Parameter(i, value))
                             }
 
-                            override fun onError(e: Exception) {
+                            override fun onError(device: BluetoothDevice, e: Exception) {
                                 Timber.e("Failure to read parameter data for parameter $i")
-                                TODO("not implemented")
+                                super.onError(device, e)
                             }
 
                         })
                     }
 
-                    override fun onError(e: Exception) {
+                    override fun onError(device: BluetoothDevice, e: Exception) {
                         Timber.e("Failed to read parameter group for parameter $i")
-                        TODO("not implemented")
+                        super.onError(device, e)
                     }
                 })
             }
 
-            override fun onError(e: Exception) {
+            override fun onError(device: BluetoothDevice, e: Exception) {
                 Timber.e("Failed to write parameter id $i")
-                TODO("not implemented")
+                super.onError(device, e)
             }
         }
     }
 
     class LockStateTask(
+        private val device: BluetoothDevice,
         private val callback: LockStateRequestTaskCallback
     ) : CharacteristicReadTask(characteristicUUID = LOCK_STATE_PASSWORD_UUID) {
         override fun onSuccess(value: ByteArray) {
@@ -280,9 +261,9 @@ class Beacon(
             }
         }
 
-        override fun onError(e: Exception) {
+        override fun onError(device: BluetoothDevice, e: Exception) {
             Timber.e("Error reading beacon lock state")
-            TODO("not implemented")
+            super.onError(device, e)
         }
 
         interface LockStateRequestTaskCallback {
@@ -302,13 +283,13 @@ class Beacon(
         override fun onSuccess() {
             Timber.e("Wrote password")
             if (checkValid && checkCallback != null) {
-                device.queueTask(LockStateTask(checkCallback))
+                device.queueTask(LockStateTask(device, checkCallback))
             }
         }
 
-        override fun onError(e: Exception) {
+        override fun onError(device: BluetoothDevice, e: Exception) {
             Timber.e("Error writing beacon password $password")
-            throw IllegalStateException("Handle this state")
+            super.onError(device, e)
         }
     }
 
@@ -347,6 +328,4 @@ class Beacon(
         }
 
     }
-
-
 }
