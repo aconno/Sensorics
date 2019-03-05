@@ -4,6 +4,7 @@ import android.bluetooth.le.ScanResult
 import com.aconno.bluetooth.BluetoothDevice
 import com.aconno.bluetooth.DeviceSpec
 import com.aconno.bluetooth.UUIDProvider
+import com.aconno.bluetooth.tasks.QueuedEmptyTask
 import com.aconno.bluetooth.tasks.ReadTask
 import com.aconno.bluetooth.tasks.Task
 import com.aconno.bluetooth.tasks.WriteTask
@@ -55,11 +56,17 @@ class Beacon(
         supportedSlots =
             "EMPTY,CUSTOM,URL,I_BEACON".split(',').map { Slot.Type.valueOf(it) }.toTypedArray()
         // TODO: Not hardcode look above
-        slotAmount = 6
 
-        slots = MutableList(slotAmount) { Slot() }
+        device.queueTasks(readParameters() + listOf<Task>(object : QueuedEmptyTask() {
+            override fun execute() {
+                slotAmount =
+                    ((parameters.flatMap { it.value }.find { it.name == "Slot Amount" }?.value
+                        ?: 6) as Number).toInt()
 
-        paramDevice.queueTasks(readParameters() + readSlots() + readAbstractData())
+                slots = MutableList(slotAmount) { Slot() }
+                device.queueTasks(readSlots())
+            }
+        }) + readAbstractData())
     }
 
     private fun readParameters(): List<Task> {
@@ -150,20 +157,19 @@ class Beacon(
             if (json != abstractData || !incremental) {
                 json.toByteArray().extendOrShorten(ABSTRACT_DATA_CHUNK_TOTAL_SIZE)
                     .chunked(ABSTRACT_DATA_CHUNK_SIZE).mapIndexed { i, data ->
-                        object : WriteTask(UUIDProvider.provideFullUUID("E001"), data) {
-                            override fun onSuccess() {
-                                Timber.i("Wrote part $i out of $ABSTRACT_DATA_CHUNK_TOTAL_SIZE for arbitrary data")
-                            }
-
-                            override fun onError(error: Int) {
-                                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                            }
+                    object : WriteTask(UUIDProvider.provideFullUUID("E001"), data) {
+                        override fun onSuccess() {
+                            Timber.i("Wrote part $i out of $ABSTRACT_DATA_CHUNK_TOTAL_SIZE for arbitrary data")
                         }
-                    }.toList()
+
+                        override fun onError(error: Int) {
+                            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                        }
+                    }
+                }.toList()
             } else listOf()
         }
     }
-
 
     class SlotReadTask(val beacon: Beacon, val slotIndex: Int) :
         WriteTask(UUIDProvider.provideFullUUID("B001"), byteArrayOf(slotIndex.toByte())) {
@@ -286,9 +292,9 @@ class Beacon(
 
 
     companion object {
-        private val ABSTRACT_DATA_CHUNK_COUNT = 50
-        private val ABSTRACT_DATA_CHUNK_SIZE = 20
-        private val ABSTRACT_DATA_CHUNK_TOTAL_SIZE =
+        private const val ABSTRACT_DATA_CHUNK_COUNT = 50
+        private const val ABSTRACT_DATA_CHUNK_SIZE = 20
+        private const val ABSTRACT_DATA_CHUNK_TOTAL_SIZE =
             ABSTRACT_DATA_CHUNK_SIZE * ABSTRACT_DATA_CHUNK_COUNT
 
         @JvmField

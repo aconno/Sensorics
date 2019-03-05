@@ -1,15 +1,10 @@
 package com.aconno.bluetooth
 
-import android.bluetooth.BluetoothGatt
+import android.bluetooth.*
 import android.bluetooth.BluetoothGatt.*
-import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattDescriptor
-import android.bluetooth.BluetoothGattService
 import android.content.Context
 import android.os.RemoteException
-import com.aconno.bluetooth.tasks.ReadTask
-import com.aconno.bluetooth.tasks.Task
-import com.aconno.bluetooth.tasks.WriteTask
+import com.aconno.bluetooth.tasks.*
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.LinkedBlockingDeque
@@ -77,11 +72,17 @@ class BluetoothDeviceImpl(
     }
 
     private fun prepareTask(task: Task): Task {
-        return task.apply {
+        return task.takeUnless { task is QueuedEmptyTask }?.apply {
             realCharacteristic =
                 services.flatMap { it.characteristics }.find { it.uuid == this.characteristic }
                     ?: throw IllegalArgumentException("Invalid characteristic used ${this.characteristic}!")
-        }
+            if (this is DescriptorReadTask) {
+                this.realDescriptor = realCharacteristic.getDescriptor(descriptor)
+            } else if (this is DescriptorWriteTask) {
+                this.realDescriptor = realCharacteristic.getDescriptor(descriptor)
+            }
+        } ?: task
+
     }
 
     override fun addCharacteristicChangedListener(
@@ -111,54 +112,61 @@ class BluetoothDeviceImpl(
     }
 
     private fun processQueueInternal() {
+        val gatt: BluetoothGatt? = gatt
+
+        while (queue.peek() is QueuedEmptyTask) {
+            (queue.pop() as QueuedEmptyTask).execute()
+        }
+
         queue.peek()?.let { task ->
-            if (!task.active) gatt.let { gatt ->
-                if (connectionState == STATE_CONNECTED && gatt != null) {
-                    task.active = true
-                    when (task) {
-                        is ReadTask -> {
-                            BLE_TAG.i("Reading from ${task.realCharacteristic.uuid}...")
-                            if (!gatt.readCharacteristic(task.realCharacteristic)) {
-                                try {
-                                    task.onError(GATT_FAILED_TO_REQUEST)
-                                } catch (ex: Exception) {
-                                    disconnect()
-                                    throw ex
-                                }
+            if (task.active) return
 
-                                queue.remove()
-                                processQueue()
-                            }
-                        }
-                        is WriteTask -> {
-                            BLE_TAG.i("Writing ${task.value.size} bytes at ${task.realCharacteristic.uuid}... Data: ${task.value.toHex()}")
-                            if (!gatt.writeCharacteristic(task.realCharacteristic.apply {
-                                    value =
-                                        if (task.value.size > MAX_PACKET_SIZE) task.value.copyOfRange(
-                                            0,
-                                            MAX_PACKET_SIZE
-                                        ) else task.value
-                                    writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-                                })) {
+            if (gatt == null || connectionState != BluetoothProfile.STATE_CONNECTED) {
+                task.onError(GATT_NOT_CONNECTED)
+                queue.remove()
+                return
+            }
 
-                                try {
-                                    task.onError(GATT_FAILED_TO_REQUEST)
-                                } catch (e: Exception) {
-                                    disconnect()
-                                    throw e
-                                }
+            task.active = true
 
-                                queue.remove()
-                                processQueue()
-                            }
-                        }
-                        else -> throw NotImplementedError()
-                    }
-                    task
-                } else {
-                    task.onError(GATT_NOT_CONNECTED)
-                    queue.remove()
+            val success: Boolean = when (task) {
+                is ReadTask -> {
+                    BLE_TAG.i("Reading from ${task.realCharacteristic.uuid}...")
+                    gatt.readCharacteristic(task.realCharacteristic)
                 }
+                is WriteTask -> {
+                    BLE_TAG.i("Writing ${task.value.size} bytes at ${task.realCharacteristic.uuid}... Data: ${task.value.toHex()}")
+                    gatt.writeCharacteristic(task.realCharacteristic.apply {
+                        value = if (task.value.size > MAX_PACKET_SIZE) task.value.copyOfRange(
+                            0,
+                            MAX_PACKET_SIZE
+                        ) else task.value
+                        writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+                    })
+                }
+                is DescriptorReadTask -> {
+                    BLE_TAG.i("Reading descriptor ${task.descriptor} on characteristic ${task.characteristic}...")
+                    gatt.readDescriptor(task.realDescriptor)
+                }
+                is DescriptorWriteTask -> {
+                    BLE_TAG.i("Writing descriptor ${task.descriptor} on characteristic ${task.characteristic}... Data: ${task.value.toHex()}")
+                    gatt.writeDescriptor(task.realDescriptor.apply {
+                        value = task.value
+                    })
+                }
+                else -> {
+                    throw NotImplementedError()
+                }
+            }
+            if (!success) {
+                try {
+                    task.onError(GATT_FAILED_TO_REQUEST)
+                } catch (e: Exception) {
+                    disconnect()
+                    throw e
+                }
+                queue.remove()
+                processQueue()
             }
         } ?: listeners.removeAll {
             it.onAllTasksCompleted()
@@ -178,8 +186,8 @@ class BluetoothDeviceImpl(
     }
 
     override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+        Timber.e("On services discovered")
         gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
-
         services = gatt.services
         gatt.services.flatMap { it.characteristics }
             .associateBy { it.uuid.toString() } // TODO: Get Real Characteristic Faster
@@ -208,21 +216,17 @@ class BluetoothDeviceImpl(
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 BLE_TAG.i("Read ${characteristic.value.size} bytes from ${characteristic.uuid}! Data: ${characteristic.value.toHex()}")
                 this.onSuccess(characteristic.value)
-                Timber.e(listeners.size.toString())
-                listeners.forEach { it.onTaskComplete(queue.size) }
-                this.taskQueue.reversed().forEach { insertTask(it) }
             } else {
                 BLE_TAG.e("Reading failed for ${characteristic.uuid} with status $status!")
-
                 try {
                     this.onError(status)
                 } catch (e: Exception) {
                     disconnect()
                     throw e
                 }
-
-                this.taskQueue.reversed().forEach { insertTask(it) }
             }
+            listeners.forEach { it.onTaskComplete(queue.size) }
+            taskQueue.reversed().forEach { insertTask(it) }
         }
         processQueue()
     }
@@ -250,15 +254,13 @@ class BluetoothDeviceImpl(
                             this@with.onSuccess()
                         }
                     })
+                    // Skip calling listeners and updating the task queue with internal tasks
+                    return@with
                 } else {
                     this.onSuccess()
-                    listeners.forEach { it.onTaskComplete(queue.size) }
-                    this.taskQueue.reversed().forEach { insertTask(it) }
                 }
             } else {
                 BLE_TAG.e("Writing failed for ${characteristic.uuid} with status $status!")
-                this.taskQueue.reversed().forEach { insertTask(it) }
-
                 try {
                     this.onError(status)
                 } catch (e: Exception) {
@@ -266,6 +268,8 @@ class BluetoothDeviceImpl(
                     throw e
                 }
             }
+            listeners.forEach { it.onTaskComplete(queue.size) }
+            taskQueue.reversed().forEach { insertTask(it) }
         }
         processQueue()
     }
@@ -277,6 +281,54 @@ class BluetoothDeviceImpl(
         characteristicChangedListenerMap[characteristic.uuid]?.forEach {
             it.onCharacteristicChanged(characteristic, characteristic.value)
         }
+    }
+
+    override fun onDescriptorRead(
+        gatt: BluetoothGatt?,
+        descriptor: BluetoothGattDescriptor,
+        status: Int
+    ) {
+        with(queue.remove() as DescriptorReadTask) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                BLE_TAG.i("Read ${descriptor.value.size} bytes from ${descriptor.uuid} on characteristic $characteristic! Data: ${descriptor.value.toHex()}")
+                onSuccess(descriptor.value)
+            } else {
+                BLE_TAG.e("Reading failed for descriptor ${descriptor.uuid} on characteristic $characteristic with status $status!")
+                try {
+                    this.onError(status)
+                } catch (e: Exception) {
+                    disconnect()
+                    throw e
+                }
+            }
+            listeners.forEach { it.onTaskComplete(queue.size) }
+            taskQueue.reversed().forEach { insertTask(it) }
+        }
+        processQueue()
+    }
+
+    override fun onDescriptorWrite(
+        gatt: BluetoothGatt?,
+        descriptor: BluetoothGattDescriptor,
+        status: Int
+    ) {
+        with(queue.remove() as DescriptorWriteTask) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                BLE_TAG.i("Written ${descriptor.value.size} bytes to descriptor ${descriptor.uuid} on characteristic $characteristic! Data: ${descriptor.value.toHex()}")
+                onSuccess()
+            } else {
+                BLE_TAG.e("Writing failed for descriptor ${descriptor.uuid} on characteristic $characteristic with status $status!")
+                try {
+                    this.onError(status)
+                } catch (e: Exception) {
+                    disconnect()
+                    throw e
+                }
+            }
+            listeners.forEach { it.onTaskComplete(queue.size) }
+            taskQueue.reversed().forEach { insertTask(it) }
+        }
+        processQueue()
     }
 
     companion object {
