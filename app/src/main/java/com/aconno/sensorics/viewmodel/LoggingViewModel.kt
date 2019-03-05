@@ -1,34 +1,93 @@
 package com.aconno.sensorics.viewmodel
 
+import android.annotation.SuppressLint
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.aconno.sensorics.ui.logs.LoggingAdapter
+import com.aconno.sensorics.domain.interactor.logs.AddLogUseCase
+import com.aconno.sensorics.domain.interactor.logs.DeleteDeviceLogsUseCase
+import com.aconno.sensorics.domain.interactor.logs.GetDeviceLogsUseCase
+import com.aconno.sensorics.domain.logs.Log
+import com.aconno.sensorics.domain.logs.LoggingLevel
+import com.aconno.sensorics.model.LogModel
+import com.aconno.sensorics.model.mapper.LogModelMapper
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 /**
  * @author julio.mendoza on 3/4/19.
  */
-class LoggingViewModel : ViewModel() {
+class LoggingViewModel(
+        private val getDeviceLogsUseCase: GetDeviceLogsUseCase,
+        private val deleteDeviceLogsUseCase: DeleteDeviceLogsUseCase,
+        private val addLogUseCase: AddLogUseCase,
+        private val logModelMapper: LogModelMapper
+) : ViewModel() {
 
-    private val logItems = mutableListOf<String>()
+    private val logItemsLiveData = MutableLiveData<ArrayList<LogModel>>()
+    private val disposables = CompositeDisposable()
 
-    fun log(info: String) {
-        log(info, LoggingAdapter.LoggingLevel.INFO)
+    fun getLogItemsLiveData(): LiveData<ArrayList<LogModel>> = logItemsLiveData
+
+    fun getDeviceLogs(deviceMacAddress: String) {
+        val disposable = getDeviceLogsUseCase.execute(deviceMacAddress)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { logs, throwable ->
+                    logs?.let { list ->
+                        logItemsLiveData.value?.addAll(list.map { logModelMapper.transform(it) })
+                        logItemsLiveData.postValue(logItemsLiveData.value)
+                    }
+
+                    throwable?.let {
+                        Timber.e(it)
+                    }
+                }
+        disposables.add(disposable)
     }
 
-    fun logError(info: String) {
-        log(info, LoggingAdapter.LoggingLevel.ERROR)
+    fun deleteDeviceLogs(deviceMacAddress: String) {
+        val disposable = deleteDeviceLogsUseCase.execute(deviceMacAddress)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    logItemsLiveData.value?.clear()
+                    logItemsLiveData.postValue(logItemsLiveData.value)
+                }
+
+        disposables.add(disposable)
     }
 
-    fun logWarning(info: String) {
-        log(info, LoggingAdapter.LoggingLevel.WARNING)
+    fun logInfo(info: String, deviceMacAddress: String) {
+        log(info, deviceMacAddress, LoggingLevel.INFO)
     }
 
-    private fun log(info: String, loggingLevel: LoggingAdapter.LoggingLevel) {
-        
+    fun logError(info: String, deviceMacAddress: String) {
+        log(info, deviceMacAddress, LoggingLevel.ERROR)
     }
 
-    companion object {
-        private const val LOG_DATE_FORMAT = "yyyy-MM-dd hh:mm:ss.SS"
-        private const val LOG_FORMAT = "%s : %s"
+    fun logWarning(info: String, deviceMacAddress: String) {
+        log(info, deviceMacAddress, LoggingLevel.WARNING)
     }
 
+    @SuppressLint("CheckResult")
+    private fun log(info: String, deviceMacAddress: String, loggingLevel: LoggingLevel) {
+        val log = Log(info, System.currentTimeMillis(), loggingLevel, deviceMacAddress)
+        val disposable = addLogUseCase.execute(log)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    logItemsLiveData.value?.add(logModelMapper.transform(log))
+                    logItemsLiveData.postValue(logItemsLiveData.value)
+                }
+
+        disposables.add(disposable)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.dispose()
+    }
 }
