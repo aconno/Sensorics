@@ -37,12 +37,8 @@ class Beacon(
     var abstractData: String = "",
     var abstractDataMapped: MutableMap<String, String> = mutableMapOf()
 ) : DeviceSpec(paramDevice) {
-    val ABSTRACT_DATA_CHUNK_COUNT = 1
-    val ABSTRACT_DATA_CHUNK_SIZE = 50
-
     val gson: Gson = GsonBuilder().create()
     var type: Type = object : TypeToken<Map<String, String>>() {}.type
-
 
     fun unlock(password: String, callback: LockStateTask.LockStateRequestTaskCallback) {
         paramDevice.queueTask(PasswordWriteTask(paramDevice, password, callback))
@@ -61,9 +57,7 @@ class Beacon(
         // TODO: Not hardcode look above
         slotAmount = 6
 
-        slots = MutableList(slotAmount) { i ->
-            Slot()
-        }
+        slots = MutableList(slotAmount) { Slot() }
 
         paramDevice.queueTasks(readParameters() + readSlots() + readAbstractData())
     }
@@ -153,20 +147,20 @@ class Beacon(
 
     private fun writeAbstractData(incremental: Boolean): List<Task> {
         return gson.toJson(abstractDataMapped).let { json ->
-            if (json != abstractData || !incremental) (0 until ABSTRACT_DATA_CHUNK_COUNT).map {
-                object : WriteTask(
-                    UUIDProvider.provideFullUUID("E001"),
-                    json.toByteArray().extendOrShorten(200).copyOfRange(it * 50, it * 50 + 50)
-                ) {
-                    override fun onSuccess() {
-                        Timber.i("Wrote part $it of 4 for arbitrary data")
-                    }
+            if (json != abstractData || !incremental) {
+                json.toByteArray().extendOrShorten(ABSTRACT_DATA_CHUNK_TOTAL_SIZE)
+                    .chunked(ABSTRACT_DATA_CHUNK_SIZE).mapIndexed { i, data ->
+                        object : WriteTask(UUIDProvider.provideFullUUID("E001"), data) {
+                            override fun onSuccess() {
+                                Timber.i("Wrote part $i out of $ABSTRACT_DATA_CHUNK_TOTAL_SIZE for arbitrary data")
+                            }
 
-                    override fun onError(error: Int) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
-                }
-            }.toList() else listOf()
+                            override fun onError(error: Int) {
+                                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                            }
+                        }
+                    }.toList()
+            } else listOf()
         }
     }
 
@@ -292,6 +286,11 @@ class Beacon(
 
 
     companion object {
+        private val ABSTRACT_DATA_CHUNK_COUNT = 50
+        private val ABSTRACT_DATA_CHUNK_SIZE = 20
+        private val ABSTRACT_DATA_CHUNK_TOTAL_SIZE =
+            ABSTRACT_DATA_CHUNK_SIZE * ABSTRACT_DATA_CHUNK_COUNT
+
         @JvmField
         val matcher: Predicate<ScanResult> = Predicate { sr ->
             sr.scanRecord?.bytes?.let {
