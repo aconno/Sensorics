@@ -1,28 +1,11 @@
 package com.aconno.bluetooth.tasks
 
-import android.bluetooth.BluetoothGattCharacteristic
-import com.aconno.bluetooth.TaskCallback
 import java.util.*
-import java.util.concurrent.LinkedBlockingDeque
 
-abstract class Task(
-    val characteristic: UUID,
-    var active: Boolean = false,
-    open var retriesAllowed: Int = RETRIES_ALLOWED
-) {
-    lateinit var realCharacteristic: BluetoothGattCharacteristic
-    val taskQueue: Queue<Task> = LinkedBlockingDeque()
+abstract class Task(var active: Boolean = false) {
+    val taskQueue: Queue<Task> = ArrayDeque<Task>()
 
-    constructor(
-        characteristic: BluetoothGattCharacteristic,
-        callback: TaskCallback,
-        active: Boolean = false,
-        retriesAllowed: Int = RETRIES_ALLOWED
-    ) : this(characteristic.uuid, active, retriesAllowed) {
-        this.realCharacteristic = characteristic
-    }
-
-    abstract fun onError(error: Int)
+    abstract fun onError(e: Exception)
 
     companion object {
         const val RETRIES_ALLOWED = 5

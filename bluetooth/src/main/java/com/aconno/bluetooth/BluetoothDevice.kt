@@ -1,12 +1,11 @@
 package com.aconno.bluetooth
 
 import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattService
 import com.aconno.bluetooth.tasks.Task
 import java.util.*
 
 interface BluetoothDevice {
-    var services: MutableList<BluetoothGattService>
+    var characteristicMap: Map<UUID, BluetoothGattCharacteristic>
     fun connect(autoConnect: Boolean, callback: BluetoothGattCallback? = null)
     fun addBluetoothGattCallback(callback: BluetoothGattCallback): Boolean
     fun removeBluetoothGattCallback(callback: BluetoothGattCallback): Boolean

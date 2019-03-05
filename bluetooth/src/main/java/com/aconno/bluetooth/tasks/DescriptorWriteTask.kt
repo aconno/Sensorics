@@ -1,23 +1,13 @@
 package com.aconno.bluetooth.tasks
 
-import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import java.util.*
 
 abstract class DescriptorWriteTask(
-    characteristic: UUID,
-    val descriptor: UUID,
-    val value: ByteArray,
-    override var retriesAllowed: Int = RETRIES_ALLOWED
-) : Task(characteristic) {
-    lateinit var realDescriptor: BluetoothGattDescriptor
-
-    constructor(
-        characteristic: BluetoothGattCharacteristic,
-        descriptor: BluetoothGattDescriptor,
-        value: ByteArray,
-        retriesAllowed: Int = RETRIES_ALLOWED
-    ) : this(characteristic.uuid, descriptor.uuid, value, retriesAllowed = retriesAllowed)
-
+    override var descriptor: BluetoothGattDescriptor? = null,
+    override val descriptorUUID: UUID = descriptor!!.uuid,
+    override val characteristicUUID: UUID = descriptor!!.characteristic.uuid,
+    val value: ByteArray
+) : DescriptorTask(descriptor, descriptorUUID, characteristicUUID) {
     abstract fun onSuccess()
 }

@@ -1,8 +1,9 @@
 package com.aconno.bluetooth.beacon
 
-import com.aconno.bluetooth.UUIDProvider
+import com.aconno.bluetooth.beacon.Beacon.Companion.PARAMETER_DATA_UUID
+import com.aconno.bluetooth.beacon.Beacon.Companion.PARAMETER_INDEX_UUID
+import com.aconno.bluetooth.tasks.CharacteristicWriteTask
 import com.aconno.bluetooth.tasks.Task
-import com.aconno.bluetooth.tasks.WriteTask
 import timber.log.Timber
 import java.nio.ByteOrder
 import kotlin.experimental.and
@@ -65,28 +66,33 @@ class Parameter(
     val max: Int = ValueConverter.SINT32.converter.deserialize(data.copyOfRange(44, 48)) as Int
 
     fun write(): Task {
-        return object : WriteTask(UUIDProvider.provideFullUUID("C002"), byteArrayOf(id.toByte())) {
+        return object : CharacteristicWriteTask(
+            characteristicUUID = PARAMETER_INDEX_UUID,
+            value = byteArrayOf(id.toByte())
+        ) {
             override fun onSuccess() {
                 Timber.e("About to write parameter: $name")
-                taskQueue.offer(object : WriteTask(
-                    UUIDProvider.provideFullUUID("C004"),
-                    type.converter.serialize(this@Parameter.value.toString()).extendOrShorten(56)
+                taskQueue.offer(object : CharacteristicWriteTask(
+                    characteristicUUID = PARAMETER_DATA_UUID,
+                    value = type.converter.serialize(this@Parameter.value.toString()).extendOrShorten(
+                        56
+                    )
                 ) {
                     override fun onSuccess() {
                         Timber.i("Written data for parameter $id")
                         dirty = false
                     }
 
-                    override fun onError(error: Int) {
+                    override fun onError(e: Exception) {
                         Timber.e("Error writing parameter $id data!")
-                        throw IllegalStateException("Error writing parameter $id data! $error")
+                        TODO("not implemented")
                     }
                 })
             }
 
-            override fun onError(error: Int) {
+            override fun onError(e: Exception) {
                 Timber.e("Error writing parameter id for id $id!")
-                throw IllegalStateException("Error writing parameter id for id $id! $error")
+                TODO("not implemented")
             }
         }
     }

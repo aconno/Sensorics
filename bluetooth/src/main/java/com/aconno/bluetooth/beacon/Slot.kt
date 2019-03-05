@@ -1,9 +1,15 @@
 package com.aconno.bluetooth.beacon
 
-import com.aconno.bluetooth.UUIDProvider
-import com.aconno.bluetooth.tasks.ReadTask
+import com.aconno.bluetooth.beacon.Beacon.Companion.SLOT_ADV_INT_UUID
+import com.aconno.bluetooth.beacon.Beacon.Companion.SLOT_DATA_UUID
+import com.aconno.bluetooth.beacon.Beacon.Companion.SLOT_RADIO_TX_UUID
+import com.aconno.bluetooth.beacon.Beacon.Companion.SLOT_RSSI_1M_UUID
+import com.aconno.bluetooth.beacon.Beacon.Companion.SLOT_TRIGGER_ENABLE_UUID
+import com.aconno.bluetooth.beacon.Beacon.Companion.SLOT_TRIGGER_TYPE_UUID
+import com.aconno.bluetooth.beacon.Beacon.Companion.SLOT_TYPE_UUID
+import com.aconno.bluetooth.tasks.CharacteristicReadTask
+import com.aconno.bluetooth.tasks.CharacteristicWriteTask
 import com.aconno.bluetooth.tasks.Task
-import com.aconno.bluetooth.tasks.WriteTask
 import timber.log.Timber
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -53,21 +59,21 @@ data class Slot(
     }
 
     fun readAdvertisementData(): Task {
-        return object : ReadTask(UUIDProvider.provideFullUUID("B003")) {
+        return object : CharacteristicReadTask(characteristicUUID = SLOT_DATA_UUID) {
             override fun onSuccess(value: ByteArray) {
-                type.rawtoContentConverter?.let {
+                type.rawToContentConverter?.let {
                     slotAdvertisingContent.putAll(it(value))
                 }
             }
 
-            override fun onError(error: Int) {
+            override fun onError(e: Exception) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
     }
 
     fun readAdvertisingInterval(): Task {
-        return object : ReadTask(UUIDProvider.provideFullUUID("B004")) {
+        return object : CharacteristicReadTask(characteristicUUID = SLOT_ADV_INT_UUID) {
             override fun onSuccess(value: ByteArray) {
                 advertisingInterval =
                     com.aconno.bluetooth.ValueConverter.UINT16.converter.deserialize(
@@ -78,14 +84,14 @@ data class Slot(
                     ).toString().toInt()
             }
 
-            override fun onError(error: Int) {
+            override fun onError(e: Exception) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
     }
 
     fun readRssi1m(): Task {
-        return object : ReadTask(UUIDProvider.provideFullUUID("B005")) {
+        return object : CharacteristicReadTask(characteristicUUID = SLOT_RSSI_1M_UUID) {
             override fun onSuccess(value: ByteArray) {
                 rssi1m = com.aconno.bluetooth.ValueConverter.SINT16.converter.deserialize(
                     value.copyOfRange(
@@ -95,14 +101,14 @@ data class Slot(
                 ).toString().toInt()
             }
 
-            override fun onError(error: Int) {
+            override fun onError(e: Exception) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
     }
 
     fun readRadioTx(): Task {
-        return object : ReadTask(UUIDProvider.provideFullUUID("B006")) {
+        return object : CharacteristicReadTask(characteristicUUID = SLOT_RADIO_TX_UUID) {
             override fun onSuccess(value: ByteArray) {
                 radioTx = com.aconno.bluetooth.ValueConverter.SINT16.converter.deserialize(
                     value.copyOfRange(
@@ -112,41 +118,40 @@ data class Slot(
                 ).toString().toInt()
             }
 
-            override fun onError(error: Int) {
+            override fun onError(e: Exception) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
     }
 
     fun readTriggerEnabled(): Task {
-        return object : ReadTask(UUIDProvider.provideFullUUID("B007")) {
+        return object : CharacteristicReadTask(characteristicUUID = SLOT_TRIGGER_ENABLE_UUID) {
             override fun onSuccess(value: ByteArray) {
                 triggerEnabled = com.aconno.bluetooth.ValueConverter.BOOLEAN.converter.deserialize(
                     byteArrayOf(value[0])
                 ).toString().toBoolean()
             }
 
-            override fun onError(error: Int) {
+            override fun onError(e: Exception) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
     }
 
     fun readTriggerType(): Task {
-        return object : ReadTask(UUIDProvider.provideFullUUID("B008")) {
+        return object : CharacteristicReadTask(characteristicUUID = SLOT_TRIGGER_TYPE_UUID) {
             override fun onSuccess(value: ByteArray) {
                 // TODO: Domingo ne zna programirat
-                try {
-                    triggerType =
-                        TriggerType.values()[com.aconno.bluetooth.ValueConverter.UINT8.converter.deserialize(
-                            byteArrayOf(value[0])
-                        ).toString().toInt()]
+                triggerType = try {
+                    TriggerType.values()[com.aconno.bluetooth.ValueConverter.UINT8.converter.deserialize(
+                        byteArrayOf(value[0])
+                    ).toString().toInt()]
                 } catch (e: Exception) {
-                    triggerType = TriggerType.DOUBLE_TAP
+                    TriggerType.DOUBLE_TAP
                 }
             }
 
-            override fun onError(error: Int) {
+            override fun onError(e: Exception) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
@@ -165,9 +170,9 @@ data class Slot(
 
     fun write(): List<Task> {
         return listOf(
-            object : WriteTask(
-                UUIDProvider.provideFullUUID("B002"),
-                ValueConverter.UTF8STRING.converter.serialize(
+            object : CharacteristicWriteTask(
+                characteristicUUID = SLOT_TYPE_UUID,
+                value = ValueConverter.UTF8STRING.converter.serialize(
                     type.name,
                     order = ByteOrder.BIG_ENDIAN
                 ).extendOrShorten(20)
@@ -176,79 +181,79 @@ data class Slot(
                     Timber.i("Written Slot Type")
                 }
 
-                override fun onError(error: Int) {
+                override fun onError(e: Exception) {
                     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             },
-            object : WriteTask(
-                UUIDProvider.provideFullUUID("B003"),
-                contentBytes().extendOrShorten(62)
+            object : CharacteristicWriteTask(
+                characteristicUUID = SLOT_DATA_UUID,
+                value = contentBytes().extendOrShorten(62)
             ) {
                 override fun onSuccess() {
                     Timber.i("Written Slot Contents")
                 }
 
-                override fun onError(error: Int) {
+                override fun onError(e: Exception) {
                     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             },
-            object : WriteTask(
-                UUIDProvider.provideFullUUID("B004"),
-                ValueConverter.UINT16.converter.serialize(advertisingInterval)
+            object : CharacteristicWriteTask(
+                characteristicUUID = SLOT_ADV_INT_UUID,
+                value = ValueConverter.UINT16.converter.serialize(advertisingInterval)
             ) {
                 override fun onSuccess() {
                     Timber.i("Written Slot Advertising Interval")
                 }
 
-                override fun onError(error: Int) {
+                override fun onError(e: Exception) {
                     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             },
-            object : WriteTask(
-                UUIDProvider.provideFullUUID("B005"),
-                ValueConverter.SINT16.converter.serialize(rssi1m)
+            object : CharacteristicWriteTask(
+                characteristicUUID = SLOT_RSSI_1M_UUID,
+                value = ValueConverter.SINT16.converter.serialize(rssi1m)
             ) {
                 override fun onSuccess() {
                     Timber.i("Written Slot RSSI")
                 }
 
-                override fun onError(error: Int) {
+                override fun onError(e: Exception) {
                     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             },
-            object : WriteTask(
-                UUIDProvider.provideFullUUID("B006"),
-                ValueConverter.SINT16.converter.serialize(radioTx)
+            object : CharacteristicWriteTask(
+                characteristicUUID = SLOT_RADIO_TX_UUID,
+                value = ValueConverter.SINT16.converter.serialize(radioTx)
             ) {
                 override fun onSuccess() {
                     Timber.i("Written Slot Radio TX")
                 }
 
-                override fun onError(error: Int) {
+                override fun onError(e: Exception) {
                     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             },
-            object : WriteTask(
-                UUIDProvider.provideFullUUID("B007"),
-                ValueConverter.BOOLEAN.converter.serialize(triggerEnabled)
+            object : CharacteristicWriteTask(
+                characteristicUUID = SLOT_TRIGGER_ENABLE_UUID,
+                value = ValueConverter.BOOLEAN.converter.serialize(triggerEnabled)
             ) {
                 override fun onSuccess() {
                     Timber.i("Written Slot Trigger Enabled")
                 }
 
-                override fun onError(error: Int) {
+                override fun onError(e: Exception) {
                     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             },
-            object : WriteTask(
-                UUIDProvider.provideFullUUID("B008"),
-                ValueConverter.UINT8.converter.serialize(triggerType.id)
+            object : CharacteristicWriteTask(
+                characteristicUUID = SLOT_TRIGGER_TYPE_UUID,
+                value = ValueConverter.UINT8.converter.serialize(triggerType.id)
             ) {
                 override fun onSuccess() {
                     Timber.i("Written Slot Trigger Type")
                 }
 
-                override fun onError(error: Int) {
+                override fun onError(e: Exception) {
                     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             }
@@ -259,7 +264,7 @@ data class Slot(
     enum class Type(
         val tabName: String,
         val hasAdvertisingContent: Boolean = false,
-        val rawtoContentConverter: ((ByteArray) -> MutableMap<String, Any>)? = null,
+        val rawToContentConverter: ((ByteArray) -> MutableMap<String, Any>)? = null,
         val contentToRawConverter: ((MutableMap<String, Any>) -> ByteArray)? = null
     ) {
         UID("UID", true, {

@@ -4,10 +4,10 @@ import android.bluetooth.le.ScanResult
 import com.aconno.bluetooth.BluetoothDevice
 import com.aconno.bluetooth.DeviceSpec
 import com.aconno.bluetooth.UUIDProvider
-import com.aconno.bluetooth.tasks.QueuedEmptyTask
-import com.aconno.bluetooth.tasks.ReadTask
+import com.aconno.bluetooth.tasks.CharacteristicReadTask
+import com.aconno.bluetooth.tasks.CharacteristicWriteTask
+import com.aconno.bluetooth.tasks.GenericTask
 import com.aconno.bluetooth.tasks.Task
-import com.aconno.bluetooth.tasks.WriteTask
 import com.aconno.bluetooth.toHex
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -42,7 +42,7 @@ class Beacon(
     var type: Type = object : TypeToken<Map<String, String>>() {}.type
 
     fun unlock(password: String, callback: LockStateTask.LockStateRequestTaskCallback) {
-        paramDevice.queueTask(PasswordWriteTask(paramDevice, password, callback))
+        device.queueTask(PasswordWriteTask(device, password, callback))
     }
 
     fun requestDeviceLockStatus(callback: LockStateTask.LockStateRequestTaskCallback) {
@@ -57,7 +57,7 @@ class Beacon(
             "EMPTY,CUSTOM,URL,I_BEACON".split(',').map { Slot.Type.valueOf(it) }.toTypedArray()
         // TODO: Not hardcode look above
 
-        device.queueTasks(readParameters() + listOf<Task>(object : QueuedEmptyTask() {
+        device.queueTasks(readParameters() + listOf<Task>(object : GenericTask() {
             override fun execute() {
                 slotAmount =
                     ((parameters.flatMap { it.value }.find { it.name == "Slot Amount" }?.value
@@ -65,6 +65,10 @@ class Beacon(
 
                 slots = MutableList(slotAmount) { Slot() }
                 device.queueTasks(readSlots())
+            }
+
+            override fun onError(e: Exception) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }) + readAbstractData())
     }
@@ -79,7 +83,7 @@ class Beacon(
 
     private fun readAbstractData(): List<Task> {
         return (ABSTRACT_DATA_CHUNK_COUNT - 1 downTo 0).map {
-            object : ReadTask(UUIDProvider.provideFullUUID("E001")) {
+            object : CharacteristicReadTask(characteristicUUID = ABSTRACT_DATA_UUID) {
                 override fun onSuccess(value: ByteArray) {
                     abstractData += ValueConverter.UTF8STRING.converter.deserialize(
                         value,
@@ -94,8 +98,8 @@ class Beacon(
                     }
                 }
 
-                override fun onError(error: Int) {
-                    TODO("Not implemented")
+                override fun onError(e: Exception) {
+                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             }
         }
@@ -112,16 +116,16 @@ class Beacon(
     private fun writeParameters(incremental: Boolean): List<Task> {
         return parameters.flatMap { it.value }.filter { it.dirty or !incremental }.map {
             it.write()
-        } + listOf(object : WriteTask(
-            UUIDProvider.provideFullUUID("C002"),
-            byteArrayOf(parameters.flatMap { it.value }.size.toByte())
+        } + listOf(object : CharacteristicWriteTask(
+            characteristicUUID = PARAMETER_INDEX_UUID,
+            value = byteArrayOf(parameters.flatMap { it.value }.size.toByte())
         ) {
             override fun onSuccess() {
                 Timber.i("Finalized Write of Parameters")
             }
 
-            override fun onError(error: Int) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            override fun onError(e: Exception) {
+                TODO("Not implemented")
             }
         })
     }
@@ -129,25 +133,29 @@ class Beacon(
     private fun writeSlots(incremental: Boolean): List<Task> {
         return slots.filterNotNull().filter { it.dirty or !incremental }.map { slot ->
             val slotIndex: Int = slots.indexOf(slot)
-            object :
-                WriteTask(UUIDProvider.provideFullUUID("B001"), byteArrayOf(slotIndex.toByte())) {
+            object : CharacteristicWriteTask(
+                characteristicUUID = SLOT_INDEX_UUID,
+                value = byteArrayOf(slotIndex.toByte())
+            ) {
                 override fun onSuccess() {
                     slot.write().reversed().forEach { taskQueue.offer(it) }
                 }
 
-                override fun onError(error: Int) {
+                override fun onError(e: Exception) {
                     Timber.e("Failed to write slot id $slotIndex")
                     throw IllegalStateException("Handle this state")
                 }
             }
-        }.toList() + listOf(object :
-            WriteTask(UUIDProvider.provideFullUUID("B001"), byteArrayOf(slotAmount.toByte())) {
+        }.toList() + listOf(object : CharacteristicWriteTask(
+            characteristicUUID = SLOT_INDEX_UUID,
+            value = byteArrayOf(slotAmount.toByte())
+        ) {
             override fun onSuccess() {
                 Timber.i("Finalized Write of Slots")
             }
 
-            override fun onError(error: Int) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            override fun onError(e: Exception) {
+                TODO("Not implemented")
             }
         })
     }
@@ -157,12 +165,15 @@ class Beacon(
             if (json != abstractData || !incremental) {
                 json.toByteArray().extendOrShorten(ABSTRACT_DATA_CHUNK_TOTAL_SIZE)
                     .chunked(ABSTRACT_DATA_CHUNK_SIZE).mapIndexed { i, data ->
-                    object : WriteTask(UUIDProvider.provideFullUUID("E001"), data) {
+                    object : CharacteristicWriteTask(
+                        characteristicUUID = ABSTRACT_DATA_UUID,
+                        value = data
+                    ) {
                         override fun onSuccess() {
                             Timber.i("Wrote part $i out of $ABSTRACT_DATA_CHUNK_TOTAL_SIZE for arbitrary data")
                         }
 
-                        override fun onError(error: Int) {
+                        override fun onError(e: Exception) {
                             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                         }
                     }
@@ -171,29 +182,33 @@ class Beacon(
         }
     }
 
-    class SlotReadTask(val beacon: Beacon, val slotIndex: Int) :
-        WriteTask(UUIDProvider.provideFullUUID("B001"), byteArrayOf(slotIndex.toByte())) {
+    class SlotReadTask(val beacon: Beacon, val slotIndex: Int) : CharacteristicWriteTask(
+        characteristicUUID = SLOT_INDEX_UUID,
+        value = byteArrayOf(slotIndex.toByte())
+    ) {
         override fun onSuccess() {
-            taskQueue.offer(object : ReadTask(UUIDProvider.provideFullUUID("B002")) {
+            taskQueue.offer(object : CharacteristicReadTask(characteristicUUID = SLOT_TYPE_UUID) {
                 override fun onSuccess(value: ByteArray) {
                     beacon.slots[slotIndex] = Slot(value).apply {
                         read().reversed().forEach { taskQueue.offer(it) }
                     }
                 }
 
-                override fun onError(error: Int) {
+                override fun onError(e: Exception) {
                     Timber.e("Failed to read slot type for slot $slotIndex")
+                    TODO("not implemented")
                 }
             })
         }
 
-        override fun onError(error: Int) {
+        override fun onError(e: Exception) {
             Timber.e("Failed to write slot id $slotIndex")
-            throw IllegalStateException("Handle this state")
+            TODO("not implemented")
         }
     }
 
-    class ParametersReadTask(val beacon: Beacon) : ReadTask(UUIDProvider.provideFullUUID("C001")) {
+    class ParametersReadTask(val beacon: Beacon) :
+        CharacteristicReadTask(characteristicUUID = PARAMETER_COUNT_UUID) {
         override fun onSuccess(value: ByteArray) {
             val parameterCount = value[0]
             (0 until parameterCount).map { i ->
@@ -203,22 +218,26 @@ class Beacon(
             }
         }
 
-        override fun onError(error: Int) {
+        override fun onError(e: Exception) {
             Timber.e("Failed to read parameter count")
-            throw IllegalStateException("Handle this state")
+            TODO("not implemented")
         }
 
-        class ParameterReadTask(val beacon: Beacon, val i: Int) :
-            WriteTask(UUIDProvider.provideFullUUID("C002"), byteArrayOf(i.toByte())) {
+        class ParameterReadTask(val beacon: Beacon, val i: Int) : CharacteristicWriteTask(
+            characteristicUUID = PARAMETER_INDEX_UUID,
+            value = byteArrayOf(i.toByte())
+        ) {
             override fun onSuccess() {
-                taskQueue.offer(object : ReadTask(UUIDProvider.provideFullUUID("C003")) {
+                taskQueue.offer(object :
+                    CharacteristicReadTask(characteristicUUID = PARAMETER_GROUP_UUID) {
                     override fun onSuccess(value: ByteArray) {
                         val group: String =
                             com.aconno.bluetooth.ValueConverter.UTF8STRING.converter.deserialize(
                                 value.copyOfRange(0, value.stringLength()),
                                 order = ByteOrder.BIG_ENDIAN
                             ) as String
-                        taskQueue.offer(object : ReadTask(UUIDProvider.provideFullUUID("C004")) {
+                        taskQueue.offer(object :
+                            CharacteristicReadTask(characteristicUUID = PARAMETER_DATA_UUID) {
                             override fun onSuccess(value: ByteArray) {
                                 Timber.e(value.toHex())
                                 beacon.parameters.getOrPut(group) {
@@ -226,31 +245,31 @@ class Beacon(
                                 }.add(Parameter(i, value))
                             }
 
-                            override fun onError(error: Int) {
+                            override fun onError(e: Exception) {
                                 Timber.e("Failure to read parameter data for parameter $i")
-                                throw IllegalStateException("Handle this state")
+                                TODO("not implemented")
                             }
 
                         })
                     }
 
-                    override fun onError(error: Int) {
+                    override fun onError(e: Exception) {
                         Timber.e("Failed to read parameter group for parameter $i")
-                        throw IllegalStateException("Handle this state")
+                        TODO("not implemented")
                     }
                 })
             }
 
-            override fun onError(error: Int) {
+            override fun onError(e: Exception) {
                 Timber.e("Failed to write parameter id $i")
-                throw IllegalStateException("Handle this state")
+                TODO("not implemented")
             }
         }
     }
 
     class LockStateTask(
         private val callback: LockStateRequestTaskCallback
-    ) : ReadTask(UUIDProvider.provideFullUUID("D001")) {
+    ) : CharacteristicReadTask(characteristicUUID = LOCK_STATE_PASSWORD_UUID) {
         override fun onSuccess(value: ByteArray) {
             if (value[0] == 0x01.toByte()) {
                 Timber.e("Device unlocked")
@@ -261,9 +280,9 @@ class Beacon(
             }
         }
 
-        override fun onError(error: Int) {
+        override fun onError(e: Exception) {
             Timber.e("Error reading beacon lock state")
-            throw IllegalStateException("Handle this state")
+            TODO("not implemented")
         }
 
         interface LockStateRequestTaskCallback {
@@ -272,19 +291,22 @@ class Beacon(
     }
 
     class PasswordWriteTask(
-        private val bluetoothDevice: BluetoothDevice,
+        private val device: BluetoothDevice,
         private val password: String,
         private val checkCallback: LockStateTask.LockStateRequestTaskCallback? = null,
         private val checkValid: Boolean = true
-    ) : WriteTask(UUIDProvider.provideFullUUID("D001"), password.toByteArray()) {
+    ) : CharacteristicWriteTask(
+        characteristicUUID = LOCK_STATE_PASSWORD_UUID,
+        value = password.toByteArray()
+    ) {
         override fun onSuccess() {
             Timber.e("Wrote password")
             if (checkValid && checkCallback != null) {
-                bluetoothDevice.queueTask(LockStateTask(checkCallback))
+                device.queueTask(LockStateTask(checkCallback))
             }
         }
 
-        override fun onError(error: Int) {
+        override fun onError(e: Exception) {
             Timber.e("Error writing beacon password $password")
             throw IllegalStateException("Handle this state")
         }
@@ -296,6 +318,21 @@ class Beacon(
         private const val ABSTRACT_DATA_CHUNK_SIZE = 20
         private const val ABSTRACT_DATA_CHUNK_TOTAL_SIZE =
             ABSTRACT_DATA_CHUNK_SIZE * ABSTRACT_DATA_CHUNK_COUNT
+
+        val SLOT_INDEX_UUID = UUIDProvider.provideFullUUID("B001")
+        val SLOT_TYPE_UUID = UUIDProvider.provideFullUUID("B002")
+        val SLOT_DATA_UUID = UUIDProvider.provideFullUUID("B003")
+        val SLOT_ADV_INT_UUID = UUIDProvider.provideFullUUID("B004")
+        val SLOT_RSSI_1M_UUID = UUIDProvider.provideFullUUID("B005")
+        val SLOT_RADIO_TX_UUID = UUIDProvider.provideFullUUID("B006")
+        val SLOT_TRIGGER_ENABLE_UUID = UUIDProvider.provideFullUUID("B007")
+        val SLOT_TRIGGER_TYPE_UUID = UUIDProvider.provideFullUUID("B008")
+        val PARAMETER_COUNT_UUID = UUIDProvider.provideFullUUID("C001")
+        val PARAMETER_INDEX_UUID = UUIDProvider.provideFullUUID("C002")
+        val PARAMETER_GROUP_UUID = UUIDProvider.provideFullUUID("C003")
+        val PARAMETER_DATA_UUID = UUIDProvider.provideFullUUID("C004")
+        val LOCK_STATE_PASSWORD_UUID = UUIDProvider.provideFullUUID("D001")
+        val ABSTRACT_DATA_UUID = UUIDProvider.provideFullUUID("E001")
 
         @JvmField
         val matcher: Predicate<ScanResult> = Predicate { sr ->

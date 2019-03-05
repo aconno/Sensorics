@@ -1,5 +1,7 @@
 package com.aconno.bluetooth.beacon
 
+import android.bluetooth.BluetoothGattCharacteristic
+
 private val HEX_CHARS = "0123456789ABCDEF"
 
 fun String.hexStringToByteArray(): ByteArray {
@@ -60,3 +62,7 @@ fun ByteArray.chunked(size: Int): Array<ByteArray> = Array(
 ) {
     this.copyOfRange(it * size, (it + 1) * size)
 }
+
+fun BluetoothGattCharacteristic.isReadable(): Boolean = this.permissions.and(0x01) != 0
+
+fun BluetoothGattCharacteristic.isWriteable(): Boolean = this.permissions.and(0x10) != 0
