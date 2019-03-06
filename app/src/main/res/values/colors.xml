@@ -19,7 +19,8 @@
     <color name="graph_z">#0000FF</color>
     <color name="bg_row_background">#fa315b</color>
 
-    <color name="logging_info">#4286f4</color>
+    <color name="logging_info">#13BB00</color>
     <color name="logging_error">#a30101</color>
     <color name="logging_warning">#efd826</color>
+    <color name="logging_background">#2B2B2B</color>
 </resources>

@@ -1,13 +1,13 @@
 package com.aconno.sensorics.ui.logs
 
 import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattService
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.UiThread
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
-import android.support.v4.view.accessibility.AccessibilityEventCompat.setAction
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -16,62 +16,103 @@ import com.aconno.bluetooth.*
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.getRealName
+import com.aconno.sensorics.model.LogModel
+import com.aconno.sensorics.viewmodel.LoggingViewModel
 import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_logging.*
-import timber.log.Timber
 import java.nio.charset.Charset
-import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnableRequestListener {
-    private lateinit var device: Device
     private lateinit var logAdapter: LoggingAdapter
     private lateinit var scrollListener: RecyclerView.OnScrollListener
+    private lateinit var device: Device
     private var bluetoothDevice: BluetoothDevice? = null
+    private var scanDisposable: Disposable? = null
     private var scrollToBottom: Boolean = true
     private var lastVisiblePosition = -1
+    private lateinit var bluetoothGattCallback: BluetoothGattCallback
+
+    @Inject
+    lateinit var loggingViewModel: LoggingViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_logging)
-        if (intent.extras != null && intent.extras!!.containsKey(LoggingActivity.EXTRA_DEVICE)) {
-            device = Gson().fromJson(
-                    intent.extras!!.getString(LoggingActivity.EXTRA_DEVICE)
-                    , Device::class.java
-            )
+        if (!intent.hasExtra(EXTRA_DEVICE)) {
+            throw IllegalArgumentException("This activity must have $EXTRA_DEVICE as an extra")
         } else {
-            throw IllegalArgumentException("Device not provided.")
+            device = Gson().fromJson(intent.getStringExtra(EXTRA_DEVICE), Device::class.java)
         }
 
         if (savedInstanceState == null) {
             initViews()
         }
+
+        loggingViewModel.getLogItemsLiveData()
+                .observe(this, android.arch.lifecycle.Observer { handleLogEvent(it) })
+
         startScan()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchLogs()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         bluetoothDevice?.disconnect()
+        scanDisposable?.dispose()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
+    }
+
+    override fun onBluetoothRequestActivityResult() {
     }
 
     private fun initViews() {
+        initActionBar()
+
+        initAdapter()
+
+        initScrollListener()
+
+        initRecyclerView()
+
+        initButtons()
+    }
+
+    private fun initActionBar() {
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
-            title = device.getRealName()
+            title = getString(R.string.log_activity_title_format, device.getRealName())
             subtitle = device.macAddress
         }
+    }
 
+    private fun initAdapter() {
         logAdapter = LoggingAdapter()
         logAdapter.setOnSelectionChangedListener(object : LoggingAdapter.OnSelectionChangedListener {
             override fun onSelectionChanged() {
                 btnScrollToBottom.isChecked = false
             }
         })
+    }
 
+    private fun initScrollListener() {
         scrollListener = object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -88,7 +129,9 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
                 }
             }
         }
+    }
 
+    private fun initRecyclerView() {
         rvLogs.layoutManager = LinearLayoutManager(applicationContext,
                 LinearLayoutManager.VERTICAL, false)
         rvLogs.setHasFixedSize(true)
@@ -102,131 +145,174 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
                         .findLastVisibleItemPosition().also {
                             if (it != -1) lastVisiblePosition = it
                         }
-
-                Timber.d("Last visible position: $lastVisiblePosition")
             }
         })
+    }
 
+    private fun initButtons() {
         btnClearAll.setOnClickListener { clear() }
         btnScrollToBottom.setOnCheckedChangeListener { _, isChecked ->
             scrollToBottom = isChecked
             if (isChecked) {
                 rvLogs.addOnScrollListener(scrollListener)
-                rvLogs.smoothScrollToPosition(logAdapter.itemCount - 1)
+                scrollToBottom()
             }
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> finish()
-            else -> return super.onOptionsItemSelected(item)
-        }
-        return true
+    private fun handleLogEvent(logs: ArrayList<LogModel>?) {
+        refreshLogs(logs ?: arrayListOf())
     }
 
     private fun startScan() {
         BluetoothImpl(this).let { bluetooth ->
-            bluetooth.startScanForDevice(device.macAddress, Consumer { sr ->
-                if (bluetoothDevice != null) return@Consumer
-                bluetoothDevice = BluetoothDeviceImpl(this, sr.device)
-                bluetooth.connect(bluetoothDevice!!, object : BluetoothGattCallback() {
-                    override fun onDeviceConnected(device: BluetoothDevice) {
-                        log("Connected")
-                        bluetooth.stopScan()
-                    }
 
-                    override fun onDeviceConnecting(device: BluetoothDevice) {
-                        logWarning("Connecting...")
-                    }
+            initGattCallback(bluetooth)
+            //TODO Uncomment this line and remove line 152 when fw is updated
+            //scanDisposable = bluetooth.startScanForDevice(device.macAddress, Consumer { sr ->
+            scanDisposable = bluetooth.startScanForDevice("FE:95:3C:B4:D2:92", Consumer { scanResult ->
+                if (bluetoothDevice != null) {
+                    return@Consumer
+                }
 
-                    override fun onDeviceDisconnected(device: BluetoothDevice) {
-                        this@LoggingActivity.bluetoothDevice = null
-                        device.removeBluetoothGattCallback(this)
-                        logError("Disconnected")
-                        showDisconnectionAlertDialog()
-                    }
-
-                    override fun onServicesDiscovered(device: BluetoothDevice) {
-                        super.onServicesDiscovered(device)
-
-                        log("${device.services.size} services discovered")
-                        device.services.flatMap { it.characteristics }.forEach {
-                            log("Characteristic with UUID: ${it.uuid} with value: ${it.value
-                                    ?: "null"} from service: ${it.service.uuid}")
-                        }
-
-                        val uuid = UUID.fromString(LOG_UUID)
-                        device.setCharacteristicNotification(uuid, true)
-                        device.addCharacteristicChangedListener(uuid, object : CharacteristicChangedListener {
-                            override fun onCharacteristicChanged(characteristic: BluetoothGattCharacteristic, value: ByteArray) {
-                                runOnUiThread {
-                                    log(value.toString(Charset.defaultCharset()))
-                                }
-                            }
-                        })
-                    }
-                })
+                bluetoothDevice = BluetoothDeviceImpl(this, scanResult.device)
+                bluetooth.connect(bluetoothDevice!!, bluetoothGattCallback)
                 bluetooth.stopScan()
             })
-            logWarning("Started scanning...")
+            logWarning(getString(R.string.log_started_scanning))
         }
     }
 
-    @UiThread
-    private fun log(info: String) {
-        log(info, LoggingAdapter.LoggingLevel.INFO)
-    }
+    private fun initGattCallback(bluetooth: Bluetooth) {
+        bluetoothGattCallback = object : BluetoothGattCallback() {
+            override fun onDeviceConnected(device: BluetoothDevice) {
+                super.onDeviceConnected(device)
+                this@LoggingActivity.onDeviceConnected(bluetooth)
+            }
 
-    @UiThread
-    private fun logError(info: String) {
-        log(info, LoggingAdapter.LoggingLevel.ERROR)
-    }
+            override fun onDeviceConnecting(device: BluetoothDevice) {
+                super.onDeviceConnecting(device)
+                logWarning(getString(R.string.connecting))
+            }
 
-    @UiThread
-    private fun logWarning(info: String) {
-        log(info, LoggingAdapter.LoggingLevel.WARNING)
-    }
+            override fun onDeviceDisconnected(device: BluetoothDevice) {
+                super.onDeviceDisconnected(device)
+                this@LoggingActivity.onDeviceDisconnected(device)
+            }
 
-    @UiThread
-    private fun log(info: String, loggingLevel: LoggingAdapter.LoggingLevel) {
-        val log = getFormattedLog(info)
-        runOnUiThread {
-            logAdapter.addLog(log, loggingLevel)
-            if (scrollToBottom) {
-                rvLogs.smoothScrollToPosition(logAdapter.itemCount - 1)
+            override fun onServicesDiscovered(device: BluetoothDevice) {
+                super.onServicesDiscovered(device)
+                this@LoggingActivity.onServicesDiscovered(device)
             }
         }
     }
 
-    private fun getFormattedLog(info: String): String {
-        val dateFormat = SimpleDateFormat(LOG_DATE_FORMAT, Locale.getDefault())
-        val formattedTime = dateFormat.format(Date())
-        return String.format(LOG_FORMAT, formattedTime, info)
+    private fun onDeviceConnected(bluetooth: Bluetooth) {
+        logInfo(getString(R.string.connected))
+        bluetooth.stopScan()
+    }
+
+    private fun onDeviceDisconnected(bluetoothDevice: BluetoothDevice) {
+        this@LoggingActivity.bluetoothDevice = null
+        bluetoothDevice.removeBluetoothGattCallback(bluetoothGattCallback)
+        logError(getString(R.string.disconnected))
+        showDisconnectionAlertDialog()
+    }
+
+    private fun onServicesDiscovered(bluetoothDevice: BluetoothDevice) {
+        logInfo(getString(R.string.log_services_discovered, bluetoothDevice.services.size))
+        logDiscoveredServices(bluetoothDevice.services)
+
+        val uuid = UUID.fromString(LOG_UUID)
+        bluetoothDevice.setCharacteristicNotification(uuid, true)
+        bluetoothDevice.addCharacteristicChangedListener(uuid, object : CharacteristicChangedListener {
+            override fun onCharacteristicChanged(characteristic: BluetoothGattCharacteristic, value: ByteArray) {
+                runOnUiThread {
+                    logInfo(value.toString(Charset.defaultCharset()))
+                }
+            }
+        })
+    }
+
+    private fun refreshLogs(logs: List<LogModel>) {
+        logAdapter.refreshLogs(logs)
+        scrollToBottom()
+    }
+
+    private fun scrollToBottom() {
+        if (scrollToBottom && logAdapter.itemCount > 0) {
+            rvLogs.smoothScrollToPosition(logAdapter.itemCount - 1)
+        }
     }
 
     @UiThread
     private fun clear() {
         logAdapter.clear()
-        Snackbar.make(layoutRoot, "Cleared log list", Snackbar.LENGTH_LONG).apply {
-            setAction("Undo") {
+        Snackbar.make(layoutRoot, R.string.log_cleared_logs, Snackbar.LENGTH_LONG).apply {
+            setAction(R.string.log_undo_clear) {
                 logAdapter.undoClear()
                 if (lastVisiblePosition != -1) {
                     rvLogs.scrollToPosition(lastVisiblePosition)
                 }
                 dismiss()
             }
-            setActionTextColor(ContextCompat.getColor(applicationContext, R.color.primaryColor))
+            addCallback(object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                        clearDeviceLogs()
+                    }
+                }
+            })
+            setActionTextColor(ContextCompat.getColor(context, R.color.primaryColor))
         }.show()
+    }
+
+    private fun logDiscoveredServices(services: List<BluetoothGattService>) {
+        services.forEach { service ->
+            (service as BluetoothGattService?)?.let {
+                loggingViewModel.logInfo(getString(R.string.log_service_discovered_format, it.uuid),
+                        device.macAddress)
+
+                it.characteristics.forEach { characteristic ->
+                    logInfo(getString(R.string.log_characteristic_format, characteristic.uuid,
+                            characteristic.value))
+                }
+            }
+        }
+    }
+
+    private fun logInfo(info: String) {
+        loggingViewModel.logInfo(info, device.macAddress)
+    }
+
+    private fun logWarning(info: String) {
+        loggingViewModel.logWarning(info, device.macAddress)
+    }
+
+    private fun logError(info: String) {
+        loggingViewModel.logError(info, device.macAddress)
+    }
+
+    private fun fetchLogs() {
+        loggingViewModel.getDeviceLogs(device.macAddress)
+    }
+
+    private fun clearDeviceLogs() {
+        loggingViewModel.deleteDeviceLogs(device.macAddress)
     }
 
     private fun showDisconnectionAlertDialog() {
         runOnUiThread {
             AlertDialog.Builder(this)
                     .setOnCancelListener { finish() }
-                    .setTitle("Disconnected!")
-                    .setMessage("The device: ${device.name} has disconnected, returning to scanner")
-                    .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
+                    .setTitle(R.string.log_disconnected_dialog_title)
+                    .setMessage(getString(R.string.log_disconnected_dialog_message_format, device.name, device.macAddress))
+                    .setPositiveButton(R.string.log_back_to_scanner) { dialog, _ ->
+                        dialog.dismiss()
+                        finish()
+                    }
+                    .setNegativeButton(R.string.log_review_logs) { dialog, _ -> dialog.dismiss() }
                     .create().also {
                         if (!isFinishing or !isDestroyed) {
                             it.show()
@@ -235,15 +321,9 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
         }
     }
 
-    override fun onBluetoothRequestActivityResult() {
-        //no-op
-    }
-
     companion object {
         private const val EXTRA_DEVICE = "EXTRA_DEVICE"
-        private const val LOG_DATE_FORMAT = "yyyy-MM-dd hh:mm:ss.SS"
-        private const val LOG_FORMAT = "%s : %s"
-        private const val LOG_UUID = "cc52a001-9adb-4c37-bc48-376f5fee8851"
+        private const val LOG_UUID = "00002a19-0000-1000-8000-00805f9b34fb"
         fun start(context: Context, device: Device) {
             Intent(context, LoggingActivity::class.java).apply {
                 putExtra(EXTRA_DEVICE, Gson().toJson(device))

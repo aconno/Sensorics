@@ -136,7 +136,6 @@ class DeviceMainFragment : DaggerFragment() {
                             //progressbar?.visibility = View.INVISIBLE
                             //disableToggleViews()
                             text = getString(R.string.disconnected)
-
                             serviceConnect?.close()
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_ERROR -> {
@@ -214,6 +213,7 @@ class DeviceMainFragment : DaggerFragment() {
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
         menu?.findItem(R.id.action_start_usecases_activity)?.isVisible = BuildConfig.FLAVOR == "dev"
         menu?.findItem(R.id.action_toggle_connect)?.isVisible = mDevice.connectable
+        menu?.findItem(R.id.action_start_logging_activity)?.isVisible = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

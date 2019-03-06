@@ -34,10 +34,10 @@ class BluetoothConnectService : DaggerService() {
     }
 
     fun writeCharacteristic(
-        serviceUUID: UUID,
-        characteristicUUID: UUID,
-        type: String,
-        value: Any
+            serviceUUID: UUID,
+            characteristicUUID: UUID,
+            type: String,
+            value: Any
     ): Boolean {
         return bluetooth.writeCharacteristic(serviceUUID, characteristicUUID, type, value)
     }

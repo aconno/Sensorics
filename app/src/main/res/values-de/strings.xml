@@ -191,8 +191,16 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
-    <string name="log_device_disconnected">Getrennt</string>
-    <string name="tasks_completed_format">Aufgaben abgeschlossen: %1$d/%2$d</string>
-    <string name="all_tasks_completed">Alle Aufgaben sind erledigt</string>
+    <string name="log_services_discovered">Dienste entdeckt: %d</string>
+    <string name="log_disconnected_dialog_message_format">Leider hat Gerät:%1$s (%2$s) die Verbindung getrennt</string>
+    <string name="log_back_to_scanner">Zurück zum Scanner</string>
+    <string name="log_review_logs">Überprüfen Sie die Protokolle</string>
+    <string name="log_disconnected_dialog_title">Getrennt!</string>
+    <string name="log_service_discovered_format">Service entdeckt: UUID = %1$s</string>
+    <string name="log_characteristic_format">Charakteristisch %1$s: Wert %2$s</string>
+    <string name="log_cleared_logs">Gelöschte Protokolle</string>
+    <string name="log_undo_clear">Rückgängig machen</string>
+    <string name="log_started_scanning">Scannen gestartet…</string>
+    <string name="log_activity_title_format">Protokolle: %1$s</string>
 
 </resources>

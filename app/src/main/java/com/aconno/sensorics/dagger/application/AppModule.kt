@@ -13,6 +13,7 @@ import com.aconno.sensorics.data.repository.action.ActionsRepositoryImpl
 import com.aconno.sensorics.data.repository.devices.DeviceMapper
 import com.aconno.sensorics.data.repository.devices.DeviceRepositoryImpl
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishRepositoryImpl
+import com.aconno.sensorics.data.repository.logs.LogsRepositoryImpl
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishRepositoryImpl
 import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinRepositoryImpl
 import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
@@ -37,6 +38,7 @@ import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
+import com.aconno.sensorics.domain.logs.LogsRepository
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
@@ -138,6 +140,13 @@ class AppModule {
             sensoricsDatabase.mqttPublishDao(),
             mqttPublishDataMapper
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLogsRepository(sensoricsDatabase: SensoricsDatabase,
+                              logDataMapper: LogDataMapper, logEntityDataMapper: LogEntityDataMapper): LogsRepository {
+        return LogsRepositoryImpl(sensoricsDatabase.LogDao(), logDataMapper, logEntityDataMapper)
     }
 
     @Provides

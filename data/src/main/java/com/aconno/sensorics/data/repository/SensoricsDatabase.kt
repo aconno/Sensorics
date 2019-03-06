@@ -8,6 +8,8 @@ import com.aconno.sensorics.data.repository.devices.DeviceDao
 import com.aconno.sensorics.data.repository.devices.DeviceEntity
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishDao
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishEntity
+import com.aconno.sensorics.data.repository.logs.LogDao
+import com.aconno.sensorics.data.repository.logs.LogEntity
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishDao
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishEntity
 import com.aconno.sensorics.data.repository.publishdevicejoin.GooglePublishDeviceJoinEntity
@@ -33,9 +35,10 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
         RestHttpGetParamEntity::class,
         RestPublishDeviceJoinEntity::class,
         RestPublishEntity::class,
-        SyncEntity::class
+        SyncEntity::class,
+        LogEntity::class
     ],
-    version = 10
+    version = 12
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 
@@ -52,4 +55,6 @@ abstract class SensoricsDatabase : RoomDatabase() {
     abstract fun restPublishDao(): RESTPublishDao
 
     abstract fun syncDao(): SyncDao
+
+    abstract fun LogDao(): LogDao
 }

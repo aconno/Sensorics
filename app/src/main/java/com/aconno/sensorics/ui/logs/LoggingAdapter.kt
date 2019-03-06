@@ -1,31 +1,22 @@
 package com.aconno.sensorics.ui.logs
 
-import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
-import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
 import android.view.ViewGroup
-import android.widget.TextView
 import com.aconno.sensorics.R
+import com.aconno.sensorics.model.LogModel
 
 internal class LoggingAdapter : RecyclerView.Adapter<LoggingAdapter.ViewHolder>() {
 
-    private val logList = arrayListOf<Pair<String, LoggingLevel>>()
-    private val deletedLogs = arrayListOf<Pair<String, LoggingLevel>>()
+    private val logList = arrayListOf<LogModel>()
+    private val deletedLogs = arrayListOf<LogModel>()
     private var onSelectionChangedListener: OnSelectionChangedListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_log, parent,
                 false) as LogTextView
-        val loggingLevel = getLoggingLevel(viewType)
-        return ViewHolder(view, loggingLevel)
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return logList[position].second.code
+        return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
@@ -33,19 +24,7 @@ internal class LoggingAdapter : RecyclerView.Adapter<LoggingAdapter.ViewHolder>(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.textView.text = logList[position].first
-        val textColor = getTextColor(holder.loggingLevel)
-        holder.textView.setTextColor(ContextCompat.getColor(holder.textView.context, textColor))
-        holder.textView.setOnSelectionChangedListener(object : LogTextView.OnSelectionChangedListener {
-            override fun onSelectionChanged() {
-                onSelectionChangedListener?.onSelectionChanged()
-            }
-        })
-    }
-
-    fun addLog(log: String, loggingLevel: LoggingLevel) {
-        logList.add(Pair(log, loggingLevel))
-        notifyItemInserted(logList.size - 1)
+        holder.bind(logList[position], onSelectionChangedListener)
     }
 
     fun clear() {
@@ -64,34 +43,26 @@ internal class LoggingAdapter : RecyclerView.Adapter<LoggingAdapter.ViewHolder>(
         this.onSelectionChangedListener = onSelectionChangedListener
     }
 
-    @ColorRes
-    private fun getTextColor(loggingLevel: LoggingLevel): Int {
-        return when (loggingLevel) {
-            LoggingLevel.INFO -> R.color.logging_info
-            LoggingLevel.ERROR -> R.color.logging_error
-            LoggingLevel.WARNING -> R.color.logging_warning
-        }
+    fun refreshLogs(logs: List<LogModel>) {
+        logList.clear()
+        logList.addAll(logs.minus(deletedLogs))
+        notifyDataSetChanged()
     }
 
-    private fun getLoggingLevel(loggingLevel: Int): LoggingLevel {
-        return when (loggingLevel) {
-            LoggingLevel.INFO.code -> LoggingLevel.INFO
-            LoggingLevel.WARNING.code -> LoggingLevel.WARNING
-            LoggingLevel.ERROR.code -> LoggingLevel.ERROR
-            else -> LoggingLevel.INFO
+    internal class ViewHolder(private val textView: LogTextView) :
+            RecyclerView.ViewHolder(textView) {
+        fun bind(logModel: LogModel, onSelectionChangedListener: OnSelectionChangedListener?) {
+            textView.text = logModel.formattedInfo
+            textView.setTextColor(ContextCompat.getColor(itemView.context, logModel.colorResId))
+            textView.setOnSelectionChangedListener(object : LogTextView.OnSelectionChangedListener {
+                override fun onSelectionChanged() {
+                    onSelectionChangedListener?.onSelectionChanged()
+                }
+            })
         }
     }
-
-    internal class ViewHolder(val textView: LogTextView, val loggingLevel: LoggingLevel) :
-            RecyclerView.ViewHolder(textView)
 
     internal interface OnSelectionChangedListener {
         fun onSelectionChanged()
-    }
-
-    internal enum class LoggingLevel(val code: Int) {
-        INFO(1),
-        ERROR(2),
-        WARNING(3)
     }
 }
