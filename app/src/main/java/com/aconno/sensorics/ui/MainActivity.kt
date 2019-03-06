@@ -391,8 +391,4 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             toggleScanFromMenuItem(menuItem)
         }
     }
-
-    companion object {
-        const val LOG_UUID = "cc52a001-9adb-4c37-bc48-376f5fee8851"
-    }
 }

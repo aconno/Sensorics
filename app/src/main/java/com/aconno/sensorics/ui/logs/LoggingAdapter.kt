@@ -45,7 +45,7 @@ internal class LoggingAdapter : RecyclerView.Adapter<LoggingAdapter.ViewHolder>(
 
     fun refreshLogs(logs: List<LogModel>) {
         logList.clear()
-        logList.addAll(logs)
+        logList.addAll(logs.minus(deletedLogs))
         notifyDataSetChanged()
     }
 

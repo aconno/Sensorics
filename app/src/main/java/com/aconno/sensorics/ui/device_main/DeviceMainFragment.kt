@@ -122,7 +122,6 @@ class DeviceMainFragment : DaggerFragment() {
                                 item.title = getString(R.string.disconnect)
                             }
                             isServicesDiscovered = true
-                            serviceConnect?.enableLogging()
                             //progressbar?.visibility = View.INVISIBLE
                             //enableToggleViews()
                             text = getString(R.string.discovered)

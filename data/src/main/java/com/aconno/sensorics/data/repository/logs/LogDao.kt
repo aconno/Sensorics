@@ -10,7 +10,7 @@ interface LogDao {
     fun getLogsForDevice(deviceMacAddress: String): Single<List<LogEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(log: LogEntity)
+    fun insert(log: LogEntity): Long
 
     @Query("DELETE FROM logs WHERE deviceMacAddress = :deviceMacAddress")
     fun deleteAllDeviceLogs(deviceMacAddress: String)

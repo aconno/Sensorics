@@ -16,8 +16,9 @@ class LogEntityDataMapper @Inject constructor(){
      * @return [LogEntity]
      */
     fun transform(log: Log): LogEntity {
-        return LogEntity(0, log.info, log.timestamp,
-                getLoggingLevelCode(log.loggingLevel), log.deviceMacAddress)
+        return LogEntity(info = log.info, timestamp = log.timestamp,
+                loggingLevel = getLoggingLevelCode(log.loggingLevel),
+                deviceMacAddress = log.deviceMacAddress)
     }
 
     private fun getLoggingLevelCode(loggingLevel: LoggingLevel): Int {

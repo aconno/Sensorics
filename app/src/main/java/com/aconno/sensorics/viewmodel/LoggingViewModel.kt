@@ -26,6 +26,7 @@ class LoggingViewModel(
         private val logModelMapper: LogModelMapper
 ) : ViewModel() {
 
+    private val logList = arrayListOf<LogModel>()
     private val logItemsLiveData = MutableLiveData<ArrayList<LogModel>>()
     private val disposables = CompositeDisposable()
 
@@ -37,8 +38,8 @@ class LoggingViewModel(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { logs, throwable ->
                     logs?.let { list ->
-                        logItemsLiveData.value?.addAll(list.map { logModelMapper.transform(it) })
-                        logItemsLiveData.postValue(logItemsLiveData.value)
+                        logList.addAll(list.map { logModelMapper.transform(it) })
+                        postValue()
                     }
 
                     throwable?.let {
@@ -53,8 +54,8 @@ class LoggingViewModel(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    logItemsLiveData.value?.clear()
-                    logItemsLiveData.postValue(logItemsLiveData.value)
+                    logList.clear()
+                    postValue()
                 }
 
         disposables.add(disposable)
@@ -79,11 +80,15 @@ class LoggingViewModel(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    logItemsLiveData.value?.add(logModelMapper.transform(log))
-                    logItemsLiveData.postValue(logItemsLiveData.value)
+                    logList.add(logModelMapper.transform(log))
+                    postValue()
                 }
 
         disposables.add(disposable)
+    }
+
+    private fun postValue() {
+        logItemsLiveData.postValue(logList)
     }
 
     override fun onCleared() {

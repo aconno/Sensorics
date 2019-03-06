@@ -14,7 +14,7 @@ import com.aconno.sensorics.data.repository.devices.DeviceEntity
                 onDelete = ForeignKey.CASCADE
         ))]
 )
-data class LogEntity(@PrimaryKey(autoGenerate = true) var id: Long,
+data class LogEntity(@PrimaryKey(autoGenerate = true) var id: Long? = null,
                      var info: String,
                      var timestamp:Long,
                      var loggingLevel: Int,

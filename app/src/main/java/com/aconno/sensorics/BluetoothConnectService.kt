@@ -5,7 +5,6 @@ import android.os.Binder
 import android.os.IBinder
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
-import com.aconno.sensorics.ui.MainActivity
 import dagger.android.DaggerService
 import io.reactivex.Flowable
 import java.util.*
@@ -57,11 +56,6 @@ class BluetoothConnectService : DaggerService() {
 
     fun close() {
         bluetooth.closeConnection()
-    }
-
-    fun enableLogging() {
-        val logUUID = UUID.fromString(MainActivity.LOG_UUID)
-        bluetooth.setCharacteristicNotification(logUUID, true)
     }
 
     override fun onBind(intent: Intent?): IBinder {
