@@ -26,6 +26,7 @@ import kotlinx.android.synthetic.main.activity_logging.*
 import java.nio.charset.Charset
 import java.util.*
 import javax.inject.Inject
+import kotlin.experimental.and
 
 class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnableRequestListener {
     private lateinit var logAdapter: LoggingAdapter
@@ -170,7 +171,7 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
             initGattCallback(bluetooth)
             //TODO Uncomment this line and remove line 152 when fw is updated
             //scanDisposable = bluetooth.startScanForDevice(device.macAddress, Consumer { sr ->
-            scanDisposable = bluetooth.startScanForDevice("FE:95:3C:B4:D2:92", Consumer { scanResult ->
+            scanDisposable = bluetooth.startScanForDevice(device.macAddress, Consumer { scanResult ->
                 if (bluetoothDevice != null) {
                     return@Consumer
                 }
@@ -228,6 +229,7 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
         bluetoothDevice.addCharacteristicChangedListener(uuid, object : CharacteristicChangedListener {
             override fun onCharacteristicChanged(characteristic: BluetoothGattCharacteristic, value: ByteArray) {
                 runOnUiThread {
+                    parseData(value)
                     logInfo(value.toString(Charset.defaultCharset()))
                 }
             }
@@ -243,6 +245,11 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
         if (scrollToBottom && logAdapter.itemCount > 0) {
             rvLogs.smoothScrollToPosition(logAdapter.itemCount - 1)
         }
+    }
+
+    private fun parseData(value: ByteArray) {
+        //TODO Implement depending on the beacon  profile
+        logInfo(value.toString(Charset.defaultCharset()))
     }
 
     @UiThread
@@ -323,7 +330,7 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
 
     companion object {
         private const val EXTRA_DEVICE = "EXTRA_DEVICE"
-        private const val LOG_UUID = "00002a19-0000-1000-8000-00805f9b34fb"
+        private const val LOG_UUID = "00002a37-0000-1000-8000-00805f9b34fb"
         fun start(context: Context, device: Device) {
             Intent(context, LoggingActivity::class.java).apply {
                 putExtra(EXTRA_DEVICE, Gson().toJson(device))
