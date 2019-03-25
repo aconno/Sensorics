@@ -15,8 +15,19 @@ class FormatJsonConverter {
             formatJsonModel.formatRequired.map { toByteFormatRequired(it) },
             formatJsonModel.connectible,
             formatJsonModel.connectionWriteList?.map { toConnectionWrite(it) },
-            formatJsonModel.connectionReadList?.map { toConnectionRead(it) }
+            formatJsonModel.connectionReadList?.map { toConnectionRead(it) },
+            toSettingsSupport(formatJsonModel.settingsSupportJsonModel)
         )
+    }
+
+    private fun toSettingsSupport(settingsSupportJsonModel: SettingsSupportJsonModel?): SettingsSupport? {
+        settingsSupportJsonModel?.let {
+            return SettingsSupport(
+                settingsSupportJsonModel.index,
+                settingsSupportJsonModel.mask.replace("0x", "", true).toInt(16).toByte()
+            )
+        }
+        return null
     }
 
     private fun toByteFormat(byteFormatJsonModel: ByteFormatJsonModel): ByteFormat {

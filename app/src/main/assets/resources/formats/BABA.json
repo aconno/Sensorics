@@ -13,22 +13,22 @@
   ],
   "format_required": [
     {
-      "name": "Vendor ID 1",
+      "name": "Nordic ID 1",
       "index": 0,
       "value": "0x59"
     },
     {
-      "name": "Vendor ID 2",
+      "name": "Nordic ID 2",
       "index": 1,
       "value": "0x00"
     },
     {
-      "name": "App ID 1",
+      "name": "Aconno ID",
       "index": 2,
       "value": "0xBA"
     },
     {
-      "name": "App ID 2",
+      "name": "Product ID",
       "index": 3,
       "value": "0xBA"
     }

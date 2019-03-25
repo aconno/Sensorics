@@ -10,7 +10,8 @@ data class Device(
     val icon: String = "",
     val connectable: Boolean = false,
     val connectionWriteList: List<ConnectionWrite>? = null,
-    val connectionReadList: List<ConnectionRead>? = null
+    val connectionReadList: List<ConnectionRead>? = null,
+    val hasSettings: Boolean = false
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
