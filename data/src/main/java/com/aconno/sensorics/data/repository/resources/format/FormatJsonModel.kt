@@ -27,5 +27,8 @@ class FormatJsonModel(
     var connectionWriteList: List<ConnectionWriteJsonModel>?,
     @SerializedName("connection_read")
     @Expose
-    var connectionReadList: List<ConnectionReadJsonModel>?
+    var connectionReadList: List<ConnectionReadJsonModel>?,
+    @SerializedName("settings_support")
+    @Expose
+    var settingsSupportJsonModel: SettingsSupportJsonModel?
 )
