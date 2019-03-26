@@ -1,0 +1,25 @@
+.counter {
+  color: #FB9A38;
+  font-family: Roboto, sans-serif;
+  font-size: 120px;
+  position: relative;
+  left: 60px;
+  top: 40px;
+}
+
+.counter-value {
+  position: absolute;
+  transform-origin: 0 100%;
+  transform: skew(20deg, 0);
+  overflow: hidden;
+  padding-right: 30px;
+  height: 1em;
+}
+
+.counter-value-mask {
+  position: absolute;
+  transform-origin: 0 100%;
+  transform: skew(-20deg);
+  overflow: hidden;
+  line-height: 1em;
+}

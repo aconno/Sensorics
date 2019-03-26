@@ -1,0 +1,127 @@
+<html>
+
+<head>
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+    <style type="text/css">
+    body {
+        font-family: 'Rubik', sans-serif;
+    }
+    </style>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+    <link rel="stylesheet" href="../html_resources/webCounterStyles.css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+    <script>
+        var readingState = -2;
+    var buttonCounter = 0;
+    var latestAdvId = -1234;
+    var BUTTON_PRESSED = 1;
+    var BUTTON_NOT_PRESSED = 0;
+
+  function onSensorReadings(json_values){
+        var readingState = null;
+        var readingCounter = null;
+
+        JSON.parse(json_values, function (key, value) {
+            if( key == "ButtonState"){
+                 readingState = parseInt(value);
+            }
+            if( key == "ButtonCounter") {
+                readingCounter = parseInt(value);
+            }
+
+        });
+
+        if( readingState != null && readingCounter != null){
+            if(latestAdvId != readingCounter && readingState == BUTTON_PRESSED){
+                latestAdvId = readingCounter
+                document.getElementById("count").innerHTML = ++buttonCounter;
+                document.getElementById("btn").style.backgroundColor = "rgb(211,211,211)";
+            }
+
+            else if( latestAdvId == readingCounter && readingState == BUTTON_NOT_PRESSED){
+                document.getElementById("btn").style.backgroundColor = "rgb(253,155,39)";
+
+            }
+
+            else{
+            }
+        }
+
+  }
+
+    function onSensorReading(name, value) {
+
+        if(name == "ButtonCounter"){
+            if(latestAdvId != value){
+                latestAdvId = value;
+                document.getElementById("count").innerHTML = ++readingCounter;
+                document.getElementById("btn").style.backgroundColor = "rgb(211,211,211)";
+            }
+            else{
+                 document.getElementById("btn").style.backgroundColor = "rgb(253,155,39)";
+            }
+        }
+
+    }
+
+    document.addEventListener("DOMContentLoaded", function(event) { 
+  var n=0;
+  setInterval(increment,1000);
+  function increment(){
+    n++;
+    setCounter(n);
+  }
+  function setCounter(v){
+    var counter=document.getElementsByClassName("counter");
+    var old=counter.children(".counter-value");
+    var oldContent=old.children(".counter-value-mask");
+
+    var t=0.4;
+    var d=t*0.0;
+    var d2=t*0.3;
+    var padding=55;
+    var offset=5;
+    var w=old.data("w");
+    w+=padding;
+    TweenMax.to(old,t,{delay:d,x:w,ease:Quad.easeIn});
+    TweenMax.to(oldContent,t,{delay:d,x:-(w-offset),ease:Quad.easeIn});
+    setTimeout(function(){old.remove()},t*1000);
+    
+    var neu=$("<div/>").addClass("counter-value").appendTo(counter);
+    var neuContent=$("<div/>").addClass("counter-value-mask").appendTo(neu).text(v);
+    
+    w=neuContent.width();
+    neu.data("w",w);
+    neu.css({
+      width:w
+    })
+    w+=padding;
+    TweenMax.from(neu,t,{delay:d2,x:-w});
+    TweenMax.from(neuContent,t,{delay:d2,x:w-offset});
+    
+    
+    
+  }
+})
+
+
+
+    </script>
+</head>
+
+<body style="background-color:#fafafa">
+    <div class="acnact">
+        <p>
+            <span style="display: block;" class="acnact-value">Count: </span>
+            <span id="count" class="acnact-value">No data</span>
+            <p>
+    </div>
+    <div class="acnact-btn-div">
+        <input type="button" id="btn" class="acnact-btn" value="">
+    </div>
+    <div class="counter">
+    </div>
+</body>
+
+</html>
