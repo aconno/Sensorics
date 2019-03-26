@@ -1,5 +1,5 @@
 {
-  "id": "18CF",
+  "id": "0300",
   "name": "acnFREIGHT",
   "icon": "ic_freight",
   "format": [
@@ -18,14 +18,23 @@
     {
       "name": "Aconno ID",
       "index": 2,
-      "value": "0x18"
+      "value": "0x69"
     },
     {
       "name": "Product ID",
       "index": 3,
-      "value": "0xCF"
+      "value": "0x03"
+    },
+    {
+      "name": "Version Number",
+      "index": 4,
+      "value": "0x00"
     }
   ],
+  "settings_support": {
+    "mask": "0x80",
+    "index": 4
+  },
   "connectable": true,
   "connection_write": [
     {
