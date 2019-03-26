@@ -11,6 +11,7 @@ import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.serialization.Deserializer
 import io.reactivex.Single
 import java.math.BigDecimal
+import kotlin.experimental.and
 
 class GenerateReadingsUseCase(
     private val formatMatcher: FormatMatcher,
@@ -77,16 +78,30 @@ class GenerateReadingsUseCase(
                 format.getIcon(),
                 format.isConnectible(),
                 format.getConnectionWriteList(),
-                format.getConnectionReadList()
+                format.getConnectionReadList(),
+                hasSettingsSupport(format, parameter)
             )
         } else {
             device = Device(
                 format.getName(),
                 "",
                 parameter.macAddress,
-                format.getIcon()
+                format.getIcon(),
+                hasSettings = hasSettingsSupport(format, parameter)
             )
         }
         return device
+    }
+
+    private fun hasSettingsSupport(
+            format: AdvertisementFormat,
+            parameter: ScanResult
+    ): Boolean {
+        format.getSettingsSupport()
+                ?.let { settingsSupport ->
+                    return ByteOperations.isolateMsd(parameter.rawData)[settingsSupport.index] and settingsSupport.mask == settingsSupport.mask
+                }
+
+        return false
     }
 }

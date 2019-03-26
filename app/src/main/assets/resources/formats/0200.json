@@ -29,5 +29,9 @@
       "index": 4,
       "value": "0x00"
     }
-  ]
+  ],
+  "settings_support": {
+    "mask": "0x80",
+    "index": 4
+  }
 }
