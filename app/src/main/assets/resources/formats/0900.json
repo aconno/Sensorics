@@ -1,12 +1,12 @@
 {
-  "id": "BABA",
+  "id": "0900",
   "name": "acnRANGE",
   "icon": "ic_acnrange",
   "format": [
     {
       "name": "Range",
-      "start_index_inclusive": 4,
-      "end_index_exclusive": 6,
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 7,
       "reversed": true,
       "data_type": "UINT16"
     }
@@ -25,12 +25,21 @@
     {
       "name": "Aconno ID",
       "index": 2,
-      "value": "0xBA"
+      "value": "0x69"
     },
     {
       "name": "Product ID",
       "index": 3,
-      "value": "0xBA"
+      "value": "0x09"
+    },
+    {
+      "name": "Version Number",
+      "index": 4,
+      "value": "0x00"
     }
-  ]
+  ],
+  "settings_support": {
+    "mask": "0x80",
+    "index": 4
+  }
 }
