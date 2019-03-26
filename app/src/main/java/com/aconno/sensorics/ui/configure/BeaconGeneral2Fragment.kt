@@ -10,8 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
-import com.aconno.bluetooth.beacon.BeaconInfo
 import com.aconno.sensorics.R
+import com.aconno.sensorics.model.javascript.BeaconInfo
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 

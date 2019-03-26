@@ -86,17 +86,12 @@ class BeaconSlotHtmlFragment : Fragment() {
     }
 
     private fun getSlotJson(): String? {
-        val slotPosition = arguments!!.getInt(BeaconSlotFragment.EXTRA_BEACON_SLOT_POSITION)
+        val slotPosition = arguments!!.getInt(EXTRA_BEACON_SLOT_POSITION)
 
         return beaconViewModel.beacon.value?.slots?.get(slotPosition)?.let {
             SlotJS(
-                it.type.ordinal,//Do not change the order
-                it.slotAdvertisingContent,
-                it.advertisingInterval.toLong(),//TODO Convert to Long by Default
-                it.rssi1m,
-                it.radioTx,
-                it.triggerEnabled,
-                it.triggerType.ordinal//Do not change the order
+                it.getType().ordinal,//Do not change the order
+                it.slotAdvertisingContent
             )
         }?.let {
             convertKeysToJavascriptFormat(Gson().toJson(it))
@@ -142,16 +137,11 @@ class BeaconSlotHtmlFragment : Fragment() {
             val slotJson = convertKeysToOriginals(slotJsonRaw)
 
             val slotJS = Gson().fromJson<SlotJS>(slotJson, SlotJS::class.java)
-            val slotPosition = arguments!!.getInt(BeaconSlotFragment.EXTRA_BEACON_SLOT_POSITION)
+            val slotPosition = arguments!!.getInt(EXTRA_BEACON_SLOT_POSITION)
 
             val newSlot = Slot(
                 Slot.Type.values()[slotJS.frameType],
-                slotJS.frame,
-                slotJS.advertisingInterval.toInt(),
-                slotJS.rssi1m,
-                slotJS.radioTx,
-                slotJS.triggerEnabled,
-                Slot.TriggerType.values()[slotJS.triggerType]
+                slotJS.frame
             )
 
             beaconViewModel.beacon.value?.slots?.set(slotPosition, newSlot)

@@ -4,8 +4,8 @@ import java.util.*
 
 
 class BluetoothGattDescriptorImpl(
-    val descriptor: android.bluetooth.BluetoothGattDescriptor,
-    override val characteristic: BluetoothGattCharacteristic
+        val descriptor: android.bluetooth.BluetoothGattDescriptor,
+        override val characteristic: BluetoothGattCharacteristic
 ) : BluetoothGattDescriptor {
     override val permissions: Int = descriptor.permissions
     override val uuid: UUID = descriptor.uuid

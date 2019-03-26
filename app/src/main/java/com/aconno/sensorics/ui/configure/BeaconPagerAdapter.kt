@@ -23,7 +23,7 @@ class BeaconPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
     }
 
     override fun getCount(): Int {
-        return if (beacon == null) 0 else (3 + (beacon?.slotAmount ?: 0))
+        return if (beacon == null) 0 else (3 + (beacon?.slots?.size ?: 0))
     }
 
     override fun getItemPosition(`object`: Any): Int {

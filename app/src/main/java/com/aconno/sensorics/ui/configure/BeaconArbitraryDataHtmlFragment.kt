@@ -86,7 +86,7 @@ class BeaconArbitraryDataHtmlFragment : Fragment() {
     }
 
     private fun getArbitraryJsonArray(): String? {
-        return beaconViewModel.beacon.value?.abstractDataMapped?.map {
+        return beaconViewModel.beacon.value?.arbitraryData?.map?.map {
             ArbitraryDataJS(it.key, it.value)
         }?.takeIf {
             it.isNotEmpty()
@@ -102,9 +102,9 @@ class BeaconArbitraryDataHtmlFragment : Fragment() {
             val arbitraryDataList =
                 Gson().fromJson<List<ArbitraryDataJS>>(arbitraryDataJSONArray, listType)
 
-            beaconViewModel.beacon.value?.abstractDataMapped?.clear()
+            beaconViewModel.beacon.value?.arbitraryData?.map?.clear()
             arbitraryDataList.forEach {
-                beaconViewModel.beacon.value?.abstractDataMapped?.put(
+                beaconViewModel.beacon.value?.arbitraryData?.map?.put(
                     it.key,
                     it.value
                 )

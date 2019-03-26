@@ -27,7 +27,7 @@ class BluetoothDeviceService : Service() {
             override fun onServicesDiscovered(device: BluetoothDevice) {
                 super.onServicesDiscovered(device)
 
-                val beacon = Beacon(device, address = macAddress)
+                val beacon = Beacon(device)
                 val taskListener = object : TasksCompleteListener() {
                     override fun onTaskComplete(tasksCompleted: Int, tasksTotal: Int) {
                         Timber.e("Task Complete")

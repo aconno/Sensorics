@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothProfile
 import android.content.Context
 import com.aconno.bluetooth.beacon.isReadable
 import com.aconno.bluetooth.beacon.isWriteable
-import com.aconno.bluetooth.tasks.*
 import timber.log.Timber
 import java.util.*
 
@@ -22,8 +21,8 @@ class GattRequestFailedException : Exception("Gatt request failed...")
 class GattErrorException(val error: Int) : Exception("Gatt error occurred: $error")
 
 class BluetoothDeviceImpl(
-    val context: Context,
-    val device: android.bluetooth.BluetoothDevice
+        val context: Context,
+        val device: android.bluetooth.BluetoothDevice
 ) : BluetoothDevice, android.bluetooth.BluetoothGattCallback() {
 
     /**
@@ -55,8 +54,7 @@ class BluetoothDeviceImpl(
     /**
      * Characteristic Changed Listener Map (Characteristic UUID -> Listener List)
      */
-    private var characteristicChangedListenerMap: MutableMap<UUID, MutableSet<CharacteristicChangedListener>> =
-        mutableMapOf()
+    private var characteristicChangedListenerMap: MutableMap<UUID, MutableSet<CharacteristicChangedListener>> = mutableMapOf()
 
     /**
      * Connects to the device optionally using the specified callback
@@ -70,22 +68,33 @@ class BluetoothDeviceImpl(
      * Disconnects the device
      */
     override fun disconnect() {
-        gatt?.disconnect() ?: onConnectionStateChange(gatt, 0, BluetoothProfile.STATE_DISCONNECTED)
+        gatt?.disconnect() ?: callbacks.forEach { it.onDeviceDisconnecting(this) }
     }
 
     /**
      * Gatt connection state change listener
      */
-    override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
+    override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
         connectionState = newState
         when (newState) {
             STATE_CONNECTED -> {
+                BLE_TAG.i("State for device ${gatt.device.address} changed to STATE_CONNECTED")
                 callbacks.forEach { it.onDeviceConnected(this) }
-                gatt?.discoverServices()
+//                gatt.discoverServices()
+                gatt.requestMtu(512)
             }
-            STATE_DISCONNECTED -> callbacks.forEach { it.onDeviceDisconnected(this) }
-            STATE_CONNECTING -> callbacks.forEach { it.onDeviceConnecting(this) }
-            STATE_DISCONNECTING -> callbacks.forEach { it.onDeviceDisconnecting(this) }
+            STATE_DISCONNECTED -> {
+                BLE_TAG.i("State for device ${gatt.device.address} changed to STATE_DISCONNECTED")
+                callbacks.forEach { it.onDeviceDisconnected(this) }
+            }
+            STATE_CONNECTING -> {
+                BLE_TAG.i("State for device ${gatt.device.address} changed to STATE_CONNECTING")
+                callbacks.forEach { it.onDeviceConnecting(this) }
+            }
+            STATE_DISCONNECTING -> {
+                BLE_TAG.i("State for device ${gatt.device.address} changed to STATE_DISCONNECTING")
+                callbacks.forEach { it.onDeviceDisconnecting(this) }
+            }
         }
     }
 
@@ -94,10 +103,9 @@ class BluetoothDeviceImpl(
      * @param uuid the uuid
      * @return the characteristic
      */
-    private fun getChar(uuid: UUID): BluetoothGattCharacteristic =
-        characteristicMap.getOrElse(uuid) {
-            throw Exception("Characteristic with UUID $uuid does not exist")
-        }
+    private fun getChar(uuid: UUID): BluetoothGattCharacteristic = characteristicMap.getOrElse(uuid) {
+        throw Exception("Characteristic with UUID $uuid does not exist")
+    }
 
     /**
      * Prepares the tasks (sets actual characteristic objects etc...)
@@ -106,9 +114,7 @@ class BluetoothDeviceImpl(
         return when (task) {
             is GenericTask -> task
             is CharacteristicTask -> task.apply { characteristic = getChar(characteristicUUID) }
-            is DescriptorTask -> task.apply {
-                descriptor = getChar(characteristicUUID).getDescriptor(descriptorUUID)
-            }
+            is DescriptorTask -> task.apply { descriptor = getChar(characteristicUUID).getDescriptor(descriptorUUID) }
             else -> throw NotImplementedError()
         }
     }
@@ -122,11 +128,18 @@ class BluetoothDeviceImpl(
     }
 
     /**
-     * Qeues up multiple tasks
+     * Queues up multiple tasks
      */
     override fun queueTasks(tasks: List<Task>) {
         tasks.forEach { queue.offer(prepareTask(it)) }
         processQueue()
+    }
+
+    /**
+     * Inserts multiple tasks in front of queue
+     */
+    override fun insertTasks(tasks: List<Task>) {
+        tasks.reversed().forEach { queue.offerFirst(prepareTask(it)) }
     }
 
     /**
@@ -151,7 +164,6 @@ class BluetoothDeviceImpl(
                         BLE_TAG.i("Executing generic task")
                         try {
                             task.execute()
-                            queueTasks(task.taskQueue.toList())
                             true
                         } catch (e: Exception) {
                             task.internalException = e
@@ -166,11 +178,8 @@ class BluetoothDeviceImpl(
                         BLE_TAG.i("Writing ${task.value.size} bytes to characteristic ${task.characteristicUUID}")
                         BLE_TAG.i("Data: ${task.value.toHex()}")
                         gatt.writeCharacteristic(task.characteristic!!.apply {
-                            value = task.value.copyOfRange(
-                                0,
-                                Math.min(task.value.size, MAX_PACKET_SIZE)
-                            )
-                            writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+                            value = task.value.copyOfRange(0, Math.min(task.value.size, MAX_PACKET_SIZE))
+                            writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                         })
                     }
                     is DescriptorReadTask -> {
@@ -192,7 +201,9 @@ class BluetoothDeviceImpl(
                 if (task is GenericTask) {
                     try {
                         if (!success) task.onError(this, task.internalException)
-                        queue.remove()
+                        with(queue.remove() as GenericTask) {
+                            insertTasks(taskQueue.toList())
+                        }
                         processQueue()
                     } catch (e: Exception) {
                         disconnect()
@@ -217,9 +228,9 @@ class BluetoothDeviceImpl(
 
     override fun setCharacteristicNotification(uuid: UUID, enable: Boolean) {
         queueTask(object : DescriptorWriteTask(
-            characteristicUUID = uuid,
-            descriptorUUID = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB"),
-            value = byteArrayOf(if (enable) 0x01 else 0x00, 0x00)
+                characteristicUUID = uuid,
+                descriptorUUID = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB"),
+                value = byteArrayOf(if (enable) 0x01 else 0x00, 0x00)
         ) {
             override fun onSuccess() {
                 gatt?.setCharacteristicNotification(this.descriptor!!.characteristic, enable)
@@ -232,10 +243,9 @@ class BluetoothDeviceImpl(
     }
 
     override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-        Timber.e("On services discovered")
+        BLE_TAG.e("On services discovered")
         gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
-        this.characteristicMap =
-            gatt.services.flatMap { it.characteristics }.associateBy { it.uuid }
+        this.characteristicMap = gatt.services.flatMap { it.characteristics }.associateBy { it.uuid }
 
         BLE_TAG.i("${gatt.services.size} services with ${characteristicMap.size} characteristics discovered!")
 
@@ -250,11 +260,7 @@ class BluetoothDeviceImpl(
         callbacks.forEach { it.onServicesDiscovered(this) }
     }
 
-    override fun onCharacteristicRead(
-        gatt: BluetoothGatt,
-        characteristic: BluetoothGattCharacteristic,
-        status: Int
-    ) {
+    override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
         with(queue.remove() as CharacteristicReadTask) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 BLE_TAG.i("Read data from ${characteristic.uuid}")
@@ -271,25 +277,22 @@ class BluetoothDeviceImpl(
             }
             listeners.forEach { it.onTaskComplete(queue.size) }
             taskQueue.reversed().forEach { insertTask(it) }
+            taskQueue.clear()
         }
         processQueue()
     }
 
-    override fun onCharacteristicWrite(
-        gatt: BluetoothGatt,
-        characteristic: BluetoothGattCharacteristic,
-        status: Int
-    ) {
+    override fun onCharacteristicWrite(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
         with(queue.remove() as CharacteristicWriteTask) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 BLE_TAG.i("Written data to ${characteristic.uuid}")
                 BLE_TAG.i("Data (${characteristic.value.size + bytesWritten}/$totalBytes bytes): ${characteristic.value.toHex()}")
                 if (this.value.size > MAX_PACKET_SIZE) {
                     insertTask(object : CharacteristicWriteTask(
-                        characteristic = characteristic,
-                        value = value.copyOfRange(MAX_PACKET_SIZE, value.size),
-                        totalBytes = totalBytes,
-                        bytesWritten = bytesWritten + MAX_PACKET_SIZE
+                            characteristic = characteristic,
+                            value = value.copyOfRange(MAX_PACKET_SIZE, value.size),
+                            totalBytes = totalBytes,
+                            bytesWritten = bytesWritten + MAX_PACKET_SIZE
                     ) {
                         override fun onError(device: BluetoothDevice, e: Exception) {
                             this@with.onError(this@BluetoothDeviceImpl, e)
@@ -311,6 +314,7 @@ class BluetoothDeviceImpl(
                     this.onError(this@BluetoothDeviceImpl, GattErrorException(status))
                     listeners.forEach { it.onTaskComplete(queue.size) }
                     taskQueue.reversed().forEach { insertTask(it) }
+                    taskQueue.clear()
                     processQueue()
                 } catch (e: Exception) {
                     disconnect()
@@ -319,22 +323,15 @@ class BluetoothDeviceImpl(
         }
     }
 
-    override fun onCharacteristicChanged(
-        gatt: BluetoothGatt,
-        characteristic: BluetoothGattCharacteristic
-    ) {
+    override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
         characteristicChangedListenerMap[characteristic.uuid]?.forEach {
             it.onCharacteristicChanged(characteristic, characteristic.value)
         }
     }
 
-    override fun onDescriptorRead(
-        gatt: BluetoothGatt?,
-        descriptor: BluetoothGattDescriptor,
-        status: Int
-    ) {
+    override fun onDescriptorRead(gatt: BluetoothGatt?, descriptor: BluetoothGattDescriptor, status: Int) {
         with(queue.remove() as DescriptorReadTask) {
-            if (status == android.bluetooth.BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
                 BLE_TAG.i("Read data from descriptor ${descriptor.uuid} on characteristic ${descriptor.characteristic}")
                 BLE_TAG.i("Data: ${descriptor.value.toHex()}")
                 onSuccess(descriptor.value)
@@ -349,17 +346,14 @@ class BluetoothDeviceImpl(
             }
             listeners.forEach { it.onTaskComplete(queue.size) }
             taskQueue.reversed().forEach { insertTask(it) }
+            taskQueue.clear()
         }
         processQueue()
     }
 
-    override fun onDescriptorWrite(
-        gatt: BluetoothGatt?,
-        descriptor: BluetoothGattDescriptor,
-        status: Int
-    ) {
+    override fun onDescriptorWrite(gatt: BluetoothGatt?, descriptor: BluetoothGattDescriptor, status: Int) {
         with(queue.remove() as DescriptorWriteTask) {
-            if (status == android.bluetooth.BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
                 BLE_TAG.i("Written data to descriptor ${descriptor.uuid} on characteristic ${descriptor.characteristic}")
                 BLE_TAG.i(" Data (${descriptor.value.size} bytes): ${descriptor.value.toHex()}")
                 onSuccess()
@@ -374,6 +368,7 @@ class BluetoothDeviceImpl(
             }
             listeners.forEach { it.onTaskComplete(queue.size) }
             taskQueue.reversed().forEach { insertTask(it) }
+            taskQueue.clear()
         }
         processQueue()
     }
@@ -386,8 +381,10 @@ class BluetoothDeviceImpl(
         super.onReadRemoteRssi(gatt, rssi, status)
     }
 
-    override fun onMtuChanged(gatt: BluetoothGatt?, mtu: Int, status: Int) {
+    override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
         super.onMtuChanged(gatt, mtu, status)
+        BLE_TAG.d("MTU changed to $mtu")
+        gatt.discoverServices()
     }
 
     override fun onPhyRead(gatt: BluetoothGatt?, txPhy: Int, rxPhy: Int, status: Int) {
@@ -401,19 +398,13 @@ class BluetoothDeviceImpl(
 
     override fun addBluetoothGattCallback(callback: BluetoothGattCallback) = callbacks.add(callback)
 
-    override fun removeBluetoothGattCallback(callback: BluetoothGattCallback) =
-        callbacks.remove(callback)
+    override fun removeBluetoothGattCallback(callback: BluetoothGattCallback) = callbacks.remove(callback)
 
-    override fun addTasksCompleteListener(listener: TasksCompleteListener): Boolean =
-        listeners.add(listener)
+    override fun addTasksCompleteListener(listener: TasksCompleteListener): Boolean = listeners.add(listener)
 
-    override fun removeTasksCompleteListener(listener: TasksCompleteListener): Boolean =
-        listeners.remove(listener)
+    override fun removeTasksCompleteListener(listener: TasksCompleteListener): Boolean = listeners.remove(listener)
 
-    override fun addCharacteristicChangedListener(
-        uuid: UUID,
-        characteristicChangedListener: CharacteristicChangedListener
-    ) {
+    override fun addCharacteristicChangedListener(uuid: UUID, characteristicChangedListener: CharacteristicChangedListener) {
         characteristicChangedListenerMap.getOrPut(uuid) {
             mutableSetOf()
         }.add(characteristicChangedListener)

@@ -1,5 +1,6 @@
-package com.aconno.bluetooth.beacon
+package com.aconno.sensorics.model.javascript
 
+import com.aconno.bluetooth.beacon.Beacon
 import java.io.Serializable
 
 class BeaconInfo : Serializable {
@@ -12,6 +13,7 @@ class BeaconInfo : Serializable {
     var softwareVersion: String = "1"
     var hardwareVersion: String = "1"
     var firmwareVersion: String = "1"
+    var osVersion: String = "1"
     var advFeature: String = "N/A"
     var supportedTxPower: String? = ""
     var supportedSlots: String? = ""
@@ -23,19 +25,19 @@ class BeaconInfo : Serializable {
             val beaconInfo = BeaconInfo()
             beacon?.let { currentBeacon ->
                 beaconInfo.name = currentBeacon.name
-                beaconInfo.address = currentBeacon.address
+                beaconInfo.address = currentBeacon.mac
                 beaconInfo.connectible = currentBeacon.connectible
-                beaconInfo.rssi = currentBeacon.rssi
                 beaconInfo.manufacturer = currentBeacon.manufacturer
                 beaconInfo.model = currentBeacon.model
-                beaconInfo.softwareVersion = currentBeacon.softwareVersion
-                beaconInfo.hardwareVersion = currentBeacon.hardwareVersion
-                beaconInfo.firmwareVersion = currentBeacon.firmwareVersion
+                beaconInfo.softwareVersion = currentBeacon.sdkVersion
+                beaconInfo.hardwareVersion = currentBeacon.hwVersion
+                beaconInfo.firmwareVersion = currentBeacon.fwVersion
+                beaconInfo.osVersion = currentBeacon.freeRTOSVersion
                 beaconInfo.advFeature = currentBeacon.advFeature
                 beaconInfo.supportedTxPower = currentBeacon.supportedTxPower.joinToString(", ")
                 beaconInfo.supportedSlots =
                     currentBeacon.supportedSlots.joinToString(", ") { it.name }
-                beaconInfo.slotAmount = currentBeacon.slotAmount
+                beaconInfo.slotAmount = currentBeacon.slots.size
             }
             return beaconInfo
 

@@ -28,7 +28,7 @@ class BeaconParameter2Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        standartParameters = beaconViewModel.beacon.value?.parameters?.flatMap { x -> x.value }
+        standartParameters = beaconViewModel.beacon.value?.parameters?.map?.flatMap { x -> x.value }
         return inflater.inflate(R.layout.fragment_beacon_parameter2, container, false)
     }
 
