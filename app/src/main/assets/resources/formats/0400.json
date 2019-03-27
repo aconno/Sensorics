@@ -1,8 +1,23 @@
 {
-  "id": "0200",
-  "name": "acnBEACON",
-  "icon": "ic_sensa",
-  "format": [],
+  "id": "0400",
+  "name": "acnACT",
+  "icon": "ic_act",
+  "format": [
+    {
+      "name": "TmpCounter",
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 7,
+      "reversed": true,
+      "data_type": "SINT16"
+    },
+    {
+      "name": "BtnState",
+      "start_index_inclusive": 7,
+      "end_index_exclusive": 8,
+      "reversed": false,
+      "data_type": "BYTE"
+    }
+  ],
   "format_required": [
     {
       "name": "Nordic ID 1",
@@ -22,7 +37,7 @@
     {
       "name": "Product ID",
       "index": 3,
-      "value": "0x02"
+      "value": "0x04"
     },
     {
       "name": "Version Number",
@@ -31,7 +46,7 @@
     }
   ],
   "settings_support": {
-    "mask": "0x00",
-    "index": 3
+    "mask": "0x80",
+    "index": 4
   }
 }
