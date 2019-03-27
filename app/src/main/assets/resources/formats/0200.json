@@ -2,7 +2,15 @@
   "id": "0200",
   "name": "acnBEACON",
   "icon": "ic_sensa",
-  "format": [],
+  "format": [
+    {
+      "name": "Not-Useful-Data",
+      "start_index_inclusive": 3,
+      "end_index_exclusive": 4,
+      "reversed": false,
+      "data_type": "BYTE"
+    }
+  ],
   "format_required": [
     {
       "name": "Nordic ID 1",
