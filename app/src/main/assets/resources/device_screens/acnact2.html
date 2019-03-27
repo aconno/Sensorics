@@ -24,6 +24,8 @@
         <input type="button" id="btn" class="acnact-btn" value="">
     </div>
     <script>
+    var counter = 0;
+    var deviceCounter = 0;
     var readingState = -2;
     var buttonCounter = 0;
     var latestAdvId = -1234;
@@ -40,7 +42,10 @@
         // use it when you're looking for something more subtle.
     };
 
+    startCounter();
+
     function onSensorReadings(json_values) {
+        console.log(json_values);
         var readingState = null;
         var readingCounter = null;
 
@@ -49,7 +54,7 @@
                 readingState = parseInt(value);
             }
             if (key == "TmpCounter") {
-                readingCounter = parseInt(value);
+                onCountUpdated(value);
             }
 
         });
@@ -57,8 +62,6 @@
         if (readingState != null && readingCounter != null) {
             if (latestAdvId != readingCounter && readingState == BUTTON_PRESSED) {
                 latestAdvId = readingCounter
-                setCount(++buttonCounter);
-                //document.getElementById("count").innerHTML = ++buttonCounter;
                 document.getElementById("btn").style.backgroundColor = "rgb(211,211,211)";
             } else if (latestAdvId == readingCounter && readingState == BUTTON_NOT_PRESSED) {
                 document.getElementById("btn").style.backgroundColor = "rgb(253,155,39)";
@@ -72,7 +75,7 @@
         if (name == "TmpCounter") {
             if (latestAdvId != value) {
                 latestAdvId = value;
-                setCount(++readingCounter);
+                onCountUpdated(value);
                 //document.getElementById("count").innerHTML = ++readingCounter;
                 document.getElementById("btn").style.backgroundColor = "rgb(211,211,211)";
             } else {
@@ -87,7 +90,27 @@
         odometer.innerHTML = value;
     }
 
-    playCounter();
+    function onCountUpdated(value) {
+        readingCounter = parseInt(value);
+        if (readingCounter > deviceCounter) {
+            deviceCounter = readingCounter;
+        } else {
+            setCount(readingCounter);
+        }
+    }
+
+    function sleep(milliseconds) {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
+
+    async function startCounter() {
+        if (counter < deviceCounter) {
+            counter++;
+            setCount(counter);
+        }
+        await sleep(400);
+        setCounter();
+    }
     </script>
 </body>
 
