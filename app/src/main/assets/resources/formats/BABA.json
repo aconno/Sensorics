@@ -1,0 +1,36 @@
+{
+  "id": "BABA",
+  "name": "acnRANGE_Old",
+  "icon": "ic_acnrange",
+  "format": [
+    {
+      "name": "Range",
+      "start_index_inclusive": 4,
+      "end_index_exclusive": 6,
+      "reversed": true,
+      "data_type": "UINT16"
+    }
+  ],
+  "format_required": [
+    {
+      "name": "Vendor ID 1",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Vendor ID 2",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "App ID 1",
+      "index": 2,
+      "value": "0xBA"
+    },
+    {
+      "name": "App ID 2",
+      "index": 3,
+      "value": "0xBA"
+    }
+  ]
+}

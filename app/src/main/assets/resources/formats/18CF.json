@@ -1,0 +1,100 @@
+{
+  "id": "18CF",
+  "name": "acnFREIGHT",
+  "icon": "ic_freight",
+  "format": [
+  ],
+  "format_required": [
+    {
+      "name": "Flags Length",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Flags Type",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "Flags",
+      "index": 2,
+      "value": "0x18"
+    },
+    {
+      "name": "Content Length",
+      "index": 3,
+      "value": "0xCF"
+    }
+  ],
+  "connectable": true,
+  "connection_write": [
+    {
+      "serviceUUID": "0000a000-0000-1000-8000-00805f9b34fb",
+      "characteristicUUID": "0000a001-0000-1000-8000-00805f9b34fb",
+      "characteristicName": "Buzzer",
+      "values": [
+        {
+          "name": "On",
+          "type": "BYTE",
+          "value": "0x01"
+        },
+        {
+          "name": "Off",
+          "type": "BYTE",
+          "value": "0x00"
+        }
+      ]
+    },
+    {
+      "serviceUUID": "0000a000-0000-1000-8000-00805f9b34fb",
+      "characteristicUUID": "0000a002-0000-1000-8000-00805f9b34fb",
+      "characteristicName": "Red Light",
+      "values": [
+        {
+          "name": "On",
+          "type": "BYTE",
+          "value": "0x01"
+        },
+        {
+          "name": "Off",
+          "type": "BYTE",
+          "value": "0x00"
+        }
+      ]
+    },
+    {
+      "serviceUUID": "0000a000-0000-1000-8000-00805f9b34fb",
+      "characteristicUUID": "0000a003-0000-1000-8000-00805f9b34fb",
+      "characteristicName": "Green Light",
+      "values": [
+        {
+          "name": "On",
+          "type": "BYTE",
+          "value": "0x01"
+        },
+        {
+          "name": "Off",
+          "type": "BYTE",
+          "value": "0x00"
+        }
+      ]
+    },
+    {
+      "serviceUUID": "0000a000-0000-1000-8000-00805f9b34fb",
+      "characteristicUUID": "0000a004-0000-1000-8000-00805f9b34fb",
+      "characteristicName": "Blue Light",
+      "values": [
+        {
+          "name": "On",
+          "type": "BYTE",
+          "value": "0x01"
+        },
+        {
+          "name": "Off",
+          "type": "BYTE",
+          "value": "0x00"
+        }
+      ]
+    }
+  ]
+}
