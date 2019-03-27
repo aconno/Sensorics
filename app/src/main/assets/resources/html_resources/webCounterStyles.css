@@ -1,635 +1,130 @@
-#Wrapper {
-  align-items: center;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  margin: 0 auto;
-  width: 100px;
-  width: 100%;
+.odometer.odometer-auto-theme, .odometer.odometer-theme-car {
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  *zoom: 1;
+  *display: inline;
+  position: relative;
 }
-
-.animated-counter {
-  background-color: whitesmoke;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px -1px rgba(35, 31, 32, 0.5);
-  box-sizing: content-box;
-  display: block;
-  font-size: 100px;
-  height: 120px;
-  line-height: 105px;
-  margin: 10px auto;
-  overflow: hidden;
+.odometer.odometer-auto-theme .odometer-digit, .odometer.odometer-theme-car .odometer-digit {
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  *zoom: 1;
+  *display: inline;
+  position: relative;
+}
+.odometer.odometer-auto-theme .odometer-digit .odometer-digit-spacer, .odometer.odometer-theme-car .odometer-digit .odometer-digit-spacer {
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  *zoom: 1;
+  *display: inline;
   visibility: hidden;
 }
-.animated-counter.done {
-  visibility: visible;
-}
-.animated-counter.cant-stop-wont-stop {
-  border-radius: 0;
-  position: relative;
-}
-.animated-counter__comma {
-  background-color: whitesmoke;
-  box-sizing: content-box;
-  color: #69696d;
-  display: inline-block;
-  height: 100px;
-  line-height: 100px;
-  margin: -5px 0;
-  padding: 5px 0;
-  position: relative;
-  -webkit-transform-style: preserve-3d;
-          transform-style: preserve-3d;
-  vertical-align: top;
-  width: 53px;
-}
-.animated-counter__comma::before {
-  content: ",";
+.odometer.odometer-auto-theme .odometer-digit .odometer-digit-inner, .odometer.odometer-theme-car .odometer-digit .odometer-digit-inner {
+  text-align: left;
   display: block;
-  text-align: center;
-  width: 100%;
-}
-.animated-counter__inner {
-  border: whitesmoke solid 10px;
-  box-sizing: content-box;
-  display: inline-block;
-  display: inline-flex;
-  flex-flow: row nowrap;
-  height: 100px;
-  margin: 0 auto;
-  -webkit-transform-style: preserve-3d;
-          transform-style: preserve-3d;
-}
-.animated-counter__inner::before, .animated-counter__inner::after {
-  content: "";
-  display: block;
-  position: absolute;
-  -webkit-transform-style: preserve-3d;
-          transform-style: preserve-3d;
-}
-.animated-counter__inner::before {
-  background-color: #231f20;
-  bottom: -10px;
-  left: -15px;
-  right: -15px;
-  top: -10px;
-  -webkit-transform: translateZ(-77px);
-          transform: translateZ(-77px);
-}
-.animated-counter__inner::after {
-  background-color: transparent;
-  background-image: linear-gradient(to bottom, rgba(245, 245, 245, 0) 10%, rgba(245, 245, 245, 0.25) 30%, rgba(245, 245, 245, 0) 50%, rgba(35, 31, 32, 0) 50%, #231f20 100%);
-  bottom: -2px;
-  box-shadow: inset 0 4px 16px -2px rgba(35, 31, 32, 0.75);
-  left: -2px;
-  right: -2px;
-  top: -2px;
-  -webkit-transform: translateZ(-1px);
-          transform: translateZ(-1px);
-}
-.animated-counter__number {
-  border-width: 10px 0;
-  box-shadow: inset 0 2px 8px -1px #231f20;
-  display: inline-block;
-  height: 100px;
-  position: relative;
-  -webkit-transform-style: preserve-3d;
-          transform-style: preserve-3d;
-  vertical-align: top;
-  width: 82px;
-}
-.animated-counter__number-sequence--start::before {
-  background-color: #69696d;
-  content: "";
-  display: block;
-  height: inherit;
   position: absolute;
   top: 0;
-  width: 154px;
-  background-image: linear-gradient(to left, rgba(35, 31, 32, 0.25), #231f20);
-  right: 100%;
-  -webkit-transform: rotateY(-90deg);
-          transform: rotateY(-90deg);
-  -webkit-transform-origin: right center;
-          transform-origin: right center;
-}
-.animated-counter__number-sequence--stop::after {
-  background-color: #69696d;
-  content: "";
-  display: block;
-  height: inherit;
-  position: absolute;
-  top: 0;
-  width: 154px;
-  background-image: linear-gradient(to right, rgba(35, 31, 32, 0.25), #231f20);
-  left: 100%;
-  -webkit-transform: rotateY(90deg);
-          transform: rotateY(90deg);
-  -webkit-transform-origin: left center;
-          transform-origin: left center;
-}
-.animated-counter__axle {
-  display: block;
-  -webkit-transform: translateZ(-169px);
-          transform: translateZ(-169px);
-  -webkit-transform-style: preserve-3d;
-          transform-style: preserve-3d;
-  width: 100%;
-}
-.animated-counter__dial {
-  -webkit-animation-delay: 0.2s;
-          animation-delay: 0.2s;
-  -webkit-animation-direction: normal;
-          animation-direction: normal;
-  -webkit-animation-duration: 2s;
-          animation-duration: 2s;
-  -webkit-animation-fill-mode: forwards;
-          animation-fill-mode: forwards;
-  -webkit-animation-iteration-count: 1;
-          animation-iteration-count: 1;
-  -webkit-animation-timing-function: ease-out;
-          animation-timing-function: ease-out;
-  background-color: rgba(64, 255, 0, 0.25);
-  display: block;
-  height: 100px;
-  margin: 0 auto;
-  position: relative;
-  -webkit-transform-style: preserve-3d;
-          transform-style: preserve-3d;
-  width: 70px;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__dial {
-  -webkit-animation-iteration-count: infinite;
-          animation-iteration-count: infinite;
-  -webkit-animation-name: cant-stop-wont-stop;
-          animation-name: cant-stop-wont-stop;
-  -webkit-animation-timing-function: linear;
-          animation-timing-function: linear;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__number:nth-child(0) .animated-counter__dial {
-  -webkit-animation-delay: -2s;
-          animation-delay: -2s;
-}
-.animated-counter.done.play .animated-counter__value--0 {
-  -webkit-animation-name: barrel-0;
-          animation-name: barrel-0;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__number:nth-child(1) .animated-counter__dial {
-  -webkit-animation-delay: -1.8s;
-          animation-delay: -1.8s;
-}
-.animated-counter.done.play .animated-counter__value--1 {
-  -webkit-animation-name: barrel-1;
-          animation-name: barrel-1;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__number:nth-child(2) .animated-counter__dial {
-  -webkit-animation-delay: -1.6s;
-          animation-delay: -1.6s;
-}
-.animated-counter.done.play .animated-counter__value--2 {
-  -webkit-animation-name: barrel-2;
-          animation-name: barrel-2;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__number:nth-child(3) .animated-counter__dial {
-  -webkit-animation-delay: -1.4s;
-          animation-delay: -1.4s;
-}
-.animated-counter.done.play .animated-counter__value--3 {
-  -webkit-animation-name: barrel-3;
-          animation-name: barrel-3;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__number:nth-child(4) .animated-counter__dial {
-  -webkit-animation-delay: -1.2s;
-          animation-delay: -1.2s;
-}
-.animated-counter.done.play .animated-counter__value--4 {
-  -webkit-animation-name: barrel-4;
-          animation-name: barrel-4;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__number:nth-child(5) .animated-counter__dial {
-  -webkit-animation-delay: -1s;
-          animation-delay: -1s;
-}
-.animated-counter.done.play .animated-counter__value--5 {
-  -webkit-animation-name: barrel-5;
-          animation-name: barrel-5;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__number:nth-child(6) .animated-counter__dial {
-  -webkit-animation-delay: -0.8s;
-          animation-delay: -0.8s;
-}
-.animated-counter.done.play .animated-counter__value--6 {
-  -webkit-animation-name: barrel-6;
-          animation-name: barrel-6;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__number:nth-child(7) .animated-counter__dial {
-  -webkit-animation-delay: -0.6s;
-          animation-delay: -0.6s;
-}
-.animated-counter.done.play .animated-counter__value--7 {
-  -webkit-animation-name: barrel-7;
-          animation-name: barrel-7;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__number:nth-child(8) .animated-counter__dial {
-  -webkit-animation-delay: -0.4s;
-          animation-delay: -0.4s;
-}
-.animated-counter.done.play .animated-counter__value--8 {
-  -webkit-animation-name: barrel-8;
-          animation-name: barrel-8;
-}
-.animated-counter.cant-stop-wont-stop .animated-counter__number:nth-child(9) .animated-counter__dial {
-  -webkit-animation-delay: -0.2s;
-          animation-delay: -0.2s;
-}
-.animated-counter.done.play .animated-counter__value--9 {
-  -webkit-animation-name: barrel-9;
-          animation-name: barrel-9;
-}
-.animated-counter__face {
-  background-color: #404040;
-  color: whitesmoke;
-  display: block;
-  height: 100px;
-  position: absolute;
-  text-align: center;
-  -webkit-transform-style: preserve-3d;
-          transform-style: preserve-3d;
-  width: 70px;
-}
-.animated-counter__face::before, .animated-counter__face::after {
-  background-color: inherit;
-  content: "";
-  display: block;
-  height: inherit;
-  position: absolute;
-  top: 0;
-  width: 154px;
-}
-.animated-counter__face::before {
-  background-image: linear-gradient(to left, rgba(35, 31, 32, 0.25), #231f20);
-  right: 100%;
-  -webkit-transform: rotateY(-88deg);
-          transform: rotateY(-88deg);
-  -webkit-transform-origin: right center;
-          transform-origin: right center;
-}
-.animated-counter__face::after {
-  background-image: linear-gradient(to right, rgba(35, 31, 32, 0.25), #231f20);
-  left: 100%;
-  -webkit-transform: rotateY(88deg);
-          transform: rotateY(88deg);
-  -webkit-transform-origin: left center;
-          transform-origin: left center;
-}
-.animated-counter__face:nth-child(1) {
-  -webkit-transform: rotateX(0deg) translateZ(154px);
-          transform: rotateX(0deg) translateZ(154px);
-}
-.animated-counter__face:nth-child(2) {
-  -webkit-transform: rotateX(36deg) translateZ(154px);
-          transform: rotateX(36deg) translateZ(154px);
-}
-.animated-counter__face:nth-child(3) {
-  -webkit-transform: rotateX(72deg) translateZ(154px);
-          transform: rotateX(72deg) translateZ(154px);
-}
-.animated-counter__face:nth-child(4) {
-  -webkit-transform: rotateX(108deg) translateZ(154px);
-          transform: rotateX(108deg) translateZ(154px);
-}
-.animated-counter__face:nth-child(5) {
-  -webkit-transform: rotateX(144deg) translateZ(154px);
-          transform: rotateX(144deg) translateZ(154px);
-}
-.animated-counter__face:nth-child(6) {
-  -webkit-transform: rotateX(180deg) translateZ(154px);
-          transform: rotateX(180deg) translateZ(154px);
-}
-.animated-counter__face:nth-child(7) {
-  -webkit-transform: rotateX(216deg) translateZ(154px);
-          transform: rotateX(216deg) translateZ(154px);
-}
-.animated-counter__face:nth-child(8) {
-  -webkit-transform: rotateX(252deg) translateZ(154px);
-          transform: rotateX(252deg) translateZ(154px);
-}
-.animated-counter__face:nth-child(9) {
-  -webkit-transform: rotateX(288deg) translateZ(154px);
-          transform: rotateX(288deg) translateZ(154px);
-}
-.animated-counter__face:nth-child(10) {
-  -webkit-transform: rotateX(324deg) translateZ(154px);
-          transform: rotateX(324deg) translateZ(154px);
-}
-.animated-counter__decal {
-  text-shadow: 0 2px 1px #231f20;
-}
-.animated-counter__fallback {
-  box-sizing: content-box;
-  color: #69696d;
-  height: 100px;
-  padding: 10px;
-}
-.animated-counter__fallback__number {
-  background-color: #404040;
-  background-image: linear-gradient(to bottom, rgba(245, 245, 245, 0) 10%, rgba(245, 245, 245, 0.25) 30%, rgba(245, 245, 245, 0) 50%, rgba(35, 31, 32, 0) 50%, #231f20 100%);
-  box-shadow: inset 0 2px 4px 1px #231f20, inset 0 4px 16px -2px rgba(35, 31, 32, 0.75);
-  color: whitesmoke;
-  display: inline-block;
-  height: 100px;
-  text-align: center;
-  text-shadow: 0 2px 1px #231f20;
-  width: 82px;
-}
-.animated-counter__coming-soon {
-  align-items: center;
-  background-color: rgba(105, 105, 109, 0.5);
-  background-image: linear-gradient(to left, #404040, transparent, transparent, #404040);
-  border: #69696d solid 1px;
-  bottom: 0;
-  color: #fff;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
   left: 0;
+  right: 0;
+  bottom: 0;
   overflow: hidden;
-  position: absolute;
-  right: 0;
-  top: 0;
 }
-.animated-counter__coming-soon__background, .animated-counter__coming-soon::before, .animated-counter__coming-soon::after {
-  bottom: 0;
+.odometer.odometer-auto-theme .odometer-digit .odometer-ribbon, .odometer.odometer-theme-car .odometer-digit .odometer-ribbon {
   display: block;
-  left: 0;
+}
+.odometer.odometer-auto-theme .odometer-digit .odometer-ribbon-inner, .odometer.odometer-theme-car .odometer-digit .odometer-ribbon-inner {
+  display: block;
+  -webkit-backface-visibility: hidden;
+}
+.odometer.odometer-auto-theme .odometer-digit .odometer-value, .odometer.odometer-theme-car .odometer-digit .odometer-value {
+  display: block;
+  -webkit-transform: translateZ(0);
+}
+.odometer.odometer-auto-theme .odometer-digit .odometer-value.odometer-last-value, .odometer.odometer-theme-car .odometer-digit .odometer-value.odometer-last-value {
   position: absolute;
-  right: 0;
-  top: 0;
 }
-.animated-counter__coming-soon__background {
-  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/348175/red-curtain.png);
-  background-position: center top;
-  background-size: cover;
-  box-shadow: inset 0 4px 16px 2px rgba(35, 31, 32, 0.85);
-  opacity: 0.6;
-  z-index: 1;
+.odometer.odometer-auto-theme.odometer-animating-up .odometer-ribbon-inner, .odometer.odometer-theme-car.odometer-animating-up .odometer-ribbon-inner {
+  -webkit-transition: -webkit-transform 2s;
+  -moz-transition: -moz-transform 2s;
+  -ms-transition: -ms-transform 2s;
+  -o-transition: -o-transform 2s;
+  transition: transform 2s;
 }
-.animated-counter__coming-soon__text {
-  font-size: 50px;
-  letter-spacing: 0.1em;
-  position: relative;
-  text-shadow: 0 0 8px #fff, 0 2px 2px rgba(64, 64, 64, 0.5);
-  text-transform: uppercase;
-  z-index: 2;
+.odometer.odometer-auto-theme.odometer-animating-up.odometer-animating .odometer-ribbon-inner, .odometer.odometer-theme-car.odometer-animating-up.odometer-animating .odometer-ribbon-inner {
+  -webkit-transform: translateY(-100%);
+  -moz-transform: translateY(-100%);
+  -ms-transform: translateY(-100%);
+  -o-transform: translateY(-100%);
+  transform: translateY(-100%);
 }
-.animated-counter__coming-soon::before, .animated-counter__coming-soon::after {
-  border: #fff dotted 10px;
-  bottom: 4px;
-  content: "";
-  left: 4px;
-  right: 4px;
-  top: 4px;
+.odometer.odometer-auto-theme.odometer-animating-down .odometer-ribbon-inner, .odometer.odometer-theme-car.odometer-animating-down .odometer-ribbon-inner {
+  -webkit-transform: translateY(-100%);
+  -moz-transform: translateY(-100%);
+  -ms-transform: translateY(-100%);
+  -o-transform: translateY(-100%);
+  transform: translateY(-100%);
 }
-.animated-counter__coming-soon::before {
-  -webkit-filter: blur(4px);
-          filter: blur(4px);
-  z-index: 3;
-}
-.animated-counter__coming-soon::after {
-  z-index: 4;
-}
-@media screen {
-  .animated-counter__fallback.not-in-use {
-    display: none;
-  }
-}
-@media print {
-  .animated-counter__inner {
-    display: none;
-  }
-  .animated-counter__fallback.not-in-use {
-    display: block;
-  }
+.odometer.odometer-auto-theme.odometer-animating-down.odometer-animating .odometer-ribbon-inner, .odometer.odometer-theme-car.odometer-animating-down.odometer-animating .odometer-ribbon-inner {
+  -webkit-transition: -webkit-transform 2s;
+  -moz-transition: -moz-transform 2s;
+  -ms-transition: -ms-transform 2s;
+  -o-transition: -o-transform 2s;
+  transition: transform 2s;
+  -webkit-transform: translateY(0);
+  -moz-transform: translateY(0);
+  -ms-transform: translateY(0);
+  -o-transform: translateY(0);
+  transform: translateY(0);
 }
 
-@-webkit-keyframes cant-stop-wont-stop {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(360deg);
-            transform: rotateX(360deg);
-  }
+.odometer.odometer-auto-theme, .odometer.odometer-theme-car {
+  -moz-border-radius: 0.34em;
+  -webkit-border-radius: 0.34em;
+  border-radius: 0.34em;
+  padding: 0.15em;
+  background: #000;
+  color: #eee0d3;
 }
-
-@keyframes cant-stop-wont-stop {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(360deg);
-            transform: rotateX(360deg);
-  }
+.odometer.odometer-auto-theme .odometer-digit, .odometer.odometer-theme-car .odometer-digit {
+  -moz-box-shadow: inset 0 0 0.3em rgba(0, 0, 0, 0.8);
+  -webkit-box-shadow: inset 0 0 0.3em rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0 0.3em rgba(0, 0, 0, 0.8);
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzMzMzMzMyIvPjxzdG9wIG9mZnNldD0iNDAlIiBzdG9wLWNvbG9yPSIjMzMzMzMzIi8+PHN0b3Agb2Zmc2V0PSI2MCUiIHN0b3AtY29sb3I9IiMxMDEwMTAiLz48c3RvcCBvZmZzZXQ9IjgwJSIgc3RvcC1jb2xvcj0iIzMzMzMzMyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzMzMzMzMyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #333333), color-stop(40%, #333333), color-stop(60%, #101010), color-stop(80%, #333333), color-stop(100%, #333333));
+  background-image: -moz-linear-gradient(top, #333333 0%, #333333 40%, #101010 60%, #333333 80%, #333333 100%);
+  background-image: -webkit-linear-gradient(top, #333333 0%, #333333 40%, #101010 60%, #333333 80%, #333333 100%);
+  background-image: linear-gradient(to bottom, #333333 0%, #333333 40%, #101010 60%, #333333 80%, #333333 100%);
+  padding: 0 0.15em;
 }
-@-webkit-keyframes barrel-0 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-720deg);
-            transform: rotateX(-720deg);
-  }
+.odometer.odometer-auto-theme .odometer-digit:first-child, .odometer.odometer-theme-car .odometer-digit:first-child {
+  -moz-border-radius: 0.2em 0 0 0.2em;
+  -webkit-border-radius: 0.2em;
+  border-radius: 0.2em 0 0 0.2em;
 }
-@keyframes barrel-0 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-720deg);
-            transform: rotateX(-720deg);
-  }
+.odometer.odometer-auto-theme .odometer-digit:last-child, .odometer.odometer-theme-car .odometer-digit:last-child {
+  -moz-border-radius: 0 0.2em 0.2em 0;
+  -webkit-border-radius: 0;
+  border-radius: 0 0.2em 0.2em 0;
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VlZTBkMyIvPjxzdG9wIG9mZnNldD0iNDAlIiBzdG9wLWNvbG9yPSIjZWVlMGQzIi8+PHN0b3Agb2Zmc2V0PSI2MCUiIHN0b3AtY29sb3I9IiNiYmFhOWEiLz48c3RvcCBvZmZzZXQ9IjgwJSIgc3RvcC1jb2xvcj0iI2VlZTBkMyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2VlZTBkMyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eee0d3), color-stop(40%, #eee0d3), color-stop(60%, #bbaa9a), color-stop(80%, #eee0d3), color-stop(100%, #eee0d3));
+  background-image: -moz-linear-gradient(top, #eee0d3 0%, #eee0d3 40%, #bbaa9a 60%, #eee0d3 80%, #eee0d3 100%);
+  background-image: -webkit-linear-gradient(top, #eee0d3 0%, #eee0d3 40%, #bbaa9a 60%, #eee0d3 80%, #eee0d3 100%);
+  background-image: linear-gradient(to bottom, #eee0d3 0%, #eee0d3 40%, #bbaa9a 60%, #eee0d3 80%, #eee0d3 100%);
+  background-color: #eee0d3;
+  color: #000;
 }
-@-webkit-keyframes barrel-1 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-756deg);
-            transform: rotateX(-756deg);
-  }
+.odometer.odometer-auto-theme .odometer-digit .odometer-digit-inner, .odometer.odometer-theme-car .odometer-digit .odometer-digit-inner {
+  left: 0.15em;
 }
-@keyframes barrel-1 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-756deg);
-            transform: rotateX(-756deg);
-  }
-}
-@-webkit-keyframes barrel-2 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-792deg);
-            transform: rotateX(-792deg);
-  }
-}
-@keyframes barrel-2 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-792deg);
-            transform: rotateX(-792deg);
-  }
-}
-@-webkit-keyframes barrel-3 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-828deg);
-            transform: rotateX(-828deg);
-  }
-}
-@keyframes barrel-3 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-828deg);
-            transform: rotateX(-828deg);
-  }
-}
-@-webkit-keyframes barrel-4 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-864deg);
-            transform: rotateX(-864deg);
-  }
-}
-@keyframes barrel-4 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-864deg);
-            transform: rotateX(-864deg);
-  }
-}
-@-webkit-keyframes barrel-5 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-900deg);
-            transform: rotateX(-900deg);
-  }
-}
-@keyframes barrel-5 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-900deg);
-            transform: rotateX(-900deg);
-  }
-}
-@-webkit-keyframes barrel-6 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-936deg);
-            transform: rotateX(-936deg);
-  }
-}
-@keyframes barrel-6 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-936deg);
-            transform: rotateX(-936deg);
-  }
-}
-@-webkit-keyframes barrel-7 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-972deg);
-            transform: rotateX(-972deg);
-  }
-}
-@keyframes barrel-7 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-972deg);
-            transform: rotateX(-972deg);
-  }
-}
-@-webkit-keyframes barrel-8 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-1008deg);
-            transform: rotateX(-1008deg);
-  }
-}
-@keyframes barrel-8 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-1008deg);
-            transform: rotateX(-1008deg);
-  }
-}
-@-webkit-keyframes barrel-9 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-1044deg);
-            transform: rotateX(-1044deg);
-  }
-}
-@keyframes barrel-9 {
-  from {
-    -webkit-transform: rotateX(0deg);
-            transform: rotateX(0deg);
-  }
-  to {
-    -webkit-transform: rotateX(-1044deg);
-            transform: rotateX(-1044deg);
-  }
+.odometer.odometer-auto-theme.odometer-animating-up .odometer-ribbon-inner, .odometer.odometer-auto-theme.odometer-animating-down.odometer-animating .odometer-ribbon-inner, .odometer.odometer-theme-car.odometer-animating-up .odometer-ribbon-inner, .odometer.odometer-theme-car.odometer-animating-down.odometer-animating .odometer-ribbon-inner {
+  -webkit-transition-timing-function: linear;
+  -moz-transition-timing-function: linear;
+  -ms-transition-timing-function: linear;
+  -o-transition-timing-function: linear;
+  transition-timing-function: linear;
 }
