@@ -8,6 +8,7 @@
     body {
         font-family: 'Rubik', sans-serif;
     }
+
     </style>
     <link rel="stylesheet" href="../html_resources/newStyles.css">
     <link rel="stylesheet" href="../html_resources/webCounterStyles.css">
@@ -15,15 +16,15 @@
 </head>
 
 <body style="background-color:#fafafa">
-    <div class="acnact">
-        <p>
-            <span style="display: block;" class="acnact-value">Count: </span>
-            <div id="odometer" style="font-size: 50px" class="odometer">000</div>
-    </div>
-    <div class="acnact-btn-div">
-        <input type="button" id="btn" class="acnact-btn" value="">
-    </div>
-    <script>
+<div class="acnact">
+    <p>
+        <span style="display: block;" class="acnact-value">Count: </span>
+    <div id="odometer" style="font-size: 50px" class="odometer">000</div>
+</div>
+<div class="acnact-btn-div">
+    <input type="button" id="btn" class="acnact-btn" value="">
+</div>
+<script>
     var counter = 0;
     var deviceCounter = 0;
     var readingState = -2;
@@ -111,7 +112,9 @@
         await sleep(400);
         setCounter();
     }
-    </script>
+
+
+</script>
 </body>
 
 </html>
