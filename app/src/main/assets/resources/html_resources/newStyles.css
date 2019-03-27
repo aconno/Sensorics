@@ -103,4 +103,19 @@
     border-radius: 100%;
 }
 
+.acnact-value-small{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+	font-size: 28px;
+    font-weight: bold;
+    margin-top: 60px
+}
 
+.acnact-value-tiny{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+	font-size: 18px;
+    font-weight: bold;
+}
