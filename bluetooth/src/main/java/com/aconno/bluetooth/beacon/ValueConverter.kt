@@ -6,7 +6,7 @@ import java.nio.charset.Charset
 import kotlin.experimental.or
 
 enum class ValueConverter(var default: Any, var converter: Converter<*>) {
-    BOOLEAN(false, object : Converter<Boolean>(false) {
+    BOOLEAN(false, object : Converter<Boolean>(false, length = 1) {
         override fun fromString(string: String): Boolean {
             return if (string.equals("true", true) || string == "1") true
             else if (string.equals("false", true) || string == "0") false
@@ -25,7 +25,7 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
             }
         }
     }),
-    BYTE(0, object : Converter<Byte>(0) {
+    BYTE(0, object : Converter<Byte>(0, length = 1) {
         override fun fromString(string: String): Byte {
             return string.toByte()
         }
@@ -38,13 +38,13 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
             return data[0]
         }
     }),
-    MAC_ADDRESS(0, object : Converter<String>("00:11:22:33:44:55") {
+    MAC_ADDRESS(0, object : Converter<String>("00:11:22:33:44:55", length = 6) {
         override fun serialize(data: String, order: ByteOrder): ByteArray {
             return serializeInternal(fromString(data))
         }
 
         override fun deserialize(data: ByteArray, order: ByteOrder): String {
-            if (data.size != length && length != -1) {
+            if (data.size < length && length != -1) {
                 throw IllegalArgumentException("Invalid buffer length, expected $length, got ${data.size}")
             } else {
                 return deserializeInternal(data)
@@ -54,12 +54,12 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
         override fun fromString(string: String): String = string
 
         override fun serializeInternal(data: String): ByteArray =
-            data.split(':').map { it.toByte() }.toList().toByteArray()
+                data.split(':').map { it.toByte() }.toList().toByteArray()
 
         override fun deserializeInternal(data: ByteArray): String =
-            data.joinToString(":") { String.format("%02x", it) }
+                data.joinToString(":") { String.format("%02x", it) }
     }),
-    SINT8(0, object : Converter<Byte>(0) {
+    SINT8(0, object : Converter<Byte>(0, length = 1) {
         override fun fromString(string: String): Byte {
             return string.toByte()
         }
@@ -72,7 +72,7 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
             return data[0]
         }
     }),
-    UINT8(0, object : Converter<Short>(0) {
+    UINT8(0, object : Converter<Short>(0, length = 1) {
         override fun fromString(string: String): Short {
             return string.toShort()
         }
@@ -86,7 +86,7 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
             return (if (v < 0) (v + 256).toShort() else v)
         }
     }),
-    SINT16(0, object : Converter<Short>(0) {
+    SINT16(0, object : Converter<Short>(0, length = 2) {
         override fun fromString(string: String): Short {
             return string.toShort()
         }
@@ -106,7 +106,7 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
             return short
         }
     }),
-    UINT16(0, object : Converter<Int>(0) {
+    UINT16(0, object : Converter<Int>(0, length = 2) {
         override fun fromString(string: String): Int {
             return string.toInt()
         }
@@ -127,7 +127,7 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
         }
 
     }),
-    SINT32(0, object : Converter<Int>(0) {
+    SINT32(0, object : Converter<Int>(0, length = 4) {
         override fun fromString(string: String): Int {
             return string.toInt()
         }
@@ -146,7 +146,7 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
         }
 
     }),
-    UINT32(0, object : Converter<Long>(0) {
+    UINT32(0, object : Converter<Long>(0, length = 4) {
         override fun fromString(string: String): Long {
             return string.toLong()
         }
@@ -184,7 +184,7 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
         }
 
     }),
-    TIME(0, object : Converter<Long>(0) {
+    TIME(0, object : Converter<Long>(0, length = 6) {
         override fun fromString(string: String): Long {
             return string.toLong()
         }
@@ -202,7 +202,7 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
         }
 
     }),
-    FLOAT(0f, object : Converter<Float>(0f) {
+    FLOAT(0f, object : Converter<Float>(0f, length = 4) {
         override fun fromString(string: String): Float {
             return string.toFloat()
         }
@@ -257,13 +257,13 @@ enum class ValueConverter(var default: Any, var converter: Converter<*>) {
         abstract fun serializeInternal(data: T): ByteArray
 
         open fun deserialize(data: ByteArray, order: ByteOrder = ByteOrder.LITTLE_ENDIAN): T {
-            if (data.size != length && length != -1) {
+            if (data.size < length && length != -1) {
                 throw IllegalArgumentException("Invalid buffer length, expected $length, got ${data.size}")
             } else {
-                data.apply {
+                val transformedData = data.copyOfRange(0, if (length != -1) length else data.size).apply {
                     if (order == ByteOrder.LITTLE_ENDIAN) reverse()
                 }
-                return deserializeInternal(data)
+                return deserializeInternal(transformedData)
             }
         }
 

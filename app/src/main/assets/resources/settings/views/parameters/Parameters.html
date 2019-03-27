@@ -1,0 +1,83 @@
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../../commons/holo.css" />
+    <style>
+        .margin-sides {
+            margin-left: 0.1em;
+            margin-right: 0.1em;
+        }
+
+        .label-description {
+            font-size: small;
+            font-weight: bold;
+            color: #666666
+        }
+
+        .div-text-right {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body style="background-color: #FAFAFA">
+<div class="container-fluid">
+    <br/>
+
+    </div>
+    <script src="../../libs/jquery.min.js"></script>
+    <script src="../../libs/popper.min.js"></script>
+    <script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
+<script src="parameter_generator.js"></script>
+<script>
+        $(document).ready(function(){
+            let listParametersString = native.getParameters();
+            if(listParametersString == "")return;
+
+            console.log(listParametersString);
+            let listParameters = JSON.parse(listParametersString)
+
+            for(let index = 0;index<listParameters.length;index++){
+                let parameter = listParameters[index];
+
+                if(parameter.type == "TYPE_PARAMETER_BOOLEAN"){
+                    let param = HtmlGenerator.generateParameterBool(parameter.id, parameter.name, parameter.value, index);
+                    $(".container-fluid").append(param);
+                    $(".container-fluid").append("<br/>");
+                    continue;
+                }
+                if(parameter.type == "TYPE_PARAMETER_TEXT"){
+                    let param = HtmlGenerator.generateParameterEditText(parameter.id, parameter.name, parameter.value, parameter.writable, index);
+                    $(".container-fluid").append(param);
+                    $(".container-fluid").append("<br/>");
+                    continue;
+                }
+                if(parameter.type == "TYPE_PARAMETER_NUMBER"){
+                    let param = HtmlGenerator.generateNumberEditText(parameter.id, parameter.name, parameter.value, parameter.min, parameter.max, parameter.writable, index);
+                    $(".container-fluid").append(param);
+                    $(".container-fluid").append("<br/>");
+                    continue;
+                }
+                if(parameter.type == "TYPE_PARAMETER_ENUM"){
+                    let param = HtmlGenerator.generateEnums(parameter.choices,parameter.id, parameter.name, parameter.value, index);
+                    $(".container-fluid").append(param);
+                    $(".container-fluid").append("<br/>");
+                    continue;
+                }
+
+                <!--$("#")-->
+
+            }
+
+        });
+
+
+</script>
+</body>
+
+</html>

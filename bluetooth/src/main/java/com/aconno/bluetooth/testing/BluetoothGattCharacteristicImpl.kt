@@ -4,11 +4,10 @@ import java.util.*
 
 
 class BluetoothGattCharacteristicImpl(
-    val characteristic: android.bluetooth.BluetoothGattCharacteristic,
-    override val service: BluetoothGattService
+        val characteristic: android.bluetooth.BluetoothGattCharacteristic,
+        override val service: BluetoothGattService
 ) : BluetoothGattCharacteristic {
-    override val descriptors: MutableList<BluetoothGattDescriptor> =
-        characteristic.descriptors.map { BluetoothGattDescriptorImpl(it, this) }.toMutableList()
+    override val descriptors: MutableList<BluetoothGattDescriptor> = characteristic.descriptors.map { BluetoothGattDescriptorImpl(it, this) }.toMutableList()
     override val instanceId: Int = characteristic.instanceId
     override val permissions: Int = characteristic.permissions
     override val properties: Int = characteristic.properties

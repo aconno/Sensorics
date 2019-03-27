@@ -1,0 +1,81 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../commons/holo.css"/>
+    <style>
+        .margin-sides {
+            margin-left: 0.1em;
+            margin-right: 0.1em;
+        }
+
+        .button22 {
+            background-color: #000000;
+            display: inline-block;
+            height: 1.8em;
+            width: 1.8em;
+            position: fixed;
+            bottom: 0px;
+            text-decoration: none;
+            right: 0px;
+            color: white;
+            border: none;
+            margin-bottom: 1em;
+            margin-right: 1em;
+            border-radius: 50%;
+            font-size: 3em;
+        }
+
+    </style>
+</head>
+
+<body style="background-color: #fafafa">
+
+<div class="row margin-sides" style="margin-top: 2em;">
+    <div id="container_arbitrary" class=" col-md-12">
+        <!-- Add arbitrary data in here -->
+    </div>
+</div>
+
+<button type="button" data-toggle="modal" id="fab_arbitrary" data-target="#arbitrary_modal"
+        class="btn btn-primary button22" data-whatever="new">+
+</button>
+
+<div class="modal fade" id="arbitrary_modal" tabindex="-1" role="dialog"
+     aria-labelledby="arbitrary_modal_label"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Data Input</h5>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="modal_key" class="col-form-label">Data Key:</label>
+                        <input type="text" class="form-control" id="modal_key">
+                    </div>
+                    <div class="form-group">
+                        <label for="modal_value" class="col-form-label">Value:</label>
+                        <textarea class="form-control" id="modal_value"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="modal_okay_btn" type="button" class="btn btn-primary">Okay</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../libs/popper.min.js"></script>
+<script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
+<script src="../../model/ArbitraryData.js"></script>
+<script src="arbitrary_generator.js"></script>
+<script src="arbitrary_init.js"></script>
+</body>
+
+</html>

@@ -16,16 +16,29 @@ import io.reactivex.functions.Predicate
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
-fun ByteArray.toHex() =
-        this.joinToString(separator = "") { it.toInt().and(0xff).toString(16).padStart(2, '0') }
-
+fun ByteArray.toHex() = this.joinToString(separator = "") { it.toInt().and(0xff).toString(16).padStart(2, '0') }
 class BluetoothImpl(val context: Activity) : Bluetooth, ScanCallback() {
+    /**
+     * Bluetooth Manager
+     */
     private var manager: BluetoothManager
+    /**
+     * Bluetooth Adapter
+     */
     private var adapter: BluetoothAdapter
+    /**
+     * Is currently scanning
+     */
     private var scanning: Boolean = false
 
-    val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
-    private val scanFilters: MutableList<Predicate<ScanResult>> = mutableListOf()
+    /**
+     * Publish Subject for scan results
+     */
+    private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
+    /**
+     * Set of scan filters
+     */
+    private val scanFilters: MutableSet<Predicate<ScanResult>> = mutableSetOf()
 
     init {
         if (context !is BluetoothEnableRequestListener) {
@@ -39,35 +52,28 @@ class BluetoothImpl(val context: Activity) : Bluetooth, ScanCallback() {
 
     override fun startScan(consumer: Consumer<ScanResult>?): Disposable? {
         if (adapter.isEnabled) {
-            Timber.e("Starting scan")
-            adapter.bluetoothLeScanner.startScan(
-                    mutableListOf(),
-                    ScanSettings.Builder()
-                            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                            .build(),
-                    this
-            )
-            scanning = true
+            if (adapter.bluetoothLeScanner != null) {
+                adapter.bluetoothLeScanner.startScan(mutableListOf(), ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build(), this)
+                scanning = true
+                return consumer?.let { scanResults.subscribe(it) }
+            } else {
+                scanning = false
+            }
         } else requestEnableBluetooth()
-        return consumer?.let { scanResults.subscribe(it) }
+        return null
     }
 
     override fun startScanForDevice(address: String, consumer: Consumer<ScanResult>?): Disposable? {
+        scanFilters.clear()
         scanFilters.add(Predicate { it.device.address == address })
         return startScan(consumer)
     }
 
-    override fun <T> startScanForDevice(
-            device: Class<T>,
-            consumer: Consumer<ScanResult>?
-    ): Disposable? where T : DeviceSpec {
+    override fun <T> startScanForDevice(device: Class<T>, consumer: Consumer<ScanResult>?): Disposable? where T : DeviceSpec {
         return startScanForDevices(listOf(device), consumer)
     }
 
-    override fun startScanForDevices(
-            devices: List<Class<out DeviceSpec>>,
-            consumer: Consumer<ScanResult>?
-    ): Disposable? {
+    override fun startScanForDevices(devices: List<Class<out DeviceSpec>>, consumer: Consumer<ScanResult>?): Disposable? {
         scanFilters.clear()
         scanFilters.addAll(devices.mapNotNull {
             try {
@@ -87,11 +93,12 @@ class BluetoothImpl(val context: Activity) : Bluetooth, ScanCallback() {
         return startScan(consumer)
     }
 
-    override fun stopScan() {
-        adapter.bluetoothLeScanner?.let {
+    override fun stopScan(): Boolean {
+        return adapter.bluetoothLeScanner?.let {
             it.stopScan(this)
             scanning = false
-        }
+            true
+        } ?: false
     }
 
     private fun requestEnableBluetooth() {
@@ -110,7 +117,7 @@ class BluetoothImpl(val context: Activity) : Bluetooth, ScanCallback() {
             startScan()
             if (!scanning) return
         }
-        device.connect(true, object : BluetoothGattCallback() {
+        device.connect(false, object : BluetoothGattCallback() {
             override fun onDeviceConnected(device: BluetoothDevice) {
                 stopScan()
             }
@@ -120,8 +127,7 @@ class BluetoothImpl(val context: Activity) : Bluetooth, ScanCallback() {
 
     override fun onScanResult(callbackType: Int, result: ScanResult) {
         if (scanFilters.size == 0
-                || scanFilters.any { it.test(result) }
-        ) {
+                || scanFilters.any { it.test(result) }) {
             Timber.e(result.device.address)
             scanResults.onNext(result)
         }

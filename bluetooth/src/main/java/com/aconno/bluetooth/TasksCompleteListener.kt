@@ -10,11 +10,10 @@ abstract class TasksCompleteListener {
     fun onAllTasksCompleted() {
         if (finishable) onTasksComplete()
     }
-
     abstract fun onTasksComplete()
     fun onTaskComplete(tasksLeft: Int) {
         tasksCompleted++
-        tasksTotal += if (tasksLeft - this.tasksLeft == -1) 0 else (tasksLeft - this.tasksLeft) + 1
+        tasksTotal += if(tasksLeft - this.tasksLeft == -1) 0 else (tasksLeft - this.tasksLeft) + 1
         this.tasksLeft = tasksLeft
         onTaskComplete(tasksCompleted, tasksTotal)
     }

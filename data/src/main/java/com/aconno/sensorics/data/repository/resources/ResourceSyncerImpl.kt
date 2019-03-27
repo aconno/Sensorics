@@ -64,6 +64,6 @@ class ResourceSyncerImpl(
 
     companion object {
         const val LATEST_VERSION = "LATEST_VERSION"
-        const val LATEST_ASSETS_VERSION = 9950239215L
+        const val LATEST_ASSETS_VERSION = 9945044754L
     }
 }

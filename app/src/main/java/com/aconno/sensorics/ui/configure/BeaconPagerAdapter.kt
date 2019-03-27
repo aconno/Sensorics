@@ -15,15 +15,15 @@ class BeaconPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
         return when (position) {
-            0 -> BeaconGeneralFragment.newInstance(beacon!!)
-            1 -> BeaconParameterFragment.newInstance()
-            2 -> BeaconArbitraryDataFragment.newInstance()
-            else -> BeaconSlotFragment.newInstance(position - 3)
+            0 -> BeaconGeneral2Fragment.newInstance()
+            1 -> BeaconParameter2Fragment.newInstance()
+            2 -> BeaconArbitraryDataHtmlFragment.newInstance()
+            else -> BeaconSlotHtmlFragment.newInstance(position - 3)
         }
     }
 
     override fun getCount(): Int {
-        return if (beacon == null) 0 else (3 + (beacon?.slotAmount ?: 0))
+        return if (beacon == null) 0 else (3 + (beacon?.slots?.size ?: 0))
     }
 
     override fun getItemPosition(`object`: Any): Int {

@@ -66,6 +66,8 @@ class DeviceMainFragment : DaggerFragment() {
     private var connectResultDisposable: Disposable? = null
 
     private var isServicesDiscovered = false
+    private var hasSettings: Boolean = false
+
     var menu: Menu? = null
 
     private val serviceConnection = object : ServiceConnection {
@@ -211,9 +213,16 @@ class DeviceMainFragment : DaggerFragment() {
         }
 
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
-        menu?.findItem(R.id.action_start_usecases_activity)?.isVisible = BuildConfig.FLAVOR == "dev"
-        menu?.findItem(R.id.action_toggle_connect)?.isVisible = mDevice.connectable
-        menu?.findItem(R.id.action_start_logging_activity)?.isVisible = true
+        setMenuItemsVisibility(menu)
+    }
+
+    private fun setMenuItemsVisibility(menu: Menu?) {
+        menu?.let {
+            it.findItem(R.id.action_start_usecases_activity).isVisible = BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
+            it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
+            it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
+            it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -246,7 +255,7 @@ class DeviceMainFragment : DaggerFragment() {
                             .show()
                     }
 
-                    getContext()?.let {
+                    activity?.let {
                         ConfigureActivity.start(it, device = mDevice)
                     }
                     return true
@@ -313,9 +322,14 @@ class DeviceMainFragment : DaggerFragment() {
             .subscribe { readings ->
 
                 var jsonValues = generateJsonArray(readings)
+                setHasSettings(readings)
 
                 web_view.loadUrl("javascript:onSensorReadings('$jsonValues')")
             }
+    }
+
+    private fun setHasSettings(readings: List<Reading>) {
+        hasSettings = readings[0].device.hasSettings
     }
 
     private fun generateJsonArray(readings: List<Reading>?): String {
@@ -513,6 +527,7 @@ class DeviceMainFragment : DaggerFragment() {
     companion object {
 
         private const val KEY_DEVICE = "KEY_DEVICE"
+        private const val DEV_BUILD_FLAVOR = "dev"
 
         fun newInstance(
             device: Device

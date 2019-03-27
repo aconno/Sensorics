@@ -1,0 +1,72 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../commons/holo.css"/>
+    <link rel="stylesheet" href="../../libs/bootstrap-slider/bootstrap-slider.min.css"/>
+    <style>
+        .margin-sides {
+            margin-left: 0.1em;
+            margin-right: 0.1em;
+        }
+
+        .label-description {
+            font-size: small;
+            font-weight: bold;
+            color: #666666
+        }
+
+        .div-text-right {
+            text-align: right
+        }
+
+        #slider .slider-selection {
+            background: #BABABA;
+        }
+    </style>
+</head>
+
+<body style="background-color: #fafafa">
+<div class="row margin-sides" style="margin-top: 2em;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Frame Type</h5>
+
+                <div class="dropdown">
+                    <button id="btn_frame_type" class="btn btn-primary dropdown-toggle"
+                            style="width: 100%; text-align: left !important;" type="button"
+                            data-toggle="dropdown">Select
+                        <span class="caret"></span></button>
+                    <ul id="dropdown_frame_type" class="dropdown-menu" style="width: 100%;">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row margin-sides" style="margin-top: 1em;">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Advertising Content</h5>
+                <div id="advertising_content" class="panel-body">
+                    <!-- Content is generated -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../libs/popper.min.js"></script>
+<script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
+<script src="../../libs/bootstrap-slider/bootstrap-slider.min.js"></script>
+<script src="../../model/Slot.js"></script>
+<script src="slot_generator.js"></script>
+<script src="slot_init.js"></script>
+</body>
+
+</html>

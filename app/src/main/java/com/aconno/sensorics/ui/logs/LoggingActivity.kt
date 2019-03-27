@@ -26,7 +26,6 @@ import kotlinx.android.synthetic.main.activity_logging.*
 import java.nio.charset.Charset
 import java.util.*
 import javax.inject.Inject
-import kotlin.experimental.and
 
 class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnableRequestListener {
     private lateinit var logAdapter: LoggingAdapter
@@ -221,8 +220,13 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
     }
 
     private fun onServicesDiscovered(bluetoothDevice: BluetoothDevice) {
-        logInfo(getString(R.string.log_services_discovered, bluetoothDevice.services.size))
-        logDiscoveredServices(bluetoothDevice.services)
+        val services = mutableListOf<BluetoothGattService>()
+        bluetoothDevice.characteristicMap.forEach {
+            services.add(it.value.service)
+        }
+
+        logInfo(getString(R.string.log_services_discovered, services.size))
+        logDiscoveredServices(services)
 
         val uuid = UUID.fromString(LOG_UUID)
         bluetoothDevice.setCharacteristicNotification(uuid, true)
@@ -247,9 +251,9 @@ class LoggingActivity : DaggerAppCompatActivity(), BluetoothImpl.BluetoothEnable
         }
     }
 
-    private fun parseData(value: ByteArray) {
+    private fun parseData(data: ByteArray) {
         //TODO Implement depending on the beacon  profile
-        logInfo(value.toString(Charset.defaultCharset()))
+        logInfo(data.toString(Charset.defaultCharset()))
     }
 
     @UiThread

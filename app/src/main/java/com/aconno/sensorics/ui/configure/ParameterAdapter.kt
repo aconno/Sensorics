@@ -31,7 +31,7 @@ class ParameterAdapter(val beacon: Beacon) : RecyclerView.Adapter<ParameterAdapt
     val TYPE_PARAMETER_NUMBER_DECIMAL = 4
     val TYPE_PARAMETER_ENUM = 5
 
-    val parameterList: List<Parameter> = beacon.parameters.flatMap { x -> x.value }
+    val parameterList: List<Parameter> = beacon.parameters.map.flatMap { x -> x.value }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItem {
@@ -63,7 +63,7 @@ class ParameterAdapter(val beacon: Beacon) : RecyclerView.Adapter<ParameterAdapt
     }
 
 
-    override fun getItemCount(): Int = beacon.parameters.map { x -> x.value.size }.sum()
+    override fun getItemCount(): Int = beacon.parameters.map.map { x -> x.value.size }.sum()
 
     abstract class ListItem(open val parent: ViewGroup, open val resource: Int) :
         RecyclerView.ViewHolder(

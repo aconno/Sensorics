@@ -28,8 +28,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-class ConfigureActivity : DaggerAppCompatActivity(),
-    BeaconGeneralFragment.OnBeaconGeneralFragmentInteractionListener {
+class ConfigureActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentListener,
+    ViewPagerSlider {
 
     @Inject
     lateinit var beaconViewModel: BeaconViewModel
@@ -221,6 +221,14 @@ class ConfigureActivity : DaggerAppCompatActivity(),
         serviceConnect?.disconnect()
     }
 
+    override fun stopViewPager() {
+        vp_beacon.isPagingEnabled = false
+    }
+
+    override fun startViewPager() {
+        vp_beacon.isPagingEnabled = true
+    }
+
     companion object {
         private const val EXTRA_DEVICE = "EXTRA_DEVICE"
 
@@ -229,16 +237,6 @@ class ConfigureActivity : DaggerAppCompatActivity(),
                 putExtra(EXTRA_DEVICE, Gson().toJson(device))
             }.also {
                 context.startActivity(it)
-            }
-        }
-    }
-
-    //BeaconGeneralFragment
-    override fun onDataUpdated(bundle: Bundle) {
-        bundle.keySet().forEach {
-            when (it) {
-                BeaconGeneralFragment.EXTRA_BEACON_CONNECTIBLE ->
-                    beaconViewModel.beacon.value?.connectible = bundle.getBoolean(it)
             }
         }
     }
