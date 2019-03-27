@@ -19,15 +19,15 @@
     },
     {
       "name": "LightLevel",
-      "start_index_inclusive": 7,
-      "end_index_exclusive": 11,
+      "start_index_inclusive": 8,
+      "end_index_exclusive": 12,
       "reversed": true,
       "data_type": "FLOAT"
     },
     {
       "name": "HalState",
-      "start_index_inclusive": 11,
-      "end_index_exclusive": 12,
+      "start_index_inclusive": 12,
+      "end_index_exclusive": 13,
       "reversed": false,
       "data_type": "BYTE"
     }
