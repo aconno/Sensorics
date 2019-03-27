@@ -10,6 +10,7 @@ class Beacon {
         this._softwareVersion = "1";
         this._hardwareVersion = "1";
         this._firmwareVersion = "1";
+        this._osVersion = "1";
         this._advFeature = "N/a";
         this._supportedTxPower = new Int32Array();
         this._supportedSlots = new Array();
@@ -73,6 +74,12 @@ class Beacon {
     }
     set firmwareVersion(value) {
         this._firmwareVersion = value;
+    }
+    get osVersion() {
+        return this._osVersion;
+    }
+    set osVersion(value) {
+        this._osVersion = value;
     }
     get advFeature() {
         return this._advFeature;

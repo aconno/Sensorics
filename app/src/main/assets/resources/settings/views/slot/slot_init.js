@@ -142,62 +142,6 @@ $(document).ready(function () {
         }
     );
 
-    //Sliders
-    $('#advertising_interval').slider({
-        value: 99,
-        formatter: function (value) {
-            $('#label_advertising_interval').text((value * 10) + " ms");
-            return 'Current value: ' + value;
-        }
-    });
-
-    $('#advertising_interval').slider().on('slideStart', function (ev) {
-        Android.stopViewPager();
-    });
-
-    $('#advertising_interval').slider().on('slideStop', function (ev) {
-        getUpdatedSlot();
-        Android.startViewPager();
-    });
-
-    $('#rssi_1m').slider({
-        value: 55,
-        formatter: function (value) {
-            $('#label_rssi_1m').text((value - 100) + " dBm");
-            return 'Current value: ' + value;
-        }
-    });
-
-    $('#rssi_1m').slider().on('slideStop', function (ev) {
-        getUpdatedSlot();
-        Android.startViewPager();
-    });
-
-    $('#rssi_1m').slider().on('slideStart', function (ev) {
-        Android.stopViewPager();
-    });
-
-    $('#radio_tx').slider({
-        value: 2,
-        formatter: function (value) {
-            $('#label_radio_tx').text((value - 100) + " dBm");
-            return 'Current value: ' + value;
-        }
-    });
-
-    $('#radio_tx').slider().on('slideStop', function (ev) {
-        getUpdatedSlot();
-        Android.startViewPager();
-    });
-
-    $('#radio_tx').slider().on('slideStart', function (ev) {
-        Android.stopViewPager();
-    });
-
-    $('#enable_cb').change(function () {
-        getUpdatedSlot();
-    });
-
     inited = true;
 });
 
@@ -241,21 +185,6 @@ function init(slotJson) {
         default:
             $('#frame_type_empty').click();
     }
-
-    $('#advertising_interval').slider('setValue', slot.advertisingInterval / 10);
-    $('#rssi_1m').slider('setValue', slot.rssi1m + 100);
-    $('#radio_tx').slider('setValue', slot.radioTx + 100);
-
-    //Trigger
-    $("#enable_cb").prop('checked', slot.triggerEnabled);
-
-    if (slot.triggerType == TriggerType.TRIPLE_TAP) {
-        $("#btn_triple_tap").click();
-    } else if (slot.triggerType == TriggerType.DOUBLE_TAP) {
-        $("#btn_double_tap").click();
-    } else {
-        //No-Op
-    }
 }
 
 function getUpdatedSlot() {
@@ -296,22 +225,6 @@ function getUpdatedSlot() {
         default:
             slot.frameType = FrameType.EMPTY;
             slot.frame = {};
-    }
-
-
-    slot.advertisingInterval = $('#advertising_interval').slider('getValue') * 10;
-    slot.rssi1m = $('#rssi_1m').slider('getValue') - 100;
-    slot.radioTx = $('#radio_tx').slider('getValue') - 100;
-
-    slot.triggerEnabled = $("#enable_cb").is(":checked");
-
-    let triggerType = $('#dropdown_trigger_type').text().trim();
-    if (triggerType.includes("Double")) {
-        slot.triggerType = TriggerType.DOUBLE_TAP;
-    } else if (triggerType.includes("Triple")) {
-        slot.triggerType = TriggerType.TRIPLE_TAP;
-    } else {
-        //No-Op
     }
 
     //console.log(slot);

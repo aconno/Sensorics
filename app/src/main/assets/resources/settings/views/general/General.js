@@ -7,6 +7,7 @@ GeneralView.Views = class {
     static get LABEL_SOFTWARE_VERSION_ID() { return  "lblSoftwareVersion"; }
     static get LABEL_HARDWARE_VERSION_ID() { return  "lblHardwareVersion"; }
     static get LABEL_FIRMWARE_VERSION_ID() { return  "lblFirmwareVersion"; }
+    static get LABEL_OS_VERSION_ID() { return  "lblOsVersion"; }
     static get LABEL_MAC_ADDRESS_ID() { return  "lblMacAddress"; }
     static get LABEL_SUPPORTED_TX_POWER_ID() { return  "lblSupportedTxPower"; }
     static get LABEL_SUPPORTED_SLOTS_ID() { return  "lblSupportedSlots"; }
@@ -39,7 +40,11 @@ GeneralView.Views = class {
     static setLabelFirmwareVersion(value) {
         $(`#${GeneralView.Views.LABEL_FIRMWARE_VERSION_ID}`).html(value);
     }
-    
+
+    static setLabelOsVersion(value) {
+            $(`#${GeneralView.Views.LABEL_OS_VERSION_ID}`).html(value);
+    }
+
     static setLabelMacAddress(value) {
         $(`#${GeneralView.Views.LABEL_MAC_ADDRESS_ID}`).html(value);
     }
@@ -83,6 +88,10 @@ GeneralView.Views = class {
     static getLabelFirmwareVersion() {
         return $(`#${GeneralView.Views.LABEL_FIRMWARE_VERSION_ID}`).html();
     }
+
+    static getLabelOsVersion() {
+        return $(`#${GeneralView.Views.LABEL_OS_VERSION_ID}`).html();
+    }
     
     static getLabelMacAddress() {
         return $(`#${GeneralView.Views.LABEL_MAC_ADDRESS_ID}`).html();
@@ -114,6 +123,7 @@ GeneralView.Actions = class{
         GeneralView.ViewsAction.setLabelSoftwareVersion(beacon.softwareVersion);
         GeneralView.ViewsAction.setLabelHardwareVersion(beacon.hardwareVersion);
         GeneralView.ViewsAction.setLabelFirmwareVersion(beacon.firmwareVersion);
+        GeneralView.ViewsAction.setLabelOsVersion(beacon.osVersion);
         GeneralView.ViewsAction.setLabelSupportedTxPower(beacon.supportedTxPower);
         GeneralView.ViewsAction.setLabelSupportedSlots(beacon.supportedSlots);
         GeneralView.ViewsAction.setLabelAdvFeature(beacon.advFeature);

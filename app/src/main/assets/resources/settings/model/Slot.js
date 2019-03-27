@@ -2,11 +2,6 @@ class Slot {
     constructor() {
         this.frameType = FrameType.EMPTY
         this.frame = {}
-        this.advertisingInterval = 1000
-        this.rssi1m = -55
-        this.radioTx = -55
-        this.triggerEnabled = true
-        this.triggerType = TriggerType.DOUBLE_TAP
     }
 }
 
@@ -18,11 +13,6 @@ var FrameType = {
     DEVICE_INFO: 4,
     EMPTY: 5,
     CUSTOM: 6
-};
-
-var TriggerType = {
-    DOUBLE_TAP: 0,
-    TRIPLE_TAP: 1,
 };
 
 const KEY_ADVERTISING_CONTENT_IBEACON_UUID =

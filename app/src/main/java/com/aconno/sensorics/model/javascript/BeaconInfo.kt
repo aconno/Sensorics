@@ -7,7 +7,6 @@ class BeaconInfo : Serializable {
     var name: String? = ""
     var address: String = "00:00:00:00:00:00"
     var connectible: Boolean = true
-    var rssi: Int = 0
     var manufacturer: String = "Aconno"
     var model: String = "V1"
     var softwareVersion: String = "1"
