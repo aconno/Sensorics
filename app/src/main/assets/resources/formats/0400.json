@@ -16,6 +16,20 @@
       "end_index_exclusive": 8,
       "reversed": false,
       "data_type": "BYTE"
+    },
+    {
+      "name": "LightLevel",
+      "start_index_inclusive": 7,
+      "end_index_exclusive": 11,
+      "reversed": true,
+      "data_type": "FLOAT"
+    },
+    {
+      "name": "HalState",
+      "start_index_inclusive": 11,
+      "end_index_exclusive": 12,
+      "reversed": false,
+      "data_type": "BYTE"
     }
   ],
   "format_required": [
