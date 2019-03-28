@@ -31,7 +31,7 @@
     </div>
 
     <div class="acnact-value-small">
-        <span style="display: block;" class="acnact-value-small">HAL: </span>
+        <span style="display: block;" class="acnact-value-small">Magnetic Sensor: </span>
         <span id="hal" style="display: block;" class="acnact-value-tiny"> </span>
     </div>
     <script>
@@ -40,10 +40,14 @@
         var readingState = -2;
         var buttonCounter = 0;
         var latestAdvId = -1234;
-        var BUTTON_PRESSED = 1;
-        var BUTTON_NOT_PRESSED = 0;
+        const BUTTON_PRESSED = 1;
+        const BUTTON_NOT_PRESSED = 0;
         const PRESSED_COLOR = "rgb(211,211,211)";
         const UNPRESSED_COLOR = "rgb(253,155,39)";
+        const BUTTON_STATE_KEY = "BtnState";
+        const BUTTON_COUNTER_KEY = "TmpCounter";
+        const LIGHT_LEVEL_KEY = "LightLevel";
+        const HAL_STATE_KEY = "HalState";
 
         window.odometerOptions = {
             auto: true, // Don't automatically initialize everything with class 'odometer'
@@ -63,34 +67,34 @@
             var readingCounter = null;
 
             JSON.parse(json_values, function (key, value) {
-                if (key == "BtnState") {
+                if (key == BUTTON_STATE_KEY) {
                     onButtonStatusChanged(value);
                 }
-                if (key == "TmpCounter") {
+                if (key == BUTTON_COUNTER_KEY) {
                     onCountUpdated(value);
-                } else if (key == "LightLevel") {
+                } else if (key == LIGHT_LEVEL_KEY) {
                     setTextValue("light", value);
-                } else if (key == "HalState") {
+                } else if (key == HAL_STATE_KEY) {
                     setTextValue("hal", value);
                 } else {
-                    console.log("Unknown key: " + key)
+                    console.log(key)
                 }
             });
         }
 
         function onSensorReading(name, value) {
-            if (name == "TmpCounter") {
+            if (name == BUTTON_COUNTER_KEY) {
                 if (latestAdvId != value) {
                     onCountUpdated(value);
                 }
-            } else if (name == "LightLevel") {
+            } else if (name == LIGHT_LEVEL_KEY) {
                 setTextValue("light", value);
-            } else if (name == "BtnState") {
+            } else if (name == BUTTON_STATE_KEY) {
                 onButtonStatusChanged(value);
-            } else if (name == "HalState") {
+            } else if (name == HAL_STATE_KEY) {
                 setTextValue("hal", value);
             } else {
-                console.log("Unknown key: " + name);
+                console.log(name);
             }
         }
 
