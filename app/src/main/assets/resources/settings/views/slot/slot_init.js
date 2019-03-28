@@ -93,15 +93,15 @@ $(document).ready(function () {
 
             $("#advertising_content").append(whatever);
 
-            $("#ibeacon_uuid").bind("change keyup paste", function () {
+            $("#ibeacon_uuid").bind("change keyup", function () {
                 getUpdatedSlot();
             });
 
-            $("#ibeacon_major").bind("change keyup paste", function () {
+            $("#ibeacon_major").bind("change keyup", function () {
                 getUpdatedSlot();
             });
 
-            $("#ibeacon_minor").bind("change keyup paste", function () {
+            $("#ibeacon_minor").bind("change keyup", function () {
                 getUpdatedSlot();
             });
         }

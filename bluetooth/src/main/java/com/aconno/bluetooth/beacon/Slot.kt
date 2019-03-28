@@ -177,9 +177,10 @@ class Slot(
                 put(KEY_ADVERTISING_CONTENT_IBEACON_MINOR, ValueConverter.UINT16.converter.deserialize(it.copyOfRange(27, 29)) as Int)
             }
         }, {
-            val uuid: UUID = UUID.fromString(it[KEY_ADVERTISING_CONTENT_IBEACON_UUID] as String? ?: "00000000-0000-0000-0000-000000000000")
-            val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR].toString().toIntOrNull() ?: 0
-            val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR].toString().toIntOrNull() ?: 0
+            val uuid: UUID = it[KEY_ADVERTISING_CONTENT_IBEACON_UUID] as UUID?
+                    ?: UUID.fromString("00000000-0000-0000-0000-000000000000")
+            val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR] as Int? ?: 0
+            val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR] as Int? ?: 0
             byteArrayOf(0x02, 0x01, 0x06, 0x1A, 0xFF.toByte(), 0x00, 0x4C, 0x02, 0x15) +
                     uuid.toBytes() +
                     ValueConverter.UINT16.converter.serialize(major) +
