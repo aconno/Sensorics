@@ -160,11 +160,22 @@ class DeviceMainFragment : DaggerFragment() {
                             text = getString(R.string.connected)
 
                         }
+                        it.action == BluetoothGattCallback.ACTION_BEACON_HAS_SETTINGS -> {
+                            Timber.i("Device has settings")
+                            hasSettings = true
+//                            it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
+                            activity?.invalidateOptionsMenu()
+                            text = ""
+                        }
                         else -> {
                             return@subscribe
                         }
                     }
-                    web_view.loadUrl("javascript:onStatusReading('$text')")
+                    text.takeIf {
+                        it.isNotBlank()
+                    }.let {
+                        web_view.loadUrl("javascript:onStatusReading('$text')")
+                    }
                 }
 
             serviceConnect?.connect(mDevice.macAddress)
@@ -218,7 +229,8 @@ class DeviceMainFragment : DaggerFragment() {
 
     private fun setMenuItemsVisibility(menu: Menu?) {
         menu?.let {
-            it.findItem(R.id.action_start_usecases_activity).isVisible = BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
+            it.findItem(R.id.action_start_usecases_activity).isVisible =
+                BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
             it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings

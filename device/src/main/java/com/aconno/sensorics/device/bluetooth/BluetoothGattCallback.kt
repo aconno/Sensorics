@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import io.reactivex.subjects.PublishSubject
+import java.util.*
 
 
 class BluetoothGattCallback(
@@ -22,6 +23,7 @@ class BluetoothGattCallback(
             "com.aconno.sensorics.ACTION_GATT_SERVICES_DISCOVERED"
         const val ACTION_DATA_AVAILABLE = "com.aconno.sensorics.ACTION_DATA_AVAILABLE"
         const val ACTION_GATT_CHAR_WRITE = "com.aconno.sensorics.ACTION_GATT_CHAR_WRITE"
+        const val ACTION_BEACON_HAS_SETTINGS = "com.aconno.sensorics.ACTION_BEACON_HAS_SETTINGS"
     }
 
     override fun onCharacteristicWrite(
@@ -46,6 +48,10 @@ class BluetoothGattCallback(
     override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
             broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED, gatt?.services)
+
+            gatt?.getService(UUID.fromString("cc52c000-9adb-4c37-bc48-376f5fee8851"))?.let {
+                broadcastUpdate(ACTION_BEACON_HAS_SETTINGS)
+            }
         }
     }
 
