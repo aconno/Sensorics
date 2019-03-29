@@ -1,7 +1,7 @@
 {
   "id": "0600",
   "name": "acnLIGHT",
-  "icon": "ic_act",
+  "icon": "ic_sensa",
   "format": [
     {
       "name": "Temperature",
@@ -58,9 +58,5 @@
       "index": 4,
       "value": "0x80"
     }
-  ],
-  "settings_support": {
-    "mask": "0x00",
-    "index": 4
-  }
+  ]
 }
