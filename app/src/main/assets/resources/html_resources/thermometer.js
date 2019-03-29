@@ -115,7 +115,7 @@ function initialiseThermometer(svg, initialT, minT, maxT, h, w, enablehighlow) {
     "text-anchor": "middle",
     stroke: "none",
     fill: "#000000",
-    "font-size": "6px",
+    "font-size": "3px",
     "font-family": "Arial",
     "font-weight": "bold"
   });
@@ -128,12 +128,12 @@ function initialiseThermometer(svg, initialT, minT, maxT, h, w, enablehighlow) {
   *                                                   *
   ****************************************************/
   if(enableHighLow) {
-    highText = thermometer.text(26, 10, currTemp + "\u00B0");
+    highText = thermometer.text(0, 51, currTemp + "\u00B0");
     highText.attr({
       "text-anchor": "middle",
       stroke: "none",
       fill: "#ff0000",
-      "font-size": "6px",
+      "font-size": "3px",
       "font-family": "Arial",
       "font-weight": "bold"
     });
@@ -144,7 +144,7 @@ function initialiseThermometer(svg, initialT, minT, maxT, h, w, enablehighlow) {
       "text-anchor": "middle",
       stroke: "none",
       fill: "#0000ff",
-      "font-size": "6px",
+      "font-size": "3px",
       "font-family": "Arial",
       "font-weight": "bold"
     });
@@ -215,4 +215,4 @@ function scaleToRange(x) {
   return t;
 }
 
-initialiseThermometer("#thermometer", 0, -10, 40, 200, 50, true);
+initialiseThermometer("#thermometer", 0, -10, 100, 200, 50, true);

@@ -33,7 +33,6 @@
         const TEMPERATURE_KEY = "Temperature";
 
         function onSensorReadings(json_values) {
-            console.log(json_values);
             JSON.parse(json_values, function (key, value) {
                 if (key == TEMPERATURE_KEY) {
                     setTemperature(value);
@@ -48,18 +47,13 @@
         }
 
         function setTemperature(value) {
-            let parsedValue = parseFloat(value);
-            console.log(parsedValue);
-            let temperature = round(parsedValue, 2);
-            console.log(temperature);
-            newTemp(temperature, 100, 0);
+            let temperature = parseFloat(value).toFixed(2);
+            if(temperature > -10) {
+                newTemp(temperature, 100, -10);
+            } else {
+                console.log("This temperature is crazy, are we in mars? " + temperature);
+            }
         }
-
-        function round(value, decimals) {
-            return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
-        }
-
-        setTemperature(0.0);
     </script>
 </body>
 
