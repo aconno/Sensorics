@@ -1,0 +1,66 @@
+{
+  "id": "0600",
+  "name": "acnLIGHT",
+  "icon": "ic_act",
+  "format": [
+    {
+      "name": "Temperature",
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 9,
+      "reversed": false,
+      "data_type": "FLOAT"
+    },
+    {
+      "name": "R",
+      "start_index_inclusive": 9,
+      "end_index_exclusive": 13,
+      "reversed": false,
+      "data_type": "FLOAT"
+    },
+    {
+      "name": "G",
+      "start_index_inclusive": 13,
+      "end_index_exclusive": 17,
+      "reversed": false,
+      "data_type": "FLOAT"
+    },
+    {
+      "name": "B",
+      "start_index_inclusive": 17,
+      "end_index_exclusive": 21,
+      "reversed": false,
+      "data_type": "FLOAT"
+    }
+  ],
+  "format_required": [
+    {
+      "name": "Nordic ID 1",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Nordic ID 2",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "Aconno ID",
+      "index": 2,
+      "value": "0x69"
+    },
+    {
+      "name": "Product ID",
+      "index": 3,
+      "value": "0x0B"
+    },
+    {
+      "name": "Version Number",
+      "index": 4,
+      "value": "0x80"
+    }
+  ],
+  "settings_support": {
+    "mask": "0x00",
+    "index": 4
+  }
+}
