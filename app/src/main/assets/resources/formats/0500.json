@@ -1,13 +1,13 @@
 {
   "id": "0500",
   "name": "acnTEMP",
-  "icon": "ic_act",
+  "icon": "ic_sensa",
   "format": [
     {
       "name": "Temperature",
       "start_index_inclusive": 5,
       "end_index_exclusive": 9,
-      "reversed": false,
+      "reversed": true,
       "data_type": "FLOAT"
     }
   ],
@@ -37,9 +37,5 @@
       "index": 4,
       "value": "0x00"
     }
-  ],
-  "settings_support": {
-    "mask": "0x00",
-    "index": 4
-  }
+  ]
 }
