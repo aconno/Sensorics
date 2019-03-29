@@ -1,0 +1,66 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+    <style type="text/css">
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+    </style>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+</head>
+
+<body style="background-color:#fafafa">
+    <div class="acnact-value-small">
+        <p>
+            <span style="display: block;" class=".acnact-value-small">Temperature: </span>
+    </div>
+    <div class="acnact-value-small">
+        <svg id="thermometer" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#"
+            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg"
+            xmlns="http://www.w3.org/2000/svg" id="svg8" version="1.1" viewBox="0 0 25 100" height="600px"
+            width="300px">
+            <g id="layer1">
+            </g>
+        </svg>
+    </div>
+    <!-- Scripts -->
+    <script src="../html_resources/snap.svg-min.js"></script>
+    <script src="../html_resources/thermometer.js"></script>
+    <script>
+        const TEMPERATURE_KEY = "Temperature";
+
+        function onSensorReadings(json_values) {
+            console.log(json_values);
+            JSON.parse(json_values, function (key, value) {
+                if (key == TEMPERATURE_KEY) {
+                    setTemperature(value);
+                }
+            });
+        }
+
+        function onSensorReading(name, value) {
+            if (name == TEMPERATURE_KEY) {
+                setTemperature(value);
+            }
+        }
+
+        function setTemperature(value) {
+            let parsedValue = parseFloat(value);
+            console.log(parsedValue);
+            let temperature = round(parsedValue, 2);
+            console.log(temperature);
+            newTemp(temperature, 100, 0);
+        }
+
+        function round(value, decimals) {
+            return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+        }
+
+        setTemperature(0.0);
+    </script>
+</body>
+
+</html>
