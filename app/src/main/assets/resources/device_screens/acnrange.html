@@ -23,6 +23,7 @@
     <script>
     function onSensorReadings(json_values){
          JSON.parse(json_values, function (key, value) {
+           console.log(value);
             if(key == "Range"){
                  var range_value = document.getElementById("range_value");
                 range_value.innerHTML = value + ' mm';
@@ -31,6 +32,7 @@
 
     }
     function onSensorReading(name, value) {
+      console.log(value);
       if (name == "Range") {
         var range_value = document.getElementById("range_value");
         range_value.innerHTML = value + ' mm';
