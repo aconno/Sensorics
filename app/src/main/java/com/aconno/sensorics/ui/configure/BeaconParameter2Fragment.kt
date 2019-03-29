@@ -74,6 +74,11 @@ class BeaconParameter2Fragment : Fragment() {
         standartParameters?.get(index)?.value = value
     }
 
+    @JavascriptInterface
+    fun onSwitchChanged(id: Int, index: Int, value: Boolean) {
+        standartParameters?.get(index)?.value = value
+    }
+
 
     companion object {
         const val HTML_FILE_PATH =
