@@ -7,28 +7,28 @@
       "name": "Temperature",
       "start_index_inclusive": 5,
       "end_index_exclusive": 9,
-      "reversed": false,
+      "reversed": true,
       "data_type": "FLOAT"
     },
     {
       "name": "R",
       "start_index_inclusive": 9,
       "end_index_exclusive": 13,
-      "reversed": false,
+      "reversed": true,
       "data_type": "FLOAT"
     },
     {
       "name": "G",
       "start_index_inclusive": 13,
       "end_index_exclusive": 17,
-      "reversed": false,
+      "reversed": true,
       "data_type": "FLOAT"
     },
     {
       "name": "B",
       "start_index_inclusive": 17,
       "end_index_exclusive": 21,
-      "reversed": false,
+      "reversed": true,
       "data_type": "FLOAT"
     }
   ],
