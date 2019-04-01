@@ -6,28 +6,28 @@
     {
       "name": "Temperature",
       "start_index_inclusive": 5,
-      "end_index_exclusive": 9,
+      "end_index_exclusive": 7,
       "reversed": true,
-      "data_type": "FLOAT"
+      "data_type": "UINT16"
     },
     {
       "name": "R",
-      "start_index_inclusive": 9,
-      "end_index_exclusive": 13,
+      "start_index_inclusive": 7,
+      "end_index_exclusive": 11,
       "reversed": true,
       "data_type": "FLOAT"
     },
     {
       "name": "G",
-      "start_index_inclusive": 13,
-      "end_index_exclusive": 17,
+      "start_index_inclusive": 11,
+      "end_index_exclusive": 15,
       "reversed": true,
       "data_type": "FLOAT"
     },
     {
       "name": "B",
-      "start_index_inclusive": 17,
-      "end_index_exclusive": 21,
+      "start_index_inclusive": 15,
+      "end_index_exclusive": 19,
       "reversed": true,
       "data_type": "FLOAT"
     }

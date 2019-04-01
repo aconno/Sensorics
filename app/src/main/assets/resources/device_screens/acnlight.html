@@ -63,9 +63,9 @@
         }
 
         function setTemperature(value) {
-            let temperature = parseFloat(value).toFixed(2);
+            let temperature = parseInt(value);
             if (temperature > -10) {
-                document.getElementById('tempterature').innerHTML = temperature;
+                document.getElementById('tempterature').innerHTML = temperature + " K";
             } else {
                 console.log("This temperature is crazy, are we in mars? " + temperature);
             }
