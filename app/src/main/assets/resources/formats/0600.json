@@ -30,6 +30,13 @@
       "end_index_exclusive": 19,
       "reversed": true,
       "data_type": "FLOAT"
+    },
+    {
+      "name": "lightLux",
+      "start_index_inclusive": 19,
+      "end_index_exclusive": 21,
+      "reversed": true,
+      "data_type": "UINT16"
     }
   ],
   "format_required": [

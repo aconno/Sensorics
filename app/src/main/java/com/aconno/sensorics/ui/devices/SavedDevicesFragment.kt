@@ -205,10 +205,10 @@ class SavedDevicesFragment : DaggerFragment(),
     private fun displayPreferredDevices(preferredDevices: List<DeviceActive>?) {
         preferredDevices?.let {
             if (preferredDevices.isEmpty()) {
-                empty_view.visibility = View.VISIBLE
+                empty_view?.visibility = View.VISIBLE
                 deviceAdapter.setDevices(listOf())
             } else {
-                empty_view.visibility = View.INVISIBLE
+                empty_view?.visibility = View.INVISIBLE
                 deviceAdapter.setDevices(preferredDevices)
                 deviceAdapter.setIcons(getIconInfoForActiveDevices(preferredDevices))
             }
