@@ -1,0 +1,136 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+    <style type="text/css">
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+    </style>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+</head>
+
+<body style="background-color:#fafafa">
+    <div class="acnact-value-small">
+        <p>
+            <span style="display: block;" class="acnact-value-small">Light Temperature: </span>
+            <span id="tempterature" class="acnact-value-small">No data</span>
+            <p>
+    </div>
+    <div class="acnact-value-small">
+        <p>
+            <span class="acnact-value-small">R: </span>
+            <span id="r" class="acnact-value-small">No data</span>
+            <span class="acnact-value-small">G: </span>
+            <span id="g" class="acnact-value-small">No data</span>
+            <span class="acnact-value-small">B: </span>
+            <span id="b" class="acnact-value-small">No data</span>
+            <p>
+    </div>
+    <div style="display: block;" id="circle"></div>
+    <div class="acnact-value_small">
+        <p>
+            <span style="display: block;" id="hex-value" class="acnlight-hexvalue">HEX Color: #</span>
+    </div>
+
+
+    <!-- Scripts -->
+    <script>
+        const TEMPERATURE_KEY = "Temperature";
+        const R_KEY = "R";
+        const G_KEY = "G";
+        const B_KEY = "B";
+        const R_ID = "r";
+        const G_ID = "g";
+        const B_ID = "b";
+
+        function onSensorReadings(json_values) {
+            console.log(json_values);
+            JSON.parse(json_values, function (key, value) {
+                onSensorReading(key, value);
+            });
+        }
+
+        function onSensorReading(name, value) {
+            if (name == TEMPERATURE_KEY) {
+                setTemperature(value);
+            } else if (name == R_KEY || name == G_KEY || name == B_KEY) {
+                setColor(name, value);
+            }
+            setCircleColor();
+        }
+
+        function setTemperature(value) {
+            let temperature = parseInt(value);
+            if (temperature > -10) {
+                document.getElementById('tempterature').innerHTML = temperature + " K";
+            } else {
+                console.log("This temperature is crazy, are we in mars? " + temperature);
+            }
+        }
+
+        function setColor(colorKey, colorValue) {
+            let colorFormat = "";
+            var colorId = null;
+            switch (colorKey) {
+                case R_KEY:
+                    colorId = R_ID;
+                    colorFormat = "#_0000";
+                    break;
+                case G_KEY:
+                    colorId = G_ID;
+                    colorFormat = "#00_00";
+                    break;
+                case B_KEY:
+                    colorId = B_ID;
+                    colorFormat = "#0000_";
+                    break;
+            }
+
+            if (colorId != null) {
+                let colorFloat = parseFloat(colorValue);
+                let color = Math.round(colorFloat);
+                if (color > 255) {
+                    color = 255;
+                } else if (color < 0) {
+                    color = 0;
+                }
+                let colorElement = document.getElementById(colorId);
+                colorElement.innerHTML = color;
+                let hexColor = rgbToHex(color);
+                colorElement.style.color = colorFormat.replace("_", hexColor);
+            }
+        }
+
+        function setCircleColor() {
+            let r = document.getElementById(R_ID).innerHTML;
+            let g = document.getElementById(G_ID).innerHTML;
+            let b = document.getElementById(B_ID).innerHTML;
+
+            let hexColor = fullColorHex(r, g, b);
+            document.getElementById('circle').style.backgroundColor = hexColor;
+            let hexValue = document.getElementById('hex-value');
+            hexValue.style.color = hexColor;
+            hexValue.innerHTML = "HEX Color: #" + hexColor;
+        }
+
+        function rgbToHex(rgb) {
+            var hex = Number(rgb).toString(16);
+            if (hex.length < 2) {
+                hex = "0" + hex;
+            }
+            return hex;
+        }
+
+        function fullColorHex(r, g, b) {
+            var red = rgbToHex(r);
+            var green = rgbToHex(g);
+            var blue = rgbToHex(b);
+            return red + green + blue;
+        }
+    </script>
+</body>
+
+</html>
