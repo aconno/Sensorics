@@ -21,6 +21,12 @@
     </div>
     <div class="acnact-value-small">
         <p>
+            <span style="display: block;" class="acnact-value-small">Illuminance: </span>
+            <span id="lux" class="acnact-value-small">No data</span>
+            <p>
+    </div>
+    <div class="acnact-value-small">
+        <p>
             <span class="acnact-value-small">R: </span>
             <span id="r" class="acnact-value-small">No data</span>
             <span class="acnact-value-small">G: </span>
@@ -39,6 +45,7 @@
     <!-- Scripts -->
     <script>
         const TEMPERATURE_KEY = "Temperature";
+        const LUX_KEY = "lightLux";
         const R_KEY = "R";
         const G_KEY = "G";
         const B_KEY = "B";
@@ -58,6 +65,8 @@
                 setTemperature(value);
             } else if (name == R_KEY || name == G_KEY || name == B_KEY) {
                 setColor(name, value);
+            } else if(name == LUX_KEY) {
+                setLux(value);
             }
             setCircleColor();
         }
@@ -129,6 +138,10 @@
             var green = rgbToHex(g);
             var blue = rgbToHex(b);
             return red + green + blue;
+        }
+
+        function setLux(value) {
+            document.getElementById('lux').innerHTML = value + " lx";
         }
     </script>
 </body>
