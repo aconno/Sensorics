@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cardCornerRadius="7dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/base_parameters"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_advertising_interval"
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/advertising_interval"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+        <SeekBar
+            android:id="@+id/sb_advertising_interval"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toStartOf="@+id/tv_advertising_interval_value"
+            app:layout_constraintStart_toStartOf="@+id/tv_advertising_interval"
+            app:layout_constraintTop_toBottomOf="@+id/tv_advertising_interval" />
+
+        <TextView
+            android:id="@+id/tv_advertising_interval_value"
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:text="@string/ms_format"
+            app:layout_constraintBottom_toBottomOf="@+id/sb_advertising_interval"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/sb_advertising_interval"
+            tools:text="1000ms" />
+
+        <TextView
+            android:id="@+id/tv_rssi_1m"
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/rssi_1m"
+            app:layout_constraintStart_toStartOf="@+id/tv_advertising_interval"
+            app:layout_constraintTop_toBottomOf="@+id/sb_advertising_interval" />
+
+        <SeekBar
+            android:id="@+id/sb_rssi_1m"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toStartOf="@+id/tv_rssi_1m_value"
+            app:layout_constraintStart_toStartOf="@+id/tv_advertising_interval"
+            app:layout_constraintTop_toBottomOf="@+id/tv_rssi_1m" />
+
+        <TextView
+            android:id="@+id/tv_rssi_1m_value"
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:text="@string/dbm_format"
+            app:layout_constraintBottom_toBottomOf="@+id/sb_rssi_1m"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/sb_rssi_1m"
+            tools:text="-55dBm" />
+
+        <TextView
+            android:id="@+id/tv_radio_tx"
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/radio_tx"
+            app:layout_constraintStart_toStartOf="@+id/tv_advertising_interval"
+            app:layout_constraintTop_toBottomOf="@+id/sb_rssi_1m" />
+
+        <SeekBar
+            android:id="@+id/sb_radio_tx"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toStartOf="@+id/tv_radio_tx_value"
+            app:layout_constraintStart_toStartOf="@+id/tv_advertising_interval"
+            app:layout_constraintTop_toBottomOf="@+id/tv_radio_tx" />
+
+        <TextView
+            android:id="@+id/tv_radio_tx_value"
+            style="@style/TextAppearance.Tiny.Black"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:text="@string/ms_format"
+            app:layout_constraintBottom_toBottomOf="@+id/sb_radio_tx"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/sb_radio_tx"
+            tools:text="1000ms" />
+    </android.support.constraint.ConstraintLayout>
+</android.support.design.card.MaterialCardView>

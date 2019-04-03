@@ -1,0 +1,69 @@
+{
+  "id": "0600",
+  "name": "acnLIGHT",
+  "icon": "ic_sensa",
+  "format": [
+    {
+      "name": "Temperature",
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 7,
+      "reversed": true,
+      "data_type": "UINT16"
+    },
+    {
+      "name": "R",
+      "start_index_inclusive": 7,
+      "end_index_exclusive": 11,
+      "reversed": true,
+      "data_type": "FLOAT"
+    },
+    {
+      "name": "G",
+      "start_index_inclusive": 11,
+      "end_index_exclusive": 15,
+      "reversed": true,
+      "data_type": "FLOAT"
+    },
+    {
+      "name": "B",
+      "start_index_inclusive": 15,
+      "end_index_exclusive": 19,
+      "reversed": true,
+      "data_type": "FLOAT"
+    },
+    {
+      "name": "lightLux",
+      "start_index_inclusive": 19,
+      "end_index_exclusive": 21,
+      "reversed": true,
+      "data_type": "UINT16"
+    }
+  ],
+  "format_required": [
+    {
+      "name": "Nordic ID 1",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Nordic ID 2",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "Aconno ID",
+      "index": 2,
+      "value": "0x69"
+    },
+    {
+      "name": "Product ID",
+      "index": 3,
+      "value": "0x0B"
+    },
+    {
+      "name": "Version Number",
+      "index": 4,
+      "value": "0x80"
+    }
+  ]
+}

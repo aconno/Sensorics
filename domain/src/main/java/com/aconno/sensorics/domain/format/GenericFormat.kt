@@ -8,7 +8,8 @@ data class GenericFormat(
     private val requiredFormat: List<ByteFormatRequired>,
     private val connectible: Boolean,
     private val connectionWrite: List<ConnectionWrite>?,
-    private val connectionRead: List<ConnectionRead>?
+    private val connectionRead: List<ConnectionRead>?,
+    private val settingsSupport: SettingsSupport?
 ) : AdvertisementFormat {
 
     override fun getName(): String {
@@ -43,5 +44,9 @@ data class GenericFormat(
 
     override fun getConnectionReadList(): List<ConnectionRead>? {
         return connectionRead
+    }
+
+    override fun getSettingsSupport(): SettingsSupport? {
+        return settingsSupport
     }
 }

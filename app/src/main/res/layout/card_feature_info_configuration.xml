@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="7dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Feature Info"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <android.support.design.circularreveal.CircularRevealGridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:alignmentMode="alignBounds"
+            android:columnCount="2"
+            android:rowCount="2"
+            android:useDefaultMargins="true">
+
+            <!--Row 1-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:text="@string/supported_tx_power" />
+
+            <TextView
+                android:id="@+id/tv_supported_tx_power"
+                style="@style/TextAppearance.Tiny"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:gravity="end"
+                tools:text="-40, -20, -16, -12, -8, -4, 0, 4" />
+
+            <!--Row 2-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:text="@string/supported_slots" />
+
+            <TextView
+                android:id="@+id/tv_supported_slots"
+                style="@style/TextAppearance.Tiny"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:gravity="end"
+                tools:text="UID, URL, TLM, iBeacon, DeviceInfo" />
+
+            <!--Row 3-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:text="@string/adv_feature" />
+
+            <TextView
+                android:id="@+id/tv_adv_feature"
+                style="@style/TextAppearance.Tiny"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:gravity="end"
+                tools:text="ADV_TX_POWER_SUPPORTED" />
+
+            <!--Row 4-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:text="@string/slot_amount" />
+
+            <TextView
+                android:id="@+id/tv_slot_amt"
+                style="@style/TextAppearance.Tiny"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:gravity="end"
+                tools:text="6" />
+
+        </android.support.design.circularreveal.CircularRevealGridLayout>
+    </LinearLayout>
+</android.support.design.card.MaterialCardView>

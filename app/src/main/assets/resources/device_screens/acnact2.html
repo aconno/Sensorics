@@ -1,0 +1,142 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+    <style type="text/css">
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+    </style>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+    <link rel="stylesheet" href="../html_resources/webCounterStyles.css">
+    <script src="../html_resources/counter.js" type="text/javascript"></script>
+</head>
+
+<body style="background-color:#fafafa">
+    <div class="acnact-value-small">
+        <p>
+            <span style="display: block;" class="acnact-value-small">Count: </span>
+            <div id="odometer" style="font-size: 50px" class="odometer">000</div>
+    </div>
+    <div class="acnact-btn-div">
+        <input type="button" id="btn" class="acnact-btn" value="">
+    </div>
+
+    <div class="acnact-value-small">
+        <p>
+            <span style="display: block;" class="acnact-value-small">Light: </span>
+            <span id="light" style="display: block;" class="acnact-value-tiny"> </span>
+    </div>
+
+    <div class="acnact-value-small">
+        <span style="display: block;" class="acnact-value-small">Magnetic Sensor: </span>
+        <span id="hal" style="display: block;" class="acnact-value-tiny"> </span>
+    </div>
+    <script>
+        var counter = 0;
+        var deviceCounter = 0;
+        var readingState = -2;
+        var buttonCounter = 0;
+        var latestAdvId = -1234;
+        const BUTTON_PRESSED = 1;
+        const BUTTON_NOT_PRESSED = 0;
+        const PRESSED_COLOR = "rgb(211,211,211)";
+        const UNPRESSED_COLOR = "rgb(253,155,39)";
+        const BUTTON_STATE_KEY = "BtnState";
+        const BUTTON_COUNTER_KEY = "TmpCounter";
+        const LIGHT_LEVEL_KEY = "LightLevel";
+        const HAL_STATE_KEY = "HalState";
+
+        window.odometerOptions = {
+            auto: true, // Don't automatically initialize everything with class 'odometer'
+            selector: '.my-numbers', // Change the selector used to automatically find things to be animated
+            format: 'd', // Change how digit groups are formatted, and how many digits are shown after the decimal point
+            duration: 500, // Change how long the javascript expects the CSS animation to take
+            theme: 'car', // Specify the theme (if you have more than one theme css file on the page)
+            animation: 'count' // Count is a simpler animation method which just increments the value,
+            // use it when you're looking for something more subtle.
+        };
+
+        startCounter();
+
+        function onSensorReadings(json_values) {
+            console.log(json_values);
+            var readingState = null;
+            var readingCounter = null;
+
+            JSON.parse(json_values, function (key, value) {
+                if (key == BUTTON_STATE_KEY) {
+                    onButtonStatusChanged(value);
+                }
+                if (key == BUTTON_COUNTER_KEY) {
+                    onCountUpdated(value);
+                } else if (key == LIGHT_LEVEL_KEY) {
+                    setTextValue("light", value);
+                } else if (key == HAL_STATE_KEY) {
+                    setTextValue("hal", value);
+                } else {
+                    console.log(key)
+                }
+            });
+        }
+
+        function onSensorReading(name, value) {
+            if (name == BUTTON_COUNTER_KEY) {
+                if (latestAdvId != value) {
+                    onCountUpdated(value);
+                }
+            } else if (name == LIGHT_LEVEL_KEY) {
+                setTextValue("light", value);
+            } else if (name == BUTTON_STATE_KEY) {
+                onButtonStatusChanged(value);
+            } else if (name == HAL_STATE_KEY) {
+                setTextValue("hal", value);
+            } else {
+                console.log(name);
+            }
+        }
+
+        function onButtonStatusChanged(value) {
+            buttonState = parseInt(value);
+            latestAdvId = buttonState;
+            let buttonElement = document.getElementById("btn");
+            let color = buttonState == BUTTON_PRESSED ? PRESSED_COLOR : UNPRESSED_COLOR;
+            buttonElement.style.backgroundColor = color;
+        }
+
+        function setCount(value) {
+            console.log(value);
+            odometer.innerHTML = value;
+        }
+
+        function onCountUpdated(value) {
+            readingCounter = parseInt(value);
+            if (readingCounter > deviceCounter) {
+                deviceCounter = readingCounter;
+            } else {
+                setCount(readingCounter);
+            }
+        }
+
+        function setTextValue(elementId, value) {
+            document.getElementById(elementId).innerHTML = value
+        }
+
+        function sleep(milliseconds) {
+            return new Promise(resolve => setTimeout(resolve, milliseconds));
+        }
+
+        async function startCounter() {
+            if (counter < deviceCounter) {
+                counter++;
+                setCount(counter);
+            }
+            await sleep(400);
+            setCounter();
+        }
+    </script>
+</body>
+
+</html>

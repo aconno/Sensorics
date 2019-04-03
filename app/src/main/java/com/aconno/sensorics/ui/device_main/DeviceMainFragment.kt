@@ -1,13 +1,14 @@
 package com.aconno.sensorics.ui.device_main
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.support.design.widget.Snackbar
+import android.support.v7.app.AlertDialog
 import android.view.*
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
@@ -21,6 +22,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
@@ -63,6 +65,8 @@ class DeviceMainFragment : DaggerFragment() {
     private var connectResultDisposable: Disposable? = null
 
     private var isServicesDiscovered = false
+    private var hasSettings: Boolean = false
+
     var menu: Menu? = null
 
     private val serviceConnection = object : ServiceConnection {
@@ -156,11 +160,22 @@ class DeviceMainFragment : DaggerFragment() {
                             text = getString(R.string.connected)
 
                         }
+                        it.action == BluetoothGattCallback.ACTION_BEACON_HAS_SETTINGS -> {
+                            Timber.i("Device has settings")
+                            hasSettings = true
+//                            it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
+                            activity?.invalidateOptionsMenu()
+                            text = ""
+                        }
                         else -> {
                             return@subscribe
                         }
                     }
-                    web_view.loadUrl("javascript:onStatusReading('$text')")
+                    text.takeIf {
+                        it.isNotBlank()
+                    }.let {
+                        web_view.loadUrl("javascript:onStatusReading('$text')")
+                    }
                 }
 
             serviceConnect?.connect(mDevice.macAddress)
@@ -209,8 +224,17 @@ class DeviceMainFragment : DaggerFragment() {
         }
 
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
-        menu?.findItem(R.id.action_start_usecases_activity)?.isVisible = BuildConfig.FLAVOR == "dev"
-        menu?.findItem(R.id.action_toggle_connect)?.isVisible = mDevice.connectable
+        setMenuItemsVisibility(menu)
+    }
+
+    private fun setMenuItemsVisibility(menu: Menu?) {
+        menu?.let {
+            it.findItem(R.id.action_start_usecases_activity).isVisible =
+                BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
+            it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
+            it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
+            it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -235,6 +259,28 @@ class DeviceMainFragment : DaggerFragment() {
                 }
                 R.id.action_start_usecases_activity -> {
                     (activity as MainActivity).onUseCaseClicked(mDevice.macAddress, mDevice.name)
+                    return true
+                }
+                R.id.action_start_config_activity -> {
+                    this.view?.let {
+                        Snackbar.make(it, "Functionality coming soon.", Snackbar.LENGTH_SHORT)
+                            .show()
+                    }
+
+                    activity?.let {
+                        ConfigureActivity.start(it, device = mDevice)
+                    }
+                    return true
+                }
+                R.id.action_start_logging_activity -> {
+                    this.view?.let {
+                        Snackbar.make(
+                            it,
+                            "Functionality coming soon.",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                    //TODO: Implement Logger functionality
                     return true
                 }
                 else -> {
@@ -293,9 +339,14 @@ class DeviceMainFragment : DaggerFragment() {
             .subscribe { readings ->
 
                 var jsonValues = generateJsonArray(readings)
+                setHasSettings(readings)
 
                 web_view.loadUrl("javascript:onSensorReadings('$jsonValues')")
             }
+    }
+
+    private fun setHasSettings(readings: List<Reading>) {
+        hasSettings = readings[0].device.hasSettings
     }
 
     private fun generateJsonArray(readings: List<Reading>?): String {
@@ -493,6 +544,7 @@ class DeviceMainFragment : DaggerFragment() {
     companion object {
 
         private const val KEY_DEVICE = "KEY_DEVICE"
+        private const val DEV_BUILD_FLAVOR = "dev"
 
         fun newInstance(
             device: Device

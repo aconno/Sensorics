@@ -13,7 +13,7 @@
 }
 
 .bg{
-	background: #ffffff
+	background: #ffffff;
 	width:50%;
 }
 .imageSize{
@@ -103,4 +103,41 @@
     border-radius: 100%;
 }
 
+.acnact-value-small{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+	font-size: 28px;
+    font-weight: bold;
+    margin-top: 60px
+}
 
+.acnact-value-tiny{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+	font-size: 18px;
+    font-weight: bold;
+}
+
+.acnlight-hexvalue{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+	font-size: 28px;
+    font-weight: bold;
+    margin-top: 60px;
+    text-shadow: 2px 1px black;
+}
+
+ #circle {
+      margin: auto;
+      width: 150px;
+      height: 150px;
+      -webkit-border-radius: 75px;
+      -moz-border-radius: 75px;
+      border-radius: 75px;
+      border: 4px solid black;
+      background: white;
+      align-content: center;
+}

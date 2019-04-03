@@ -41,7 +41,9 @@
         <service
             android:name=".BluetoothConnectService"
             android:exported="false" />
-
+        <service
+            android:name="com.aconno.bluetooth.BluetoothDeviceService"
+            android:exported="false" />
         <service
             android:name=".SyncConfigurationService"
             android:exported="true"
@@ -76,6 +78,10 @@
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_settings"
             android:theme="@style/SettingsTheme" />
+
+        <activity
+            android:name=".ui.configure.ConfigureActivity"
+            android:label="@string/title_configure" />
 
         <activity
             android:name=".ui.SplashActivity"

@@ -1,0 +1,109 @@
+{
+  "id": "0300",
+  "name": "acnAlert",
+  "icon": "ic_freight",
+  "format": [
+  ],
+  "format_required": [
+    {
+      "name": "Nordic ID 1",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Nordic ID 2",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "Aconno ID",
+      "index": 2,
+      "value": "0x69"
+    },
+    {
+      "name": "Product ID",
+      "index": 3,
+      "value": "0x03"
+    },
+    {
+      "name": "Version Number",
+      "index": 4,
+      "value": "0x00"
+    }
+  ],
+  "settings_support": {
+    "mask": "0x80",
+    "index": 4
+  },
+  "connectable": true,
+  "connection_write": [
+    {
+      "serviceUUID": "cc52a000-9adb-4c37-bc48-376f5fee8851",
+      "characteristicUUID": "cc52a001-9adb-4c37-bc48-376f5fee8851",
+      "characteristicName": "Buzzer",
+      "values": [
+        {
+          "name": "On",
+          "type": "BYTE",
+          "value": "0x01"
+        },
+        {
+          "name": "Off",
+          "type": "BYTE",
+          "value": "0x00"
+        }
+      ]
+    },
+    {
+      "serviceUUID": "cc52a000-9adb-4c37-bc48-376f5fee8851",
+      "characteristicUUID": "cc52a002-9adb-4c37-bc48-376f5fee8851",
+      "characteristicName": "Red Light",
+      "values": [
+        {
+          "name": "On",
+          "type": "BYTE",
+          "value": "0x01"
+        },
+        {
+          "name": "Off",
+          "type": "BYTE",
+          "value": "0x00"
+        }
+      ]
+    },
+    {
+      "serviceUUID": "cc52a000-9adb-4c37-bc48-376f5fee8851",
+      "characteristicUUID": "cc52a003-9adb-4c37-bc48-376f5fee8851",
+      "characteristicName": "Green Light",
+      "values": [
+        {
+          "name": "On",
+          "type": "BYTE",
+          "value": "0x01"
+        },
+        {
+          "name": "Off",
+          "type": "BYTE",
+          "value": "0x00"
+        }
+      ]
+    },
+    {
+      "serviceUUID": "cc52a000-9adb-4c37-bc48-376f5fee8851",
+      "characteristicUUID": "cc52a004-9adb-4c37-bc48-376f5fee8851",
+      "characteristicName": "Blue Light",
+      "values": [
+        {
+          "name": "On",
+          "type": "BYTE",
+          "value": "0x01"
+        },
+        {
+          "name": "Off",
+          "type": "BYTE",
+          "value": "0x00"
+        }
+      ]
+    }
+  ]
+}

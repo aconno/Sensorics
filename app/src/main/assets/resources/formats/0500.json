@@ -1,0 +1,41 @@
+{
+  "id": "0500",
+  "name": "acnTEMP",
+  "icon": "ic_sensa",
+  "format": [
+    {
+      "name": "Temperature",
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 9,
+      "reversed": true,
+      "data_type": "FLOAT"
+    }
+  ],
+  "format_required": [
+    {
+      "name": "Nordic ID 1",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Nordic ID 2",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "Aconno ID",
+      "index": 2,
+      "value": "0x69"
+    },
+    {
+      "name": "Product ID",
+      "index": 3,
+      "value": "0x0C"
+    },
+    {
+      "name": "Version Number",
+      "index": 4,
+      "value": "0x00"
+    }
+  ]
+}
