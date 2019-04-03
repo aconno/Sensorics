@@ -194,8 +194,10 @@ class BluetoothImpl(
 
     override fun stopScanning() {
         val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
-        scanEvent.onNext(ScanEvent.stop())
-        bluetoothLeScanner.stopScan(scanCallback)
+        bluetoothLeScanner?.let {
+            scanEvent.onNext(ScanEvent.stop())
+            it.stopScan(scanCallback)
+        }
     }
 
     override fun getGattResults(): Flowable<GattCallbackPayload> {
