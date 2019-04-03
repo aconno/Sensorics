@@ -16,6 +16,10 @@ import javax.inject.Inject
 
 class SensoricsApplication : Application(), HasActivityInjector, HasServiceInjector {
 
+    companion object {
+        private const val DEV_BUILD_FLAVOR = "dev"
+    }
+
     @Inject
     lateinit var dispatchingActivityInjector: DispatchingAndroidInjector<Activity>
 
@@ -32,7 +36,10 @@ class SensoricsApplication : Application(), HasActivityInjector, HasServiceInjec
             return
         }
         LeakCanary.install(this)
-        Timber.plant(Timber.DebugTree())
+        @Suppress("ConstantConditionIf")
+        if(BuildConfig.FLAVOR == DEV_BUILD_FLAVOR) {
+            Timber.plant(Timber.DebugTree())
+        }
         Fabric.with(this, Crashlytics())
     }
 
