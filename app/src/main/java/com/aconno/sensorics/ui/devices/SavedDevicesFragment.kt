@@ -1,17 +1,22 @@
 package com.aconno.sensorics.ui.devices
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
+import android.app.*
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
+import android.graphics.drawable.Icon
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.design.widget.Snackbar
+import android.support.v4.app.NotificationManagerCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.util.Log
 import android.view.*
 import android.widget.EditText
 import com.aconno.sensorics.BuildConfig
@@ -25,6 +30,7 @@ import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.IconInfo
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.bubble.BubbleActivity
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceViewModel
@@ -208,11 +214,95 @@ class SavedDevicesFragment : DaggerFragment(),
                 empty_view?.visibility = View.VISIBLE
                 deviceAdapter.setDevices(listOf())
             } else {
+                showBubble(it)
                 empty_view?.visibility = View.INVISIBLE
                 deviceAdapter.setDevices(preferredDevices)
                 deviceAdapter.setIcons(getIconInfoForActiveDevices(preferredDevices))
             }
         }
+    }
+
+    private fun showBubble(it: List<DeviceActive>) {
+        Log.d("BubbleTag", "ShowBubble called")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && it.isNotEmpty()) {
+            createNotificationChannel()
+            it.forEach {
+                createAndShowBubble(it)
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun createAndShowBubble(deviceActive: DeviceActive) {
+        context?.applicationContext?.let { applicationContext ->
+            Log.d("BubbleTag", "App Context not null")
+
+            val pendingIntent =
+                PendingIntent.getActivity(
+                    applicationContext,
+                    deviceActive.device.hashCode(),
+                    BubbleActivity.getIntent(applicationContext, deviceActive.device),
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+
+            val bubbleMetadata = Notification.BubbleMetadata.Builder()
+                .setDesiredHeight(800)
+                .setIcon(
+                    Icon.createWithResource(
+                        applicationContext,
+                        R.mipmap.ic_launcher_rounded
+                    )
+                )
+                .setIntent(pendingIntent)
+                .setAutoExpandBubble(true)
+                .build()
+
+            // Create notification
+            val chatBot = Person.Builder()
+                .setBot(true)
+                .setName("BubbleBot ${deviceActive.device.macAddress}")
+                .setIcon(
+                    Icon.createWithResource(
+                        applicationContext,
+                        R.drawable.ic_beach_access_black_24dp
+                    )
+                )
+                .setImportant(true)
+                .build()
+
+            val builder = Notification.Builder(applicationContext, CHANNEL_ID)
+                .addPerson(chatBot)
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(
+                    Icon.createWithResource(
+                        applicationContext,
+                        R.drawable.ic_beach_access_black_24dp
+                    )
+                )
+                .setBubbleMetadata(bubbleMetadata)
+
+            with(NotificationManagerCompat.from(applicationContext)) {
+                // notificationId is a unique int for each notification that you must define
+                notify(NOTIFICATION_ID + deviceActive.device.hashCode(), builder.build())
+            }
+        }
+    }
+
+    companion object {
+        private const val CHANNEL_ID: String = "AndroidQChannelId"
+        private const val NOTIFICATION_ID: Int = 12332
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel() {
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val channel = NotificationChannel(CHANNEL_ID, "Bubble", importance).apply {
+            description = "Bubble Desc"
+        }
+        // Register the channel with the system
+        val notificationManager: NotificationManager =
+            context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     override fun onResume() {

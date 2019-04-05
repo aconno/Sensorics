@@ -14,12 +14,15 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.aconno.sensorics.*
+import com.aconno.sensorics.BluetoothConnectService
+import com.aconno.sensorics.BuildConfig
+import com.aconno.sensorics.R
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.toHexByte
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.configure.ConfigureActivity
@@ -199,16 +202,16 @@ class DeviceMainFragment : DaggerFragment() {
         return inflater.inflate(R.layout.fragment_device_main, container, false)
     }
 
-    override fun onResume() {
-        super.onResume()
-        val mainActivity: MainActivity = context as MainActivity
-        mainActivity.supportActionBar?.title = mDevice.getRealName()
-        mainActivity.supportActionBar?.subtitle = mDevice.macAddress
-
-        if (!mainActivity.isScanning() && !mDevice.connectable) {
-            showAlertDialog(mainActivity)
-        }
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        val mainActivity: MainActivity = context as MainActivity
+//        mainActivity.supportActionBar?.title = mDevice.getRealName()
+//        mainActivity.supportActionBar?.subtitle = mDevice.macAddress
+//
+//        if (!mainActivity.isScanning() && !mDevice.connectable) {
+//            showAlertDialog(mainActivity)
+//        }
+//    }
 
     override fun onDetach() {
         if (mDevice.connectable)

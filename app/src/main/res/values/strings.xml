@@ -247,5 +247,6 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
+    <string name="title_activity_bubble">BubbleActivity</string>
 
 </resources>

@@ -335,8 +335,8 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     override fun permissionAccepted(actionCode: Int) {
         if (actionCode == SensoricsPermission.ACCESS_FINE_LOCATION.code) {
-            permissionViewModel.requestAccessToReadExternalStorage()
-        } else {
+//            permissionViewModel.requestAccessToReadExternalStorage()
+//        } else {
             bluetoothScanningViewModel.startScanning(filterByDevice)
             filterByDevice = true
         }

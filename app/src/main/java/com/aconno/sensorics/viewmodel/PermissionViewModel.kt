@@ -17,7 +17,7 @@ class PermissionViewModel(
     }
 
     fun requestAccessToReadExternalStorage() {
-        checkAndRequestPermission(SensoricsPermission.READ_EXTERNAL_STORAGE)
+//        checkAndRequestPermission(SensoricsPermission.READ_EXTERNAL_STORAGE)
     }
 
     private fun checkAndRequestPermission(sensoricsPermission: SensoricsPermission) {

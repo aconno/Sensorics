@@ -10,6 +10,9 @@ import com.aconno.sensorics.dagger.actionlist.ActionListModule
 import com.aconno.sensorics.dagger.actionlist.ActionListScope
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceScope
+import com.aconno.sensorics.dagger.bubble.BubbleActivityModule
+import com.aconno.sensorics.dagger.bubble.BubbleActivityScope
+import com.aconno.sensorics.dagger.bubble.BubbleFragmentModule
 import com.aconno.sensorics.dagger.configure.ConfigurationModule
 import com.aconno.sensorics.dagger.configure.ConfigurationScope
 import com.aconno.sensorics.dagger.deviceselect.DeviceSelectionFragmentsModule
@@ -33,6 +36,7 @@ import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.SplashActivity
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
+import com.aconno.sensorics.ui.bubble.BubbleActivity
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
@@ -104,4 +108,8 @@ abstract class ActivityBuilder {
     @ConfigurationScope
     @ContributesAndroidInjector(modules = [ConfigurationModule::class])
     abstract fun bindConfigureActivity(): ConfigureActivity
+
+    @BubbleActivityScope
+    @ContributesAndroidInjector(modules = [BubbleActivityModule::class, BubbleFragmentModule::class])
+    abstract fun bindBubbleActivity(): BubbleActivity
 }
