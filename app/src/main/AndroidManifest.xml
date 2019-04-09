@@ -33,6 +33,7 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".ui.MainActivity" />
+        <activity android:name=".ui.MainActivity2" />
         <activity android:name=".ui.ActionListActivity" />
 
         <service

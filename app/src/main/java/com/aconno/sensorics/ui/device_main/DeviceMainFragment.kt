@@ -21,6 +21,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.MainActivity2
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
@@ -185,8 +186,6 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setHasOptionsMenu(true)
         getParams()
     }
 
@@ -200,7 +199,7 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onResume() {
         super.onResume()
-        val mainActivity: MainActivity = context as MainActivity
+        val mainActivity: MainActivity2 = context as MainActivity2
         mainActivity.supportActionBar?.title = mDevice.getRealName()
         mainActivity.supportActionBar?.subtitle = mDevice.macAddress
 
@@ -216,17 +215,14 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        if (mDevice.connectable) {
-            menu.clear()
+        if (hasOptionsMenu()) {
             this.menu = menu
+            setMenuItemsVisibility(menu)
         }
-
-        activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
-        setMenuItemsVisibility(menu)
     }
 
     private fun setMenuItemsVisibility(menu: Menu?) {
+        Timber.d("${mDevice.name} $hasSettings")
         menu?.let {
             it.findItem(R.id.action_start_usecases_activity).isVisible =
                 BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
@@ -239,6 +235,7 @@ class DeviceMainFragment : DaggerFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         context?.let { context ->
             when (item.itemId) {
+                R.id.action_toggle_scan -> Timber.d("HJOHO")
                 R.id.action_toggle_connect ->
                     if (item.isChecked) {
                         item.isChecked = false
@@ -261,11 +258,6 @@ class DeviceMainFragment : DaggerFragment() {
                     return true
                 }
                 R.id.action_start_config_activity -> {
-                    this.view?.let {
-                        Snackbar.make(it, "Functionality coming soon.", Snackbar.LENGTH_SHORT)
-                            .show()
-                    }
-
                     activity?.let {
                         ConfigureActivity.start(it, device = mDevice)
                     }
@@ -346,6 +338,9 @@ class DeviceMainFragment : DaggerFragment() {
 
     private fun setHasSettings(readings: List<Reading>) {
         hasSettings = readings[0].device.hasSettings
+        if (hasSettings != readings[0].device.hasSettings && isVisible) {
+            setMenuItemsVisibility(menu)
+        }
     }
 
     private fun generateJsonArray(readings: List<Reading>?): String {
@@ -416,7 +411,7 @@ class DeviceMainFragment : DaggerFragment() {
         mDevice = connectionCharacteristicsFinder.addCharacteristicsToDevice(device)
     }
 
-    private fun showAlertDialog(mainActivity: MainActivity) {
+    private fun showAlertDialog(mainActivity: MainActivity2) {
 
         val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(
             mainActivity
@@ -552,6 +547,7 @@ class DeviceMainFragment : DaggerFragment() {
             deviceMainFragment.arguments = Bundle().apply {
                 putString(KEY_DEVICE, Gson().toJson(device))
             }
+            deviceMainFragment.setHasOptionsMenu(true)
             return deviceMainFragment
         }
     }
