@@ -3,13 +3,13 @@ package com.aconno.sensorics.data.repository
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import io.reactivex.Observable
-import io.reactivex.subjects.ReplaySubject
+import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.CopyOnWriteArrayList
 
 class InMemoryRepositoryImpl : InMemoryRepository {
 
     private val buffers = hashMapOf<String, CopyOnWriteArrayList<Reading>>()
-    private val subjects = hashMapOf<String, ReplaySubject<List<Reading>>>()
+    private val subjects = hashMapOf<String, BehaviorSubject<List<Reading>>>()
 
     override fun addReading(reading: Reading) {
         if (!buffers.containsKey(getKey(reading))) {
@@ -19,7 +19,7 @@ class InMemoryRepositoryImpl : InMemoryRepository {
         buffer?.let { addToBuffer(reading, buffer) }
 
         if (!subjects.containsKey(getKey(reading))) {
-            subjects[getKey(reading)] = ReplaySubject.create(1)
+            subjects[getKey(reading)] = BehaviorSubject.create()
         }
         val subject = subjects[getKey(reading)]
         subject?.let { buffer?.let { subject.onNext(buffer) } }
