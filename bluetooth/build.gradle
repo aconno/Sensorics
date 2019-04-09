@@ -10,7 +10,7 @@ android {
         targetSdkVersion target_sdk_version
         versionCode sensorics_version_code
         versionName sensorics_version_name
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -33,21 +33,21 @@ dependencies {
     implementation "com.jakewharton.timber:timber:4.7.1"
 
     // Support Library
-    implementation "com.android.support:appcompat-v7:$support_library_version"
+    implementation "androidx.appcompat:appcompat:1.0.2"
 
     // Unit Testing
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 
     //RXJava
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation "io.reactivex.rxjava2:rxkotlin:$rx_kotlin_version"
 
     // Room + RxJava support
-    implementation 'android.arch.persistence.room:runtime:1.1.1'
-    kapt "android.arch.persistence.room:compiler:1.1.1"
-    implementation 'android.arch.persistence.room:rxjava2:1.1.1'
+    implementation 'androidx.room:room-runtime:2.1.0-alpha06'
+    kapt "androidx.room:room-compiler:2.1.0-alpha06"
+    implementation 'androidx.room:room-rxjava2:2.1.0-alpha06'
 
     // JSON
     implementation "com.google.code.gson:gson:$gson_version"

@@ -1,6 +1,6 @@
 package com.aconno.sensorics.viewmodel
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.ifttt.GeneralRestPublishDeviceJoin
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*

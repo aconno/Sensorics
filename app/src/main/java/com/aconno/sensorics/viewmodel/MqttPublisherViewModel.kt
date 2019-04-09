@@ -1,6 +1,6 @@
 package com.aconno.sensorics.viewmodel
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.ifttt.GeneralMqttPublishDeviceJoin
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase

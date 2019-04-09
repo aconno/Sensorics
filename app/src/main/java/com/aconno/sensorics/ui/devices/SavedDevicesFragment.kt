@@ -6,14 +6,9 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import android.widget.EditText
+import androidx.recyclerview.widget.*
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceActiveAdapter
@@ -28,6 +23,7 @@ import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -75,7 +71,7 @@ class SavedDevicesFragment : DaggerFragment(),
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
 
         if (context is SavedDevicesFragmentListener) {
@@ -105,7 +101,7 @@ class SavedDevicesFragment : DaggerFragment(),
         setHasOptionsMenu(true)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
+    override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         activity?.menuInflater?.inflate(R.menu.menu_devices, menu)
         menu?.findItem(R.id.action_start_dashboard)?.isVisible = BuildConfig.FLAVOR == "dev"
@@ -188,7 +184,10 @@ class SavedDevicesFragment : DaggerFragment(),
             snackbar?.dismiss()
             listener?.onFABClicked()
             Timber.d("Button add device clicked")
-            ScannedDevicesDialog().show(activity?.supportFragmentManager, "devices_dialog")
+
+            activity?.supportFragmentManager?.let {
+                ScannedDevicesDialog().show(it, "devices_dialog")
+            }
         }
     }
 

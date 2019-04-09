@@ -2,14 +2,13 @@ package com.aconno.sensorics.ui
 
 import android.graphics.Color
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.ActionAdapter
 import com.aconno.sensorics.adapter.ItemClickListener
@@ -17,6 +16,7 @@ import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

@@ -56,15 +56,6 @@ class FormatMatcher(
         return true
     }
 
-    private fun matches(bytes: ByteArray, requiredBytes: List<ByteFormatRequired>): Boolean {
-        requiredBytes.forEachIndexed { index, it ->
-            if (bytes[it.position] != it.value) {
-                return false
-            }
-        }
-        return true
-    }
-
     fun getReadingTypes(formatName: String): List<String> {
         val readingTypes = mutableListOf<String>()
         supportedFormats.filter { it.getName() == formatName }

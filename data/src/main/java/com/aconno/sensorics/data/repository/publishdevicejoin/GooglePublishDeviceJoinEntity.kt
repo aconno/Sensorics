@@ -1,7 +1,7 @@
 package com.aconno.sensorics.data.repository.publishdevicejoin
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.ForeignKey
+import androidx.room.Entity
+import androidx.room.ForeignKey
 import com.aconno.sensorics.data.repository.devices.DeviceEntity
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishEntity
 

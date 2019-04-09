@@ -1,6 +1,6 @@
 package com.aconno.sensorics.data.repository.action
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import io.reactivex.Single
 
 @Dao

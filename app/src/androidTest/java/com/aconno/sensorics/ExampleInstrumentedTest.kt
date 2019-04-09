@@ -1,6 +1,6 @@
 package com.aconno.sensorics
 
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.runner.AndroidJUnit4
 import com.udojava.evalex.Expression
 import org.junit.Test
 import org.junit.runner.RunWith

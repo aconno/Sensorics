@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.mqttpublisher
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
 import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase

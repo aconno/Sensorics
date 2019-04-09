@@ -1,9 +1,9 @@
 package com.aconno.sensorics.dagger.application
 
-import android.arch.persistence.room.Room
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import android.support.v4.content.LocalBroadcastManager
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.room.Room
 import com.aconno.sensorics.IntentProviderImpl
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.data.mapper.*

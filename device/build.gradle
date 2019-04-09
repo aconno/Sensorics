@@ -9,7 +9,7 @@ android {
         targetSdkVersion target_sdk_version
         versionCode sensorics_version_code
         versionName sensorics_version_name
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -31,7 +31,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    implementation "com.android.support:appcompat-v7:$support_library_version"
+    implementation "androidx.appcompat:appcompat:1.0.2"
 
     implementation "io.reactivex.rxjava2:rxkotlin:$rx_kotlin_version"
 
@@ -48,8 +48,8 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
     implementation "com.udojava:EvalEx:2.1"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_version"
-    androidTestImplementation "com.android.support.test:runner:$test_runner_version"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.1.1"
+    androidTestImplementation "androidx.test:runner:1.1.1"
 }
 
 apply plugin: 'kotlin-android-extensions'

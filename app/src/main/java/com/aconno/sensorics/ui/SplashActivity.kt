@@ -1,9 +1,9 @@
 package com.aconno.sensorics.ui
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
 import com.aconno.sensorics.viewmodel.SplashViewModel
 import com.aconno.sensorics.viewmodel.factory.SplashViewModelFactory

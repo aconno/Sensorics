@@ -1,6 +1,6 @@
 package com.aconno.sensorics.viewmodel
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.ifttt.GooglePublish
 import com.aconno.sensorics.domain.ifttt.MqttPublish
 import com.aconno.sensorics.domain.ifttt.RestPublish

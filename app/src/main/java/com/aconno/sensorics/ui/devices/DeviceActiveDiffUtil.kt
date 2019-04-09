@@ -1,6 +1,6 @@
 package com.aconno.sensorics.ui.devices
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 import com.aconno.sensorics.model.DeviceActive
 
 class DeviceActiveDiffUtil : DiffUtil.ItemCallback<DeviceActive>() {

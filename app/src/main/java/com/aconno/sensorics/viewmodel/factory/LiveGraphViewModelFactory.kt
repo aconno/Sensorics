@@ -1,7 +1,7 @@
 package com.aconno.sensorics.viewmodel.factory
 
 import android.app.Application
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.viewmodel.LiveGraphViewModel
 

@@ -1,9 +1,9 @@
 package com.aconno.sensorics.adapter
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.model.toString

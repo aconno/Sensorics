@@ -1,6 +1,6 @@
 package com.aconno.sensorics.data.repository.publishdevicejoin
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import com.aconno.sensorics.data.repository.devices.DeviceEntity
 import io.reactivex.Maybe
 

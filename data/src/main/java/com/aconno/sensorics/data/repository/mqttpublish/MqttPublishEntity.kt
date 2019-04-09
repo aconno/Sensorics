@@ -1,7 +1,7 @@
 package com.aconno.sensorics.data.repository.mqttpublish
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 @Entity(tableName = "mqtt_publish")
 data class MqttPublishEntity(

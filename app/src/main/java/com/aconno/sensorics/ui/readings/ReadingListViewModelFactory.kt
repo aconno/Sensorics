@@ -1,6 +1,6 @@
 package com.aconno.sensorics.ui.readings
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.viewmodel.factory.BaseViewModelFactory

@@ -3,11 +3,11 @@ package com.aconno.sensorics.ui.dialogs
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.ScanDeviceAdapter
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
@@ -38,7 +38,7 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
 
     private var savedDevices = mutableListOf<Device>()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
 
         try {
@@ -122,7 +122,7 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
         )
     }
 
-    override fun onDismiss(dialog: DialogInterface?) {
+    override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         listener?.onDialogDismissed()
     }

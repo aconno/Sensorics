@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.gcloudpublisher
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
 import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase

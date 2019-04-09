@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.configure
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.ui.configure.BeaconViewModel
 import com.aconno.sensorics.ui.configure.BeaconViewModelFactory
 import com.aconno.sensorics.ui.configure.ConfigureActivity

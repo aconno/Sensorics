@@ -1,10 +1,10 @@
 package com.aconno.sensorics.viewmodel
 
 import android.app.Application
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
 import android.bluetooth.BluetoothAdapter
 import android.content.IntentFilter
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SingleLiveEvent
 import com.aconno.sensorics.domain.scanning.Bluetooth
