@@ -264,6 +264,9 @@ class DeviceMainFragment : DaggerFragment() {
                     //TODO: Implement Logger functionality
                     return true
                 }
+                R.id.action_rename_device -> {
+                    renameDevice()
+                }
                 else -> {
                     //Do nothing
                 }
@@ -523,6 +526,10 @@ class DeviceMainFragment : DaggerFragment() {
                 it.value
             )
         }
+    }
+
+    private fun renameDevice() {
+        (activity as? MainActivity2)?.renameDevice(mDevice.macAddress)
     }
 
     companion object {

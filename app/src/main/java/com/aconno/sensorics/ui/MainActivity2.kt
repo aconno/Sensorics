@@ -325,6 +325,10 @@ class MainActivity2 : DaggerAppCompatActivity(),
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
+    fun renameDevice(macAddress: String) {
+
+    }
+
     inner class ViewPagerAdapter : FragmentStateAdapter(this@MainActivity2) {
         override fun getItem(position: Int): Fragment {
             return DeviceMainFragment.newInstance(deviceList[position].device)
