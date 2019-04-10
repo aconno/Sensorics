@@ -14,14 +14,14 @@ import android.view.View
 import android.widget.EditText
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
-import com.aconno.sensorics.adapter.viewpager2.FragmentStateAdapter
 import com.aconno.sensorics.adapter.viewpager2.TabLayoutMediator
+import com.aconno.sensorics.adapter.viewpager2.ViewPager2TouchHelper
+import com.aconno.sensorics.adapter.viewpager2.ViewPagerAdapter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
@@ -66,6 +66,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     private var deviceList = mutableListOf<DeviceActive>()
 
     private lateinit var viewPagerAdapter: ViewPagerAdapter
+    private lateinit var pageChangedCallback: PageChangedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,26 +141,22 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun setupViewPager() {
         content_pager?.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        viewPagerAdapter = ViewPagerAdapter()
+        viewPagerAdapter = ViewPagerAdapter(this, deviceList)
         content_pager?.adapter = viewPagerAdapter
-        content_pager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                for (i in 0..(viewPagerAdapter.itemCount - 1)) {
-                    (viewPagerAdapter.getItem(position) as DeviceMainFragment).setMenuVisibility(
-                        position == i
-                    )
-                }
-
-                invalidateOptionsMenu()
-            }
-        })
+        pageChangedCallback = PageChangedCallback()
+        content_pager?.registerOnPageChangeCallback(pageChangedCallback)
 
         TabLayoutMediator(tabLayout, content_pager) { tab, position ->
             tab.text = deviceList[position].device.getRealName()
         }.attach()
+
+        with(ViewPager2TouchHelper()) {
+            setViewPager(content_pager)
+        }
     }
 
     override fun onDestroy() {
+        content_pager?.unregisterOnPageChangeCallback(pageChangedCallback)
         compositeDisposable.clear()
         compositeDisposable = CompositeDisposable()
         super.onDestroy()
@@ -175,7 +172,9 @@ class MainActivity2 : DaggerAppCompatActivity(),
     override fun onResume() {
         super.onResume()
         bluetoothViewModel.observeBluetoothState()
-        bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
+        bluetoothViewModel.bluetoothState.observe(
+            this,
+            Observer { onBluetoothStateChange(it) })
     }
 
     private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
@@ -197,10 +196,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
             val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
             menuItem?.setVisible(false)
         }
-    }
-
-    fun isScanning(): Boolean {
-        return BluetoothScanningService.isRunning()
     }
 
     override fun onPause() {
@@ -422,18 +417,15 @@ class MainActivity2 : DaggerAppCompatActivity(),
         }
     }
 
-    inner class ViewPagerAdapter : FragmentStateAdapter(this@MainActivity2) {
-        fun removeItemAt(position: Int) {
-            deviceList.removeAt(position)
-            notifyDataSetChanged()
-        }
+    inner class PageChangedCallback : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            for (i in 0..(viewPagerAdapter.itemCount - 1)) {
+                (viewPagerAdapter.getItem(position) as DeviceMainFragment).setMenuVisibility(
+                    position == i
+                )
+            }
 
-        override fun getItem(position: Int): Fragment {
-            return DeviceMainFragment.newInstance(deviceList[position].device)
-        }
-
-        override fun getItemCount(): Int {
-            return deviceList.size
+            invalidateOptionsMenu()
         }
     }
 }

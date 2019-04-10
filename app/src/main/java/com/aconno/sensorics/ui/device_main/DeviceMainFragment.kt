@@ -311,7 +311,6 @@ class DeviceMainFragment : DaggerFragment() {
                         text_error_message.text = throwable.message
                     })
         }
-
     }
 
     private fun setupConnectionForFreight() {
