@@ -154,7 +154,6 @@ public final class TabLayoutMediator {
             // Make sure we reflect the currently set ViewPager item
             if (adapterCount > 0) {
                 int currItem = mViewPager.getCurrentItem();
-
                 TabLayout.Tab tab = mTabLayout.getTabAt(currItem);
                 if(tab != null) {
                     tab.select();
