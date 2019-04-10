@@ -13,12 +13,15 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
-import com.aconno.sensorics.*
+import com.aconno.sensorics.BluetoothConnectService
+import com.aconno.sensorics.BuildConfig
+import com.aconno.sensorics.R
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.toHexByte
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.MainActivity2
@@ -186,6 +189,7 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         getParams()
     }
 
@@ -197,17 +201,6 @@ class DeviceMainFragment : DaggerFragment() {
         return inflater.inflate(R.layout.fragment_device_main, container, false)
     }
 
-    override fun onResume() {
-        super.onResume()
-        val mainActivity: MainActivity2 = context as MainActivity2
-        mainActivity.supportActionBar?.title = mDevice.getRealName()
-        mainActivity.supportActionBar?.subtitle = mDevice.macAddress
-
-        if (!mainActivity.isScanning() && !mDevice.connectable) {
-            showAlertDialog(mainActivity)
-        }
-    }
-
     override fun onDetach() {
         if (mDevice.connectable)
             context?.unbindService(serviceConnection)
@@ -215,10 +208,8 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        if (hasOptionsMenu()) {
-            this.menu = menu
-            setMenuItemsVisibility(menu)
-        }
+        activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
+        setMenuItemsVisibility(menu)
     }
 
     private fun setMenuItemsVisibility(menu: Menu?) {
@@ -235,7 +226,6 @@ class DeviceMainFragment : DaggerFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         context?.let { context ->
             when (item.itemId) {
-                R.id.action_toggle_scan -> Timber.d("HJOHO")
                 R.id.action_toggle_connect ->
                     if (item.isChecked) {
                         item.isChecked = false
@@ -547,7 +537,6 @@ class DeviceMainFragment : DaggerFragment() {
             deviceMainFragment.arguments = Bundle().apply {
                 putString(KEY_DEVICE, Gson().toJson(device))
             }
-            deviceMainFragment.setHasOptionsMenu(true)
             return deviceMainFragment
         }
     }

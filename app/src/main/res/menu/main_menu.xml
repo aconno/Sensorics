@@ -14,34 +14,4 @@
         android:orderInCategory="99"
         android:title="@string/settings"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_start_actions_activity"
-        android:title="@string/actions"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_start_usecases_activity"
-        android:title="@string/usecases"
-        android:visible="false"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_start_config_activity"
-        android:title="@string/config"
-        android:visible="true"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_start_logging_activity"
-        android:title="@string/logging"
-        android:visible="true"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_toggle_connect"
-        android:checkable="true"
-        android:checked="true"
-        android:title="@string/disconnect"
-        app:showAsAction="ifRoom" />
 </menu>

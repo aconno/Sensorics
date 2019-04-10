@@ -120,6 +120,7 @@ dependencies {
 
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
     implementation 'com.jpardogo.materialtabstrip:library:1.1.1'
+    implementation 'pub.devrel:easypermissions:3.0.0'
 
 }
 

@@ -1,17 +1,24 @@
 package com.aconno.sensorics.ui
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.aconno.sensorics.BluetoothScanningService
+import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
+import com.aconno.sensorics.adapter.viewpager2.FragmentStateAdapter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
+import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
@@ -20,16 +27,18 @@ import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.DeviceViewModel
-import com.aconno.sensorics.viewmodel.PermissionViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_toolbar2.*
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivity2 : DaggerAppCompatActivity(), PermissionViewModel.PermissionCallbacks,
-    ScannedDevicesDialogListener {
+
+class MainActivity2 : DaggerAppCompatActivity(),
+    ScannedDevicesDialogListener, EasyPermissions.PermissionCallbacks {
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
@@ -71,7 +80,6 @@ class MainActivity2 : DaggerAppCompatActivity(), PermissionViewModel.PermissionC
         bluetoothScanningViewModel.getScanEvent()
             .observe(this, Observer { handleScanEvent(it) })
 
-        invalidateOptionsMenu()
         setupViewPager()
     }
 
@@ -127,16 +135,17 @@ class MainActivity2 : DaggerAppCompatActivity(), PermissionViewModel.PermissionC
         content_pager?.adapter = viewPagerAdapter
         content_pager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                invalidateFragmentMenus(content_pager.currentItem)
+                for (i in 0..(viewPagerAdapter.itemCount - 1)) {
+                    (viewPagerAdapter.getItem(position) as DeviceMainFragment).setMenuVisibility(
+                        position == i
+                    )
+                }
+
+                invalidateOptionsMenu()
+                supportActionBar?.title = deviceList[position].device.getRealName()
+                supportActionBar?.subtitle = deviceList[position].device.macAddress
             }
         })
-    }
-
-    private fun invalidateFragmentMenus(position: Int) {
-        for (i in 0 until viewPagerAdapter.itemCount) {
-            viewPagerAdapter.getItem(i).setHasOptionsMenu(i == position)
-        }
-        invalidateOptionsMenu() //or respectively its support method.
     }
 
     override fun onDestroy() {
@@ -188,9 +197,9 @@ class MainActivity2 : DaggerAppCompatActivity(), PermissionViewModel.PermissionC
         bluetoothViewModel.stopObservingBluetoothState()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.clear()
         mainMenu = menu
-        mainMenu?.clear()
         menuInflater.inflate(R.menu.main_menu, menu)
 
         mainMenu?.findItem(R.id.action_toggle_scan)?.let {
@@ -239,9 +248,7 @@ class MainActivity2 : DaggerAppCompatActivity(), PermissionViewModel.PermissionC
 
     fun startScanning(filterByDevice: Boolean = true) {
         this.filterByDevice = filterByDevice
-        //Permissions skipped
-        bluetoothScanningViewModel.startScanning(filterByDevice)
-        this@MainActivity2.filterByDevice = true
+        startScaninngWithPermissions()
     }
 
     private fun stopScanning() {
@@ -263,19 +270,59 @@ class MainActivity2 : DaggerAppCompatActivity(), PermissionViewModel.PermissionC
         }
     }
 
-    override fun permissionAccepted(actionCode: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    @AfterPermissionGranted(RC_LOCATION_AND_EXTERNAL)
+    private fun startScaninngWithPermissions() {
+        val perms =
+            arrayOf<String>(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        if (EasyPermissions.hasPermissions(this, *perms)) {
+            bluetoothScanningViewModel.startScanning(filterByDevice)
+            this@MainActivity2.filterByDevice = true
+        } else {
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(
+                this, getString(R.string.snackbar_permission_message),
+                RC_LOCATION_AND_EXTERNAL, *perms
+            )
+        }
     }
 
-    override fun permissionDenied(actionCode: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        //TODO: Make this nice...
+        Snackbar.make(
+            main_container,
+            getString(R.string.snackbar_permission_message),
+            Snackbar.LENGTH_LONG
+        ).setAction(getString(R.string.snackbar_settings)) {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+            startActivity(intent)
+        }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+            .show()
     }
 
-    override fun showRationale(actionCode: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        //No-Op
     }
 
-    inner class ViewPagerAdapter : FragmentStateAdapter(this) {
+    companion object {
+        const val RC_LOCATION_AND_EXTERNAL = 12312
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    inner class ViewPagerAdapter : FragmentStateAdapter(this@MainActivity2) {
         override fun getItem(position: Int): Fragment {
             return DeviceMainFragment.newInstance(deviceList[position].device)
         }
