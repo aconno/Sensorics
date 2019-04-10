@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
     <string name="app_name">Sensorics</string>
     <string name="start_scan">Start scan</string>
     <string name="stop_scan">Stop scan</string>

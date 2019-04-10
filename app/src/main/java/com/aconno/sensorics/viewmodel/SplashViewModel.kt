@@ -14,7 +14,7 @@ class SplashViewModel(
     fun initApp() {
         GlobalScope.launch(Dispatchers.Main) {
 
-            GlobalScope.async {
+            withContext(Dispatchers.Default) {
 
                 //This will make sure Splash will stay 2000 ms
                 val currMillis = System.currentTimeMillis()
@@ -29,7 +29,7 @@ class SplashViewModel(
                     //Delay coroutine to fill rest
                     delay(-diff)
                 }
-            }.await()
+            }
 
             initializationLiveEvent.postValue(true)
         }
