@@ -248,5 +248,8 @@
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
     <string name="rename">Rename</string>
+    <string name="rename_beacon">Rename Beacon</string>
+    <string name="undo">Undo</string>
+    <string name="beacon_renamed">Beacon renamed</string>
 
 </resources>
