@@ -15,6 +15,7 @@ import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.viewpager2.FragmentStateAdapter
+import com.aconno.sensorics.adapter.viewpager2.TabLayoutMediator
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
@@ -142,10 +143,12 @@ class MainActivity2 : DaggerAppCompatActivity(),
                 }
 
                 invalidateOptionsMenu()
-                supportActionBar?.title = deviceList[position].device.getRealName()
-                supportActionBar?.subtitle = deviceList[position].device.macAddress
             }
         })
+
+        TabLayoutMediator(tabLayout, content_pager) { tab, position ->
+            tab.text = deviceList[position].device.getRealName()
+        }.attach()
     }
 
     override fun onDestroy() {
