@@ -133,7 +133,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun setupViewPager() {
         content_pager?.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        viewPagerAdapter = ViewPagerAdapter(this, deviceList)
+        viewPagerAdapter = ViewPagerAdapter(this)
         content_pager?.adapter = viewPagerAdapter
         pageChangedCallback = PageChangedCallback()
         content_pager?.registerOnPageChangeCallback(pageChangedCallback)
@@ -157,7 +157,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     private fun displayPreferredDevices(it: List<DeviceActive>) {
         if (deviceList.size != it.size) {
             deviceList = it.toMutableList()
-            viewPagerAdapter.notifyDataSetChanged()
+            viewPagerAdapter.submitList(deviceList)
         }
     }
 

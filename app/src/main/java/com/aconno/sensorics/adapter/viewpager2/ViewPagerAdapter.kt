@@ -6,10 +6,16 @@ import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 
 class ViewPagerAdapter(
-    fragmentActivity: FragmentActivity,
-    private val deviceList: MutableList<DeviceActive>
-) :
-    FragmentStateAdapter(fragmentActivity) {
+    fragmentActivity: FragmentActivity
+) : FragmentStateAdapter(fragmentActivity) {
+
+    private var deviceList: MutableList<DeviceActive> = mutableListOf()
+
+    fun submitList(list: MutableList<DeviceActive>) {
+        deviceList = list
+        notifyDataSetChanged()
+    }
+
     fun removeItemAt(position: Int) {
         deviceList.removeAt(position)
         notifyItemRemoved(position)
