@@ -213,7 +213,6 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     private fun setMenuItemsVisibility(menu: Menu?) {
-        Timber.d("${mDevice.name} $hasSettings")
         menu?.let {
             it.findItem(R.id.action_start_usecases_activity).isVisible =
                 BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
@@ -300,7 +299,6 @@ class DeviceMainFragment : DaggerFragment() {
                         text_error_message.text = throwable.message
                     })
         }
-
     }
 
     private fun setupConnectionForFreight() {

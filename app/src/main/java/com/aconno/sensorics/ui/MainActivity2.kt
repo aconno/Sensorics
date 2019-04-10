@@ -16,6 +16,7 @@ import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.viewpager2.FragmentStateAdapter
 import com.aconno.sensorics.adapter.viewpager2.TabLayoutMediator
+import com.aconno.sensorics.adapter.viewpager2.ViewPager2TouchHelper
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
@@ -141,6 +142,10 @@ class MainActivity2 : DaggerAppCompatActivity(),
         TabLayoutMediator(tabLayout, content_pager) { tab, position ->
             tab.text = deviceList[position].device.getRealName()
         }.attach()
+
+        with(ViewPager2TouchHelper()) {
+            setViewPager(content_pager)
+        }
     }
 
     override fun onDestroy() {
@@ -160,7 +165,9 @@ class MainActivity2 : DaggerAppCompatActivity(),
     override fun onResume() {
         super.onResume()
         bluetoothViewModel.observeBluetoothState()
-        bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
+        bluetoothViewModel.bluetoothState.observe(
+            this,
+            Observer { onBluetoothStateChange(it) })
     }
 
     private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
