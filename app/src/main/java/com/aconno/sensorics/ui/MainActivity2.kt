@@ -48,7 +48,7 @@ import javax.inject.Inject
 
 
 class MainActivity2 : DaggerAppCompatActivity(),
-        ScannedDevicesDialogListener, EasyPermissions.PermissionCallbacks {
+    ScannedDevicesDialogListener, EasyPermissions.PermissionCallbacks {
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
@@ -67,8 +67,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private var deviceList = mutableListOf<DeviceActive>()
 
-    private val editedDeviceMap = hashMapOf<String, DeviceActive>()
-
     private lateinit var viewPagerAdapter: ViewPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,14 +82,14 @@ class MainActivity2 : DaggerAppCompatActivity(),
         setSupportActionBar(toolbar)
 
         compositeDisposable.add(
-                deviceViewModel.getSavedDevicesFlowable()
-                        .subscribe {
-                            displayPreferredDevices(it)
-                        }
+            deviceViewModel.getSavedDevicesFlowable()
+                .subscribe {
+                    displayPreferredDevices(it)
+                }
         )
 
         bluetoothScanningViewModel.getScanEvent()
-                .observe(this, Observer { handleScanEvent(it) })
+            .observe(this, Observer { handleScanEvent(it) })
 
         setupViewPager()
     }
@@ -150,7 +148,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
             override fun onPageSelected(position: Int) {
                 for (i in 0..(viewPagerAdapter.itemCount - 1)) {
                     (viewPagerAdapter.getItem(position) as DeviceMainFragment).setMenuVisibility(
-                            position == i
+                        position == i
                     )
                 }
 
@@ -242,9 +240,9 @@ class MainActivity2 : DaggerAppCompatActivity(),
     private fun startSettingsActivity() {
         if (BluetoothScanningService.isRunning()) {
             Snackbar.make(
-                    findViewById(android.R.id.content),
-                    getString(R.string.snackbar_stop_scanning),
-                    Snackbar.LENGTH_SHORT
+                findViewById(android.R.id.content),
+                getString(R.string.snackbar_stop_scanning),
+                Snackbar.LENGTH_SHORT
             ).show()
         } else {
             SettingsActivity.start(this)
@@ -288,18 +286,18 @@ class MainActivity2 : DaggerAppCompatActivity(),
     @AfterPermissionGranted(RC_LOCATION_AND_EXTERNAL)
     private fun startScaninngWithPermissions() {
         val perms =
-                arrayOf<String>(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
+            arrayOf<String>(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
         if (EasyPermissions.hasPermissions(this, *perms)) {
             bluetoothScanningViewModel.startScanning(filterByDevice)
             this@MainActivity2.filterByDevice = true
         } else {
             // Do not have permissions, request them now
             EasyPermissions.requestPermissions(
-                    this, getString(R.string.snackbar_permission_message),
-                    RC_LOCATION_AND_EXTERNAL, *perms
+                this, getString(R.string.snackbar_permission_message),
+                RC_LOCATION_AND_EXTERNAL, *perms
             )
         }
     }
@@ -307,15 +305,15 @@ class MainActivity2 : DaggerAppCompatActivity(),
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         //TODO: Make this nice...
         Snackbar.make(
-                main_container,
-                getString(R.string.snackbar_permission_message),
-                Snackbar.LENGTH_LONG
+            main_container,
+            getString(R.string.snackbar_permission_message),
+            Snackbar.LENGTH_LONG
         ).setAction(getString(R.string.snackbar_settings)) {
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
             intent.data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
             startActivity(intent)
         }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
-                .show()
+            .show()
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
@@ -327,14 +325,32 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         // Forward results to EasyPermissions
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    fun removeCurrentDisplayedBeacon(macAddress: String) {
+
+        var position = -1
+        var device: Device? = null
+        deviceList.forEachIndexed { index, deviceActive ->
+            if(deviceActive.device.macAddress == macAddress) {
+                device = deviceActive.device
+                position = index
+                return@forEachIndexed
+            }
+        }
+
+        device?.let {
+            deviceViewModel.deleteDevice(it)
+            viewPagerAdapter.removeItemAt(position)
+        }
     }
 
     @SuppressLint("InflateParams")
@@ -397,6 +413,11 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     inner class ViewPagerAdapter : FragmentStateAdapter(this@MainActivity2) {
+        fun removeItemAt(position: Int) {
+            deviceList.removeAt(position)
+            notifyItemRemoved(position)
+        }
+
         override fun getItem(position: Int): Fragment {
             return DeviceMainFragment.newInstance(deviceList[position].device)
         }

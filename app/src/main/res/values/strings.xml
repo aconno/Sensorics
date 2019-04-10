@@ -251,5 +251,7 @@
     <string name="rename_beacon">Rename Beacon</string>
     <string name="undo">Undo</string>
     <string name="beacon_renamed">Beacon renamed</string>
+    <string name="remove_device_dialog_title_format">Delete beacon %1$s</string>
+    <string name="remove_device_dialog_message">Are you sure you want to delete this device?</string>
 
 </resources>

@@ -35,7 +35,7 @@ class SensoricsApplication : Application(), HasActivityInjector, HasServiceInjec
             // You should not init your app in this process.
             return
         }
-        LeakCanary.install(this)
+        //LeakCanary.install(this)
         @Suppress("ConstantConditionIf")
         if(BuildConfig.FLAVOR == DEV_BUILD_FLAVOR) {
             Timber.plant(Timber.DebugTree())

@@ -213,7 +213,6 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     private fun setMenuItemsVisibility(menu: Menu?) {
-        Timber.d("${mDevice.name} $hasSettings")
         menu?.let {
             it.findItem(R.id.action_start_usecases_activity).isVisible =
                 BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
@@ -264,6 +263,10 @@ class DeviceMainFragment : DaggerFragment() {
                     //TODO: Implement Logger functionality
                     return true
                 }
+                R.id.action_delete_beacon -> {
+                    showDeleteDeviceDialog()
+                    return true
+                }
                 R.id.action_rename_device -> {
                     renameDevice()
                 }
@@ -273,6 +276,23 @@ class DeviceMainFragment : DaggerFragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showDeleteDeviceDialog() {
+        activity?.let {
+            AlertDialog.Builder(it)
+                    .setTitle(getString(R.string.remove_device_dialog_title_format, mDevice.name))
+                    .setMessage(R.string.remove_device_dialog_message)
+                    .setPositiveButton(R.string.yes) {dialog, _ ->
+                        removeBeacon()
+                        dialog.dismiss()
+                    }
+                    .show()
+        }
+    }
+
+    private fun removeBeacon() {
+        (activity as? MainActivity2)?.removeCurrentDisplayedBeacon(mDevice.macAddress)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
