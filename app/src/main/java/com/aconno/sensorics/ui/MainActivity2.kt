@@ -8,15 +8,14 @@ import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
-import com.aconno.sensorics.adapter.viewpager2.FragmentStateAdapter
 import com.aconno.sensorics.adapter.viewpager2.TabLayoutMediator
 import com.aconno.sensorics.adapter.viewpager2.ViewPager2TouchHelper
+import com.aconno.sensorics.adapter.viewpager2.ViewPagerAdapter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
@@ -134,7 +133,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun setupViewPager() {
         content_pager?.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        viewPagerAdapter = ViewPagerAdapter()
+        viewPagerAdapter = ViewPagerAdapter(this, deviceList)
         content_pager?.adapter = viewPagerAdapter
         pageChangedCallback = PageChangedCallback()
         content_pager?.registerOnPageChangeCallback(pageChangedCallback)
@@ -348,21 +347,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
             }
 
             invalidateOptionsMenu()
-        }
-    }
-
-    inner class ViewPagerAdapter : FragmentStateAdapter(this@MainActivity2) {
-        fun removeItemAt(position: Int) {
-            deviceList.removeAt(position)
-            notifyItemRemoved(position)
-        }
-
-        override fun getItem(position: Int): Fragment {
-            return DeviceMainFragment.newInstance(deviceList[position].device)
-        }
-
-        override fun getItemCount(): Int {
-            return deviceList.size
         }
     }
 }
