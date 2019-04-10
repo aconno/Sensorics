@@ -58,6 +58,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private var deviceList = listOf<DeviceActive>()
     private lateinit var viewPagerAdapter: ViewPagerAdapter
+    private lateinit var pageChangedCallback: PageChangedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -134,17 +135,8 @@ class MainActivity2 : DaggerAppCompatActivity(),
         content_pager?.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         viewPagerAdapter = ViewPagerAdapter()
         content_pager?.adapter = viewPagerAdapter
-        content_pager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                for (i in 0..(viewPagerAdapter.itemCount - 1)) {
-                    (viewPagerAdapter.getItem(position) as DeviceMainFragment).setMenuVisibility(
-                        position == i
-                    )
-                }
-
-                invalidateOptionsMenu()
-            }
-        })
+        pageChangedCallback = PageChangedCallback()
+        content_pager?.registerOnPageChangeCallback(pageChangedCallback)
 
         TabLayoutMediator(tabLayout, content_pager) { tab, position ->
             tab.text = deviceList[position].device.getRealName()
@@ -152,6 +144,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     override fun onDestroy() {
+        content_pager?.unregisterOnPageChangeCallback(pageChangedCallback)
         compositeDisposable.clear()
         compositeDisposable = CompositeDisposable()
         super.onDestroy()
@@ -189,10 +182,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
             val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
             menuItem?.setVisible(false)
         }
-    }
-
-    fun isScanning(): Boolean {
-        return BluetoothScanningService.isRunning()
     }
 
     override fun onPause() {
@@ -323,6 +312,18 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
         // Forward results to EasyPermissions
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    inner class PageChangedCallback : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            for (i in 0..(viewPagerAdapter.itemCount - 1)) {
+                (viewPagerAdapter.getItem(position) as DeviceMainFragment).setMenuVisibility(
+                    position == i
+                )
+            }
+
+            invalidateOptionsMenu()
+        }
     }
 
     inner class ViewPagerAdapter : FragmentStateAdapter(this@MainActivity2) {
