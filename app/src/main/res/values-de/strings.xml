@@ -195,7 +195,5 @@
     <string name="rename_beacon">Beacon umbenennen</string>
     <string name="undo">Rückgängig machen</string>
     <string name="beacon_renamed">Beacon umbenannt</string>
-    <string name="remove_device_dialog_message">Möchten Sie dieses Gerät wirklich löschen?</string>
-    <string name="remove_device_dialog_title_format">Bake löschen %1$s</string>
-
+    <string name="beacon_removed">Beacon entfernt</string>
 </resources>

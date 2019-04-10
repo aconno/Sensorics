@@ -264,11 +264,12 @@ class DeviceMainFragment : DaggerFragment() {
                     return true
                 }
                 R.id.action_delete_beacon -> {
-                    showDeleteDeviceDialog()
+                    removeBeacon()
                     return true
                 }
                 R.id.action_rename_device -> {
                     renameDevice()
+                    return true
                 }
                 else -> {
                     //Do nothing
@@ -276,19 +277,6 @@ class DeviceMainFragment : DaggerFragment() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun showDeleteDeviceDialog() {
-        activity?.let {
-            AlertDialog.Builder(it)
-                    .setTitle(getString(R.string.remove_device_dialog_title_format, mDevice.name))
-                    .setMessage(R.string.remove_device_dialog_message)
-                    .setPositiveButton(R.string.yes) {dialog, _ ->
-                        removeBeacon()
-                        dialog.dismiss()
-                    }
-                    .show()
-        }
     }
 
     private fun removeBeacon() {

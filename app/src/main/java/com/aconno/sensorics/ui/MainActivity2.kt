@@ -37,9 +37,7 @@ import com.aconno.sensorics.viewmodel.DeviceViewModel
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_toolbar2.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
@@ -336,20 +334,19 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     fun removeCurrentDisplayedBeacon(macAddress: String) {
-
         var position = -1
-        var device: Device? = null
+        var removedDevice: DeviceActive? = null
         deviceList.forEachIndexed { index, deviceActive ->
             if(deviceActive.device.macAddress == macAddress) {
-                device = deviceActive.device
+                removedDevice = deviceActive
                 position = index
                 return@forEachIndexed
             }
         }
 
-        device?.let {
-            deviceViewModel.deleteDevice(it)
+        removedDevice?.let {
             viewPagerAdapter.removeItemAt(position)
+            showDeleteSnackbar(position, it)
         }
     }
 
@@ -386,12 +383,25 @@ class MainActivity2 : DaggerAppCompatActivity(),
             deviceList[position] = newDeviceActive
             viewPagerAdapter.notifyItemChanged(position)
 
-            showUndoableSnackbar(R.string.beacon_renamed, View.OnClickListener {
-                deviceList[position] = deviceToUpdate
-                viewPagerAdapter.notifyItemChanged(position)
-            }) {
-                deviceViewModel.updateDevice(deviceToUpdate.device, deviceAlias)
-            }
+            showRenameSnackbar(position, deviceToUpdate, deviceAlias)
+        }
+    }
+
+    private fun showRenameSnackbar(position: Int, deviceToUpdate: DeviceActive, deviceAlias: String) {
+        showUndoableSnackbar(R.string.beacon_renamed, View.OnClickListener {
+            deviceList[position] = deviceToUpdate
+            viewPagerAdapter.notifyItemChanged(position)
+        }) {
+            deviceViewModel.updateDevice(deviceToUpdate.device, deviceAlias)
+        }
+    }
+
+    private fun showDeleteSnackbar(position: Int, removedDevice: DeviceActive) {
+        showUndoableSnackbar(R.string.beacon_removed, View.OnClickListener {
+            deviceList[position] = removedDevice
+            viewPagerAdapter.notifyDataSetChanged()
+        }) {
+            deviceViewModel.deleteDevice(removedDevice.device)
         }
     }
 
@@ -415,7 +425,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     inner class ViewPagerAdapter : FragmentStateAdapter(this@MainActivity2) {
         fun removeItemAt(position: Int) {
             deviceList.removeAt(position)
-            notifyItemRemoved(position)
+            notifyDataSetChanged()
         }
 
         override fun getItem(position: Int): Fragment {
