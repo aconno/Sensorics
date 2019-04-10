@@ -55,11 +55,12 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private var compositeDisposable = CompositeDisposable()
 
-    private var deviceList = listOf<DeviceActive>()
+    private var deviceList = mutableListOf<DeviceActive>()
     private lateinit var viewPagerAdapter: ViewPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.d("Created")
         setContentView(R.layout.activity_toolbar2)
         button_add_device?.setOnClickListener {
             stopScanning()
@@ -142,8 +143,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
                 }
 
                 invalidateOptionsMenu()
-                supportActionBar?.title = deviceList[position].device.getRealName()
-                supportActionBar?.subtitle = deviceList[position].device.macAddress
             }
         })
     }
@@ -156,7 +155,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun displayPreferredDevices(it: List<DeviceActive>) {
         if (deviceList.size != it.size) {
-            deviceList = it
+            deviceList = it.toMutableList()
             viewPagerAdapter.notifyDataSetChanged()
         }
     }
@@ -322,8 +321,33 @@ class MainActivity2 : DaggerAppCompatActivity(),
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
+    fun removeCurrentDisplayedBeacon(macAddress: String) {
+
+        var position = -1
+        var device: Device? = null
+        deviceList.forEachIndexed { index, deviceActive ->
+            if(deviceActive.device.macAddress == macAddress) {
+                device = deviceActive.device
+                position = index
+                return@forEachIndexed
+            }
+        }
+
+        device?.let {
+            deviceViewModel.deleteDevice(it)
+            viewPagerAdapter.removeItemAt(position)
+        }
+    }
+
     inner class ViewPagerAdapter : FragmentStateAdapter(this@MainActivity2) {
+        fun removeItemAt(position: Int) {
+            deviceList.removeAt(position)
+            notifyItemRemoved(position)
+        }
+
         override fun getItem(position: Int): Fragment {
+            supportActionBar?.title = deviceList[position].device.getRealName()
+            supportActionBar?.subtitle = deviceList[position].device.macAddress
             return DeviceMainFragment.newInstance(deviceList[position].device)
         }
 
