@@ -1,7 +1,7 @@
 package com.aconno.sensorics.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.aconno.sensorics.SingleLiveEvent
 import com.aconno.sensorics.domain.ResourcesInitializer
 import kotlinx.coroutines.*
 
@@ -9,7 +9,7 @@ class SplashViewModel(
     private val resourcesInitializer: ResourcesInitializer
 ) : ViewModel() {
 
-    val initializationLiveEvent = SingleLiveEvent<Boolean>()
+    val initializationLiveEvent = MutableLiveData<Boolean>()
 
     fun initApp() {
         GlobalScope.launch(Dispatchers.Main) {
