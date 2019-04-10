@@ -31,4 +31,8 @@
         android:checked="true"
         android:title="@string/disconnect"
         app:showAsAction="ifRoom" />
+
+    <item android:id="@+id/action_delete_beacon"
+        android:visible="true"
+        android:title="@string/delete"/>
 </menu>

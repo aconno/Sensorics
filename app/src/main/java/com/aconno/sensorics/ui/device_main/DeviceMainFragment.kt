@@ -263,12 +263,33 @@ class DeviceMainFragment : DaggerFragment() {
                     //TODO: Implement Logger functionality
                     return true
                 }
+                R.id.action_delete_beacon -> {
+                    showDeleteDeviceDialog()
+                    return true
+                }
                 else -> {
                     //Do nothing
                 }
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showDeleteDeviceDialog() {
+        activity?.let {
+            AlertDialog.Builder(it)
+                    .setTitle(getString(R.string.remove_device_dialog_title_format, mDevice.name))
+                    .setMessage(R.string.remove_device_dialog_message)
+                    .setPositiveButton(R.string.yes) {dialog, _ ->
+                        removeBeacon()
+                        dialog.dismiss()
+                    }
+                    .show()
+        }
+    }
+
+    private fun removeBeacon() {
+        (activity as? MainActivity2)?.removeCurrentDisplayedBeacon(mDevice.macAddress)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

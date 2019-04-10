@@ -57,7 +57,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private var compositeDisposable = CompositeDisposable()
 
-    private var deviceList = listOf<DeviceActive>()
+    private var deviceList = mutableListOf<DeviceActive>()
     private lateinit var viewPagerAdapter: ViewPagerAdapter
     private lateinit var pageChangedCallback: PageChangedCallback
 
@@ -157,7 +157,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun displayPreferredDevices(it: List<DeviceActive>) {
         if (deviceList.size != it.size) {
-            deviceList = it
+            deviceList = it.toMutableList()
             viewPagerAdapter.notifyDataSetChanged()
         }
     }
@@ -321,6 +321,24 @@ class MainActivity2 : DaggerAppCompatActivity(),
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
+    fun removeCurrentDisplayedBeacon(macAddress: String) {
+
+        var position = -1
+        var device: Device? = null
+        deviceList.forEachIndexed { index, deviceActive ->
+            if(deviceActive.device.macAddress == macAddress) {
+                device = deviceActive.device
+                position = index
+                return@forEachIndexed
+            }
+        }
+
+        device?.let {
+            deviceViewModel.deleteDevice(it)
+            viewPagerAdapter.removeItemAt(position)
+        }
+    }
+
     inner class PageChangedCallback : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             for (i in 0..(viewPagerAdapter.itemCount - 1)) {
@@ -334,6 +352,11 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     inner class ViewPagerAdapter : FragmentStateAdapter(this@MainActivity2) {
+        fun removeItemAt(position: Int) {
+            deviceList.removeAt(position)
+            notifyItemRemoved(position)
+        }
+
         override fun getItem(position: Int): Fragment {
             return DeviceMainFragment.newInstance(deviceList[position].device)
         }
