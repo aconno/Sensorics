@@ -63,8 +63,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private var compositeDisposable = CompositeDisposable()
 
-    private var deviceList = mutableListOf<DeviceActive>()
-
     private lateinit var viewPagerAdapter: ViewPagerAdapter
     private lateinit var pageChangedCallback: PageChangedCallback
 
@@ -81,10 +79,8 @@ class MainActivity2 : DaggerAppCompatActivity(),
         setSupportActionBar(toolbar)
 
         compositeDisposable.add(
-            deviceViewModel.getSavedDevicesFlowable()
-                .subscribe {
-                    displayPreferredDevices(it)
-                }
+                deviceViewModel.getSavedDevicesFlowable()
+                        .subscribe(::displayPreferredDevices, ::onGetDevicesError)
         )
 
         bluetoothScanningViewModel.getScanEvent()
@@ -141,12 +137,13 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun setupViewPager() {
         content_pager?.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        viewPagerAdapter = ViewPagerAdapter(this, deviceList)
+        viewPagerAdapter = ViewPagerAdapter(this)
         content_pager?.adapter = viewPagerAdapter
         pageChangedCallback = PageChangedCallback()
         content_pager?.registerOnPageChangeCallback(pageChangedCallback)
 
         TabLayoutMediator(tabLayout, content_pager) { tab, position ->
+            val deviceList = viewPagerAdapter.deviceList
             tab.text = deviceList[position].device.getRealName()
         }.attach()
 
@@ -163,10 +160,11 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     private fun displayPreferredDevices(it: List<DeviceActive>) {
-        if (deviceList.size != it.size) {
-            deviceList = it.toMutableList()
-            viewPagerAdapter.notifyDataSetChanged()
-        }
+        viewPagerAdapter.deviceList = it.toMutableList()
+    }
+
+    private fun onGetDevicesError(throwable: Throwable) {
+        Timber.e(throwable)
     }
 
     override fun onResume() {
@@ -331,6 +329,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     fun removeCurrentDisplayedBeacon(macAddress: String) {
         var position = -1
         var removedDevice: DeviceActive? = null
+        val deviceList = viewPagerAdapter.deviceList
         deviceList.forEachIndexed { index, deviceActive ->
             if(deviceActive.device.macAddress == macAddress) {
                 removedDevice = deviceActive
@@ -347,6 +346,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     @SuppressLint("InflateParams")
     fun renameDevice(macAddress: String) {
+        val deviceList = viewPagerAdapter.deviceList
         deviceList.find { it.device.macAddress == macAddress }?.let { deviceToUpdate ->
             val view = layoutInflater.inflate(R.layout.layout_rename, null)
             val input = view.findViewById<EditText>(R.id.edit_name).apply {
@@ -374,9 +374,10 @@ class MainActivity2 : DaggerAppCompatActivity(),
             val newDevice = Device(oldDevice.name, deviceAlias, oldDevice.macAddress, oldDevice.icon)
             val newDeviceActive = DeviceActive(newDevice, deviceToUpdate.active)
 
+            val deviceList = viewPagerAdapter.deviceList
             val position = deviceList.indexOf(deviceToUpdate)
             deviceList[position] = newDeviceActive
-            viewPagerAdapter.notifyItemChanged(position)
+            viewPagerAdapter.updateItemAt(newDeviceActive, position)
 
             showRenameSnackbar(position, deviceToUpdate, deviceAlias)
         }
@@ -384,8 +385,9 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun showRenameSnackbar(position: Int, deviceToUpdate: DeviceActive, deviceAlias: String) {
         showUndoableSnackbar(R.string.beacon_renamed, View.OnClickListener {
+            val deviceList = viewPagerAdapter.deviceList
             deviceList[position] = deviceToUpdate
-            viewPagerAdapter.notifyItemChanged(position)
+            viewPagerAdapter.updateItemAt(deviceToUpdate, position)
         }) {
             deviceViewModel.updateDevice(deviceToUpdate.device, deviceAlias)
         }
@@ -393,8 +395,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun showDeleteSnackbar(position: Int, removedDevice: DeviceActive) {
         showUndoableSnackbar(R.string.beacon_removed, View.OnClickListener {
-            deviceList[position] = removedDevice
-            viewPagerAdapter.notifyDataSetChanged()
+            viewPagerAdapter.insertItemAt(removedDevice, position)
         }) {
             deviceViewModel.deleteDevice(removedDevice.device)
         }
