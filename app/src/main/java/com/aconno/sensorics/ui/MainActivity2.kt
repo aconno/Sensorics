@@ -346,6 +346,10 @@ class MainActivity2 : DaggerAppCompatActivity(),
                 )
             }
 
+            if (deviceList[position].device.connectable && BluetoothScanningService.isRunning()) {
+                stopScanning()
+            }
+
             invalidateOptionsMenu()
         }
     }
