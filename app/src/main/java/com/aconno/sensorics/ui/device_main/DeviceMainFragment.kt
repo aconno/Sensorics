@@ -278,13 +278,13 @@ class DeviceMainFragment : DaggerFragment() {
     private fun showDeleteDeviceDialog() {
         activity?.let {
             AlertDialog.Builder(it)
-                    .setTitle(getString(R.string.remove_device_dialog_title_format, mDevice.name))
-                    .setMessage(R.string.remove_device_dialog_message)
-                    .setPositiveButton(R.string.yes) {dialog, _ ->
-                        removeBeacon()
-                        dialog.dismiss()
-                    }
-                    .show()
+                .setTitle(getString(R.string.remove_device_dialog_title_format, mDevice.name))
+                .setMessage(R.string.remove_device_dialog_message)
+                .setPositiveButton(R.string.yes) { dialog, _ ->
+                    removeBeacon()
+                    dialog.dismiss()
+                }
+                .show()
         }
     }
 

@@ -326,7 +326,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
         var position = -1
         var device: Device? = null
         deviceList.forEachIndexed { index, deviceActive ->
-            if(deviceActive.device.macAddress == macAddress) {
+            if (deviceActive.device.macAddress == macAddress) {
                 device = deviceActive.device
                 position = index
                 return@forEachIndexed
