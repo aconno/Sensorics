@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
@@ -32,6 +33,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_toolbar2.*
+import kotlinx.android.synthetic.main.pager_tab_layout.view.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
@@ -69,8 +71,11 @@ class MainActivity2 : DaggerAppCompatActivity(),
             ScannedDevicesDialog().show(supportFragmentManager, "devices_dialog")
         }
 
-        toolbar.title = getString(R.string.app_name)
         setSupportActionBar(toolbar)
+        supportActionBar?.title = getString(R.string.app_name)
+        //TODO Change Icon
+//        supportActionBar?.setDisplayShowHomeEnabled(true)
+//        supportActionBar?.setIcon(R.mipmap.ic_launcher_rounded)
 
         compositeDisposable.add(
             deviceViewModel.getSavedDevicesFlowable()
@@ -139,11 +144,18 @@ class MainActivity2 : DaggerAppCompatActivity(),
         content_pager?.registerOnPageChangeCallback(pageChangedCallback)
 
         TabLayoutMediator(tabLayout, content_pager) { tab, position ->
-            tab.text = deviceList[position].device.getRealName()
+            tab.customView = prepareTabView(deviceList[position])
         }.attach()
 
         with(ViewPager2TouchHelper()) {
             setViewPager(content_pager)
+        }
+    }
+
+    private fun prepareTabView(deviceActive: DeviceActive): View {
+        return layoutInflater.inflate(R.layout.pager_tab_layout, null).apply {
+            tv_title?.text = deviceActive.device.getRealName()
+            tv_count?.text = deviceActive.device.macAddress
         }
     }
 
