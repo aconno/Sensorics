@@ -22,7 +22,6 @@ import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
-import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.ui.settings.SettingsActivity
@@ -144,7 +143,11 @@ class MainActivity2 : DaggerAppCompatActivity(),
         content_pager?.registerOnPageChangeCallback(pageChangedCallback)
 
         TabLayoutMediator(tabLayout, content_pager) { tab, position ->
-            tab.customView = prepareTabView(deviceList[position])
+            if (position == 0) {
+                tab.text = "Welcome"
+            } else {
+                tab.customView = prepareTabView(deviceList[position - 1])
+            }
         }.attach()
 
         with(ViewPager2TouchHelper()) {
@@ -333,7 +336,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     fun removeCurrentDisplayedBeacon(macAddress: String) {
-
         var position = -1
         var device: Device? = null
         deviceList.forEachIndexed { index, deviceActive ->
@@ -353,13 +355,15 @@ class MainActivity2 : DaggerAppCompatActivity(),
     inner class PageChangedCallback : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             for (i in 0..(viewPagerAdapter.itemCount - 1)) {
-                (viewPagerAdapter.getItem(position) as DeviceMainFragment).setMenuVisibility(
+                viewPagerAdapter.getItem(position).setMenuVisibility(
                     position == i
                 )
             }
 
-            if (deviceList[position].device.connectable && BluetoothScanningService.isRunning()) {
-                stopScanning()
+            if (position != 0) {
+                if (deviceList[position - 1].device.connectable && BluetoothScanningService.isRunning()) {
+                    stopScanning()
+                }
             }
 
             invalidateOptionsMenu()
