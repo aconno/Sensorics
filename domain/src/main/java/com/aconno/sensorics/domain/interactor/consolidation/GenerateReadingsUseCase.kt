@@ -28,40 +28,48 @@ class GenerateReadingsUseCase(
             val byteFormat = it.value
             val device = generateDevice(format, parameter)
 
-            val reading = Reading(
-                parameter.timestamp,
-                device,
-                evaluateFormula(byteFormat, msd),
-                name,
-                format.id
-            )
-            sensorReadings.add(reading)
+            evaluateFormula(byteFormat, msd)?.let { number ->
+                val reading = Reading(
+                    parameter.timestamp,
+                    device,
+                    number,
+                    name,
+                    format.id
+                )
+
+                sensorReadings.add(reading)
+            }
         }
         return Single.just(sensorReadings)
     }
 
-    private fun evaluateFormula(byteFormat: ByteFormat, msd: ByteArray): Number {
-        val deserializedNumber = deserializer.deserializeNumber(
-            msd,
-            byteFormat
-        )
+    private fun evaluateFormula(byteFormat: ByteFormat, msd: ByteArray): Number? {
+        try {
+            val deserializedNumber = deserializer.deserializeNumber(
+                msd,
+                byteFormat
+            )
 
-        //If there is no formula,Don't do anything.
-        return if (byteFormat.formula == null) {
-            deserializedNumber
-        } else {
-            try {
-                //Evaluete expression
-                byteFormat.formula.with(
-                    "x", BigDecimal(
-                        deserializedNumber.toString()
-                    )
-                ).eval()
-            } catch (ex: Exception) {
-                //TODO Known Bug
-                //Attempt to read from field 'java.util.TreeMap$TreeMapEntry java.util.TreeMap$TreeMapEntry.left' on a null object reference
+            //If there is no formula,Don't do anything.
+            return if (byteFormat.formula == null) {
                 deserializedNumber
+            } else {
+                try {
+                    //Evaluete expression
+                    byteFormat.formula.with(
+                        "x", BigDecimal(
+                            deserializedNumber.toString()
+                        )
+                    ).eval()
+                } catch (ex: Exception) {
+                    //TODO Known Bug
+                    //Attempt to read from field 'java.util.TreeMap$TreeMapEntry java.util.TreeMap$TreeMapEntry.left' on a null object reference
+                    deserializedNumber
+                }
             }
+
+        } catch (ex: Exception) {
+            return null
         }
     }
 
@@ -94,13 +102,13 @@ class GenerateReadingsUseCase(
     }
 
     private fun hasSettingsSupport(
-            format: AdvertisementFormat,
-            parameter: ScanResult
+        format: AdvertisementFormat,
+        parameter: ScanResult
     ): Boolean {
         format.getSettingsSupport()
-                ?.let { settingsSupport ->
-                    return ByteOperations.isolateMsd(parameter.rawData)[settingsSupport.index] and settingsSupport.mask == settingsSupport.mask
-                }
+            ?.let { settingsSupport ->
+                return ByteOperations.isolateMsd(parameter.rawData)[settingsSupport.index] and settingsSupport.mask == settingsSupport.mask
+            }
 
         return false
     }
