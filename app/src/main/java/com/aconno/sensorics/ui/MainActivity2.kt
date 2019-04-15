@@ -10,13 +10,11 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager.widget.ViewPager
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
-import com.aconno.sensorics.adapter.viewpager2.TabLayoutMediator
-import com.aconno.sensorics.adapter.viewpager2.ViewPager2TouchHelper
-import com.aconno.sensorics.adapter.viewpager2.ViewPagerAdapter
+import com.aconno.sensorics.adapter.viewpager.ViewPagerAdapter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
@@ -30,6 +28,7 @@ import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.DeviceViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_toolbar2.*
 import kotlinx.android.synthetic.main.pager_tab_layout.view.*
@@ -59,7 +58,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private var deviceList = mutableListOf<DeviceActive>()
     private lateinit var viewPagerAdapter: ViewPagerAdapter
-    private lateinit var pageChangedCallback: PageChangedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +76,15 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
         compositeDisposable.add(
             deviceViewModel.getSavedDevicesFlowable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    displayPreferredDevices(it)
+                }
+        )
+
+        compositeDisposable.add(
+            deviceViewModel.deviceActiveObservable
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     displayPreferredDevices(it)
                 }
@@ -136,23 +143,28 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     private fun setupViewPager() {
-        content_pager?.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        viewPagerAdapter = ViewPagerAdapter(this)
+        viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         content_pager?.adapter = viewPagerAdapter
-        pageChangedCallback = PageChangedCallback()
-        content_pager?.registerOnPageChangeCallback(pageChangedCallback)
-
-        TabLayoutMediator(tabLayout, content_pager) { tab, position ->
-            if (position == 0) {
-                tab.text = "Welcome"
-            } else {
-                tab.customView = prepareTabView(deviceList[position - 1])
+        tabLayout.setupWithViewPager(content_pager)
+        content_pager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
             }
-        }.attach()
 
-        with(ViewPager2TouchHelper()) {
-            setViewPager(content_pager)
-        }
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                if (position != 0) {
+                    if (deviceList[position - 1].device.connectable && BluetoothScanningService.isRunning()) {
+                        stopScanning()
+                    }
+                }
+            }
+        })
     }
 
     private fun prepareTabView(deviceActive: DeviceActive): View {
@@ -163,7 +175,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     override fun onDestroy() {
-        content_pager?.unregisterOnPageChangeCallback(pageChangedCallback)
         compositeDisposable.clear()
         compositeDisposable = CompositeDisposable()
         super.onDestroy()
@@ -173,6 +184,14 @@ class MainActivity2 : DaggerAppCompatActivity(),
         if (deviceList.size != it.size) {
             deviceList = it.toMutableList()
             viewPagerAdapter.submitList(deviceList)
+
+            // Iterate over all tabs and set the custom view
+            for (i in 1 until (tabLayout.tabCount)) {
+                val tab = tabLayout.getTabAt(i)
+                tab?.customView = prepareTabView(deviceList[i - 1])
+            }
+        } else {
+            viewPagerAdapter.submitStatusChangedList(it)
         }
     }
 
@@ -286,7 +305,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     @AfterPermissionGranted(RC_LOCATION_AND_EXTERNAL)
     private fun startScaninngWithPermissions() {
         val perms =
-            arrayOf<String>(
+            arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
@@ -349,24 +368,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
         device?.let {
             deviceViewModel.deleteDevice(it)
             viewPagerAdapter.removeItemAt(position)
-        }
-    }
-
-    inner class PageChangedCallback : ViewPager2.OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            for (i in 0..(viewPagerAdapter.itemCount - 1)) {
-                viewPagerAdapter.getItem(position).setMenuVisibility(
-                    position == i
-                )
-            }
-
-            if (position != 0) {
-                if (deviceList[position - 1].device.connectable && BluetoothScanningService.isRunning()) {
-                    stopScanning()
-                }
-            }
-
-            invalidateOptionsMenu()
         }
     }
 }

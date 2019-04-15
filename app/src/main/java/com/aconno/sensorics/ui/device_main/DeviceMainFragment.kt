@@ -13,6 +13,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
@@ -44,7 +45,7 @@ import javax.inject.Inject
 
 
 @SuppressLint("SetJavaScriptEnabled")
-class DeviceMainFragment : DaggerFragment() {
+class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
     @Inject
     lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
@@ -71,6 +72,7 @@ class DeviceMainFragment : DaggerFragment() {
     private var isServicesDiscovered = false
     private var isConnectedOrConnecting = false
     private var hasSettings: Boolean = false
+    private var status: Boolean = false
 
     var menu: Menu? = null
 
@@ -208,6 +210,52 @@ class DeviceMainFragment : DaggerFragment() {
         }
     }
 
+    override fun setStatus(isOnline: Boolean) {
+        if (isOnline == status) {
+            return
+        }
+
+        context?.let { context ->
+            if (isOnline) {
+                setStatusOnline(context)
+            } else {
+                setStatusOffline(context)
+            }
+        }
+    }
+
+    private fun setStatusOffline(context: Context) {
+        status = false
+        txt_offline?.text = getString(R.string.offline)
+        txt_offline?.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                android.R.color.darker_gray
+            )
+        )
+        txt_offline?.visibility = View.VISIBLE
+    }
+
+    private fun setStatusOnline(context: Context): Boolean? {
+        status = true
+        txt_offline?.text = getString(R.string.online)
+        txt_offline?.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                R.color.online_green
+            )
+        )
+        return txt_offline?.postDelayed(
+            {
+                txt_offline?.visibility = View.GONE
+            }, 500
+        )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean("mm", status)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         context?.let { context ->
             when (item.itemId) {
@@ -282,6 +330,10 @@ class DeviceMainFragment : DaggerFragment() {
         setupWebView()
         if (mDevice.connectable)
             setupConnectionForFreight()
+
+        savedInstanceState?.let {
+            setStatus(it.getBoolean("mm", false))
+        }
     }
 
     private fun setupWebView() {
@@ -323,11 +375,12 @@ class DeviceMainFragment : DaggerFragment() {
             .concatMap { filterByMacUseCase.execute(it, mDevice.macAddress).toFlowable() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
+                setStatus(true)
 
-                var jsonValues = generateJsonArray(readings)
+                val jsonValues = generateJsonArray(readings)
                 setHasSettings(readings)
 
-                web_view.loadUrl("javascript:onSensorReadings('$jsonValues')")
+                web_view?.loadUrl("javascript:onSensorReadings('$jsonValues')")
             }
     }
 
