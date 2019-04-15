@@ -7,6 +7,7 @@ import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.device_main.ScanStatus
 import com.aconno.sensorics.ui.welcome.WelcomeFragment
+import timber.log.Timber
 
 class ViewPagerAdapter(
     fragmentManager: FragmentManager
@@ -16,8 +17,18 @@ class ViewPagerAdapter(
      * Keeps track of fragment references
      */
     private val sparseFragmentArray = SparseArray<DeviceMainFragment>()
-
     private var deviceList: MutableList<DeviceActive> = mutableListOf()
+
+    init {
+        fragmentManager.fragments.forEachIndexed { index, fragment ->
+            fragment.takeIf {
+                it is DeviceMainFragment
+            }?.let {
+                sparseFragmentArray.put(index, it as DeviceMainFragment)
+            }
+        }
+    }
+
 
     fun submitList(list: MutableList<DeviceActive>) {
         deviceList = list
@@ -31,7 +42,10 @@ class ViewPagerAdapter(
 
     override fun getItem(position: Int) =
         if (position == 0) WelcomeFragment.newInstance()
-        else getDeviceMainFragment(position)
+        else {
+            Timber.d("$position")
+            getDeviceMainFragment(position)
+        }
 
     private fun getDeviceMainFragment(position: Int): DeviceMainFragment =
         DeviceMainFragment.newInstance(deviceList[position - 1].device).apply {
