@@ -193,5 +193,7 @@
     <string name="apply">Apply</string>
     <string name="remove_device_dialog_message">Möchten Sie dieses Gerät wirklich löschen?</string>
     <string name="remove_device_dialog_title_format">Bake löschen %1$s</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
 
 </resources>

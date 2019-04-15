@@ -8,16 +8,12 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.*
-import android.view.animation.OvershootInterpolator
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.transition.ChangeBounds
-import androidx.transition.TransitionManager
+import androidx.core.content.ContextCompat
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
@@ -214,22 +210,39 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     }
 
     override fun setStatus(isOnline: Boolean) {
-        if (isOnline) {
-            updateConstraints(R.layout.fragment_device_main_online)
-        } else {
-            updateConstraints(R.layout.fragment_device_main)
+        context?.let { context ->
+            if (isOnline) {
+                setStatusOnline(context)
+            } else {
+                setStatusOffline(context)
+            }
         }
     }
 
-    fun updateConstraints(@LayoutRes id: Int) {
-        context?.let {
-            val newConstraintSet = ConstraintSet()
-            newConstraintSet.clone(it, id)
-            newConstraintSet.applyTo(cl_root)
-            val transition = ChangeBounds()
-            transition.interpolator = OvershootInterpolator()
-            TransitionManager.beginDelayedTransition(cl_root, transition)
-        }
+    private fun setStatusOffline(context: Context) {
+        txt_offline?.text = getString(R.string.offline)
+        txt_offline?.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                android.R.color.darker_gray
+            )
+        )
+        txt_offline?.visibility = View.VISIBLE
+    }
+
+    private fun setStatusOnline(context: Context): Boolean? {
+        txt_offline?.text = getString(R.string.online)
+        txt_offline?.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                R.color.online_green
+            )
+        )
+        return txt_offline?.postDelayed(
+            {
+                txt_offline?.visibility = View.GONE
+            }, 500
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
