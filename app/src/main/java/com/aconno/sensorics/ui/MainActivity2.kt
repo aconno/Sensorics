@@ -30,6 +30,7 @@ import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.DeviceViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_toolbar2.*
 import kotlinx.android.synthetic.main.pager_tab_layout.view.*
@@ -78,6 +79,15 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
         compositeDisposable.add(
             deviceViewModel.getSavedDevicesFlowable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    displayPreferredDevices(it)
+                }
+        )
+
+        compositeDisposable.add(
+            deviceViewModel.deviceActiveObservable
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     displayPreferredDevices(it)
                 }
@@ -173,6 +183,8 @@ class MainActivity2 : DaggerAppCompatActivity(),
         if (deviceList.size != it.size) {
             deviceList = it.toMutableList()
             viewPagerAdapter.submitList(deviceList)
+        } else {
+            viewPagerAdapter.submitStatusChangedList(it)
         }
     }
 

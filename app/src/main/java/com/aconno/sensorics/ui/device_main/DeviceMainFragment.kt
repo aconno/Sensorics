@@ -8,11 +8,16 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.*
+import android.view.animation.OvershootInterpolator
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
@@ -44,7 +49,7 @@ import javax.inject.Inject
 
 
 @SuppressLint("SetJavaScriptEnabled")
-class DeviceMainFragment : DaggerFragment() {
+class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
     @Inject
     lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
@@ -205,6 +210,25 @@ class DeviceMainFragment : DaggerFragment() {
                     isChecked = false
                 }
             }
+        }
+    }
+
+    override fun setStatus(isOnline: Boolean) {
+        if (isOnline) {
+            updateConstraints(R.layout.fragment_device_main_online)
+        } else {
+            updateConstraints(R.layout.fragment_device_main)
+        }
+    }
+
+    fun updateConstraints(@LayoutRes id: Int) {
+        context?.let {
+            val newConstraintSet = ConstraintSet()
+            newConstraintSet.clone(it, id)
+            newConstraintSet.applyTo(cl_root)
+            val transition = ChangeBounds()
+            transition.interpolator = OvershootInterpolator()
+            TransitionManager.beginDelayedTransition(cl_root, transition)
         }
     }
 
