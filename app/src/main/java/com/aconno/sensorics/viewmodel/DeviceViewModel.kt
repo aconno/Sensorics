@@ -26,6 +26,7 @@ class DeviceViewModel(
 
     val deviceActiveObservable: PublishSubject<List<DeviceActive>> =
         PublishSubject.create<List<DeviceActive>>()
+
     private var deviceList: List<DeviceActive>? = null
 
     private val timestamps = hashMapOf<Device, Long>()
@@ -34,17 +35,18 @@ class DeviceViewModel(
 
     init {
         disposables.add(
-            deviceStream.subscribe { scannedDevice ->
-                timestamps[scannedDevice] = System.currentTimeMillis()
-                val savedDevices = deviceList
-                savedDevices?.forEach {
-                    if (scannedDevice == it.device && !it.active) {
-                        it.active = true
-                        deviceActiveObservable.onNext(savedDevices)
-                        return@forEach
+            deviceStream
+                .subscribe { scannedDevice ->
+                    timestamps[scannedDevice] = System.currentTimeMillis()
+                    val savedDevices = deviceList
+                    savedDevices?.forEach {
+                        if (scannedDevice == it.device && !it.active) {
+                            it.active = true
+                            deviceActiveObservable.onNext(savedDevices)
+                            return@forEach
+                        }
                     }
                 }
-            }
         )
 
         disposables.add(
