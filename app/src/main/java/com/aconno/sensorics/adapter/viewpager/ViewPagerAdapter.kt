@@ -1,20 +1,16 @@
-package com.aconno.sensorics.adapter.viewpager2
+package com.aconno.sensorics.adapter.viewpager
 
 import android.util.SparseArray
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.device_main.ScanStatus
 import com.aconno.sensorics.ui.welcome.WelcomeFragment
 
 class ViewPagerAdapter(
-    fragmentActivity: FragmentActivity
-) : FragmentStateAdapter(fragmentActivity) {
-
-    companion object {
-        const val ITEM_TYPE_WELCOME = 0
-        const val ITEM_TYPE_DEVICE = 1
-    }
+    fragmentManager: FragmentManager
+) : FragmentStatePagerAdapter(fragmentManager) {
 
     /**
      * Keeps track of fragment references
@@ -30,30 +26,23 @@ class ViewPagerAdapter(
 
     fun removeItemAt(position: Int) {
         deviceList.removeAt(position)
-        notifyItemRemoved(position)
+        notifyDataSetChanged()
     }
-
-    override fun getItemViewType(position: Int) =
-        if (position == 0) ITEM_TYPE_WELCOME else ITEM_TYPE_DEVICE
 
     override fun getItem(position: Int) =
         if (position == 0) WelcomeFragment.newInstance()
         else getDeviceMainFragment(position)
 
     private fun getDeviceMainFragment(position: Int): DeviceMainFragment =
-        if (sparseFragmentArray[position] != null) {
-            sparseFragmentArray[position]
-        } else {
-            DeviceMainFragment.newInstance(deviceList[position - 1].device).apply {
-                sparseFragmentArray.put(position, this)
-            }
+        DeviceMainFragment.newInstance(deviceList[position - 1].device).apply {
+            sparseFragmentArray.put(position, this)
         }
 
     /**
      * If ScanStatus is not initialized, this will return null. Instead of creating new one.
      */
     private fun getScanStatusItemOrNull(position: Int): ScanStatus? =
-        if (position < sparseFragmentArray.size() && sparseFragmentArray[position] != null) {
+        if (position <= sparseFragmentArray.size() && sparseFragmentArray[position] != null) {
             sparseFragmentArray[position]
         } else {
             null
@@ -70,7 +59,9 @@ class ViewPagerAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
+    override fun getPageTitle(position: Int): CharSequence? = if (position == 0) "Welcome" else ""
+
+    override fun getCount(): Int {
         return deviceList.size + 1
     }
 }

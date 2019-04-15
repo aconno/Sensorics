@@ -72,6 +72,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     private var isServicesDiscovered = false
     private var isConnectedOrConnecting = false
     private var hasSettings: Boolean = false
+    private var status: Boolean = false
 
     var menu: Menu? = null
 
@@ -210,6 +211,10 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     }
 
     override fun setStatus(isOnline: Boolean) {
+        if (isOnline == status) {
+            return
+        }
+
         context?.let { context ->
             if (isOnline) {
                 setStatusOnline(context)
@@ -220,6 +225,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     }
 
     private fun setStatusOffline(context: Context) {
+        status = false
         txt_offline?.text = getString(R.string.offline)
         txt_offline?.setBackgroundColor(
             ContextCompat.getColor(
@@ -231,6 +237,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     }
 
     private fun setStatusOnline(context: Context): Boolean? {
+        status = true
         txt_offline?.text = getString(R.string.online)
         txt_offline?.setBackgroundColor(
             ContextCompat.getColor(
@@ -243,6 +250,10 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
                 txt_offline?.visibility = View.GONE
             }, 500
         )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean("mm", status)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -319,6 +330,10 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         setupWebView()
         if (mDevice.connectable)
             setupConnectionForFreight()
+
+        savedInstanceState?.let {
+            setStatus(it.getBoolean("mm", false))
+        }
     }
 
     private fun setupWebView() {
@@ -360,11 +375,12 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
             .concatMap { filterByMacUseCase.execute(it, mDevice.macAddress).toFlowable() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
+                setStatus(true)
 
-                var jsonValues = generateJsonArray(readings)
+                val jsonValues = generateJsonArray(readings)
                 setHasSettings(readings)
 
-                web_view.loadUrl("javascript:onSensorReadings('$jsonValues')")
+                web_view?.loadUrl("javascript:onSensorReadings('$jsonValues')")
             }
     }
 
