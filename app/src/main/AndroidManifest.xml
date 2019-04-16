@@ -84,6 +84,12 @@
             android:label="@string/title_configure" />
 
         <activity
+            android:name=".ui.dfu.DfuActivity"
+            android:label="@string/title_dfu" />
+
+        <service android:name=".DfuService" />
+
+        <activity
             android:name=".ui.SplashActivity"
             android:noHistory="true"
             android:theme="@style/SplashTheme">
