@@ -250,12 +250,12 @@
 
     <!--Flasher Activity-->
     <string name="title_dfu">Update Firmware</string>
-    <string name="status_format">Status: %1$s</string>
+    <string name="status_format">Status: <b>%1$s</b></string>
     <string name="current_device_format">Current Device: %1$s</string>
-    <string name="speed_format">Speed: %1$.2fkB/s</string>
-    <string name="progress_format">Progress: %1$s</string>
-    <string name="parts_format">Part: %1$d of %2$d</string>
-    <string name="avg_speed_format">Avg Speed: %1$.2fkB/s</string>
+    <string name="speed_format">Speed: <b>%1$.2fkB/s</b></string>
+    <string name="progress_format">Progress: <b>%1$s</b></string>
+    <string name="parts_format">Part: <b>%1$d of %2$d</b></string>
+    <string name="avg_speed_format">Avg Speed: <b>%1$.2fkB/s</b></string>
     <string name="device_counter_format">Device %1$d of %2$d</string>
     <string name="total_time">Total Time:</string>
     <string name="device_time">Device Time:</string>
