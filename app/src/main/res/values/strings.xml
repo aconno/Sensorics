@@ -247,6 +247,34 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
+
+    <!--Flasher Activity-->
     <string name="title_dfu">Update Firmware</string>
+    <string name="status_format">Status: %1$s</string>
+    <string name="current_device_format">Current Device: %1$s</string>
+    <string name="speed_format">Speed: %1$.2fkB/s</string>
+    <string name="progress_format">Progress: %1$s</string>
+    <string name="parts_format">Part: %1$d of %2$d</string>
+    <string name="avg_speed_format">Avg Speed: %1$.2fkB/s</string>
+    <string name="device_counter_format">Device %1$d of %2$d</string>
+    <string name="total_time">Total Time:</string>
+    <string name="device_time">Device Time:</string>
+    <string name="device_flash_success">Success</string>
+    <string name="device_flash_error">Error</string>
+    <string name="dfu">Update Firmware</string>
+    <string name="snack_file_selection">Please select a file</string>
+    <string name="snack_action_select">Select</string>
+    <string name="dfuactivity_status_updating">Updating</string>
+    <string name="dfuactivity_status_uploading">Uploading</string>
+    <string name="dfuactivity_status_firmwarevalidating">Firmware validating</string>
+    <string name="dfuactivity_status_complete">Complete</string>
+    <string name="dfuactivity_status_dfu_aborted">Dfu Aborted</string>
+    <string name="dfuactivity_status_disconnected">Disconnected</string>
+    <string name="dfuactivity_status_disconnecting">Disconnecting</string>
+    <string name="dfuactivity_status_enabling_dfu_mode">Enabling Dfu Mode</string>
+    <string name="dfuactivity_status_upload_starting">Upload Starting</string>
+    <string name="dfuactivity_status_connected">Connected</string>
+    <string name="dfuactivity_status_connecting">Connecting</string>
+
 
 </resources>

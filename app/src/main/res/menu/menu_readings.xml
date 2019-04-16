@@ -31,4 +31,9 @@
         android:checked="true"
         android:title="@string/disconnect"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_dfu"
+        android:title="@string/dfu"
+        app:showAsAction="never" />
 </menu>

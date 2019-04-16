@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_dfu_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        tools:title="Title" />
+
+    <ViewSwitcher
+        android:id="@+id/vs_dfu_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/iv_dfu_selectFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add" />
+
+            <TextView
+                android:id="@+id/txt_dfu_selectedFile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Test/sda.zip" />
+
+            <Button
+                android:id="@+id/btn_dfu_flash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_dfu_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Status" />
+
+            <com.github.lzyzsd.circleprogress.ArcProgress
+                android:id="@+id/prg_dfu_progress"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                custom:arc_finished_color="@color/primaryColor"
+                custom:arc_progress="0"
+                custom:arc_text_color="@color/primaryTextColor"
+                custom:arc_unfinished_color="@color/primaryLightColor" />
+
+            <TextView
+                android:id="@+id/txt_dfu_uploadProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/txt_dfu_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/txt_dfu_parts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/txt_dfu_avgSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ViewSwitcher>
+</LinearLayout>

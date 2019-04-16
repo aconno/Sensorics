@@ -23,6 +23,7 @@ import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
+import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -280,6 +281,10 @@ class DeviceMainFragment : DaggerFragment() {
                         ).show()
                     }
                     //TODO: Implement Logger functionality
+                    return true
+                }
+                R.id.action_dfu -> {
+                    DfuActivity.start(context, mDevice.macAddress)
                     return true
                 }
                 else -> {
