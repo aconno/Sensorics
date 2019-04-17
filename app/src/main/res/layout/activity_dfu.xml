@@ -18,11 +18,13 @@
         android:id="@+id/vs_dfu_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:animateLayoutChanges="true">
+        android:animateLayoutChanges="true"
+        android:inAnimation="@anim/anim_fade_in"
+        android:outAnimation="@anim/anim_fade_out"
+        android:paddingStart="8dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,7 +40,7 @@
                 android:drawableStart="@drawable/ic_add"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
-                android:text="Select A File"
+                android:text="@string/dfu_btn_select_file"
                 android:textAllCaps="false" />
 
             <TextView
@@ -58,7 +60,7 @@
                 android:drawableStart="@drawable/ic_file_upload_black_24dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
-                android:text="Start Firmware Update"
+                android:text="@string/dfu_btn_start_firmware_update"
                 android:textAllCaps="false" />
         </LinearLayout>
 
@@ -72,8 +74,8 @@
                 android:id="@+id/txt_dfu_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                tools:text="Status : " />
+                android:text="@string/dfu_txt_status_starting"
+                android:textSize="20sp" />
 
             <com.github.lzyzsd.circleprogress.ArcProgress
                 android:id="@+id/prg_dfu_progress"

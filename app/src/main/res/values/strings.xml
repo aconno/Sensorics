@@ -248,7 +248,7 @@
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
 
-    <!--Flasher Activity-->
+    <!--Dfu Activity-->
     <string name="title_dfu">Update Firmware</string>
     <string name="status_format">Status: <b>%1$s</b></string>
     <string name="current_device_format">Current Device: %1$s</string>
@@ -262,8 +262,8 @@
     <string name="device_flash_success">Success</string>
     <string name="device_flash_error">Error</string>
     <string name="dfu">Update Firmware</string>
-    <string name="snack_file_selection">Please select a file</string>
-    <string name="snack_action_select">Select</string>
+    <string name="dfu_snack_msg_file_selection">Please select a file</string>
+    <string name="dfu_snack_action_select">Select</string>
     <string name="dfuactivity_status_updating">Updating</string>
     <string name="dfuactivity_status_uploading">Uploading</string>
     <string name="dfuactivity_status_firmwarevalidating">Firmware validating</string>
@@ -275,6 +275,11 @@
     <string name="dfuactivity_status_upload_starting">Upload Starting</string>
     <string name="dfuactivity_status_connected">Connected</string>
     <string name="dfuactivity_status_connecting">Connecting</string>
+    <string name="dfu_snack_action_goback">Go Back</string>
+    <string name="dfu_snack_msg_work_in_progress">Work in progress.</string>
+    <string name="dfu_btn_select_file">Select A File</string>
+    <string name="dfu_btn_start_firmware_update">Start Firmware Update</string>
+    <string name="dfu_txt_status_starting">Status : Starting..</string>
 
 
 </resources>

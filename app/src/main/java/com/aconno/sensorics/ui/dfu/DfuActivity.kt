@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui.dfu
 
 import android.app.Activity
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -19,6 +20,7 @@ import com.aconno.sensorics.snack
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_dfu.*
 import no.nordicsemi.android.dfu.DfuBaseService
+import no.nordicsemi.android.dfu.DfuBaseService.EXTRA_DEVICE_ADDRESS
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter
 import no.nordicsemi.android.dfu.DfuServiceInitiator
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper
@@ -30,6 +32,7 @@ class DfuActivity : DaggerAppCompatActivity() {
 
     private lateinit var deviceAddress: String
     private var dfuFileUri: Uri? = null
+    private var canGoBack = false
     private var isUpdating = false
         set(value) {
             field = value
@@ -76,10 +79,21 @@ class DfuActivity : DaggerAppCompatActivity() {
         deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS)
         dfuFileUri = savedInstanceState?.getParcelable(EXTRA_FILE_PATH)
         isUpdating = savedInstanceState?.getBoolean(EXTRA_UPDATE_STATUS) ?: false
+
+        if (intent.hasExtra(DfuBaseService.EXTRA_DEVICE_NAME)
+            && intent.hasExtra(DfuBaseService.EXTRA_PROGRESS)
+        ) {
+            val progress = intent.getIntExtra(DfuBaseService.EXTRA_PROGRESS, 0)
+            setStatusText(getString(R.string.dfuactivity_status_updating))
+            prg_dfu_progress.progress = progress
+
+            isUpdating = true
+        }
     }
 
     private fun updateUI(value: Boolean) {
         if (value) {
+            canGoBack = false
             vs_dfu_container?.displayedChild = 1
         } else {
             vs_dfu_container?.displayedChild = 0
@@ -96,7 +110,32 @@ class DfuActivity : DaggerAppCompatActivity() {
         DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener)
     }
 
+    override fun onBackPressed() {
+        if (isUpdating) {
+            if (canGoBack) {
+                isUpdating = false
+            } else {
+                vs_dfu_container?.snack(getString(R.string.dfu_snack_msg_work_in_progress)) {
+                    action(
+                        getString(R.string.dfu_snack_action_goback),
+                        ContextCompat.getColor(applicationContext, R.color.primaryDarkColor)
+                    ) {
+                        isUpdating = false
+                    }
+                }
+            }
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     private fun flash() {
+        if (!BluetoothAdapter.getDefaultAdapter().isEnabled) {
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            startActivityForResult(enableBtIntent, 321)
+            return
+        }
+
         if (dfuFileUri != null) {
             isUpdating = true
 
@@ -108,10 +147,13 @@ class DfuActivity : DaggerAppCompatActivity() {
             starterDFU.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true)
 
             starterDFU.setZip(dfuFileUri!!)
-            starterDFU.start(this, DfuService::class.java)
+            starterDFU.start(applicationContext, DfuService::class.java)
         } else {
-            ll_dfu_root?.snack(getString(R.string.snack_file_selection)) {
-                action(getString(R.string.snack_action_select)) {
+            ll_dfu_root?.snack(getString(R.string.dfu_snack_msg_file_selection)) {
+                action(
+                    getString(R.string.dfu_snack_action_select),
+                    ContextCompat.getColor(applicationContext, R.color.primaryDarkColor)
+                ) {
                     openFileChooser()
                 }
             }
@@ -238,12 +280,13 @@ class DfuActivity : DaggerAppCompatActivity() {
     }
 
     private fun onComplete() {
+        canGoBack = true
         val vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(200L, 0L, 200L), -1))
+            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
             @Suppress("DEPRECATION")
-            vibrator.vibrate(longArrayOf(200L, 0L, 200L), -1)
+            vibrator.vibrate(500)
         }
     }
 
@@ -257,7 +300,6 @@ class DfuActivity : DaggerAppCompatActivity() {
 
     companion object {
         private const val EXTRA_FILE_PATH = "EXTRA_FILE_PATH"
-        private const val EXTRA_DEVICE_ADDRESS = "EXTRA_DEVICE_ADDRESS"
         private const val EXTRA_UPDATE_STATUS = "EXTRA_UPDATE_STATUS"
         private const val READ_REQUEST_CODE = 12332
 
@@ -266,7 +308,7 @@ class DfuActivity : DaggerAppCompatActivity() {
 
         fun start(context: Context, deviceMacAddress: String) {
             with(Intent(context, DfuActivity::class.java)) {
-                putExtra(EXTRA_DEVICE_ADDRESS, deviceMacAddress)
+                putExtra(DfuBaseService.EXTRA_DEVICE_ADDRESS, deviceMacAddress)
                 context.startActivity(this)
             }
         }
