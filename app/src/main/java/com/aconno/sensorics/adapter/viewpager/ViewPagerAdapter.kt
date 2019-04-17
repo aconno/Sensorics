@@ -36,20 +36,29 @@ class ViewPagerAdapter(
 
     fun submitList(list: MutableList<DeviceActive>) {
         deviceList = list
+        updateSparseArray()
+        submitStatusChangedList()
+        notifyDataSetChanged()
+    }
+
+    private fun updateSparseArray() {
         val tempFragmentArray = sparseFragmentArray.clone()
         sparseFragmentArray.clear()
 
         deviceList.forEachIndexed { index, deviceActive ->
             val fragment =
-                tempFragmentArray.find { areTheSame(deviceActive.device, it.getDevice()) }
+                tempFragmentArray.find { areDevicesTheSame(deviceActive.device, it.getDevice()) }
                     ?: DeviceMainFragment.newInstance(deviceActive.device)
             sparseFragmentArray.put(index, fragment)
         }
-        submitStatusChangedList()
-        notifyDataSetChanged()
     }
 
-    private fun areTheSame(device: Device, otherDevice: Device?): Boolean {
+    /**
+     * Checks for equality both in MAC addresses and device names, this method should only be used for
+     * particular case and not in the application generally, that is why the
+     * [equals][com.aconno.sensorics.domain.model.Device.equals] wasn't modified
+     */
+    private fun areDevicesTheSame(device: Device, otherDevice: Device?): Boolean {
         return otherDevice?.let {
             device.macAddress == it.macAddress && device.name == it.name
         } ?: false
