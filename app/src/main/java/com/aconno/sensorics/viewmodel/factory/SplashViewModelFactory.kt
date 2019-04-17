@@ -1,6 +1,6 @@
 package com.aconno.sensorics.viewmodel.factory
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.ResourcesInitializer
 import com.aconno.sensorics.viewmodel.SplashViewModel
 

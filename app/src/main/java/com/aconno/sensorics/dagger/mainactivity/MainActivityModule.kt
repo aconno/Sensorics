@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.mainactivity
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.permissons.PermissionActionFactory

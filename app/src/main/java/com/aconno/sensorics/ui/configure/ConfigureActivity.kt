@@ -1,18 +1,18 @@
 package com.aconno.sensorics.ui.configure
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.Observer
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Observer
 import com.aconno.bluetooth.BluetoothDeviceService
 import com.aconno.bluetooth.TasksCompleteListener
 import com.aconno.bluetooth.beacon.Beacon

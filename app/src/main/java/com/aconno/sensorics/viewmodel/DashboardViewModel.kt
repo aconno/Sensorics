@@ -1,8 +1,8 @@
 package com.aconno.sensorics.viewmodel
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.serialization.JavascriptCallGenerator
 import io.reactivex.Flowable

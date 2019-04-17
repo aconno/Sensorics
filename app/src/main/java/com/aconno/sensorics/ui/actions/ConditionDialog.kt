@@ -2,11 +2,11 @@ package com.aconno.sensorics.ui.actions
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.fragment.app.DialogFragment
 import com.aconno.sensorics.R
 import kotlinx.android.synthetic.main.dialog_condition.*
 
@@ -16,7 +16,7 @@ class ConditionDialog : DialogFragment() {
 
     private var sensorType: String? = null
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
             listener = context as ConditionDialogListener
@@ -36,7 +36,7 @@ class ConditionDialog : DialogFragment() {
 
     private fun removeTitleSpacing() {
         // Required for Lollipop (maybe others too) devices
-        dialog.window.requestFeature(Window.FEATURE_NO_TITLE)
+        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,7 +55,7 @@ class ConditionDialog : DialogFragment() {
         }
 
         button_cancel.setOnClickListener {
-            dialog.cancel()
+            dialog?.cancel()
         }
 
         button_set.setOnClickListener {
@@ -75,7 +75,7 @@ class ConditionDialog : DialogFragment() {
             sensorType?.let {
                 listener?.onSetClicked(it, condition, value)
             }
-            dialog.dismiss()
+            dialog?.dismiss()
         }
     }
 
@@ -91,7 +91,7 @@ class ConditionDialog : DialogFragment() {
             return dialog
         }
 
-        private fun getSensorTypeExtra(args: Bundle): String {
+        private fun getSensorTypeExtra(args: Bundle): String? {
             return args.getString(TYPE_EXTRA)
         }
     }

@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.restpublisher
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.ifttt.RestPublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase

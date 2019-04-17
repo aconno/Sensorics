@@ -2,11 +2,11 @@ package com.aconno.sensorics.ui.settings.publishers.resthttpgetparams
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import com.aconno.sensorics.R
 import com.aconno.sensorics.model.RestHttpGetParamModel
 
@@ -44,7 +44,7 @@ class AddRestHttpGetParamDialog : DialogFragment() {
         keyText = view.findViewById(R.id.edit_key)
         valueText = view.findViewById(R.id.edit_value)
 
-        dialog.window
+        dialog?.window
             ?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         if (restHttpGetParamModel != null) {
@@ -81,7 +81,7 @@ class AddRestHttpGetParamDialog : DialogFragment() {
 
     private fun removeTitleSpacing() {
         // Required for Lollipop (maybe others too) devices
-        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
+        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
     }
 
     private fun isNotEmpty(vararg array: String): Boolean {
@@ -100,7 +100,7 @@ class AddRestHttpGetParamDialog : DialogFragment() {
         if (context is OnFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:context=".ui.settings.publishers.selectpublish.SelectPublisherActivity">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/custom_toolbar"
         style="@style/Toolbar"
         android:layout_width="match_parent"

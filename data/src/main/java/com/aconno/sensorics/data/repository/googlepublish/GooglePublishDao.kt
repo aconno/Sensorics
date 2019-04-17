@@ -1,6 +1,6 @@
 package com.aconno.sensorics.data.repository.googlepublish
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import io.reactivex.Maybe
 import io.reactivex.Single
 

@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.publish
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
 import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
 import com.aconno.sensorics.domain.ifttt.RestPublishRepository

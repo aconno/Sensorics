@@ -5,11 +5,12 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.model.RestHttpGetParamModel
@@ -79,10 +80,10 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
             onItemClickListener, this
         )
         with(recyclerView) {
-            layoutManager = android.support.v7.widget.LinearLayoutManager(context)
+            layoutManager = LinearLayoutManager(context)
             adapter = rvAdapter
 
-            val dividerItemDecoration = android.support.v7.widget.DividerItemDecoration(
+            val dividerItemDecoration = DividerItemDecoration(
                 recyclerView.context,
                 (layoutManager as LinearLayoutManager).orientation
             )

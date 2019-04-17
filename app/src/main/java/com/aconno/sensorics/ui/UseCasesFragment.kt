@@ -2,14 +2,14 @@ package com.aconno.sensorics.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.aconno.sensorics.LiveDataObserver
 import com.aconno.sensorics.R
 import com.aconno.sensorics.viewmodel.UseCasesViewModel

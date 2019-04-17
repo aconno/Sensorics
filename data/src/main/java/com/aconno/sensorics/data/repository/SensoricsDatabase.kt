@@ -1,7 +1,7 @@
 package com.aconno.sensorics.data.repository
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.RoomDatabase
+import androidx.room.Database
+import androidx.room.RoomDatabase
 import com.aconno.sensorics.data.repository.action.ActionDao
 import com.aconno.sensorics.data.repository.action.ActionEntity
 import com.aconno.sensorics.data.repository.devices.DeviceDao
@@ -35,7 +35,7 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
         RestPublishEntity::class,
         SyncEntity::class
     ],
-    version = 10
+    version = 11
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 

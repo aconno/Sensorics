@@ -2,19 +2,18 @@ package com.aconno.sensorics.ui
 
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
-import android.arch.lifecycle.Observer
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
@@ -34,6 +33,7 @@ import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.PermissionViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_toolbar.*
 import timber.log.Timber

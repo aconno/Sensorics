@@ -7,13 +7,12 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AlertDialog
 import android.view.*
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.appcompat.app.AlertDialog
 import com.aconno.sensorics.*
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
@@ -26,6 +25,7 @@ import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.android.support.DaggerFragment
 import io.reactivex.Flowable
@@ -188,7 +188,6 @@ class DeviceMainFragment : DaggerFragment() {
 
         setHasOptionsMenu(true)
         getParams()
-        retainInstance = true
     }
 
     override fun onCreateView(
@@ -216,10 +215,10 @@ class DeviceMainFragment : DaggerFragment() {
         super.onDetach()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
+    override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         if (mDevice.connectable) {
-            menu?.clear()
+            menu.clear()
             this.menu = menu
         }
 

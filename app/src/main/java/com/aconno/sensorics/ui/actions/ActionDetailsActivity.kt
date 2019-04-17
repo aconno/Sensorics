@@ -1,14 +1,13 @@
 package com.aconno.sensorics.ui.actions
 
-import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.CheckedTextView
+import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceSpinnerAdapter
 import com.aconno.sensorics.domain.actions.outcomes.Outcome
@@ -17,6 +16,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.Settings
 import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.IconInfo
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

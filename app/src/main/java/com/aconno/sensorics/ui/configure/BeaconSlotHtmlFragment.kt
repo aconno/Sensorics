@@ -1,15 +1,15 @@
 package com.aconno.sensorics.ui.configure
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import com.aconno.bluetooth.beacon.Slot
 import com.aconno.sensorics.R
 import com.aconno.sensorics.model.javascript.SlotJS

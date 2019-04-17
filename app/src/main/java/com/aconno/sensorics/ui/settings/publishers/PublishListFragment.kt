@@ -4,13 +4,12 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.model.BasePublishModel
@@ -20,6 +19,7 @@ import com.aconno.sensorics.model.RestPublishModel
 import com.aconno.sensorics.ui.base.BaseFragment
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.SelectPublisherActivity
 import com.aconno.sensorics.viewmodel.PublishListViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_publish_list.*
@@ -103,7 +103,7 @@ class PublishListFragment : BaseFragment(),
         if (context is OnListFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnListFragmentInteractionListener")
         }
     }
 

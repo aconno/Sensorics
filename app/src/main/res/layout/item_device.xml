@@ -33,7 +33,7 @@
 
     </RelativeLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/view_foreground"
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_item_height"
@@ -75,5 +75,5 @@
             app:layout_constraintTop_toBottomOf="@id/name"
             tools:text="23:45:67:AA:BB:65" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

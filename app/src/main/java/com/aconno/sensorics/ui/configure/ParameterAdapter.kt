@@ -1,7 +1,6 @@
 package com.aconno.sensorics.ui.configure
 
 import android.os.Build
-import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -11,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.SeekBar
+import androidx.recyclerview.widget.RecyclerView
 import com.aconno.bluetooth.beacon.Beacon
 import com.aconno.bluetooth.beacon.Parameter
 import com.aconno.bluetooth.beacon.ValueConverter

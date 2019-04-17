@@ -1,10 +1,10 @@
 package com.aconno.sensorics.ui.livegraph
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
 import com.aconno.sensorics.ui.graph.BleGraph
 import com.aconno.sensorics.viewmodel.LiveGraphViewModel

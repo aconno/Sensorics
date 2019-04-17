@@ -2,9 +2,9 @@ package com.aconno.sensorics.ui.settings.publishers.restheader
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.view.*
 import android.widget.*
+import androidx.fragment.app.DialogFragment
 import com.aconno.sensorics.R
 import com.aconno.sensorics.model.RestHeaderModel
 
@@ -49,7 +49,7 @@ class AddRestHeaderDialog : DialogFragment() {
         )
 
         keyText?.setAdapter(adapter)
-        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         if (restHeaderModel != null) {
             this.keyText?.setText(restHeaderModel!!.key)
@@ -85,7 +85,7 @@ class AddRestHeaderDialog : DialogFragment() {
 
     private fun removeTitleSpacing() {
         // Required for Lollipop (maybe others too) devices
-        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
+        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
     }
 
     private fun isNotEmpty(vararg array: String): Boolean {

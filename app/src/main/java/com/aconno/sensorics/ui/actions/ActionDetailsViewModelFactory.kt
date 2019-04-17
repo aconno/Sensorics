@@ -1,6 +1,6 @@
 package com.aconno.sensorics.ui.actions
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionByIdUseCase

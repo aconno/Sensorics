@@ -1,16 +1,16 @@
 package com.aconno.sensorics.ui.readings
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.*
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
-import dagger.android.support.DaggerFragment
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_generic_reading_list.*
 import kotlinx.android.synthetic.main.item_reading.view.*
 import javax.inject.Inject
@@ -36,10 +36,10 @@ class GenericReadingListFragment : DaggerFragment() {
         mainActivity.supportActionBar?.subtitle = macAddress
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
+    override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
-        menu?.findItem(R.id.action_start_usecases_activity)?.isVisible = BuildConfig.FLAVOR == "dev"
+        menu.findItem(R.id.action_start_usecases_activity)?.isVisible = BuildConfig.FLAVOR == "dev"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
