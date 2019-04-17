@@ -234,6 +234,7 @@ class DeviceMainFragment : DaggerFragment() {
             it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
+            it.findItem(R.id.action_dfu).isVisible = hasSettings
         }
     }
 
