@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_dfu_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        tools:title="Title" />
+
+    <ViewSwitcher
+        android:id="@+id/vs_dfu_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:inAnimation="@anim/anim_fade_in"
+        android:outAnimation="@anim/anim_fade_out"
+        android:paddingStart="8dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/iv_dfu_selectFile"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:drawableStart="@drawable/ic_add"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:text="@string/dfu_btn_select_file"
+                android:textAllCaps="false" />
+
+            <TextView
+                android:id="@+id/txt_dfu_selectedFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="20sp"
+                tools:text="Selected File : Test/sda.zip" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/btn_dfu_flash"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp"
+                android:drawableStart="@drawable/ic_file_upload_black_24dp"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:text="@string/dfu_btn_start_firmware_update"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_dfu_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dfu_txt_status_starting"
+                android:textSize="20sp" />
+
+            <com.github.lzyzsd.circleprogress.ArcProgress
+                android:id="@+id/prg_dfu_progress"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="20dp"
+                custom:arc_finished_color="@color/primaryColor"
+                custom:arc_progress="0"
+                custom:arc_text_color="@color/primaryTextColor"
+                custom:arc_unfinished_color="@color/primaryLightColor" />
+
+            <TextView
+                android:id="@+id/txt_dfu_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                tools:text="Speed: 17 KBps" />
+
+            <TextView
+                android:id="@+id/txt_dfu_avgSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                tools:text="Average Speed: 17 KBps" />
+
+            <TextView
+                android:id="@+id/txt_dfu_parts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                tools:text="Parts: 1" />
+        </LinearLayout>
+    </ViewSwitcher>
+</LinearLayout>

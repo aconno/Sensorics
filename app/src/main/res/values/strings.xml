@@ -248,4 +248,38 @@
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
 
+    <!--Dfu Activity-->
+    <string name="title_dfu">Update Firmware</string>
+    <string name="status_format">Status: <b>%1$s</b></string>
+    <string name="current_device_format">Current Device: %1$s</string>
+    <string name="speed_format">Speed: <b>%1$.2fkB/s</b></string>
+    <string name="progress_format">Progress: <b>%1$s</b></string>
+    <string name="parts_format">Part: <b>%1$d of %2$d</b></string>
+    <string name="avg_speed_format">Avg Speed: <b>%1$.2fkB/s</b></string>
+    <string name="device_counter_format">Device %1$d of %2$d</string>
+    <string name="total_time">Total Time:</string>
+    <string name="device_time">Device Time:</string>
+    <string name="device_flash_success">Success</string>
+    <string name="device_flash_error">Error</string>
+    <string name="dfu">Update Firmware</string>
+    <string name="dfu_snack_msg_file_selection">Please select a file</string>
+    <string name="dfu_snack_action_select">Select</string>
+    <string name="dfuactivity_status_updating">Updating</string>
+    <string name="dfuactivity_status_uploading">Uploading</string>
+    <string name="dfuactivity_status_firmwarevalidating">Firmware validating</string>
+    <string name="dfuactivity_status_complete">Complete</string>
+    <string name="dfuactivity_status_dfu_aborted">Dfu Aborted</string>
+    <string name="dfuactivity_status_disconnected">Disconnected</string>
+    <string name="dfuactivity_status_disconnecting">Disconnecting</string>
+    <string name="dfuactivity_status_enabling_dfu_mode">Enabling Dfu Mode</string>
+    <string name="dfuactivity_status_upload_starting">Upload Starting</string>
+    <string name="dfuactivity_status_connected">Connected</string>
+    <string name="dfuactivity_status_connecting">Connecting</string>
+    <string name="dfu_snack_action_goback">Go Back</string>
+    <string name="dfu_snack_msg_work_in_progress">Work in progress.</string>
+    <string name="dfu_btn_select_file">Select A File</string>
+    <string name="dfu_btn_start_firmware_update">Start Firmware Update</string>
+    <string name="dfu_txt_status_starting">Status : Starting..</string>
+
+
 </resources>

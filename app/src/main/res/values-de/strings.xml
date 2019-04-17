@@ -47,9 +47,9 @@
     <string name="device_registry">Device Registry</string>
     <string name="devices">Geräte</string>
     <string name="done">Erledigt</string>
-    <string name="no_rest_headers">Es sind keine headers vorhanden. Drücke plus (+) um einen header hinzufügen.</string>
-    <string name="no_rest_httpgetparams">Es sind keine HTTP Get Param. vorhanden. Drücke plus (+) um einen HTTP Param. hinzufügen.</string>
-    <string name="no_devices_plus_button_label">Es sind keine Geräte vorhanden. Drücke plus (+) um ein Gerät hinzufügen.</string>
+    <string name="no_rest_headers">Es sind keine headers vorhanden. Drücke plus (+) um einen header hinzuzufügen.</string>
+    <string name="no_rest_httpgetparams">Es sind keine HTTP Get Param. vorhanden. Drücke plus (+) um einen HTTP Param. hinzuzufügen.</string>
+    <string name="no_devices_plus_button_label">Es sind keine Geräte vorhanden. Drücke plus (+) um ein Gerät hinzuzufügen.</string>
     <string name="message_no_scanned_devices">Es sind keine Geräte in der Nähe</string>
     <string name="name">Name</string>
     <string name="region">Region</string>
@@ -84,7 +84,7 @@
     <string name="password">Passwort</string>
     <string name="title_select_publish">Wählen Sie den Anbieter</string>
     <string name="title_settings">Einstellungen</string>
-    <string name="no_publishers_found">Es sind keine backends vorhanden. Drücke plus (+) um ein beckend hinzufügen.</string>
+    <string name="no_publishers_found">Es sind keine backends vorhanden. Drücke plus (+) um ein backend hinzuzufügen.</string>
     <string name="no_devices_found">Es sind keine gespeicherten Geräte vorhanden</string>
     <string name="title_publish_list">Backends</string>
     <string name="settings">Einstellungen</string>
@@ -191,5 +191,38 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
+
+    <!--Dfu Activity-->
+    <string name="title_dfu">Firmware aktualisieren</string>
+    <string name="status_format">Status: <b>%1$s</b></string>
+    <string name="current_device_format">Aktuelles Gerät: %1$s</string>
+    <string name="speed_format">Geschwindigkeit: <b>%1$.2fkB/s</b></string>
+    <string name="progress_format">Fortschritt: <b>%1$s</b></string>
+    <string name="parts_format">Teil: <b>%1$d von %2$d</b></string>
+    <string name="avg_speed_format">Durchschnittsgeschwindigkeit: <b>%1$.2fkB/s</b></string>
+    <string name="device_counter_format">Gerät %1$d von %2$d</string>
+    <string name="total_time">Gesamtzeit:</string>
+    <string name="device_time">Gerätezeit:</string>
+    <string name="device_flash_success">Erfolg</string>
+    <string name="device_flash_error">Fehler</string>
+    <string name="dfu">Firmware aktualisieren</string>
+    <string name="dfu_snack_msg_file_selection">Bitte wählen Sie eine Datei aus</string>
+    <string name="dfu_snack_action_select">Auswählen</string>
+    <string name="dfuactivity_status_updating">Aktualisiert</string>
+    <string name="dfuactivity_status_uploading">Hochladen</string>
+    <string name="dfuactivity_status_firmwarevalidating">Firmware-Validierung</string>
+    <string name="dfuactivity_status_complete">Abgeschlossen</string>
+    <string name="dfuactivity_status_dfu_aborted">Dfu Abgebrochen</string>
+    <string name="dfuactivity_status_disconnected">Getrennt</string>
+    <string name="dfuactivity_status_disconnecting">Verbindung wird getrennt</string>
+    <string name="dfuactivity_status_enabling_dfu_mode">Dfu-Modus Aktivieren</string>
+    <string name="dfuactivity_status_upload_starting">Upload wird gestartet</string>
+    <string name="dfuactivity_status_connected">Verbunden</string>
+    <string name="dfuactivity_status_connecting">Wird verbunden</string>
+    <string name="dfu_snack_action_goback">Zurückgehen</string>
+    <string name="dfu_snack_msg_work_in_progress">Firmware wird aktualisiert</string>
+    <string name="dfu_btn_select_file">Datei auswählen</string>
+    <string name="dfu_btn_start_firmware_update">Firmware Aktualisierung Starten</string>
+    <string name="dfu_txt_status_starting">Status : Wird gestartet</string>
 
 </resources>

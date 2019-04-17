@@ -13,6 +13,7 @@ import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceSco
 import com.aconno.sensorics.dagger.configure.ConfigurationModule
 import com.aconno.sensorics.dagger.configure.ConfigurationScope
 import com.aconno.sensorics.dagger.deviceselect.DeviceSelectionFragmentsModule
+import com.aconno.sensorics.dagger.dfu.DfuActivityScope
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherScope
 import com.aconno.sensorics.dagger.mainactivity.MainActivityFragmentsModule
@@ -34,6 +35,7 @@ import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.SplashActivity
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.aconno.sensorics.ui.configure.ConfigureActivity
+import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
@@ -104,4 +106,8 @@ abstract class ActivityBuilder {
     @ConfigurationScope
     @ContributesAndroidInjector(modules = [ConfigurationModule::class])
     abstract fun bindConfigureActivity(): ConfigureActivity
+
+    @DfuActivityScope
+    @ContributesAndroidInjector
+    abstract fun bindDfuActivity(): DfuActivity
 }

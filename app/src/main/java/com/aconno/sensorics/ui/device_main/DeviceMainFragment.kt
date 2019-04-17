@@ -23,6 +23,7 @@ import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
+import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -233,6 +234,7 @@ class DeviceMainFragment : DaggerFragment() {
             it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
+            it.findItem(R.id.action_dfu).isVisible = hasSettings
         }
     }
 
@@ -280,6 +282,10 @@ class DeviceMainFragment : DaggerFragment() {
                         ).show()
                     }
                     //TODO: Implement Logger functionality
+                    return true
+                }
+                R.id.action_dfu -> {
+                    DfuActivity.start(context, mDevice.macAddress)
                     return true
                 }
                 else -> {
