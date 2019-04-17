@@ -13,6 +13,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
@@ -44,7 +45,7 @@ import javax.inject.Inject
 
 
 @SuppressLint("SetJavaScriptEnabled")
-class DeviceMainFragment : DaggerFragment() {
+class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
     @Inject
     lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
@@ -69,7 +70,9 @@ class DeviceMainFragment : DaggerFragment() {
     private var connectResultDisposable: Disposable? = null
 
     private var isServicesDiscovered = false
+    private var isConnectedOrConnecting = false
     private var hasSettings: Boolean = false
+    private var status: Boolean = false
 
     var menu: Menu? = null
 
@@ -96,85 +99,58 @@ class DeviceMainFragment : DaggerFragment() {
 
                     when {
                         it.action == BluetoothGattCallback.ACTION_GATT_DEVICE_NOT_FOUND -> {
+                            isConnectedOrConnecting = false
                             Timber.i("Device not found")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.connect)
-                            }
                             text = getString(R.string.device_not_found)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
+                            isConnectedOrConnecting = true
                             Timber.i("Device connecting")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
                             text = getString(R.string.connecting)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
+                            isConnectedOrConnecting = true
                             Timber.i("Device connected")
-
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
                             text = getString(R.string.connected)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_SERVICES_DISCOVERED -> {
+                            isConnectedOrConnecting = true
                             Timber.i("Device discovered")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
                             isServicesDiscovered = true
-                            //progressbar?.visibility = View.INVISIBLE
-                            //enableToggleViews()
                             text = getString(R.string.discovered)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
+                            isConnectedOrConnecting = false
                             Timber.i("Device disconnected")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.connect)
-                            }
                             isServicesDiscovered = false
-                            //progressbar?.visibility = View.INVISIBLE
-                            //disableToggleViews()
                             text = getString(R.string.disconnected)
 
                             serviceConnect?.close()
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_ERROR -> {
+                            isConnectedOrConnecting = false
                             Timber.i("Device Error")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.connect)
-                            }
                             isServicesDiscovered = false
                             text = getString(R.string.error)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
                             Timber.i("Device write")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
                             writeCommandQueue.poll()
                             writeCharacteristics(writeCommandQueue.peek())
                             text = getString(R.string.connected)
-
                         }
                         it.action == BluetoothGattCallback.ACTION_BEACON_HAS_SETTINGS -> {
                             Timber.i("Device has settings")
                             hasSettings = true
-//                            it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
-                            activity?.invalidateOptionsMenu()
                             text = ""
                         }
                         else -> {
                             return@subscribe
                         }
                     }
+
+                    activity?.invalidateOptionsMenu()
+
                     text.takeIf {
                         it.isNotBlank()
                     }.let {
@@ -182,8 +158,7 @@ class DeviceMainFragment : DaggerFragment() {
                     }
                 }
 
-            serviceConnect?.connect(mDevice.macAddress)
-
+//            serviceConnect?.connect(mDevice.macAddress)
         }
     }
 
@@ -219,7 +194,66 @@ class DeviceMainFragment : DaggerFragment() {
             it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
+            it.findItem(R.id.action_toggle_scan).isVisible = !mDevice.connectable
+
+            if (isConnectedOrConnecting) {
+                with(it.findItem(R.id.action_toggle_connect)) {
+                    title = getString(com.aconno.sensorics.R.string.disconnect)
+                    isChecked = true
+                }
+            } else {
+                with(it.findItem(R.id.action_toggle_connect)) {
+                    title = getString(com.aconno.sensorics.R.string.connect)
+                    isChecked = false
+                }
+            }
         }
+    }
+
+    override fun setStatus(isOnline: Boolean) {
+        if (isOnline == status) {
+            return
+        }
+
+        context?.let { context ->
+            if (isOnline) {
+                setStatusOnline(context)
+            } else {
+                setStatusOffline(context)
+            }
+        }
+    }
+
+    private fun setStatusOffline(context: Context) {
+        status = false
+        txt_offline?.text = getString(R.string.offline)
+        txt_offline?.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                android.R.color.darker_gray
+            )
+        )
+        txt_offline?.visibility = View.VISIBLE
+    }
+
+    private fun setStatusOnline(context: Context): Boolean? {
+        status = true
+        txt_offline?.text = getString(R.string.online)
+        txt_offline?.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                R.color.online_green
+            )
+        )
+        return txt_offline?.postDelayed(
+            {
+                txt_offline?.visibility = View.GONE
+            }, 500
+        )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean("mm", status)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -287,6 +321,10 @@ class DeviceMainFragment : DaggerFragment() {
         setupWebView()
         if (mDevice.connectable)
             setupConnectionForFreight()
+
+        savedInstanceState?.let {
+            setStatus(it.getBoolean("mm", false))
+        }
     }
 
     private fun setupWebView() {
@@ -328,11 +366,12 @@ class DeviceMainFragment : DaggerFragment() {
             .concatMap { filterByMacUseCase.execute(it, mDevice.macAddress).toFlowable() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
+                setStatus(true)
 
-                var jsonValues = generateJsonArray(readings)
+                val jsonValues = generateJsonArray(readings)
                 setHasSettings(readings)
 
-                web_view.loadUrl("javascript:onSensorReadings('$jsonValues')")
+                web_view?.loadUrl("javascript:onSensorReadings('$jsonValues')")
             }
     }
 
@@ -536,7 +575,11 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     private fun renameDevice() {
-        (activity as? MainActivity2)?.renameDevice(mDevice.macAddress)
+        (activity as? MainActivity2)?.showRenameDialog(mDevice.macAddress)
+    }
+
+    fun getDevice(): Device? {
+        return if (::mDevice.isInitialized) mDevice else null
     }
 
     companion object {

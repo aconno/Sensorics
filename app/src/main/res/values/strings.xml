@@ -247,6 +247,11 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
+    <string name="remove_device_dialog_title_format">Delete beacon %1$s</string>
+    <string name="remove_device_dialog_message">Are you sure you want to delete this device?</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+
     <string name="rename">Rename</string>
     <string name="rename_beacon">Rename Beacon</string>
     <string name="undo">Undo</string>

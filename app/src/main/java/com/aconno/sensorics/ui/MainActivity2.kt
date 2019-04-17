@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -12,33 +11,30 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
-import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager.widget.ViewPager
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
-import com.aconno.sensorics.adapter.viewpager2.TabLayoutMediator
-import com.aconno.sensorics.adapter.viewpager2.ViewPager2TouchHelper
-import com.aconno.sensorics.adapter.viewpager2.ViewPagerAdapter
+import com.aconno.sensorics.adapter.viewpager.ViewPagerAdapter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
-import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.DeviceViewModel
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_toolbar2.*
+import kotlinx.android.synthetic.main.pager_tab_layout.view.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
@@ -63,8 +59,8 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private var compositeDisposable = CompositeDisposable()
 
+    private var deviceList = mutableListOf<DeviceActive>()
     private lateinit var viewPagerAdapter: ViewPagerAdapter
-    private lateinit var pageChangedCallback: PageChangedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,12 +71,26 @@ class MainActivity2 : DaggerAppCompatActivity(),
             ScannedDevicesDialog().show(supportFragmentManager, "devices_dialog")
         }
 
-        toolbar.title = getString(R.string.app_name)
         setSupportActionBar(toolbar)
+        supportActionBar?.title = getString(R.string.app_name)
+        //TODO Change Icon
+//        supportActionBar?.setDisplayShowHomeEnabled(true)
+//        supportActionBar?.setIcon(R.mipmap.ic_launcher_rounded)
 
         compositeDisposable.add(
-                deviceViewModel.getSavedDevicesFlowable()
-                        .subscribe(::displayPreferredDevices, ::onGetDevicesError)
+            deviceViewModel.getSavedDevicesFlowable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    displayPreferredDevices(it)
+                }
+        )
+
+        compositeDisposable.add(
+            deviceViewModel.deviceActiveObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    displayPreferredDevices(it)
+                }
         )
 
         bluetoothScanningViewModel.getScanEvent()
@@ -136,35 +146,52 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     private fun setupViewPager() {
-        content_pager?.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        viewPagerAdapter = ViewPagerAdapter(this)
+        viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         content_pager?.adapter = viewPagerAdapter
-        pageChangedCallback = PageChangedCallback()
-        content_pager?.registerOnPageChangeCallback(pageChangedCallback)
+        tabLayout.setupWithViewPager(content_pager)
+        content_pager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+            }
 
-        TabLayoutMediator(tabLayout, content_pager) { tab, position ->
-            val deviceList = viewPagerAdapter.deviceList
-            tab.text = deviceList[position].device.getRealName()
-        }.attach()
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
 
-        with(ViewPager2TouchHelper()) {
-            setViewPager(content_pager)
+            override fun onPageSelected(position: Int) {
+                if (position != 0) {
+                    if (deviceList[position - 1].device.connectable && BluetoothScanningService.isRunning()) {
+                        stopScanning()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun prepareTabView(deviceActive: DeviceActive): View {
+        return layoutInflater.inflate(R.layout.pager_tab_layout, null).apply {
+            tv_title?.text = deviceActive.device.getRealName()
+            tv_count?.text = deviceActive.device.macAddress
         }
     }
 
     override fun onDestroy() {
-        content_pager?.unregisterOnPageChangeCallback(pageChangedCallback)
         compositeDisposable.clear()
         compositeDisposable = CompositeDisposable()
         super.onDestroy()
     }
 
     private fun displayPreferredDevices(it: List<DeviceActive>) {
-        viewPagerAdapter.deviceList = it.toMutableList()
-    }
+        deviceList = it.toMutableList()
+        viewPagerAdapter.submitList(deviceList)
 
-    private fun onGetDevicesError(throwable: Throwable) {
-        Timber.e(throwable)
+        // Iterate over all tabs and set the custom view
+        for (i in 1 until (tabLayout.tabCount)) {
+            val tab = tabLayout.getTabAt(i)
+            tab?.customView = prepareTabView(deviceList[i - 1])
+        }
     }
 
     override fun onResume() {
@@ -252,7 +279,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     fun startScanning(filterByDevice: Boolean = true) {
         this.filterByDevice = filterByDevice
-        startScaninngWithPermissions()
+        startScanningWithPermissions()
     }
 
     private fun stopScanning() {
@@ -275,9 +302,9 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     @AfterPermissionGranted(RC_LOCATION_AND_EXTERNAL)
-    private fun startScaninngWithPermissions() {
+    private fun startScanningWithPermissions() {
         val perms =
-            arrayOf<String>(
+            arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
@@ -327,26 +354,22 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     fun removeCurrentDisplayedBeacon(macAddress: String) {
-        var position = -1
-        var removedDevice: DeviceActive? = null
-        val deviceList = viewPagerAdapter.deviceList
-        deviceList.forEachIndexed { index, deviceActive ->
-            if(deviceActive.device.macAddress == macAddress) {
-                removedDevice = deviceActive
-                position = index
-                return@forEachIndexed
-            }
-        }
-
-        removedDevice?.let {
-            viewPagerAdapter.removeItemAt(position)
-            showDeleteSnackbar(position, it)
+        deviceList.find { it.device.macAddress == macAddress }?.let {
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.remove_device_dialog_title_format, it.device.name))
+                .setMessage(R.string.remove_device_dialog_message)
+                .setPositiveButton(R.string.yes) { dialog, _ ->
+                    deviceViewModel.deleteDevice(it.device)
+                    dialog.dismiss()
+                }.setNegativeButton(R.string.condition_dialog_cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
     }
 
     @SuppressLint("InflateParams")
-    fun renameDevice(macAddress: String) {
-        val deviceList = viewPagerAdapter.deviceList
+    fun showRenameDialog(macAddress: String) {
         deviceList.find { it.device.macAddress == macAddress }?.let { deviceToUpdate ->
             val view = layoutInflater.inflate(R.layout.layout_rename, null)
             val input = view.findViewById<EditText>(R.id.edit_name).apply {
@@ -354,79 +377,23 @@ class MainActivity2 : DaggerAppCompatActivity(),
             }
 
             AlertDialog.Builder(this)
-                    .setView(view)
-                    .setTitle(R.string.rename_beacon)
-                    .setPositiveButton(R.string.yes) { dialog, _ ->
-                        onRenameDeviceConfirmed(deviceToUpdate, input.text.toString())
+                .setView(view)
+                .setTitle(R.string.rename_beacon)
+                .setPositiveButton(R.string.rename) { dialog, _ ->
+                    val newName = input.text.toString()
+                    if (newName.isNotBlank()) {
+                        renameDevice(deviceToUpdate, newName)
                         dialog.dismiss()
-                    }
-                    .setNegativeButton(R.string.no) { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .show()
-        }
-    }
-
-    private fun onRenameDeviceConfirmed(deviceToUpdate: DeviceActive, deviceAlias: String?) {
-        if (deviceAlias?.isNotBlank() == true) {
-            val oldDevice = deviceToUpdate.device
-
-            val newDevice = Device(oldDevice.name, deviceAlias, oldDevice.macAddress, oldDevice.icon)
-            val newDeviceActive = DeviceActive(newDevice, deviceToUpdate.active)
-
-            val deviceList = viewPagerAdapter.deviceList
-            val position = deviceList.indexOf(deviceToUpdate)
-            deviceList[position] = newDeviceActive
-            viewPagerAdapter.updateItemAt(newDeviceActive, position)
-
-            showRenameSnackbar(position, deviceToUpdate, deviceAlias)
-        }
-    }
-
-    private fun showRenameSnackbar(position: Int, deviceToUpdate: DeviceActive, deviceAlias: String) {
-        showUndoableSnackbar(R.string.beacon_renamed, View.OnClickListener {
-            val deviceList = viewPagerAdapter.deviceList
-            deviceList[position] = deviceToUpdate
-            viewPagerAdapter.updateItemAt(deviceToUpdate, position)
-        }) {
-            deviceViewModel.updateDevice(deviceToUpdate.device, deviceAlias)
-        }
-    }
-
-    private fun showDeleteSnackbar(position: Int, removedDevice: DeviceActive) {
-        showUndoableSnackbar(R.string.beacon_removed, View.OnClickListener {
-            viewPagerAdapter.insertItemAt(removedDevice, position)
-        }) {
-            deviceViewModel.deleteDevice(removedDevice.device)
-        }
-    }
-
-    private fun showUndoableSnackbar(@StringRes resId: Int, clickListener: View.OnClickListener,
-                                     onSnackbarTimeout: () -> Unit) {
-        Snackbar.make(main_container, resId, Snackbar.LENGTH_LONG).run {
-            setAction(R.string.undo, clickListener)
-            setActionTextColor(Color.WHITE)
-            addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-                        onSnackbarTimeout()
                     }
                 }
-            })
-            show()
+                .setNegativeButton(R.string.condition_dialog_cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
     }
 
-    inner class PageChangedCallback : ViewPager2.OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            for (i in 0..(viewPagerAdapter.itemCount - 1)) {
-                (viewPagerAdapter.getItem(position) as DeviceMainFragment).setMenuVisibility(
-                    position == i
-                )
-            }
-
-            invalidateOptionsMenu()
-        }
+    private fun renameDevice(deviceToUpdate: DeviceActive, newName: String) {
+        deviceViewModel.updateDevice(deviceToUpdate.device, newName)
     }
 }

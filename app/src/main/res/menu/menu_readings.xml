@@ -29,7 +29,7 @@
         android:id="@+id/action_toggle_connect"
         android:checkable="true"
         android:checked="true"
-        android:title="@string/disconnect"
+        android:title="@string/connect"
         app:showAsAction="ifRoom" />
 
     <item

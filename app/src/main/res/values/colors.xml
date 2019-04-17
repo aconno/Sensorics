@@ -18,4 +18,6 @@
     <color name="graph_y">#00FF00</color>
     <color name="graph_z">#0000FF</color>
     <color name="bg_row_background">#fa315b</color>
+
+    <color name="online_green">#4bb543</color>
 </resources>
