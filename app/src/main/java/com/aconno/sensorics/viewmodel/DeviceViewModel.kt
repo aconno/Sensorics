@@ -7,8 +7,10 @@ import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceActive
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -99,8 +101,8 @@ class DeviceViewModel(
         )
 
         saveDeviceUseCase.execute(newDevice)
-            .subscribeOn(Schedulers.io())
-            .subscribe()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
     }
 
     fun deleteDevice(device: Device) {

@@ -1,6 +1,8 @@
 package com.aconno.sensorics.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,6 +10,7 @@ import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
@@ -181,17 +184,13 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     private fun displayPreferredDevices(it: List<DeviceActive>) {
-        if (deviceList.size != it.size) {
-            deviceList = it.toMutableList()
-            viewPagerAdapter.submitList(deviceList)
+        deviceList = it.toMutableList()
+        viewPagerAdapter.submitList(deviceList)
 
-            // Iterate over all tabs and set the custom view
-            for (i in 1 until (tabLayout.tabCount)) {
-                val tab = tabLayout.getTabAt(i)
-                tab?.customView = prepareTabView(deviceList[i - 1])
-            }
-        } else {
-            viewPagerAdapter.submitStatusChangedList(it)
+        // Iterate over all tabs and set the custom view
+        for (i in 1 until (tabLayout.tabCount)) {
+            val tab = tabLayout.getTabAt(i)
+            tab?.customView = prepareTabView(deviceList[i - 1])
         }
     }
 
@@ -280,7 +279,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     fun startScanning(filterByDevice: Boolean = true) {
         this.filterByDevice = filterByDevice
-        startScaninngWithPermissions()
+        startScanningWithPermissions()
     }
 
     private fun stopScanning() {
@@ -303,7 +302,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     @AfterPermissionGranted(RC_LOCATION_AND_EXTERNAL)
-    private fun startScaninngWithPermissions() {
+    private fun startScanningWithPermissions() {
         val perms =
             arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -355,19 +354,46 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     fun removeCurrentDisplayedBeacon(macAddress: String) {
-        var position = -1
-        var device: Device? = null
-        deviceList.forEachIndexed { index, deviceActive ->
-            if (deviceActive.device.macAddress == macAddress) {
-                device = deviceActive.device
-                position = index
-                return@forEachIndexed
-            }
+        deviceList.find { it.device.macAddress == macAddress }?.let {
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.remove_device_dialog_title_format, it.device.name))
+                .setMessage(R.string.remove_device_dialog_message)
+                .setPositiveButton(R.string.yes) { dialog, _ ->
+                    deviceViewModel.deleteDevice(it.device)
+                    dialog.dismiss()
+                }.setNegativeButton(R.string.condition_dialog_cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
+    }
 
-        device?.let {
-            deviceViewModel.deleteDevice(it)
-            viewPagerAdapter.removeItemAt(position)
+    @SuppressLint("InflateParams")
+    fun showRenameDialog(macAddress: String) {
+        deviceList.find { it.device.macAddress == macAddress }?.let { deviceToUpdate ->
+            val view = layoutInflater.inflate(R.layout.layout_rename, null)
+            val input = view.findViewById<EditText>(R.id.edit_name).apply {
+                setText(deviceToUpdate.device.getRealName())
+            }
+
+            AlertDialog.Builder(this)
+                .setView(view)
+                .setTitle(R.string.rename_beacon)
+                .setPositiveButton(R.string.rename) { dialog, _ ->
+                    val newName = input.text.toString()
+                    if (newName.isNotBlank()) {
+                        renameDevice(deviceToUpdate, newName)
+                        dialog.dismiss()
+                    }
+                }
+                .setNegativeButton(R.string.condition_dialog_cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
+    }
+
+    private fun renameDevice(deviceToUpdate: DeviceActive, newName: String) {
+        deviceViewModel.updateDevice(deviceToUpdate.device, newName)
     }
 }

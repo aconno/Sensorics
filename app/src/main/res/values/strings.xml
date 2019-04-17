@@ -252,4 +252,9 @@
     <string name="online">Online</string>
     <string name="offline">Offline</string>
 
+    <string name="rename">Rename</string>
+    <string name="rename_beacon">Rename Beacon</string>
+    <string name="undo">Undo</string>
+    <string name="beacon_renamed">Beacon renamed</string>
+    <string name="beacon_removed">Beacon removed</string>
 </resources>
