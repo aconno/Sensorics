@@ -1,42 +1,83 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css" />
     <link href="../html_resources/Rubik.css" rel="stylesheet">
     <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
     <link rel="stylesheet" href="../html_resources/angle.css">
-    <style type="text/css">
-        body {
-            font-family: 'Rubik', sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
     <script src="../html_resources/materialize_min.js"></script>
     <script src="../html_resources/jquery-3.3.1.min.js"></script>
     <script>
+        const x = "X"
+        const y = "Y"
+        const z = "Z"
+        const INVALID_INDEX = -1
+
+        var transforms = [0, 0, 0]
+        const angles = [x, y, z]
+
         function onSensorReadings(json_values) {
-            JSON .parse(json_values, function (key, value) {
+            JSON.parse(json_values, function (key, value) {
                 onSensorReading(key, value)
             });
         }
 
         function onSensorReading(name, value) {
-            rotate(name, value)
+            var shouldRotate = true
+            var index = INVALID_INDEX
+            switch (name) {
+                case x:
+                    index = 0
+                    break;
+                case y:
+                    index = 1
+                    break
+                case z:
+                    index = 2
+                    break
+            }
+
+            if (index != INVALID_INDEX) {
+                transforms[index] = value
+                rotate()
+            }
         }
 
-        function rotate(angle, amount) {
-            let cssFunction = "rotate" + angle
-            $(".3dable").css({
-                transform: cssFunction + "(" + amount + "deg)"
+        function rotate() {
+            var i
+            var rotations = ""
+            for(let i = 0; i < transforms.length; i ++) {
+                var angle = angles[i]
+                var amount = transforms[i]
+                rotations += "rotate" + angle + "(" + amount + "deg) "
+                $("#" + angle + "-angle").html(angle + ": " + amount)
+            }
+
+            console.log(rotations)
+
+            $(".pointer").css({
+                transform: rotations
             })
-        }
+        }        
     </script>
-    <link rel="stylesheet" href="../html_resources/newStyles.css">
 </head>
 
 <body style="background-color:#fafafa">
-    <div class="pointer 3dable">
-        <h1>&#x25B2;</h1>
+    <div class="pointer">
+        <span class="helper"></span>
+        <img src="../html_resources/ic_aconno.png" />
     </div>
+    <p id="X-angle">
+        X : No Data
+    </p>
+
+    <p id="Y-angle">
+        Y : No Data
+    </p>
+
+    <p id="Z-angle">
+        Z : No Data
+    </p>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 {
   "id": "1100",
-  "name": "acnAngle",
+  "name": "acnANGLE",
   "icon": "ic_acc",
   "format": [
     {
@@ -24,7 +24,6 @@
       "reversed": true,
       "data_type": "FLOAT"
     }
-
   ],
   "format_required": [
     {
@@ -54,7 +53,7 @@
     }
   ],
   "settings_support": {
-    "mask": "0x01",
+    "mask": "0x80",
     "index": 4
   }
 }
