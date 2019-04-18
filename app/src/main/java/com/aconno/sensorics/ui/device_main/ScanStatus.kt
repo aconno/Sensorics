@@ -6,5 +6,5 @@ interface ScanStatus {
      * false = Offline
      * @param isOnline Boolean
      */
-    fun setStatus(isOnline: Boolean)
+    fun setStatus(isOnline: Boolean, force: Boolean = false)
 }

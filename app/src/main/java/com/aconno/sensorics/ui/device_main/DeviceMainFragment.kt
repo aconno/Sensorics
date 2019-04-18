@@ -210,8 +210,8 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         }
     }
 
-    override fun setStatus(isOnline: Boolean) {
-        if (isOnline == status) {
+    override fun setStatus(isOnline: Boolean, force: Boolean) {
+        if (isOnline == status && !force) {
             return
         }
 
@@ -236,7 +236,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         txt_offline?.visibility = View.VISIBLE
     }
 
-    private fun setStatusOnline(context: Context): Boolean? {
+    private fun setStatusOnline(context: Context) {
         status = true
         txt_offline?.text = getString(R.string.online)
         txt_offline?.setBackgroundColor(
@@ -245,7 +245,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
                 R.color.online_green
             )
         )
-        return txt_offline?.postDelayed(
+        txt_offline?.postDelayed(
             {
                 txt_offline?.visibility = View.GONE
             }, 500
@@ -253,7 +253,8 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean("mm", status)
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(EXTRA_STATUS, status)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -323,7 +324,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
             setupConnectionForFreight()
 
         savedInstanceState?.let {
-            setStatus(it.getBoolean("mm", false))
+            setStatus(it.getBoolean(EXTRA_STATUS, false), true)
         }
     }
 
@@ -586,6 +587,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
         private const val KEY_DEVICE = "KEY_DEVICE"
         private const val DEV_BUILD_FLAVOR = "dev"
+        private const val EXTRA_STATUS = "EXTRA_STATUS"
 
         fun newInstance(
             device: Device

@@ -97,6 +97,19 @@ class MainActivity2 : DaggerAppCompatActivity(),
             .observe(this, Observer { handleScanEvent(it) })
 
         setupViewPager()
+
+        savedInstanceState?.let {
+            Timber.d("Extracting...")
+            content_pager?.postDelayed({
+                content_pager?.setCurrentItem(it.getInt(EXTRA_CURRENT_PAGE, 0), false)
+            }, 100)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Timber.d("Saving... ${content_pager?.currentItem}")
+        outState.putInt(EXTRA_CURRENT_PAGE, content_pager?.currentItem ?: 0)
     }
 
     override fun onDevicesDialogItemClick(item: Device) {
@@ -148,6 +161,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     private fun setupViewPager() {
         viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         content_pager?.adapter = viewPagerAdapter
+        content_pager?.offscreenPageLimit = 2
         tabLayout.setupWithViewPager(content_pager)
         content_pager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
@@ -338,10 +352,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
         //No-Op
     }
 
-    companion object {
-        const val RC_LOCATION_AND_EXTERNAL = 12312
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -396,4 +406,10 @@ class MainActivity2 : DaggerAppCompatActivity(),
     private fun renameDevice(deviceToUpdate: DeviceActive, newName: String) {
         deviceViewModel.updateDevice(deviceToUpdate.device, newName)
     }
+
+    companion object {
+        const val RC_LOCATION_AND_EXTERNAL = 12312
+        const val EXTRA_CURRENT_PAGE = "EXTRA_CURRENT_PAGE"
+    }
+
 }
