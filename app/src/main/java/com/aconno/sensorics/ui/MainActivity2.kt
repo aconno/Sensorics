@@ -99,7 +99,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
         setupViewPager()
 
         savedInstanceState?.let {
-            Timber.d("Extracting...")
             content_pager?.postDelayed({
                 content_pager?.setCurrentItem(it.getInt(EXTRA_CURRENT_PAGE, 0), false)
             }, 100)
@@ -108,7 +107,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Timber.d("Saving... ${content_pager?.currentItem}")
         outState.putInt(EXTRA_CURRENT_PAGE, content_pager?.currentItem ?: 0)
     }
 

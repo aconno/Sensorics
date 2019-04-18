@@ -3,8 +3,10 @@ package com.aconno.sensorics
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
+import com.aconno.sensorics.ui.devicecon.WriteCommand
 import dagger.android.DaggerService
 import io.reactivex.Flowable
 import java.util.*
@@ -18,6 +20,9 @@ class BluetoothConnectService : DaggerService() {
 
 
     private val mBinder = LocalBinder()
+
+    private val writeCommandQueue: Queue<WriteCommand> = ArrayDeque<WriteCommand>()
+    private var isConnected = false
 
     inner class LocalBinder : Binder() {
         fun getService(): BluetoothConnectService {
@@ -38,13 +43,46 @@ class BluetoothConnectService : DaggerService() {
         characteristicUUID: UUID,
         type: String,
         value: Any
-    ): Boolean {
-        return bluetooth.writeCharacteristic(serviceUUID, characteristicUUID, type, value)
+    ) {
+        offerACommandToQueue(WriteCommand(serviceUUID, characteristicUUID, type, value))
+    }
+
+    private fun offerACommandToQueue(writeCommand: WriteCommand) {
+        writeCommandQueue.offer(writeCommand)
+
+        if (writeCommandQueue.size == 1) {
+            writeCommandToDevice(writeCommand)
+        }
     }
 
     fun getConnectResults(): Flowable<GattCallbackPayload> {
-        return bluetooth.getGattResults()
+        return bluetooth.getGattResults().doOnNext {
+            if (it.action == BluetoothGattCallback.ACTION_GATT_SERVICES_DISCOVERED) {
+                isConnected = true
+            } else if (it.action == BluetoothGattCallback.ACTION_GATT_CHAR_WRITE) {
+                //remove the first one
+                writeCommandQueue.poll()
+
+                //write next one
+                writeCommandQueue.peek()?.let { writeCommand ->
+                    writeCommandToDevice(writeCommand)
+                }
+            }
+        }
     }
+
+    private fun writeCommandToDevice(writeCommand: WriteCommand) =
+        if (isConnected) {
+            bluetooth.writeCharacteristic(
+                writeCommand.serviceUUID,
+                writeCommand.charUUID,
+                writeCommand.type,
+                writeCommand.value
+            )
+        } else {
+            false
+        }
+
 
     fun connect(deviceAddress: String) {
         bluetooth.connect(deviceAddress)

@@ -7,10 +7,7 @@ import com.aconno.sensorics.data.repository.resources.ResourcesRepositoryImpl
 import com.aconno.sensorics.domain.ConfigListManager
 import com.aconno.sensorics.domain.FormatListManager
 import com.aconno.sensorics.domain.format.FormatMatcher
-import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
-import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
-import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
-import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
+import com.aconno.sensorics.domain.interactor.resources.*
 import com.aconno.sensorics.domain.repository.*
 import com.google.gson.Gson
 import dagger.Module
@@ -89,6 +86,18 @@ class ResourcesModule {
         application: SensoricsApplication
     ): GetMainResourceUseCase {
         return GetMainResourceUseCase(
+            configListManager,
+            application.cacheDir.absolutePath
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetConnectionResourceUseCase(
+        configListManager: ConfigListManager,
+        application: SensoricsApplication
+    ): GetConnectionResourceUseCase {
+        return GetConnectionResourceUseCase(
             configListManager,
             application.cacheDir.absolutePath
         )

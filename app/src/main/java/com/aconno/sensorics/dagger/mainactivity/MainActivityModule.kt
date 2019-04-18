@@ -8,6 +8,7 @@ import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetConnectionResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
@@ -221,8 +222,9 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideMainResourceViewModelFactory(
-        getMainResourceUseCase: GetMainResourceUseCase
-    ) = MainResourceViewModelFactory(getMainResourceUseCase)
+        getMainResourceUseCase: GetMainResourceUseCase,
+        getConnectionResourceUseCase: GetConnectionResourceUseCase
+    ) = MainResourceViewModelFactory(getMainResourceUseCase, getConnectionResourceUseCase)
 
     @Provides
     @MainActivityScope
