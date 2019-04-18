@@ -10,6 +10,7 @@ body {
     height: 300px;
     text-align: center;
     overflow: hidden;
+    transition: 100ms ease-in-out;
   }
 
   .helper {
