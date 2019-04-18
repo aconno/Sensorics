@@ -1,0 +1,42 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+    <link rel="stylesheet" href="../html_resources/angle.css">
+    <style type="text/css">
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+    </style>
+    <script src="../html_resources/materialize_min.js"></script>
+    <script src="../html_resources/jquery-3.3.1.min.js"></script>
+    <script>
+        function onSensorReadings(json_values) {
+            JSON .parse(json_values, function (key, value) {
+                onSensorReading(key, value)
+            });
+        }
+
+        function onSensorReading(name, value) {
+            rotate(name, value)
+        }
+
+        function rotate(angle, amount) {
+            let cssFunction = "rotate" + angle
+            $(".3dable").css({
+                transform: cssFunction + "(" + amount + "deg)"
+            })
+        }
+    </script>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+</head>
+
+<body style="background-color:#fafafa">
+    <div class="pointer 3dable">
+        <h1>&#x25B2;</h1>
+    </div>
+</body>
+
+</html>

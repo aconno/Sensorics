@@ -1,0 +1,32 @@
+p { font-size: 9px; font-family: sans; color: white; display:none; }  
+.pointer {
+    margin: 0;
+    padding: 0;
+    display: block;
+    width: 300px;
+    height: 300px;
+    border: solid 1px white;
+    color: #FD9B27;
+    text-align: center;
+    overflow: hidden;
+  }
+  .pointer h1 {
+    font-size: 300px;
+    margin: 0;
+    padding: 0;
+    margin-top: -35px;
+  }
+  .pointer h2 {
+    font-family: sans;
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+    margin-top: -60px;
+  }
+  .n {
+    top: 20%;
+    left:50%;
+    position:absolute;
+    font:5em Helvetica;
+    margin: 0 0 0 -40px;
+  }
