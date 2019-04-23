@@ -9,13 +9,16 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
+import com.aconno.sensorics.ui.BleScanner
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.MainActivity2
 import com.aconno.sensorics.ui.configure.ConfigureActivity
@@ -55,6 +58,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
     private var hasSettings: Boolean = false
     private var status: Boolean = false
+    private var bleScanner: BleScanner? = null
 
     var menu: Menu? = null
 
@@ -70,6 +74,24 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_device_main, container, false)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        if (context is BleScanner) {
+            with(context as BleScanner) {
+                bleScanner = this
+            }
+        } else {
+            Timber.e("Fragment context needs to implement BleScanner Interface")
+            (context as AppCompatActivity).onBackPressed()
+        }
+    }
+
+    override fun onDetach() {
+        bleScanner = null
+        super.onDetach()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
@@ -138,6 +160,9 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         context?.let { context ->
             when (item.itemId) {
                 R.id.action_toggle_connect -> {
+                    if (BluetoothScanningService.isRunning()) {
+                        bleScanner?.stopScan()
+                    }
                     ConnectActivity.start(context, mDevice)
                 }
 

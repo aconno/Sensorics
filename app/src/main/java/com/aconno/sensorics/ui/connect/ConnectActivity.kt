@@ -216,13 +216,11 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
 
         @JavascriptInterface
         fun buzzerPlay(checked: Boolean) {
-            Timber.i("test the buzzer value $checked")
             toggleBuzzerCharacteristic(checked)
         }
 
         @JavascriptInterface
         fun changeColorOfFreight(color: String) {
-            Timber.i("test the color value $color")
             writeColorCharacteristic(color)
         }
 

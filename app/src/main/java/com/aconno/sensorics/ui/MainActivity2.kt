@@ -13,7 +13,6 @@ import android.view.View
 import android.widget.EditText
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.viewpager.widget.ViewPager
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
@@ -42,7 +41,7 @@ import javax.inject.Inject
 
 
 class MainActivity2 : DaggerAppCompatActivity(),
-    ScannedDevicesDialogListener, EasyPermissions.PermissionCallbacks {
+    ScannedDevicesDialogListener, EasyPermissions.PermissionCallbacks, BleScanner {
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
@@ -66,8 +65,8 @@ class MainActivity2 : DaggerAppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar2)
         button_add_device?.setOnClickListener {
-            stopScanning()
-            startScanning(false)
+            stopScan()
+            startScan(false)
             ScannedDevicesDialog().show(supportFragmentManager, "devices_dialog")
         }
 
@@ -115,7 +114,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     override fun onDialogDismissed() {
-        stopScanning()
+        stopScan()
     }
 
     private fun handleScanEvent(scanEvent: ScanEvent?) {
@@ -161,25 +160,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
         content_pager?.adapter = viewPagerAdapter
         content_pager?.offscreenPageLimit = 2
         tabLayout.setupWithViewPager(content_pager)
-        content_pager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrollStateChanged(state: Int) {
-            }
-
-            override fun onPageScrolled(
-                position: Int,
-                positionOffset: Float,
-                positionOffsetPixels: Int
-            ) {
-            }
-
-            override fun onPageSelected(position: Int) {
-                if (position != 0) {
-                    if (deviceList[position - 1].device.connectable && BluetoothScanningService.isRunning()) {
-                        stopScanning()
-                    }
-                }
-            }
-        })
     }
 
     private fun prepareTabView(deviceActive: DeviceActive): View {
@@ -289,12 +269,12 @@ class MainActivity2 : DaggerAppCompatActivity(),
         }
     }
 
-    fun startScanning(filterByDevice: Boolean = true) {
+    override fun startScan(filterByDevice: Boolean) {
         this.filterByDevice = filterByDevice
         startScanningWithPermissions()
     }
 
-    private fun stopScanning() {
+    override fun stopScan() {
         bluetoothScanningViewModel.stopScanning()
     }
 
@@ -307,9 +287,9 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun toggleScanFromMenuItem(item: MenuItem) {
         if (item.isChecked) {
-            stopScanning()
+            stopScan()
         } else {
-            startScanning()
+            startScan()
         }
     }
 
