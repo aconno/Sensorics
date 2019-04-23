@@ -26,7 +26,6 @@ class BluetoothServiceConnection : ServiceConnection {
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         serviceConnect = (service as BluetoothConnectService.LocalBinder).getService()
         connectionCallback?.let { connectionCallback ->
-            connectionCallback.onServiceConnectionCreated()
 
             val subscribe = serviceConnect?.getConnectResults()
                 ?.subscribe {
@@ -54,6 +53,7 @@ class BluetoothServiceConnection : ServiceConnection {
                             connectionCallback.onStatusTextChanged(R.string.error)
                         }
                         it.action == BluetoothGattCallback.ACTION_BEACON_HAS_SETTINGS -> {
+                            connectionCallback.onStatusTextChanged(R.string.discovered)
                             connectionCallback.onHasSettings()
                         }
                         else -> {
@@ -86,7 +86,6 @@ class BluetoothServiceConnection : ServiceConnection {
     }
 
     interface ConnectionCallback {
-        fun onServiceConnectionCreated()
         fun onStatusTextChanged(@StringRes stringRes: Int)
         fun onHasSettings()
         fun onConnected()

@@ -11,6 +11,7 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.appcompat.app.AlertDialog
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
@@ -18,7 +19,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.toHexByte
 import com.aconno.sensorics.ui.configure.ConfigureActivity
-import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
+import com.aconno.sensorics.viewmodel.connection.ConnectionViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
@@ -38,19 +39,60 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
     lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
 
     @Inject
-    lateinit var mainResourceViewModel: MainResourceViewModel
+    lateinit var connectionViewModel: ConnectionViewModel
 
     private lateinit var device: Device
     private lateinit var compositeDisposable: CompositeDisposable
 
     private var hasSettings = false
     private var isConnectedOrConnecting = true
-    private var webViewBundle: Bundle? = null
+    private var shouldStopService = false
+    private var latestStatusStringRes = 0
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(EXTRA_CONNECTION_STATUS, isConnectedOrConnecting)
         outState.putBoolean(EXTRA_HAS_SETTINGS, hasSettings)
+        web_view?.saveState(outState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        BluetoothConnectService.start(this, bluetoothServiceConnection, device)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        applicationContext.unbindService(bluetoothServiceConnection)
+
+        if (shouldStopService) {
+            applicationContext.startService(BluetoothConnectService.getStopIntent(this))
+        }
+    }
+
+    override fun onBackPressed() {
+        if (isConnectedOrConnecting) {
+            val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
+
+            alertDialogBuilder.setTitle(resources.getString(R.string.dialog_close_connection))
+            alertDialogBuilder
+                .setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
+                    shouldStopService = true
+                    dialog.cancel()
+                    super.onBackPressed()
+
+                }
+                .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
+                    shouldStopService = false
+                    dialog.cancel()
+                    super.onBackPressed()
+                }
+
+            val alertDialog = alertDialogBuilder.create()
+            alertDialog.show()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,13 +114,7 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
             finish()
         }
 
-        setupWebView()
-
-        Intent(this, BluetoothConnectService::class.java).apply {
-            bindService(
-                this, bluetoothServiceConnection, Context.BIND_AUTO_CREATE
-            )
-        }
+        setupWebView(savedInstanceState)
     }
 
     private fun loadSavedInstanceState(it: Bundle) {
@@ -95,16 +131,16 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun setupWebView() {
+    private fun setupWebView(savedInstanceState: Bundle?) {
         web_view.webChromeClient = WebChromeClient()
         web_view.webViewClient = MyWebViewClient()
         web_view.addJavascriptInterface(WebViewJavaScriptInterface(), "app")
         web_view.settings.javaScriptEnabled = true
 
-        if (webViewBundle != null) {
-            web_view.restoreState(webViewBundle)
+        if (savedInstanceState != null) {
+            web_view.restoreState(savedInstanceState)
         } else {
-            val getResourceDisposable = mainResourceViewModel.getConnectionResourcePath(device.name)
+            val getResourceDisposable = connectionViewModel.getConnectionResourcePath(device.name)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -174,13 +210,13 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
     }
 
     override fun onDestroy() {
-        unbindService(bluetoothServiceConnection)
         compositeDisposable.clear()
         super.onDestroy()
     }
 
     override fun onStatusTextChanged(stringRes: Int) {
         runOnUiThread {
+            latestStatusStringRes = stringRes
             web_view?.loadUrl("javascript:onStatusReading('${getString(stringRes)}')")
         }
     }
@@ -199,16 +235,15 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
         invalidateOptionsMenu()
     }
 
-    override fun onServiceConnectionCreated() {
-        bluetoothServiceConnection.connect(device.macAddress)
-    }
-
     inner class MyWebViewClient : WebViewClient() {
 
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
-            onStatusTextChanged(R.string.connecting)
-            //No-op
+            if (latestStatusStringRes == 0) {
+                onStatusTextChanged(R.string.connecting)
+            } else {
+                onStatusTextChanged(latestStatusStringRes)
+            }
         }
     }
 
@@ -305,7 +340,7 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
     }
 
     companion object {
-        private const val EXTRA_DEVICE = "EXTRA_DEVICE"
+        const val EXTRA_DEVICE = "EXTRA_DEVICE"
         private const val EXTRA_CONNECTION_STATUS = "EXTRA_CONNECTION_STATUS"
         private const val EXTRA_HAS_SETTINGS = "EXTRA_HAS_SETTINGS"
 

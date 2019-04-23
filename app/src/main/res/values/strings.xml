@@ -257,4 +257,5 @@
     <string name="undo">Undo</string>
     <string name="beacon_renamed">Beacon renamed</string>
     <string name="beacon_removed">Beacon removed</string>
+    <string name="dialog_close_connection">Do you want to close connection?\n(Recommended)</string>
 </resources>
