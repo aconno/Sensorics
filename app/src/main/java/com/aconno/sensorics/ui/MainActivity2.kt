@@ -11,9 +11,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import androidx.annotation.MenuRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.viewpager.widget.ViewPager
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
@@ -42,7 +42,7 @@ import javax.inject.Inject
 
 
 class MainActivity2 : DaggerAppCompatActivity(),
-    ScannedDevicesDialogListener, EasyPermissions.PermissionCallbacks {
+    ScannedDevicesDialogListener, EasyPermissions.PermissionCallbacks, BleScanner {
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
@@ -60,19 +60,24 @@ class MainActivity2 : DaggerAppCompatActivity(),
     private var compositeDisposable = CompositeDisposable()
 
     private var deviceList = mutableListOf<DeviceActive>()
+
     private lateinit var viewPagerAdapter: ViewPagerAdapter
+
+    private lateinit var bluetoothSnackbar: Snackbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar2)
         button_add_device?.setOnClickListener {
-            stopScanning()
-            startScanning(false)
+            stopScan()
+            startScan(false)
             ScannedDevicesDialog().show(supportFragmentManager, "devices_dialog")
         }
 
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.app_name)
+
+        initBluetoothSnackbar()
         //TODO Change Icon
 //        supportActionBar?.setDisplayShowHomeEnabled(true)
 //        supportActionBar?.setIcon(R.mipmap.ic_launcher_rounded)
@@ -99,16 +104,15 @@ class MainActivity2 : DaggerAppCompatActivity(),
         setupViewPager()
 
         savedInstanceState?.let {
-            Timber.d("Extracting...")
             content_pager?.postDelayed({
                 content_pager?.setCurrentItem(it.getInt(EXTRA_CURRENT_PAGE, 0), false)
             }, 100)
         }
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Timber.d("Saving... ${content_pager?.currentItem}")
         outState.putInt(EXTRA_CURRENT_PAGE, content_pager?.currentItem ?: 0)
     }
 
@@ -116,8 +120,17 @@ class MainActivity2 : DaggerAppCompatActivity(),
         deviceViewModel.saveDevice(item)
     }
 
+    private fun initBluetoothSnackbar() {
+        bluetoothSnackbar =
+            Snackbar.make(main_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
+                .also {
+                    it.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+                }
+    }
+
     override fun onDialogDismissed() {
-        stopScanning()
+        stopScan()
     }
 
     private fun handleScanEvent(scanEvent: ScanEvent?) {
@@ -163,25 +176,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
         content_pager?.adapter = viewPagerAdapter
         content_pager?.offscreenPageLimit = 2
         tabLayout.setupWithViewPager(content_pager)
-        content_pager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrollStateChanged(state: Int) {
-            }
-
-            override fun onPageScrolled(
-                position: Int,
-                positionOffset: Float,
-                positionOffsetPixels: Int
-            ) {
-            }
-
-            override fun onPageSelected(position: Int) {
-                if (position != 0) {
-                    if (deviceList[position - 1].device.connectable && BluetoothScanningService.isRunning()) {
-                        stopScanning()
-                    }
-                }
-            }
-        })
     }
 
     private fun prepareTabView(deviceActive: DeviceActive): View {
@@ -224,16 +218,22 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     private fun onBluetoothOn() {
-        mainMenu?.let {
-            val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
-            menuItem?.setVisible(true)
-        }
+        changeMenuItemVisibility(true, R.id.action_toggle_scan, R.id.action_toggle_connect)
+        bluetoothSnackbar.dismiss()
     }
 
     private fun onBluetoothOff() {
-        mainMenu?.let {
-            val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
-            menuItem?.setVisible(false)
+        changeMenuItemVisibility(false, R.id.action_toggle_scan, R.id.action_toggle_connect)
+
+        bluetoothSnackbar.show()
+    }
+
+    private fun changeMenuItemVisibility(visible: Boolean, vararg itemIds: Int) {
+        mainMenu?.let { menu ->
+            itemIds.forEach {
+                val menuItem: MenuItem? = menu.findItem(it)
+                menuItem?.isVisible = visible
+            }
         }
     }
 
@@ -291,12 +291,12 @@ class MainActivity2 : DaggerAppCompatActivity(),
         }
     }
 
-    fun startScanning(filterByDevice: Boolean = true) {
+    override fun startScan(filterByDevice: Boolean) {
         this.filterByDevice = filterByDevice
         startScanningWithPermissions()
     }
 
-    private fun stopScanning() {
+    override fun stopScan() {
         bluetoothScanningViewModel.stopScanning()
     }
 
@@ -309,9 +309,9 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun toggleScanFromMenuItem(item: MenuItem) {
         if (item.isChecked) {
-            stopScanning()
+            stopScan()
         } else {
-            startScanning()
+            startScan()
         }
     }
 

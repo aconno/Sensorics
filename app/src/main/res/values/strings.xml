@@ -257,6 +257,7 @@
     <string name="undo">Undo</string>
     <string name="beacon_renamed">Beacon renamed</string>
     <string name="beacon_removed">Beacon removed</string>
+    <string name="dialog_close_connection">Do you want to close connection?\n(Recommended)</string>
     <!--Dfu Activity-->
     <string name="title_dfu">Update Firmware</string>
     <string name="status_format">Status: <b>%1$s</b></string>

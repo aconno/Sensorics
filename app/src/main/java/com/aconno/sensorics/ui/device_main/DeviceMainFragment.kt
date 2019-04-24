@@ -1,32 +1,28 @@
 package com.aconno.sensorics.ui.device_main
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.view.*
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.aconno.sensorics.BluetoothConnectService
+import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
-import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
-import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
-import com.aconno.sensorics.toHexByte
 import com.aconno.sensorics.ui.ActionListActivity
+import com.aconno.sensorics.ui.BleScanner
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.MainActivity2
 import com.aconno.sensorics.ui.configure.ConfigureActivity
+import com.aconno.sensorics.ui.connect.ConnectActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
@@ -41,15 +37,11 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_device_main.*
 import org.json.JSONObject
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 
 @SuppressLint("SetJavaScriptEnabled")
 class DeviceMainFragment : DaggerFragment(), ScanStatus {
-
-    @Inject
-    lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
 
     @Inject
     lateinit var sensorReadingFlow: Flowable<List<Reading>> //TODO: Move this to the view model
@@ -66,102 +58,11 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     private lateinit var mDevice: Device
     private var webViewBundle: Bundle? = null
 
-    private val writeCommandQueue: Queue<WriteCommand> = ArrayDeque<WriteCommand>()
-    private var serviceConnect: BluetoothConnectService? = null
-    private var connectResultDisposable: Disposable? = null
-
-    private var isServicesDiscovered = false
-    private var isConnectedOrConnecting = false
     private var hasSettings: Boolean = false
     private var status: Boolean = false
+    private var bleScanner: BleScanner? = null
 
     var menu: Menu? = null
-
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceDisconnected(name: ComponentName?) {
-            Timber.d("Disconnected")
-            connectResultDisposable?.dispose()
-            serviceConnect = null
-        }
-
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            serviceConnect = (service as BluetoothConnectService.LocalBinder).getService()
-            Timber.d("Connected")
-
-            connectResultDisposable = serviceConnect!!.getConnectResults()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    if (!isAdded) {
-                        return@subscribe
-                    }
-
-                    Timber.d(it.action)
-                    val text: String
-
-                    when {
-                        it.action == BluetoothGattCallback.ACTION_GATT_DEVICE_NOT_FOUND -> {
-                            isConnectedOrConnecting = false
-                            Timber.i("Device not found")
-                            text = getString(R.string.device_not_found)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
-                            isConnectedOrConnecting = true
-                            Timber.i("Device connecting")
-                            text = getString(R.string.connecting)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
-                            isConnectedOrConnecting = true
-                            Timber.i("Device connected")
-                            text = getString(R.string.connected)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_SERVICES_DISCOVERED -> {
-                            isConnectedOrConnecting = true
-                            Timber.i("Device discovered")
-                            isServicesDiscovered = true
-                            text = getString(R.string.discovered)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
-                            isConnectedOrConnecting = false
-                            Timber.i("Device disconnected")
-                            isServicesDiscovered = false
-                            text = getString(R.string.disconnected)
-
-                            serviceConnect?.close()
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_ERROR -> {
-                            isConnectedOrConnecting = false
-                            Timber.i("Device Error")
-                            isServicesDiscovered = false
-                            text = getString(R.string.error)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
-                            Timber.i("Device write")
-                            writeCommandQueue.poll()
-                            writeCharacteristics(writeCommandQueue.peek())
-                            text = getString(R.string.connected)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_BEACON_HAS_SETTINGS -> {
-                            Timber.i("Device has settings")
-                            hasSettings = true
-                            text = ""
-                        }
-                        else -> {
-                            return@subscribe
-                        }
-                    }
-
-                    activity?.invalidateOptionsMenu()
-
-                    text.takeIf {
-                        it.isNotBlank()
-                    }.let {
-                        web_view.loadUrl("javascript:onStatusReading('$text')")
-                    }
-                }
-
-//            serviceConnect?.connect(mDevice.macAddress)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -177,9 +78,21 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         return inflater.inflate(R.layout.fragment_device_main, container, false)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        if (context is BleScanner) {
+            with(context as BleScanner) {
+                bleScanner = this
+            }
+        } else {
+            Timber.e("Fragment context needs to implement BleScanner Interface")
+            (context as AppCompatActivity).onBackPressed()
+        }
+    }
+
     override fun onDetach() {
-        if (mDevice.connectable)
-            context?.unbindService(serviceConnection)
+        bleScanner = null
         super.onDetach()
     }
 
@@ -196,19 +109,6 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
             it.findItem(R.id.action_dfu).isVisible = hasSettings
-            it.findItem(R.id.action_toggle_scan).isVisible = !mDevice.connectable
-
-            if (isConnectedOrConnecting) {
-                with(it.findItem(R.id.action_toggle_connect)) {
-                    title = getString(com.aconno.sensorics.R.string.disconnect)
-                    isChecked = true
-                }
-            } else {
-                with(it.findItem(R.id.action_toggle_connect)) {
-                    title = getString(com.aconno.sensorics.R.string.connect)
-                    isChecked = false
-                }
-            }
         }
     }
 
@@ -262,18 +162,12 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         context?.let { context ->
             when (item.itemId) {
-                R.id.action_toggle_connect ->
-                    if (item.isChecked) {
-                        item.isChecked = false
-                        serviceConnect?.disconnect()
-                        item.title = getString(R.string.connect)
-                        true
-                    } else {
-                        item.isChecked = true
-                        serviceConnect?.connect(mDevice.macAddress)
-                        item.title = getString(R.string.disconnect)
-                        true
+                R.id.action_toggle_connect -> {
+                    if (BluetoothScanningService.isRunning()) {
+                        bleScanner?.stopScan()
                     }
+                    ConnectActivity.start(context, mDevice)
+                }
 
                 R.id.action_start_actions_activity -> {
                     ActionListActivity.start(context)
@@ -326,8 +220,6 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupWebView()
-        if (mDevice.connectable)
-            setupConnectionForFreight()
 
         savedInstanceState?.let {
             setStatus(it.getBoolean(EXTRA_STATUS, false), true)
@@ -356,16 +248,6 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
                         text_error_message.text = throwable.message
                     })
         }
-    }
-
-    private fun setupConnectionForFreight() {
-
-        val gattServiceIntent = Intent(
-            context, BluetoothConnectService::class.java
-        )
-        context!!.bindService(
-            gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE
-        )
     }
 
     private fun subscribeOnSensorReadings() {
@@ -432,19 +314,6 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
                 }
             }
         }
-
-        @JavascriptInterface
-        fun buzzerPlay(checked: Boolean) {
-            Timber.i("test the buzzer value $checked")
-            toggleBuzzerCharacteristic(checked)
-        }
-
-        @JavascriptInterface
-        fun changeColorOfFreight(color: String) {
-            Timber.i("test the color value $color")
-            writeColorCharacteristic(color)
-        }
-
     }
 
     private fun getParams() {
@@ -452,9 +321,9 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
             arguments!!.getString(KEY_DEVICE)
             , Device::class.java
         )
-        Timber.i("device is $device")
 
-        mDevice = connectionCharacteristicsFinder.addCharacteristicsToDevice(device)
+        mDevice = device
+        Timber.i("device is $device")
     }
 
     private fun showAlertDialog(mainActivity: MainActivity2) {
@@ -478,107 +347,6 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
-    }
-
-    //should be called when the buzzer in acnfreight is pressed
-    private fun toggleBuzzerCharacteristic(turnOn: Boolean) {
-        val deviceWrite = mDevice.connectionWriteList!![0]
-        val turnOnIndex = if (turnOn) 0 else 1
-
-        addWriteCommand(
-            UUID.fromString(deviceWrite.serviceUUID),
-            UUID.fromString(deviceWrite.characteristicUUID),
-            deviceWrite.values[turnOnIndex].type,
-            byteArrayOf(deviceWrite.values[turnOnIndex].value.toHexByte())
-        )
-    }
-
-    private fun writeColorCharacteristic(hex: String) {
-        //val hex = Integer.toHexString(color)
-        Timber.i("hex value $hex hex $hex")
-        val red: Byte
-        val green: Byte
-        val blue: Byte
-        if (hex.length >= 7) {
-
-            red = "0x${hex.subSequence(1, 3)}".toHexByte()
-            green = "0x${hex.subSequence(3, 5)}".toHexByte()
-            blue = "0x${hex.subSequence(5, 7)}".toHexByte()
-        } else {
-            red = "0x00".toHexByte()
-            green = "0x00".toHexByte()
-            blue = "0x00".toHexByte()
-        }
-
-
-        var deviceWrite = mDevice.connectionWriteList?.get(1)
-        deviceWrite?.let {
-
-            Timber.i("Service UUId is ${it.serviceUUID}")
-
-            val serviceUUID: UUID = UUID.fromString(it.serviceUUID)
-            val charUUID: UUID = UUID.fromString(it.characteristicUUID)
-
-            val type: String = it.values[1].type
-            val value: ByteArray = byteArrayOf(red)
-
-            addWriteCommand(
-                serviceUUID,
-                charUUID,
-                type,
-                value
-            )
-        }
-
-
-        deviceWrite = mDevice.connectionWriteList?.get(2)
-        deviceWrite?.let {
-
-            val serviceUUID: UUID = UUID.fromString(it.serviceUUID)
-            val charUUID: UUID = UUID.fromString(it.characteristicUUID)
-            val type: String = it.values[1].type
-            val value: ByteArray = byteArrayOf(green)
-            addWriteCommand(
-                serviceUUID,
-                charUUID,
-                type,
-                value
-            )
-        }
-
-        deviceWrite = mDevice.connectionWriteList?.get(3)
-        deviceWrite?.let {
-
-            val serviceUUID: UUID = UUID.fromString(it.serviceUUID)
-            val charUUID: UUID = UUID.fromString(it.characteristicUUID)
-            val type: String = it.values[1].type
-            val value: ByteArray = byteArrayOf(blue)
-
-            addWriteCommand(
-                serviceUUID,
-                charUUID,
-                type,
-                value
-            )
-        }
-    }
-
-    private fun addWriteCommand(serviceUUID: UUID, charUUID: UUID, type: String, value: ByteArray) {
-        val writeCommand = WriteCommand(serviceUUID, charUUID, type, value)
-        writeCommandQueue.add(writeCommand)
-        writeCharacteristics(writeCommandQueue.peek())
-    }
-
-
-    private fun writeCharacteristics(cmd: WriteCommand?) {
-        cmd?.let {
-            serviceConnect!!.writeCharacteristic(
-                it.serviceUUID,
-                it.charUUID,
-                it.type,
-                it.value
-            )
-        }
     }
 
     private fun renameDevice() {
