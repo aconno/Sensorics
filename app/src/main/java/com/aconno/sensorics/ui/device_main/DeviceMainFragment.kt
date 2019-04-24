@@ -160,10 +160,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         context?.let { context ->
             when (item.itemId) {
                 R.id.action_toggle_connect -> {
-                    if (BluetoothScanningService.isRunning()) {
-                        bleScanner?.stopScan()
-                    }
-                    ConnectActivity.start(context, mDevice)
+                    connectToBeacon(context)
                 }
 
                 R.id.action_start_actions_activity -> {
@@ -205,6 +202,13 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun connectToBeacon(context: Context) {
+        if (BluetoothScanningService.isRunning()) {
+            bleScanner?.stopScan()
+        }
+        ConnectActivity.start(context, mDevice)
     }
 
     private fun removeBeacon() {
@@ -305,6 +309,13 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
                 if (it is LiveGraphOpener) {
                     (it as LiveGraphOpener).openLiveGraph(mDevice.macAddress, sensorName)
                 }
+            }
+        }
+
+        @JavascriptInterface
+        fun connect() {
+            context?.let {
+                connectToBeacon(it)
             }
         }
     }
