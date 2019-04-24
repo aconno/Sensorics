@@ -49,6 +49,28 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
     private var shouldStopService = false
     private var latestStatusStringRes = 0
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_connect)
+        setSupportActionBar(toolbar)
+
+        loadParams()
+
+        savedInstanceState?.let {
+            loadSavedInstanceState(it)
+        }
+
+        compositeDisposable = CompositeDisposable()
+        bluetoothServiceConnection.connectionCallback = this
+
+        if (!device.connectable) {
+            //Device is not connectable go back
+            finish()
+        }
+
+        setupWebView(savedInstanceState)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(EXTRA_CONNECTION_STATUS, isConnectedOrConnecting)
@@ -93,68 +115,6 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
         } else {
             shouldStopService = true
             super.onBackPressed()
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_connect)
-        setSupportActionBar(toolbar)
-
-        loadParams()
-
-        savedInstanceState?.let {
-            loadSavedInstanceState(it)
-        }
-
-        compositeDisposable = CompositeDisposable()
-        bluetoothServiceConnection.connectionCallback = this
-
-        if (!device.connectable) {
-            //Device is not connectable go back
-            finish()
-        }
-
-        setupWebView(savedInstanceState)
-    }
-
-    private fun loadSavedInstanceState(it: Bundle) {
-        isConnectedOrConnecting = it.getBoolean(EXTRA_CONNECTION_STATUS, true)
-        hasSettings = it.getBoolean(EXTRA_HAS_SETTINGS, false)
-    }
-
-    private fun loadParams() {
-        val deviceJson = intent.getStringExtra(EXTRA_DEVICE)
-        device = Gson().fromJson<Device>(deviceJson, Device::class.java)
-        device = connectionCharacteristicsFinder.addCharacteristicsToDevice(device)
-        supportActionBar?.title = device.getRealName()
-        supportActionBar?.subtitle = device.macAddress
-    }
-
-    @SuppressLint("SetJavaScriptEnabled")
-    private fun setupWebView(savedInstanceState: Bundle?) {
-        web_view.webChromeClient = WebChromeClient()
-        web_view.webViewClient = MyWebViewClient()
-        web_view.addJavascriptInterface(WebViewJavaScriptInterface(), "app")
-        web_view.settings.javaScriptEnabled = true
-
-        if (savedInstanceState != null) {
-            web_view.restoreState(savedInstanceState)
-        } else {
-            val getResourceDisposable = connectionViewModel.getConnectionResourcePath(device.name)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { resourcePath ->
-                        text_error_message.visibility = View.INVISIBLE
-                        web_view.loadUrl(resourcePath)
-                    },
-                    { throwable ->
-                        text_error_message.visibility = View.VISIBLE
-                        text_error_message.text = throwable.message
-                    })
-
-            compositeDisposable.add(getResourceDisposable)
         }
     }
 
@@ -215,6 +175,50 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
         super.onDestroy()
     }
 
+    //Private methods
+
+    private fun loadSavedInstanceState(it: Bundle) {
+        isConnectedOrConnecting = it.getBoolean(EXTRA_CONNECTION_STATUS, true)
+        hasSettings = it.getBoolean(EXTRA_HAS_SETTINGS, false)
+    }
+
+    private fun loadParams() {
+        val deviceJson = intent.getStringExtra(EXTRA_DEVICE)
+        device = Gson().fromJson<Device>(deviceJson, Device::class.java)
+        device = connectionCharacteristicsFinder.addCharacteristicsToDevice(device)
+        supportActionBar?.title = device.getRealName()
+        supportActionBar?.subtitle = device.macAddress
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun setupWebView(savedInstanceState: Bundle?) {
+        web_view.webChromeClient = WebChromeClient()
+        web_view.webViewClient = MyWebViewClient()
+        web_view.addJavascriptInterface(WebViewJavaScriptInterface(), "app")
+        web_view.settings.javaScriptEnabled = true
+
+        if (savedInstanceState != null) {
+            web_view.restoreState(savedInstanceState)
+        } else {
+            val getResourceDisposable = connectionViewModel.getConnectionResourcePath(device.name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { resourcePath ->
+                        text_error_message.visibility = View.INVISIBLE
+                        web_view.loadUrl(resourcePath)
+                    },
+                    { throwable ->
+                        text_error_message.visibility = View.VISIBLE
+                        text_error_message.text = throwable.message
+                    })
+
+            compositeDisposable.add(getResourceDisposable)
+        }
+    }
+
+    //Interface methods
+
     override fun onStatusTextChanged(stringRes: Int) {
         runOnUiThread {
             latestStatusStringRes = stringRes
@@ -237,6 +241,7 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
         invalidateOptionsMenu()
     }
 
+    //Inner Classes
     inner class MyWebViewClient : WebViewClient() {
 
         override fun onPageFinished(view: WebView?, url: String?) {
