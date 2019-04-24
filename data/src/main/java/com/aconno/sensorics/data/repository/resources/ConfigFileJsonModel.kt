@@ -21,5 +21,8 @@ data class ConfigFileJsonModel(
     val name: String,
     @SerializedName("usecase_screen_path")
     @Expose
-    val usecaseScreenPath: String
+    val usecaseScreenPath: String,
+    @SerializedName("connection_screen_path")
+    @Expose
+    val connectionScreenPath: String? = null
 )

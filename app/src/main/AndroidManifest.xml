@@ -37,6 +37,10 @@
             android:configChanges="keyboardHidden|orientation" />
         <activity android:name=".ui.ActionListActivity" />
 
+        <activity
+            android:name=".ui.connect.ConnectActivity"
+            android:parentActivityName=".ui.MainActivity2" />
+
         <service
             android:name=".BluetoothScanningService"
             android:exported="false" />
