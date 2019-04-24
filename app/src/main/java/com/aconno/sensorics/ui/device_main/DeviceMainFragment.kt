@@ -24,7 +24,7 @@ import com.aconno.sensorics.ui.MainActivity2
 import com.aconno.sensorics.ui.UseCasesFragment
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.connect.ConnectActivity
-import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
+import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -243,18 +243,44 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         iv_close_usecase?.setOnClickListener {
             removeUseCaseFragment()
         }
+
+        iv_close_livegraph?.setOnClickListener {
+            removeLiveGraphFragment()
+        }
+    }
+
+    private fun removeLiveGraphFragment() {
+        childFragmentManager.fragments.find {
+            it is LiveGraphFragment
+        }?.let {
+            it as LiveGraphFragment
+        }?.let {
+            ll_livegraph?.postDelayed({
+                ll_livegraph?.visibility = View.GONE
+            }, ANIM_DURATION)
+
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.exit_to_left, R.anim.exit_to_left)
+                .remove(it)
+                .commit()
+        }
     }
 
     private fun removeUseCaseFragment() {
-        val fragment = childFragmentManager.fragments[0]
-        childFragmentManager.beginTransaction()
-            .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_right)
-            .remove(fragment)
-            .commit()
+        childFragmentManager.fragments.find {
+            it is UseCasesFragment
+        }?.let {
+            it as UseCasesFragment
+        }?.let {
+            ll_usecase?.postDelayed({
+                ll_usecase?.visibility = View.GONE
+            }, ANIM_DURATION)
 
-        ll_usecase?.postDelayed({
-            ll_usecase?.visibility = View.GONE
-        }, ANIM_DURATION)
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_right)
+                .remove(it)
+                .commit()
+        }
     }
 
     private fun setupWebView() {
@@ -339,9 +365,9 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
         @JavascriptInterface
         fun openLiveGraph(sensorName: String) {
-            activity?.let {
-                if (it is LiveGraphOpener) {
-                    (it as LiveGraphOpener).openLiveGraph(mDevice.macAddress, sensorName)
+            activity?.apply {
+                runOnUiThread {
+                    showLiveGraphFragment(sensorName)
                 }
             }
         }
@@ -351,6 +377,20 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
             context?.let {
                 connectToBeacon(it)
             }
+        }
+    }
+
+    private fun showLiveGraphFragment(sensorName: String) {
+        //If it is not visible
+        if (ll_livegraph.visibility == View.GONE) {
+            ll_livegraph.visibility = View.VISIBLE
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_left)
+                .replace(
+                    R.id.fl_livegraph,
+                    LiveGraphFragment.newInstance(mDevice.macAddress, sensorName)
+                )
+                .commit()
         }
     }
 
