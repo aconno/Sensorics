@@ -224,6 +224,7 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
 
     override fun onHasSettings() {
         hasSettings = true
+        invalidateOptionsMenu()
     }
 
     override fun onConnected() {
