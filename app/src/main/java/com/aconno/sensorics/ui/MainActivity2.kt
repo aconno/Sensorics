@@ -11,7 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
-import androidx.annotation.MenuRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.BluetoothScanningService
@@ -211,6 +211,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
+        setScanMenuLabel()
         when (bluetoothState?.state) {
             BluetoothState.BLUETOOTH_OFF -> onBluetoothOff()
             BluetoothState.BLUETOOTH_ON -> onBluetoothOn()
@@ -218,21 +219,33 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     private fun onBluetoothOn() {
-        changeMenuItemVisibility(true, R.id.action_toggle_scan, R.id.action_toggle_connect)
+        changeMenuItemsAvailability(true, R.id.action_toggle_scan, R.id.action_toggle_connect)
         bluetoothSnackbar.dismiss()
     }
 
     private fun onBluetoothOff() {
-        changeMenuItemVisibility(false, R.id.action_toggle_scan, R.id.action_toggle_connect)
-
+        changeMenuItemsAvailability(false, R.id.action_toggle_scan, R.id.action_toggle_connect)
+        changeMenuItemLabel(R.id.action_toggle_connect, R.string.connect)
         bluetoothSnackbar.show()
     }
 
-    private fun changeMenuItemVisibility(visible: Boolean, vararg itemIds: Int) {
+    private fun changeMenuItemsAvailability(enabled: Boolean, vararg itemIds: Int) {
         mainMenu?.let { menu ->
-            itemIds.forEach {
-                val menuItem: MenuItem? = menu.findItem(it)
-                menuItem?.isVisible = visible
+            itemIds.forEach { id ->
+                menu.findItem(id)?.takeIf { it.isVisible }?.let {
+                    it.isEnabled = enabled
+                    if (!enabled) {
+                        it.isChecked = false
+                    }
+                }
+            }
+        }
+    }
+
+    private fun changeMenuItemLabel(menuItemId: Int, @StringRes labelId: Int) {
+        mainMenu?.let { menu ->
+            menu.findItem(menuItemId)?.takeIf {it.isVisible }?.let {
+                it.title = getString(labelId)
             }
         }
     }
@@ -247,14 +260,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
         mainMenu = menu
         menuInflater.inflate(R.menu.main_menu, menu)
 
-        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
-            setScanMenuLabel(it)
-            val state = bluetoothViewModel.bluetoothState.value
-            when (state?.state) {
-                BluetoothState.BLUETOOTH_ON -> it.setVisible(true)
-                else -> it.setVisible(false)
-            }
-        }
+        setScanMenuLabel()
 
         return true
     }
@@ -281,13 +287,15 @@ class MainActivity2 : DaggerAppCompatActivity(),
         }
     }
 
-    private fun setScanMenuLabel(menuItem: MenuItem) {
-        if (BluetoothScanningService.isRunning()) {
-            menuItem.title = getString(R.string.stop_scan)
-            menuItem.isChecked = true
-        } else {
-            menuItem.title = getString(R.string.start_scan)
-            menuItem.isChecked = false
+    private fun setScanMenuLabel() {
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let {menuItem ->
+            if (BluetoothScanningService.isRunning()) {
+                menuItem.title = getString(R.string.stop_scan)
+                menuItem.isChecked = true
+            } else {
+                menuItem.title = getString(R.string.start_scan)
+                menuItem.isChecked = false
+            }
         }
     }
 
