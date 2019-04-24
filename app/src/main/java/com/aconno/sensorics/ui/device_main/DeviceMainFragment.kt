@@ -17,10 +17,11 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.BleScanner
-import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.MainActivity2
+import com.aconno.sensorics.ui.UseCasesFragment
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.connect.ConnectActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
@@ -168,7 +169,19 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
                     return true
                 }
                 R.id.action_start_usecases_activity -> {
-                    (activity as MainActivity).onUseCaseClicked(mDevice.macAddress, mDevice.name)
+                    if (ll_usecase.visibility == View.GONE) {
+                        ll_usecase.visibility = View.VISIBLE
+                        childFragmentManager.beginTransaction()
+                            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right)
+                            .replace(
+                                R.id.fl_usecase,
+                                UseCasesFragment.newInstance(
+                                    mDevice.macAddress,
+                                    mDevice.getRealName()
+                                )
+                            )
+                            .commit()
+                    }
                     return true
                 }
                 R.id.action_start_config_activity -> {
@@ -220,6 +233,18 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
         savedInstanceState?.let {
             setStatus(it.getBoolean(EXTRA_STATUS, false), true)
+        }
+
+        iv_close_usecase?.setOnClickListener {
+            val fragment = childFragmentManager.fragments[0]
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_right)
+                .remove(fragment)
+                .commit()
+
+            ll_usecase?.postDelayed({
+                ll_usecase?.visibility = View.GONE
+            }, 700)
         }
     }
 
