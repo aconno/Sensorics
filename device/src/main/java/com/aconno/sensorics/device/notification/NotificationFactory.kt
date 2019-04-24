@@ -70,7 +70,9 @@ class NotificationFactory {
         message: String,
         contentIntent: PendingIntent,
         deleteIntent: PendingIntent,
-        buttonText: String
+        buttonText: String,
+        autoCancel: Boolean = false,
+        cancelIntent: PendingIntent? = null
     ): Notification {
         createNotificationsChannel(context, NotificationChannelFactory.SERVICE_CHANNEL)
         return NotificationCompat.Builder(
@@ -81,7 +83,8 @@ class NotificationFactory {
             .setContentTitle("Sensorics")
             .setContentText(message)
             .setContentIntent(contentIntent)
-            .setAutoCancel(false)
+            .setAutoCancel(autoCancel)
+            .setDeleteIntent(cancelIntent)
             .addAction(
                 0, buttonText,
                 deleteIntent

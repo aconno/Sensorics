@@ -91,6 +91,7 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
             val alertDialog = alertDialogBuilder.create()
             alertDialog.show()
         } else {
+            shouldStopService = true
             super.onBackPressed()
         }
     }
