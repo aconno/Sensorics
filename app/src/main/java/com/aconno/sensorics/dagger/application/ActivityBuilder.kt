@@ -31,7 +31,7 @@ import com.aconno.sensorics.dagger.splash.SplashActivityScope
 import com.aconno.sensorics.dagger.sync.SyncConfigurationServiceModule
 import com.aconno.sensorics.dagger.sync.SyncConfigurationServiceScope
 import com.aconno.sensorics.ui.ActionListActivity
-import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.MainActivity2
 import com.aconno.sensorics.ui.SplashActivity
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.aconno.sensorics.ui.configure.ConfigureActivity
@@ -50,7 +50,7 @@ abstract class ActivityBuilder {
     @ContributesAndroidInjector(
         modules = [MainActivityModule::class, MainActivityFragmentsModule::class]
     )
-    abstract fun bindMainActivity(): MainActivity
+    abstract fun bindMainActivity(): MainActivity2
 
     @BluetoothScanningServiceScope
     @ContributesAndroidInjector(modules = [BluetoothScanningServiceModule::class])

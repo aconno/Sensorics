@@ -2,6 +2,7 @@ package com.aconno.sensorics
 
 import android.view.View
 import androidx.annotation.StringRes
+import android.util.SparseArray
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceRelationModel
 import com.google.android.material.snackbar.Snackbar
@@ -21,6 +22,26 @@ fun String.toHexByte(): Byte {
     ) and 0xff).toByte()
 }
 
+fun <E> SparseArray<E>.find(predicate: (E) -> Boolean): E? {
+    for (i in 0 until this.size()) {
+        val element = this.valueAt(i)
+        if (predicate(element)) {
+            return element
+        }
+    }
+
+    return null
+}
+
+fun <E> SparseArray<E>.keyOf(element: E): Int? {
+    for (i in 0 until this.size()) {
+        if (element == this[i]) {
+            return i
+        }
+    }
+    return null
+
+}
 inline fun View.snack(
     @StringRes messageRes: Int, length: Int = Snackbar.LENGTH_LONG,
     f: Snackbar.() -> Unit

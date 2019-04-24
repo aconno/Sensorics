@@ -13,14 +13,19 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
-import com.aconno.sensorics.*
+import androidx.core.content.ContextCompat
+import com.aconno.sensorics.BluetoothConnectService
+import com.aconno.sensorics.BuildConfig
+import com.aconno.sensorics.R
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.toHexByte
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.MainActivity2
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.dfu.DfuActivity
@@ -41,7 +46,7 @@ import javax.inject.Inject
 
 
 @SuppressLint("SetJavaScriptEnabled")
-class DeviceMainFragment : DaggerFragment() {
+class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
     @Inject
     lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
@@ -66,7 +71,9 @@ class DeviceMainFragment : DaggerFragment() {
     private var connectResultDisposable: Disposable? = null
 
     private var isServicesDiscovered = false
+    private var isConnectedOrConnecting = false
     private var hasSettings: Boolean = false
+    private var status: Boolean = false
 
     var menu: Menu? = null
 
@@ -93,85 +100,58 @@ class DeviceMainFragment : DaggerFragment() {
 
                     when {
                         it.action == BluetoothGattCallback.ACTION_GATT_DEVICE_NOT_FOUND -> {
+                            isConnectedOrConnecting = false
                             Timber.i("Device not found")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.connect)
-                            }
                             text = getString(R.string.device_not_found)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
+                            isConnectedOrConnecting = true
                             Timber.i("Device connecting")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
                             text = getString(R.string.connecting)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
+                            isConnectedOrConnecting = true
                             Timber.i("Device connected")
-
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
                             text = getString(R.string.connected)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_SERVICES_DISCOVERED -> {
+                            isConnectedOrConnecting = true
                             Timber.i("Device discovered")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
                             isServicesDiscovered = true
-                            //progressbar?.visibility = View.INVISIBLE
-                            //enableToggleViews()
                             text = getString(R.string.discovered)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
+                            isConnectedOrConnecting = false
                             Timber.i("Device disconnected")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.connect)
-                            }
                             isServicesDiscovered = false
-                            //progressbar?.visibility = View.INVISIBLE
-                            //disableToggleViews()
                             text = getString(R.string.disconnected)
 
                             serviceConnect?.close()
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_ERROR -> {
+                            isConnectedOrConnecting = false
                             Timber.i("Device Error")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.connect)
-                            }
                             isServicesDiscovered = false
                             text = getString(R.string.error)
                         }
                         it.action == BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
                             Timber.i("Device write")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
                             writeCommandQueue.poll()
                             writeCharacteristics(writeCommandQueue.peek())
                             text = getString(R.string.connected)
-
                         }
                         it.action == BluetoothGattCallback.ACTION_BEACON_HAS_SETTINGS -> {
                             Timber.i("Device has settings")
                             hasSettings = true
-//                            it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
-                            activity?.invalidateOptionsMenu()
                             text = ""
                         }
                         else -> {
                             return@subscribe
                         }
                     }
+
+                    activity?.invalidateOptionsMenu()
+
                     text.takeIf {
                         it.isNotBlank()
                     }.let {
@@ -179,14 +159,12 @@ class DeviceMainFragment : DaggerFragment() {
                     }
                 }
 
-            serviceConnect?.connect(mDevice.macAddress)
-
+//            serviceConnect?.connect(mDevice.macAddress)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setHasOptionsMenu(true)
         getParams()
     }
@@ -199,17 +177,6 @@ class DeviceMainFragment : DaggerFragment() {
         return inflater.inflate(R.layout.fragment_device_main, container, false)
     }
 
-    override fun onResume() {
-        super.onResume()
-        val mainActivity: MainActivity = context as MainActivity
-        mainActivity.supportActionBar?.title = mDevice.getRealName()
-        mainActivity.supportActionBar?.subtitle = mDevice.macAddress
-
-        if (!mainActivity.isScanning() && !mDevice.connectable) {
-            showAlertDialog(mainActivity)
-        }
-    }
-
     override fun onDetach() {
         if (mDevice.connectable)
             context?.unbindService(serviceConnection)
@@ -217,12 +184,6 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        if (mDevice.connectable) {
-            menu.clear()
-            this.menu = menu
-        }
-
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
         setMenuItemsVisibility(menu)
     }
@@ -235,7 +196,67 @@ class DeviceMainFragment : DaggerFragment() {
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
             it.findItem(R.id.action_dfu).isVisible = hasSettings
+            it.findItem(R.id.action_toggle_scan).isVisible = !mDevice.connectable
+
+            if (isConnectedOrConnecting) {
+                with(it.findItem(R.id.action_toggle_connect)) {
+                    title = getString(com.aconno.sensorics.R.string.disconnect)
+                    isChecked = true
+                }
+            } else {
+                with(it.findItem(R.id.action_toggle_connect)) {
+                    title = getString(com.aconno.sensorics.R.string.connect)
+                    isChecked = false
+                }
+            }
         }
+    }
+
+    override fun setStatus(isOnline: Boolean, force: Boolean) {
+        if (isOnline == status && !force) {
+            return
+        }
+
+        context?.let { context ->
+            if (isOnline) {
+                setStatusOnline(context)
+            } else {
+                setStatusOffline(context)
+            }
+        }
+    }
+
+    private fun setStatusOffline(context: Context) {
+        status = false
+        txt_offline?.text = getString(R.string.offline)
+        txt_offline?.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                android.R.color.darker_gray
+            )
+        )
+        txt_offline?.visibility = View.VISIBLE
+    }
+
+    private fun setStatusOnline(context: Context) {
+        status = true
+        txt_offline?.text = getString(R.string.online)
+        txt_offline?.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                R.color.online_green
+            )
+        )
+        txt_offline?.postDelayed(
+            {
+                txt_offline?.visibility = View.GONE
+            }, 500
+        )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(EXTRA_STATUS, status)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -263,11 +284,6 @@ class DeviceMainFragment : DaggerFragment() {
                     return true
                 }
                 R.id.action_start_config_activity -> {
-                    this.view?.let {
-                        Snackbar.make(it, "Functionality coming soon.", Snackbar.LENGTH_SHORT)
-                            .show()
-                    }
-
                     activity?.let {
                         ConfigureActivity.start(it, device = mDevice)
                     }
@@ -284,6 +300,14 @@ class DeviceMainFragment : DaggerFragment() {
                     //TODO: Implement Logger functionality
                     return true
                 }
+                R.id.action_delete_beacon -> {
+                    removeBeacon()
+                    return true
+                }
+                R.id.action_rename_device -> {
+                    renameDevice()
+                    return true
+                }
                 R.id.action_dfu -> {
                     DfuActivity.start(context, mDevice.macAddress)
                     return true
@@ -296,10 +320,18 @@ class DeviceMainFragment : DaggerFragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun removeBeacon() {
+        (activity as? MainActivity2)?.removeCurrentDisplayedBeacon(mDevice.macAddress)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupWebView()
         if (mDevice.connectable)
             setupConnectionForFreight()
+
+        savedInstanceState?.let {
+            setStatus(it.getBoolean(EXTRA_STATUS, false), true)
+        }
     }
 
     private fun setupWebView() {
@@ -324,7 +356,6 @@ class DeviceMainFragment : DaggerFragment() {
                         text_error_message.text = throwable.message
                     })
         }
-
     }
 
     private fun setupConnectionForFreight() {
@@ -342,16 +373,20 @@ class DeviceMainFragment : DaggerFragment() {
             .concatMap { filterByMacUseCase.execute(it, mDevice.macAddress).toFlowable() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
+                setStatus(true)
 
-                var jsonValues = generateJsonArray(readings)
+                val jsonValues = generateJsonArray(readings)
                 setHasSettings(readings)
 
-                web_view.loadUrl("javascript:onSensorReadings('$jsonValues')")
+                web_view?.loadUrl("javascript:onSensorReadings('$jsonValues')")
             }
     }
 
     private fun setHasSettings(readings: List<Reading>) {
         hasSettings = readings[0].device.hasSettings
+        if (hasSettings != readings[0].device.hasSettings && isVisible) {
+            setMenuItemsVisibility(menu)
+        }
     }
 
     private fun generateJsonArray(readings: List<Reading>?): String {
@@ -422,7 +457,7 @@ class DeviceMainFragment : DaggerFragment() {
         mDevice = connectionCharacteristicsFinder.addCharacteristicsToDevice(device)
     }
 
-    private fun showAlertDialog(mainActivity: MainActivity) {
+    private fun showAlertDialog(mainActivity: MainActivity2) {
 
         val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(
             mainActivity
@@ -546,10 +581,19 @@ class DeviceMainFragment : DaggerFragment() {
         }
     }
 
+    private fun renameDevice() {
+        (activity as? MainActivity2)?.showRenameDialog(mDevice.macAddress)
+    }
+
+    fun getDevice(): Device? {
+        return if (::mDevice.isInitialized) mDevice else null
+    }
+
     companion object {
 
         private const val KEY_DEVICE = "KEY_DEVICE"
         private const val DEV_BUILD_FLAVOR = "dev"
+        private const val EXTRA_STATUS = "EXTRA_STATUS"
 
         fun newInstance(
             device: Device
