@@ -169,19 +169,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
                     return true
                 }
                 R.id.action_start_usecases_activity -> {
-                    if (ll_usecase.visibility == View.GONE) {
-                        ll_usecase.visibility = View.VISIBLE
-                        childFragmentManager.beginTransaction()
-                            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right)
-                            .replace(
-                                R.id.fl_usecase,
-                                UseCasesFragment.newInstance(
-                                    mDevice.macAddress,
-                                    mDevice.getRealName()
-                                )
-                            )
-                            .commit()
-                    }
+                    showUseCaseFragment()
                     return true
                 }
                 R.id.action_start_config_activity -> {
@@ -217,6 +205,23 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun showUseCaseFragment() {
+        //If it is not visible already
+        if (ll_usecase.visibility == View.GONE) {
+            ll_usecase.visibility = View.VISIBLE
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right)
+                .replace(
+                    R.id.fl_usecase,
+                    UseCasesFragment.newInstance(
+                        mDevice.macAddress,
+                        mDevice.getRealName()
+                    )
+                )
+                .commit()
+        }
+    }
+
     private fun connectToBeacon(context: Context) {
         if (BluetoothScanningService.isRunning()) {
             bleScanner?.stopScan()
@@ -236,16 +241,20 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         }
 
         iv_close_usecase?.setOnClickListener {
-            val fragment = childFragmentManager.fragments[0]
-            childFragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_right)
-                .remove(fragment)
-                .commit()
-
-            ll_usecase?.postDelayed({
-                ll_usecase?.visibility = View.GONE
-            }, 700)
+            removeUseCaseFragment()
         }
+    }
+
+    private fun removeUseCaseFragment() {
+        val fragment = childFragmentManager.fragments[0]
+        childFragmentManager.beginTransaction()
+            .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_right)
+            .remove(fragment)
+            .commit()
+
+        ll_usecase?.postDelayed({
+            ll_usecase?.visibility = View.GONE
+        }, ANIM_DURATION)
     }
 
     private fun setupWebView() {
@@ -391,6 +400,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         private const val KEY_DEVICE = "KEY_DEVICE"
         private const val DEV_BUILD_FLAVOR = "dev"
         private const val EXTRA_STATUS = "EXTRA_STATUS"
+        private const val ANIM_DURATION = 700L
 
         fun newInstance(
             device: Device
