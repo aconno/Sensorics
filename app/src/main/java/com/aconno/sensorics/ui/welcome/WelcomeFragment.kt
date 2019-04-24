@@ -33,32 +33,27 @@ class WelcomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         iv_close_dashboard?.setOnClickListener {
-            val fragment = childFragmentManager.fragments[0]
-            childFragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_right)
-                .remove(fragment)
-                .commit()
-
-            ll_dashboard?.postDelayed({
-                ll_dashboard?.visibility = View.GONE
-            }, 700)
+            removeDashboardFragent()
         }
+    }
+
+    private fun removeDashboardFragent() {
+        val fragment = childFragmentManager.fragments[0]
+        childFragmentManager.beginTransaction()
+            .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_right)
+            .remove(fragment)
+            .commit()
+
+        ll_dashboard?.postDelayed({
+            ll_dashboard?.visibility = View.GONE
+        }, ANIM_DURATION)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         context?.let {
             when (item.itemId) {
                 R.id.action_start_dashboard -> {
-                    if (ll_dashboard.visibility == View.GONE) {
-                        ll_dashboard.visibility = View.VISIBLE
-                        childFragmentManager.beginTransaction()
-                            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right)
-                            .replace(
-                                R.id.fl_dashboard,
-                                DashboardFragment.newInstance()
-                            )
-                            .commit()
-                    }
+                    showDashboardFragment()
                     return true
                 }
                 else -> {
@@ -70,9 +65,24 @@ class WelcomeFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun showDashboardFragment() {
+        //If it is not visible already
+        if (ll_dashboard.visibility == View.GONE) {
+            ll_dashboard.visibility = View.VISIBLE
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right)
+                .replace(
+                    R.id.fl_dashboard,
+                    DashboardFragment.newInstance()
+                )
+                .commit()
+        }
+    }
+
     companion object {
 
         const val DEV_BUILD_FLAVOR = "dev"
+        const val ANIM_DURATION = 700L
 
         @JvmStatic
         fun newInstance() =
