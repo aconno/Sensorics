@@ -29,6 +29,7 @@ import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.DeviceViewModel
+import com.aconno.sensorics.viewmodel.LocationViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -53,6 +54,9 @@ class MainActivity2 : DaggerAppCompatActivity(),
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
 
+    @Inject
+    lateinit var locationViewModel: LocationViewModel
+
     private var mainMenu: Menu? = null
 
     private var filterByDevice: Boolean = true
@@ -63,7 +67,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private lateinit var viewPagerAdapter: ViewPagerAdapter
 
-    private lateinit var bluetoothSnackbar: Snackbar
+    private var snackbar: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +81,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.app_name)
 
-        initBluetoothSnackbar()
         //TODO Change Icon
 //        supportActionBar?.setDisplayShowHomeEnabled(true)
 //        supportActionBar?.setIcon(R.mipmap.ic_launcher_rounded)
@@ -120,13 +123,19 @@ class MainActivity2 : DaggerAppCompatActivity(),
         deviceViewModel.saveDevice(item)
     }
 
-    private fun initBluetoothSnackbar() {
-        bluetoothSnackbar =
-            Snackbar.make(main_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
-                .also {
-                    it.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
-                }
+    private fun showHardwareStatusSnackbar(
+        @StringRes stringResId: Int, action: (View) -> Unit
+    ) {
+        snackbar = snackbar?.also {
+            it.setText(stringResId)
+            it.setAction(R.string.enable, action)
+        } ?: Snackbar.make(main_container, stringResId, Snackbar.LENGTH_INDEFINITE)
+            .setAction(R.string.enable, action)
+            .also {
+                it.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+            }
+
+        snackbar?.show()
     }
 
     override fun onDialogDismissed() {
@@ -208,25 +217,46 @@ class MainActivity2 : DaggerAppCompatActivity(),
         bluetoothViewModel.bluetoothState.observe(
             this,
             Observer { onBluetoothStateChange(it) })
+
+        locationViewModel.startLocationStateUpdates()
+        locationViewModel.locationStateLiveData.observe(this, Observer {
+            onLocationStateChange(it)
+        })
     }
 
     private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
         setScanMenuLabel()
         when (bluetoothState?.state) {
-            BluetoothState.BLUETOOTH_OFF -> onBluetoothOff()
-            BluetoothState.BLUETOOTH_ON -> onBluetoothOn()
+            BluetoothState.BLUETOOTH_OFF -> {
+                showHardwareStatusSnackbar(
+                    R.string.bt_disabled
+                ) { bluetoothViewModel.enableBluetooth() }
+                onNecessaryHardwareOff()
+            }
+            BluetoothState.BLUETOOTH_ON ->
+                onNecessaryHardwareOn()
         }
     }
 
-    private fun onBluetoothOn() {
-        changeMenuItemsAvailability(true, R.id.action_toggle_scan, R.id.action_toggle_connect)
-        bluetoothSnackbar.dismiss()
+    private fun onLocationStateChange(isLocationOn: Boolean) {
+        if (isLocationOn) {
+            onNecessaryHardwareOn()
+        } else {
+            showHardwareStatusSnackbar(
+                R.string.location_disabled
+            ) { startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)); }
+            onNecessaryHardwareOff()
+        }
     }
 
-    private fun onBluetoothOff() {
+    private fun onNecessaryHardwareOn() {
+        changeMenuItemsAvailability(true, R.id.action_toggle_scan, R.id.action_toggle_connect)
+        snackbar?.dismiss()
+    }
+
+    private fun onNecessaryHardwareOff() {
         changeMenuItemsAvailability(false, R.id.action_toggle_scan, R.id.action_toggle_connect)
         changeMenuItemLabel(R.id.action_toggle_connect, R.string.connect)
-        bluetoothSnackbar.show()
     }
 
     private fun changeMenuItemsAvailability(enabled: Boolean, vararg itemIds: Int) {
@@ -244,7 +274,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private fun changeMenuItemLabel(menuItemId: Int, @StringRes labelId: Int) {
         mainMenu?.let { menu ->
-            menu.findItem(menuItemId)?.takeIf {it.isVisible }?.let {
+            menu.findItem(menuItemId)?.takeIf { it.isVisible }?.let {
                 it.title = getString(labelId)
             }
         }
@@ -253,6 +283,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     override fun onPause() {
         super.onPause()
         bluetoothViewModel.stopObservingBluetoothState()
+        locationViewModel.stopObservingLocationUpdates()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -288,7 +319,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     private fun setScanMenuLabel() {
-        mainMenu?.findItem(R.id.action_toggle_scan)?.let {menuItem ->
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let { menuItem ->
             if (BluetoothScanningService.isRunning()) {
                 menuItem.title = getString(R.string.stop_scan)
                 menuItem.isChecked = true

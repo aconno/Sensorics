@@ -290,6 +290,6 @@
     <string name="dfu_btn_select_file">Select A File</string>
     <string name="dfu_btn_start_firmware_update">Start Firmware Update</string>
     <string name="dfu_txt_status_starting">Status : Starting..</string>
-
+    <string name="location_disabled">Location is disabled</string>
 
 </resources>

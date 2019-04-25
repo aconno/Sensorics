@@ -12,7 +12,7 @@ class LocationStateListener {
         return locationStateSubject
     }
 
-    fun onLoationStateEvent(isLocationOn: Boolean) {
+    fun onLocationStateChanged(isLocationOn: Boolean) {
         locationStateSubject.onNext(isLocationOn)
     }
 }
