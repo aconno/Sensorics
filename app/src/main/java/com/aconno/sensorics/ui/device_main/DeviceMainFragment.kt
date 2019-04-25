@@ -23,7 +23,6 @@ import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.MainActivity2
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.connect.ConnectActivity
-import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
@@ -99,6 +98,9 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     override fun onPrepareOptionsMenu(menu: Menu) {
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
         setMenuItemsVisibility(menu)
+        (activity as? MainActivity2)?.let {
+            it.updateMenuItems()
+        }
     }
 
     private fun setMenuItemsVisibility(menu: Menu?) {

@@ -67,7 +67,13 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private lateinit var viewPagerAdapter: ViewPagerAdapter
 
-    private var snackbar: Snackbar? = null
+    private lateinit var bluetoothSnackbar: Snackbar
+
+    private lateinit var locationSnackbar: Snackbar
+
+    private var isLocationOn = false
+
+    private var isBluetoothOn = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +112,10 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
         setupViewPager()
 
+        initBluetoothSnackbar()
+
+        initLocationSnackbar()
+
         savedInstanceState?.let {
             content_pager?.postDelayed({
                 content_pager?.setCurrentItem(it.getInt(EXTRA_CURRENT_PAGE, 0), false)
@@ -123,19 +133,27 @@ class MainActivity2 : DaggerAppCompatActivity(),
         deviceViewModel.saveDevice(item)
     }
 
-    private fun showHardwareStatusSnackbar(
+    private fun initBluetoothSnackbar() {
+        bluetoothSnackbar = createServiceDisabledSnackbar(
+            R.string.bt_disabled
+        ) { bluetoothViewModel.enableBluetooth() }
+    }
+
+    private fun initLocationSnackbar() {
+        locationSnackbar =
+            createServiceDisabledSnackbar(
+                R.string.location_disabled
+            ) { startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)); }
+    }
+
+    private fun createServiceDisabledSnackbar(
         @StringRes stringResId: Int, action: (View) -> Unit
-    ) {
-        snackbar = snackbar?.also {
-            it.setText(stringResId)
-            it.setAction(R.string.enable, action)
-        } ?: Snackbar.make(main_container, stringResId, Snackbar.LENGTH_INDEFINITE)
+    ): Snackbar {
+        return Snackbar.make(main_container, stringResId, Snackbar.LENGTH_INDEFINITE)
             .setAction(R.string.enable, action)
             .also {
                 it.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
             }
-
-        snackbar?.show()
     }
 
     override fun onDialogDismissed() {
@@ -228,41 +246,58 @@ class MainActivity2 : DaggerAppCompatActivity(),
         setScanMenuLabel()
         when (bluetoothState?.state) {
             BluetoothState.BLUETOOTH_OFF -> {
-                showHardwareStatusSnackbar(
-                    R.string.bt_disabled
-                ) { bluetoothViewModel.enableBluetooth() }
-                onNecessaryHardwareOff()
+                bluetoothSnackbar.show()
+                disableMenuItems()
             }
-            BluetoothState.BLUETOOTH_ON ->
-                onNecessaryHardwareOn()
+            BluetoothState.BLUETOOTH_ON -> onBluetoothOn()
         }
     }
 
     private fun onLocationStateChange(isLocationOn: Boolean) {
         if (isLocationOn) {
-            onNecessaryHardwareOn()
+            onLocationOn()
         } else {
-            showHardwareStatusSnackbar(
-                R.string.location_disabled
-            ) { startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)); }
-            onNecessaryHardwareOff()
+            locationSnackbar.show()
+            disableMenuItems()
         }
     }
 
-    private fun onNecessaryHardwareOn() {
-        changeMenuItemsAvailability(true, R.id.action_toggle_scan, R.id.action_toggle_connect)
-        snackbar?.dismiss()
+    private fun onBluetoothOn() {
+        isBluetoothOn = true
+        bluetoothSnackbar.dismiss()
+        updateMenuItems()
     }
 
-    private fun onNecessaryHardwareOff() {
+    private fun onLocationOn() {
+        isLocationOn = true
+        locationSnackbar.dismiss()
+        updateMenuItems()
+    }
+
+    private fun disableMenuItems() {
         changeMenuItemsAvailability(false, R.id.action_toggle_scan, R.id.action_toggle_connect)
         changeMenuItemLabel(R.id.action_toggle_connect, R.string.connect)
+        button_add_device.isEnabled = false
+    }
+
+    fun updateMenuItems() {
+        if (isBluetoothOn && isLocationOn) {
+            button_add_device.isEnabled = true
+            changeMenuItemsAvailability(true, R.id.action_toggle_scan, R.id.action_toggle_connect)
+        } else {
+            disableMenuItems()
+            if (!isBluetoothOn) {
+                bluetoothSnackbar.show()
+            } else {
+                locationSnackbar.show()
+            }
+        }
     }
 
     private fun changeMenuItemsAvailability(enabled: Boolean, vararg itemIds: Int) {
         mainMenu?.let { menu ->
             itemIds.forEach { id ->
-                menu.findItem(id)?.takeIf { it.isVisible }?.let {
+                menu.findItem(id)?.let {
                     it.isEnabled = enabled
                     if (!enabled) {
                         it.isChecked = false
@@ -327,6 +362,9 @@ class MainActivity2 : DaggerAppCompatActivity(),
                 menuItem.title = getString(R.string.start_scan)
                 menuItem.isChecked = false
             }
+
+            val isEnabled = isBluetoothOn && isLocationOn
+            menuItem.setEnabled(isEnabled)
         }
     }
 

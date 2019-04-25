@@ -10,7 +10,7 @@ import com.aconno.sensorics.device.location.LocationStateListener
 class LocationStateReceiver(private val locationStateListener: LocationStateListener) :
     BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        intent?.takeIf { it.action == Intent.ACTION_PROVIDER_CHANGED }?.let { _ ->
+        intent?.takeIf { it.action == LocationManager.PROVIDERS_CHANGED_ACTION }?.let { _ ->
             context?.let {
                 locationStateListener.onLocationStateChanged(isLocationOn(context))
             }
