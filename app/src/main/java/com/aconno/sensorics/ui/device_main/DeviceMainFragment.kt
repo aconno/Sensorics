@@ -17,14 +17,15 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.BleScanner
-import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.MainActivity2
+import com.aconno.sensorics.ui.UseCasesFragment
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.connect.ConnectActivity
 import com.aconno.sensorics.ui.dfu.DfuActivity
-import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
+import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -165,10 +166,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         context?.let { context ->
             when (item.itemId) {
                 R.id.action_toggle_connect -> {
-                    if (BluetoothScanningService.isRunning()) {
-                        bleScanner?.stopScan()
-                    }
-                    ConnectActivity.start(context, mDevice)
+                    connectToBeacon(context)
                 }
 
                 R.id.action_start_actions_activity -> {
@@ -176,7 +174,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
                     return true
                 }
                 R.id.action_start_usecases_activity -> {
-                    (activity as MainActivity).onUseCaseClicked(mDevice.macAddress, mDevice.name)
+                    showUseCaseFragment()
                     return true
                 }
                 R.id.action_start_config_activity -> {
@@ -216,6 +214,30 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun showUseCaseFragment() {
+        //If it is not visible already
+        if (ll_usecase.visibility == View.GONE) {
+            ll_usecase.visibility = View.VISIBLE
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right)
+                .replace(
+                    R.id.fl_usecase,
+                    UseCasesFragment.newInstance(
+                        mDevice.macAddress,
+                        mDevice.getRealName()
+                    )
+                )
+                .commit()
+        }
+    }
+
+    private fun connectToBeacon(context: Context) {
+        if (BluetoothScanningService.isRunning()) {
+            bleScanner?.stopScan()
+        }
+        ConnectActivity.start(context, mDevice)
+    }
+
     private fun removeBeacon() {
         (activity as? MainActivity2)?.removeCurrentDisplayedBeacon(mDevice.macAddress)
     }
@@ -225,6 +247,48 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
         savedInstanceState?.let {
             setStatus(it.getBoolean(EXTRA_STATUS, false), true)
+        }
+
+        iv_close_usecase?.setOnClickListener {
+            removeUseCaseFragment()
+        }
+
+        iv_close_livegraph?.setOnClickListener {
+            removeLiveGraphFragment()
+        }
+    }
+
+    private fun removeLiveGraphFragment() {
+        childFragmentManager.fragments.find {
+            it is LiveGraphFragment
+        }?.let {
+            it as LiveGraphFragment
+        }?.let {
+            ll_livegraph?.postDelayed({
+                ll_livegraph?.visibility = View.GONE
+            }, ANIM_DURATION)
+
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.exit_to_left, R.anim.exit_to_left)
+                .remove(it)
+                .commit()
+        }
+    }
+
+    private fun removeUseCaseFragment() {
+        childFragmentManager.fragments.find {
+            it is UseCasesFragment
+        }?.let {
+            it as UseCasesFragment
+        }?.let {
+            ll_usecase?.postDelayed({
+                ll_usecase?.visibility = View.GONE
+            }, ANIM_DURATION)
+
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_right)
+                .remove(it)
+                .commit()
         }
     }
 
@@ -310,11 +374,32 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
         @JavascriptInterface
         fun openLiveGraph(sensorName: String) {
-            activity?.let {
-                if (it is LiveGraphOpener) {
-                    (it as LiveGraphOpener).openLiveGraph(mDevice.macAddress, sensorName)
+            activity?.apply {
+                runOnUiThread {
+                    showLiveGraphFragment(sensorName)
                 }
             }
+        }
+
+        @JavascriptInterface
+        fun connect() {
+            context?.let {
+                connectToBeacon(it)
+            }
+        }
+    }
+
+    private fun showLiveGraphFragment(sensorName: String) {
+        //If it is not visible
+        if (ll_livegraph.visibility == View.GONE) {
+            ll_livegraph.visibility = View.VISIBLE
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_left)
+                .replace(
+                    R.id.fl_livegraph,
+                    LiveGraphFragment.newInstance(mDevice.macAddress, sensorName)
+                )
+                .commit()
         }
     }
 
@@ -364,6 +449,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         private const val KEY_DEVICE = "KEY_DEVICE"
         private const val DEV_BUILD_FLAVOR = "dev"
         private const val EXTRA_STATUS = "EXTRA_STATUS"
+        private const val ANIM_DURATION = 700L
 
         fun newInstance(
             device: Device
