@@ -63,3 +63,9 @@ fun Snackbar.action(action: String, color: Int? = null, listener: (View) -> Unit
     setAction(action, listener)
     color?.let { setActionTextColor(color) }
 }
+
+fun Snackbar.showIfNotShowing() {
+    if(!this.isShown) {
+        this.show()
+    }
+}

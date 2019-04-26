@@ -99,9 +99,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     override fun onPrepareOptionsMenu(menu: Menu) {
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
         setMenuItemsVisibility(menu)
-        (activity as? MainActivity2)?.let {
-            it.updateMenuItems()
-        }
+        (activity as? MainActivity2)?.updateUIItemsAvailability()
     }
 
     private fun setMenuItemsVisibility(menu: Menu?) {

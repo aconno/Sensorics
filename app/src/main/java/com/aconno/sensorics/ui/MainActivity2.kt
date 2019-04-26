@@ -14,14 +14,11 @@ import android.widget.EditText
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import com.aconno.sensorics.BluetoothScanningService
-import com.aconno.sensorics.BuildConfig
-import com.aconno.sensorics.R
+import com.aconno.sensorics.*
 import com.aconno.sensorics.adapter.viewpager.ViewPagerAdapter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
-import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -30,6 +27,7 @@ import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.DeviceViewModel
 import com.aconno.sensorics.viewmodel.LocationViewModel
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -65,15 +63,15 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     private var deviceList = mutableListOf<DeviceActive>()
 
+    private var isLocationOn = true
+
+    private var isBluetoothOn = true
+
     private lateinit var viewPagerAdapter: ViewPagerAdapter
 
     private lateinit var bluetoothSnackbar: Snackbar
 
     private lateinit var locationSnackbar: Snackbar
-
-    private var isLocationOn = false
-
-    private var isBluetoothOn = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +79,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
         button_add_device?.setOnClickListener {
             stopScan()
             startScan(false)
-            ScannedDevicesDialog().show(supportFragmentManager, "devices_dialog")
+            ScannedDevicesDialog().show(supportFragmentManager, SCANNED_DEVICES_DIALOG_TAG)
         }
 
         setSupportActionBar(toolbar)
@@ -150,7 +148,14 @@ class MainActivity2 : DaggerAppCompatActivity(),
         @StringRes stringResId: Int, action: (View) -> Unit
     ): Snackbar {
         return Snackbar.make(main_container, stringResId, Snackbar.LENGTH_INDEFINITE)
-            .setAction(R.string.enable, action)
+            .setAction(R.string.enable) {}
+            .addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                override fun onShown(transientBottomBar: Snackbar?) {
+                    super.onShown(transientBottomBar)
+                    transientBottomBar?.view?.findViewById<View>(R.id.snackbar_action)
+                        ?.setOnClickListener(action)
+                }
+            })
             .also {
                 it.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
             }
@@ -243,53 +248,51 @@ class MainActivity2 : DaggerAppCompatActivity(),
     }
 
     private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
-        setScanMenuLabel()
         when (bluetoothState?.state) {
-            BluetoothState.BLUETOOTH_OFF -> {
-                bluetoothSnackbar.show()
-                disableMenuItems()
+            BluetoothState.BLUETOOTH_ON -> {
+                isBluetoothOn = true
+                updateUIItemsAvailability()
             }
-            BluetoothState.BLUETOOTH_ON -> onBluetoothOn()
+            BluetoothState.BLUETOOTH_OFF -> {
+                isBluetoothOn = false
+                updateUIItemsAvailability()
+            }
         }
     }
 
     private fun onLocationStateChange(isLocationOn: Boolean) {
-        if (isLocationOn) {
-            onLocationOn()
-        } else {
-            locationSnackbar.show()
-            disableMenuItems()
-        }
-    }
-
-    private fun onBluetoothOn() {
-        isBluetoothOn = true
-        bluetoothSnackbar.dismiss()
-        updateMenuItems()
-    }
-
-    private fun onLocationOn() {
-        isLocationOn = true
-        locationSnackbar.dismiss()
-        updateMenuItems()
+        this.isLocationOn = isLocationOn
+        updateUIItemsAvailability()
     }
 
     private fun disableMenuItems() {
         changeMenuItemsAvailability(false, R.id.action_toggle_scan, R.id.action_toggle_connect)
         changeMenuItemLabel(R.id.action_toggle_connect, R.string.connect)
-        button_add_device.isEnabled = false
     }
 
-    fun updateMenuItems() {
+    fun updateUIItemsAvailability() {
+        Timber.d("Bluetooth: $isBluetoothOn, Location: $isLocationOn")
         if (isBluetoothOn && isLocationOn) {
             button_add_device.isEnabled = true
+            locationSnackbar.dismiss()
+            bluetoothSnackbar.dismiss()
             changeMenuItemsAvailability(true, R.id.action_toggle_scan, R.id.action_toggle_connect)
         } else {
-            disableMenuItems()
+            button_add_device.isEnabled = false
+            dismissScannedDevicesDialog()
             if (!isBluetoothOn) {
-                bluetoothSnackbar.show()
+                bluetoothSnackbar.showIfNotShowing()
             } else {
-                locationSnackbar.show()
+                locationSnackbar.showIfNotShowing()
+            }
+            disableMenuItems()
+        }
+    }
+
+    private fun dismissScannedDevicesDialog() {
+        supportFragmentManager.findFragmentByTag(SCANNED_DEVICES_DIALOG_TAG)?.let {
+            if (it.isVisible) {
+                (it as ScannedDevicesDialog).dismiss()
             }
         }
     }
@@ -362,9 +365,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
                 menuItem.title = getString(R.string.start_scan)
                 menuItem.isChecked = false
             }
-
-            val isEnabled = isBluetoothOn && isLocationOn
-            menuItem.setEnabled(isEnabled)
         }
     }
 
@@ -487,6 +487,7 @@ class MainActivity2 : DaggerAppCompatActivity(),
     companion object {
         const val RC_LOCATION_AND_EXTERNAL = 12312
         const val EXTRA_CURRENT_PAGE = "EXTRA_CURRENT_PAGE"
+        private const val SCANNED_DEVICES_DIALOG_TAG = "devices_dialog"
     }
 
 }
