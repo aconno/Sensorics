@@ -31,7 +31,6 @@ class LiveGraphFragment : DaggerFragment() {
             macAddress = it.getString(MAC_ADDRESS_EXTRA, "")
             graphName = it.getString(GRAPH_NAME_EXTRA, "")
         }
-
     }
 
     override fun onCreateView(

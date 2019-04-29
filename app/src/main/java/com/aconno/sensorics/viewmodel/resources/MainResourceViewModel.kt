@@ -11,5 +11,4 @@ class MainResourceViewModel(
     fun getResourcePath(deviceName: String): Single<String> {
         return getMainResourceUseCase.execute(deviceName)
     }
-
 }

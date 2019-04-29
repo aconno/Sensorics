@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="de">
+<resources>
     <string name="app_name">Sensorics</string>
     <string name="start_scan">Scan starten</string>
     <string name="stop_scan">Scan stoppen</string>
@@ -191,16 +191,7 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
-    <string name="remove_device_dialog_message">Möchten Sie dieses Gerät wirklich löschen?</string>
-    <string name="remove_device_dialog_title_format">Bake löschen %1$s</string>
-    <string name="online">Online</string>
-    <string name="offline">Offline</string>
 
-    <string name="rename">Umbenennen</string>
-    <string name="rename_beacon">Beacon umbenennen</string>
-    <string name="undo">Rückgängig machen</string>
-    <string name="beacon_renamed">Beacon umbenannt</string>
-    <string name="beacon_removed">Beacon entfernt</string>
     <!--Dfu Activity-->
     <string name="title_dfu">Firmware aktualisieren</string>
     <string name="status_format">Status: <b>%1$s</b></string>
@@ -233,6 +224,5 @@
     <string name="dfu_btn_select_file">Datei auswählen</string>
     <string name="dfu_btn_start_firmware_update">Firmware Aktualisierung Starten</string>
     <string name="dfu_txt_status_starting">Status : Wird gestartet</string>
-    <string name="location_disabled">Standort ist deaktiviert</string>
 
 </resources>

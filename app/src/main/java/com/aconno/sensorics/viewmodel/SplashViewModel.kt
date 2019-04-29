@@ -1,7 +1,7 @@
 package com.aconno.sensorics.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.aconno.sensorics.SingleLiveEvent
 import com.aconno.sensorics.domain.ResourcesInitializer
 import kotlinx.coroutines.*
 
@@ -9,12 +9,12 @@ class SplashViewModel(
     private val resourcesInitializer: ResourcesInitializer
 ) : ViewModel() {
 
-    val initializationLiveEvent = MutableLiveData<Boolean>()
+    val initializationLiveEvent = SingleLiveEvent<Boolean>()
 
     fun initApp() {
         GlobalScope.launch(Dispatchers.Main) {
 
-            withContext(Dispatchers.Default) {
+            GlobalScope.async {
 
                 //This will make sure Splash will stay 2000 ms
                 val currMillis = System.currentTimeMillis()
@@ -29,7 +29,7 @@ class SplashViewModel(
                     //Delay coroutine to fill rest
                     delay(-diff)
                 }
-            }
+            }.await()
 
             initializationLiveEvent.postValue(true)
         }

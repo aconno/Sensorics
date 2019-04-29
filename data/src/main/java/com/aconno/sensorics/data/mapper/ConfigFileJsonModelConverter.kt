@@ -12,8 +12,7 @@ class ConfigFileJsonModelConverter {
             configFileJsonModel.iconPath,
             configFileJsonModel.id,
             configFileJsonModel.name,
-            configFileJsonModel.usecaseScreenPath,
-            configFileJsonModel.connectionScreenPath
+            configFileJsonModel.usecaseScreenPath
         )
     }
 }

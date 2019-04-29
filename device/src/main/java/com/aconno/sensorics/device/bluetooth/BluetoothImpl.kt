@@ -52,7 +52,7 @@ class BluetoothImpl(
     ): Pair<List<ScanFilter>?, ScanSettings> {
         val settingsBuilder = ScanSettings.Builder()
 
-        val scanMode = sharedPrefs.getString("scan_mode", "3")?.toInt()
+        val scanMode = sharedPrefs.getString("scan_mode", "3").toInt()
         when (scanMode) {
             1 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
             2 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_BALANCED)
