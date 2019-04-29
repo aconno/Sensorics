@@ -52,7 +52,7 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connect)
-        setSupportActionBar(toolbar)
+//        setSupportActionBar(toolbar)
 
         loadParams()
 
@@ -61,7 +61,7 @@ class ConnectActivity : DaggerAppCompatActivity(), BluetoothServiceConnection.Co
         }
 
         compositeDisposable = CompositeDisposable()
-        bluetoothServiceConnection.connectionCallback = this
+//        bluetoothServiceConnection.connectionCallback = this
 
         if (!device.connectable) {
             //Device is not connectable go back

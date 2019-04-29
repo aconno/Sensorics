@@ -10,6 +10,7 @@ import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
+import com.aconno.sensorics.domain.interactor.resources.GetConnectionResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
@@ -22,6 +23,8 @@ import com.aconno.sensorics.ui.MainActivity2
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
 import com.aconno.sensorics.ui.readings.ReadingListViewModelFactory
 import com.aconno.sensorics.viewmodel.*
+import com.aconno.sensorics.viewmodel.connection.ConnectionViewModel
+import com.aconno.sensorics.viewmodel.connection.ConnectionViewModelFactory
 import com.aconno.sensorics.viewmodel.factory.*
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModelFactory
@@ -233,6 +236,20 @@ class MainActivityModule {
         mainResourceViewModelFactory: MainResourceViewModelFactory
     ) = ViewModelProviders.of(mainActivity, mainResourceViewModelFactory)
         .get(MainResourceViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideConnectionViewModelFactory(
+        getConnectionResourceUseCase: GetConnectionResourceUseCase
+    ) = ConnectionViewModelFactory(getConnectionResourceUseCase)
+
+    @Provides
+    @MainActivityScope
+    fun provideConnectionViewModel(
+        connectActivity: MainActivity2,
+        connectionViewModelFactory: ConnectionViewModelFactory
+    ) = ViewModelProviders.of(connectActivity, connectionViewModelFactory)
+        .get(ConnectionViewModel::class.java)
 
     @Provides
     @MainActivityScope

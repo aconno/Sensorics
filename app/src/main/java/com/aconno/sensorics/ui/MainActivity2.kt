@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -20,6 +21,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.model.DeviceActive
+import com.aconno.sensorics.ui.connect.BluetoothServiceConnection
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.ui.settings.SettingsActivity
@@ -37,11 +39,15 @@ import kotlinx.android.synthetic.main.pager_tab_layout.view.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 
 class MainActivity2 : DaggerAppCompatActivity(),
-    ScannedDevicesDialogListener, EasyPermissions.PermissionCallbacks, BleScanner {
+    ScannedDevicesDialogListener, EasyPermissions.PermissionCallbacks, BleScanner, Connectable
+    , BluetoothServiceConnection.ConnectionCallback {
+
+    private val bluetoothServiceConnection = BluetoothServiceConnection()
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
@@ -68,6 +74,10 @@ class MainActivity2 : DaggerAppCompatActivity(),
     private var isBluetoothOn = true
 
     private lateinit var viewPagerAdapter: ViewPagerAdapter
+
+    private var isConnectedOrConnecting = false
+    private var shouldStopService = false
+    private var isBound = false
 
     private lateinit var bluetoothSnackbar: Snackbar
 
@@ -120,6 +130,82 @@ class MainActivity2 : DaggerAppCompatActivity(),
             }, 100)
         }
 
+        bluetoothServiceConnection.registerConnectionCallback(this)
+    }
+
+    override fun onStatusTextChanged(stringRes: Int) {
+        //No-Need
+    }
+
+    override fun onHasSettings() {
+        //No-Need
+    }
+
+    override fun onConnected() {
+        isConnectedOrConnecting = true
+
+    }
+
+    override fun onDisconnected() {
+        isConnectedOrConnecting = false
+    }
+
+    override fun connect(device: Device) {
+        isConnectedOrConnecting = true
+        isBound = true
+        BluetoothConnectService.start(this, bluetoothServiceConnection, device)
+    }
+
+    override fun disconnect() {
+        bluetoothServiceConnection.disconnect()
+    }
+
+    override fun registerConnectionCallback(connectionCallback: BluetoothServiceConnection.ConnectionCallback) {
+        bluetoothServiceConnection.registerConnectionCallback(connectionCallback)
+    }
+
+    override fun unRegisterConnectionCallback(connectionCallback: BluetoothServiceConnection.ConnectionCallback) {
+        bluetoothServiceConnection.unregisterConnectionCallback(connectionCallback)
+    }
+
+    override fun shutDownConnectionService() {
+        applicationContext.unbindService(bluetoothServiceConnection)
+
+        if (shouldStopService) {
+            applicationContext.startService(BluetoothConnectService.getStopIntent(this))
+        }
+
+        isBound = false
+        isConnectedOrConnecting = false
+    }
+
+    override fun writeCharacteristic(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+        type: String,
+        value: Any
+    ) {
+        if (isConnectedOrConnecting) {
+            bluetoothServiceConnection.writeCharacteristic(
+                serviceUUID,
+                characteristicUUID,
+                type,
+                value
+            )
+        } else {
+            Toast.makeText(this, "Please connect first!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (isBound) {
+            applicationContext.unbindService(bluetoothServiceConnection)
+
+            if (shouldStopService) {
+                applicationContext.startService(BluetoothConnectService.getStopIntent(this))
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -163,6 +249,39 @@ class MainActivity2 : DaggerAppCompatActivity(),
 
     override fun onDialogDismissed() {
         stopScan()
+    }
+
+    override fun isConnectedOrConnecting(): Boolean = isConnectedOrConnecting
+
+    override fun onBackPressed() {
+        if (isConnectedOrConnecting) {
+            showCloseConnectionDialogForBackPress()
+        } else {
+            shouldStopService = true
+            super.onBackPressed()
+        }
+    }
+
+    private fun showCloseConnectionDialogForBackPress() {
+        val alertDialogBuilder: androidx.appcompat.app.AlertDialog.Builder =
+            androidx.appcompat.app.AlertDialog.Builder(this)
+
+        alertDialogBuilder.setTitle(resources.getString(R.string.dialog_close_connection))
+        alertDialogBuilder
+            .setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
+                shouldStopService = true
+                dialog.cancel()
+                super.onBackPressed()
+
+            }
+            .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
+                shouldStopService = false
+                dialog.cancel()
+                super.onBackPressed()
+            }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 
     private fun handleScanEvent(scanEvent: ScanEvent?) {
