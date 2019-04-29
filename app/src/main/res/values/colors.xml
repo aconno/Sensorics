@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#FD9B27</color>
+    <color name="primaryColor">#ff9933</color>
     <color name="primaryLightColor">#f7cb96</color>
     <color name="primaryDarkColor">#965c17</color>
-    <color name="secondaryColor">#333333</color>
+    <color name="secondaryColor">#414141</color>
     <color name="secondaryLightColor">#5c5c5c</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#ffffff</color>
@@ -19,6 +19,7 @@
     <color name="graph_z">#0000FF</color>
     <color name="bg_row_background">#fa315b</color>
 
-    <color name="black">#000</color>
+    <color name="online_green">#4bb543</color>
+
     <color name="red">#c00</color>
 </resources>

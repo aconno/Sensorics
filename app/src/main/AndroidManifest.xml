@@ -32,8 +32,14 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.MainActivity" />
+        <activity
+            android:name=".ui.MainActivity2"
+            android:configChanges="keyboardHidden|orientation" />
         <activity android:name=".ui.ActionListActivity" />
+
+        <activity
+            android:name=".ui.connect.ConnectActivity"
+            android:parentActivityName=".ui.MainActivity2" />
 
         <service
             android:name=".BluetoothScanningService"

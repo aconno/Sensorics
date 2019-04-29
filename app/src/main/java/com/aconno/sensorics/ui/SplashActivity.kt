@@ -26,7 +26,7 @@ class SplashActivity : DaggerAppCompatActivity() {
             .get(SplashViewModel::class.java)
 
         splashViewModel.initializationLiveEvent.observe(this, Observer {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, MainActivity2::class.java)
             startActivity(intent)
         })
 

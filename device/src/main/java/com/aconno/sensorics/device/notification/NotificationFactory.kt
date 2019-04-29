@@ -65,6 +65,33 @@ class NotificationFactory {
             .build()
     }
 
+    fun makeConnectionNotification(
+        context: Context,
+        message: String,
+        contentIntent: PendingIntent,
+        deleteIntent: PendingIntent,
+        buttonText: String,
+        autoCancel: Boolean = false,
+        cancelIntent: PendingIntent? = null
+    ): Notification {
+        createNotificationsChannel(context, NotificationChannelFactory.SERVICE_CHANNEL)
+        return NotificationCompat.Builder(
+            context,
+            NotificationChannelFactory.CHANNEL_ID
+        )
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle("Sensorics")
+            .setContentText(message)
+            .setContentIntent(contentIntent)
+            .setAutoCancel(autoCancel)
+            .setDeleteIntent(cancelIntent)
+            .addAction(
+                0, buttonText,
+                deleteIntent
+            )
+            .build()
+    }
+
     companion object {
         const val ALERT_NOTIFICATION_NAME = "com.aconno.sensorics.ALERT_NOTIFICATION"
         const val ALERT_NOTIFICATION_ID = 100

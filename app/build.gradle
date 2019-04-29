@@ -59,6 +59,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
+    implementation "androidx.core:core-ktx:1.1.0-alpha05"
     implementation "androidx.appcompat:appcompat:1.0.2"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "com.google.android.material:material:1.1.0-alpha05"
@@ -121,6 +122,7 @@ dependencies {
 
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
     implementation 'com.jpardogo.materialtabstrip:library:1.1.1'
+    implementation 'pub.devrel:easypermissions:3.0.0'
 
 }
 

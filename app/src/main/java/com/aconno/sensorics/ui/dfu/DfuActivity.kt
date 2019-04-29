@@ -292,7 +292,7 @@ class DfuActivity : DaggerAppCompatActivity() {
 
     private fun setStatusText(
         status: String,
-        @ColorRes textColor: Int = R.color.black
+        @ColorRes textColor: Int = R.color.primaryTextColor
     ) {
         txt_dfu_status.text = getString(R.string.status_format, status)
         txt_dfu_status.setTextColor(ContextCompat.getColor(applicationContext, textColor))
