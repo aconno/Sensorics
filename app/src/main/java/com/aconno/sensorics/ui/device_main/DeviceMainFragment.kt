@@ -24,6 +24,7 @@ import com.aconno.sensorics.ui.MainActivity2
 import com.aconno.sensorics.ui.UseCasesFragment
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.connect.ConnectActivity
+import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -98,6 +99,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     override fun onPrepareOptionsMenu(menu: Menu) {
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
         setMenuItemsVisibility(menu)
+        (activity as? MainActivity2)?.updateUIItemsAvailability()
     }
 
     private fun setMenuItemsVisibility(menu: Menu?) {
@@ -107,6 +109,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
             it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
+            it.findItem(R.id.action_dfu).isVisible = hasSettings
         }
     }
 
@@ -195,6 +198,10 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
                 }
                 R.id.action_rename_device -> {
                     renameDevice()
+                    return true
+                }
+                R.id.action_dfu -> {
+                    DfuActivity.start(context, mDevice.macAddress)
                     return true
                 }
                 else -> {

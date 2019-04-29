@@ -81,7 +81,7 @@
 
     <style name="TextAppearance.Tiny.Black" parent="@style/TextAppearance.Tiny">
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">#060606</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
     </style>
 
     <style name="AppTabLayout" parent="Widget.Design.TabLayout">
