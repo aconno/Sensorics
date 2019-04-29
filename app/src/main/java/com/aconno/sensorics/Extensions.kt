@@ -1,8 +1,8 @@
 package com.aconno.sensorics
 
+import android.util.SparseArray
 import android.view.View
 import androidx.annotation.StringRes
-import android.util.SparseArray
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceRelationModel
 import com.google.android.material.snackbar.Snackbar
@@ -42,6 +42,7 @@ fun <E> SparseArray<E>.keyOf(element: E): Int? {
     return null
 
 }
+
 inline fun View.snack(
     @StringRes messageRes: Int, length: Int = Snackbar.LENGTH_LONG,
     f: Snackbar.() -> Unit
@@ -65,7 +66,7 @@ fun Snackbar.action(action: String, color: Int? = null, listener: (View) -> Unit
 }
 
 fun Snackbar.showIfNotShowing() {
-    if(!this.isShown) {
+    if (!this.isShown) {
         this.show()
     }
 }

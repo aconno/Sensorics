@@ -20,11 +20,9 @@ import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.ui.*
 import com.aconno.sensorics.ui.configure.ConfigureActivity
-import com.aconno.sensorics.ui.*
-import com.aconno.sensorics.ui.connect.ConnectActivity
-import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.connect.BluetoothServiceConnection
 import com.aconno.sensorics.ui.connect.ConnectFragment
+import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
