@@ -2,6 +2,7 @@ package com.aconno.sensorics.dagger.mainactivity
 
 import com.aconno.sensorics.dagger.application.FragmentScope
 import com.aconno.sensorics.ui.UseCasesFragment
+import com.aconno.sensorics.ui.connect.ConnectFragment
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
 import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
@@ -41,4 +42,8 @@ abstract class MainActivityFragmentsModule {
     @FragmentScope
     @ContributesAndroidInjector
     abstract fun deviceMainFragment(): DeviceMainFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    abstract fun deviceConnectFragment(): ConnectFragment
 }

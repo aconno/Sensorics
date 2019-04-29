@@ -18,12 +18,10 @@ import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.getRealName
-import com.aconno.sensorics.ui.ActionListActivity
-import com.aconno.sensorics.ui.BleScanner
-import com.aconno.sensorics.ui.MainActivity2
-import com.aconno.sensorics.ui.UseCasesFragment
+import com.aconno.sensorics.ui.*
 import com.aconno.sensorics.ui.configure.ConfigureActivity
-import com.aconno.sensorics.ui.connect.ConnectActivity
+import com.aconno.sensorics.ui.connect.BluetoothServiceConnection
+import com.aconno.sensorics.ui.connect.ConnectFragment
 import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -40,7 +38,8 @@ import javax.inject.Inject
 
 
 @SuppressLint("SetJavaScriptEnabled")
-class DeviceMainFragment : DaggerFragment(), ScanStatus {
+class DeviceMainFragment : DaggerFragment(), ScanStatus,
+    BluetoothServiceConnection.ConnectionCallback {
 
     @Inject
     lateinit var sensorReadingFlow: Flowable<List<Reading>> //TODO: Move this to the view model
@@ -60,11 +59,13 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     private var hasSettings: Boolean = false
     private var status: Boolean = false
     private var bleScanner: BleScanner? = null
+    private var connectable: Connectable? = null
 
     var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        retainInstance = true
         setHasOptionsMenu(true)
         getParams()
     }
@@ -80,19 +81,46 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        if (context is BleScanner) {
+        if (context is BleScanner && context is Connectable) {
             with(context as BleScanner) {
                 bleScanner = this
             }
+
+            with(context as Connectable) {
+                connectable = this
+                registerConnectionCallback(this@DeviceMainFragment)
+            }
         } else {
-            Timber.e("Fragment context needs to implement BleScanner Interface")
+            Timber.e("Fragment context needs to implement BleScanner or Connectable Interface")
             (context as AppCompatActivity).onBackPressed()
         }
     }
 
     override fun onDetach() {
+        connectable?.unRegisterConnectionCallback(this)
         bleScanner = null
         super.onDetach()
+    }
+
+    override fun onStatusTextChanged(stringRes: Int) {
+        //No-need
+    }
+
+    override fun onHasSettings() {
+        hasSettings = true
+        activity?.invalidateOptionsMenu()
+    }
+
+    override fun onConnected() {
+        activity?.invalidateOptionsMenu()
+    }
+
+    override fun onDisconnected() {
+        activity?.invalidateOptionsMenu()
+    }
+
+    fun onServiceClosed() {
+        removeConnectFragment()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
@@ -107,6 +135,18 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
             it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
+
+            if (connectable?.isConnectedOrConnecting() == true) {
+                with(it.findItem(R.id.action_toggle_connect)) {
+                    title = getString(com.aconno.sensorics.R.string.disconnect)
+                    isChecked = true
+                }
+            } else {
+                with(it.findItem(R.id.action_toggle_connect)) {
+                    title = getString(com.aconno.sensorics.R.string.connect)
+                    isChecked = false
+                }
+            }
         }
     }
 
@@ -155,13 +195,23 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(EXTRA_STATUS, status)
+        outState.putInt(EXTRA_VISIBILITY, ll_fragment?.visibility ?: View.GONE)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         context?.let { context ->
             when (item.itemId) {
                 R.id.action_toggle_connect -> {
-                    connectToBeacon(context)
+                    if (item.isChecked) {
+                        connectable?.disconnect()
+                        item.isChecked = false
+                        item.title = getString(R.string.connect)
+                    } else {
+                        item.isChecked = true
+                        connectToBeacon()
+                        connectable?.connect(mDevice)
+                        item.title = getString(R.string.disconnect)
+                    }
                 }
 
                 R.id.action_start_actions_activity -> {
@@ -207,26 +257,49 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
     private fun showUseCaseFragment() {
         //If it is not visible already
-        if (ll_usecase.visibility == View.GONE) {
-            ll_usecase.visibility = View.VISIBLE
+        if (ll_fragment.visibility == View.GONE) {
+            ll_fragment.visibility = View.VISIBLE
             childFragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right)
                 .replace(
-                    R.id.fl_usecase,
+                    R.id.fl_fragment,
                     UseCasesFragment.newInstance(
                         mDevice.macAddress,
                         mDevice.getRealName()
                     )
                 )
+                .addToBackStack(null)
                 .commit()
         }
     }
 
-    private fun connectToBeacon(context: Context) {
+    private fun showConnectFragment() {
+        //If it is not visible already
+        if (ll_fragment.visibility == View.GONE) {
+            ll_fragment.visibility = View.VISIBLE
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right)
+                .replace(
+                    R.id.fl_fragment,
+                    ConnectFragment.newInstance(mDevice)
+                )
+                .addToBackStack(null)
+                .commit()
+        }
+    }
+
+    private fun connectToBeacon() {
         if (BluetoothScanningService.isRunning()) {
             bleScanner?.stopScan()
         }
-        ConnectActivity.start(context, mDevice)
+
+        val fragment = childFragmentManager.fragments.find {
+            it is ConnectFragment
+        }
+
+        if (fragment == null) {
+            showConnectFragment()
+        }
     }
 
     private fun removeBeacon() {
@@ -238,14 +311,15 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
         savedInstanceState?.let {
             setStatus(it.getBoolean(EXTRA_STATUS, false), true)
+            ll_fragment?.visibility = it.getInt(EXTRA_VISIBILITY)
         }
 
-        iv_close_usecase?.setOnClickListener {
+        iv_close_fragment?.setOnClickListener {
             removeUseCaseFragment()
-        }
 
-        iv_close_livegraph?.setOnClickListener {
             removeLiveGraphFragment()
+
+            removeConnectFragment()
         }
     }
 
@@ -255,12 +329,32 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         }?.let {
             it as LiveGraphFragment
         }?.let {
-            ll_livegraph?.postDelayed({
-                ll_livegraph?.visibility = View.GONE
+            ll_fragment?.postDelayed({
+                ll_fragment?.visibility = View.GONE
             }, ANIM_DURATION)
 
             childFragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.exit_to_left, R.anim.exit_to_left)
+                .remove(it)
+                .commit()
+        }
+    }
+
+    private fun removeConnectFragment() {
+        childFragmentManager.fragments.find {
+            it is ConnectFragment
+        }?.let {
+            it as ConnectFragment
+        }?.let {
+            ll_fragment?.postDelayed({
+                ll_fragment?.visibility = View.GONE
+            }, ANIM_DURATION)
+
+            connectable?.disconnect()
+            connectable?.shutDownConnectionService()
+
+            childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.exit_to_right, R.anim.exit_to_right)
                 .remove(it)
                 .commit()
         }
@@ -272,8 +366,8 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         }?.let {
             it as UseCasesFragment
         }?.let {
-            ll_usecase?.postDelayed({
-                ll_usecase?.visibility = View.GONE
+            ll_fragment?.postDelayed({
+                ll_fragment?.visibility = View.GONE
             }, ANIM_DURATION)
 
             childFragmentManager.beginTransaction()
@@ -374,22 +468,27 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
 
         @JavascriptInterface
         fun connect() {
-            context?.let {
-                connectToBeacon(it)
+            activity?.let {
+                activity?.runOnUiThread {
+                    connectToBeacon()
+                    connectable?.connect(mDevice)
+                    it.invalidateOptionsMenu()
+                }
             }
         }
     }
 
     private fun showLiveGraphFragment(sensorName: String) {
         //If it is not visible
-        if (ll_livegraph.visibility == View.GONE) {
-            ll_livegraph.visibility = View.VISIBLE
+        if (ll_fragment.visibility == View.GONE) {
+            ll_fragment.visibility = View.VISIBLE
             childFragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_left)
                 .replace(
-                    R.id.fl_livegraph,
+                    R.id.fl_fragment,
                     LiveGraphFragment.newInstance(mDevice.macAddress, sensorName)
                 )
+                .addToBackStack(null)
                 .commit()
         }
     }
@@ -404,7 +503,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         Timber.i("device is $device")
     }
 
-    private fun showAlertDialog(mainActivity: MainActivity2) {
+    private fun uldowAlertDialog(mainActivity: MainActivity2) {
 
         val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(
             mainActivity
@@ -440,6 +539,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus {
         private const val KEY_DEVICE = "KEY_DEVICE"
         private const val DEV_BUILD_FLAVOR = "dev"
         private const val EXTRA_STATUS = "EXTRA_STATUS"
+        private const val EXTRA_VISIBILITY = "EXTRA_VISIBILITY"
         private const val ANIM_DURATION = 700L
 
         fun newInstance(
