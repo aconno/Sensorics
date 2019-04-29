@@ -21,7 +21,6 @@ import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.connect.BluetoothServiceConnection
-import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.ui.settings.SettingsActivity
@@ -74,9 +73,8 @@ class MainActivity2 : DaggerAppCompatActivity(),
         setContentView(R.layout.activity_toolbar2)
         button_add_device?.setOnClickListener {
             stopScan()
-            if (startScan(false)) {
-                ScannedDevicesDialog().show(supportFragmentManager, "devices_dialog")
-            }
+            startScan(false)
+            ScannedDevicesDialog().show(supportFragmentManager, "devices_dialog")
         }
 
         setSupportActionBar(toolbar)
@@ -212,38 +210,6 @@ class MainActivity2 : DaggerAppCompatActivity(),
             shouldStopService = true
             super.onBackPressed()
         }
-    }
-
-    private fun showCloseConnectionDialogForScanning(filterByDevice: Boolean) {
-        val alertDialogBuilder: androidx.appcompat.app.AlertDialog.Builder =
-            androidx.appcompat.app.AlertDialog.Builder(this)
-
-        alertDialogBuilder.setTitle(resources.getString(R.string.dialog_close_connection))
-        alertDialogBuilder
-            .setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
-                supportFragmentManager.fragments.filter {
-                    it is DeviceMainFragment
-                }.map {
-                    it as DeviceMainFragment
-                }.forEach {
-                    it.onServiceClosed()
-                }
-
-                invalidateOptionsMenu()
-
-                startScan(filterByDevice)
-                if (!filterByDevice) {
-                    ScannedDevicesDialog().show(supportFragmentManager, "devices_dialog")
-                }
-
-                dialog.cancel()
-            }
-            .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
-                dialog.cancel()
-            }
-
-        val alertDialog = alertDialogBuilder.create()
-        alertDialog.show()
     }
 
     private fun showCloseConnectionDialogForBackPress() {
@@ -420,15 +386,9 @@ class MainActivity2 : DaggerAppCompatActivity(),
         }
     }
 
-    override fun startScan(filterByDevice: Boolean): Boolean {
-        return if (isBound || isConnectedOrConnecting) {
-            showCloseConnectionDialogForScanning(filterByDevice)
-            false
-        } else {
-            this.filterByDevice = filterByDevice
-            startScanningWithPermissions()
-            true
-        }
+    override fun startScan(filterByDevice: Boolean) {
+        this.filterByDevice = filterByDevice
+        startScanningWithPermissions()
     }
 
     override fun stopScan() {
