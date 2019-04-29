@@ -20,6 +20,9 @@ import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.ui.*
 import com.aconno.sensorics.ui.configure.ConfigureActivity
+import com.aconno.sensorics.ui.*
+import com.aconno.sensorics.ui.connect.ConnectActivity
+import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.connect.BluetoothServiceConnection
 import com.aconno.sensorics.ui.connect.ConnectFragment
 import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
@@ -126,6 +129,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus,
     override fun onPrepareOptionsMenu(menu: Menu) {
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
         setMenuItemsVisibility(menu)
+        (activity as? MainActivity2)?.updateUIItemsAvailability()
     }
 
     private fun setMenuItemsVisibility(menu: Menu?) {
@@ -135,6 +139,7 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus,
             it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
+            it.findItem(R.id.action_dfu).isVisible = hasSettings
 
             if (connectable?.isConnectedOrConnecting() == true) {
                 with(it.findItem(R.id.action_toggle_connect)) {
@@ -245,6 +250,10 @@ class DeviceMainFragment : DaggerFragment(), ScanStatus,
                 }
                 R.id.action_rename_device -> {
                     renameDevice()
+                    return true
+                }
+                R.id.action_dfu -> {
+                    DfuActivity.start(context, mDevice.macAddress)
                     return true
                 }
                 else -> {

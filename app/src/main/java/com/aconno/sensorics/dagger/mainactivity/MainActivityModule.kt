@@ -2,7 +2,9 @@ package com.aconno.sensorics.dagger.mainactivity
 
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.BluetoothStateReceiver
+import com.aconno.sensorics.LocationStateReceiver
 import com.aconno.sensorics.SensoricsApplication
+import com.aconno.sensorics.device.location.LocationStateListener
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
@@ -248,4 +250,35 @@ class MainActivityModule {
         connectionViewModelFactory: ConnectionViewModelFactory
     ) = ViewModelProviders.of(connectActivity, connectionViewModelFactory)
         .get(ConnectionViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideLocationViewModelFactory(
+        mainActivity: MainActivity2,
+        locationStateReceiver: LocationStateReceiver,
+        locationStateListener: LocationStateListener
+    ) = LocationViewModelFactory(
+        locationStateReceiver,
+        locationStateListener,
+        mainActivity.application
+    )
+
+    @Provides
+    @MainActivityScope
+    fun provideLocationViewModel(
+        mainActivity: MainActivity2,
+        locationViewModelFactory: LocationViewModelFactory
+    ) = ViewModelProviders.of(
+        mainActivity,
+        locationViewModelFactory
+    ).get(LocationViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideLocationStateReceiver(locationStateListener: LocationStateListener):
+            LocationStateReceiver = LocationStateReceiver(locationStateListener)
+
+    @Provides
+    @MainActivityScope
+    fun provideLocationStateListener(): LocationStateListener = LocationStateListener()
 }
