@@ -6,12 +6,12 @@ import android.content.Intent
 import com.aconno.sensorics.device.notification.AlertNotificationReceiver
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationFactory
-import com.aconno.sensorics.ui.MainActivity2
+import com.aconno.sensorics.ui.MainActivity
 
 class IntentProviderImpl : IntentProvider {
 
     override fun getSensoricsContentIntent(context: Context): PendingIntent {
-        val contentIntent = Intent(context, MainActivity2::class.java)
+        val contentIntent = Intent(context, MainActivity::class.java)
         contentIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         return PendingIntent.getActivity(
             context,
@@ -22,7 +22,7 @@ class IntentProviderImpl : IntentProvider {
     }
 
     override fun getAlertNotificationContentIntent(context: Context): PendingIntent {
-        val contentIntent = Intent(context, MainActivity2::class.java)
+        val contentIntent = Intent(context, MainActivity::class.java)
         contentIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
         val requestCode = 0

@@ -27,7 +27,6 @@ class ResourcesInitializerImpl(
         moveFolder("formats")
         moveFolder("icons")
         moveFolder("device_screens")
-        moveFolder("connection_screens")
         moveFolder("usecase_screens")
         moveFolder("html_resources")
     }

@@ -6,6 +6,5 @@ data class ResourceConfig(
     val iconPath: String,
     val id: String,
     val name: String,
-    val usecaseScreenPath: String,
-    val connectionScreenPath: String? = null
+    val usecaseScreenPath: String
 )

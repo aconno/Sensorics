@@ -2,15 +2,13 @@ package com.aconno.sensorics.dagger.mainactivity
 
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.BluetoothStateReceiver
-import com.aconno.sensorics.LocationStateReceiver
 import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.device.location.LocationStateListener
+import com.aconno.sensorics.device.permissons.PermissionActionFactory
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
-import com.aconno.sensorics.domain.interactor.resources.GetConnectionResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
@@ -19,12 +17,10 @@ import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
-import com.aconno.sensorics.ui.MainActivity2
+import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
 import com.aconno.sensorics.ui.readings.ReadingListViewModelFactory
 import com.aconno.sensorics.viewmodel.*
-import com.aconno.sensorics.viewmodel.connection.ConnectionViewModel
-import com.aconno.sensorics.viewmodel.connection.ConnectionViewModelFactory
 import com.aconno.sensorics.viewmodel.factory.*
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModelFactory
@@ -39,7 +35,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideSensorListViewModel(
-        mainActivity: MainActivity2,
+        mainActivity: MainActivity,
         sensorListViewModelFactory: SensorListViewModelFactory
     ) = ViewModelProviders.of(mainActivity, sensorListViewModelFactory)
         .get(SensorListViewModel::class.java)
@@ -57,7 +53,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideReadingListViewModel(
-        mainActivity: MainActivity2,
+        mainActivity: MainActivity,
         readingListViewModelFactory: ReadingListViewModelFactory
     ) = ViewModelProviders.of(mainActivity, readingListViewModelFactory)
         .get(ReadingListViewModel::class.java)
@@ -75,7 +71,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideBluetoothScanningViewModel(
-        mainActivity: MainActivity2,
+        mainActivity: MainActivity,
         bluetoothScanningViewModelFactory: BluetoothScanningViewModelFactory
     ) = ViewModelProviders.of(mainActivity, bluetoothScanningViewModelFactory)
         .get(BluetoothScanningViewModel::class.java)
@@ -90,11 +86,17 @@ class MainActivityModule {
         sensoricsApplication
     )
 
+    @Provides
+    @MainActivityScope
+    fun providePermissionsViewModel(mainActivity: MainActivity): PermissionViewModel {
+        val permissionAction = PermissionActionFactory.getPermissionAction(mainActivity)
+        return PermissionViewModel(permissionAction, mainActivity)
+    }
 
     @Provides
     @MainActivityScope
     fun provideBluetoothViewModelFactory(
-        mainActivity: MainActivity2,
+        mainActivity: MainActivity,
         bluetooth: Bluetooth,
         bluetoothStateReceiver: BluetoothStateReceiver
     ) = BluetoothViewModelFactory(bluetooth, bluetoothStateReceiver, mainActivity.application)
@@ -102,7 +104,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideBluetoothViewModel(
-        mainActivity: MainActivity2, bluetoothViewModelFactory: BluetoothViewModelFactory
+        mainActivity: MainActivity, bluetoothViewModelFactory: BluetoothViewModelFactory
     ) = ViewModelProviders.of(
         mainActivity,
         bluetoothViewModelFactory
@@ -135,7 +137,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideUseCasesViewModel(
-        mainActivity: MainActivity2,
+        mainActivity: MainActivity,
         useCasesViewModelFactory: UseCasesViewModelFactory
     ) = ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
         .get(UseCasesViewModel::class.java)
@@ -143,7 +145,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideDeviceListViewModel(
-        mainActivity: MainActivity2,
+        mainActivity: MainActivity,
         deviceListViewModelFactory: DeviceListViewModelFactory
     ): DeviceViewModel {
         return ViewModelProviders.of(mainActivity, deviceListViewModelFactory)
@@ -184,7 +186,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideDashboardViewModel(
-        mainActivity: MainActivity2,
+        mainActivity: MainActivity,
         useCasesViewModelFactory: DashboardViewModelFactory
     ) = ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
         .get(DashboardViewModel::class.java)
@@ -201,7 +203,7 @@ class MainActivityModule {
     @MainActivityScope
     fun provideLiveGraphViewModelFactory(
         getReadingsUseCase: GetReadingsUseCase,
-        mainActivity: MainActivity2
+        mainActivity: MainActivity
     ) = LiveGraphViewModelFactory(
         getReadingsUseCase,
         mainActivity.application
@@ -211,7 +213,7 @@ class MainActivityModule {
     @MainActivityScope
     fun provideLiveGraphViewModel(
         liveGraphViewModelFactory: LiveGraphViewModelFactory,
-        mainActivity: MainActivity2
+        mainActivity: MainActivity
     ) = ViewModelProviders.of(
         mainActivity,
         liveGraphViewModelFactory
@@ -232,53 +234,8 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideMainResourceViewModel(
-        mainActivity: MainActivity2,
+        mainActivity: MainActivity,
         mainResourceViewModelFactory: MainResourceViewModelFactory
     ) = ViewModelProviders.of(mainActivity, mainResourceViewModelFactory)
         .get(MainResourceViewModel::class.java)
-
-    @Provides
-    @MainActivityScope
-    fun provideConnectionViewModelFactory(
-        getConnectionResourceUseCase: GetConnectionResourceUseCase
-    ) = ConnectionViewModelFactory(getConnectionResourceUseCase)
-
-    @Provides
-    @MainActivityScope
-    fun provideConnectionViewModel(
-        connectActivity: MainActivity2,
-        connectionViewModelFactory: ConnectionViewModelFactory
-    ) = ViewModelProviders.of(connectActivity, connectionViewModelFactory)
-        .get(ConnectionViewModel::class.java)
-
-    @Provides
-    @MainActivityScope
-    fun provideLocationViewModelFactory(
-        mainActivity: MainActivity2,
-        locationStateReceiver: LocationStateReceiver,
-        locationStateListener: LocationStateListener
-    ) = LocationViewModelFactory(
-        locationStateReceiver,
-        locationStateListener,
-        mainActivity.application
-    )
-
-    @Provides
-    @MainActivityScope
-    fun provideLocationViewModel(
-        mainActivity: MainActivity2,
-        locationViewModelFactory: LocationViewModelFactory
-    ) = ViewModelProviders.of(
-        mainActivity,
-        locationViewModelFactory
-    ).get(LocationViewModel::class.java)
-
-    @Provides
-    @MainActivityScope
-    fun provideLocationStateReceiver(locationStateListener: LocationStateListener):
-            LocationStateReceiver = LocationStateReceiver(locationStateListener)
-
-    @Provides
-    @MainActivityScope
-    fun provideLocationStateListener(): LocationStateListener = LocationStateListener()
 }

@@ -37,7 +37,7 @@
                 style="@style/Widget.AppCompat.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:drawableStart="@drawable/ic_add_orange"
+                android:drawableStart="@drawable/ic_add"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:text="@string/dfu_btn_select_file"

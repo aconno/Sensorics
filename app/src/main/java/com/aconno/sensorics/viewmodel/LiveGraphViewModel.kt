@@ -2,25 +2,27 @@ package com.aconno.sensorics.viewmodel
 
 import android.app.Application
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.model.DataSeriesSettings
 import com.aconno.sensorics.ui.graph.BleDataSeries
 import com.aconno.sensorics.ui.graph.BleGraph
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 
 class LiveGraphViewModel(
     private val getReadingsUseCase: GetReadingsUseCase,
     application: Application
-) : ViewModel() {
+) : AndroidViewModel(application) {
 
     private val refreshTimestamp: MutableLiveData<Long> = MutableLiveData()
 
     private val vectorGraphs = listOf("Magnetometer", "Accelerometer", "Gyroscope")
-    private var compositeDisposable: CompositeDisposable? = null
+    private var disposable: Disposable? = null
+    private var disposableY: Disposable? = null
+    private var disposableZ: Disposable? = null
 
     private lateinit var macAddress: String
     private lateinit var graphName: String
@@ -28,41 +30,37 @@ class LiveGraphViewModel(
     fun setMacAddressAndGraphName(macAddress: String, graphName: String) {
         this.macAddress = macAddress
         this.graphName = graphName
-        compositeDisposable?.clear()
-        this.compositeDisposable = CompositeDisposable()
 
         if (graphName in vectorGraphs) {
-            val disposable = getReadingsUseCase.execute(macAddress, "$graphName X")
+            disposable?.dispose()
+            disposable = getReadingsUseCase.execute(macAddress, "$graphName X")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     xDataSeries.updateDataSet(it)
                     refreshTimestamp.value = System.currentTimeMillis()
                 }
-            val disposableY = getReadingsUseCase.execute(macAddress, "$graphName Y")
+            disposableY?.dispose()
+            disposableY = getReadingsUseCase.execute(macAddress, "$graphName Y")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     yDataSeries.updateDataSet(it)
                     refreshTimestamp.value = System.currentTimeMillis()
                 }
-            val disposableZ = getReadingsUseCase.execute(macAddress, "$graphName Z")
+            disposableZ?.dispose()
+            disposableZ = getReadingsUseCase.execute(macAddress, "$graphName Z")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     zDataSeries.updateDataSet(it)
                     refreshTimestamp.value = System.currentTimeMillis()
                 }
-
-            compositeDisposable?.addAll(
-                disposable, disposableY, disposableZ
-            )
-
         } else {
-            val disposable = getReadingsUseCase.execute(macAddress, graphName)
+            disposable?.dispose()
+            disposable = getReadingsUseCase.execute(macAddress, graphName)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     dataSeries.updateDataSet(it)
                     refreshTimestamp.value = System.currentTimeMillis()
                 }
-            compositeDisposable?.add(disposable)
         }
     }
 
@@ -118,10 +116,5 @@ class LiveGraphViewModel(
                 listOf(dataSeries)
             )
         }
-    }
-
-    override fun onCleared() {
-        compositeDisposable?.clear()
-        super.onCleared()
     }
 }

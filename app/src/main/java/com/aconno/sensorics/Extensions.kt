@@ -1,6 +1,5 @@
 package com.aconno.sensorics
 
-import android.util.SparseArray
 import android.view.View
 import androidx.annotation.StringRes
 import com.aconno.sensorics.domain.model.Device
@@ -20,27 +19,6 @@ fun String.toHexByte(): Byte {
         this.replace("0x", ""),
         16
     ) and 0xff).toByte()
-}
-
-fun <E> SparseArray<E>.find(predicate: (E) -> Boolean): E? {
-    for (i in 0 until this.size()) {
-        val element = this.valueAt(i)
-        if (predicate(element)) {
-            return element
-        }
-    }
-
-    return null
-}
-
-fun <E> SparseArray<E>.keyOf(element: E): Int? {
-    for (i in 0 until this.size()) {
-        if (element == this[i]) {
-            return i
-        }
-    }
-    return null
-
 }
 
 inline fun View.snack(
@@ -63,10 +41,4 @@ fun Snackbar.action(@StringRes actionRes: Int, color: Int? = null, listener: (Vi
 fun Snackbar.action(action: String, color: Int? = null, listener: (View) -> Unit) {
     setAction(action, listener)
     color?.let { setActionTextColor(color) }
-}
-
-fun Snackbar.showIfNotShowing() {
-    if (!this.isShown) {
-        this.show()
-    }
 }
