@@ -410,6 +410,21 @@ class DeviceMainFragment : DaggerFragment() {
             writeColorCharacteristic(color)
         }
 
+        @JavascriptInterface
+        fun writeCharacteristic(characteristicName: String, value: Byte, type: String) {
+            mDevice.connectionWriteList?.find {
+                it.characteristicName == characteristicName
+            }?.let {
+                writeCharacteristics(
+                    WriteCommand(
+                        UUID.fromString(it.serviceUUID),
+                        UUID.fromString(it.characteristicUUID),
+                        type,
+                        byteArrayOf(value)
+                    )
+                )
+            }
+        }
     }
 
     private fun getParams() {

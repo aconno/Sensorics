@@ -1,0 +1,164 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+    <!-- <style type="text/css">
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+    </style> -->
+    <script src="../html_resources/materialize_min.js"></script>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+
+    <style>
+        *,
+        :after,
+        :before {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 60px auto;
+            text-align: center;
+            background-color: #ff9295;
+            transition: background-color 0.2s cubic-bezier(0, -1.85, 0.27, 1.75);
+        }
+
+        .toggle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate3d(-50%, -50%, 0);
+        }
+
+        .toggle:before {
+            content: 'OFF';
+            position: absolute;
+            left: -56px;
+            top: 30px;
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .toggle:after {
+            content: 'ON';
+            position: absolute;
+            right: -46px;
+            top: 30px;
+            font-size: 18px;
+            color: rgba(253, 15, 21, 0.31);
+        }
+
+        .toggle label {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            background-color: #FD1015;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.1), 0px 9px 15px 0px #ef4247;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .toggle label:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s cubic-bezier(0, -1.85, 0.27, 1.75);
+            height: 42px;
+            width: 42px;
+            background-color: #fd0f14;
+            border-radius: 46px;
+            box-shadow: inset 0px 0px 0px 8px #fff;
+        }
+
+        .toggle input {
+            display: none;
+        }
+
+        .toggle input:checked+label {
+            background-color: #57de72;
+            box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.1), 0px 9px 15px 0px rgba(3, 132, 28, 0.5411764706);
+        }
+
+        .toggle input:checked+label:before {
+            width: 10px;
+            background-color: #fff;
+        }
+
+        .on {
+            background-color: #6fc57c;
+        }
+
+        .on .toggle:before {
+            color: rgba(62, 160, 81, 0.89);
+        }
+
+        .on .toggle:after {
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div>
+        <p class="label">
+            <span>Status: </span>
+            <span id="status"></span>
+        </p>
+    </div>
+
+    <div class="toggle">
+        <input type="checkbox" id="toggle" />
+        <label for="toggle"></label>
+    </div>
+
+    <script>
+        var isChecked = 0;
+
+        function onStatusReading(text) {
+            if (text.localeCompare("CONNECTED") == 0 || text.localeCompare("VERBUNDEN") == 0) {
+                document.getElementById("status").innerHTML = text;
+                document.getElementById("toggle").removeAttribute("disabled");
+            }
+            else if (text != "") {
+                document.getElementById("status").innerHTML = text;
+                document.getElementById("toggle").setAttribute("disabled", true);
+            } else {
+                console.log("Reading text is empty ");
+            }
+        }
+        function connect() {
+            if (isChecked == 0) {
+                app.writeCharacteristic("On/Off", 0x00, "BYTE");
+                isChecked = 1;
+                document.getElementById("speaker").src = "../icons/speaker_on.png";
+            } else {
+                app.writeCharacteristic("On/Off", 0x01, "BYTE");
+                isChecked = 0;
+                document.getElementById("speaker").src = "../icons/speaker_off.png";
+            }
+        }
+
+        // JUST FOR BACKGROUND CHANGE
+        const toggle = document.querySelector('#toggle');
+
+        const updateBackground = (event) => {
+            document.body.classList.toggle('on');
+        }
+
+        toggle.addEventListener("click", () => document.body.classList.toggle('on'), false);
+        toggle.addEventListener("click", () => connect(), false);
+
+    </script>
+</body>
+
+</html>
