@@ -48,12 +48,7 @@ class ResourcesInitializerImpl(
                 "${cacheDir.absolutePath}/sensorics/${folderPath.replaceFirst("resources/", "")}"
             )
 
-        Timber.i(
-            "${cacheDir.absolutePath}/sensorics/${folderPath.replaceFirst(
-                "resources/",
-                ""
-            )}"
-        )
+        Timber.i(fileToBeWritten.path)
 
         fileToBeWritten.parentFile.takeIf {
             !it.exists()
