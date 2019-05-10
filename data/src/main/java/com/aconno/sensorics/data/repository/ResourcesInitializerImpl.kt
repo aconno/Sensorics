@@ -2,6 +2,7 @@ package com.aconno.sensorics.data.repository
 
 import android.content.res.AssetManager
 import com.aconno.sensorics.domain.ResourcesInitializer
+import timber.log.Timber
 import java.io.File
 
 class ResourcesInitializerImpl(
@@ -23,27 +24,44 @@ class ResourcesInitializerImpl(
         File("${cacheDir.absolutePath}/sensorics/")
             .mkdir()
 
-        moveFolder("configs")
-        moveFolder("formats")
-        moveFolder("icons")
-        moveFolder("device_screens")
-        moveFolder("usecase_screens")
-        moveFolder("html_resources")
+        moveFolder("resources")
     }
 
     private fun moveFolder(folderName: String) {
-        File("${cacheDir.absolutePath}/sensorics/$folderName/")
-            .mkdir()
-
-        assets.list("resources/$folderName")?.let { fileList ->
-            fileList.forEach { filename ->
-                val fileInputStream = assets.open("resources/$folderName/$filename")
-                val fileToBeWritten =
-                    File("${cacheDir.absolutePath}/sensorics/$folderName/$filename")
-
-                //Saving IS into the file
-                fileToBeWritten.outputStream().use { fileInputStream.copyTo(it) }
+        assets.list(folderName)?.let { fileList ->
+            if (fileList.isEmpty()) {
+                Timber.i("$folderName + --")
+                copyFile(folderName)
+            } else {
+                fileList.forEach { filename ->
+                    Timber.i("$folderName/$filename")
+                    moveFolder("$folderName/$filename")
+                }
             }
         }
+    }
+
+    private fun copyFile(folderPath: String) {
+        val fileInputStream = assets.open(folderPath)
+        val fileToBeWritten =
+            File(
+                "${cacheDir.absolutePath}/sensorics/${folderPath.replaceFirst("resources/", "")}"
+            )
+
+        Timber.i(
+            "${cacheDir.absolutePath}/sensorics/${folderPath.replaceFirst(
+                "resources/",
+                ""
+            )}"
+        )
+
+        fileToBeWritten.parentFile.takeIf {
+            !it.exists()
+        }?.let {
+            it.mkdirs()
+        }
+
+        //Saving IS into the file
+        fileToBeWritten.outputStream().use { fileInputStream.copyTo(it) }
     }
 }
