@@ -39,6 +39,12 @@ class ResourceSyncerImpl(
                     fileToBeSaved.parentFile.mkdir()
                 }
 
+                fileToBeSaved.parentFile.takeIf {
+                    !it.exists()
+                }?.let {
+                    it.mkdirs()
+                }
+
                 //Saving IS into the file
                 fileToBeSaved.outputStream().use { downloadedContentInputStream.copyTo(it) }
 
@@ -64,6 +70,6 @@ class ResourceSyncerImpl(
 
     companion object {
         const val LATEST_VERSION = "LATEST_VERSION"
-        const val LATEST_ASSETS_VERSION = 9945044754L
+        const val LATEST_ASSETS_VERSION = 1557484716L
     }
 }
