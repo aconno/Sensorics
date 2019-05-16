@@ -2,6 +2,7 @@ package com.aconno.sensorics.device.bluetooth
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
@@ -43,7 +44,7 @@ class BluetoothImpl(
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
 
     private val gattCallback: BluetoothGattCallback =
-        BluetoothGattCallback(connectGattResults, bluetoothCharacteristicValueConverter)
+        BluetoothGattCallback(connectGattResults)
     private var lastConnectedDeviceAddress: String? = null
     private var lastConnectedGatt: BluetoothGatt? = null
 
@@ -219,5 +220,39 @@ class BluetoothImpl(
 
         return currentState.mergeWith(bluetoothStateListener.getBluetoothStates())
             .toFlowable(BackpressureStrategy.LATEST)
+    }
+
+    override fun enableCharacteristicNotification(
+        characteristicUUID: UUID,
+        serviceUUID: UUID,
+        isEnabled: Boolean
+    ): Boolean {
+        lastConnectedGatt?.let { bluetoothGatt ->
+            val characteristic = bluetoothGatt.getService(serviceUUID)
+                .getCharacteristic(characteristicUUID) ?: return false
+
+            characteristic.let {
+                bluetoothGatt.setCharacteristicNotification(characteristic, isEnabled)
+                val descriptor = characteristic.getDescriptor(
+                    UUID.fromString(
+                        CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID
+                    )
+                )
+
+                descriptor.value =
+                    if (isEnabled) BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE else byteArrayOf(
+                        0x00,
+                        0x00
+                    )
+                return bluetoothGatt.writeDescriptor(descriptor)
+            }
+        }
+
+        return false
+    }
+
+    companion object {
+        private const val CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID =
+            "00002902-0000-1000-8000-00805f9b34fb"
     }
 }

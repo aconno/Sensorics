@@ -21,6 +21,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.cache.CacheActivity
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.dfu.DfuActivity
@@ -286,6 +287,10 @@ class DeviceMainFragment : DaggerFragment() {
                 }
                 R.id.action_dfu -> {
                     DfuActivity.start(context, mDevice.macAddress)
+                    return true
+                }
+                R.id.action_cache -> {
+                    CacheActivity.start(context, mDevice.macAddress)
                     return true
                 }
                 else -> {
