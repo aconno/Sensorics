@@ -39,6 +39,6 @@
 
     <item
         android:id="@+id/action_cache"
-        android:title="Cache"
+        android:title="@string/cache"
         app:showAsAction="never" />
 </menu>

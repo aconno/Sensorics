@@ -12,12 +12,15 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Observer
 import com.aconno.sensorics.*
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
@@ -53,135 +56,54 @@ class DeviceMainFragment : DaggerFragment() {
     @Inject
     lateinit var filterByMacUseCase: FilterByMacUseCase
 
-    private var sensorReadingFlowDisposable: Disposable? = null
-
     @Inject
     lateinit var mainResourceViewModel: MainResourceViewModel
-    private var getResourceDisposable: Disposable? = null
 
     private lateinit var mDevice: Device
-    private var webViewBundle: Bundle? = null
 
     private val writeCommandQueue: Queue<WriteCommand> = ArrayDeque<WriteCommand>()
-    private var serviceConnect: BluetoothConnectService? = null
-    private var connectResultDisposable: Disposable? = null
+
+    private var sensorReadingFlowDisposable: Disposable? = null
+
+    private var getResourceDisposable: Disposable? = null
+
+    private var webViewBundle: Bundle? = null
+
+    private var bluetoothConnectService: BluetoothConnectService? = null
 
     private var isServicesDiscovered = false
+
     private var hasSettings: Boolean = false
+
+    private var hasCache: Boolean = false
 
     var menu: Menu? = null
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
             Timber.d("Disconnected")
-            connectResultDisposable?.dispose()
-            serviceConnect = null
+            bluetoothConnectService = null
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            serviceConnect = (service as BluetoothConnectService.LocalBinder).getService()
-            Timber.d("Connected")
+            bluetoothConnectService =
+                (service as? BluetoothConnectService.LocalBinder)
+                    ?.getService()
+                    ?.also { bluetoothService ->
+                        Timber.d("Connected")
 
-            connectResultDisposable = serviceConnect!!.getConnectResults()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    if (!isAdded) {
-                        return@subscribe
+                        activity?.takeIf { isAdded }?.let { fragmentActivity ->
+                            bluetoothService.getConnectResultsLiveData()
+                                .observe(fragmentActivity, Observer<GattCallbackPayload> {
+                                    onConnectionPayloadReceived(it)
+                                })
+
+                            bluetoothService.startConnectionStream()
+
+                            bluetoothService.connect(mDevice.macAddress)
+                        }
+
                     }
-
-                    Timber.d(it.action)
-                    val text: String
-
-                    when {
-                        it.action == BluetoothGattCallback.ACTION_GATT_DEVICE_NOT_FOUND -> {
-                            Timber.i("Device not found")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.connect)
-                            }
-                            text = getString(R.string.device_not_found)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
-                            Timber.i("Device connecting")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
-                            text = getString(R.string.connecting)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
-                            Timber.i("Device connected")
-
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
-                            text = getString(R.string.connected)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_SERVICES_DISCOVERED -> {
-                            Timber.i("Device discovered")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
-                            isServicesDiscovered = true
-                            //progressbar?.visibility = View.INVISIBLE
-                            //enableToggleViews()
-                            text = getString(R.string.discovered)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
-                            Timber.i("Device disconnected")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.connect)
-                            }
-                            isServicesDiscovered = false
-                            //progressbar?.visibility = View.INVISIBLE
-                            //disableToggleViews()
-                            text = getString(R.string.disconnected)
-
-                            serviceConnect?.close()
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_ERROR -> {
-                            Timber.i("Device Error")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.connect)
-                            }
-                            isServicesDiscovered = false
-                            text = getString(R.string.error)
-                        }
-                        it.action == BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
-                            Timber.i("Device write")
-                            if (menu != null) {
-                                val item: MenuItem = menu!!.findItem(R.id.action_toggle_connect)
-                                item.title = getString(R.string.disconnect)
-                            }
-                            writeCommandQueue.poll()
-                            writeCharacteristics(writeCommandQueue.peek())
-                            text = getString(R.string.connected)
-
-                        }
-                        it.action == BluetoothGattCallback.ACTION_BEACON_HAS_SETTINGS -> {
-                            Timber.i("Device has settings")
-                            hasSettings = true
-//                            it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
-                            activity?.invalidateOptionsMenu()
-                            text = ""
-                        }
-                        else -> {
-                            return@subscribe
-                        }
-                    }
-                    text.takeIf {
-                        it.isNotBlank()
-                    }.let {
-                        web_view.loadUrl("javascript:onStatusReading('$text')")
-                    }
-                }
-
-            serviceConnect?.connect(mDevice.macAddress)
-
         }
     }
 
@@ -236,6 +158,7 @@ class DeviceMainFragment : DaggerFragment() {
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
             it.findItem(R.id.action_dfu).isVisible = hasSettings
+            //it.findItem(R.id.action_cache).isVisible = hasCache
         }
     }
 
@@ -245,12 +168,12 @@ class DeviceMainFragment : DaggerFragment() {
                 R.id.action_toggle_connect ->
                     if (item.isChecked) {
                         item.isChecked = false
-                        serviceConnect?.disconnect()
+                        bluetoothConnectService?.disconnect()
                         item.title = getString(R.string.connect)
                         true
                     } else {
                         item.isChecked = true
-                        serviceConnect?.connect(mDevice.macAddress)
+                        bluetoothConnectService?.connect(mDevice.macAddress)
                         item.title = getString(R.string.disconnect)
                         true
                     }
@@ -332,14 +255,85 @@ class DeviceMainFragment : DaggerFragment() {
 
     }
 
-    private fun setupConnectionForFreight() {
+    private fun onConnectionPayloadReceived(gattCallbackPayload: GattCallbackPayload) {
+        Timber.i(gattCallbackPayload.action)
+        val text: String = when (gattCallbackPayload.action) {
+            BluetoothGattCallback.ACTION_GATT_DEVICE_NOT_FOUND -> {
+                setToggleActionText(R.string.connect)
 
-        val gattServiceIntent = Intent(
-            context, BluetoothConnectService::class.java
-        )
-        context!!.bindService(
-            gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE
-        )
+                getString(R.string.device_not_found)
+            }
+            BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
+                setToggleActionText(R.string.disconnect)
+
+                getString(R.string.connecting)
+            }
+            BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
+                setToggleActionText(R.string.disconnect)
+
+                getString(R.string.connected)
+            }
+            BluetoothGattCallback.ACTION_GATT_SERVICES_DISCOVERED -> {
+                setToggleActionText(R.string.disconnect)
+                isServicesDiscovered = true
+
+                getString(R.string.discovered)
+            }
+            BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
+                setToggleActionText(R.string.connect)
+                isServicesDiscovered = false
+                bluetoothConnectService?.close()
+
+                getString(R.string.disconnected)
+            }
+            BluetoothGattCallback.ACTION_GATT_ERROR -> {
+                setToggleActionText(R.string.connect)
+                isServicesDiscovered = false
+                getString(R.string.error)
+            }
+            BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
+                setToggleActionText(R.string.disconnect)
+                writeCommandQueue.poll()
+                writeCharacteristics(writeCommandQueue.peek())
+                getString(R.string.connected)
+
+            }
+            BluetoothGattCallback.ACTION_BEACON_HAS_SETTINGS -> {
+                hasSettings = true
+                activity?.invalidateOptionsMenu()
+
+                ""
+            }
+            BluetoothGattCallback.ACTION_BEACON_HAS_CACHE -> {
+                Timber.i("Services discovered")
+                onBeaconHasCache()
+
+                ""
+            }
+            else -> ""
+        }
+
+        text.takeIf {
+            it.isNotBlank()
+        }.let {
+            web_view.loadUrl("javascript:onStatusReading('$text')")
+        }
+    }
+
+    private fun setToggleActionText(@StringRes resId: Int) {
+        menu?.let {
+            it.findItem(R.id.action_toggle_connect)?.title = getString(resId)
+        }
+    }
+
+    private fun setupConnectionForFreight() {
+        context?.let { appContext ->
+            Intent(
+                appContext, BluetoothConnectService::class.java
+            ).let {
+                appContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
+            }
+        }
     }
 
     private fun subscribeOnSensorReadings() {
@@ -557,13 +551,17 @@ class DeviceMainFragment : DaggerFragment() {
 
     private fun writeCharacteristics(cmd: WriteCommand?) {
         cmd?.let {
-            serviceConnect!!.writeCharacteristic(
+            bluetoothConnectService!!.writeCharacteristic(
                 it.serviceUUID,
                 it.charUUID,
                 it.type,
                 it.value
             )
         }
+    }
+
+    private fun onBeaconHasCache() {
+        hasCache = true
     }
 
     companion object {
