@@ -13,8 +13,10 @@ import androidx.lifecycle.Observer
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.model.GattCallbackPayload
+import com.aconno.sensorics.print
 import io.reactivex.disposables.Disposable
 import timber.log.Timber
+import java.nio.charset.Charset
 import java.util.*
 
 class CacheActivity : AppCompatActivity() {
@@ -83,9 +85,10 @@ class CacheActivity : AppCompatActivity() {
             BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
                 Timber.i("Device disconnected")
                 bluetoothConnectService?.close()
+                finish()
             }
             BluetoothGattCallback.ACTION_DATA_AVAILABLE -> {
-                Timber.i("Characteristic changed: ${payload.payload}")
+                onCharacteristicChanged(payload.payload)
             }
             BluetoothGattCallback.ACTION_GATT_DESCRIPTOR_WRITE -> {
                 onDescriptorWritten(payload.payload)
@@ -93,6 +96,13 @@ class CacheActivity : AppCompatActivity() {
             else -> {
                 return
             }
+        }
+    }
+
+    private fun onCharacteristicChanged(payload: Any?) {
+        val characteristic = payload as? BluetoothGattCharacteristic
+        characteristic?.let {
+            Timber.d(it.value.print())
         }
     }
 

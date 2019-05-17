@@ -42,3 +42,12 @@ fun Snackbar.action(action: String, color: Int? = null, listener: (View) -> Unit
     setAction(action, listener)
     color?.let { setActionTextColor(color) }
 }
+
+fun ByteArray.print(): String {
+    val stringBuilder = StringBuilder()
+    this.forEach {
+        stringBuilder.append(String.format("%02X", it))
+    }
+
+    return stringBuilder.toString()
+}
