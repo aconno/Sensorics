@@ -13,8 +13,14 @@ class FormatMatcher(
 
     fun matches(rawData: ByteArray): Boolean {
         supportedFormats.forEach {
+            val isolateMsd = ByteOperations.isolateMsd(rawData)
+
+            if (isolateMsd.size < it.getRequiredFormat().size) {
+                return@forEach
+            }
+
             if (matches(
-                    ByteOperations.isolateMsd(rawData),
+                    isolateMsd,
                     it.getRequiredFormat(),
                     it.getSettingsSupport()
                 )
@@ -26,17 +32,40 @@ class FormatMatcher(
     }
 
     fun findFormat(rawData: ByteArray): AdvertisementFormat? {
+        val matchedFormats = mutableListOf<AdvertisementFormat>()
+
         supportedFormats.forEach {
+            val isolateMsd = ByteOperations.isolateMsd(rawData)
+
+            if (isolateMsd.size < it.getRequiredFormat().size) {
+                return@forEach
+            }
+
             if (matches(
-                    ByteOperations.isolateMsd(rawData),
+                    isolateMsd,
                     it.getRequiredFormat(),
                     it.getSettingsSupport()
                 )
             ) {
-                return it
+                matchedFormats.add(it)
             }
         }
-        return null
+
+        return when {
+            matchedFormats.size == 0 -> null
+            matchedFormats.size == 1 -> matchedFormats[0]
+            else -> {
+                var bestFormatForThisAdvertisement = matchedFormats[0]
+
+                matchedFormats.forEach {
+                    if (it.getRequiredFormat().size > bestFormatForThisAdvertisement.getRequiredFormat().size) {
+                        bestFormatForThisAdvertisement = it
+                    }
+                }
+
+                bestFormatForThisAdvertisement
+            }
+        }
     }
 
     private fun matches(
