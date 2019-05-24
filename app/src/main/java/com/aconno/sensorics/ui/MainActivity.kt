@@ -87,12 +87,12 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             .build()
 
         val build = PeriodicWorkRequestBuilder<SyncConfigurationWorker>(15, TimeUnit.MINUTES)
-            .addTag("My_WORKER_TAG_00123")
+            .addTag(WORK_TAG)
             .setConstraints(constraints)
             .build()
 
         WorkManager.getInstance(applicationContext)
-            .enqueueUniquePeriodicWork("MyWorkName", ExistingPeriodicWorkPolicy.KEEP, build)
+            .enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, build)
     }
 
     override fun onResume() {
@@ -381,5 +381,10 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             val menuItem: MenuItem = it!!.findItem(R.id.action_toggle_scan)
             toggleScanFromMenuItem(menuItem)
         }
+    }
+
+    companion object {
+        const val WORK_TAG = "My_WORKER_TAG_00123"
+        const val WORK_NAME = "MyWorkName"
     }
 }
