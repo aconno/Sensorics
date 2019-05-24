@@ -1,4 +1,4 @@
-package com.aconno.sensorics.dagger.sync
+package com.aconno.sensorics.dagger.worker
 
 import android.content.SharedPreferences
 import com.aconno.sensorics.SensoricsApplication
@@ -17,7 +17,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 class SyncConfigurationServiceModule {
 
     @Provides
-    @SyncConfigurationServiceScope
     fun provideResourcesApi(
         gson: Gson
     ): ResourcesApi {
@@ -29,7 +28,6 @@ class SyncConfigurationServiceModule {
     }
 
     @Provides
-    @SyncConfigurationServiceScope
     fun provideResourceSyncer(
         application: SensoricsApplication,
         resourcesApi: ResourcesApi,
@@ -39,7 +37,6 @@ class SyncConfigurationServiceModule {
     }
 
     @Provides
-    @SyncConfigurationServiceScope
     fun provideSyncUseCase(
         resourceSyncer: ResourceSyncer
     ) = SyncUseCase(resourceSyncer)

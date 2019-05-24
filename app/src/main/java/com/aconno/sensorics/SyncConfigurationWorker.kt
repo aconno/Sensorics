@@ -1,34 +1,28 @@
 package com.aconno.sensorics
 
-import android.app.job.JobParameters
-import android.app.job.JobService
+import android.content.Context
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import com.aconno.sensorics.dagger.worker.ChildWorkerFactory
 import com.aconno.sensorics.domain.ConfigListManager
 import com.aconno.sensorics.domain.FormatListManager
 import com.aconno.sensorics.domain.interactor.sync.SyncUseCase
-import dagger.android.AndroidInjection
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.*
 import timber.log.Timber
-import javax.inject.Inject
 
-class SyncConfigurationService : JobService() {
-
-    @Inject
-    lateinit var syncUseCase: SyncUseCase
-
-    @Inject
-    lateinit var configListManager: ConfigListManager
-
-    @Inject
-    lateinit var formatListManager: FormatListManager
+class SyncConfigurationWorker @AssistedInject constructor(
+    @Assisted private val appContext: Context,
+    @Assisted private val params: WorkerParameters,
+    private val syncUseCase: SyncUseCase,
+    private val configListManager: ConfigListManager,
+    private val formatListManager: FormatListManager
+) : Worker(appContext, params) {
 
     lateinit var job: Deferred<Boolean>
 
-    override fun onCreate() {
-        AndroidInjection.inject(this)
-        super.onCreate()
-    }
-
-    override fun onStartJob(params: JobParameters?): Boolean {
+    override fun doWork(): Result {
         Timber.i("Job scheduler started")
 
         GlobalScope.launch(Dispatchers.Main) {
@@ -41,7 +35,8 @@ class SyncConfigurationService : JobService() {
 
             broadcastUpdatingFinished()
         }
-        return false
+
+        return Result.success()
     }
 
     private suspend fun broadcastUpdatingFinished() {
@@ -54,10 +49,6 @@ class SyncConfigurationService : JobService() {
         }
     }
 
-    override fun onStopJob(params: JobParameters?): Boolean {
-        job.cancel()
-
-        Timber.i("Job scheduler stopped")
-        return false
-    }
+    @AssistedInject.Factory
+    interface Factory : ChildWorkerFactory
 }

@@ -44,10 +44,6 @@
         <service
             android:name="com.aconno.bluetooth.BluetoothDeviceService"
             android:exported="false" />
-        <service
-            android:name=".SyncConfigurationService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
             android:name=".ui.settings.publishers.PublishListActivity"
@@ -102,6 +98,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.actions.ActionDetailsActivity" />
+
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            android:exported="false"
+            tools:node="remove" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

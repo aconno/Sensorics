@@ -1,9 +1,5 @@
 package com.aconno.sensorics.ui
 
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -14,10 +10,11 @@ import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.work.*
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
-import com.aconno.sensorics.SyncConfigurationService
+import com.aconno.sensorics.SyncConfigurationWorker
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
@@ -37,6 +34,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_toolbar.*
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCallbacks,
@@ -65,8 +63,8 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         setContentView(R.layout.activity_toolbar)
 
         snackbar =
-                Snackbar.make(content_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
+            Snackbar.make(content_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
 
         snackbar?.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
 
@@ -79,29 +77,22 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             showSavedDevicesFragment()
         }
 
-        scheduleJob()
+        scheduleWork()
         observeScanEvents()
     }
 
-    private fun scheduleJob() {
-        val jobSchedule: JobScheduler =
-            this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+    private fun scheduleWork() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
 
-        val pendingJob = jobSchedule.allPendingJobs
-            .find {
-                it.id == 1
-            }
+        val build = PeriodicWorkRequestBuilder<SyncConfigurationWorker>(15, TimeUnit.MINUTES)
+            .addTag("My_WORKER_TAG_00123")
+            .setConstraints(constraints)
+            .build()
 
-        //If pending job still in progress no need to re-schedule..
-        if (pendingJob == null) {
-            val serviceComponents = ComponentName(this, SyncConfigurationService::class.java)
-            val jobInfo: JobInfo = JobInfo.Builder(1, serviceComponents)
-                .setPeriodic(15 * 60 * 1000)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setPersisted(true)
-                .build()
-            jobSchedule.schedule(jobInfo)
-        }
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniquePeriodicWork("MyWorkName", ExistingPeriodicWorkPolicy.KEEP, build)
     }
 
     override fun onResume() {
