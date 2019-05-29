@@ -77,5 +77,5 @@ class Parameters(
     inline fun <reified T> getParameterValue(name: String, default: T): T = map
             .flatMap { it.value }
             .find { it.name == name }
-            ?.value as T ?: (default)
+        ?.value as T? ?: (default)
 }
