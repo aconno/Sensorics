@@ -3,7 +3,10 @@ package com.aconno.sensorics
 import android.app.Activity
 import android.app.Application
 import android.app.Service
+import androidx.work.Configuration
+import androidx.work.WorkManager
 import com.aconno.sensorics.dagger.application.DaggerAppComponent
+import com.aconno.sensorics.dagger.worker.GeneralWorkerFactory
 import com.crashlytics.android.Crashlytics
 import com.squareup.leakcanary.LeakCanary
 import dagger.android.AndroidInjector
@@ -19,6 +22,9 @@ class SensoricsApplication : Application(), HasActivityInjector, HasServiceInjec
     companion object {
         private const val DEV_BUILD_FLAVOR = "dev"
     }
+
+    @Inject
+    lateinit var workerFactory: GeneralWorkerFactory
 
     @Inject
     lateinit var dispatchingActivityInjector: DispatchingAndroidInjector<Activity>
@@ -41,6 +47,11 @@ class SensoricsApplication : Application(), HasActivityInjector, HasServiceInjec
             Timber.plant(Timber.DebugTree())
         }
         Fabric.with(this, Crashlytics())
+
+        WorkManager.initialize(
+            this,
+            Configuration.Builder().setWorkerFactory(workerFactory).build()
+        )
     }
 
     override fun activityInjector(): AndroidInjector<Activity> {

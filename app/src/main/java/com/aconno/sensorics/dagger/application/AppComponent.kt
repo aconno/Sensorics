@@ -1,6 +1,8 @@
 package com.aconno.sensorics.dagger.application
 
 import com.aconno.sensorics.SensoricsApplication
+import com.aconno.sensorics.dagger.worker.WorkerAssistedInjectModule
+import com.aconno.sensorics.dagger.worker.WorkerBindingModule
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
@@ -13,7 +15,9 @@ import javax.inject.Singleton
         BluetoothModule::class,
         DataModule::class,
         ResourcesModule::class,
-        ActivityBuilder::class
+        ActivityBuilder::class,
+        WorkerAssistedInjectModule::class,
+        WorkerBindingModule::class
     ]
 )
 @Singleton

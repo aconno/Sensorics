@@ -93,7 +93,7 @@ dependencies {
     implementation "com.google.code.gson:gson:$gson_version"
     implementation 'com.github.lzyzsd:circleprogress:1.2.1'
 
-    implementation("com.crashlytics.sdk.android:crashlytics:2.9.4@aar") {
+    implementation("com.crashlytics.sdk.android:crashlytics:2.10.1@aar") {
         transitive = true
     }
 
@@ -122,6 +122,12 @@ dependencies {
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
     implementation 'com.jpardogo.materialtabstrip:library:1.1.1'
 
+    compileOnly 'com.squareup.inject:assisted-inject-annotations-dagger2:0.4.0'
+    kapt 'com.squareup.inject:assisted-inject-processor-dagger2:0.4.0'
+
+    // if you're using Kotlin
+    def workManagerVersion = "2.1.0-alpha02"
+    implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
 }
 
 repositories {
