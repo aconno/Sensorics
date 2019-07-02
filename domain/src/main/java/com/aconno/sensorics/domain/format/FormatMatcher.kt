@@ -91,6 +91,6 @@ class FormatMatcher(
             .forEach {
                 readingTypes.addAll(it.getFormat().keys)
             }
-        return readingTypes.sorted()
+        return readingTypes.distinct().sorted()
     }
 }
