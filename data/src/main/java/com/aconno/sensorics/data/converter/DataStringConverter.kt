@@ -15,6 +15,7 @@ class DataStringConverter(
         private const val TS = "ts"
         private const val DATE = "date"
         private const val DEVICE = "device"
+        private const val RSSI = "rssi"
 
         private const val NOT_VALID = -1
         private const val ONE_BY_ONE = 1
@@ -47,7 +48,7 @@ class DataStringConverter(
 
     private fun checkDataStringValid(): Int {
         val filteredList =
-            list.filter { it != TS && it != DEVICE && it != DATE } as MutableList<String>
+            list.filter { it != TS && it != DEVICE && it != DATE && it != RSSI} as MutableList<String>
 
         return if (filteredList.contains(VALUE) || filteredList.contains(NAME)) {
             filteredList.removeAll { it == VALUE || it == NAME }
@@ -104,6 +105,9 @@ class DataStringConverter(
                     DEVICE -> {
                         newDataString.replace("\$$it", reading.device.macAddress)
                     }
+                    RSSI -> {
+                        newDataString.replace("\$$it", reading.rssi.toString())
+                    }
                     else -> {
                         throw IllegalArgumentException()
                     }
@@ -138,8 +142,16 @@ class DataStringConverter(
                     )
                 }
                 DEVICE -> {
-                    newDataString =
-                            newDataString.replace("\$$DEVICE", readings[0].device.macAddress)
+                    newDataString = newDataString.replace(
+                        "\$$DEVICE",
+                        readings[0].device.macAddress
+                    )
+                }
+                RSSI -> {
+                    newDataString = newDataString.replace(
+                        "\$$RSSI",
+                        readings[0].rssi.toString()
+                    )
                 }
                 else -> {
                     val find =

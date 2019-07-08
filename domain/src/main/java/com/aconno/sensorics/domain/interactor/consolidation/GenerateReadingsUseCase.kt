@@ -34,6 +34,7 @@ class GenerateReadingsUseCase(
                     device,
                     number,
                     name,
+                    parameter.rssi,
                     format.id
                 )
 
