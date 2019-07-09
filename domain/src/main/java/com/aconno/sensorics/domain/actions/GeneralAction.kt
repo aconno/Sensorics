@@ -9,5 +9,6 @@ class GeneralAction(
     override val name: String,
     override val device: Device,
     override val condition: Condition,
-    override val outcome: Outcome
+    override val outcome: Outcome,
+    override val active: Boolean
 ) : Action

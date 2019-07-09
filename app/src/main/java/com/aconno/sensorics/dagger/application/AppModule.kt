@@ -148,6 +148,7 @@ class AppModule {
             SensoricsDatabase::class.java,
             "Sensorics"
         )
+            .addMigrations(SensoricsDatabase.MIGRATION_11_12)
             .fallbackToDestructiveMigration()
             .build()
     }

@@ -21,4 +21,6 @@
 
     <color name="black">#000</color>
     <color name="red">#c00</color>
+    
+    <color name="inactive_action_background_color">#BCCCCBCB</color>
 </resources>

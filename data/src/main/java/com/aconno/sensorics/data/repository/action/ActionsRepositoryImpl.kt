@@ -22,6 +22,14 @@ class ActionsRepositoryImpl(
         return actionDao.getActionById(actionId).map { actionEntity -> toAction(actionEntity) }
     }
 
+    override fun getActionsByDeviceMacAddress(macAddress: String): Single<List<Action>> {
+        return actionDao.getActionsByDeviceMacAddress(macAddress).map { actionEntities ->
+            actionEntities.map {
+                toAction(it)
+            }
+        }
+    }
+
     override fun addAction(action: Action): Completable {
         return Completable.fromAction {
             Timber.i("Inserted Action")
@@ -48,7 +56,8 @@ class ActionsRepositoryImpl(
             conditionType = action.condition.type,
             value = action.condition.limit,
             textMessage = action.outcome.parameters[Outcome.TEXT_MESSAGE] ?: "",
-            outcomeType = action.outcome.type
+            outcomeType = action.outcome.type,
+            active = if (action.active) 1 else 0
         )
     }
 
@@ -83,7 +92,8 @@ class ActionsRepositoryImpl(
             name,
             device,
             condition,
-            outcome
+            outcome,
+            actionEntity.active == 1
         )
     }
 }

@@ -9,6 +9,8 @@ interface ActionsRepository {
 
     fun getActionById(actionId: Long): Single<Action>
 
+    fun getActionsByDeviceMacAddress(macAddress: String): Single<List<Action>>
+
     fun addAction(action: Action): Completable
 
     fun deleteAction(action: Action): Completable

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container_activity"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                     xmlns:tools="http://schemas.android.com/tools"
+                                                     android:id="@+id/container_activity"
+                                                     android:layout_width="match_parent"
+                                                     android:layout_height="match_parent" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:orientation="vertical">
+        android:orientation="vertical" >
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -22,13 +22,13 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent" >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="80dp">
+                android:paddingBottom="80dp" >
 
                 <EditText
                     android:id="@+id/edittext_name"
@@ -55,6 +55,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/title_padding"
                     tools:listitem="@layout/item_spinner_device" />
+
+                <Switch
+                    android:id="@+id/switch_active"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                    android:layout_marginTop="@dimen/item_vertical_spacing"
+                    android:text="@string/active" />
 
                 <TextView
                     android:id="@+id/label_condition"
@@ -96,7 +104,7 @@
                     app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
                     app:dividerDrawableVertical="@drawable/chip_divider_vertical"
                     app:flexWrap="wrap"
-                    app:showDivider="middle">
+                    app:showDivider="middle" >
 
                     <CheckedTextView
                         android:id="@+id/button_outcome_notification"
@@ -119,7 +127,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/text_to_speech" />
 
-                </com.google.android.flexbox.FlexboxLayout>
+                </com.google.android.flexbox.FlexboxLayout >
 
 
                 <EditText
@@ -134,11 +142,11 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
 
-            </LinearLayout>
+            </LinearLayout >
 
-        </ScrollView>
+        </ScrollView >
 
-    </LinearLayout>
+    </LinearLayout >
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_save"
@@ -150,4 +158,4 @@
         android:tint="@color/secondaryTextColor"
         app:fabSize="normal" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout >

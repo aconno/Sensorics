@@ -45,6 +45,8 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         setDevicesSpinnerAdapter()
         setDevicesSelectListener()
 
+        setActiveSwitchListener()
+
         setOutcomeSelectListeners()
 
         setSaveButtonListener()
@@ -60,6 +62,13 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
     override fun onResume() {
         super.onResume()
         container_activity.requestFocus()
+    }
+
+    private fun setActiveSwitchListener() {
+        switch_active.setOnCheckedChangeListener { _, checked ->
+            val name = edittext_name.text.toString()
+            actionDetailsViewModel.setActive(name, checked)
+        }
     }
 
     private fun setDevicesSpinnerAdapter() {
@@ -188,6 +197,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
             action?.let {
                 Timber.d("On action changed")
                 setName(action.name)
+                setActive(action.active)
                 setDevice(action.device)
                 setOutcome(action.outcome)
             }
@@ -196,6 +206,10 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
 
     private fun setName(name: String) {
         edittext_name.setText(name)
+    }
+
+    private fun setActive(active: Boolean) {
+        switch_active.isChecked = active
     }
 
     private fun setDevice(device: Device?) {

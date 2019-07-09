@@ -10,4 +10,5 @@ interface Action {
     val device: Device
     val condition: Condition
     val outcome: Outcome
+    val active: Boolean
 }
