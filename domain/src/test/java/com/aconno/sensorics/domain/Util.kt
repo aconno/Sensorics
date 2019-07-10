@@ -37,16 +37,17 @@ class Util {
             0xF5.toByte(),//27
             0x9E.toByte(),//28
             0x0F.toByte() //29
-        )
+        ).toByteArray()
 
-        val REQUIRED_FORMAT_BYTES = BEACON_BYTES.subList(5, 29)
+        val REQUIRED_FORMAT_BYTES = BEACON_BYTES.toList().subList(5, 29).toByteArray()
 
         val TEMPERATURE_FORMAT = ByteFormat(
             "Temperature",
             10,
             14,
             true,
-            "FLOAT"
+            "FLOAT",
+            null
         )
 
         val HUMIDITY_FORMAT = ByteFormat(
@@ -54,7 +55,8 @@ class Util {
             14,
             18,
             true,
-            "FLOAT"
+            "FLOAT",
+            null
         )
 
         val PRESSURE_FORMAT = ByteFormat(
@@ -62,7 +64,8 @@ class Util {
             18,
             22,
             true,
-            "FLOAT"
+            "FLOAT",
+            null
         )
 
         val LIGHT_FORMAT = ByteFormat(
@@ -70,7 +73,8 @@ class Util {
             22,
             26,
             true,
-            "FLOAT"
+            "FLOAT",
+            null
         )
 
         val BATTERY_LEVEL_FORMAT = ByteFormat(
@@ -78,7 +82,8 @@ class Util {
             26,
             27,
             false,
-            "BYTE"
+            "BYTE",
+            null
         )
 
         fun getListOfFormats(): HashMap<String, ByteFormat> {

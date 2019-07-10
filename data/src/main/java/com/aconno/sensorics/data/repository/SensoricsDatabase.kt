@@ -2,6 +2,8 @@ package com.aconno.sensorics.data.repository
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.aconno.sensorics.data.repository.action.ActionDao
 import com.aconno.sensorics.data.repository.action.ActionEntity
 import com.aconno.sensorics.data.repository.devices.DeviceDao
@@ -35,7 +37,7 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
         RestPublishEntity::class,
         SyncEntity::class
     ],
-    version = 11
+    version = 12
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 
@@ -52,4 +54,12 @@ abstract class SensoricsDatabase : RoomDatabase() {
     abstract fun restPublishDao(): RESTPublishDao
 
     abstract fun syncDao(): SyncDao
+
+    companion object {
+        val MIGRATION_11_12 = object: Migration(11, 12) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE actions ADD COLUMN active INTEGER NOT NULL DEFAULT 1")
+            }
+        }
+    }
 }

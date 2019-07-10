@@ -12,6 +12,9 @@ interface ActionDao {
     @Query("SELECT * FROM actions WHERE id = :actionId")
     fun getActionById(actionId: Long): Single<ActionEntity>
 
+    @Query("SELECT * FROM actions WHERE deviceMacAddress = :macAddress")
+    fun getActionsByDeviceMacAddress(macAddress: String): Single<List<ActionEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(action: ActionEntity)
 

@@ -3,16 +3,17 @@ package com.aconno.sensorics.ui.devices
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
+import android.widget.Toast
 import androidx.recyclerview.widget.*
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceActiveAdapter
 import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
+import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.Settings
 import com.aconno.sensorics.getRealName
@@ -28,6 +29,7 @@ import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import java.util.*
@@ -42,6 +44,9 @@ class SavedDevicesFragment : DaggerFragment(),
 
     @Inject
     lateinit var settings: Settings
+
+    @Inject
+    lateinit var setActionActiveByDeviceMacAddressUseCase: SetActionActiveByDeviceMacAddressUseCase
 
     private lateinit var deviceAdapter: DeviceActiveAdapter
 
@@ -221,39 +226,88 @@ class SavedDevicesFragment : DaggerFragment(),
         mainActivity?.supportActionBar?.subtitle = ""
     }
 
-    @SuppressLint("InflateParams")
     private fun onLongClick(param: DeviceActive) {
+        val renameString = getString(R.string.rename)
+        val deactivateAllActionsString = getString(R.string.deactivate_all_actions)
+        val activateAllActionsString = getString(R.string.activate_all_actions)
+
+        val options = arrayOf(
+            renameString,
+            deactivateAllActionsString,
+            activateAllActionsString
+        )
+
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(R.string.actions)
+            .setItems(options) { _, which ->
+                when (options[which]) {
+                    renameString -> {
+                        createRenameDeviceDialog(param.device).show()
+                    }
+                    deactivateAllActionsString -> {
+                        setActionActiveByDeviceMacAddressUseCase.execute(param.device.macAddress, false)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({
+                                Toast.makeText(
+                                    context,
+                                    "Deactivated all actions for device",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }, {
+                                Toast.makeText(
+                                    context,
+                                    "Error deactivating all actions for device",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            })
+                    }
+                    activateAllActionsString -> {
+                        setActionActiveByDeviceMacAddressUseCase.execute(param.device.macAddress, true)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({
+                                Toast.makeText(
+                                    context,
+                                    "Activated all actions for device",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }, {
+                                Toast.makeText(
+                                    context,
+                                    "Error activating all actions for device",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            })
+                    }
+                }
+            }
+            .show()
+    }
+
+    @SuppressLint("InflateParams")
+    fun createRenameDeviceDialog(device: Device): AlertDialog {
         val builder = AlertDialog.Builder(context)
 
         val inflate = layoutInflater.inflate(R.layout.layout_rename, null)
         val input = inflate.findViewById<EditText>(R.id.edit_name)
-        input.setText(param.device.getRealName())
+        input.setText(device.getRealName())
 
-        val dialogClickListener: DialogInterface.OnClickListener =
-            DialogInterface.OnClickListener { dialog, which ->
-                when (which) {
-                    DialogInterface.BUTTON_POSITIVE -> {
-                        val text = input.text.toString()
-
-                        if (!text.isBlank()) {
-                            deviceViewModel.updateDevice(param.device, text)
-                        }
-
-                        dialog.dismiss()
-                    }
-
-                    DialogInterface.BUTTON_NEGATIVE -> {
-                        dialog.dismiss()
-                    }
-                }
-            }
-
-        builder
+        return builder
             .setView(inflate)
             .setTitle("Rename Beacon")
-            .setPositiveButton(getString(R.string.yes), dialogClickListener)
-            .setNegativeButton(getString(R.string.no), dialogClickListener)
-            .show()
+            .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
+                input.text.toString().let { text ->
+                    if (!text.isBlank()) {
+                        deviceViewModel.updateDevice(device, text)
+                    }
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
     }
 
     fun onBluetoothOn() {

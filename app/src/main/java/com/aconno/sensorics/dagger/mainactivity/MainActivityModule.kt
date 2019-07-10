@@ -3,8 +3,13 @@ package com.aconno.sensorics.dagger.mainactivity
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
+import com.aconno.sensorics.dagger.action_details.ActionDetailsActivityScope
 import com.aconno.sensorics.device.permissons.PermissionActionFactory
+import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionsByDeviceMacAddressUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
@@ -238,4 +243,25 @@ class MainActivityModule {
         mainResourceViewModelFactory: MainResourceViewModelFactory
     ) = ViewModelProviders.of(mainActivity, mainResourceViewModelFactory)
         .get(MainResourceViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
+    fun provideAddActionUseCase(
+        actionsRepository: ActionsRepository
+    ) = AddActionUseCase(actionsRepository)
+
+    @Provides
+    @MainActivityScope
+    fun provideGetActionsByDeviceMacAddressUseCase(
+        actionsRepository: ActionsRepository
+    ) = GetActionsByDeviceMacAddressUseCase(actionsRepository)
+
+    @Provides
+    @MainActivityScope
+    fun provideSetActionActiveByDeviceMacAddressUseCase(
+        addActionUseCase: AddActionUseCase,
+        getActionsByDeviceMacAddressUseCase: GetActionsByDeviceMacAddressUseCase
+    ) = SetActionActiveByDeviceMacAddressUseCase(
+        addActionUseCase, getActionsByDeviceMacAddressUseCase
+    )
 }

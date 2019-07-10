@@ -19,18 +19,21 @@ class InputToOutcomesUseCase(
             }
         return Single.fromObservable(observable)
     }
-    
+
     private fun actionsToOutcomes(actions: List<Action>, input: Input): List<Outcome> {
         val result = mutableListOf<Outcome>()
 
-        actions.filter { it.device.macAddress == input.macAddress }
-            .forEach { action ->
-                if (action.condition.isSatisfied(input)) {
-                    result.add(action.outcome)
-
-                }
-
-            }
+        actions.filter {
+            it.device.macAddress == input.macAddress
+        }.filter { action ->
+            action.active
+        }.filter { action ->
+            action.condition.isSatisfied(input)
+        }.map { action ->
+            action.outcome
+        }.let { outcomes ->
+            result.addAll(outcomes)
+        }
 
         return result
     }

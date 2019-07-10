@@ -48,7 +48,8 @@ class ActionDetailsViewModel(
                             action.name,
                             action.device,
                             action.condition,
-                            action.outcome
+                            action.outcome,
+                            action.active
                         )
                     )
                 }
@@ -148,6 +149,21 @@ class ActionDetailsViewModel(
         }
     }
 
+    fun setActive(name: String, active: Boolean) {
+        val actionViewModel = actionLiveData.value
+        if (actionViewModel == null) {
+            actionLiveData.value = ActionViewModel(
+                name = name,
+                active = active
+            )
+        } else {
+            actionViewModel.name = name
+            actionViewModel.active = active
+            actionLiveData.value = actionViewModel
+        }
+
+    }
+
     fun getReadingTypes(device: Device): List<String> {
         return formatMatcher.getReadingTypes(device.name)
     }
@@ -167,6 +183,7 @@ class ActionDetailsViewModel(
         val device = actionLiveData.value?.device
         val condition = actionLiveData.value?.condition
         val outcome = actionLiveData.value?.outcome
+        val active = actionLiveData.value?.active
         if (device == null) {
             return getCompletableIllegalArgumentError(
                 application,
@@ -185,6 +202,12 @@ class ActionDetailsViewModel(
                 R.string.message_action_outcome_not_selected
             )
         }
+        if (active == null) {
+            return getCompletableIllegalArgumentError(
+                application,
+                R.string.message_action_active_state_not_selected
+            )
+        }
         val parameters = hashMapOf<String, String>()
 
         parameters[Outcome.TEXT_MESSAGE] = message
@@ -194,7 +217,8 @@ class ActionDetailsViewModel(
             name,
             device,
             condition,
-            newOutcome
+            newOutcome,
+            active
         )
 
         return addActionUseCase.execute(action)
@@ -218,7 +242,8 @@ class ActionDetailsViewModel(
         var name: String = "",
         var device: Device? = null,
         var condition: Condition? = null,
-        var outcome: Outcome? = null
+        var outcome: Outcome? = null,
+        var active: Boolean = false
     )
 
     fun getIconPath(deviceName: String): String? {
