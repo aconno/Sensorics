@@ -48,9 +48,19 @@ class ConditionDialog : DialogFragment() {
 
         view_less.setOnClickListener {
             view_less.isChecked = !view_less.isChecked
+            view_equal.isChecked = false
+            view_more.isChecked = false
+        }
+
+        view_equal.setOnClickListener {
+            view_less.isChecked = false
+            view_equal.isChecked = !view_equal.isChecked
+            view_more.isChecked = false
         }
 
         view_more.setOnClickListener {
+            view_less.isChecked = false
+            view_equal.isChecked = false
             view_more.isChecked = !view_more.isChecked
         }
 
@@ -69,8 +79,12 @@ class ConditionDialog : DialogFragment() {
     }
 
     private fun onSetClicked() {
-        if ((view_less.isChecked xor view_more.isChecked) && view_value.text.isNotBlank()) {
-            val condition = if (view_less.isChecked) "<" else ">"
+        when {
+            view_less.isChecked -> "<"
+            view_equal.isChecked -> "="
+            view_more.isChecked -> ">"
+            else -> null
+        }?.takeIf { view_value.text.isNotBlank() }?.let { condition ->
             val value = view_value.text.toString()
             sensorType?.let {
                 listener?.onSetClicked(it, condition, value)

@@ -10,6 +10,7 @@ fun Condition.toString(context: Context): String {
     val constraint = when (type) {
         LimitCondition.MORE_THAN -> ">"
         LimitCondition.LESS_THAN -> "<"
+        LimitCondition.EQUAL_TO -> "="
         else -> throw IllegalArgumentException("Int is not valid constraint identifier: $type")
     }
     val value = limit.toString()
