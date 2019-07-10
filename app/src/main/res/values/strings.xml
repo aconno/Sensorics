@@ -55,6 +55,7 @@
     <string name="delete">Delete</string>
 
     <string name="condition_less">Less</string>
+    <string name="condition_equal">Equal</string>
     <string name="condition_more">More</string>
     <string name="condition_value_hint">Value</string>
     <string name="condition_dialog_set">Set</string>
