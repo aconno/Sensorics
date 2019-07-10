@@ -229,5 +229,9 @@
     <string name="deactivate_all_actions">Alle Aktionen dektivieren</string>
     <string name="message_action_active_state_not_selected">Aktiver status ist nicht ausgewählt</string>
     <string name="rename">Umbenennen</string>
+    <string name="message_time_from_not_selected">Zeit von nicht ausgewählt</string>
+    <string name="message_time_to_not_selected">Zeit bis nicht ausgewählt</string>
+    <string name="label_time_from">Zeit von</string>
+    <string name="label_time_to">Zeit bis</string>
 
 </resources>

@@ -159,6 +159,11 @@
     <string name="hint_action_name">Action name</string>
     <string name="label_condition">Condition</string>
     <string name="label_outcome">Outcome</string>
+    <string name="message_time_from_not_selected">Time from not selected</string>
+    <string name="message_time_to_not_selected">Time to not selected</string>
+    <string name="label_time_from">Time from</string>
+    <string name="label_time_to">Time to</string>
+
 
     <string name="scan_mode_low_latency">Low Latency</string>
     <string name="scan_mode_balanced">Balanced</string>
@@ -285,6 +290,5 @@
     <string name="dfu_btn_select_file">Select A File</string>
     <string name="dfu_btn_start_firmware_update">Start Firmware Update</string>
     <string name="dfu_txt_status_starting">Status : Starting..</string>
-
 
 </resources>

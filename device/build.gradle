@@ -45,6 +45,8 @@ dependencies {
 
     implementation "com.google.code.gson:gson:$gson_version"
 
+    implementation "com.jakewharton.threetenabp:threetenabp:$threetenabp_version"
+
     testImplementation "junit:junit:$junit_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 

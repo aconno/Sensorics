@@ -57,7 +57,9 @@ class ActionsRepositoryImpl(
             value = action.condition.limit,
             textMessage = action.outcome.parameters[Outcome.TEXT_MESSAGE] ?: "",
             outcomeType = action.outcome.type,
-            active = if (action.active) 1 else 0
+            active = if (action.active) 1 else 0,
+            timeFrom = action.timeFrom,
+            timeTo = action.timeTo
         )
     }
 
@@ -93,7 +95,9 @@ class ActionsRepositoryImpl(
             device,
             condition,
             outcome,
-            actionEntity.active == 1
+            actionEntity.active == 1,
+            actionEntity.timeFrom,
+            actionEntity.timeTo
         )
     }
 }

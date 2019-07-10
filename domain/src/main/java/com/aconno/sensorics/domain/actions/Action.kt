@@ -11,4 +11,6 @@ interface Action {
     val condition: Condition
     val outcome: Outcome
     val active: Boolean
+    val timeFrom: Int
+    val timeTo: Int
 }

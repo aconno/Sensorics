@@ -26,5 +26,7 @@ data class ActionEntity(
     var value: Float,
     var textMessage: String,
     var outcomeType: Int,
-    var active: Int
+    var active: Int,
+    val timeFrom: Int,
+    val timeTo: Int
 )

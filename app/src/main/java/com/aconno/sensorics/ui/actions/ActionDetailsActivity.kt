@@ -2,6 +2,7 @@ package com.aconno.sensorics.ui.actions
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -48,6 +49,8 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         setActiveSwitchListener()
 
         setOutcomeSelectListeners()
+
+        setTimeChangeListeners()
 
         setSaveButtonListener()
 
@@ -200,6 +203,8 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
                 setActive(action.active)
                 setDevice(action.device)
                 setOutcome(action.outcome)
+                setTimeFromData(action.timeFrom)
+                setTimeToData(action.timeTo)
             }
         })
     }
@@ -221,6 +226,60 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
             } else {
                 invalidateConditions(device)
             }
+        }
+    }
+
+    private fun setTimeChangeListeners() {
+        timepicker_time_from.setIs24HourView(true)
+        timepicker_time_from.setOnTimeChangedListener { _, hour, minute ->
+            val name = edittext_name.text.toString()
+            actionDetailsViewModel.setTimeFrom(name, hour * 3600 + minute * 60)
+        }
+
+        timepicker_time_to.setIs24HourView(true)
+        timepicker_time_to.setOnTimeChangedListener { _, hour, minute ->
+            val name = edittext_name.text.toString()
+            actionDetailsViewModel.setTimeTo(name, hour * 3600 + minute * 60)
+        }
+    }
+
+    private fun setTimeFromData(timeOfDayInSeconds: Int) {
+        var time = timeOfDayInSeconds
+        val seconds = time % 60
+        time -= seconds
+        time /= 60
+        val minutes = time % 60
+        time -= minutes
+        time /= 60
+        @Suppress("UnnecessaryVariable")
+        val hours = time % 24
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            timepicker_time_from.hour = hours
+            timepicker_time_from.minute =minutes
+        } else {
+            timepicker_time_from.currentHour = hours
+            timepicker_time_from.currentMinute = minutes
+        }
+    }
+
+    private fun setTimeToData(timeOfDayInSeconds: Int) {
+        var time = timeOfDayInSeconds
+        val seconds = time % 60
+        time -= seconds
+        time /= 60
+        val minutes = time % 60
+        time -= minutes
+        time /= 60
+        @Suppress("UnnecessaryVariable")
+        val hours = time % 24
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            timepicker_time_to.hour = hours
+            timepicker_time_to.minute =minutes
+        } else {
+            timepicker_time_to.currentHour = hours
+            timepicker_time_to.currentMinute = minutes
         }
     }
 

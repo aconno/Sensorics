@@ -8,6 +8,7 @@ import androidx.work.WorkManager
 import com.aconno.sensorics.dagger.application.DaggerAppComponent
 import com.aconno.sensorics.dagger.worker.GeneralWorkerFactory
 import com.crashlytics.android.Crashlytics
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -52,6 +53,8 @@ class SensoricsApplication : Application(), HasActivityInjector, HasServiceInjec
             this,
             Configuration.Builder().setWorkerFactory(workerFactory).build()
         )
+
+        AndroidThreeTen.init(this)
     }
 
     override fun activityInjector(): AndroidInjector<Activity> {
