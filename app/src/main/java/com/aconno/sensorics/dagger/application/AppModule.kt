@@ -23,6 +23,7 @@ import com.aconno.sensorics.device.VibratorImpl
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationDisplayImpl
 import com.aconno.sensorics.device.notification.NotificationFactory
+import com.aconno.sensorics.device.time.TimeProviderImpl
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
@@ -43,6 +44,7 @@ import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.domain.serialization.Deserializer
 import com.aconno.sensorics.domain.serialization.DeserializerImpl
+import com.aconno.sensorics.domain.time.TimeProvider
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -149,6 +151,7 @@ class AppModule {
             "Sensorics"
         )
             .addMigrations(SensoricsDatabase.MIGRATION_11_12)
+            .addMigrations(SensoricsDatabase.MIGRATION_12_13)
             .fallbackToDestructiveMigration()
             .build()
     }
@@ -287,4 +290,10 @@ class AppModule {
     @Provides
     @Singleton
     fun provideSyncRepository(dao: SyncDao): SyncRepository = SyncRepositoryImpl(dao)
+
+    @Provides
+    @Singleton
+    fun provideTimeProvider(): TimeProvider {
+        return TimeProviderImpl()
+    }
 }

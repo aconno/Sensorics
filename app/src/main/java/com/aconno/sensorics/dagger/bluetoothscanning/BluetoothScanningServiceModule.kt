@@ -21,7 +21,9 @@ import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllEnabledRes
 import com.aconno.sensorics.domain.interactor.repository.GetRestHeadersByIdUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetRestHttpGetParamsByIdUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveSensorReadingsUseCase
+import com.aconno.sensorics.domain.interactor.time.GetLocalTimeOfDayInSecondsUseCase
 import com.aconno.sensorics.domain.repository.InMemoryRepository
+import com.aconno.sensorics.domain.time.TimeProvider
 import dagger.Module
 import dagger.Provides
 
@@ -74,8 +76,19 @@ class BluetoothScanningServiceModule {
 
     @Provides
     @BluetoothScanningServiceScope
-    fun provideHandleInputUseCase(actionsRepository: ActionsRepository): InputToOutcomesUseCase {
-        return InputToOutcomesUseCase(actionsRepository)
+    fun provideHandleInputUseCase(
+        actionsRepository: ActionsRepository,
+        getLocalTimeOfDayInSecondsUseCase: GetLocalTimeOfDayInSecondsUseCase
+    ): InputToOutcomesUseCase {
+        return InputToOutcomesUseCase(actionsRepository, getLocalTimeOfDayInSecondsUseCase)
+    }
+
+    @Provides
+    @BluetoothScanningServiceScope
+    fun provideGetLocalTimeOfDayInSecondsUseCase(
+        timeProvider: TimeProvider
+    ): GetLocalTimeOfDayInSecondsUseCase {
+        return GetLocalTimeOfDayInSecondsUseCase(timeProvider)
     }
 
     @Provides

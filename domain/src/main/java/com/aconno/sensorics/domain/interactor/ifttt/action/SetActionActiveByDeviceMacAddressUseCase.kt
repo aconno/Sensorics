@@ -20,7 +20,9 @@ class SetActionActiveByDeviceMacAddressUseCase(
                     device = it.device,
                     condition = it.condition,
                     outcome = it.outcome,
-                    active = parameter2
+                    active = parameter2,
+                    timeFrom = it.timeFrom,
+                    timeTo = it.timeTo
                 )
                 addActionUseCase.execute(action)
             }

@@ -122,6 +122,8 @@ dependencies {
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
     implementation 'com.jpardogo.materialtabstrip:library:1.1.1'
 
+    implementation "com.jakewharton.threetenabp:threetenabp:$threetenabp_version"
+
     compileOnly 'com.squareup.inject:assisted-inject-annotations-dagger2:0.4.0'
     kapt 'com.squareup.inject:assisted-inject-processor-dagger2:0.4.0'
 

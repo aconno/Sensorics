@@ -49,7 +49,9 @@ class ActionDetailsViewModel(
                             action.device,
                             action.condition,
                             action.outcome,
-                            action.active
+                            action.active,
+                            action.timeFrom,
+                            action.timeTo
                         )
                     )
                 }
@@ -161,7 +163,38 @@ class ActionDetailsViewModel(
             actionViewModel.active = active
             actionLiveData.value = actionViewModel
         }
+    }
 
+    fun setTimeFrom(name: String, timeFrom: Int) {
+        val actionViewModel = actionLiveData.value
+        if (actionViewModel == null) {
+            actionLiveData.value = ActionViewModel(
+                name = name,
+                timeFrom = timeFrom
+            )
+        } else {
+            actionViewModel.name = name
+            actionViewModel.timeFrom = timeFrom
+            // TODO: Re-enable if you have issues because of the way that callback works this
+            //  gets called a lot so I disabled it and it shouldn't really affect anything
+//            actionLiveData.value = actionViewModel
+        }
+    }
+
+    fun setTimeTo(name: String, timeTo: Int) {
+        val actionViewModel = actionLiveData.value
+        if (actionViewModel == null) {
+            actionLiveData.value = ActionViewModel(
+                name = name,
+                timeTo = timeTo
+            )
+        } else {
+            actionViewModel.name = name
+            actionViewModel.timeTo = timeTo
+            // TODO: Re-enable if you have issues because of the way that callback works this
+            //  gets called a lot so I disabled it and it shouldn't really affect anything
+//            actionLiveData.value = actionViewModel
+        }
     }
 
     fun getReadingTypes(device: Device): List<String> {
@@ -184,6 +217,8 @@ class ActionDetailsViewModel(
         val condition = actionLiveData.value?.condition
         val outcome = actionLiveData.value?.outcome
         val active = actionLiveData.value?.active
+        val timeFrom = actionLiveData.value?.timeFrom
+        val timeTo = actionLiveData.value?.timeTo
         if (device == null) {
             return getCompletableIllegalArgumentError(
                 application,
@@ -208,6 +243,18 @@ class ActionDetailsViewModel(
                 R.string.message_action_active_state_not_selected
             )
         }
+        if (timeFrom == null) {
+            return getCompletableIllegalArgumentError(
+                application,
+                R.string.message_time_from_not_selected
+            )
+        }
+        if (timeTo == null) {
+            return getCompletableIllegalArgumentError(
+                application,
+                R.string.message_time_to_not_selected
+            )
+        }
         val parameters = hashMapOf<String, String>()
 
         parameters[Outcome.TEXT_MESSAGE] = message
@@ -218,7 +265,9 @@ class ActionDetailsViewModel(
             device,
             condition,
             newOutcome,
-            active
+            active,
+            timeFrom,
+            timeTo
         )
 
         return addActionUseCase.execute(action)
@@ -243,7 +292,9 @@ class ActionDetailsViewModel(
         var device: Device? = null,
         var condition: Condition? = null,
         var outcome: Outcome? = null,
-        var active: Boolean = false
+        var active: Boolean = true,
+        var timeFrom: Int = 0,
+        var timeTo: Int = 0
     )
 
     fun getIconPath(deviceName: String): String? {

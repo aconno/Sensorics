@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                     xmlns:tools="http://schemas.android.com/tools"
-                                                     android:id="@+id/container_activity"
-                                                     android:layout_width="match_parent"
-                                                     android:layout_height="match_parent" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -22,21 +22,21 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="80dp" >
+                android:paddingBottom="80dp">
 
                 <EditText
                     android:id="@+id/edittext_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
                     android:layout_marginTop="@dimen/item_vertical_spacing"
+                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                     android:hint="@string/hint_action_name"
                     android:inputType="textCapWords" />
 
@@ -77,9 +77,9 @@
                     android:id="@+id/container_conditions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
                     android:layout_marginTop="@dimen/title_padding"
+                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                     app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
                     app:dividerDrawableVertical="@drawable/chip_divider_vertical"
                     app:flexWrap="wrap"
@@ -98,13 +98,13 @@
                     android:id="@+id/container_outcomes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
                     android:layout_marginTop="@dimen/title_padding"
+                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                     app:dividerDrawableHorizontal="@drawable/chip_divider_horizontal"
                     app:dividerDrawableVertical="@drawable/chip_divider_vertical"
                     app:flexWrap="wrap"
-                    app:showDivider="middle" >
+                    app:showDivider="middle">
 
                     <CheckedTextView
                         android:id="@+id/button_outcome_notification"
@@ -127,26 +127,81 @@
                         android:layout_height="wrap_content"
                         android:text="@string/text_to_speech" />
 
-                </com.google.android.flexbox.FlexboxLayout >
+                </com.google.android.flexbox.FlexboxLayout>
 
 
                 <EditText
                     android:id="@+id/edittext_message"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
                     android:layout_marginTop="@dimen/item_vertical_spacing"
+                    android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
                     android:hint="@string/message_hint"
                     android:inputType="text"
                     android:visibility="gone"
                     tools:visibility="visible" />
 
-            </LinearLayout >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-        </ScrollView >
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-    </LinearLayout >
+                        <TextView
+                            android:id="@+id/label_time_from"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                            android:layout_marginTop="@dimen/item_vertical_spacing"
+                            android:gravity="center"
+                            android:text="@string/label_time_from"
+                            android:textColor="@color/primaryTextColor" />
+
+                        <TimePicker
+                            android:id="@+id/timepicker_time_from"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+                            android:layout_marginTop="@dimen/item_vertical_spacing"
+                            android:timePickerMode="spinner" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/label_time_to"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+                            android:layout_marginTop="@dimen/item_vertical_spacing"
+                            android:gravity="center"
+                            android:text="@string/label_time_to"
+                            android:textColor="@color/primaryTextColor" />
+
+                        <TimePicker
+                            android:id="@+id/timepicker_time_to"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/item_vertical_spacing"
+                            android:layout_marginEnd="@dimen/screen_edge_left_right_margin"
+                            android:timePickerMode="spinner" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_save"
@@ -158,4 +213,4 @@
         android:tint="@color/secondaryTextColor"
         app:fabSize="normal" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout >
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

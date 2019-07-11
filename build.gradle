@@ -81,4 +81,6 @@ ext {
     retrofit_version = '2.5.0'
 
     coroutines_version = '1.0.0'
+
+    threetenabp_version = '1.2.1'
 }

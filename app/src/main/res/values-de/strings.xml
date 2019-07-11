@@ -26,6 +26,7 @@
     <string name="message_hint">Nachricht</string>
     <string name="delete">Aktion löschen</string>
     <string name="condition_less">Kleiner</string>
+    <string name="condition_equal">Gleich</string>
     <string name="condition_more">Größer</string>
     <string name="condition_value_hint">Wert</string>
     <string name="condition_dialog_set">Festlegen</string>
@@ -224,7 +225,6 @@
     <string name="dfu_btn_select_file">Datei auswählen</string>
     <string name="dfu_btn_start_firmware_update">Firmware Aktualisierung Starten</string>
     <string name="dfu_txt_status_starting">Status : Wird gestartet</string>
-    <string name="condition_equal">Gleich</string>
 
     <!-- Action -->
     <string name="active">Aktiv</string>
@@ -232,6 +232,9 @@
     <string name="deactivate_all_actions">Alle Aktionen dektivieren</string>
     <string name="message_action_active_state_not_selected">Aktiver status ist nicht ausgewählt</string>
     <string name="rename">Umbenennen</string>
-    <string name="condition_equal">Gleich</string>
+    <string name="message_time_from_not_selected">Zeit von nicht ausgewählt</string>
+    <string name="message_time_to_not_selected">Zeit bis nicht ausgewählt</string>
+    <string name="label_time_from">Zeit von</string>
+    <string name="label_time_to">Zeit bis</string>
 
 </resources>
