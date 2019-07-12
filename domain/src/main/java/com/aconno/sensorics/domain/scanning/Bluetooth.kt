@@ -44,7 +44,9 @@ interface Bluetooth {
         value: Any
     ): Boolean
 
-    fun enableCharacteristicNotification(characteristicUUID: UUID,
-                                         serviceUUID: UUID,
-                                         isEnabled: Boolean): Boolean
+    fun enableCharacteristicNotification(
+        characteristicUUID: UUID,
+        serviceUUID: UUID,
+        isEnabled: Boolean
+    ): Boolean
 }

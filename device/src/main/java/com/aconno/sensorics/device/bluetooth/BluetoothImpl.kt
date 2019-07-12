@@ -43,8 +43,7 @@ class BluetoothImpl(
 
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
 
-    private val gattCallback: BluetoothGattCallback =
-        BluetoothGattCallback(connectGattResults)
+    private val gattCallback: BluetoothGattCallback = BluetoothGattCallback(connectGattResults)
     private var lastConnectedDeviceAddress: String? = null
     private var lastConnectedGatt: BluetoothGatt? = null
 
