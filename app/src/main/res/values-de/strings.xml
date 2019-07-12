@@ -225,6 +225,7 @@
     <string name="dfu_btn_select_file">Datei auswählen</string>
     <string name="dfu_btn_start_firmware_update">Firmware Aktualisierung Starten</string>
     <string name="dfu_txt_status_starting">Status : Wird gestartet</string>
+    <string name="cache">Zwischenspeicher</string>
 
     <!-- Action -->
     <string name="active">Aktiv</string>

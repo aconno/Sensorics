@@ -36,4 +36,10 @@
         android:id="@+id/action_dfu"
         android:title="@string/dfu"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_cache"
+        android:title="@string/cache"
+        android:visible="false"
+        app:showAsAction="never" />
 </menu>
