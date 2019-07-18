@@ -1,0 +1,45 @@
+{
+  "id": "F000",
+  "name": "schmersal",
+  "icon": "ic_act",
+  "format": [
+    {
+      "name": "State",
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 6,
+      "reversed": true,
+      "data_type": "BOOLEAN"
+    }
+  ],
+  "format_required": [
+    {
+      "name": "Nordic ID 1",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Nordic ID 2",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "Aconno ID",
+      "index": 2,
+      "value": "0x69"
+    },
+    {
+      "name": "Product ID",
+      "index": 3,
+      "value": "0xF0"
+    },
+    {
+      "name": "Version Number",
+      "index": 4,
+      "value": "0x00"
+    }
+  ],
+  "settings_support": {
+    "mask": "0x80",
+    "index": 4
+  }
+}
