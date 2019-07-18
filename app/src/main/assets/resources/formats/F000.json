@@ -1,14 +1,14 @@
 {
   "id": "F000",
-  "name": "schmersal",
+  "name": "acnSchmersal",
   "icon": "ic_act",
   "format": [
     {
-      "name": "State",
+      "name": "STATE",
       "start_index_inclusive": 5,
       "end_index_exclusive": 6,
       "reversed": true,
-      "data_type": "BOOLEAN"
+      "data_type": "BYTE"
     }
   ],
   "format_required": [

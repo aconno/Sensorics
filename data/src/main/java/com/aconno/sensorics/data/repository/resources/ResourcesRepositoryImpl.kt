@@ -7,6 +7,7 @@ import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.model.ResourceConfig
 import com.aconno.sensorics.domain.repository.ResourcesRepository
 import com.google.gson.Gson
+import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -27,8 +28,9 @@ class ResourcesRepositoryImpl(
         if (configFolder.exists()) {
             return configFolder.listFiles()
                 .map {
+                    Timber.d("Loading config: ${it.path}")
 
-                    val configFileJsonModel = gson.fromJson<ConfigFileJsonModel>(
+                    val configFileJsonModel = gson.fromJson(
                         it.readText(),
                         ConfigFileJsonModel::class.java
                     )
@@ -36,7 +38,7 @@ class ResourcesRepositoryImpl(
                     configFileJsonModelConverter.toResourceConfig(configFileJsonModel)
                 }
         } else {
-            throw FileNotFoundException("Configs not found..")
+            throw FileNotFoundException("Configs not found...")
         }
     }
 
@@ -49,8 +51,9 @@ class ResourcesRepositoryImpl(
         if (configFolder.exists()) {
             return configFolder.listFiles()
                 .map {
+                    Timber.d("Loading format: ${it.path}")
 
-                    val formatFileJsonModel = gson.fromJson<FormatJsonModel>(
+                    val formatFileJsonModel = gson.fromJson(
                         it.readText(),
                         FormatJsonModel::class.java
                     )
@@ -58,7 +61,7 @@ class ResourcesRepositoryImpl(
                     formatJsonConverter.toAdvertisementFormat(formatFileJsonModel)
                 }
         } else {
-            throw FileNotFoundException("Formats not found..")
+            throw FileNotFoundException("Formats not found...")
         }
     }
 
