@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.item_publish.view.*
  * specified [OnListFragmentInteractionListener].
  */
 class PublishRecyclerViewAdapter(
-    private val mValues: List<BasePublishModel>,
+    private val mValues: MutableList<BasePublishModel>,
     private val mListener: OnListFragmentInteractionListener?,
     private val mLongItemClickListener: LongItemClickListener<BasePublishModel>?
 ) : RecyclerView.Adapter<PublishRecyclerViewAdapter.ViewHolder>() {
@@ -80,6 +80,18 @@ class PublishRecyclerViewAdapter(
     }
 
     override fun getItemCount(): Int = mValues.size
+
+    fun getPublishModel(position: Int) = mValues[position]
+
+    fun removePublishModel(position: Int) {
+        mValues.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+    fun addPublishModelAtPosition(basePublishModel: BasePublishModel, position: Int) {
+        mValues.add(position, basePublishModel)
+        notifyItemInserted(position)
+    }
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
         val mNameView: TextView = mView.publish_name
