@@ -127,6 +127,13 @@
                         android:layout_height="wrap_content"
                         android:text="@string/text_to_speech" />
 
+                    <CheckedTextView
+                        android:id="@+id/button_outcome_alarm"
+                        style="@style/ChipView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/alarm" />
+
                 </com.google.android.flexbox.FlexboxLayout>
 
 
