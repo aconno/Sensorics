@@ -1,5 +1,6 @@
 package com.aconno.sensorics.dagger.application
 
+import com.aconno.sensorics.AlarmService
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.dagger.action_details.ActionDetailsActivityScope
@@ -7,6 +8,8 @@ import com.aconno.sensorics.dagger.action_details.ActionDetailsModule
 import com.aconno.sensorics.dagger.actionlist.ActionListFragmentsModule
 import com.aconno.sensorics.dagger.actionlist.ActionListModule
 import com.aconno.sensorics.dagger.actionlist.ActionListScope
+import com.aconno.sensorics.dagger.alarm.AlarmServiceModule
+import com.aconno.sensorics.dagger.alarm.AlarmServiceScope
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceScope
 import com.aconno.sensorics.dagger.configure.ConfigurationModule
@@ -103,4 +106,8 @@ abstract class ActivityBuilder {
     @DfuActivityScope
     @ContributesAndroidInjector
     abstract fun bindDfuActivity(): DfuActivity
+
+    @AlarmServiceScope
+    @ContributesAndroidInjector(modules = [AlarmServiceModule::class])
+    abstract fun bindAlarmService(): AlarmService
 }
