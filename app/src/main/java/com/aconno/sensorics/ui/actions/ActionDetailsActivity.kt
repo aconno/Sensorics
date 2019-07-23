@@ -243,6 +243,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun setTimeFromData(timeOfDayInSeconds: Int) {
         var time = timeOfDayInSeconds
         val seconds = time % 60
@@ -263,6 +264,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun setTimeToData(timeOfDayInSeconds: Int) {
         var time = timeOfDayInSeconds
         val seconds = time % 60
@@ -291,8 +293,13 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         button_outcome_text_to_speech.setOnClickListener {
             setOutcomeData(Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH)
         }
+
         button_outcome_vibration.setOnClickListener {
             setOutcomeData(Outcome.OUTCOME_TYPE_VIBRATION)
+        }
+
+        button_outcome_alarm.setOnClickListener {
+            setOutcomeData(Outcome.OUTCOME_TYPE_ALARM)
         }
     }
 
@@ -304,9 +311,9 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
 
     private fun setOutcome(outcome: Outcome?) {
         button_outcome_notification.isChecked = false
-
         button_outcome_text_to_speech.isChecked = false
         button_outcome_vibration.isChecked = false
+        button_outcome_alarm.isChecked = false
         edittext_message.visibility = View.GONE
 
         outcome?.let {
@@ -321,6 +328,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
                     edittext_message.visibility = View.VISIBLE
                 }
                 Outcome.OUTCOME_TYPE_VIBRATION -> button_outcome_vibration.isChecked = true
+                Outcome.OUTCOME_TYPE_ALARM -> button_outcome_alarm.isChecked = true
             }
             edittext_message.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
         }
