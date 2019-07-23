@@ -23,12 +23,10 @@ import kotlinx.android.synthetic.main.item_publish.view.*
  */
 class PublishRecyclerViewAdapter(
     private val mValues: MutableList<BasePublishModel>,
-    private val mListener: OnListFragmentInteractionListener?,
-    private val mLongItemClickListener: LongItemClickListener<BasePublishModel>?
+    private val mListener: OnListFragmentInteractionListener?
 ) : RecyclerView.Adapter<PublishRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
-    private val mOnLongClickListener: View.OnLongClickListener
     private var mCheckedChangeListener: OnCheckedChangeListener? = null
 
     init {
@@ -37,12 +35,6 @@ class PublishRecyclerViewAdapter(
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
             mListener?.onListFragmentInteraction(item)
-        }
-
-        mOnLongClickListener = View.OnLongClickListener {
-            val item = it.tag as BasePublishModel
-            mLongItemClickListener?.onLongClick(item)
-            true
         }
     }
 
@@ -75,8 +67,6 @@ class PublishRecyclerViewAdapter(
         holder.mEnableView.setOnCheckedChangeListener { _, isChecked ->
             mCheckedChangeListener?.onCheckedChange(isChecked, position)
         }
-
-        holder.mView.setOnLongClickListener(mOnLongClickListener)
     }
 
     override fun getItemCount(): Int = mValues.size

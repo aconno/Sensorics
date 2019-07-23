@@ -1,8 +1,6 @@
 package com.aconno.sensorics.ui.settings.publishers
 
-import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.*
 import com.aconno.sensorics.R
-import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.MqttPublishModel
@@ -31,8 +28,7 @@ import javax.inject.Inject
  * Activities containing this fragment MUST implement the
  * [PublishListFragment.OnListFragmentInteractionListener] interface.
  */
-class PublishListFragment : BaseFragment(),
-    LongItemClickListener<BasePublishModel> {
+class PublishListFragment : BaseFragment() {
     private var snackbar: Snackbar? = null
 
     @Inject
@@ -43,20 +39,6 @@ class PublishListFragment : BaseFragment(),
     private var listener: OnListFragmentInteractionListener? = null
     private var listBasePublish: MutableList<BasePublishModel> = mutableListOf()
     private var selectedItem: BasePublishModel? = null
-
-    private var dialogClickListener: DialogInterface.OnClickListener =
-        DialogInterface.OnClickListener { dialog, which ->
-            when (which) {
-                DialogInterface.BUTTON_POSITIVE -> {
-                    deleteSelectedItem()
-                    dialog.dismiss()
-                }
-
-                DialogInterface.BUTTON_NEGATIVE -> {
-                    dialog.dismiss()
-                }
-            }
-        }
 
     private val checkedChangeListener: PublishRecyclerViewAdapter.OnCheckedChangeListener = object :
         PublishRecyclerViewAdapter.OnCheckedChangeListener {
@@ -80,8 +62,7 @@ class PublishListFragment : BaseFragment(),
 
         publishAdapter = PublishRecyclerViewAdapter(
             listBasePublish,
-            listener,
-            this
+            listener
         )
 
         view_publish_list.layoutManager = LinearLayoutManager(context)
@@ -149,7 +130,7 @@ class PublishListFragment : BaseFragment(),
     override fun onResume() {
         super.onResume()
         val subscribe = publishListViewModel.getAllPublish()
-            .filter { !it.isEmpty() }
+            .filter { it.isNotEmpty() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { actions -> initPublishList(actions) }
@@ -202,16 +183,6 @@ class PublishListFragment : BaseFragment(),
             //Let GC collect removed instance
             selectedItem = null
         }
-    }
-
-    override fun onLongClick(param: BasePublishModel) {
-        selectedItem = param
-        val builder = AlertDialog.Builder(context)
-
-        builder.setMessage(getString(R.string.are_you_sure))
-            .setPositiveButton(getString(R.string.yes), dialogClickListener)
-            .setNegativeButton(getString(R.string.no), dialogClickListener)
-            .show()
     }
 
     override fun onDetach() {
