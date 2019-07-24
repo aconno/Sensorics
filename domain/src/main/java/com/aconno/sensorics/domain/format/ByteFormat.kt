@@ -8,5 +8,6 @@ data class ByteFormat(
     val endIndexExclusive: Int,
     val isReversed: Boolean,
     val dataType: String,
-    val formula: Expression?
+    val formula: Expression?,
+    val source: Byte
 )

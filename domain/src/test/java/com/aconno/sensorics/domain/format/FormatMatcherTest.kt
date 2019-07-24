@@ -92,7 +92,8 @@ class FormatMatcherTest {
                 ByteFormatRequired(
                     "Name $index",
                     index,
-                    byte
+                    byte,
+                    0xFF.toByte()
                 )
             )
         }
@@ -108,7 +109,8 @@ class FormatMatcherTest {
                 ByteFormatRequired(
                     "Name $index",
                     index,
-                    byte or 0xAB.toByte()
+                    byte or 0xAB.toByte(),
+                    0xFF.toByte()
                 )
             )
         }

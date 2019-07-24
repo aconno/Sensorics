@@ -12,42 +12,64 @@ class FormatMatcher(
         get() = getFormatsUseCase.execute()
 
     fun matches(rawData: ByteArray): Boolean {
-        supportedFormats.forEach {
-            val isolateMsd = ByteOperations.isolateMsd(rawData)
+        return supportedFormats.any { format ->
+            val advertisementMap = ByteOperations.isolateAdvertisementTypes(rawData)
 
-            if (isolateMsd.size < it.getRequiredFormat().size) {
-                return@forEach
-            }
+            if (advertisementMap.map {
+                    it.value
+                }.sumBy {
+                    it.size
+                } >= format.getRequiredFormat().size) {
 
-            if (matches(
-                    isolateMsd,
-                    it.getRequiredFormat(),
-                    it.getSettingsSupport()
-                )
-            ) {
-                return true
+                format.getRequiredFormat().groupBy { requiredFormat ->
+                    requiredFormat.source
+                }.all { entry ->
+                    val type = entry.key
+                    val requiredBytes = entry.value
+                    advertisementMap[type]?.let { data ->
+                        matches(
+                            data,
+                            requiredBytes,
+                            if (type == 0xFF.toByte()) format.getSettingsSupport() else null
+                        )
+                    } ?: false
+                }
+            } else {
+                false
             }
         }
-        return false
     }
 
     fun findFormat(rawData: ByteArray): AdvertisementFormat? {
         val matchedFormats = mutableListOf<AdvertisementFormat>()
 
-        supportedFormats.forEach {
-            val isolateMsd = ByteOperations.isolateMsd(rawData)
+        supportedFormats.forEach {format ->
+            val advertisementMap = ByteOperations.isolateAdvertisementTypes(rawData)
 
-            if (isolateMsd.size < it.getRequiredFormat().size) {
+            if (advertisementMap.map {
+                    it.value
+                }.sumBy {
+                    it.size
+                } < format.getRequiredFormat().size) {
                 return@forEach
             }
 
-            if (matches(
-                    isolateMsd,
-                    it.getRequiredFormat(),
-                    it.getSettingsSupport()
-                )
-            ) {
-                matchedFormats.add(it)
+            val matched = format.getRequiredFormat().groupBy { requiredFormat ->
+                requiredFormat.source
+            }.all { entry ->
+                val type = entry.key
+                val requiredBytes = entry.value
+                advertisementMap[type]?.let { data ->
+                    matches(
+                        data,
+                        requiredBytes,
+                        if (type == 0xFF.toByte()) format.getSettingsSupport() else null
+                    )
+                } ?: false
+            }
+
+            if (matched) {
+                matchedFormats.add(format)
             }
         }
 
@@ -73,16 +95,14 @@ class FormatMatcher(
         requiredBytes: List<ByteFormatRequired>,
         settingsSupport: SettingsSupport?
     ): Boolean {
-        requiredBytes.forEachIndexed { index, it ->
-            if (index == settingsSupport?.index) {
-                bytes[it.position] = bytes[it.position] and settingsSupport.mask.inv()
+        return bytes.let { data ->
+            settingsSupport?.let { support ->
+                data[support.index] = data[support.index] and support.mask.inv()
             }
-
-            if (bytes[it.position] != it.value) {
-                return false
+            requiredBytes.all { format ->
+                data[format.position] == format.value
             }
         }
-        return true
     }
 
     fun getReadingTypes(formatName: String): List<String> {
