@@ -22,13 +22,11 @@ import kotlinx.android.synthetic.main.item_publish.view.*
  * specified [OnListFragmentInteractionListener].
  */
 class PublishRecyclerViewAdapter(
-    private val mValues: List<BasePublishModel>,
-    private val mListener: OnListFragmentInteractionListener?,
-    private val mLongItemClickListener: LongItemClickListener<BasePublishModel>?
+    private val mValues: MutableList<BasePublishModel>,
+    private val mListener: OnListFragmentInteractionListener?
 ) : RecyclerView.Adapter<PublishRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
-    private val mOnLongClickListener: View.OnLongClickListener
     private var mCheckedChangeListener: OnCheckedChangeListener? = null
 
     init {
@@ -37,12 +35,6 @@ class PublishRecyclerViewAdapter(
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
             mListener?.onListFragmentInteraction(item)
-        }
-
-        mOnLongClickListener = View.OnLongClickListener {
-            val item = it.tag as BasePublishModel
-            mLongItemClickListener?.onLongClick(item)
-            true
         }
     }
 
@@ -75,11 +67,21 @@ class PublishRecyclerViewAdapter(
         holder.mEnableView.setOnCheckedChangeListener { _, isChecked ->
             mCheckedChangeListener?.onCheckedChange(isChecked, position)
         }
-
-        holder.mView.setOnLongClickListener(mOnLongClickListener)
     }
 
     override fun getItemCount(): Int = mValues.size
+
+    fun getPublishModel(position: Int) = mValues[position]
+
+    fun removePublishModel(position: Int) {
+        mValues.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+    fun addPublishModelAtPosition(basePublishModel: BasePublishModel, position: Int) {
+        mValues.add(position, basePublishModel)
+        notifyItemInserted(position)
+    }
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
         val mNameView: TextView = mView.publish_name
