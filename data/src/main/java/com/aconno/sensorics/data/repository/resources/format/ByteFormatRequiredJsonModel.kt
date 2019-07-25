@@ -12,5 +12,8 @@ class ByteFormatRequiredJsonModel(
     var index: Int,
     @SerializedName("value")
     @Expose
-    var value: String
+    var value: String,
+    @SerializedName("source")
+    @Expose
+    var source: Byte?
 )

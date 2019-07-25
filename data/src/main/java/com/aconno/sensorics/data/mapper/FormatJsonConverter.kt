@@ -37,7 +37,8 @@ class FormatJsonConverter {
             byteFormatJsonModel.endIndexExclusive,
             byteFormatJsonModel.reversed,
             byteFormatJsonModel.dataType,
-            getFormulaExpression(byteFormatJsonModel.formula)
+            getFormulaExpression(byteFormatJsonModel.formula),
+            byteFormatJsonModel.source ?: 0xFF.toByte()
         )
     }
 
@@ -55,7 +56,10 @@ class FormatJsonConverter {
         return ByteFormatRequired(
             byteFormatRequiredJsonModel.name,
             byteFormatRequiredJsonModel.index,
-            byteFormatRequiredJsonModel.value.replace("0x", "", true).toInt(16).toByte()
+            byteFormatRequiredJsonModel.value.replace(
+                "0x", "", true
+            ).toInt(16).toByte(),
+            byteFormatRequiredJsonModel.source ?: 0xFF.toByte()
         )
     }
 
