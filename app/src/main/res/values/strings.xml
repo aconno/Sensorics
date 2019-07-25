@@ -53,6 +53,7 @@
     <string name="phone_number">Phone number</string>
     <string name="message_hint">Message</string>
     <string name="delete">Delete</string>
+    <string name="undo" translatable="false">Undo</string>
 
     <string name="condition_less">Less</string>
     <string name="condition_equal">Equal</string>
@@ -292,6 +293,11 @@
     <string name="dfu_btn_start_firmware_update">Start Firmware Update</string>
     <string name="dfu_txt_status_starting">Status : Starting..</string>
     <string name="cache">Cache</string>
-    <string name="undo">Undo</string>
+
+    <!-- Alarm -->
+    <string name="alarm">Alarm</string>
+    <string name="snooze">Snooze</string>
+    <string name="stop_alarm">Stop Alarm</string>
+    <string name="alarm_active">Alarm active</string>
 
 </resources>

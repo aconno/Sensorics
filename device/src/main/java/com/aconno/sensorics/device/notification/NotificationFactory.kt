@@ -7,7 +7,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.aconno.sensorics.device.R
+import com.aconno.sensorics.domain.AlarmServiceController.Companion.ACTION_ALARM_SNOOZE
 import com.aconno.sensorics.domain.ifttt.NotificationDisplay
 
 /**
@@ -30,6 +32,29 @@ class NotificationFactory {
             .setContentText(contentText)
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
+            .build()
+    }
+
+    fun makeForegroundServiceNotificationWithAction(
+        context: Context,
+        contentIntent: PendingIntent,
+        title: String,
+        contentText: String,
+        actionIntent: PendingIntent,
+        actionTitle: String,
+        actionIcon: Int
+    ): Notification {
+        createNotificationsChannel(context, NotificationChannelFactory.SERVICE_CHANNEL)
+        return NotificationCompat.Builder(
+            context,
+            NotificationChannelFactory.CHANNEL_ID
+        )
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(title)
+            .setContentText(contentText)
+            .setContentIntent(contentIntent)
+            .setAutoCancel(true)
+            .addAction(actionIcon, actionTitle, actionIntent)
             .build()
     }
 
@@ -119,6 +144,18 @@ class AlertNotificationReceiver : BroadcastReceiver() {
     }
 }
 
+class AlarmNotificationReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+        context?.also { ctx ->
+            when (intent?.action) {
+                ACTION_ALARM_SNOOZE -> LocalBroadcastManager.getInstance(
+                    ctx
+                ).sendBroadcast(Intent(ACTION_ALARM_SNOOZE))
+            }
+        }
+    }
+}
+
 interface IntentProvider {
 
     fun getSensoricsContentIntent(context: Context): PendingIntent
@@ -126,5 +163,7 @@ interface IntentProvider {
     fun getAlertNotificationContentIntent(context: Context): PendingIntent
 
     fun getAlertNotificationDeleteIntent(context: Context): PendingIntent
+
+    fun getAlarmSnoozeIntent(context: Context): PendingIntent
 }
 

@@ -8,6 +8,7 @@ class Outcome(val parameters: Map<String, String>, val type: Int) {
             1 -> "SMS"
             2 -> "Text to Speech"
             3 -> "Vibration"
+            4 -> "Alarm"
             else -> throw IllegalArgumentException("Outcome type not valid: $type")
         }
     }
@@ -18,6 +19,7 @@ class Outcome(val parameters: Map<String, String>, val type: Int) {
         const val OUTCOME_TYPE_SMS = 1
         const val OUTCOME_TYPE_TEXT_TO_SPEECH = 2
         const val OUTCOME_TYPE_VIBRATION = 3
+        const val OUTCOME_TYPE_ALARM = 4
 
         const val TEXT_MESSAGE = "textMessage"
         const val PHONE_NUMBER = "phoneNumber"
