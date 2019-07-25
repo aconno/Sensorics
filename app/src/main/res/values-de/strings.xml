@@ -237,5 +237,9 @@
     <string name="message_time_to_not_selected">Zeit bis nicht ausgewählt</string>
     <string name="label_time_from">Zeit von</string>
     <string name="label_time_to">Zeit bis</string>
+    <string name="stop_alarm">Alarm stoppen</string>
+    <string name="snooze">Alarm ausschalten</string>
+    <string name="alarm">Alarm</string>
+    <string name="alarm_active">Alarm aktiv</string>
 
 </resources>
