@@ -100,6 +100,7 @@
     <string name="publish_hour">Hour</string>
     <string name="publish_min">Min</string>
     <string name="publish_sec">Sec</string>
+    <string name="publish_millis">Milli</string>
     <string name="sending_interval">Sending Interval</string>
     <string name="last_data_sent">"Last data sent at: "</string>
     <string name="snackbar_stop_scanning">Please stop scanning first</string>
