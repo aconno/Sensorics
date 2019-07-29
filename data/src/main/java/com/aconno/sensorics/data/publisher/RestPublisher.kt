@@ -185,6 +185,7 @@ class RestPublisher(
                         while (tries-- > 0) {
                             try {
                                 response = httpClient.newCall(request).execute()
+                                break
                             } catch (e: IOException) {
                                 Timber.d(e)
                             }
@@ -217,6 +218,7 @@ class RestPublisher(
                         while (tries-- > 0) {
                             try {
                                 response = httpClient.newCall(request).execute()
+                                break
                             } catch (e: IOException) {
                                 Timber.d(e)
                             }
@@ -246,6 +248,7 @@ class RestPublisher(
                         while (tries-- > 0) {
                             try {
                                 response = httpClient.newCall(request).execute()
+                                break
                             } catch (e: IOException) {
                                 Timber.d(e)
                             }
