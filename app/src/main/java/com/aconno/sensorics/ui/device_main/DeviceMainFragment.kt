@@ -358,12 +358,13 @@ class DeviceMainFragment : DaggerFragment() {
         val jsonObject = JSONObject()
 
         readings?.forEach {
-
             if (!it.value.toDouble().isNaN()) {
                 jsonObject.put(it.name, it.value)
             }
+        }
 
-
+        readings?.firstOrNull()?.let {
+            jsonObject.put("rssi", it.rssi)
         }
 
         return jsonObject.toString()
