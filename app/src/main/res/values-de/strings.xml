@@ -62,6 +62,7 @@
     <string name="publish_hour">Std.</string>
     <string name="publish_min">Min.</string>
     <string name="publish_sec">Sek.</string>
+    <string name="publish_millis">Milli.</string>
     <string name="sending_interval">Sende intervall</string>
     <string name="last_data_sent">"Letzte Daten gesendet um: "</string>
     <string name="snackbar_stop_scanning">Bitte scan zuerst beenden</string>
