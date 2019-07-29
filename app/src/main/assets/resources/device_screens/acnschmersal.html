@@ -15,6 +15,13 @@
             if (name == "STATE") {
                 switchToState(value);
             }
+            if (name == "rssi") {
+                updateRSSI(value);
+            }
+        }
+
+        function updateRSSI(value) {
+            document.getElementById("rssi").innerHTML = "" + value;
         }
 
 	function switchToState(state){
@@ -34,6 +41,9 @@ switched.style.display="block";
 </head>
 <body>
 <center>
+    <p>
+        Signal strength: <span id="rssi">?</span> dBm
+    </p>
     <br><br>
 
     <img id="normal" width="90%"
