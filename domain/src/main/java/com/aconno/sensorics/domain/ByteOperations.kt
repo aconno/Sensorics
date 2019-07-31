@@ -1,5 +1,7 @@
 package com.aconno.sensorics.domain
 
+import com.aconno.sensorics.domain.ByteOperations.NextByteType.*
+
 object ByteOperations {
 
     fun isolateMsd(bytes: ByteArray): ByteArray {
@@ -25,5 +27,53 @@ object ByteOperations {
         } catch (ex: Exception) {
             return bytes
         }
+    }
+
+    fun isolateAdvertisementTypes(bytes: ByteArray): Map<Byte, ByteArray> {
+        var nextByteType = LENGTH
+        var bytesLeftInType = 0
+        var currentType: Byte = 0
+        val map = mutableMapOf<Byte, MutableList<Byte>>()
+
+        bytes.forEachIndexed { i, byte ->
+            when(nextByteType) {
+                LENGTH -> {
+                    bytesLeftInType = byte.toInt()
+                    if (bytesLeftInType > 0x00) {
+                        nextByteType = TYPE
+                    }
+                }
+                TYPE -> {
+                    currentType = byte
+
+                    map.getOrPut(currentType, {
+                        mutableListOf()
+                    })
+
+                    nextByteType = DATA
+
+                    bytesLeftInType--
+                    if(bytesLeftInType == 0x00) {
+                        nextByteType = LENGTH
+                    }
+                }
+                DATA -> {
+                    map[currentType]?.add(byte)
+
+                    bytesLeftInType--
+                    if(bytesLeftInType == 0x00) {
+                        nextByteType = LENGTH
+                    }
+                }
+            }
+        }
+
+        return map.mapValues { entry ->
+            entry.value.toByteArray()
+        }
+    }
+
+    enum class NextByteType{
+        LENGTH,TYPE,DATA
     }
 }

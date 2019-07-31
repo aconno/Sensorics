@@ -21,5 +21,8 @@ class ByteFormatJsonModel(
     var dataType: String,
     @SerializedName("formula")
     @Expose
-    var formula: String?
+    var formula: String?,
+    @SerializedName("source")
+    @Expose
+    var source: Byte?
 )

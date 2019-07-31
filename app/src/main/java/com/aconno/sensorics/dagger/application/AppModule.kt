@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.room.Room
+import com.aconno.sensorics.AlarmServiceControllerImpl
 import com.aconno.sensorics.IntentProviderImpl
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.data.mapper.*
@@ -18,12 +19,16 @@ import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinR
 import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
 import com.aconno.sensorics.data.repository.sync.SyncDao
 import com.aconno.sensorics.data.repository.sync.SyncRepositoryImpl
+import com.aconno.sensorics.device.DeviceAudioManagerImpl
+import com.aconno.sensorics.device.DeviceTelephonyManagerImpl
 import com.aconno.sensorics.device.TextToSpeechPlayerImpl
 import com.aconno.sensorics.device.VibratorImpl
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationDisplayImpl
 import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.device.time.TimeProviderImpl
+import com.aconno.sensorics.domain.AlarmServiceController
+import com.aconno.sensorics.domain.DeviceAudioManager
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
@@ -44,6 +49,7 @@ import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.domain.serialization.Deserializer
 import com.aconno.sensorics.domain.serialization.DeserializerImpl
+import com.aconno.sensorics.domain.telephony.DeviceTelephonyManager
 import com.aconno.sensorics.domain.time.TimeProvider
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
@@ -89,6 +95,16 @@ class AppModule {
     fun provideTextToSpeechPlayer(sensoricsApplication: SensoricsApplication): TextToSpeechPlayer {
         return TextToSpeechPlayerImpl(sensoricsApplication)
     }
+
+    @Provides
+    @Singleton
+    fun provideAlarmServiceController(
+        sensoricsApplication: SensoricsApplication,
+        broadcastManager: LocalBroadcastManager
+    ): AlarmServiceController = AlarmServiceControllerImpl(
+        sensoricsApplication.applicationContext,
+        broadcastManager
+    )
 
     @Provides
     @Singleton
@@ -296,4 +312,20 @@ class AppModule {
     fun provideTimeProvider(): TimeProvider {
         return TimeProviderImpl()
     }
+
+    @Provides
+    @Singleton
+    fun provideDeviceAudioManager(
+        sensoricsApplication: SensoricsApplication
+    ): DeviceAudioManager = DeviceAudioManagerImpl(
+        sensoricsApplication.applicationContext
+    )
+
+    @Provides
+    @Singleton
+    fun proviceDeviceTelephonyManager(
+        sensoricsApplication: SensoricsApplication
+    ): DeviceTelephonyManager = DeviceTelephonyManagerImpl(
+        sensoricsApplication.applicationContext
+    )
 }

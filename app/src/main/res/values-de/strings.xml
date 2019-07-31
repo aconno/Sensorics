@@ -62,6 +62,7 @@
     <string name="publish_hour">Std.</string>
     <string name="publish_min">Min.</string>
     <string name="publish_sec">Sek.</string>
+    <string name="publish_millis">Milli.</string>
     <string name="sending_interval">Sende intervall</string>
     <string name="last_data_sent">"Letzte Daten gesendet um: "</string>
     <string name="snackbar_stop_scanning">Bitte scan zuerst beenden</string>
@@ -242,6 +243,10 @@
     <string name="message_time_to_not_selected">Zeit bis nicht ausgewählt</string>
     <string name="label_time_from">Zeit von</string>
     <string name="label_time_to">Zeit bis</string>
+    <string name="stop_alarm">Alarm stoppen</string>
+    <string name="snooze">Alarm ausschalten</string>
+    <string name="alarm">Alarm</string>
+    <string name="alarm_active">Alarm aktiv</string>
     <string name="export">Exportieren</string>
     <string name="export_all">Alles exportieren</string>
     <string name="export_file">JSON Datei exportieren</string>

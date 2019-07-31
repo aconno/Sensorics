@@ -1,5 +1,6 @@
 package com.aconno.sensorics.domain.ifttt.outcome
 
+import com.aconno.sensorics.domain.AlarmServiceController
 import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.outcomes.Outcome
@@ -24,14 +25,15 @@ class RunOutcomeUseCase(
 class OutcomeExecutorSelector(
     private val notificationOutcomeExecutor: NotificationOutcomeExecutor,
     private val textToSpeechOutcomeExecutor: TextToSpeechOutcomeExecutor,
-    private val vibrationOutcomeExecutor: VibrationOutcomeExecutor
+    private val vibrationOutcomeExecutor: VibrationOutcomeExecutor,
+    private val alarmOutcomeExecutor: AlarmOutcomeExecutor
 ) {
     fun selectOutcomeExecutor(outcome: Outcome): OutcomeExecutor {
         return when (outcome.type) {
-
             Outcome.OUTCOME_TYPE_NOTIFICATION -> notificationOutcomeExecutor
             Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH -> textToSpeechOutcomeExecutor
             Outcome.OUTCOME_TYPE_VIBRATION -> vibrationOutcomeExecutor
+            Outcome.OUTCOME_TYPE_ALARM -> alarmOutcomeExecutor
             else -> throw IllegalArgumentException("Invalid Outcome type.")
         }
     }
@@ -101,5 +103,13 @@ class VibrationOutcomeExecutor(private val vibrator: Vibrator) : OutcomeExecutor
     companion object {
         var running = false
         private const val OUTCOME_EXECUTION_TIME_MS = 8_000
+    }
+}
+
+class AlarmOutcomeExecutor(
+    private val alarmServiceController: AlarmServiceController
+) : OutcomeExecutor {
+    override fun execute(outcome: Outcome) {
+        alarmServiceController.start()
     }
 }

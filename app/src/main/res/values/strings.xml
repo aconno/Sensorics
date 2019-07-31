@@ -53,6 +53,7 @@
     <string name="phone_number">Phone number</string>
     <string name="message_hint">Message</string>
     <string name="delete">Delete</string>
+    <string name="undo" translatable="false">Undo</string>
 
     <string name="condition_less">Less</string>
     <string name="condition_equal">Equal</string>
@@ -99,6 +100,7 @@
     <string name="publish_hour">Hour</string>
     <string name="publish_min">Min</string>
     <string name="publish_sec">Sec</string>
+    <string name="publish_millis">Milli</string>
     <string name="sending_interval">Sending Interval</string>
     <string name="last_data_sent">"Last data sent at: "</string>
     <string name="snackbar_stop_scanning">Please stop scanning first</string>
@@ -139,7 +141,7 @@
     <string name="qos_0" translatable="false">0</string>
     <string name="qos_2" translatable="false">2</string>
     <string name="dataString">Data String</string>
-    <string name="publisher_info_text" formatted="true" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$rssi</i> => rssi \n<i>$name</i> => key \n<i>$value</i> => sensor value \n<b>Specific Values:</b> \n<i>$temperature,$light,$battery_level</i> etc. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a></string>
+    <string name="publisher_info_text" formatted="true" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$rssi</i> => rssi \n<i>$name</i> => key \n<i>$value</i> => sensor value \n<b>Specific Values:</b> \n<i>$temperature,$light,$battery_level</i> etc. \nStrings not fully substituted (if a value is missing from the reading) will not be sent. $ should not be used since any detected unknown embeddable values will result in the data not sending. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a></string>
     <string name="publisher_info_title">Info</string>
     <string name="title_select_publish">Select Publisher</string>
     <string name="title_settings">Settings</string>
@@ -303,6 +305,12 @@
     <string name="dfu_btn_start_firmware_update">Start Firmware Update</string>
     <string name="dfu_txt_status_starting">Status : Starting..</string>
     <string name="cache">Cache</string>
+
+    <!-- Alarm -->
+    <string name="alarm">Alarm</string>
+    <string name="snooze">Snooze</string>
+    <string name="stop_alarm">Stop Alarm</string>
+    <string name="alarm_active">Alarm active</string>
     <string name="file_not_saved">File not saved</string>
     <string name="file_not_loaded">File not loaded</string>
     <string name="sharing_failed">Sharing failed</string>

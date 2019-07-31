@@ -64,13 +64,13 @@ class DataStringConverter(
     }
 
     fun convert(readings: List<Reading>): List<String> {
-        if (type == ONE_BY_ONE) {
-            return getOneByOne(readings, userDataString)
+        return if (type == ONE_BY_ONE) {
+            getOneByOne(readings, userDataString)
         } else if (type == CHUNK) {
-            return listOf(getChunk(readings, userDataString))
-        }
-
-        return listOf(userDataString)
+            listOf(getChunk(readings, userDataString))
+        } else {
+            listOf(userDataString)
+        }.filter { !it.contains('$') }
     }
 
     fun convert(readings: List<Reading>, userDataString: String): List<String> {
