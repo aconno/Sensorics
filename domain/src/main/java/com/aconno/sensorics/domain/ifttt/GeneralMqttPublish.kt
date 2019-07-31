@@ -1,5 +1,7 @@
 package com.aconno.sensorics.domain.ifttt
 
+import com.aconno.sensorics.domain.ifttt.outcome.PublishType
+
 class GeneralMqttPublish(
     override val id: Long,
     override val name: String,
@@ -14,4 +16,6 @@ class GeneralMqttPublish(
     override var timeMillis: Long,
     override var lastTimeMillis: Long,
     override var dataString: String
-) : MqttPublish
+) : MqttPublish {
+    override val type: PublishType = PublishType.MQTT
+}

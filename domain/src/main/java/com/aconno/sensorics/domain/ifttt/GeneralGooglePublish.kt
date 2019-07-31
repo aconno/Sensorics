@@ -1,5 +1,7 @@
 package com.aconno.sensorics.domain.ifttt
 
+import com.aconno.sensorics.domain.ifttt.outcome.PublishType
+
 class GeneralGooglePublish(
     override val id: Long,
     override val name: String,
@@ -13,4 +15,6 @@ class GeneralGooglePublish(
     override var timeMillis: Long,
     override var lastTimeMillis: Long,
     override var dataString: String
-) : GooglePublish
+) : GooglePublish {
+    override val type: PublishType = PublishType.GOOGLE
+}
