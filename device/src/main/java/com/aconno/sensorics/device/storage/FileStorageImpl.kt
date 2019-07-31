@@ -20,39 +20,39 @@ class FileStorageImpl(private val context: Context) : FileStorage {
         }
     }
 
-    @Throws(IOException::class)
+    @Throws(IOException::class, FileNotFoundException::class)
     override fun storeData(uri: String, data: ByteArray) {
         context.contentResolver.openFileDescriptor(Uri.parse(uri), "w")?.use {
-            // use{} automatically closes the stream
             FileOutputStream(it.fileDescriptor).use { fos ->
-                try {
-                    fos.write(data)
-                } catch (e: IOException) {
-                    throw e
-                }
+                fos.write(data)
             }
-        }
+        } ?: throw IOException("ContentResolver failed to open FileDescriptor")
     }
 
-    @Throws(IOException::class)
+    @Throws(IOException::class, FileNotFoundException::class)
     override fun readData(uri: String): ByteArray {
         context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")?.use {
             FileInputStream(it.fileDescriptor).use { fis ->
                 return fis.readBytes()
             }
-        }
-        throw IOException("ContentResolver failed to open FileDescriptor")
+        } ?: throw IOException("ContentResolver failed to open FileDescriptor")
     }
 
     @Throws(IllegalArgumentException::class, IOException::class, SecurityException::class)
-    override fun storeTempData(data: ByteArray): Pair<String, File> { //todo storetemptext i vraca pair
-        val tempSharedFile = File.createTempFile("backend", ".json", context.cacheDir)
-        tempSharedFile.writeBytes(data)
-        return FileProvider.getUriForFile(
-            context,
-            "com.aconno.sensorics.fileprovider",
-            tempSharedFile
-        ).toString() to tempSharedFile
+    override fun storeTempData(data: ByteArray): Pair<String, File> {
+        return File.createTempFile(
+            "backend",
+            ".json",
+            context.cacheDir
+        ).let {
+            it.writeBytes(data)
+
+            FileProvider.getUriForFile(
+                context,
+                "com.aconno.sensorics.fileprovider",
+                it
+            ).toString() to it
+        }
     }
 
 }

@@ -3,6 +3,7 @@ package com.aconno.sensorics.domain.interactor.data
 import com.aconno.sensorics.domain.FileStorage
 import com.aconno.sensorics.domain.interactor.type.SingleUseCaseWithParameter
 import io.reactivex.Single
+import java.io.FileNotFoundException
 import java.io.IOException
 
 class ReadDataUseCase(
@@ -12,6 +13,8 @@ class ReadDataUseCase(
         return try {
             Single.just(fileStorage.readData(parameter))
         } catch (e: IOException) {
+            Single.error(e)
+        } catch (e: FileNotFoundException) {
             Single.error(e)
         }
     }
