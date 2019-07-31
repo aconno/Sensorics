@@ -3,7 +3,8 @@ package com.aconno.sensorics.ui.settings.publishers
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.view.Menu
+import android.view.MenuItem
 import com.aconno.sensorics.R
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.GooglePublishModel
@@ -19,28 +20,44 @@ import kotlinx.android.synthetic.main.activity_publish_list.*
 /**
  * @author aconno
  */
-class PublishListActivity : DaggerAppCompatActivity(),
-    PublishListFragment.OnListFragmentInteractionListener {
+class PublishListActivity : DaggerAppCompatActivity(), PublishListFragment.OnListFragmentClickListener {
 
+    private var mainMenu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_publish_list)
 
-        val fm = supportFragmentManager
-        if (fm != null) {
-            var fragment: Fragment? = fm.findFragmentById(R.id.publish_list_container)
-            if (fragment == null) {
-                fragment =
-                        PublishListFragment.newInstance()
-                fm.beginTransaction().add(R.id.publish_list_container, fragment).commit()
-            }
+        supportFragmentManager.findFragmentById(
+            R.id.publish_list_container
+        ) ?: PublishListFragment.newInstance().also {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.publish_list_container, it)
+                .commit()
         }
+
+        invalidateOptionsMenu()
 
         setSupportActionBar(custom_toolbar)
     }
 
-    override fun onListFragmentInteraction(item: BasePublishModel?) {
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        mainMenu = menu
+        mainMenu?.clear()
+        menuInflater.inflate(R.menu.share_all_menu, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        (supportFragmentManager
+            .findFragmentById(R.id.publish_list_container) as PublishListFragment)
+            .resolveActionBarEvent(item)
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onListFragmentClick(item: BasePublishModel?) {
         when (item) {
             is GooglePublishModel -> GoogleCloudPublisherActivity.start(this, item)
             is RestPublishModel -> RestPublisherActivity.start(this, item)

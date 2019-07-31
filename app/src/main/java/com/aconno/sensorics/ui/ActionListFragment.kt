@@ -76,10 +76,10 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
 
                     snackbar?.addCallback(object : Snackbar.Callback() {
                         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
-                                || event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
-                                || event == Snackbar.Callback.DISMISS_EVENT_SWIPE
-                                || event == Snackbar.Callback.DISMISS_EVENT_MANUAL
+                            if (event == DISMISS_EVENT_TIMEOUT
+                                || event == DISMISS_EVENT_CONSECUTIVE
+                                || event == DISMISS_EVENT_SWIPE
+                                || event == DISMISS_EVENT_MANUAL
                             ) {
                                 deleteActionUseCase.execute(action)
                                     .subscribeOn(Schedulers.io())

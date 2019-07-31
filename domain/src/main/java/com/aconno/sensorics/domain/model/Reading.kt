@@ -8,7 +8,6 @@ data class Reading(
     val rssi: Int,
     val advertisementId: String
 ) {
-
     fun toCsvString(): String {
         return "$timestamp, ${device.macAddress}, $rssi, $name, $value"
     }

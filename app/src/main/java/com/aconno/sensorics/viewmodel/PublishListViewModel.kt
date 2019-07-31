@@ -1,14 +1,18 @@
 package com.aconno.sensorics.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.GooglePublish
 import com.aconno.sensorics.domain.ifttt.MqttPublish
 import com.aconno.sensorics.domain.ifttt.RestPublish
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
 import com.aconno.sensorics.model.BasePublishModel
@@ -35,8 +39,22 @@ class PublishListViewModel(
     private val getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
     private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
     private val deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
-    private val updatePublishUseCase: UpdatePublishUseCase
+    private val updatePublishUseCase: UpdatePublishUseCase,
+    private val addGooglePublishUseCase: AddGooglePublishUseCase,
+    private val addRestPublishUsecase: AddRestPublishUseCase,
+    private val addMqttPublishUseCase: AddMqttPublishUseCase
 ) : ViewModel() {
+
+    fun add(publish: BasePublish): Disposable {
+        return when (publish) {
+            is GooglePublish -> addGooglePublishUseCase.execute(publish)
+            is RestPublish -> addRestPublishUsecase.execute(publish)
+            is MqttPublish -> addMqttPublishUseCase.execute(publish)
+            else -> throw IllegalArgumentException("Invalid publish type.")
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
+    }
 
     fun update(publishModel: BasePublishModel): Disposable {
         val mappedPublish = when (publishModel) {
