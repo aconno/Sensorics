@@ -307,5 +307,6 @@
     <string name="file_not_loaded">File not loaded</string>
     <string name="sharing_failed">Sharing failed</string>
     <string name="parsing_json_error">Couldn\'t parse JSON file</string>
+    <string name="error_converting_data_to_json">Error converting data to JSON</string>
 
 </resources>

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.fragment.app.Fragment
 import com.aconno.sensorics.R
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.GooglePublishModel
@@ -18,27 +17,24 @@ import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_publish_list.*
 
 
-
 /**
  * @author aconno
  */
 class PublishListActivity : DaggerAppCompatActivity(), PublishListFragment.OnListFragmentClickListener {
 
     private var mainMenu: Menu? = null
-    private lateinit var mFragment: PublishListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_publish_list)
 
-        val fm = supportFragmentManager
-        var fragment: Fragment? = fm.findFragmentById(R.id.publish_list_container)
-        if (fragment == null) {
-            fragment = PublishListFragment.newInstance()
-            fm.beginTransaction().add(R.id.publish_list_container, fragment).commit()
+        supportFragmentManager.findFragmentById(
+            R.id.publish_list_container
+        ) ?: PublishListFragment.newInstance().also {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.publish_list_container, it)
+                .commit()
         }
-
-        mFragment = fragment as PublishListFragment
 
         invalidateOptionsMenu()
 

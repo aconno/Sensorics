@@ -53,7 +53,7 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
 
     private lateinit var tempSharedFile: File
 
-    private var jsonData: String? = null
+    private var tempExportJSONData: String? = null
 
     private var snackbar: Snackbar? = null
 
@@ -121,34 +121,38 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
             this
         )
 
-        view_publish_list.layoutManager = LinearLayoutManager(context)
-        view_publish_list.adapter = publishAdapter
+        view_publish_list.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = publishAdapter
 
-        view_publish_list.itemAnimator = DefaultItemAnimator()
-        view_publish_list.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                (view_publish_list.layoutManager as LinearLayoutManager).orientation
+            itemAnimator = DefaultItemAnimator()
+            addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    (layoutManager as LinearLayoutManager).orientation
+                )
             )
-        )
+        }
 
         context?.let { context ->
             ItemTouchHelper(object : SwipeToDeleteCallback(context) {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
+
                     val publishModel = publishAdapter.getPublishModel(position)
+
                     publishAdapter.removePublishModel(position)
 
                     snackbar = Snackbar.make(
                         container_fragment,
                         "${publishModel.name} removed!",
                         Snackbar.LENGTH_LONG
-                    ).also {
-                        it.setAction(getString(R.string.undo)) {
+                    ).apply {
+                        setAction(getString(R.string.undo)) {
                             publishAdapter.addPublishModelAtPosition(publishModel, position)
                         }
 
-                        it.addCallback(object : Snackbar.Callback() {
+                        addCallback(object : Snackbar.Callback() {
                             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                                 if (event == DISMISS_EVENT_TIMEOUT
                                     || event == DISMISS_EVENT_CONSECUTIVE
@@ -161,49 +165,55 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
                             }
                         })
 
-                        it.setActionTextColor(Color.YELLOW)
+                        setActionTextColor(Color.YELLOW)
 
-                        it.show()
+                        show()
                     }
                 }
             }).attachToRecyclerView(view_publish_list)
         }
 
         button_add_publisher.setOnClickListener {
+            snackbar?.dismiss()
             SelectPublisherActivity.start(context!!)
         }
     }
 
     override fun onListItemLongClick(item: BasePublishModel?) {
         activity?.let {
-            item?.let {model ->
-                val builder = AlertDialog.Builder(it)
-                builder.setTitle(R.string.export)
-                    .setItems(resources.getStringArray(R.array.ExportOptions))
-                        { dialog, which ->
-                            convertPublishersToJsonUseCase.execute(mapModelsToPublishers(listOf(model)))
-                                .subscribeOn(Schedulers.computation())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe({ result ->
-                                    when (resources.getStringArray(R.array.ExportOptions)[which]) {
-                                        getString(R.string.share_text) -> shareJSONtext(result)
-                                        getString(R.string.share_file) -> shareJSONfile(result)
-                                        getString(R.string.export_file) -> {
-                                            jsonData = result
-                                            exportJSONfile()
-                                        }
-                                    }
-                                }, {
+            item?.let { model ->
+                val options = resources.getStringArray(R.array.ExportOptions)
 
-                                })
-                        }
-                builder.create()
-                builder.show()
+                AlertDialog.Builder(it)
+                    .setTitle(R.string.export)
+                    .setItems(options) { dialog, which ->
+                        convertPublishersToJsonUseCase.execute(mapModelsToPublishers(listOf(model)))
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({ result ->
+                                when (options[which]) {
+                                    getString(R.string.share_text) -> shareJSONtext(result)
+                                    getString(R.string.share_file) -> shareJSONfile(result)
+                                    getString(R.string.export_file) -> {
+                                        tempExportJSONData = result
+                                        startExportJSONActivity()
+                                    }
+                                }
+                            }, {
+                                Snackbar.make(container_fragment,
+                                    getString(R.string.error_converting_data_to_json),
+                                    Snackbar.LENGTH_SHORT).show()
+                            }).also {
+                                addDisposable(it)
+                            }
+                    }
+                    .create()
+                    .show()
             }
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
-    fun mapModelsToPublishers(models: List<BasePublishModel>): List<BasePublish> {
+    private fun mapModelsToPublishers(models: List<BasePublishModel>): List<BasePublish> {
         return models.map {
             when (it) {
                 is GooglePublishModel -> googlePublishModelDataMapper.transform(it)
@@ -214,7 +224,7 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
         }.toList()
     }
 
-    fun mapPublishersToModels(publishers: List<BasePublish>): List<BasePublishModel> {
+    private fun mapPublishersToModels(publishers: List<BasePublish>): List<BasePublishModel> {
         return publishers.map {
             when (it.type) {
                 PublishType.GOOGLE -> googlePublishDataMapper.transform(it as GooglePublish)
@@ -225,7 +235,7 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
         }.toList()
     }
 
-    fun shareJSONtext(data: String) {
+    private fun shareJSONtext(data: String) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, data)
@@ -235,7 +245,7 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
     }
 
     @SuppressLint("CheckResult")
-    fun shareJSONfile(data: String) {
+    private fun shareJSONfile(data: String) {
         storeTempTextUseCase.execute(data)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -248,16 +258,19 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
                     putExtra(Intent.EXTRA_STREAM, Uri.parse(uriAndFile.first))
                     putExtra(Intent.EXTRA_SUBJECT, getString(R.string.file_share_subject))
                 }
-                    startActivityForResult(
+                startActivityForResult(
                     Intent.createChooser(sendIntent, getString(R.string.share_file)), CODE_SHARE
-                ) }, {
-                    Snackbar.make(container_fragment,
-                        getString(R.string.sharing_failed),
-                        Snackbar.LENGTH_SHORT).show()
-            })
+                )
+            }, {
+                Snackbar.make(container_fragment,
+                    getString(R.string.sharing_failed),
+                    Snackbar.LENGTH_SHORT).show()
+            }).also {
+                addDisposable(it)
+            }
     }
 
-    fun exportJSONfile() {
+    private fun startExportJSONActivity() {
         val exportIntent: Intent = Intent().apply {
             type = "text/*"
             action = Intent.ACTION_CREATE_DOCUMENT
@@ -267,7 +280,7 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
         startActivityForResult(exportIntent, CODE_EXPORT)
     }
 
-    fun importJSONfile() {
+    private fun startImportJSONActivity() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "*/*"
@@ -275,8 +288,8 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
         startActivityForResult(intent, CODE_IMPORT)
     }
 
-    fun fillFile(uri: Uri?) {
-        jsonData?.let {
+    fun writeJSONToFile(uri: Uri?) {
+        tempExportJSONData?.let {
             uri?.toString()?.let { uriString ->
                 storeTextUseCase.execute(uriString, it)
                     .subscribeOn(Schedulers.io())
@@ -289,7 +302,9 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
                         Snackbar.make(container_fragment,
                             getString(R.string.file_not_saved),
                             Snackbar.LENGTH_SHORT).show()
-                    }.subscribe()
+                    }.subscribe().also {
+                        addDisposable(it)
+                    }
             }
         }
     }
@@ -314,8 +329,9 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
                     Snackbar.make(container_fragment,
                         getString(R.string.file_not_loaded),
                         Snackbar.LENGTH_SHORT).show()
-                })
-
+                }).also {
+                    addDisposable(it)
+                }
         }
     }
 
@@ -329,16 +345,20 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ result ->
                     when (it.itemId) {
-                        R.id.action_import_file -> importJSONfile()
+                        R.id.action_import_file -> startImportJSONActivity()
                         R.id.action_share_all -> shareJSONfile(result)
                         R.id.action_export_all -> {
-                            jsonData = result
-                            exportJSONfile()
+                            tempExportJSONData = result
+                            startExportJSONActivity()
                         }
                     }
                 }, {
-
-                })
+                    Snackbar.make(container_fragment,
+                        getString(R.string.error_converting_data_to_json),
+                        Snackbar.LENGTH_SHORT).show()
+                }).also {
+                    addDisposable(it)
+                }
         }
     }
 
@@ -346,7 +366,9 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             CODE_SHARE -> tempSharedFile.delete()
-            CODE_EXPORT -> fillFile(if (resultCode == Activity.RESULT_OK) data?.data else null)
+            CODE_EXPORT -> if (resultCode == Activity.RESULT_OK) {
+                writeJSONToFile(data?.data)
+            }
             CODE_IMPORT -> readFile(data?.data)
         }
     }
@@ -362,13 +384,14 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
 
     override fun onResume() {
         super.onResume()
-        val subscribe = publishListViewModel.getAllPublish()
+        publishListViewModel.getAllPublish()
             .filter { it.isNotEmpty() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { actions -> initPublishList(actions) }
-
-        addDisposable(subscribe)
+            .also {
+                addDisposable(it)
+            }
     }
 
     override fun onPause() {
@@ -386,49 +409,47 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
     }
 
     private fun deleteSelectedItem() {
-        selectedItem?.let {
-            when (selectedItem) {
-                is GooglePublishModel -> {
-                    addDisposable(
-                        publishListViewModel.delete(selectedItem as GooglePublishModel)
-                    )
-                }
-                is RestPublishModel -> {
-                    addDisposable(
-                        publishListViewModel.delete(selectedItem as RestPublishModel)
-                    )
-                }
-                is MqttPublishModel -> {
-                    addDisposable(
-                        publishListViewModel.delete(selectedItem as MqttPublishModel)
-                    )
-                }
+        selectedItem?.let { model ->
+            when (model) {
+                is GooglePublishModel -> publishListViewModel.delete(model)
+                is RestPublishModel -> publishListViewModel.delete(model)
+                is MqttPublishModel -> publishListViewModel.delete(model)
                 else -> throw IllegalArgumentException("Illegal argument provided.")
+            }.also {
+                addDisposable(it)
             }
 
-            val index = listBasePublish.indexOf(selectedItem!!)
-            listBasePublish.remove(selectedItem!!)
+            val index = listBasePublish.indexOf(model)
+
+            listBasePublish.remove(model)
+
             publishAdapter.notifyItemRemoved(index)
 
             if (listBasePublish.isEmpty()) {
                 empty_view.visibility = View.VISIBLE
             }
+
             //Let GC collect removed instance
             selectedItem = null
         }
     }
 
-    fun addModels(coll: List<BasePublish>?) {
+    private fun addModels(coll: List<BasePublish>?) {
         coll?.let { list ->
             val offset = listBasePublish.size
-            if(offset == 0) {
+
+            list.forEach { publish ->
+                addDisposable(publishListViewModel.add(publish))
+            }
+
+            if (offset == 0) {
                 initPublishList(mapPublishersToModels(list))
             } else {
                 mapPublishersToModels(list).forEachIndexed { index, model ->
-                    publishAdapter.addPublishModelAtPosition(model, offset + index)
+                    listBasePublish.add(offset + index, model)
                 }
+                publishAdapter.notifyItemRangeChanged(offset, list.size)
             }
-            list.forEach { basePublish -> publishListViewModel.add(basePublish) }
         }
     }
 
