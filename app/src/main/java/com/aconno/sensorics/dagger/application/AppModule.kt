@@ -23,7 +23,6 @@ import com.aconno.sensorics.device.VibratorImpl
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationDisplayImpl
 import com.aconno.sensorics.device.notification.NotificationFactory
-import com.aconno.sensorics.device.storage.FileStorageImpl
 import com.aconno.sensorics.device.time.TimeProviderImpl
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.ActionsRepository
@@ -34,7 +33,6 @@ import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateReadingsUseCase
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateScanDeviceUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
-import com.aconno.sensorics.domain.interactor.data.*
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
