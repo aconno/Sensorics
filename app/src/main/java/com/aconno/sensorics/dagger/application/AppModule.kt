@@ -23,6 +23,7 @@ import com.aconno.sensorics.device.VibratorImpl
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationDisplayImpl
 import com.aconno.sensorics.device.notification.NotificationFactory
+import com.aconno.sensorics.device.storage.FileStorageImpl
 import com.aconno.sensorics.device.time.TimeProviderImpl
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.ActionsRepository
@@ -33,6 +34,7 @@ import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateReadingsUseCase
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateScanDeviceUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
+import com.aconno.sensorics.domain.interactor.data.*
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
@@ -295,5 +297,55 @@ class AppModule {
     @Singleton
     fun provideTimeProvider(): TimeProvider {
         return TimeProviderImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreDataUseCase(
+        sensoricsApplication: SensoricsApplication
+    ): StoreDataUseCase {
+        return StoreDataUseCase(FileStorageImpl(sensoricsApplication.applicationContext))
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreTextUseCase(
+        sensoricsApplication: SensoricsApplication
+    ): StoreTextUseCase {
+        return StoreTextUseCase(StoreDataUseCase(
+            FileStorageImpl(sensoricsApplication.applicationContext)))
+    }
+
+    @Provides
+    @Singleton
+    fun provideReadDataUseCase(
+        sensoricsApplication: SensoricsApplication
+    ): ReadDataUseCase {
+        return ReadDataUseCase(FileStorageImpl(sensoricsApplication.applicationContext))
+    }
+
+    @Provides
+    @Singleton
+    fun provideReadTextUseCase(
+        sensoricsApplication: SensoricsApplication
+    ): ReadTextUseCase {
+        return ReadTextUseCase(ReadDataUseCase(FileStorageImpl(sensoricsApplication.applicationContext)))
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreTempDataUseCase(
+        sensoricsApplication: SensoricsApplication
+    ): StoreTempDataUseCase {
+        return StoreTempDataUseCase(FileStorageImpl(sensoricsApplication.applicationContext))
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreTempTextUseCase(
+        sensoricsApplication: SensoricsApplication
+    ): StoreTempTextUseCase {
+        return StoreTempTextUseCase(StoreTempDataUseCase(
+            FileStorageImpl(sensoricsApplication.applicationContext)))
     }
 }

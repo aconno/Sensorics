@@ -5,12 +5,17 @@ import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
 import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
 import com.aconno.sensorics.domain.ifttt.RestPublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToPublishersUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertPublishersToJsonUseCase
 import com.aconno.sensorics.model.mapper.*
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.viewmodel.PublishListViewModel
@@ -94,6 +99,32 @@ class PublishListModule {
 
     @Provides
     @PublishListScope
+    fun provideAddGooglePublishUseCase(
+        repository: GooglePublishRepository
+    ) : AddGooglePublishUseCase {
+        return AddGooglePublishUseCase(repository)
+    }
+
+
+    @Provides
+    @PublishListScope
+    fun provideAddRestPublishUseCase(
+        repository: RestPublishRepository
+    ) : AddRestPublishUseCase {
+        return AddRestPublishUseCase(repository)
+    }
+
+
+    @Provides
+    @PublishListScope
+    fun provideAddMqttPublishUseCase(
+        repository: MqttPublishRepository
+    ) : AddMqttPublishUseCase {
+        return AddMqttPublishUseCase(repository)
+    }
+
+    @Provides
+    @PublishListScope
     fun providePublishListViewModelFactory(
         getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
         getAllRestPublishUseCase: GetAllRestPublishUseCase,
@@ -106,7 +137,10 @@ class PublishListModule {
         getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
         mqttPublishModelDataMapper: MqttPublishModelDataMapper,
         deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
-        updatePublishUseCase: UpdatePublishUseCase
+        updatePublishUseCase: UpdatePublishUseCase,
+        addGooglePublishUseCase: AddGooglePublishUseCase,
+        addRestPublishUseCase: AddRestPublishUseCase,
+        addMqttPublishUseCase: AddMqttPublishUseCase
     ) =
         PublishListViewModelFactory(
             getAllGooglePublishUseCase,
@@ -120,6 +154,21 @@ class PublishListModule {
             getAllMqttPublishUseCase,
             mqttPublishModelDataMapper,
             deleteMqttPublishUseCase,
-            updatePublishUseCase
+            updatePublishUseCase,
+            addGooglePublishUseCase,
+            addRestPublishUseCase,
+            addMqttPublishUseCase
         )
+
+    @Provides
+    @PublishListScope
+    fun provideConvertPublishersToJsonUseCase() : ConvertPublishersToJsonUseCase {
+        return ConvertPublishersToJsonUseCase()
+    }
+
+    @Provides
+    @PublishListScope
+    fun provideConvertJsonToPublishersUseCase() : ConvertJsonToPublishersUseCase {
+        return ConvertJsonToPublishersUseCase()
+    }
 }

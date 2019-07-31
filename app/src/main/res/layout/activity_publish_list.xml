@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/publish_list_root_view"
     tools:context=".ui.settings.publishers.PublishListActivity">
 
     <androidx.appcompat.widget.Toolbar

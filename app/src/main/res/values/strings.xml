@@ -258,6 +258,17 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
+    <string name="undo">Undo</string>
+    <string name="export">Export</string>
+    <string name="share_text">Share JSON text</string>
+    <string name="share_file">Share JSON file</string>
+    <string name="export_file">Export JSON file</string>
+    <string name="file_share_subject">Backend configuration options</string>
+    <string name="file_saved">File saved</string>
+    <string name="share_all">Share all</string>
+    <string name="export_all">Export all</string>
+    <string name="import_all">Import</string>
+
 
     <!--Dfu Activity-->
     <string name="title_dfu">Update Firmware</string>
@@ -292,6 +303,9 @@
     <string name="dfu_btn_start_firmware_update">Start Firmware Update</string>
     <string name="dfu_txt_status_starting">Status : Starting..</string>
     <string name="cache">Cache</string>
-    <string name="undo">Undo</string>
+    <string name="file_not_saved">File not saved</string>
+    <string name="file_not_loaded">File not loaded</string>
+    <string name="sharing_failed">Sharing failed</string>
+    <string name="parsing_json_error">Couldn\'t parse JSON file</string>
 
 </resources>

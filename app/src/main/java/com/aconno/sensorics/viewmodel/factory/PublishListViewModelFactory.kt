@@ -2,10 +2,13 @@ package com.aconno.sensorics.viewmodel.factory
 
 import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
 import com.aconno.sensorics.model.mapper.*
@@ -23,7 +26,11 @@ class PublishListViewModelFactory(
     private val getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
     private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
     private val deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
-    private val updatePublishUseCase: UpdatePublishUseCase
+    private val updatePublishUseCase: UpdatePublishUseCase,
+    private val addGooglePublishUseCase: AddGooglePublishUseCase,
+    private val addRestPublishUseCase: AddRestPublishUseCase,
+    private val addMqttPublishUseCase: AddMqttPublishUseCase
+
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -39,7 +46,10 @@ class PublishListViewModelFactory(
             getAllMqttPublishUseCase,
             mqttPublishModelDataMapper,
             deleteMqttPublishUseCase,
-            updatePublishUseCase
+            updatePublishUseCase,
+            addGooglePublishUseCase,
+            addRestPublishUseCase,
+            addMqttPublishUseCase
         )
         return getViewModel(viewModel, modelClass)
     }

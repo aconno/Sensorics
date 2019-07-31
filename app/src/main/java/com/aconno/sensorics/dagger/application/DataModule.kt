@@ -14,4 +14,6 @@ class DataModule {
     @Singleton
     fun provideSettings(sharedPreferences: SharedPreferences): Settings =
         SettingsImpl(sharedPreferences)
+
+
 }
