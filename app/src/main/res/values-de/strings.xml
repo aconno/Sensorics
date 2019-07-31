@@ -193,17 +193,7 @@
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
     <string name="undo">Undo</string>
-    <string name="export">Export</string>
-    <string name="share_text">Share JSON text</string>
-    <string name="share_file">Share JSON file</string>
-    <string name="export_file">Export JSON file</string>
     <string name="file_share_subject">Backend configuration options</string>
-    <string name="file_saved">File saved</string>
-    <string name="share_all">Share all</string>
-    <string name="export_all">Export all</string>
-    <string name="import_all">Import</string>
-    <string name="file_not_saved">File not saved</string>
-    <string name="file_not_loaded">File not loaded</string>
     <string name="sharing_failed">Sharing failed</string>
     <string name="parsing_json_error">Couldn\'t parse JSON file</string>
 
@@ -252,5 +242,15 @@
     <string name="message_time_to_not_selected">Zeit bis nicht ausgewählt</string>
     <string name="label_time_from">Zeit von</string>
     <string name="label_time_to">Zeit bis</string>
+    <string name="export">Exportieren</string>
+    <string name="export_all">Alles exportieren</string>
+    <string name="export_file">JSON Datei exportieren</string>
+    <string name="file_not_loaded">Datei nicht geladen</string>
+    <string name="file_not_saved">Datei nicht gespeichert</string>
+    <string name="file_saved">Datei gespeichert</string>
+    <string name="import_all">Importieren</string>
+    <string name="share_all">Alles teilen</string>
+    <string name="share_file">JSON Datei teilen</string>
+    <string name="share_text">JSON Text teilen</string>
 
 </resources>

@@ -258,7 +258,7 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
-    <string name="undo">Undo</string>
+    <string name="undo" translatable="false">Undo</string>
     <string name="export">Export</string>
     <string name="share_text">Share JSON text</string>
     <string name="share_file">Share JSON file</string>
