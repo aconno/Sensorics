@@ -315,5 +315,6 @@
     <string name="parsing_json_error">Couldn\'t parse JSON file</string>
     <string name="error_converting_data_to_json">Error converting data to JSON</string>
     <string name="undo">Undo</string>
+    <string name="import_error" translatable="false">Import error</string>
 
 </resources>

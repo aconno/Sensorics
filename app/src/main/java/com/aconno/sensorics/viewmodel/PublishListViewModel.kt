@@ -9,12 +9,15 @@ import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetMqttPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.MqttPublishModel
@@ -22,6 +25,7 @@ import com.aconno.sensorics.model.RestPublishModel
 import com.aconno.sensorics.model.mapper.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -42,18 +46,37 @@ class PublishListViewModel(
     private val updatePublishUseCase: UpdatePublishUseCase,
     private val addGooglePublishUseCase: AddGooglePublishUseCase,
     private val addRestPublishUsecase: AddRestPublishUseCase,
-    private val addMqttPublishUseCase: AddMqttPublishUseCase
+    private val addMqttPublishUseCase: AddMqttPublishUseCase,
+    private val getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
+    private val getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
+    private val getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase
 ) : ViewModel() {
 
-    fun add(publish: BasePublish): Disposable {
+    fun add(publish: BasePublish): Single<Long> {
         return when (publish) {
             is GooglePublish -> addGooglePublishUseCase.execute(publish)
             is RestPublish -> addRestPublishUsecase.execute(publish)
             is MqttPublish -> addMqttPublishUseCase.execute(publish)
             else -> throw IllegalArgumentException("Invalid publish type.")
-        }.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe()
+        }
+    }
+
+    fun getGooglePublishModelById(id: Long) : Maybe<GooglePublishModel> {
+        return getGooglePublishByIdUseCase.execute(id).flatMap {
+            Maybe.just(googlePublishDataMapper.transform(it))
+        }
+    }
+
+    fun getRestPublishModelById(id: Long) : Maybe<RestPublishModel> {
+        return getRestPublishByIdUseCase.execute(id).flatMap {
+            Maybe.just(restPublishDataMapper.transform(it))
+        }
+    }
+
+    fun getMqttPublishModelById(id: Long) : Maybe<MqttPublishModel> {
+        return getMqttPublishByIdUseCase.execute(id).flatMap {
+            Maybe.just(mqttPublishModelDataMapper.toMqttPublishModel(it))
+        }
     }
 
     fun update(publishModel: BasePublishModel): Disposable {

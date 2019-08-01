@@ -34,6 +34,8 @@ import com.aconno.sensorics.ui.base.BaseFragment
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.SelectPublisherActivity
 import com.aconno.sensorics.viewmodel.PublishListViewModel
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_publish_list.*
@@ -435,21 +437,45 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
     }
 
     private fun addModels(coll: List<BasePublish>?) {
-        coll?.let { list ->
+        coll?.let {
             val offset = listBasePublish.size
 
-            list.forEach { publish ->
-                addDisposable(publishListViewModel.add(publish))
-            }
-
-            if (offset == 0) {
-                initPublishList(mapPublishersToModels(list))
-            } else {
-                mapPublishersToModels(list).forEachIndexed { index, model ->
-                    listBasePublish.add(offset + index, model)
+            Flowable.fromIterable(it)
+                .flatMapMaybe { publish ->
+                    publishListViewModel.add(publish)
+                        .subscribeOn(Schedulers.io())
+                        .flatMapMaybe { id ->
+                            when (publish) {
+                                is GooglePublish -> {
+                                    publishListViewModel.getGooglePublishModelById(id)
+                                }
+                                is RestPublish -> {
+                                    publishListViewModel.getRestPublishModelById(id)
+                                }
+                                is MqttPublish -> {
+                                    publishListViewModel.getMqttPublishModelById(id)
+                                }
+                                else -> Maybe.error(IllegalArgumentException("Invalid Publish"))
+                            }.subscribeOn(Schedulers.io())
+                        }
+                }.observeOn(AndroidSchedulers.mainThread())
+                .toList()
+                .subscribe({list ->
+                    if (offset == 0) {
+                        initPublishList(list)
+                    } else {
+                        list.forEachIndexed { index, model ->
+                            listBasePublish.add(offset + index, model)
+                        }
+                        publishAdapter.notifyItemRangeChanged(offset, list.size)
+                    }
+                }, {
+                    Snackbar.make(container_fragment,
+                        getString(R.string.import_error),
+                        Snackbar.LENGTH_SHORT).show()
+                }).also {
+                    addDisposable(it)
                 }
-                publishAdapter.notifyItemRangeChanged(offset, list.size)
-            }
         }
     }
 
