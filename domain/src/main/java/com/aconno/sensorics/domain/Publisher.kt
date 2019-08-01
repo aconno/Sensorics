@@ -17,6 +17,6 @@ interface Publisher {
     interface TestConnectionCallback {
         fun onConnectionStart()
         fun onConnectionSuccess()
-        fun onConnectionFail()
+        fun onConnectionFail(exception: Throwable?)
     }
 }

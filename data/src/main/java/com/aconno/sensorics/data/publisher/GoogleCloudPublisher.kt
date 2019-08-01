@@ -169,7 +169,7 @@ class GoogleCloudPublisher(
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
                     Timber.e(exception, "Failed to connect to server")
-                    testConnectionCallback?.onConnectionFail()
+                    testConnectionCallback?.onConnectionFail(exception)
                 }
             })
         } catch (e: MqttException) {

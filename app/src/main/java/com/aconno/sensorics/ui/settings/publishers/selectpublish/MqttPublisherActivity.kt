@@ -67,6 +67,7 @@ class MqttPublisherActivity : BaseActivity() {
             GlobalScope.launch(Dispatchers.Main) {
                 progressbar.visibility = View.INVISIBLE
                 isTestingAlreadyRunning = false
+                edit_url_mqtt?.error = null
                 Toast.makeText(
                     this@MqttPublisherActivity,
                     getString(R.string.test_succeeded),
@@ -75,10 +76,15 @@ class MqttPublisherActivity : BaseActivity() {
             }
         }
 
-        override fun onConnectionFail() {
+        override fun onConnectionFail(exception: Throwable?) {
             GlobalScope.launch(Dispatchers.Main) {
                 progressbar.visibility = View.INVISIBLE
                 isTestingAlreadyRunning = false
+                if(exception is IllegalArgumentException) {
+                    edit_url_mqtt?.error = getString(R.string.mqtt_format)
+                } else {
+                    edit_url_mqtt?.error = null
+                }
                 Toast.makeText(
                     this@MqttPublisherActivity,
                     getString(R.string.test_failed),
@@ -158,47 +164,49 @@ class MqttPublisherActivity : BaseActivity() {
     }
 
     private fun setFields() {
-        edit_name.setText(mqttPublishModel?.name)
+        mqttPublishModel?.let { model ->
+            edit_name.setText(model.name)
 
-        edit_interval_count.setText(
-            PublisherIntervalConverter.calculateCountFromMillis(
-                this,
-                mqttPublishModel!!.timeMillis,
-                mqttPublishModel!!.timeType
+            edit_interval_count.setText(
+                PublisherIntervalConverter.calculateCountFromMillis(
+                    this,
+                    model.timeMillis,
+                    model.timeType
+                )
             )
-        )
 
-        spinner_interval_time.setSelection(
-            resources.getStringArray(R.array.PublishIntervals).indexOf(
-                mqttPublishModel?.timeType
+            spinner_interval_time.setSelection(
+                resources.getStringArray(R.array.PublishIntervals).indexOf(
+                    model.timeType
+                )
             )
-        )
 
-        if (mqttPublishModel!!.lastTimeMillis == 0L) {
-            text_lastdatasent.visibility = View.GONE
-        } else {
-            text_lastdatasent.visibility = View.VISIBLE
-            val str = getString(R.string.last_data_sent) + " " +
+            if (model.lastTimeMillis == 0L) {
+                text_lastdatasent.visibility = View.GONE
+            } else {
+                text_lastdatasent.visibility = View.VISIBLE
+                val str = getString(R.string.last_data_sent) + " " +
                     millisToFormattedDateString(
-                        mqttPublishModel!!.lastTimeMillis
+                        model.lastTimeMillis
                     )
-            text_lastdatasent.text = str
+                text_lastdatasent.text = str
+            }
+
+
+            edit_url_mqtt.setText(model.url)
+            edit_clientid_mqtt.setText(model.clientId)
+            edit_username_mqtt.setText(model.username)
+            edit_password_mqtt.setText(model.password)
+            edit_topic_mqtt.setText(model.topic)
+
+            when (model.qos) {
+                0 -> qos_0.isChecked = true
+                1 -> qos_1.isChecked = true
+                2 -> qos_2.isChecked = true
+            }
+
+            edit_datastring.setText(model.dataString)
         }
-
-
-        edit_url_mqtt.setText(mqttPublishModel!!.url)
-        edit_clientid_mqtt.setText(mqttPublishModel!!.clientId)
-        edit_username_mqtt.setText(mqttPublishModel!!.username)
-        edit_password_mqtt.setText(mqttPublishModel!!.password)
-        edit_topic_mqtt.setText(mqttPublishModel!!.topic)
-
-        when (mqttPublishModel!!.qos) {
-            0 -> qos_0.isChecked = true
-            1 -> qos_1.isChecked = true
-            2 -> qos_2.isChecked = true
-        }
-
-        edit_datastring.setText(mqttPublishModel?.dataString)
     }
 
     private fun millisToFormattedDateString(millis: Long): String {

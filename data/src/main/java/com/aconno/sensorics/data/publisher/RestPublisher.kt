@@ -143,11 +143,11 @@ class RestPublisher(
                     if (it.isSuccessful) {
                         testConnectionCallback.onConnectionSuccess()
                     } else {
-                        testConnectionCallback.onConnectionFail()
+                        testConnectionCallback.onConnectionFail(null)
                     }
                 },
                 {
-                    testConnectionCallback.onConnectionFail()
+                    testConnectionCallback.onConnectionFail(it)
                 }
             )
     }
