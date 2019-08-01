@@ -422,11 +422,7 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
                 addDisposable(it)
             }
 
-            val index = listBasePublish.indexOf(model)
-
             listBasePublish.remove(model)
-
-            publishAdapter.notifyItemRemoved(index)
 
             if (listBasePublish.isEmpty()) {
                 // Because activity may quit before the snackbar is finished
