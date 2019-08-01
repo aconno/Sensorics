@@ -53,7 +53,6 @@
     <string name="phone_number">Phone number</string>
     <string name="message_hint">Message</string>
     <string name="delete">Delete</string>
-    <string name="undo" translatable="false">Undo</string>
 
     <string name="condition_less">Less</string>
     <string name="condition_equal">Equal</string>
@@ -260,7 +259,6 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
-    <string name="undo" translatable="false">Undo</string>
     <string name="export">Export</string>
     <string name="share_text">Share JSON text</string>
     <string name="share_file">Share JSON file</string>
@@ -316,5 +314,6 @@
     <string name="sharing_failed">Sharing failed</string>
     <string name="parsing_json_error">Couldn\'t parse JSON file</string>
     <string name="error_converting_data_to_json">Error converting data to JSON</string>
+    <string name="undo">Undo</string>
 
 </resources>

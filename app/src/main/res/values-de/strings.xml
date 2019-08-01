@@ -193,7 +193,6 @@
     <string name="custom">Custom</string>
     <string name="title_activity_beacon_list">BeaconListActivity</string>
     <string name="apply">Apply</string>
-    <string name="undo">Undo</string>
     <string name="file_share_subject">Backend configuration options</string>
     <string name="sharing_failed">Sharing failed</string>
     <string name="parsing_json_error">Couldn\'t parse JSON file</string>
@@ -257,5 +256,7 @@
     <string name="share_all">Alles teilen</string>
     <string name="share_file">JSON Datei teilen</string>
     <string name="share_text">JSON Text teilen</string>
+    <string name="undo">Undo</string>
+    <string name="error_converting_data_to_json">Error converting data to JSON</string>
 
 </resources>
