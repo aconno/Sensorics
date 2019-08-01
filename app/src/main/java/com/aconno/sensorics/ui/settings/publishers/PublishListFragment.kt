@@ -137,6 +137,8 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
         context?.let { context ->
             ItemTouchHelper(object : SwipeToDeleteCallback(context) {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    snackbar?.dismiss()
+
                     val position = viewHolder.adapterPosition
 
                     val publishModel = publishAdapter.getPublishModel(position)
@@ -395,6 +397,7 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
     }
 
     override fun onPause() {
+        snackbar?.dismiss()
         publishAdapter.setOnCheckedChangeListener(null)
         listBasePublish.clear()
         publishAdapter.notifyDataSetChanged()
@@ -426,7 +429,8 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
             publishAdapter.notifyItemRemoved(index)
 
             if (listBasePublish.isEmpty()) {
-                empty_view.visibility = View.VISIBLE
+                // Because activity may quit before the snackbar is finished
+                empty_view?.visibility = View.VISIBLE
             }
 
             //Let GC collect removed instance
