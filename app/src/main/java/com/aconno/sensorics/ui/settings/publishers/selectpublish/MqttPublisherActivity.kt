@@ -80,10 +80,12 @@ class MqttPublisherActivity : BaseActivity() {
             GlobalScope.launch(Dispatchers.Main) {
                 progressbar.visibility = View.INVISIBLE
                 isTestingAlreadyRunning = false
-                if(exception is IllegalArgumentException) {
-                    edit_url_mqtt?.error = getString(R.string.mqtt_format)
-                } else {
-                    edit_url_mqtt?.error = null
+                exception?.message?.let { m ->
+                    if(m.contains(edit_url_mqtt?.text.toString())) {
+                        edit_url_mqtt?.error = getString(R.string.mqtt_format)
+                    } else {
+                        edit_url_mqtt?.error = null
+                    }
                 }
                 Toast.makeText(
                     this@MqttPublisherActivity,
