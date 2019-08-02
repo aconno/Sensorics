@@ -85,7 +85,7 @@ class RestPublisherActivity : BaseActivity() {
             }
         }
 
-        override fun onConnectionFail() {
+        override fun onConnectionFail(exception: Throwable?) {
             GlobalScope.launch(Dispatchers.Main) {
                 progressbar.visibility = View.INVISIBLE
                 isTestingAlreadyRunning = false

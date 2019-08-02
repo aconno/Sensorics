@@ -316,5 +316,6 @@
     <string name="error_converting_data_to_json">Error converting data to JSON</string>
     <string name="undo">Undo</string>
     <string name="import_error" translatable="false">Import error</string>
+    <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
 
 </resources>
