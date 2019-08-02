@@ -14,14 +14,14 @@ class DeserializerTest {
 
     private val deserializer = DeserializerImpl()
 
-    private val signedByteByteFormat = ByteFormat("", 0, 1, false, "BYTE", null)
-    private val unsignedByteByteFormat = ByteFormat("", 0, 1, false, "UINT8", null)
-    private val signedShortByteFormat = ByteFormat("", 0, 2, false, "SINT16", null)
-    private val unsignedShortByteFormat = ByteFormat("", 0, 2, false, "UINT16", null)
-    private val signedIntByteFormat = ByteFormat("", 0, 4, false, "INT32", null)
-    private val unsignedIntByteFormat = ByteFormat("", 0, 4, false, "UINT32", null)
-    private val signedLongByteFormat = ByteFormat("", 0, 8, false, "INT64", null)
-    private val floatByteFormat = ByteFormat("", 0, 4, false, "FLOAT", null)
+    private val signedByteByteFormat = ByteFormat("", 0, 1, false, "BYTE", null, 0xFF.toByte())
+    private val unsignedByteByteFormat = ByteFormat("", 0, 1, false, "UINT8", null, 0xFF.toByte())
+    private val signedShortByteFormat = ByteFormat("", 0, 2, false, "SINT16", null, 0xFF.toByte())
+    private val unsignedShortByteFormat = ByteFormat("", 0, 2, false, "UINT16", null, 0xFF.toByte())
+    private val signedIntByteFormat = ByteFormat("", 0, 4, false, "INT32", null, 0xFF.toByte())
+    private val unsignedIntByteFormat = ByteFormat("", 0, 4, false, "UINT32", null, 0xFF.toByte())
+    private val signedLongByteFormat = ByteFormat("", 0, 8, false, "INT64", null, 0xFF.toByte())
+    private val floatByteFormat = ByteFormat("", 0, 4, false, "FLOAT", null, 0xFF.toByte())
 
     @Test
     fun signedByteTest() {
