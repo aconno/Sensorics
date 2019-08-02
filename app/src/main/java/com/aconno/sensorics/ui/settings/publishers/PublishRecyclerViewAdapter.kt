@@ -71,7 +71,7 @@ class PublishRecyclerViewAdapter(
         }
 
         holder.mEnableView.setOnCheckedChangeListener { _, isChecked ->
-            mCheckedChangeListener?.onCheckedChange(isChecked, position)
+            mCheckedChangeListener?.onCheckedChange(isChecked, holder.adapterPosition)
         }
     }
 
