@@ -5,12 +5,15 @@ import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetMqttPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
 import com.aconno.sensorics.model.mapper.*
 import com.aconno.sensorics.viewmodel.PublishListViewModel
 
@@ -29,8 +32,10 @@ class PublishListViewModelFactory(
     private val updatePublishUseCase: UpdatePublishUseCase,
     private val addGooglePublishUseCase: AddGooglePublishUseCase,
     private val addRestPublishUseCase: AddRestPublishUseCase,
-    private val addMqttPublishUseCase: AddMqttPublishUseCase
-
+    private val addMqttPublishUseCase: AddMqttPublishUseCase,
+    private val getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
+    private val getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
+    private val getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -49,7 +54,10 @@ class PublishListViewModelFactory(
             updatePublishUseCase,
             addGooglePublishUseCase,
             addRestPublishUseCase,
-            addMqttPublishUseCase
+            addMqttPublishUseCase,
+            getGooglePublishByIdUseCase,
+            getRestPublishByIdUseCase,
+            getMqttPublishByIdUseCase
         )
         return getViewModel(viewModel, modelClass)
     }
