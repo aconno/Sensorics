@@ -31,28 +31,29 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    implementation "androidx.appcompat:appcompat:1.0.2"
-
-    implementation "io.reactivex.rxjava2:rxjava:2.2.7"
-    implementation "io.reactivex.rxjava2:rxkotlin:$rx_kotlin_version"
-
-    implementation "com.jakewharton.timber:timber:$timber_version"
-    api "com.squareup.retrofit2:retrofit:$retrofit_version"
-    api "com.squareup.retrofit2:converter-scalars:$retrofit_version"
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
 
     compileOnly "javax.annotation:jsr250-api:$javax_annotation_version"
     implementation "javax.inject:javax.inject:$javax_inject_version"
 
+    implementation "io.reactivex.rxjava2:rxjava:$rx_java_version"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rx_kotlin_version"
+
     implementation "com.google.code.gson:gson:$gson_version"
 
+    implementation "com.jakewharton.timber:timber:$timber_version"
     implementation "com.jakewharton.threetenabp:threetenabp:$threetenabp_version"
+
+    implementation "com.udojava:EvalEx:$eval_ex_version"
+
+    api "com.squareup.retrofit2:retrofit:$retrofit_version"
+    api "com.squareup.retrofit2:converter-scalars:$retrofit_version"
 
     testImplementation "junit:junit:$junit_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
-    implementation "com.udojava:EvalEx:2.1"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.1.1"
-    androidTestImplementation "androidx.test:runner:1.1.1"
+    androidTestImplementation "androidx.test:runner:$test_runner_version"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
 }
 
 apply plugin: 'kotlin-android-extensions'
