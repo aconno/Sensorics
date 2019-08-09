@@ -38,5 +38,5 @@ dependencies {
     testImplementation "junit:junit:$junit_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.mockito:mockito-inline:$mockito_inline_version"
-    testImplementation "com.google.truth:truth:$google_truth_version"
+    testImplementation "com.google.truth:truth:1.0"
 }
