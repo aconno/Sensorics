@@ -127,6 +127,7 @@ class DeviceMainFragment : DaggerFragment() {
         super.onResume()
         val mainActivity: MainActivity = context as MainActivity
         mainActivity.supportActionBar?.title = mDevice.getRealName()
+        mainActivity.supportActionBar?.subtitle = mDevice.macAddress
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
         if (!mainActivity.isScanning() &&
