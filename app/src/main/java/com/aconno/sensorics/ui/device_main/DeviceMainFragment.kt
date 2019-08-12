@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui.device_main
 
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -61,7 +62,7 @@ class DeviceMainFragment : DaggerFragment() {
 
     private lateinit var mDevice: Device
 
-    private val writeCommandQueue: Queue<WriteCommand> = ArrayDeque<WriteCommand>()
+    private val writeCommandQueue: Queue<WriteCommand> = ArrayDeque()
 
     private var sensorReadingFlowDisposable: Disposable? = null
 
@@ -127,8 +128,12 @@ class DeviceMainFragment : DaggerFragment() {
         val mainActivity: MainActivity = context as MainActivity
         mainActivity.supportActionBar?.title = mDevice.getRealName()
         mainActivity.supportActionBar?.subtitle = mDevice.macAddress
+        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
-        if (!mainActivity.isScanning() && !mDevice.connectable) {
+        if (!mainActivity.isScanning() &&
+            !mDevice.connectable &&
+            bluetoothAdapter != null &&
+            bluetoothAdapter.isEnabled) {
             showAlertDialog(mainActivity)
         }
     }
@@ -342,7 +347,7 @@ class DeviceMainFragment : DaggerFragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
 
-                var jsonValues = generateJsonArray(readings)
+                val jsonValues = generateJsonArray(readings)
                 setHasSettings(readings)
 
                 web_view.loadUrl("javascript:onSensorReadings('$jsonValues')")
