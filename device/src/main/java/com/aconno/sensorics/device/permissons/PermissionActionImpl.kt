@@ -14,8 +14,8 @@ class PermissionActionImpl(private val activity: Activity) : PermissionAction {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun requestPermission(permission: String, requestCode: Int) {
-        ActivityCompat.requestPermissions(activity, arrayOf(permission), requestCode)
+    override fun requestPermissions(requestCode: Int, vararg permissions: String) {
+        ActivityCompat.requestPermissions(activity, permissions, requestCode)
     }
 
     override fun shouldShowRequestPermissionRationale(permission: String): Boolean {

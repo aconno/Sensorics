@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -156,10 +157,10 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun openLiveGraph(macAddress: String, sensorName: String) {
-        supportFragmentManager?.beginTransaction()?.add(
+        supportFragmentManager.beginTransaction().add(
             content_container.id,
             LiveGraphFragment.newInstance(macAddress, sensorName)
-        )?.addToBackStack(null)?.commit()
+        ).addToBackStack(null).commit()
     }
 
     override fun onFABClicked() {
@@ -299,7 +300,10 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     fun startScanning(filterByDevice: Boolean = true) {
         this.filterByDevice = filterByDevice
-        permissionViewModel.requestAccessFineLocation()
+        permissionViewModel.handlePermissionsRequest(
+            SensoricsPermission.ACCESS_FINE_LOCATION,
+            SensoricsPermission.READ_EXTERNAL_STORAGE
+        )
     }
 
     private fun stopScanning() {
@@ -321,20 +325,15 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        permissionViewModel.checkGrantedPermission(grantResults, requestCode)
+        permissionViewModel.checkGrantedPermissions(grantResults, requestCode)
     }
 
     override fun permissionAccepted(actionCode: Int) {
-        if (actionCode == SensoricsPermission.ACCESS_FINE_LOCATION.code) {
-            permissionViewModel.requestAccessToReadExternalStorage()
-        } else {
-            bluetoothScanningViewModel.startScanning(filterByDevice)
-            filterByDevice = true
-        }
+        bluetoothScanningViewModel.startScanning(filterByDevice)
+        filterByDevice = true
     }
 
     override fun permissionDenied(actionCode: Int) {
-        //TODO: Make this nice...
         Snackbar.make(
             content_container,
             getString(R.string.snackbar_permission_message),
@@ -347,8 +346,29 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             .show()
     }
 
-    override fun showRationale(actionCode: Int) {
+    private fun buildRationaleString(permissions: List<SensoricsPermission>): String {
+        val sb = StringBuilder(getString(R.string.the_app_needs_permission))
+        sb.append(":\n\n")
+        permissions.forEach {
+            sb.append(getString(SensoricsPermission.RATIONALE_MAP.getValue(it.code)))
+            sb.append(":\n")
+        }
+        return sb.toString()
+    }
 
+    override fun showRationale(
+        needRationale : List<SensoricsPermission>,
+        vararg needGrant: SensoricsPermission
+    ) {
+        val message = buildRationaleString(needRationale)
+
+        AlertDialog.Builder(this)
+            .setMessage(message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.ok) { dialogInterface, id ->
+                dialogInterface.dismiss()
+                permissionViewModel.requestPermissions(*needGrant)
+            }.create().show()
     }
 
     fun onDashboardClicked() {

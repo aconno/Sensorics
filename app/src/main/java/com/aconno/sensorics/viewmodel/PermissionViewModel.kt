@@ -3,42 +3,58 @@ package com.aconno.sensorics.viewmodel
 import android.content.pm.PackageManager
 import com.aconno.sensorics.device.permissons.PermissionAction
 import com.aconno.sensorics.model.SensoricsPermission
+import timber.log.Timber
 
 /**
- * TODO Refactor // This class has to take multiple permissions at the same time.//
+ * @param permissionAction is used for communicating with android's permission API
+ * @param permissionCallbacks is used for handling permission result callbacks
+ *
  */
 class PermissionViewModel(
     private val permissionAction: PermissionAction,
     private val permissionCallbacks: PermissionCallbacks
 ) {
 
-    fun requestAccessFineLocation() {
-        checkAndRequestPermission(SensoricsPermission.ACCESS_FINE_LOCATION)
-    }
+    fun handlePermissionsRequest(vararg sensoricsPermissions: SensoricsPermission) {
+        if(sensoricsPermissions.isEmpty()) {
+            Timber.e("checkAndRequestPermission method called with 0 arguments")
+            return
+        }
+        val notGrantedPermissions = sensoricsPermissions.filter {
+            !permissionAction.hasSelfPermission(it.permission)
+        }.toTypedArray()
 
-    fun requestAccessToReadExternalStorage() {
-        checkAndRequestPermission(SensoricsPermission.READ_EXTERNAL_STORAGE)
-    }
+        if(notGrantedPermissions.isEmpty()) {
+            permissionCallbacks.permissionAccepted(
+                if (sensoricsPermissions.size > 1)
+                    SensoricsPermission.MULTIPLE_PERMISSIONS_CODE
+                else
+                    sensoricsPermissions.first().code
+            )
+            return
+        }
 
-    private fun checkAndRequestPermission(sensoricsPermission: SensoricsPermission) {
-        if (permissionAction.hasSelfPermission(sensoricsPermission.permission)) {
-            permissionCallbacks.permissionAccepted(sensoricsPermission.code)
+        val permissionsNeedingRationale = notGrantedPermissions.filter {
+            permissionAction.shouldShowRequestPermissionRationale(it.permission)
+        }
+        if(permissionsNeedingRationale.isNotEmpty()) {
+            permissionCallbacks.showRationale(permissionsNeedingRationale, *notGrantedPermissions)
         } else {
-            if (permissionAction.shouldShowRequestPermissionRationale(sensoricsPermission.permission)) {
-                //TODO: Rationale not implemented yet
-                //permissionCallbacks.showRationale(sensoricsPermission.code)
-                requestPermission(sensoricsPermission)
-            } else {
-                requestPermission(sensoricsPermission)
-            }
+            requestPermissions(*(notGrantedPermissions))
         }
     }
 
-    private fun requestPermission(sensoricsPermission: SensoricsPermission) {
-        permissionAction.requestPermission(sensoricsPermission.permission, sensoricsPermission.code)
+    fun requestPermissions(vararg sensoricsPermissions: SensoricsPermission) {
+        permissionAction.requestPermissions(
+            if (sensoricsPermissions.size > 1)
+                SensoricsPermission.MULTIPLE_PERMISSIONS_CODE
+            else
+                sensoricsPermissions.first().code,
+            *(sensoricsPermissions.map { it.permission }.toTypedArray())
+        )
     }
 
-    fun checkGrantedPermission(grantResults: IntArray, requestCode: Int) {
+    fun checkGrantedPermissions(grantResults: IntArray, requestCode: Int) {
         if (verifyGrantedPermission(grantResults)) {
             permissionCallbacks.permissionAccepted(requestCode)
         } else {
@@ -47,12 +63,7 @@ class PermissionViewModel(
     }
 
     private fun verifyGrantedPermission(grantResults: IntArray): Boolean {
-        grantResults.forEach {
-            if (it != PackageManager.PERMISSION_GRANTED) {
-                return false
-            }
-        }
-        return true
+        return !grantResults.contains(PackageManager.PERMISSION_DENIED)
     }
 
     interface PermissionCallbacks {
@@ -61,6 +72,8 @@ class PermissionViewModel(
 
         fun permissionDenied(actionCode: Int)
 
-        fun showRationale(actionCode: Int)
+        fun showRationale(
+            needRationale: List<SensoricsPermission>,
+            vararg needGrant: SensoricsPermission)
     }
 }

@@ -123,8 +123,8 @@ class DeviceMainFragment : DaggerFragment() {
         return inflater.inflate(R.layout.fragment_device_main, container, false)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         val mainActivity: MainActivity = context as MainActivity
         mainActivity.supportActionBar?.title = mDevice.getRealName()
         mainActivity.supportActionBar?.subtitle = mDevice.macAddress

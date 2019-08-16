@@ -4,7 +4,7 @@ interface PermissionAction {
 
     fun hasSelfPermission(permission: String): Boolean
 
-    fun requestPermission(permission: String, requestCode: Int)
+    fun requestPermissions(requestCode: Int, vararg permissions: String)
 
     fun shouldShowRequestPermissionRationale(permission: String): Boolean
 }

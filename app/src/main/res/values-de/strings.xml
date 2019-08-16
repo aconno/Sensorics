@@ -258,5 +258,6 @@
     <string name="share_text">JSON Text teilen</string>
     <string name="undo">Undo</string>
     <string name="error_converting_data_to_json">Error converting data to JSON</string>
+    <string name="ok">OK</string>
 
 </resources>

@@ -317,5 +317,9 @@
     <string name="undo">Undo</string>
     <string name="import_error" translatable="false">Import error</string>
     <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
+    <string name="ok">OK</string>
+    <string name="location_rationale">Location is required for using Bluetooth</string>
+    <string name="the_app_needs_permission">Please grant following permissions</string>
+    <string name="read_storage_rationale">Storage access is required</string>
 
 </resources>
