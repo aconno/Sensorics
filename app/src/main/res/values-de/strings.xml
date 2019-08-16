@@ -258,5 +258,7 @@
     <string name="share_text">JSON Text teilen</string>
     <string name="undo">Undo</string>
     <string name="error_converting_data_to_json">Error converting data to JSON</string>
+    <string name="snackbar_scan_failed_already_started">Der Gerätescan wurde bereits gestartet</string>
+    <string name="snackbar_scan_failed">Der Gerätescan ist fehlgeschlagen</string>
 
 </resources>
