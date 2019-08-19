@@ -301,8 +301,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     fun startScanning(filterByDevice: Boolean = true) {
         this.filterByDevice = filterByDevice
         permissionViewModel.handlePermissionsRequest(
-            SensoricsPermission.ACCESS_FINE_LOCATION,
-            SensoricsPermission.READ_EXTERNAL_STORAGE
+            SensoricsPermission.ACCESS_COARSE_LOCATION
         )
     }
 
@@ -325,15 +324,19 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        permissionViewModel.checkGrantedPermissions(grantResults, requestCode)
+        permissionViewModel.checkGrantedPermissions(requestCode, permissions, grantResults)
     }
 
     override fun permissionAccepted(actionCode: Int) {
-        bluetoothScanningViewModel.startScanning(filterByDevice)
-        filterByDevice = true
+        Timber.d(actionCode.toString())
+        if(actionCode and SensoricsPermission.ACCESS_COARSE_LOCATION.code != 0) {
+            bluetoothScanningViewModel.startScanning(filterByDevice)
+            filterByDevice = true
+        }
     }
 
     override fun permissionDenied(actionCode: Int) {
+        Timber.d(actionCode.toString())
         Snackbar.make(
             content_container,
             getString(R.string.snackbar_permission_message),

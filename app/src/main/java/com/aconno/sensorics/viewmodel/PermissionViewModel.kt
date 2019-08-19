@@ -26,10 +26,7 @@ class PermissionViewModel(
 
         if(notGrantedPermissions.isEmpty()) {
             permissionCallbacks.permissionAccepted(
-                if (sensoricsPermissions.size > 1)
-                    SensoricsPermission.MULTIPLE_PERMISSIONS_CODE
-                else
-                    sensoricsPermissions.first().code
+                SensoricsPermission.getCode(*sensoricsPermissions)
             )
             return
         }
@@ -46,24 +43,34 @@ class PermissionViewModel(
 
     fun requestPermissions(vararg sensoricsPermissions: SensoricsPermission) {
         permissionAction.requestPermissions(
-            if (sensoricsPermissions.size > 1)
-                SensoricsPermission.MULTIPLE_PERMISSIONS_CODE
-            else
-                sensoricsPermissions.first().code,
+            SensoricsPermission.getCode(*sensoricsPermissions),
             *(sensoricsPermissions.map { it.permission }.toTypedArray())
         )
     }
 
-    fun checkGrantedPermissions(grantResults: IntArray, requestCode: Int) {
-        if (verifyGrantedPermission(grantResults)) {
-            permissionCallbacks.permissionAccepted(requestCode)
-        } else {
+    fun checkGrantedPermissions(requestCode: Int, permissions: Array<String>, results: IntArray) {
+        if(results.isEmpty()) {
             permissionCallbacks.permissionDenied(requestCode)
+        } else {
+            val parts = partitionResults(permissions, results)
+            if(parts.first != 0) {
+                permissionCallbacks.permissionAccepted(parts.first)
+            }
+            if(parts.second != 0) {
+                permissionCallbacks.permissionDenied(parts.second)
+            }
         }
     }
 
-    private fun verifyGrantedPermission(grantResults: IntArray): Boolean {
-        return !grantResults.contains(PackageManager.PERMISSION_DENIED)
+    private fun partitionResults(permissions: Array<String>, results: IntArray): Pair<Int, Int> {
+        val pairList = permissions.map{ SensoricsPermission.CODE_MAP.getValue(it) }
+            .zip(results.toTypedArray())
+            .partition{ it.second == PackageManager.PERMISSION_GRANTED }
+        val first = if(pairList.first.isEmpty()) 0 else pairList.first.map { it.first }
+            .reduce{mask, it -> mask or it }
+        val second = if(pairList.second.isEmpty()) 0 else pairList.second.map { it.first }
+            .reduce{mask, it -> mask or it }
+        return first to second
     }
 
     interface PermissionCallbacks {

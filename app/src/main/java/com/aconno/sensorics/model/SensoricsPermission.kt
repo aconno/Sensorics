@@ -5,24 +5,28 @@ import com.aconno.sensorics.R
 
 class SensoricsPermission(val code: Int, val permission: String) {
 
+
+    /**
+     * to add new permission, create its code (power of 2) and add it to rationale map
+     */
     companion object {
 
-        const val MULTIPLE_PERMISSIONS_CODE = 1
-        private const val ACCESS_FINE_LOCATION_CODE = 2
-        private const val READ_EXTERNAL_STORAGE_CODE = 3
+        private const val ACCESS_COARSE_LOCATION_CODE = 1 shl 0
 
         val RATIONALE_MAP = mapOf(
-            ACCESS_FINE_LOCATION_CODE to R.string.location_rationale,
-            READ_EXTERNAL_STORAGE_CODE to R.string.read_storage_rationale
+            ACCESS_COARSE_LOCATION_CODE to R.string.location_rationale
             )
 
-        val ACCESS_FINE_LOCATION = SensoricsPermission(
-            ACCESS_FINE_LOCATION_CODE,
-            Manifest.permission.ACCESS_FINE_LOCATION
+        val CODE_MAP = mapOf(
+            Manifest.permission.ACCESS_COARSE_LOCATION to ACCESS_COARSE_LOCATION_CODE
         )
-        val READ_EXTERNAL_STORAGE = SensoricsPermission(
-            READ_EXTERNAL_STORAGE_CODE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+
+        val ACCESS_COARSE_LOCATION = SensoricsPermission(
+            ACCESS_COARSE_LOCATION_CODE,
+            Manifest.permission.ACCESS_COARSE_LOCATION
         )
+
+        fun getCode(vararg permissions: SensoricsPermission): Int =
+            permissions.map { it.code }.reduce{ mask, it -> mask or it }
     }
 }
