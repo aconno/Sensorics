@@ -14,6 +14,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            useProguard false
+            minifyEnabled false
+            shrinkResources false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -61,7 +66,7 @@ dependencies {
     implementation "com.udojava:EvalEx:$eval_ex_version"
 
     //current version 4.0.1 not compiling on clean build
-    def okhttp3_data_version = '3.14.2'
+    def okhttp3_data_version = '3.12.0'
     implementation "com.squareup.okhttp3:okhttp:$okhttp3_data_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3_data_version"
 
@@ -69,7 +74,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
     androidTestImplementation "androidx.test:runner:$test_runner_version"
+    androidTestImplementation "androidx.test.ext:junit:1.1.1"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
     androidTestImplementation "org.mockito:mockito-inline:$mockito_inline_version"
-    androidTestImplementation "org.robolectric:robolectric:4.3"
 }
