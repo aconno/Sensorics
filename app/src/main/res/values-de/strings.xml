@@ -259,5 +259,7 @@
     <string name="undo">Undo</string>
     <string name="error_converting_data_to_json">Error converting data to JSON</string>
     <string name="ok">OK</string>
+    <string name="location_rationale">Für die Verwendung von Bluetooth ist die Standortberechtigung erforderlich</string>
+    <string name="the_app_needs_permission">Bitte gewähren Sie folgende Berechtigungen</string>
 
 </resources>

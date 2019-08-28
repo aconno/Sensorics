@@ -354,7 +354,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         sb.append(":\n\n")
         permissions.forEach {
             sb.append(getString(SensoricsPermission.RATIONALE_MAP.getValue(it.code)))
-            sb.append(":\n")
+            sb.append(".\n")
         }
         return sb.toString()
     }
