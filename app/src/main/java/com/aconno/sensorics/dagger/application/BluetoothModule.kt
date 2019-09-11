@@ -4,7 +4,7 @@ import android.bluetooth.BluetoothAdapter
 import android.content.SharedPreferences
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
+import com.aconno.sensorics.device.BluetoothGattAttributeValueConverter
 import com.aconno.sensorics.device.bluetooth.BluetoothImpl
 import com.aconno.sensorics.device.bluetooth.BluetoothPermission
 import com.aconno.sensorics.device.bluetooth.BluetoothPermissionImpl
@@ -41,7 +41,7 @@ class BluetoothModule {
         bluetoothAdapter: BluetoothAdapter,
         bluetoothPermission: BluetoothPermission,
         bluetoothStateListener: BluetoothStateListener,
-        bluetoothCharacteristicValueConverter: BluetoothCharacteristicValueConverter
+        bluetoothGattAttributeValueConverter: BluetoothGattAttributeValueConverter
     ): Bluetooth =
         BluetoothImpl(
             sensoricsApplication,
@@ -49,7 +49,7 @@ class BluetoothModule {
             bluetoothAdapter,
             bluetoothPermission,
             bluetoothStateListener,
-            bluetoothCharacteristicValueConverter
+            bluetoothGattAttributeValueConverter
         )
 
     @Provides
