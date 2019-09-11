@@ -337,8 +337,7 @@ class BluetoothScanningService : DaggerService() {
     }
 
     private fun basePublishToMqttPublisher(basePublish: BasePublish): Publisher {
-        val devices = getDevicesThatConnectedWithMqttPublishUseCase.execute(basePublish.id)
-            ?: listOf()
+        val devices = getDevicesThatConnectedWithMqttPublishUseCase.execute(basePublish.id).blockingGet()
 
         return MqttPublisher(this, basePublish as MqttPublish, devices, syncRepository)
     }
