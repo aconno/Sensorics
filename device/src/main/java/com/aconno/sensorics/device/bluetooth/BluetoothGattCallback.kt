@@ -2,6 +2,7 @@ package com.aconno.sensorics.device.bluetooth
 
 import android.bluetooth.*
 import android.bluetooth.BluetoothGattCallback
+import com.aconno.sensorics.domain.UUIDProvider
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
@@ -206,7 +207,14 @@ class BluetoothGattCallback(
         const val ACTION_GATT_DESCRIPTOR_WRITE_FAIL = "com.aconno.sensorics.ACTION_GATT_DESCRIPTOR_WRITE_FAIL"
 
         private const val SETTINGS_SERVICE_UUID = "cc52c000-9adb-4c37-bc48-376f5fee8851"
-        private const val CACHE_SERVICE_UUID = "cc521000-9adb-4c37-bc48-376f5fee8851"
-        private const val CACHE_CHARACTERISTIC_UUID = "cc521001-9adb-4c37-bc48-376f5fee8851"
+
+        val CACHE_SERVICE_UUID = UUIDProvider.provideFullUUID("1000")
+        val CACHE_CHARACTERISTIC_UUID = UUIDProvider.provideFullUUID("1001")
+        val SLOT_SERVICE_UUID = UUIDProvider.provideFullUUID("B000")
+        val SLOT_SAVE_CHARACTERISTIC_UUID = UUIDProvider.provideFullUUID("B001")
+        val SLOT_BULK_CHARACTERISTIC_UUID = UUIDProvider.provideFullUUID("B002")
+        val PARAMETER_SERVICE_UUID = UUIDProvider.provideFullUUID("B000")
+        val PARAMETER_SAVE_CHARACTERISTIC_UUID = UUIDProvider.provideFullUUID("B001")
+        val PARAMETER_BULK_CHARACTERISTIC_UUID = UUIDProvider.provideFullUUID("B002")
     }
 }
