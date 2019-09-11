@@ -72,7 +72,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.0.0"
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "androidx.preference:preference:1.0.0"
-    implementation "androidx.work:work-runtime-ktx:2.1.0-alpha02"
+    implementation "androidx.work:work-runtime-ktx:2.1.0-rc01"
 
     implementation "io.reactivex.rxjava2:rxandroid:$rx_android_version"
     implementation "io.reactivex.rxjava2:rxkotlin:$rx_kotlin_version"
@@ -84,7 +84,7 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
 
-    implementation "com.google.android.material:material:1.1.0-alpha05"
+    implementation "com.google.android.material:material:1.1.0-alpha09"
     implementation "com.google.android:flexbox:1.0.0"
     implementation "com.google.code.gson:gson:$gson_version"
 
@@ -127,8 +127,10 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
     androidTestImplementation "androidx.test:runner:$test_runner_version"
-    testImplementation "androidx.arch.core:core-testing:2.1.0-alpha01"
+    testImplementation "androidx.arch.core:core-testing:2.1.0-rc01"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
+
+    implementation 'com.github.AllanHasegawa.Tempo:tempo:0.2.0'
 
     androidTestImplementation "org.mockito:mockito-inline:$mockito_inline_version"
     testImplementation "org.mockito:mockito-inline:$mockito_inline_version"
