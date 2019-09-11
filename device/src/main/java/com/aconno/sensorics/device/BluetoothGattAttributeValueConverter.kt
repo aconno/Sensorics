@@ -2,11 +2,12 @@ package com.aconno.sensorics.device
 
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattCharacteristic.*
+import android.bluetooth.BluetoothGattDescriptor
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BluetoothCharacteristicValueConverter @Inject constructor() {
+class BluetoothGattAttributeValueConverter @Inject constructor() {
 
     companion object {
         /**
@@ -55,6 +56,19 @@ class BluetoothCharacteristicValueConverter @Inject constructor() {
                 val pair = getMantissaAndExp(value as Float)
                 characteristic.setValue(pair.first, pair.second, realType, 0)
             }
+            else -> throw IllegalArgumentException("$type Format is not supported.")
+        }
+    }
+
+    /**
+     * @value will not be converted to ByteArray or String or Float or Int. Only it will be casted.
+     */
+    fun setValue(descriptor: BluetoothGattDescriptor, type: String, value: Any) {
+
+        val realType = getType(type)
+
+        when (realType) {
+            FORMAT_BYTE -> descriptor.value = value as ByteArray
             else -> throw IllegalArgumentException("$type Format is not supported.")
         }
     }

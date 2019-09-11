@@ -8,7 +8,7 @@ import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.SharedPreferences
-import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
+import com.aconno.sensorics.device.BluetoothGattAttributeValueConverter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.model.ScanResult
@@ -18,6 +18,7 @@ import com.aconno.sensorics.domain.scanning.ScanEvent
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
@@ -30,8 +31,10 @@ class BluetoothImpl(
     private val bluetoothAdapter: BluetoothAdapter,
     private val bluetoothPermission: BluetoothPermission,
     private val bluetoothStateListener: BluetoothStateListener,
-    private val bluetoothCharacteristicValueConverter: BluetoothCharacteristicValueConverter
-) : Bluetooth {
+    private val bluetoothGattAttributeValueConverter: BluetoothGattAttributeValueConverter
+) : Bluetooth, Consumer<GattCallbackPayload> {
+
+    override var mtu: Int = 20
 
     private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
     private val connectGattResults: PublishSubject<GattCallbackPayload> = PublishSubject.create()
@@ -46,6 +49,19 @@ class BluetoothImpl(
     private val gattCallback: BluetoothGattCallback = BluetoothGattCallback(connectGattResults)
     private var lastConnectedDeviceAddress: String? = null
     private var lastConnectedGatt: BluetoothGatt? = null
+
+    init {
+        getGattResults().subscribe(this)
+    }
+
+    override fun accept(payload: GattCallbackPayload) {
+        Timber.i(payload.action)
+        when (payload.action) {
+            BluetoothGattCallback.ACTION_GATT_MTU_CHANGED -> {
+                this.mtu = (payload.payload as? Int) ?: mtu
+            }
+        }
+    }
 
     private fun getScanSettings(
         devices: List<Device>? = null
@@ -100,17 +116,13 @@ class BluetoothImpl(
     }
 
     override fun readCharacteristic(serviceUUID: UUID, characteristicUUID: UUID): Boolean {
-        return lastConnectedGatt?.let {
-            val characteristic = it.getService(serviceUUID)
-                .getCharacteristic(characteristicUUID)
-
-            if (characteristic != null) {
-                it.readCharacteristic(characteristic)
-                true
-            } else {
-                false
-            }
-        }!!
+        return lastConnectedGatt?.let { gatt ->
+            gatt.getService(serviceUUID)
+                ?.getCharacteristic(characteristicUUID)
+                ?.let { characteristic ->
+                    gatt.readCharacteristic(characteristic)
+                }
+        } ?: false
     }
 
     override fun writeCharacteristic(
@@ -119,18 +131,51 @@ class BluetoothImpl(
         type: String,
         value: Any
     ): Boolean {
-        return lastConnectedGatt?.let {
-            val characteristic = it.getService(serviceUUID)
-                .getCharacteristic(characteristicUUID)
+        return lastConnectedGatt?.let { gatt ->
+            gatt.getService(serviceUUID)
+                ?.getCharacteristic(characteristicUUID)
+                ?.let { characteristic ->
+                    bluetoothGattAttributeValueConverter.setValue(characteristic, type, value)
+                    gatt.writeCharacteristic(characteristic)
+                }
+        } ?: false
+    }
 
-            bluetoothCharacteristicValueConverter.setValue(characteristic, type, value)
-            if (characteristic != null) {
-                it.writeCharacteristic(characteristic)
-                true
-            } else {
-                false
-            }
-        }!!
+    override fun readDescriptor(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+        descriptorUUID: UUID
+    ): Boolean {
+        return lastConnectedGatt?.let { gatt ->
+            gatt.getService(serviceUUID)
+                ?.getCharacteristic(characteristicUUID)
+                ?.getDescriptor(descriptorUUID)
+                ?.let { descriptor ->
+                    gatt.readDescriptor(descriptor)
+                }
+        } ?: false
+    }
+
+    override fun writeDescriptor(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+        descriptorUUID: UUID,
+        type: String,
+        value: Any
+    ): Boolean {
+        return lastConnectedGatt?.let { gatt ->
+            gatt.getService(serviceUUID)
+                ?.getCharacteristic(characteristicUUID)
+                ?.getDescriptor(descriptorUUID)
+                ?.let { descriptor ->
+                    bluetoothGattAttributeValueConverter.setValue(descriptor, type, value)
+                    gatt.readDescriptor(descriptor)
+                }
+        } ?: false
+    }
+
+    override fun requestMtu(mtu: Int): Boolean {
+        return lastConnectedGatt?.requestMtu(mtu) ?: false
     }
 
     override fun connect(address: String) {
