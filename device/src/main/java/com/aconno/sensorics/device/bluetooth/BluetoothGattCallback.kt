@@ -38,6 +38,10 @@ class BluetoothGattCallback(
                 broadcastUpdate(ACTION_BEACON_HAS_SETTINGS)
             }
 
+            findLogCharacteristic(gatt)?.let {
+                broadcastUpdate(ACTION_BEACON_HAS_LOGS, it)
+            }
+
             findCacheCharacteristic(gatt)?.let {
                 broadcastUpdate(ACTION_BEACON_HAS_CACHE, it)
             }
@@ -105,6 +109,11 @@ class BluetoothGattCallback(
             ?.characteristics?.find { it.uuid.toString() == CACHE_CHARACTERISTIC_UUID }
     }
 
+    private fun findLogCharacteristic(gatt: BluetoothGatt?): BluetoothGattCharacteristic? {
+        return gatt?.services?.find { it.uuid.toString() == LOG_SERVICE_UUID }
+            ?.characteristics?.find { it.uuid.toString() == LOG_CHARACTERISTIC_UUID }
+    }
+
     companion object {
         const val ACTION_GATT_ERROR = "com.aconno.sensorics.ACTION_GATT_ERROR"
         const val ACTION_GATT_CONNECTING = "com.aconno.sensorics.ACTION_GATT_CONNECTING"
@@ -117,9 +126,12 @@ class BluetoothGattCallback(
         const val ACTION_GATT_CHAR_WRITE = "com.aconno.sensorics.ACTION_GATT_CHAR_WRITE"
         const val ACTION_BEACON_HAS_SETTINGS = "com.aconno.sensorics.ACTION_BEACON_HAS_SETTINGS"
         const val ACTION_BEACON_HAS_CACHE = "com.aconno.sensorics.ACTION_BEACON_HAS_CACHE"
+        const val ACTION_BEACON_HAS_LOGS = "com.aconno.sensorics.ACTION_BEACON_HAS_LOGS"
         const val ACTION_GATT_DESCRIPTOR_WRITE = "com.aconno.sensorics.ACTION_GATT_DESCRIPTOR_WRITE"
         private const val SETTINGS_SERVICE_UUID = "cc52c000-9adb-4c37-bc48-376f5fee8851"
         private const val CACHE_SERVICE_UUID = "cc521000-9adb-4c37-bc48-376f5fee8851"
         private const val CACHE_CHARACTERISTIC_UUID = "cc521001-9adb-4c37-bc48-376f5fee8851"
+        private const val LOG_SERVICE_UUID = "cc524000-9adb-4c37-bc48-376f5fee8851"
+        private const val LOG_CHARACTERISTIC_UUID = "cc524001-9adb-4c37-bc48-376f5fee8851"
     }
 }

@@ -86,6 +86,7 @@
             android:name=".ui.dfu.DfuActivity"
             android:label="@string/title_dfu" />
         <activity android:name=".ui.cache.CacheActivity" />
+        <activity android:name=".ui.log.LogActivity" />
 
 
         <activity android:name=".ui.dfu.NotificationActivity" />

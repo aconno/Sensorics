@@ -317,5 +317,6 @@
     <string name="undo">Undo</string>
     <string name="import_error" translatable="false">Import error</string>
     <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
+    <string name="auto_scroll">AutoScroll</string>
 
 </resources>

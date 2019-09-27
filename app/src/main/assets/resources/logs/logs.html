@@ -1,0 +1,143 @@
+<html>
+<head>
+    <link href="../html_resources/Rubik.css" rel="stylesheet"/>
+    <link href="./logs.css" rel="stylesheet"/>
+    <style type="text/css">
+    body {
+        font-family: 'Rubik', sans-serif;
+    }
+    </style>
+    <script>
+    var ln = 0; //line counter
+    var bufferSize = 256;
+    var scrollingPaused = false;
+    var searchTerms = null; // { columnName: "str1", keyword: "str2" };
+    const columnNames = ["timestamp", "level", "tag", "message"];
+    const logLevels = {
+        U: { colour: "magenta", priority: 5 }, // undefined
+        E: { colour: "red", priority: 4 },    // error
+        W: { colour: "gold", priority: 3 },   // warn
+        I: { colour: "blue", priority: 2 },   // info
+        D: { colour: "green", priority: 1 },  // debug
+        T: { colour: "grey", priority: 0 }    // trace
+    }
+    var minLogLevel = logLevels.T;
+
+    function addLogLine(json_value) {
+        if(window.bufferSize === 0) {
+            return;
+        }
+        resizeBuffer(window.bufferSize - 1);
+        window.ln += 1;
+        const line = JSON.parse(json_value);
+        const tableBody = document.getElementById("tableBody");
+        const newRow = document.createElement("tr");
+        for(let i = 0; i < columnNames.length; i++) {
+            let cell = document.createElement("td");
+            cell.setAttribute("class", columnNames[i])
+            if(columnNames[i] === "level") {
+                let levelStr = line.level.charAt(0).toUpperCase();
+                cell.style.backgroundColor = (
+                    logLevels[levelStr] || logLevels.U
+                ).colour;
+                cell.innerHTML = logLevels[levelStr] ? levelStr : "U";
+            } else {
+                cell.innerHTML = line[columnNames[i]];
+            }
+            newRow.appendChild(cell);
+        }
+        tableBody.appendChild(newRow);
+        newRow.style.display = satisfiesFilter(newRow) ? "" : "none";
+        if(!window.scrollingPaused && newRow.style.display != "none") {
+            newRow.scrollIntoView();
+        }
+    }
+    function toggleAutoScroll() {
+        window.scrollingPaused = !window.scrollingPaused;
+    }
+    function setBufferSize(newBufferSize) {
+        window.bufferSize = newBufferSize;
+        resizeBuffer(newBufferSize);
+    }
+    function resizeBuffer(newLength) {
+        while(window.ln > newLength) {
+            document.getElementById("table").deleteRow(1);
+            window.ln -= 1;
+        }
+    }
+    function setMinLogLevel(logLevel) {
+        window.minLogLevel = logLevels[logLevel.charAt(0).toUpperCase()];
+        applyNewFilter();
+    }
+    function searchFor(newColumnName, newKeyword) {
+        if(!(newColumnName && newKeyword)) {
+            window.searchTerms = null
+        } else {
+            window.searchTerms = { columnName: newColumnName, keyword: newKeyword.toLowerCase() };
+        }
+        applyNewFilter();
+    }
+    function satisfiesFilter(row) {
+        if(row.firstElementChild.tagName === "TH") {
+            return true;
+        }
+        let columnNumber = columnNames.indexOf("level");
+        const logLevel = logLevels[row.children[columnNumber].textContent];
+        const highPriority = window.minLogLevel.priority <= logLevel.priority;
+
+        if(window.searchTerms) {
+            columnNumber = columnNames.indexOf(window.searchTerms.columnName);
+            var matchesSearch = row.children[columnNumber].textContent.toLowerCase().includes(
+                window.searchTerms.keyword
+            );
+        } else {
+            var matchesSearch = true;
+        }
+        return highPriority && matchesSearch;
+    }
+    function applyNewFilter() {
+        Array.from(document.getElementById("tableBody").children).forEach(function (row) {
+            if(satisfiesFilter(row)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+    function exportDisplayed() {
+        const arr = Array.from(document.getElementById("tableBody").children).map(function (row) {
+            if(row.firstElementChild.tagName === "TH" || row.style.display === "none") {
+                return null;
+            }
+            var logLine = {};
+            for(let i = 0; i < columnNames.length; ++i) {
+                logLine[columnNames[i]] = row.children[i].textContent;
+            };
+            return logLine;
+        });
+        return JSON.stringify(arr.filter(function (value) {return value != null}));
+    }
+    </script>
+</head>
+
+<body style="background-color: white">
+    <table id="table">
+        <tbody id="tableBody">
+            <tr>
+                <th class="timestamp" id="timestampHeader">
+                    Timestamp
+                </th>
+                <th class="level" style="background-color: black">
+                    Lvl
+                </th>
+                <th class="tag">
+                    Tag
+                </th>
+                <th class="message">
+                    Message
+                </th>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

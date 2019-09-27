@@ -1,0 +1,30 @@
+html, body {
+    margin: 0;
+    background-color: white;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+#table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+}
+td {
+    word-break: break-all;
+}
+.timestamp {
+    width: 12ch;
+    text-align: center;
+}
+.level {
+    width: 3ch;
+    color: white;
+    font-weight: "bold";
+    text-align: center;
+}
+.tag {
+    width: 20%;
+}
+tbody tr:nth-child(even) {
+    background: #BABABA;
+}
