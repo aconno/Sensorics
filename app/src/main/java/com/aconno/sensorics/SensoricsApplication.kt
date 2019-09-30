@@ -15,6 +15,8 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
 import io.fabric.sdk.android.Fabric
+import io.tempo.Tempo
+import io.tempo.time_sources.SlackSntpTimeSource
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -55,6 +57,8 @@ class SensoricsApplication : Application(), HasActivityInjector, HasServiceInjec
         )
 
         AndroidThreeTen.init(this)
+
+        Tempo.initialize(this, timeSources = listOf(SlackSntpTimeSource()))
     }
 
     override fun activityInjector(): AndroidInjector<Activity> {

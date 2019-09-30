@@ -30,6 +30,7 @@ import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
+import com.aconno.sensorics.ui.settings_framework.SettingsFrameworkActivity
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -163,7 +164,8 @@ class DeviceMainFragment : DaggerFragment() {
             it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
             it.findItem(R.id.action_dfu).isVisible = hasSettings
-            //it.findItem(R.id.action_cache).isVisible = hasCache
+            it.findItem(R.id.action_settings_framework).isVisible = hasSettings
+            it.findItem(R.id.action_cache).isVisible = hasCache
         }
     }
 
@@ -219,6 +221,10 @@ class DeviceMainFragment : DaggerFragment() {
                 }
                 R.id.action_cache -> {
                     CacheActivity.start(context, mDevice.macAddress)
+                    return true
+                }
+                R.id.action_settings_framework -> {
+                    SettingsFrameworkActivity.start(context, mDevice.macAddress)
                     return true
                 }
                 else -> {

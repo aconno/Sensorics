@@ -42,4 +42,10 @@
         android:title="@string/cache"
         android:visible="false"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_settings_framework"
+        android:title="@string/settings_framework"
+        android:visible="false"
+        app:showAsAction="never" />
 </menu>

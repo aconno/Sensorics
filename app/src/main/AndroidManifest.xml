@@ -86,6 +86,7 @@
             android:name=".ui.dfu.DfuActivity"
             android:label="@string/title_dfu" />
         <activity android:name=".ui.cache.CacheActivity" />
+        <activity android:name=".ui.settings_framework.SettingsFrameworkActivity" />
 
 
         <activity android:name=".ui.dfu.NotificationActivity" />
@@ -108,7 +109,7 @@
             android:name=".device.notification.AlarmNotificationReceiver"
             android:enabled="true">
             <intent-filter>
-                <action  android:name="com.troido.intent.action.ACTION_ALARM_SNOOZE" />
+                <action android:name="com.troido.intent.action.ACTION_ALARM_SNOOZE" />
             </intent-filter>
         </receiver>
 
@@ -121,8 +122,8 @@
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.aconno.sensorics.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />

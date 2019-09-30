@@ -123,7 +123,7 @@ class ConfigureActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentListen
             object : TasksCompleteListener() {
                 @SuppressLint("SetTextI18n")
                 override fun onTaskComplete(tasksCompleted: Int, tasksTotal: Int) {
-                    Timber.e("Task Complete")
+                    Timber.e("TaskBase Complete")
                     runOnUiThread {
                         dialog.message.text = "$tasksCompleted/$tasksTotal"
                     }
