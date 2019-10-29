@@ -7,6 +7,7 @@ import androidx.room.Room
 import com.aconno.sensorics.AlarmServiceControllerImpl
 import com.aconno.sensorics.IntentProviderImpl
 import com.aconno.sensorics.SensoricsApplication
+import com.aconno.sensorics.dagger.time.TimeModule
 import com.aconno.sensorics.data.mapper.*
 import com.aconno.sensorics.data.repository.InMemoryRepositoryImpl
 import com.aconno.sensorics.data.repository.SensoricsDatabase
@@ -58,7 +59,7 @@ import dagger.Provides
 import io.reactivex.Flowable
 import javax.inject.Singleton
 
-@Module
+@Module (includes = [TimeModule::class])
 class AppModule {
 
     @Provides
@@ -307,11 +308,6 @@ class AppModule {
     @Singleton
     fun provideSyncRepository(dao: SyncDao): SyncRepository = SyncRepositoryImpl(dao)
 
-    @Provides
-    @Singleton
-    fun provideTimeProvider(): TimeProvider {
-        return TimeProviderImpl()
-    }
 
     @Provides
     @Singleton
@@ -323,7 +319,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun proviceDeviceTelephonyManager(
+    fun provideDeviceTelephonyManager(
         sensoricsApplication: SensoricsApplication
     ): DeviceTelephonyManager = DeviceTelephonyManagerImpl(
         sensoricsApplication.applicationContext

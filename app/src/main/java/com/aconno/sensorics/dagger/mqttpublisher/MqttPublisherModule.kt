@@ -18,7 +18,7 @@ class MqttPublisherModule {
 
     @Provides
     @MqttPublisherScope
-    fun provideRestPublisherViewModel(
+    fun provideMqttPublisherViewModel(
         mqttPublisherActivity: MqttPublisherActivity,
         mqttPublisherViewModelFactory: MqttPublisherViewModelFactory
     ) = ViewModelProviders.of(mqttPublisherActivity, mqttPublisherViewModelFactory)
@@ -38,27 +38,5 @@ class MqttPublisherModule {
         mqttPublishModelDataMapper
     )
 
-    @Provides
-    @MqttPublisherScope
-    fun provideSavePublishDeviceJoinUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): SavePublishDeviceJoinUseCase {
-        return SavePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
 
-    @Provides
-    @MqttPublisherScope
-    fun provideDeletePublishDeviceJoinUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): DeletePublishDeviceJoinUseCase {
-        return DeletePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @MqttPublisherScope
-    fun provideAddMqttPublishUseCase(
-        mqttPublishRepository: MqttPublishRepository
-    ): AddMqttPublishUseCase {
-        return AddMqttPublishUseCase(mqttPublishRepository)
-    }
 }

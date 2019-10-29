@@ -51,29 +51,6 @@ class RESTPublisherModule {
         restHttpGetParamModelMapper
     )
 
-    @Provides
-    @RESTPublisherScope
-    fun provideAddRESTPublishUseCase(
-        restPublishRepository: RestPublishRepository
-    ): AddRestPublishUseCase {
-        return AddRestPublishUseCase(restPublishRepository)
-    }
-
-    @Provides
-    @RESTPublisherScope
-    fun provideSavePublishDeviceJoinUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): SavePublishDeviceJoinUseCase {
-        return SavePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @RESTPublisherScope
-    fun provideDeletePublishDeviceJoinUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): DeletePublishDeviceJoinUseCase {
-        return DeletePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
 
     @Provides
     @RESTPublisherScope
@@ -107,19 +84,20 @@ class RESTPublisherModule {
         return DeleteRestHttpGetParamUseCase(restPublishRepository)
     }
 
-    @Provides
-    @RESTPublisherScope
-    fun provideGetRESTHeadersByIdUseCase(
-        restPublishRepository: RestPublishRepository
-    ): GetRestHeadersByIdUseCase {
-        return GetRestHeadersByIdUseCase(restPublishRepository)
-    }
+    //This two methods are provided by PublishModule since they are also used by BluetoothScanningService
+  //  @Provides
+   // @RESTPublisherScope
+   // fun provideGetRESTHeadersByIdUseCase(
+   //     restPublishRepository: RestPublishRepository
+   // ): GetRestHeadersByIdUseCase {
+  //      return GetRestHeadersByIdUseCase(restPublishRepository)
+  //  }
 
-    @Provides
-    @RESTPublisherScope
-    fun provideGetRESTHttpGetParamsByIdUseCase(
-        restPublishRepository: RestPublishRepository
-    ): GetRestHttpGetParamsByIdUseCase {
-        return GetRestHttpGetParamsByIdUseCase(restPublishRepository)
-    }
+   // @Provides
+  //  @RESTPublisherScope
+   // fun provideGetRESTHttpGetParamsByIdUseCase(
+   //     restPublishRepository: RestPublishRepository
+   // ): GetRestHttpGetParamsByIdUseCase {
+   //     return GetRestHttpGetParamsByIdUseCase(restPublishRepository)
+   // }
 }

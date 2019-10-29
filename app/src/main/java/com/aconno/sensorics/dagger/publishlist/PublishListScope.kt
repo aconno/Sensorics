@@ -1,4 +1,4 @@
-package com.aconno.sensorics.dagger.publish
+package com.aconno.sensorics.dagger.publishlist
 
 import javax.inject.Scope
 

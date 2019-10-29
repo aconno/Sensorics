@@ -38,29 +38,5 @@ class GoogleCloudPublisherModule {
         deletePublishDeviceJoinUseCase
     )
 
-    @Provides
-    @GoogleCloudPublisherScope
-    fun provideAddGooglePublishUseCase(
-        googlePublishRepository: GooglePublishRepository
-    ): AddGooglePublishUseCase {
-        return AddGooglePublishUseCase(
-            googlePublishRepository
-        )
-    }
 
-    @Provides
-    @GoogleCloudPublisherScope
-    fun provideSavePublishDeviceJoinUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): SavePublishDeviceJoinUseCase {
-        return SavePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @GoogleCloudPublisherScope
-    fun provideDeletePublishDeviceJoinUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): DeletePublishDeviceJoinUseCase {
-        return DeletePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
 }
