@@ -1,6 +1,7 @@
 package com.aconno.sensorics.dagger.actionlist
 
 import com.aconno.sensorics.domain.actions.ActionsRepository
+import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
@@ -34,5 +35,11 @@ class ActionListModule {
     fun provideDeleteActionUseCase(
         actionsRepository: ActionsRepository
     ) = DeleteActionUseCase(actionsRepository)
+
+    @Provides
+    @ActionListScope
+    fun provideAddActionUseCase(
+            actionsRepository: ActionsRepository
+    ) = AddActionUseCase(actionsRepository)
 
 }

@@ -13,6 +13,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.ActionAdapter
 import com.aconno.sensorics.adapter.ItemClickListener
 import com.aconno.sensorics.domain.actions.Action
+import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
@@ -38,7 +39,20 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
     @Inject
     lateinit var deleteActionUseCase: DeleteActionUseCase
 
+    @Inject
+    lateinit var saveActionUseCase: AddActionUseCase
+
     private val disposables = CompositeDisposable()
+
+    private val checkedChangeListener: ActionAdapter.OnCheckedChangeListener = object :
+            ActionAdapter.OnCheckedChangeListener {
+        override fun onCheckedChange(checked: Boolean, action : Action) {
+            action.active = checked
+            disposables.add(
+                saveActionUseCase.execute(action).subscribeOn(Schedulers.io()).subscribe()
+            )
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -119,6 +133,7 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
     override fun onPause() {
         super.onPause()
         disposables.clear()
+        actionAdapter.checkedChangeListener = null
     }
 
     private fun initActionList(actions: List<Action>) {
@@ -128,6 +143,8 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
         } else {
             action_list_empty_view.visibility = View.INVISIBLE
         }
+
+        actionAdapter.checkedChangeListener = checkedChangeListener
     }
 
     override fun onItemClick(item: Action) {

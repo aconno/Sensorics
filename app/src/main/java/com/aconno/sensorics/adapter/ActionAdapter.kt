@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.model.toString
+import com.aconno.sensorics.ui.settings.publishers.PublishRecyclerViewAdapter
 import kotlinx.android.synthetic.main.item_action.view.*
 
 class ActionAdapter(
     private val actions: MutableList<Action>,
     private val clickListener: ItemClickListener<Action>
 ) : RecyclerView.Adapter<ActionAdapter.ViewHolder>() {
+    var checkedChangeListener: OnCheckedChangeListener? = null
 
     fun setActions(actions: List<Action>) {
         this.actions.clear()
@@ -68,7 +70,16 @@ class ActionAdapter(
             view.text_mac_address.text = action.device.macAddress
             view.text_condition.text = action.condition.toString(view.context)
             view.text_outcome.text = action.outcome.toString()
+            view.action_switch.isChecked = action.active
             view.setOnClickListener { clickListener.onItemClick(action) }
+
+            view.action_switch.setOnCheckedChangeListener { _, isChecked ->
+                checkedChangeListener?.onCheckedChange(isChecked, action)
+            }
         }
+    }
+
+    interface OnCheckedChangeListener {
+        fun onCheckedChange(checked: Boolean, action: Action)
     }
 }

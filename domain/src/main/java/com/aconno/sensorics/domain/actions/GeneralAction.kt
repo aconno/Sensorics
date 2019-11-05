@@ -10,7 +10,7 @@ class GeneralAction(
     override val device: Device,
     override val condition: Condition,
     override val outcome: Outcome,
-    override val active: Boolean,
+    override var active: Boolean,
     override val timeFrom: Int,
     override val timeTo: Int
 ) : Action
