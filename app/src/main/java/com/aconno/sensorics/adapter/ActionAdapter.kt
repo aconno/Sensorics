@@ -55,17 +55,6 @@ class ActionAdapter(
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(action: Action) {
-            if (!action.active) {
-                val color = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    view.context.resources.getColor(R.color.inactive_action_background_color, view.context.theme)
-                } else {
-
-                    view.context.resources.getColor(R.color.inactive_action_background_color)
-                }
-                view.constraint_layout_action.setBackgroundColor(color)
-            } else {
-                view.constraint_layout_action.setBackgroundColor(Color.TRANSPARENT) // TODO: If default changed change it
-            }
             view.text_name.text = action.name
             view.text_mac_address.text = action.device.macAddress
             view.text_condition.text = action.condition.toString(view.context)
