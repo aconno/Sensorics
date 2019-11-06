@@ -312,7 +312,7 @@
     <string name="file_not_loaded">File not loaded</string>
     <string name="sharing_failed">Sharing failed</string>
     <string name="parsing_json_error">Couldn\'t parse JSON file</string>
-    <string name="error_converting_data_to_json">Error converting data to JSON</string>
+    <string name="error_converting_data_to_json" translatable="false">Error converting data to JSON</string>
     <string name="undo">Undo</string>
     <string name="import_error" translatable="false">Import error</string>
     <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
