@@ -15,5 +15,5 @@ interface FileStorage {
     fun readData(uri: String): ByteArray
 
     @Throws(IllegalArgumentException::class, IOException::class)
-    fun storeTempData(data: ByteArray): Pair<String, File>
+    fun storeTempData(data: ByteArray, fileNamePrefix : String = "data"): Pair<String, File>
 }

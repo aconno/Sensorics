@@ -1,6 +1,7 @@
 package com.aconno.sensorics.dagger.publish
 
 import androidx.lifecycle.ViewModelProviders
+import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
 import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
 import com.aconno.sensorics.domain.ifttt.RestPublishRepository
@@ -18,7 +19,7 @@ import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublis
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToPublishersUseCase
-import com.aconno.sensorics.domain.interactor.publisher.ConvertPublishersToJsonUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import com.aconno.sensorics.model.mapper.*
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.viewmodel.PublishListViewModel
@@ -201,8 +202,8 @@ class PublishListModule {
 
     @Provides
     @PublishListScope
-    fun provideConvertPublishersToJsonUseCase() : ConvertPublishersToJsonUseCase {
-        return ConvertPublishersToJsonUseCase()
+    fun provideConvertPublishersToJsonUseCase() : ConvertObjectsToJsonUseCase<BasePublish> {
+        return ConvertObjectsToJsonUseCase()
     }
 
     @Provides

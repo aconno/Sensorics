@@ -13,24 +13,32 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.ActionAdapter
 import com.aconno.sensorics.adapter.ItemClickListener
 import com.aconno.sensorics.domain.actions.Action
+import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToActionsUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToObjectsUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.google.android.material.snackbar.Snackbar
-import dagger.android.support.DaggerFragment
+import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_action_list.*
+import kotlinx.android.synthetic.main.fragment_action_list.container_fragment
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
  * @author aconno
  */
-class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
+
+
+class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListener<Action> {
 
     private lateinit var actionAdapter: ActionAdapter
     private var snackbar: Snackbar? = null
+    override val sharedFileNamePrefix = "actions"
 
     @Inject
     lateinit var getAllActionsUseCase: GetAllActionsUseCase
@@ -38,7 +46,15 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
     @Inject
     lateinit var deleteActionUseCase: DeleteActionUseCase
 
-    private val disposables = CompositeDisposable()
+    @Inject
+    lateinit var addActionUseCase: AddActionUseCase
+
+    @Inject
+    lateinit var convertActionsToJsonUseCase: ConvertObjectsToJsonUseCase<Action>
+
+    @Inject
+    lateinit var convertJsonToActionsUseCase: ConvertJsonToActionsUseCase
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -100,6 +116,60 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
         }
     }
 
+    override fun getFileShareSubject(): String {
+        return getString(R.string.actions_file_share_subject)
+    }
+
+    override fun getConvertFromJsonUseCase(): ConvertJsonToObjectsUseCase<Action> {
+        return convertJsonToActionsUseCase
+    }
+
+    override fun getConvertToJsonUseCase(): ConvertObjectsToJsonUseCase<Action> {
+        return convertActionsToJsonUseCase
+    }
+
+    override fun getItems(): List<Action> {
+        return actionAdapter.getActions()
+    }
+
+    override fun onItemsImportedFromFile(items: List<Action>) {
+        addActions(items)
+    }
+
+    private fun addActions(actions: List<Action>) {
+        Flowable.fromIterable(actions)
+                .observeOn(Schedulers.io())
+                .flatMapSingle {
+                    action ->
+                        Timber.d("ADDING ACTION TO DB ${action.name}")
+                        addActionUseCase.execute(action)
+                                .map {
+                                    action.id = it
+                                    action
+                                }
+                                .observeOn(Schedulers.io())
+                    }
+                .observeOn(AndroidSchedulers.mainThread())
+                .toList()
+                .subscribe ({
+                        addActionsToActionAdapter(it)
+                }, {
+                    Timber.d(it)
+                    Snackbar.make(container_fragment,
+                            getString(R.string.import_error),
+                            Snackbar.LENGTH_SHORT).show()
+                })
+                .also { addDisposable(it) }
+    }
+
+    private fun addActionsToActionAdapter(actions: List<Action>) {
+        if(actionAdapter.getActions().isEmpty()) {
+            initActionList(actions)
+        } else {
+            actionAdapter.appendActions(actions)
+        }
+    }
+
     private fun startAddActionActivity() {
         context?.let { ActionDetailsActivity.start(it) }
     }
@@ -107,7 +177,7 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
     override fun onResume() {
         super.onResume()
 
-        disposables.add(
+        addDisposable(
             getAllActionsUseCase.execute()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -116,13 +186,10 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
 
     }
 
-    override fun onPause() {
-        super.onPause()
-        disposables.clear()
-    }
 
     private fun initActionList(actions: List<Action>) {
         actionAdapter.setActions(actions)
+
         if (actions.isEmpty()) {
             action_list_empty_view.visibility = View.VISIBLE
         } else {
@@ -134,6 +201,8 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
         snackbar?.dismiss()
         context?.let { ActionDetailsActivity.start(it, item.id) }
     }
+
+
 
     companion object {
 

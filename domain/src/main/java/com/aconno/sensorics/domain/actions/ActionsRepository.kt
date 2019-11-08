@@ -11,7 +11,7 @@ interface ActionsRepository {
 
     fun getActionsByDeviceMacAddress(macAddress: String): Single<List<Action>>
 
-    fun addAction(action: Action): Completable
+    fun addAction(action: Action): Single<Long>
 
     fun deleteAction(action: Action): Completable
 }

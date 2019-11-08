@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.MalformedJsonException
 import io.reactivex.Single
 
-class ConvertJsonToPublishersUseCase : SingleUseCaseWithParameter<List<BasePublish>, String> {
+class ConvertJsonToPublishersUseCase : ConvertJsonToObjectsUseCase<BasePublish>() {
     private val gson = Gson()
     override fun execute(parameter: String): Single<List<BasePublish>> {
         try {

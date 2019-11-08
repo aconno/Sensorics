@@ -23,7 +23,7 @@ import com.aconno.sensorics.domain.interactor.data.ReadTextUseCase
 import com.aconno.sensorics.domain.interactor.data.StoreTempTextUseCase
 import com.aconno.sensorics.domain.interactor.data.StoreTextUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToPublishersUseCase
-import com.aconno.sensorics.domain.interactor.publisher.ConvertPublishersToJsonUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.MqttPublishModel
@@ -63,7 +63,7 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
     lateinit var publishListViewModel: PublishListViewModel
 
     @Inject
-    lateinit var convertPublishersToJsonUseCase: ConvertPublishersToJsonUseCase
+    lateinit var convertPublishersToJsonUseCase: ConvertObjectsToJsonUseCase<BasePublish>
 
     @Inject
     lateinit var convertJsonToPublishersUseCase: ConvertJsonToPublishersUseCase
@@ -250,7 +250,7 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
 
     @SuppressLint("CheckResult")
     private fun shareJSONfile(data: String) {
-        storeTempTextUseCase.execute(data)
+        storeTempTextUseCase.execute(data,"backend") //the second parameter is temp file name prefix
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ uriAndFile ->

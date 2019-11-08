@@ -10,6 +10,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.model.toString
 import kotlinx.android.synthetic.main.item_action.view.*
+import java.util.*
 
 class ActionAdapter(
     private val actions: MutableList<Action>,
@@ -20,6 +21,10 @@ class ActionAdapter(
         this.actions.clear()
         this.actions.addAll(actions)
         notifyDataSetChanged()
+    }
+
+    fun getActions() : List<Action>{
+        return Collections.unmodifiableList(actions)
     }
 
     fun getAction(position: Int): Action {
@@ -48,6 +53,12 @@ class ActionAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(actions[position])
+    }
+
+    fun appendActions(newActions: List<Action>) {
+        val offset = actions.size
+        actions.addAll(newActions)
+        notifyItemRangeChanged(offset,newActions.size)
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {

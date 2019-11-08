@@ -24,7 +24,7 @@ class SetActionActiveByDeviceMacAddressUseCase(
                     timeFrom = it.timeFrom,
                     timeTo = it.timeTo
                 )
-                addActionUseCase.execute(action)
+                Completable.fromSingle(addActionUseCase.execute(action))
             }
     }
 }

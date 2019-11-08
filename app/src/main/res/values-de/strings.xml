@@ -259,4 +259,6 @@
     <string name="undo">Undo</string>
     <string name="error_converting_data_to_json">Error converting data to JSON</string>
 
+    <string name="actions_file_share_subject">Sensorics Aktionsliste</string>
+
 </resources>
