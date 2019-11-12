@@ -320,4 +320,7 @@
     <string name="actions_file_share_subject">Sensorics actions list</string>
     <string name="backends_file_share_subject">Sensorics backends</string>
 
+    <string name="import_one_action_success">Successfully imported 1 action</string>
+    <string name="import_multiple_actions_success">Successfully imported %d actions</string>
+
 </resources>

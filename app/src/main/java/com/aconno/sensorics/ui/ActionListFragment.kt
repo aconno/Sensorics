@@ -171,6 +171,13 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         } else {
             actionAdapter.appendActions(actions)
         }
+
+        Snackbar.make(container_fragment,
+                when(actions.size) {
+                    1 -> getString(R.string.import_one_action_success)
+                    else -> getString(R.string.import_multiple_actions_success, actions.size)
+                },
+                Snackbar.LENGTH_SHORT).show()
     }
 
     private fun startAddActionActivity() {
