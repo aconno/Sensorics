@@ -25,7 +25,6 @@ import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_action_list.*
-import kotlinx.android.synthetic.main.fragment_action_list.container_fragment
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,6 +38,7 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
     private lateinit var actionAdapter: ActionAdapter
     private var snackbar: Snackbar? = null
     override val sharedFileNamePrefix = "actions"
+    override val exportedFileName: String = "actions.json"
 
     @Inject
     lateinit var getAllActionsUseCase: GetAllActionsUseCase

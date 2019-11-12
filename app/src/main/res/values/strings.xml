@@ -318,5 +318,6 @@
     <string name="import_error" translatable="false">Import error</string>
     <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
     <string name="actions_file_share_subject">Sensorics actions list</string>
+    <string name="backends_file_share_subject">Sensorics backends</string>
 
 </resources>

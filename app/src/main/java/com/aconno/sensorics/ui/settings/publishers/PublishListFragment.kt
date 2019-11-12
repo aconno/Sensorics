@@ -1,15 +1,9 @@
 package com.aconno.sensorics.ui.settings.publishers
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.*
@@ -19,9 +13,7 @@ import com.aconno.sensorics.domain.ifttt.GooglePublish
 import com.aconno.sensorics.domain.ifttt.MqttPublish
 import com.aconno.sensorics.domain.ifttt.RestPublish
 import com.aconno.sensorics.domain.ifttt.outcome.PublishType
-import com.aconno.sensorics.domain.interactor.data.ReadTextUseCase
-import com.aconno.sensorics.domain.interactor.data.StoreTempTextUseCase
-import com.aconno.sensorics.domain.interactor.data.StoreTextUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToObjectsUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToPublishersUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import com.aconno.sensorics.model.BasePublishModel
@@ -29,8 +21,8 @@ import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.MqttPublishModel
 import com.aconno.sensorics.model.RestPublishModel
 import com.aconno.sensorics.model.mapper.*
+import com.aconno.sensorics.ui.ShareableItemsListFragment
 import com.aconno.sensorics.ui.SwipeToDeleteCallback
-import com.aconno.sensorics.ui.base.BaseFragment
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.SelectPublisherActivity
 import com.aconno.sensorics.viewmodel.PublishListViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -39,23 +31,15 @@ import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_publish_list.*
-import java.io.File
 import javax.inject.Inject
 
-private const val CODE_SHARE = 1
-private const val CODE_EXPORT = 2
-private const val CODE_IMPORT = 3
 
 /**
  * A fragment representing a list of Items.
  * Activities containing this fragment MUST implement the
  * [PublishListFragment.OnListFragmentClickListener] interface.
  */
-class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListItemLongClickListener {
-
-    private lateinit var tempSharedFile: File
-
-    private var tempExportJSONData: String? = null
+class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRecyclerViewAdapter.OnListItemLongClickListener {
 
     private var snackbar: Snackbar? = null
 
@@ -67,15 +51,6 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
 
     @Inject
     lateinit var convertJsonToPublishersUseCase: ConvertJsonToPublishersUseCase
-
-    @Inject
-    lateinit var storeTextUseCase: StoreTextUseCase
-
-    @Inject
-    lateinit var storeTempTextUseCase: StoreTempTextUseCase
-
-    @Inject
-    lateinit var readTextUseCase: ReadTextUseCase
 
     @Inject
     lateinit var restPublishModelDataMapper: RESTPublishModelDataMapper
@@ -97,6 +72,8 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
     private var listener: OnListFragmentClickListener? = null
     private var listBasePublish: MutableList<BasePublishModel> = mutableListOf()
     private var selectedItem: BasePublishModel? = null
+
+    override val exportedFileName: String = "backend.json"
 
     private val checkedChangeListener: PublishRecyclerViewAdapter.OnCheckedChangeListener = object :
         PublishRecyclerViewAdapter.OnCheckedChangeListener {
@@ -183,49 +160,47 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
         }
     }
 
-    override fun onListItemLongClick(item: BasePublishModel?) {
-        activity?.let {
-            item?.let { model ->
-                val options = resources.getStringArray(R.array.ExportOptions)
+    override val sharedFileNamePrefix: String = "backend"
 
-                AlertDialog.Builder(it)
-                    .setTitle(R.string.export)
-                    .setItems(options) { dialog, which ->
-                        convertPublishersToJsonUseCase.execute(mapModelsToPublishers(listOf(model)))
-                            .subscribeOn(Schedulers.computation())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({ result ->
-                                when (options[which]) {
-                                    getString(R.string.share_text) -> shareJSONtext(result)
-                                    getString(R.string.share_file) -> shareJSONfile(result)
-                                    getString(R.string.export_file) -> {
-                                        tempExportJSONData = result
-                                        startExportJSONActivity()
-                                    }
-                                }
-                            }, {
-                                Snackbar.make(container_fragment,
-                                    getString(R.string.error_converting_data_to_json),
-                                    Snackbar.LENGTH_SHORT).show()
-                            }).also {
-                                addDisposable(it)
-                            }
-                    }
-                    .create()
-                    .show()
-            }
-        } ?: throw IllegalStateException("Activity cannot be null")
+    override fun getConvertFromJsonUseCase(): ConvertJsonToObjectsUseCase<BasePublish> {
+        return convertJsonToPublishersUseCase
+    }
+
+    override fun getConvertToJsonUseCase(): ConvertObjectsToJsonUseCase<BasePublish> {
+        return convertPublishersToJsonUseCase
+    }
+
+    override fun getFileShareSubject(): String {
+        return getString(R.string.backends_file_share_subject)
+    }
+
+    override fun getItems(): List<BasePublish> {
+        return mapModelsToPublishers(listBasePublish)
+    }
+
+    override fun onItemsImportedFromFile(items: List<BasePublish>) {
+        addModels(items)
+    }
+
+    override fun onListItemLongClick(item: BasePublishModel?) {
+        item?.let {
+            showExportOptionsDialog(mapModelToPublisher(it))
+        }
     }
 
     private fun mapModelsToPublishers(models: List<BasePublishModel>): List<BasePublish> {
         return models.map {
-            when (it) {
-                is GooglePublishModel -> googlePublishModelDataMapper.transform(it)
-                is RestPublishModel -> restPublishModelDataMapper.transform(it)
-                is MqttPublishModel -> mqttPublishModelDataMapper.toMqttPublish(it)
-                else -> throw IllegalArgumentException("Invalid publish model.")
-            }
+            mapModelToPublisher(it)
         }.toList()
+    }
+
+    private fun mapModelToPublisher(model : BasePublishModel) : BasePublish {
+        return when (model) {
+            is GooglePublishModel -> googlePublishModelDataMapper.transform(model)
+            is RestPublishModel -> restPublishModelDataMapper.transform(model)
+            is MqttPublishModel -> mqttPublishModelDataMapper.toMqttPublish(model)
+            else -> throw IllegalArgumentException("Invalid publish model.")
+        }
     }
 
     private fun mapPublishersToModels(publishers: List<BasePublish>): List<BasePublishModel> {
@@ -239,143 +214,6 @@ class PublishListFragment : BaseFragment(), PublishRecyclerViewAdapter.OnListIte
         }.toList()
     }
 
-    private fun shareJSONtext(data: String) {
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, data)
-            type = "application/json"
-        }
-        startActivity(Intent.createChooser(sendIntent, resources.getText(R.string.export)))
-    }
-
-    @SuppressLint("CheckResult")
-    private fun shareJSONfile(data: String) {
-        storeTempTextUseCase.execute(data,"backend") //the second parameter is temp file name prefix
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ uriAndFile ->
-                tempSharedFile = uriAndFile.second
-                val sendIntent: Intent = Intent().apply {
-                    type = "text/*"
-                    action = Intent.ACTION_SEND
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    putExtra(Intent.EXTRA_STREAM, Uri.parse(uriAndFile.first))
-                    putExtra(Intent.EXTRA_SUBJECT, getString(R.string.file_share_subject))
-                }
-                startActivityForResult(
-                    Intent.createChooser(sendIntent, getString(R.string.share_file)), CODE_SHARE
-                )
-            }, {
-                Snackbar.make(container_fragment,
-                    getString(R.string.sharing_failed),
-                    Snackbar.LENGTH_SHORT).show()
-            }).also {
-                addDisposable(it)
-            }
-    }
-
-    private fun startExportJSONActivity() {
-        val exportIntent: Intent = Intent().apply {
-            type = "text/*"
-            action = Intent.ACTION_CREATE_DOCUMENT
-            addCategory(Intent.CATEGORY_OPENABLE)
-            putExtra(Intent.EXTRA_TITLE, "backend.json")
-        }
-        startActivityForResult(exportIntent, CODE_EXPORT)
-    }
-
-    private fun startImportJSONActivity() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*"
-        }
-        startActivityForResult(intent, CODE_IMPORT)
-    }
-
-    fun writeJSONToFile(uri: Uri?) {
-        tempExportJSONData?.let {
-            uri?.toString()?.let { uriString ->
-                storeTextUseCase.execute(uriString, it)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnComplete {
-                        Snackbar.make(container_fragment,
-                            getString(R.string.file_saved),
-                            Snackbar.LENGTH_SHORT).show()
-                    }.doOnError {
-                        Snackbar.make(container_fragment,
-                            getString(R.string.file_not_saved),
-                            Snackbar.LENGTH_SHORT).show()
-                    }.subscribe().also {
-                        addDisposable(it)
-                    }
-            }
-        }
-    }
-
-    fun readFile(uri: Uri?) {
-        uri?.toString()?.let { uriString ->
-            readTextUseCase.execute(uriString)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result ->
-                    convertJsonToPublishersUseCase.execute(result)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ publishers ->
-                            addModels(publishers)
-                        }, {
-                            Snackbar.make(container_fragment,
-                                getString(R.string.parsing_json_error),
-                                Snackbar.LENGTH_SHORT).show()
-                        })
-                }, {
-                    Snackbar.make(container_fragment,
-                        getString(R.string.file_not_loaded),
-                        Snackbar.LENGTH_SHORT).show()
-                }).also {
-                    addDisposable(it)
-                }
-        }
-    }
-
-    /**
-     * Called by PublihListActivity when an item in the actionbar menu is selected
-     */
-    fun resolveActionBarEvent(item: MenuItem?) {
-        item?.let {
-            convertPublishersToJsonUseCase.execute(mapModelsToPublishers(listBasePublish))
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result ->
-                    when (it.itemId) {
-                        R.id.action_import_file -> startImportJSONActivity()
-                        R.id.action_share_all -> shareJSONfile(result)
-                        R.id.action_export_all -> {
-                            tempExportJSONData = result
-                            startExportJSONActivity()
-                        }
-                    }
-                }, {
-                    Snackbar.make(container_fragment,
-                        getString(R.string.error_converting_data_to_json),
-                        Snackbar.LENGTH_SHORT).show()
-                }).also {
-                    addDisposable(it)
-                }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            CODE_SHARE -> tempSharedFile.delete()
-            CODE_EXPORT -> if (resultCode == Activity.RESULT_OK) {
-                writeJSONToFile(data?.data)
-            }
-            CODE_IMPORT -> readFile(data?.data)
-        }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

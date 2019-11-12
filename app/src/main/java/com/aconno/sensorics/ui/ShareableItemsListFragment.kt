@@ -16,7 +16,6 @@ import com.aconno.sensorics.ui.base.BaseFragment
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_action_list.container_fragment
 import java.io.File
 import javax.inject.Inject
 
@@ -24,6 +23,7 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
     private var tempExportJSONData: String? = null
     private lateinit var tempSharedFile: File
     abstract val sharedFileNamePrefix : String
+    abstract val exportedFileName : String
 
     @Inject
     lateinit var storeTextUseCase: StoreTextUseCase
@@ -42,17 +42,21 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnComplete {
-                            Snackbar.make(container_fragment,
-                                    getString(R.string.file_saved),
-                                    Snackbar.LENGTH_SHORT).show()
+                            showSnackbarMessage(getString(R.string.file_saved))
                         }.doOnError {
-                            Snackbar.make(container_fragment,
-                                    getString(R.string.file_not_saved),
-                                    Snackbar.LENGTH_SHORT).show()
+                            showSnackbarMessage(getString(R.string.file_not_saved))
                         }.subscribe().also {
                             addDisposable(it)
                         }
             }
+        }
+    }
+
+    private fun showSnackbarMessage(message : String) {
+        view?.let {
+            Snackbar.make(it,
+                    message,
+                    Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -77,9 +81,7 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
                                             }
                                         }
                                     }, {
-                                        Snackbar.make(container_fragment,
-                                                getString(R.string.error_converting_data_to_json),
-                                                Snackbar.LENGTH_SHORT).show()
+                                        showSnackbarMessage(getString(R.string.error_converting_data_to_json))
                                     }).also {
                                         addDisposable(it)
                                     }
@@ -117,9 +119,7 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
                             }
                         }
                     }, {
-                        Snackbar.make(container_fragment,
-                                getString(R.string.error_converting_data_to_json),
-                                Snackbar.LENGTH_SHORT).show()
+                        showSnackbarMessage(getString(R.string.error_converting_data_to_json))
                     }).also {
                         addDisposable(it)
                     }
@@ -145,9 +145,7 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
                             Intent.createChooser(sendIntent, getString(R.string.share_file)), CODE_SHARE
                     )
                 }, {
-                    Snackbar.make(container_fragment,
-                            getString(R.string.sharing_failed),
-                            Snackbar.LENGTH_SHORT).show()
+                    showSnackbarMessage(getString(R.string.sharing_failed))
                 }).also {
                     addDisposable(it)
                 }
@@ -160,7 +158,7 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
             type = "text/*"
             action = Intent.ACTION_CREATE_DOCUMENT
             addCategory(Intent.CATEGORY_OPENABLE)
-            putExtra(Intent.EXTRA_TITLE, "actions.json")
+            putExtra(Intent.EXTRA_TITLE, exportedFileName)
         }
 
         startActivityForResult(exportIntent, CODE_EXPORT)
@@ -203,14 +201,10 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
                                 .subscribe({ items ->
                                     onItemsImportedFromFile(items)
                                 }, {
-                                    Snackbar.make(container_fragment,
-                                            getString(R.string.parsing_json_error),
-                                            Snackbar.LENGTH_SHORT).show()
+                                    showSnackbarMessage(getString(R.string.parsing_json_error))
                                 })
                     }, {
-                        Snackbar.make(container_fragment,
-                                getString(R.string.file_not_loaded),
-                                Snackbar.LENGTH_SHORT).show()
+                        showSnackbarMessage(getString(R.string.file_not_loaded))
                     }).also {
                         addDisposable(it)
                     }
