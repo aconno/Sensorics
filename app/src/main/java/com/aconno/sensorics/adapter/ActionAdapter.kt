@@ -14,7 +14,8 @@ import java.util.*
 
 class ActionAdapter(
     private val actions: MutableList<Action>,
-    private val clickListener: ItemClickListener<Action>
+    private val clickListener: ItemClickListener<Action>,
+    private val longClickListener: OnListItemLongClickListener?
 ) : RecyclerView.Adapter<ActionAdapter.ViewHolder>() {
 
     fun setActions(actions: List<Action>) {
@@ -80,6 +81,14 @@ class ActionAdapter(
             view.text_condition.text = action.condition.toString(view.context)
             view.text_outcome.text = action.outcome.toString()
             view.setOnClickListener { clickListener.onItemClick(action) }
+            view.setOnLongClickListener {
+                longClickListener?.onListItemLongClick(action)
+                true
+            }
         }
+    }
+
+    interface OnListItemLongClickListener {
+        fun onListItemLongClick(item: Action)
     }
 }

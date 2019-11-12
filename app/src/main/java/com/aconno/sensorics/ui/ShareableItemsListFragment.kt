@@ -2,6 +2,7 @@ package com.aconno.sensorics.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.view.MenuItem
@@ -34,7 +35,7 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
     lateinit var readTextUseCase: ReadTextUseCase
 
 
-    fun writeJSONToFile(uri: Uri?) {
+    private fun writeJSONToFile(uri: Uri?) {
         tempExportJSONData?.let {
             uri?.toString()?.let { uriString ->
                 storeTextUseCase.execute(uriString, it)
@@ -53,6 +54,49 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
                         }
             }
         }
+    }
+
+    fun showExportOptionsDialog(sharedItem : T) {
+        activity?.let {
+            sharedItem?.let { item ->
+                val options = resources.getStringArray(R.array.ExportOptions)
+
+                AlertDialog.Builder(it)
+                        .setTitle(R.string.export)
+                        .setItems(options) { dialog, which ->
+                            getConvertToJsonUseCase().execute(listOf(sharedItem))
+                                    .subscribeOn(Schedulers.computation())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe({ result ->
+                                        when (options[which]) {
+                                            getString(R.string.share_text) -> shareJSONtext(result)
+                                            getString(R.string.share_file) -> shareJSONfile(result)
+                                            getString(R.string.export_file) -> {
+                                                tempExportJSONData = result
+                                                startExportJSONActivity()
+                                            }
+                                        }
+                                    }, {
+                                        Snackbar.make(container_fragment,
+                                                getString(R.string.error_converting_data_to_json),
+                                                Snackbar.LENGTH_SHORT).show()
+                                    }).also {
+                                        addDisposable(it)
+                                    }
+                        }
+                        .create()
+                        .show()
+            }
+        } ?: throw IllegalStateException("Activity cannot be null")
+    }
+
+    private fun shareJSONtext(data: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, data)
+            type = "text/plain"
+        }
+        startActivity(Intent.createChooser(sendIntent, resources.getText(R.string.export)))
     }
 
     abstract fun getConvertToJsonUseCase() : ConvertObjectsToJsonUseCase<T>

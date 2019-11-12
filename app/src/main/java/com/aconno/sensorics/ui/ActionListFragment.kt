@@ -34,7 +34,7 @@ import javax.inject.Inject
  */
 
 
-class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListener<Action> {
+class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListener<Action>, ActionAdapter.OnListItemLongClickListener {
 
     private lateinit var actionAdapter: ActionAdapter
     private var snackbar: Snackbar? = null
@@ -65,7 +65,7 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        actionAdapter = ActionAdapter(mutableListOf(), this)
+        actionAdapter = ActionAdapter(mutableListOf(), this,this)
         action_list.adapter = actionAdapter
 
         action_list.itemAnimator = DefaultItemAnimator()
@@ -116,6 +116,10 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         }
     }
 
+    override fun onListItemLongClick(item: Action) {
+        showExportOptionsDialog(item)
+    }
+
     override fun getFileShareSubject(): String {
         return getString(R.string.actions_file_share_subject)
     }
@@ -141,7 +145,6 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
                 .observeOn(Schedulers.io())
                 .flatMapSingle {
                     action ->
-                        Timber.d("ADDING ACTION TO DB ${action.name}")
                         addActionUseCase.execute(action)
                                 .map {
                                     action.id = it
