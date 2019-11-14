@@ -265,4 +265,7 @@
     <string name="import_one_action_success">1 Aktion erfolgreich importiert</string>
     <string name="import_multiple_actions_success">%d Aktionen erfolgreich importiert</string>
 
+    <string name="action_import_partial_success">%d/%d Aktionen erfolgreich importiert</string>
+    <string name="empty_import_file">Die Datei ist leer</string>
+
 </resources>

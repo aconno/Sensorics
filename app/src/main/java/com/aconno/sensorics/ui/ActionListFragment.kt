@@ -21,11 +21,9 @@ import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToObjectsUseC
 import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_action_list.*
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -141,29 +139,54 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
     }
 
     private fun addActions(actions: List<Action>) {
-        Flowable.fromIterable(actions)
-                .observeOn(Schedulers.io())
-                .flatMapSingle {
-                    action ->
-                        addActionUseCase.execute(action)
-                                .map {
-                                    action.id = it
-                                    action
-                                }
-                                .observeOn(Schedulers.io())
+        var imported = 0
+        var failed = 0
+        val actionsToAddToAdapter : MutableList<Action> = mutableListOf()
+
+        if(actions.isEmpty()) { //in case of user tries to import an empty file
+            Snackbar.make(container_fragment,
+                    getString(R.string.empty_import_file),
+                    Snackbar.LENGTH_SHORT).show()
+        }
+
+        val updateAdapterLazily = { //updates the adapter only when all actions have been (successfully or unsuccessfully) added to db
+            if(actions.size == failed + imported) {
+                addActionsToActionAdapter(actionsToAddToAdapter)
+
+                Snackbar.make(container_fragment,
+                        when(imported) {
+                            0 -> getString(R.string.import_error)
+                            1 -> if(failed == 0) getString(R.string.import_one_action_success)
+                                else getString(R.string.action_import_partial_success, imported, actions.size)
+                            else -> if(failed == 0) getString(R.string.import_multiple_actions_success,imported)
+                                else getString(R.string.action_import_partial_success, imported, actions.size)
+                        },
+                        Snackbar.LENGTH_SHORT).show()
+            }
+        }
+
+        actions.forEach { action ->
+            addActionUseCase.execute(action)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .map {
+                        action.id = it
+                        action
                     }
-                .observeOn(AndroidSchedulers.mainThread())
-                .toList()
-                .subscribe ({
-                        addActionsToActionAdapter(it)
-                }, {
-                    Timber.d(it)
-                    Snackbar.make(container_fragment,
-                            getString(R.string.import_error),
-                            Snackbar.LENGTH_SHORT).show()
-                })
-                .also { addDisposable(it) }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe ({
+                        actionsToAddToAdapter.add(it)
+                        imported++
+                        updateAdapterLazily()
+                    }, {
+                        failed++
+                        updateAdapterLazily()
+                    }
+                    )
+                }
+
     }
+
 
     private fun addActionsToActionAdapter(actions: List<Action>) {
         if(actionAdapter.getActions().isEmpty()) {
@@ -171,13 +194,6 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         } else {
             actionAdapter.appendActions(actions)
         }
-
-        Snackbar.make(container_fragment,
-                when(actions.size) {
-                    1 -> getString(R.string.import_one_action_success)
-                    else -> getString(R.string.import_multiple_actions_success, actions.size)
-                },
-                Snackbar.LENGTH_SHORT).show()
     }
 
     private fun startAddActionActivity() {
