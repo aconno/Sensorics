@@ -3,6 +3,7 @@ package com.aconno.sensorics.dagger.application
 import com.aconno.sensorics.AlarmService
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BluetoothScanningService
+import com.aconno.sensorics.MqttVirtualScanningService
 import com.aconno.sensorics.dagger.action_details.ActionDetailsActivityScope
 import com.aconno.sensorics.dagger.action_details.ActionDetailsModule
 import com.aconno.sensorics.dagger.actionlist.ActionListFragmentsModule
@@ -23,6 +24,8 @@ import com.aconno.sensorics.dagger.mainactivity.MainActivityModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityScope
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherModule
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherScope
+import com.aconno.sensorics.dagger.mqttvirtualscanning.MqttVirtualScanningServiceModule
+import com.aconno.sensorics.dagger.mqttvirtualscanning.MqttVirtualScanningServiceScope
 import com.aconno.sensorics.dagger.publish.PublishListFragmentsModule
 import com.aconno.sensorics.dagger.publish.PublishListModule
 import com.aconno.sensorics.dagger.publish.PublishListScope
@@ -55,6 +58,10 @@ abstract class ActivityBuilder {
     @BluetoothScanningServiceScope
     @ContributesAndroidInjector(modules = [BluetoothScanningServiceModule::class])
     abstract fun bindBluetoothScanningService(): BluetoothScanningService
+
+    @MqttVirtualScanningServiceScope
+    @ContributesAndroidInjector(modules = [MqttVirtualScanningServiceModule::class])
+    abstract fun bindMqttVirtualScanningService(): MqttVirtualScanningService
 
     @ContributesAndroidInjector
     abstract fun bindBluetoothConnectService(): BluetoothConnectService

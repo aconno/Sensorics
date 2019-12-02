@@ -3,7 +3,6 @@ package com.aconno.sensorics.dagger.mainactivity
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.dagger.action_details.ActionDetailsActivityScope
 import com.aconno.sensorics.device.permissons.PermissionActionFactory
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
@@ -83,11 +82,27 @@ class MainActivityModule {
 
     @Provides
     @MainActivityScope
+    fun provideMqttVirtualScanningViewModel(
+        mainActivity: MainActivity,
+        mqttVirtualScanningViewModelFactory: MqttVirtualScanningViewModelFactory
+    ) = ViewModelProviders.of(mainActivity, mqttVirtualScanningViewModelFactory)
+        .get(MqttVirtualScanningViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
     fun provideBluetoothScanningViewModelFactory(
         bluetooth: Bluetooth,
         sensoricsApplication: SensoricsApplication
     ) = BluetoothScanningViewModelFactory(
         bluetooth,
+        sensoricsApplication
+    )
+
+    @Provides
+    @MainActivityScope
+    fun provideMqttVirtualScanningViewModelFactory(
+        sensoricsApplication: SensoricsApplication
+    ) = MqttVirtualScanningViewModelFactory(
         sensoricsApplication
     )
 
