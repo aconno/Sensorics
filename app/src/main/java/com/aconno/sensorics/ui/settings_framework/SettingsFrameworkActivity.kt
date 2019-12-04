@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.R
@@ -24,16 +23,37 @@ import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
+import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
 import com.google.gson.Gson
+import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.Disposable
+import kotlinx.android.synthetic.main.activity_configure.*
 import timber.log.Timber
+import javax.inject.Inject
 
-class SettingsFrameworkActivity : AppCompatActivity(), LockStateRequestCallback {
+class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCallback ,
+    BeaconGeneralFragmentListener {
     private var bluetoothConnectService: BluetoothConnectService? = null
     private var connectResultDisposable: Disposable? = null
     private lateinit var macAddress: String
     private lateinit var taskProcessor: BluetoothTaskProcessor
     private lateinit var beacon: Beacon
+
+    @Inject
+    lateinit var beaconViewModel: BeaconSettingsViewModel
+    var device: String = ""
+
+    private val beaconSettingsPagerAdapter: BeaconSettingsPagerAdapter by lazy {
+        BeaconSettingsPagerAdapter(supportFragmentManager).apply {
+            beaconViewModel.beacon.observe(this@SettingsFrameworkActivity, Observer<Beacon> {
+                it?.let {
+                    this.beacon = it
+                    Timber.d("Beacon updated")
+                    this.notifyDataSetChanged()
+                }
+            })
+        }
+    }
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -67,6 +87,28 @@ class SettingsFrameworkActivity : AppCompatActivity(), LockStateRequestCallback 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_configure)
         getDeviceMacAddress(savedInstanceState)
+
+        if (intent.extras != null && intent.extras!!.containsKey(DEVICE_MAC_ADDRESS)) {
+            intent.extras!!.getString(DEVICE_MAC_ADDRESS)?.let {
+                device = it
+            }
+
+        } else {
+            throw IllegalArgumentException("Device not provided.")
+        }
+
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        /*Set titlebar */
+        supportActionBar?.subtitle = device
+
+        vp_beacon.adapter = beaconSettingsPagerAdapter
+        beaconSettingsPagerAdapter.notifyDataSetChanged()
+
+        // Bind the tabs to the ViewPager
+        tabs.setViewPager(vp_beacon)
     }
 
     override fun onStart() {
@@ -124,8 +166,10 @@ class SettingsFrameworkActivity : AppCompatActivity(), LockStateRequestCallback 
                 override fun onSuccess() {
                     Timber.d("Test567")
                     Timber.d(Gson().toJson(beacon.toJson()))
-                }
 
+                    beaconViewModel.beacon.value = beacon
+                    tabs.visibility = View.VISIBLE
+                }
                 override fun execute(bluetooth: Bluetooth): Boolean {
                     return true
                 }
@@ -194,5 +238,21 @@ class SettingsFrameworkActivity : AppCompatActivity(), LockStateRequestCallback 
                 context.startActivity(it)
             }
         }
+    }
+
+    override fun updateFirmware() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun resetFactory() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun powerOff() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun addPassword() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
