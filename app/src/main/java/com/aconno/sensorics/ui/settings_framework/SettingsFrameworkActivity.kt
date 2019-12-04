@@ -19,9 +19,12 @@ import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.v2.BeaconImpl
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.device.bluetooth.BluetoothTaskProcessorImpl
+import com.aconno.sensorics.device.bluetooth.tasks.GenericTask
 import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
 import com.aconno.sensorics.domain.model.GattCallbackPayload
+import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
+import com.google.gson.Gson
 import io.reactivex.disposables.Disposable
 import timber.log.Timber
 
@@ -116,7 +119,16 @@ class SettingsFrameworkActivity : AppCompatActivity(), LockStateRequestCallback 
                 Toast.LENGTH_LONG
             ).show()
 
-            beacon.read()
+            beacon.read(object : GenericTask("On Read Completed Task") {
+                override fun onSuccess() {
+                    Timber.d("Test567")
+                    Timber.d(Gson().toJson(beacon.toJson()))
+                }
+
+                override fun execute(bluetooth: Bluetooth): Boolean {
+                    return true
+                }
+            })
         } else {
             runOnUiThread {
                 createPasswordDialog(object : OnPasswordDialogAction {

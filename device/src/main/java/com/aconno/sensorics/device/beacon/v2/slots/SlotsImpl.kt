@@ -1,7 +1,6 @@
 package com.aconno.sensorics.device.beacon.v2.slots
 
 import com.aconno.sensorics.device.beacon.Slots
-import com.aconno.sensorics.device.beacon.v2.slots.SlotImpl.Config
 import com.aconno.sensorics.domain.migrate.*
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.UINT32
 import timber.log.Timber
@@ -9,6 +8,7 @@ import java.util.zip.CRC32
 
 
 class SlotsImpl(override val size: Int) : Slots(size) {
+    override lateinit var config: Config
 
     init {
 //        repeat(size) { add(SlotImpl()) }
@@ -30,7 +30,7 @@ class SlotsImpl(override val size: Int) : Slots(size) {
         val frameTypeSize: Short = reader.readUInt8()
         val advertisingFormatSize: Int = reader.readUInt16()
 
-        val config = Config(
+        config = Config(
             slotNameSize.toInt(),
             frameTypeSize.toInt(),
             advertisingFormatSize

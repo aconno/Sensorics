@@ -26,7 +26,6 @@ import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.cache.CacheActivity
-import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
@@ -161,7 +160,6 @@ class DeviceMainFragment : DaggerFragment() {
             it.findItem(R.id.action_start_usecases_activity).isVisible =
                 BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
             it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
-            it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
             it.findItem(R.id.action_dfu).isVisible = hasSettings
             it.findItem(R.id.action_settings_framework).isVisible = hasSettings
@@ -191,17 +189,6 @@ class DeviceMainFragment : DaggerFragment() {
                 }
                 R.id.action_start_usecases_activity -> {
                     (activity as MainActivity).onUseCaseClicked(mDevice.macAddress, mDevice.name)
-                    return true
-                }
-                R.id.action_start_config_activity -> {
-                    this.view?.let {
-                        Snackbar.make(it, "Functionality coming soon.", Snackbar.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    activity?.let {
-                        ConfigureActivity.start(it, device = mDevice)
-                    }
                     return true
                 }
                 R.id.action_start_logging_activity -> {

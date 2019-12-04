@@ -4,12 +4,15 @@ import com.aconno.sensorics.device.beacon.Slot.Type
 import com.aconno.sensorics.domain.migrate.asObjectOrNull
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 
 
 abstract class Slots(
     size: Int,
     open val supportedSlots: Array<Type> = DEFAULT_SUPPORTED_SLOTS
 ) : ArrayList<Slot>(size) {
+    abstract var config: Config
+
     abstract fun fromBytes(data: ByteArray)
 
     abstract fun toBytes(): ByteArray
@@ -18,10 +21,17 @@ abstract class Slots(
 
 
     fun toJson(): JsonElement {
-        return JsonArray().apply {
-            this@Slots.forEach { slot ->
-                this.add(slot.toJson())
-            }
+        return JsonObject().apply {
+            this.add("config", JsonObject().apply {
+                this.addProperty("nameSize", config.NAME_SIZE)
+                this.addProperty("frameTypeSize", config.FRAME_TYPE_SIZE)
+                this.addProperty("advFormatSize", config.ADV_FORMAT_SIZE)
+            })
+            this.add("slots", JsonArray().apply {
+                this@Slots.forEach { slot ->
+                    this.add(slot.toJson())
+                }
+            })
         }
     }
 
@@ -47,4 +57,10 @@ abstract class Slots(
             .map { Type.valueOf(it) }
             .toTypedArray()
     }
+
+    class Config(
+        val NAME_SIZE: Int,
+        val FRAME_TYPE_SIZE: Int,
+        val ADV_FORMAT_SIZE: Int
+    )
 }

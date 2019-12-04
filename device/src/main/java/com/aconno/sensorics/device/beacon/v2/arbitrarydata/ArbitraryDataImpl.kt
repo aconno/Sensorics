@@ -3,13 +3,13 @@ package com.aconno.sensorics.device.beacon.v2.arbitrarydata
 import com.aconno.sensorics.device.bluetooth.tasks.CharacteristicReadTask
 import com.aconno.sensorics.device.bluetooth.tasks.CharacteristicWriteTask
 import com.aconno.sensorics.domain.UUIDProvider
-import com.aconno.sensorics.domain.migrate.ValueConverters
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.UINT32
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.UTF8_STRING
 import com.aconno.sensorics.domain.migrate.ValueReader
 import com.aconno.sensorics.domain.migrate.ValueReaderImpl
 import com.aconno.sensorics.domain.migrate.getValueForUpdate
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
+import com.aconno.sensorics.domain.scanning.Task
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
@@ -33,8 +33,8 @@ class ArbitraryDataImpl(
 
     val type: Type = object : TypeToken<Map<String, String>>() {}.type
 
-    override fun read(taskProcessor: BluetoothTaskProcessor) {
-        taskProcessor.queueTask(object : CharacteristicReadTask(
+    override fun read(taskProcessor: BluetoothTaskProcessor): Task {
+        return object : CharacteristicReadTask(
             name = "Arbitrary Data Read Task",
             serviceUUID = serviceUuid,
             characteristicUUID = uuid
@@ -47,12 +47,15 @@ class ArbitraryDataImpl(
                 val reader: ValueReader = ValueReaderImpl(data)
                 totalSize = reader.readUInt32().toInt()
 
+                taskQueue.clear()
                 if (data.size < totalSize) {
-                    taskQueue.offer(this.apply { active = false })
+                    taskQueue.offer(this.apply {
+                        active = false
+                    })
                 } else {
                     capacity = reader.readUInt32().toInt()
 
-                    val crcGiven: Long = ValueConverters.UINT32.deserialize(data, data.size - 4)
+                    val crcGiven: Long = UINT32.deserialize(data, data.size - 4)
                     val crcCalculated: Long = CRC32().getValueForUpdate(data.copyOf(data.size - 4))
 
                     if (crcGiven != crcCalculated) {
@@ -73,7 +76,7 @@ class ArbitraryDataImpl(
                     }
                 }
             }
-        })
+        }
     }
 
     override operator fun set(key: String, value: String): Boolean {

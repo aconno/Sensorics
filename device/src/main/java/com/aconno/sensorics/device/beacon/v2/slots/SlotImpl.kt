@@ -3,6 +3,7 @@ package com.aconno.sensorics.device.beacon.v2.slots
 import com.aconno.sensorics.device.beacon.Slot
 import com.aconno.sensorics.device.beacon.Slot.AdvertisingModeParameters.Mode.EVENT
 import com.aconno.sensorics.device.beacon.Slot.AdvertisingModeParameters.Mode.INTERVAL
+import com.aconno.sensorics.device.beacon.Slots.Config
 import com.aconno.sensorics.domain.migrate.*
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.ASCII_STRING
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.INT8
@@ -92,10 +93,4 @@ class SlotImpl(
             INT8.serialize(txPower) +
             byteArrayOf(0x00, 0x00, 0x00)
     }
-
-    class Config(
-        val NAME_SIZE: Int,
-        val FRAME_TYPE_SIZE: Int,
-        val ADV_FORMAT_SIZE: Int
-    )
 }
