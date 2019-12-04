@@ -18,7 +18,7 @@ class BluetoothDeviceService : Service() {
     ) {
         val remoteDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(macAddress)
         bluetoothDeviceImpl = BluetoothDeviceImpl(this, remoteDevice)
-        bluetoothDeviceImpl?.connect(false, object : BluetoothGattCallback() {
+        bluetoothDeviceImpl?.connect(true, object : BluetoothGattCallback() {
             override fun onDeviceDisconnected(device: BluetoothDevice) {
                 Timber.wtf("Disconnected somehow")
                 loadingTasksUIInterface.onDisconnected()

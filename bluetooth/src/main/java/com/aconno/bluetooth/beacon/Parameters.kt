@@ -42,7 +42,7 @@ class Parameters(
         override fun onSuccess() {
             taskQueue.offer(object : CharacteristicReadTask("Reading parameter $i group", characteristicUUID = PARAMETER_GROUP_UUID) {
                 override fun onSuccess(value: ByteArray) {
-                    val group: String = com.aconno.bluetooth.ValueConverter.UTF8STRING.converter.deserialize(value.copyOfRange(0, value.stringLength()), order = ByteOrder.BIG_ENDIAN) as String
+                    val group: String = ValueConverter.UTF8STRING.converter.deserialize(value.copyOfRange(0, value.stringLength()), order = ByteOrder.BIG_ENDIAN) as String
                     taskQueue.offer(object : CharacteristicReadTask("Reading parameter $i data", characteristicUUID = PARAMETER_DATA_UUID) {
                         override fun onSuccess(value: ByteArray) {
                             Timber.e(value.toHex())

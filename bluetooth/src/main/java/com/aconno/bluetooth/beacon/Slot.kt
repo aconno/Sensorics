@@ -113,6 +113,13 @@ class Slot(
             val rawToContentConverter: ((ByteArray) -> MutableMap<String, Any>)? = null,
             val contentToRawConverter: ((MutableMap<String, Any>) -> ByteArray)? = null
     ) {
+        DEFAULT("DEFAULT", true, {
+            mutableMapOf<String, Any>().apply {
+                put(KEY_ADVERTISING_CONTENT_DEFAULT_DATA, trimAdvertisement(it))
+            }
+        }, {
+            it[KEY_ADVERTISING_CONTENT_DEFAULT_DATA] as ByteArray
+        }),
         UID("UID", true, {
             mutableMapOf<String, Any>().apply {
                 put(KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID, it.copyOfRange(0, 10).toCompactHex())
@@ -207,6 +214,7 @@ class Slot(
 
     companion object {
         const val EXTRA_BEACON_SLOT_POSITION = "com.aconno.beaconapp.BEACON_SLOT_POSITION"
+        const val KEY_ADVERTISING_CONTENT_DEFAULT_DATA = "com.aconno.beaconapp.ADVERTISING_CONTENT_DEFAULT_DATA"
         const val KEY_ADVERTISING_CONTENT_IBEACON_UUID = "com.aconno.beaconapp.ADVERTISING_CONTENT_IBEACON_UUID"
         const val KEY_ADVERTISING_CONTENT_IBEACON_MAJOR = "com.aconno.beaconapp.ADVERTISING_CONTENT_IBEACON_MAJOR"
         const val KEY_ADVERTISING_CONTENT_IBEACON_MINOR = "com.aconno.beaconapp.ADVERTISING_CONTENT_IBEACON_MINOR"
@@ -214,6 +222,38 @@ class Slot(
         const val KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID = "com.aconno.beaconapp.ADVERTISING_CONTENT_UID_INSTANCE_ID"
         const val KEY_ADVERTISING_CONTENT_URL_URL = "com.aconno.beaconapp.ADVERTISING_CONTENT_UID_URL_URL"
         const val KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM = "com.aconno.beaconapp.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM"
+
+
+        fun advertisementToMap(advertisement: ByteArray): Map<Byte, ByteArray> {
+            val map: MutableMap<Byte, MutableList<Byte>> = mutableMapOf()
+            var currentId: Byte? = null
+            var lengthLeft = 0
+            for (i in 0 until advertisement.size) {
+                if (lengthLeft == 0) {
+                    lengthLeft = advertisement[i].toInt()
+                } else {
+                    if (currentId == null) {
+                        currentId = advertisement[i]
+                        map[currentId] = mutableListOf()
+                    } else {
+                        map[currentId]?.add(advertisement[i])
+                    }
+                    lengthLeft--
+                }
+            }
+
+            return map.entries.associate { it.key to it.value.toByteArray() }
+        }
+
+        fun advertisementMapToBytes(map: Map<Byte, ByteArray>): ByteArray {
+            return map.flatMap { entry ->
+                listOf((entry.value.size + 1).toByte(), entry.key) + entry.value.toList()
+            }.toByteArray()
+        }
+
+        fun trimAdvertisement(advertisement: ByteArray): ByteArray {
+            return advertisementMapToBytes(advertisementToMap(advertisement))
+        }
     }
 
 }

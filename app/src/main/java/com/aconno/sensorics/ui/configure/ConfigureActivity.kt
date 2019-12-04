@@ -33,7 +33,7 @@ class ConfigureActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentListen
 
     @Inject
     lateinit var beaconViewModel: BeaconViewModel
-
+    var isStop: Boolean = false
     private val beaconPagerAdapter: BeaconPagerAdapter by lazy {
         BeaconPagerAdapter(supportFragmentManager).apply {
             beaconViewModel.beacon.observe(this@ConfigureActivity, Observer<Beacon> {
@@ -152,7 +152,7 @@ class ConfigureActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentListen
         }.create().apply {
             setCanceledOnTouchOutside(false)
         }.also {
-            if (!this.isFinishing or !this.isDestroyed) {
+            if ( !isStop or !this.isFinishing or !this.isDestroyed) {
                 it.show()
             }
         }
@@ -203,6 +203,7 @@ class ConfigureActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentListen
 
     override fun onStart() {
         super.onStart()
+        Timber.d("Service Connection")
         Intent(this, BluetoothDeviceService::class.java).also {
             bindService(
                 it, serviceConnection, Context.BIND_AUTO_CREATE
@@ -211,7 +212,9 @@ class ConfigureActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentListen
     }
 
     override fun onStop() {
+        isStop = true
         unbindService(serviceConnection)
+        dialog.dismiss()
         closeConnection()
         super.onStop()
     }
