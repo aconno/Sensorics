@@ -14,7 +14,7 @@ import dagger.Provides
 import io.reactivex.Flowable
 
 @Module
-class ActionDetailsModule {
+class ActionDetailsActivityModule {
 
     @Provides
     @ActionDetailsActivityScope

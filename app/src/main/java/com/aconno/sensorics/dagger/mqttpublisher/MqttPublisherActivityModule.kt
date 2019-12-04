@@ -1,8 +1,6 @@
 package com.aconno.sensorics.dagger.mqttpublisher
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
-import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
@@ -14,10 +12,10 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class MqttPublisherModule {
+class MqttPublisherActivityModule {
 
     @Provides
-    @MqttPublisherScope
+    @MqttPublisherActivityScope
     fun provideMqttPublisherViewModel(
         mqttPublisherActivity: MqttPublisherActivity,
         mqttPublisherViewModelFactory: MqttPublisherViewModelFactory
@@ -25,7 +23,7 @@ class MqttPublisherModule {
         .get(MqttPublisherViewModel::class.java)
 
     @Provides
-    @MqttPublisherScope
+    @MqttPublisherActivityScope
     fun provideMqttPublisherViewModelFactory(
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,

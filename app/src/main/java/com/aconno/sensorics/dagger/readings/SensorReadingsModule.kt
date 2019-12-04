@@ -1,10 +1,6 @@
 package com.aconno.sensorics.dagger.readings
 
-import android.app.Application
-import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceScope
-import com.aconno.sensorics.dagger.mainactivity.MainActivityScope
 import com.aconno.sensorics.device.storage.FileStorageImpl
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase

@@ -1,7 +1,6 @@
 package com.aconno.sensorics.dagger.restpublisher
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.ifttt.RestPublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
@@ -15,10 +14,10 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class RESTPublisherModule {
+class RESTPublisherActivityModule {
 
     @Provides
-    @RESTPublisherScope
+    @RESTPublisherActivityScope
     fun provideRestPublisherViewModel(
         restPublisherActivity: RestPublisherActivity,
         restPublisherViewModelFactory: RestPublisherViewModelFactory
@@ -26,7 +25,7 @@ class RESTPublisherModule {
         .get(RestPublisherViewModel::class.java)
 
     @Provides
-    @RESTPublisherScope
+    @RESTPublisherActivityScope
     fun provideRestPublisherViewModelFactory(
         addRestPublishUseCase: AddRestPublishUseCase,
         restPublishModelDataMapper: RESTPublishModelDataMapper,
@@ -52,52 +51,6 @@ class RESTPublisherModule {
     )
 
 
-    @Provides
-    @RESTPublisherScope
-    fun provideSaveRESTHeaderUseCase(
-        restPublishRepository: RestPublishRepository
-    ): SaveRestHeaderUseCase {
-        return SaveRestHeaderUseCase(restPublishRepository)
-    }
 
-    @Provides
-    @RESTPublisherScope
-    fun provideSaveRESTHttpGetParamUseCase(
-        restPublishRepository: RestPublishRepository
-    ): SaveRestHttpGetParamUseCase {
-        return SaveRestHttpGetParamUseCase(restPublishRepository)
-    }
 
-    @Provides
-    @RESTPublisherScope
-    fun provideDeleteRESTHeaderUseCase(
-        restPublishRepository: RestPublishRepository
-    ): DeleteRestHeaderUseCase {
-        return DeleteRestHeaderUseCase(restPublishRepository)
-    }
-
-    @Provides
-    @RESTPublisherScope
-    fun provideDeleteRESTHttpGetParamUseCase(
-        restPublishRepository: RestPublishRepository
-    ): DeleteRestHttpGetParamUseCase {
-        return DeleteRestHttpGetParamUseCase(restPublishRepository)
-    }
-
-    //This two methods are provided by PublishModule since they are also used by BluetoothScanningService
-  //  @Provides
-   // @RESTPublisherScope
-   // fun provideGetRESTHeadersByIdUseCase(
-   //     restPublishRepository: RestPublishRepository
-   // ): GetRestHeadersByIdUseCase {
-  //      return GetRestHeadersByIdUseCase(restPublishRepository)
-  //  }
-
-   // @Provides
-  //  @RESTPublisherScope
-   // fun provideGetRESTHttpGetParamsByIdUseCase(
-   //     restPublishRepository: RestPublishRepository
-   // ): GetRestHttpGetParamsByIdUseCase {
-   //     return GetRestHttpGetParamsByIdUseCase(restPublishRepository)
-   // }
 }

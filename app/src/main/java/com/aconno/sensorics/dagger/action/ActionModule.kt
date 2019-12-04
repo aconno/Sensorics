@@ -1,7 +1,7 @@
 package com.aconno.sensorics.dagger.action
 
-import androidx.room.ForeignKey
-import com.aconno.sensorics.dagger.mainactivity.MainActivityScope
+import com.aconno.sensorics.data.repository.SensoricsDatabase
+import com.aconno.sensorics.data.repository.action.ActionsRepositoryImpl
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.ifttt.action.*
 import dagger.Module
@@ -52,4 +52,12 @@ class ActionModule {
     ) = SetActionActiveByDeviceMacAddressUseCase(
             addActionUseCase, getActionsByDeviceMacAddressUseCase
     )
+
+    @Provides
+    @ActionScope
+    fun provideActionsRepository(
+        sensoricsDatabase: SensoricsDatabase
+    ): ActionsRepository {
+        return ActionsRepositoryImpl(sensoricsDatabase.actionDao())
+    }
 }
