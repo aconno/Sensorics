@@ -10,12 +10,14 @@ import com.aconno.sensorics.device.beacon.v2.parameters.ParametersImpl
 import com.aconno.sensorics.device.beacon.v2.slots.SlotsImpl
 import com.aconno.sensorics.device.bluetooth.tasks.BulkCharacteristicReadTask
 import com.aconno.sensorics.device.bluetooth.tasks.CharacteristicWriteTask
+import com.aconno.sensorics.device.bluetooth.tasks.GenericTask
 import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
 import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateTask
 import com.aconno.sensorics.device.bluetooth.tasks.lock.PasswordWriteTask
 import com.aconno.sensorics.domain.UUIDProvider
 import com.aconno.sensorics.domain.migrate.ValueConverters
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
+import com.aconno.sensorics.domain.scanning.Task
 
 /**
  * Beacon device class
@@ -42,8 +44,8 @@ class BeaconImpl(
         taskProcessor.queueTask(LockStateTask(callback))
     }
 
-    override fun read() {
-        val tasks = listOf(object : BulkCharacteristicReadTask(
+    override fun read(onDoneTask: GenericTask?) {
+        val tasks = mutableListOf<Task>(object : BulkCharacteristicReadTask(
             name = "Parameter Bulk Read Task",
             serviceUUID = PARAMETER_SERVICE_UUID,
             characteristicUUID = PARAMETER_BULK_UUID
@@ -51,7 +53,7 @@ class BeaconImpl(
             override fun onSuccess(value: ByteArray) {
                 parameters.fromBytes(value)
                 arbitraryData = ArbitraryDataImpl()
-                arbitraryData.read(taskProcessor)
+                this.taskQueue.add(arbitraryData.read(taskProcessor))
             }
         }, object : BulkCharacteristicReadTask(
             name = "Slot Bulk Read Task",
@@ -64,12 +66,16 @@ class BeaconImpl(
                 slots = SlotsImpl(slotCount)
                 slots.fromBytes(value)
             }
-        })
+        }).also { list ->
+            onDoneTask?.let { task ->
+                list.add(task)
+            }
+        }.toList()
         taskProcessor.queueTasks(tasks)
     }
 
-    override fun write(full: Boolean) {
-        val tasks = mutableListOf(
+    override fun write(full: Boolean, onDoneTask: GenericTask?) {
+        val tasks = mutableListOf<Task>(
             object : CharacteristicWriteTask(
                 name = "Parameter Bulk Write Task",
                 serviceUUID = PARAMETER_SERVICE_UUID,
@@ -109,6 +115,11 @@ class BeaconImpl(
                 }
             }
         )
+
+        onDoneTask?.let { task ->
+            tasks.add(task)
+        }
+
         taskProcessor.queueTasks(tasks)
         arbitraryData.write(taskProcessor, full)
     }

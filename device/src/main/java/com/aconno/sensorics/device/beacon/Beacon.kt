@@ -2,6 +2,7 @@ package com.aconno.sensorics.device.beacon
 
 import android.content.Context
 import com.aconno.sensorics.device.beacon.v2.BeaconImpl
+import com.aconno.sensorics.device.bluetooth.tasks.GenericTask
 import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
 import com.aconno.sensorics.domain.migrate.getArrayOrNull
 import com.aconno.sensorics.domain.migrate.getObjectOrNull
@@ -103,14 +104,14 @@ abstract class Beacon(context: Context, taskProcessor: BluetoothTaskProcessor) {
     /**
      * Read all the configuration data
      */
-    abstract fun read()
+    abstract fun read(onDoneTask: GenericTask? = null)
 
     /**
      * Write all the configuration data
      *
      * @param full indremental or full write
      */
-    abstract fun write(full: Boolean)
+    abstract fun write(full: Boolean, onDoneTask: GenericTask? = null)
 
     fun toJson(): JsonObject {
         return JsonObject().apply {
