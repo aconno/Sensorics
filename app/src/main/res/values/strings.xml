@@ -333,5 +333,7 @@
 
     <string name="export_no_items">No items to export</string>
     <string name="share_no_items">No items to share</string>
+    <string name="share_all_as_text">Share all as JSON text</string>
+    <string name="share_all_as_file">Share all as JSON file</string>
 
 </resources>

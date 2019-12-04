@@ -126,12 +126,12 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
                     .subscribe({ result ->
                         when (it.itemId) {
                             R.id.action_import_file -> startImportJSONActivity()
-                            R.id.action_share_all, R.id.action_share_selected_as_file -> shareJSONfile(result)
+                            R.id.action_share_all_as_file, R.id.action_share_selected_as_file -> shareJSONfile(result)
                             R.id.action_export_all, R.id.action_export_selected -> {
                                 tempExportJSONData = result
                                 startExportJSONActivity()
                             }
-                            R.id.action_share_selected_as_text -> shareJSONtext(result)
+                            R.id.action_share_all_as_text, R.id.action_share_selected_as_text -> shareJSONtext(result)
 
                         }
                     }, {
