@@ -103,20 +103,36 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
 
     abstract fun getConvertToJsonUseCase() : ConvertObjectsToJsonUseCase<T>
     abstract fun getItems() : List<T>
+    open fun getItemsForExport() : List<T> {
+        return getItems()
+    }
 
-    fun resolveActionBarEvent(item: MenuItem?) {
+    open fun resolveActionBarEvent(item: MenuItem?) {
+        val itemsToExport = getItemsForExport()
+        if(itemsToExport.isEmpty() && item?.itemId!=R.id.action_import_file) {
+            showSnackbarMessage(
+                    if(item?.itemId in arrayOf(R.id.action_export_all,R.id.action_export_selected)) {
+                        getString(R.string.export_no_items)
+                    } else {
+                        getString(R.string.share_no_items)
+                    }
+            )
+            return
+        }
         item?.let {
-            getConvertToJsonUseCase().execute(getItems())
+            getConvertToJsonUseCase().execute(itemsToExport)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ result ->
                         when (it.itemId) {
                             R.id.action_import_file -> startImportJSONActivity()
-                            R.id.action_share_all -> shareJSONfile(result)
-                            R.id.action_export_all -> {
+                            R.id.action_share_all, R.id.action_share_selected_as_file -> shareJSONfile(result)
+                            R.id.action_export_all, R.id.action_export_selected -> {
                                 tempExportJSONData = result
                                 startExportJSONActivity()
                             }
+                            R.id.action_share_selected_as_text -> shareJSONtext(result)
+
                         }
                     }, {
                         showSnackbarMessage(getString(R.string.error_converting_data_to_json))

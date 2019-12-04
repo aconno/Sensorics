@@ -9,7 +9,19 @@
     android:minHeight="@dimen/list_item_height"
     android:paddingStart="@dimen/screen_edge_left_right_margin"
     android:paddingEnd="@dimen/screen_edge_left_right_margin"
+    android:animateLayoutChanges="true"
     tools:layout_editor_absoluteY="25dp">
+
+    <CheckBox
+        android:id="@+id/item_selected"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_name"
@@ -20,7 +32,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/text_mac_address"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/item_selected"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Name of the Action" />
 
@@ -32,7 +44,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/item_selected"
         tools:text="MA:CA:DD:RE:SS:00" />
 
     <TextView

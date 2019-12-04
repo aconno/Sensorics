@@ -325,4 +325,13 @@
     <string name="action_import_partial_success">Successfully imported %d/%d actions</string>
     <string name="empty_import_file">File si empty</string>
 
+    <string name="selected_items_count">Items: %d</string>
+    <string name="export_selected">Export</string>
+    <string name="share_selected_as_text">Share JSON text</string>
+    <string name="share_selected_as_file">Share JSON file</string>
+    <string name="select_all">Select all</string>
+
+    <string name="export_no_items">No items to export</string>
+    <string name="share_no_items">No items to share</string>
+
 </resources>

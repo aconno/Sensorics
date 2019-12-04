@@ -268,4 +268,13 @@
     <string name="action_import_partial_success">%d/%d Aktionen erfolgreich importiert</string>
     <string name="empty_import_file">Die Datei ist leer</string>
 
+    <string name="selected_items_count">Artikel: %d</string>
+    <string name="export_selected">Exportieren</string>
+    <string name="share_selected_as_text">JSON Text teilen</string>
+    <string name="share_selected_as_file">JSON Datei teilen</string>
+    <string name="select_all">Alle Wählen</string>
+
+    <string name="export_no_items">Keine Artikel zum Exportieren</string>
+    <string name="share_no_items">Keine Artikel zum Teilen</string>
+
 </resources>
