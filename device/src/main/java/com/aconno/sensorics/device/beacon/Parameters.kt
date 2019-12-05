@@ -6,6 +6,7 @@ import com.aconno.sensorics.domain.migrate.getObjectOrNull
 import com.aconno.sensorics.domain.migrate.getStringOrNull
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import timber.log.Timber
 
 abstract class Parameters : LinkedHashMap<String, MutableList<Parameter<Any>>>() {
     abstract var count: Int
@@ -47,6 +48,7 @@ abstract class Parameters : LinkedHashMap<String, MutableList<Parameter<Any>>>()
             })
             this.add("parameters", JsonObject().apply {
                 forEach { entry ->
+                    Timber.d("Keys: ${entry.key}")
                     this.add(entry.key, JsonArray().apply {
                         entry.value.forEach {
                             this.add(it.toJson())

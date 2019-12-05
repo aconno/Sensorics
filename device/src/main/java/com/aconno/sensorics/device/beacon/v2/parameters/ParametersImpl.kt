@@ -35,10 +35,10 @@ class ParametersImpl : Parameters() {
         )
 
         Timber.d("Parameter max value size - $parameterMaxValueSize")
-        Timber.d("Parameter name size - $parameterMaxValueSize")
-        Timber.d("Parameter unit size- $parameterMaxValueSize")
+        Timber.d("Parameter name size - $parameterNameSize")
+        Timber.d("Parameter unit size- $parameterUnitSize")
         Timber.d("Parameter group count - $parameterMaxValueSize")
-        Timber.d("Parameter group name size - $parameterMaxValueSize")
+        Timber.d("Parameter group name size - $parameterGroupCount")
 
         var currentParameterIndex = 0
         for (groupIndex in 0 until parameterGroupCount) {

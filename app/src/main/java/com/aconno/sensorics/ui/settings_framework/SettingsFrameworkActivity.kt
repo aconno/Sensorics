@@ -48,7 +48,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             beaconViewModel.beacon.observe(this@SettingsFrameworkActivity, Observer<Beacon> {
                 it?.let {
                     this.beacon = it
-                    Timber.d("Beacon updated")
                     this.notifyDataSetChanged()
                 }
             })
@@ -166,7 +165,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                 override fun onSuccess() {
                     Timber.d("Test567")
                     Timber.d(Gson().toJson(beacon.toJson()))
-
                     beaconViewModel.beacon.value = beacon
                     tabs.visibility = View.VISIBLE
                 }
