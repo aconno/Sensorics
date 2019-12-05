@@ -55,9 +55,9 @@ class BeaconSettingsParametersFragment : Fragment() {
         standartParameters?.let { parameters ->
             val defaultParameters =
                 parameters.map { parameter ->
-                    beaconViewModel.beacon?.value?.parameters?.config?.let {
-                        BeaconSettingsDefaultParameter.Builder().buildFromParameter(parameter, it)
-                    }
+
+                    BeaconSettingsDefaultParameter.Builder().buildFromParameter(parameter)
+
                 }
             val json = Gson().toJson(defaultParameters)
             Timber.d("Print Json: $json")

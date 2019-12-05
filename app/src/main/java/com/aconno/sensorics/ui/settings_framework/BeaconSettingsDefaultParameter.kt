@@ -2,26 +2,22 @@ package com.aconno.sensorics.ui.settings_framework
 
 
 import com.aconno.sensorics.device.beacon.Parameter
-import com.aconno.sensorics.device.beacon.Parameters
 import com.aconno.sensorics.domain.migrate.ValueConverterBase
 import com.aconno.sensorics.domain.migrate.ValueConverters
 import java.io.Serializable
 
 class BeaconSettingsDefaultParameter(val name: String, val type: String) : Serializable {
 
-
     var writable: Boolean = false
     var id = -1
     var value: Any? = null
-    var editable: Boolean = false
     var valueInternal: Any? = null
     val min: Int = -1
     val max: Int = 1
 
     class Builder {
         fun buildFromParameter(
-            parameter: Parameter<Any>,
-            beacon: Parameters.Config
+            parameter: Parameter<Any>
         ): BeaconSettingsDefaultParameter {
             val defaultParameter = BeaconSettingsDefaultParameter(parameter.name, getLocalType(parameter.type))
 
