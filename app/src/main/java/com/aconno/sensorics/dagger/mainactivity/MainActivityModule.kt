@@ -130,29 +130,6 @@ class MainActivityModule {
         bluetoothViewModelFactory
     ).get(BluetoothViewModel::class.java)
 
-    @Provides
-    @MainActivityScope
-    fun provideGetAllDevicesUseCase(
-        deviceRepository: DeviceRepository
-    ): GetSavedDevicesUseCase {
-        return GetSavedDevicesUseCase(deviceRepository)
-    }
-
-    @Provides
-    @MainActivityScope
-    fun provideSaveDeviceUseCase(
-        deviceRepository: DeviceRepository
-    ): SaveDeviceUseCase {
-        return SaveDeviceUseCase(deviceRepository)
-    }
-
-    @Provides
-    @MainActivityScope
-    fun provideDeleteDeviceUseCase(
-        deviceRepository: DeviceRepository
-    ): DeleteDeviceUseCase {
-        return DeleteDeviceUseCase(deviceRepository)
-    }
 
     @Provides
     @MainActivityScope
@@ -241,12 +218,6 @@ class MainActivityModule {
 
     @Provides
     @MainActivityScope
-    fun provideGetSensorReadingsUseCase(
-        inMemoryRepository: InMemoryRepository
-    ) = GetReadingsUseCase(inMemoryRepository)
-
-    @Provides
-    @MainActivityScope
     fun provideMainResourceViewModelFactory(
         getMainResourceUseCase: GetMainResourceUseCase
     ) = MainResourceViewModelFactory(getMainResourceUseCase)
@@ -259,24 +230,5 @@ class MainActivityModule {
     ) = ViewModelProviders.of(mainActivity, mainResourceViewModelFactory)
         .get(MainResourceViewModel::class.java)
 
-    @Provides
-    @MainActivityScope
-    fun provideAddActionUseCase(
-        actionsRepository: ActionsRepository
-    ) = AddActionUseCase(actionsRepository)
 
-    @Provides
-    @MainActivityScope
-    fun provideGetActionsByDeviceMacAddressUseCase(
-        actionsRepository: ActionsRepository
-    ) = GetActionsByDeviceMacAddressUseCase(actionsRepository)
-
-    @Provides
-    @MainActivityScope
-    fun provideSetActionActiveByDeviceMacAddressUseCase(
-        addActionUseCase: AddActionUseCase,
-        getActionsByDeviceMacAddressUseCase: GetActionsByDeviceMacAddressUseCase
-    ) = SetActionActiveByDeviceMacAddressUseCase(
-        addActionUseCase, getActionsByDeviceMacAddressUseCase
-    )
 }

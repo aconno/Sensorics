@@ -1,4 +1,4 @@
-package com.aconno.sensorics.dagger.publish
+package com.aconno.sensorics.dagger.actionlist
 
 import javax.inject.Scope
 
@@ -7,4 +7,4 @@ import javax.inject.Scope
  */
 @Scope
 @Retention(AnnotationRetention.RUNTIME)
-annotation class PublishListScope
+annotation class ActionListActivityScope
