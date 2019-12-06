@@ -4,8 +4,6 @@ import com.aconno.sensorics.AlarmService
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.MqttVirtualScanningService
-import com.aconno.sensorics.dagger.action_details.ActionDetailsActivityScope
-import com.aconno.sensorics.dagger.action_details.ActionDetailsModule
 import com.aconno.sensorics.dagger.action.ActionModule
 import com.aconno.sensorics.dagger.action.ActionScope
 import com.aconno.sensorics.dagger.actiondetails.ActionDetailsActivityScope
@@ -34,9 +32,13 @@ import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityModule
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityScope
 import com.aconno.sensorics.dagger.mqttvirtualscanning.MqttVirtualScanningServiceModule
 import com.aconno.sensorics.dagger.mqttvirtualscanning.MqttVirtualScanningServiceScope
-import com.aconno.sensorics.dagger.publish.PublishListFragmentsModule
-import com.aconno.sensorics.dagger.publish.PublishListActivityModule
-import com.aconno.sensorics.dagger.publish.PublishListActivityScope
+import com.aconno.sensorics.dagger.publisher.PublisherModule
+import com.aconno.sensorics.dagger.publisher.PublisherScope
+import com.aconno.sensorics.dagger.publishlist.PublishListActivityModule
+import com.aconno.sensorics.dagger.publishlist.PublishListActivityScope
+import com.aconno.sensorics.dagger.publishlist.PublishListFragmentsModule
+import com.aconno.sensorics.dagger.readings.SensorReadingsModule
+import com.aconno.sensorics.dagger.readings.SensorReadingsScope
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityModule
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityScope
 import com.aconno.sensorics.dagger.splash.SplashActivityModule
@@ -81,7 +83,13 @@ abstract class ActivityBuilder {
     abstract fun bindBluetoothScanningService(): BluetoothScanningService
 
     @MqttVirtualScanningServiceScope
-    @ContributesAndroidInjector(modules = [MqttVirtualScanningServiceModule::class])
+    @DeviceScope
+    @ActionScope
+    @PublisherScope
+    @ContributesAndroidInjector(modules = [MqttVirtualScanningServiceModule::class,
+        DeviceModule::class, ActionModule::class,
+        PublisherModule::class
+    ])
     abstract fun bindMqttVirtualScanningService(): MqttVirtualScanningService
 
     @ContributesAndroidInjector

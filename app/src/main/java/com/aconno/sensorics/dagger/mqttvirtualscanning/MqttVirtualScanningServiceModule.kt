@@ -77,13 +77,6 @@ class MqttVirtualScanningServiceModule {
         return LogReadingUseCase(FileStorageImpl(mqttVirtualScanningService))
     }
 
-    @Provides
-    @MqttVirtualScanningServiceScope
-    fun provideGetSavedDevicesUseCase(
-        deviceRepository: DeviceRepository
-    ): GetSavedDevicesUseCase {
-        return GetSavedDevicesUseCase(deviceRepository)
-    }
 
     @Provides
     @MqttVirtualScanningServiceScope
@@ -94,13 +87,6 @@ class MqttVirtualScanningServiceModule {
         return InputToOutcomesUseCase(actionsRepository, getLocalTimeOfDayInSecondsUseCase)
     }
 
-    @Provides
-    @MqttVirtualScanningServiceScope
-    fun provideGetLocalTimeOfDayInSecondsUseCase(
-        timeProvider: TimeProvider
-    ): GetLocalTimeOfDayInSecondsUseCase {
-        return GetLocalTimeOfDayInSecondsUseCase(timeProvider)
-    }
 
     @Provides
     @MqttVirtualScanningServiceScope
@@ -124,49 +110,4 @@ class MqttVirtualScanningServiceModule {
         return RunOutcomeUseCase(outcomeExecutorSelector)
     }
 
-    @Provides
-    @MqttVirtualScanningServiceScope
-    fun provideGetAllEnabledGooglePublishUseCase(
-        googlePublishRepository: GooglePublishRepository
-    ): GetAllEnabledGooglePublishUseCase {
-        return GetAllEnabledGooglePublishUseCase(
-            googlePublishRepository
-        )
-    }
-
-    @Provides
-    @MqttVirtualScanningServiceScope
-    fun provideGetAllEnabledRESTPublishUseCase(
-        restPublishRepository: RestPublishRepository
-    ): GetAllEnabledRestPublishUseCase {
-        return GetAllEnabledRestPublishUseCase(
-            restPublishRepository
-        )
-    }
-
-    @Provides
-    @MqttVirtualScanningServiceScope
-    fun provideGetAllEnabledMqttPublishUseCase(
-        mqttPublishRepository: MqttPublishRepository
-    ): GetAllEnabledMqttPublishUseCase {
-        return GetAllEnabledMqttPublishUseCase(
-            mqttPublishRepository
-        )
-    }
-
-    @Provides
-    @MqttVirtualScanningServiceScope
-    fun provideGetRESTHeadersByIdUseCase(
-        restPublishRepository: RestPublishRepository
-    ): GetRestHeadersByIdUseCase {
-        return GetRestHeadersByIdUseCase(restPublishRepository)
-    }
-
-    @Provides
-    @MqttVirtualScanningServiceScope
-    fun provideGetRESTHttpGetParamsByIdUseCase(
-        restPublishRepository: RestPublishRepository
-    ): GetRestHttpGetParamsByIdUseCase {
-        return GetRestHttpGetParamsByIdUseCase(restPublishRepository)
-    }
 }
