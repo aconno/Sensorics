@@ -86,9 +86,12 @@ abstract class ActivityBuilder {
     @DeviceScope
     @ActionScope
     @PublisherScope
+    @SensorReadingsScope
+    @ActionOutcomeScope
     @ContributesAndroidInjector(modules = [MqttVirtualScanningServiceModule::class,
         DeviceModule::class, ActionModule::class,
-        PublisherModule::class
+        PublisherModule::class, SensorReadingsModule::class,
+        ActionOutcomeModule::class
     ])
     abstract fun bindMqttVirtualScanningService(): MqttVirtualScanningService
 
