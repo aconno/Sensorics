@@ -1,4 +1,4 @@
-package com.aconno.sensorics.dagger.action_details
+package com.aconno.sensorics.dagger.actiondetails
 
 import javax.inject.Scope
 

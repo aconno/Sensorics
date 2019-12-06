@@ -3,10 +3,12 @@ package com.aconno.sensorics.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import com.aconno.sensorics.R
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_toolbar.*
+import timber.log.Timber
 
 class ActionListActivity : DaggerAppCompatActivity() {
 
@@ -23,6 +25,7 @@ class ActionListActivity : DaggerAppCompatActivity() {
                 fm.beginTransaction().add(R.id.content_container, fragment).commit()
             }
         }
+
     }
 
     companion object {
