@@ -317,5 +317,7 @@
     <string name="undo">Undo</string>
     <string name="import_error" translatable="false">Import error</string>
     <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
+    <string name="snackbar_scan_failed_already_started">Scan already started</string>
+    <string name="snackbar_scan_failed">Scan failed!</string>
 
 </resources>
