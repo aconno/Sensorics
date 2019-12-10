@@ -32,6 +32,7 @@ class NotificationFactory {
             .setContentText(contentText)
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_LOW) //setting for devices with Android version below 8.0
             .build()
     }
 
@@ -55,6 +56,7 @@ class NotificationFactory {
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .addAction(actionIcon, actionTitle, actionIntent)
+                .setPriority(NotificationCompat.PRIORITY_LOW) //setting for devices with Android version below 8.0
             .build()
     }
 
@@ -87,6 +89,7 @@ class NotificationFactory {
             .setAutoCancel(true)
             .setDeleteIntent(deleteIntent)
             .setContentIntent(contentIntent)
+                .setPriority(NotificationCompat.PRIORITY_HIGH) //setting for devices with Android version below 8.0
             .build()
     }
 

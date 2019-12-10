@@ -9,32 +9,25 @@ import android.os.Build
  */
 class NotificationChannelFactory(private val notificationManager: NotificationManager) {
 
+
     fun makeServiceNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel(
+            val notificationChannel = NotificationChannel(
                     CHANNEL_ID,
                     CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_LOW
                 )
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
             notificationManager.createNotificationChannel(notificationChannel)
         }
     }
 
     fun makeAlertsChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel(
+            val notificationChannel = NotificationChannel(
                     ALERTS_CHANNEL_ID,
                     ALERTS_CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_HIGH
                 )
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
             notificationManager.createNotificationChannel(notificationChannel)
         }
     }
