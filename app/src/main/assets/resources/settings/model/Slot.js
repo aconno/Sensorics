@@ -2,17 +2,18 @@ class Slot {
     constructor() {
         this.frameType = FrameType.EMPTY
         this.frame = {}
+        this.name = "Name"
     }
 }
 
 var FrameType = {
     UID: 0,
-    URL: 1,
+    URL: "URL",
     TLM: 2,
-    IBEACON: 3,
+    IBEACON: "iBeacon",
     DEVICE_INFO: 4,
-    EMPTY: 5,
-    CUSTOM: 6
+    EMPTY: "DEFAULT",
+    CUSTOM: "Custom (MSD)"
 };
 
 const KEY_ADVERTISING_CONTENT_IBEACON_UUID =
@@ -27,6 +28,8 @@ const KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID =
     "KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID"
 const KEY_ADVERTISING_CONTENT_URL_URL =
     "KEY_ADVERTISING_CONTENT_URL_URL"
+const KEY_ADVERTISING_CONTENT_DEFAULT_DATA =
+        "KEY_ADVERTISING_CONTENT_DEFAULT_DATA"
 const KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM =
     "KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM"
 const KEY_ADVERTISING_CONTENT_CUSTOM_IS_HEX_MODE_ON =

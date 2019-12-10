@@ -1,10 +1,11 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-    <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="../../commons/holo.css"/>
-    <link rel="stylesheet" href="../../libs/bootstrap-slider/bootstrap-slider.min.css"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../../commons/holo.css" />
     <style>
         .margin-sides {
             margin-left: 0.1em;
@@ -67,7 +68,6 @@
                 <h5 class="card-title">Slot Name</h5>
                 <div id="slot_name" class="panel-body">
                     <!-- Content is generated -->
-                    <input type="text"  id="slot_name_text" value="Submit">
                 </div>
             </div>
         </div>
@@ -78,9 +78,16 @@
 <script src="../../libs/popper.min.js"></script>
 <script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
 <script src="../../libs/bootstrap-slider/bootstrap-slider.min.js"></script>
-<script src="../../model/Slot.js"></script>
-<script src="slot_generator.js"></script>
-<script src="slot_init.js"></script>
+
+<script>
+        $(document).ready(function(){
+            let listSlots = Android.getSlots();
+            console.log("List of slots: " +listSlots)
+            let firstPage = listSlots[0];
+
+            if(
+        });
+</script>
 </body>
 
 </html>

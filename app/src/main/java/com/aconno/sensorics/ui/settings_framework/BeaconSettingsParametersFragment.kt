@@ -29,7 +29,6 @@ class BeaconSettingsParametersFragment : Fragment() {
     ): View? {
 
         standartParameters = beaconViewModel.beacon.value?.parameters?.flatMap { x -> x.value }
-        Timber.d("Standard Parameters: $standartParameters")
         return inflater.inflate(R.layout.fragment_beacon_parameter2, container, false)
     }
 
@@ -60,7 +59,6 @@ class BeaconSettingsParametersFragment : Fragment() {
 
                 }
             val json = Gson().toJson(defaultParameters)
-            Timber.d("Print Json: $json")
             return json
         }
         return ""

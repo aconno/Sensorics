@@ -19,7 +19,7 @@ import timber.log.Timber
 
 class BeaconSettingsArbitraryDataHtmlFragment: Fragment() {
 
-    private val beaconViewModel: BeaconSettingsViewModel by lazy {
+    private val beaconSettingsViewModel: BeaconSettingsViewModel by lazy {
         ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
     }
 
@@ -85,7 +85,7 @@ class BeaconSettingsArbitraryDataHtmlFragment: Fragment() {
     }
 
     private fun getArbitraryJsonArray(): String? {
-        return beaconViewModel.beacon.value?.arbitraryData?.map {
+        return beaconSettingsViewModel.beacon.value?.arbitraryData?.map {
             ArbitraryDataJS(it.key, it.value)
         }?.takeIf {
             it.isNotEmpty()
@@ -101,9 +101,9 @@ class BeaconSettingsArbitraryDataHtmlFragment: Fragment() {
             val arbitraryDataList =
                 Gson().fromJson<List<ArbitraryDataJS>>(arbitraryDataJSONArray, listType)
 
-            beaconViewModel.beacon.value?.arbitraryData?.clear()
+            beaconSettingsViewModel.beacon.value?.arbitraryData?.clear()
             arbitraryDataList.forEach {
-                beaconViewModel.beacon.value?.arbitraryData?.put(
+                beaconSettingsViewModel.beacon.value?.arbitraryData?.put(
                     it.key,
                     it.value
                 )

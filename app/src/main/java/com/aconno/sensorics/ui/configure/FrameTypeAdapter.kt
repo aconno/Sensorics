@@ -6,10 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.aconno.bluetooth.beacon.Slot.Type
+import com.aconno.sensorics.device.beacon.Slot
 
-class FrameTypeAdapter(context: Context, types: Array<Type>) :
-    ArrayAdapter<Type>(context, android.R.layout.simple_spinner_item, types) {
+
+class FrameTypeAdapter(context: Context, types: Array<Slot.Type>) :
+    ArrayAdapter<Slot.Type>(context, android.R.layout.simple_spinner_item, types) {
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View = convertView

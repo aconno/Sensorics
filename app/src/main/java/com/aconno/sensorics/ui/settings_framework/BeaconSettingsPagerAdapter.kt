@@ -5,9 +5,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
 import com.aconno.sensorics.device.beacon.Beacon
-import com.aconno.sensorics.ui.configure.BeaconArbitraryDataHtmlFragment
-import com.aconno.sensorics.ui.configure.BeaconParameter2Fragment
-import com.aconno.sensorics.ui.configure.BeaconSlotHtmlFragment
 
 class BeaconSettingsPagerAdapter (fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
         var beacon: Beacon? = null
@@ -20,8 +17,8 @@ class BeaconSettingsPagerAdapter (fm: FragmentManager) : FragmentStatePagerAdapt
             return when (position) {
                 0 -> BeaconSettingsGeneralFragment.newInstance()
                 1 -> BeaconSettingsParametersFragment.newInstance()
-                2 -> BeaconArbitraryDataHtmlFragment.newInstance()
-                else -> BeaconSlotHtmlFragment.newInstance(position - 3)
+                2 -> BeaconSettingsArbitraryDataHtmlFragment.newInstance()
+                else -> BeaconSettingsSlotFragment.newInstance(position - 3)
             }
         }
 

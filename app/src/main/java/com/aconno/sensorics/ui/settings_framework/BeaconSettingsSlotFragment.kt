@@ -1,6 +1,7 @@
-package com.aconno.sensorics.ui.configure
+package com.aconno.sensorics.ui.settings_framework
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,34 +9,57 @@ import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.bluetooth.beacon.Slot
+import com.aconno.bluetooth.beacon.Slot.Companion.EXTRA_BEACON_SLOT_POSITION
 import com.aconno.sensorics.R
+import com.aconno.sensorics.device.beacon.Beacon
+import com.aconno.sensorics.device.beacon.Slot
+import com.aconno.sensorics.device.beacon.Slots
 import com.aconno.sensorics.model.javascript.SlotJS
+import com.aconno.sensorics.ui.configure.BeaconSlotHtmlFragment
+import com.aconno.sensorics.ui.configure.ViewPagerSlider
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 import timber.log.Timber
 
+open class BeaconSettingsSlotFragment : Fragment() {
 
-class BeaconSlotHtmlFragment : Fragment() {
-
-    private val beaconViewModel: BeaconViewModel by lazy {
-        ViewModelProviders.of(requireActivity()).get(BeaconViewModel::class.java)
+    private val beaconViewModel: BeaconSettingsViewModel by lazy {
+        ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    private lateinit var beacon: Beacon
+
+    private lateinit var slots: Slots
+
+    private var slotPosition: Int = 0
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+
+        arguments?.let {
+            slotPosition = it.getInt(EXTRA_BEACON_SLOT_POSITION)
+
+            beaconViewModel.beacon.value?.let { beacon ->
+                this.beacon = beacon
+                this.slots = beacon.slots
+
+            } ?: throw IllegalStateException(
+                "Started BeaconSlotFragment without beacon!"
+            )
+        } ?: throw IllegalStateException(
+            "Started BeaconSlotFragment without EXTRA_BEACON_SLOT_POSITION argument!"
+        )
         return inflater.inflate(R.layout.fragment_beacon_general2, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         if (savedInstanceState != null)
             webview_general.restoreState(savedInstanceState)
-
         initiateWebView()
     }
 
@@ -47,9 +71,18 @@ class BeaconSlotHtmlFragment : Fragment() {
         webview_general.loadUrl(HTML_FILE_PATH)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        webview_general.saveState(outState)
-        super.onSaveInstanceState(outState)
+
+    //Prevent running twice or more
+    inner class WebAppClient : WebViewClient() {
+        override fun onPageFinished(view: WebView?, url: String?) {
+            super.onPageFinished(view, url)
+
+            if (isAdded) {
+                getSlotJson()?.let {
+                    callJavaScript("init", it)
+                }
+            }
+        }
     }
 
     private fun callJavaScript(methodName: String, vararg params: Any) {
@@ -72,110 +105,106 @@ class BeaconSlotHtmlFragment : Fragment() {
         webview_general.loadUrl(stringBuilder.toString())
     }
 
-    //Prevent running twice or more
-    inner class WebAppClient : WebViewClient() {
-        override fun onPageFinished(view: WebView?, url: String?) {
-            super.onPageFinished(view, url)
-
-            if (isAdded) {
-                getSlotJson()?.let {
-                    callJavaScript("init", it)
-                }
-            }
-        }
-    }
-
     private fun getSlotJson(): String? {
         val slotPosition = arguments!!.getInt(EXTRA_BEACON_SLOT_POSITION)
 
-        return beaconViewModel.beacon.value?.slots?.get(slotPosition)?.let {
-           /* SlotJS(
-                it.getType().ordinal,//Do not change the order
-                it.slotAdvertisingContent
-            ) */
+        val data = beaconViewModel.beacon.value?.slots?.get(slotPosition)?.let {
+            SlotJS(
+                it.getType().tabName,//Do not change the order
+                it.advertisingContent,
+                it.name
+            )
         }?.let {
             convertKeysToJavascriptFormat(Gson().toJson(it))
                 .replace("\\u0000", "")
         }
+        Timber.d("getSlotJson: $data $slotPosition")
+        return data
     }
 
     private fun convertKeysToJavascriptFormat(slotJson: String): String {
         var convertedJson = slotJson.replace(
-            Slot.KEY_ADVERTISING_CONTENT_IBEACON_UUID,
+            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_UUID,
             "KEY_ADVERTISING_CONTENT_IBEACON_UUID"
         )
         convertedJson = convertedJson.replace(
-            Slot.KEY_ADVERTISING_CONTENT_IBEACON_MAJOR,
+            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_MAJOR,
             "KEY_ADVERTISING_CONTENT_IBEACON_MAJOR"
         )
         convertedJson = convertedJson.replace(
-            Slot.KEY_ADVERTISING_CONTENT_IBEACON_MINOR,
+            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_MINOR,
             "KEY_ADVERTISING_CONTENT_IBEACON_MINOR"
         )
         convertedJson = convertedJson.replace(
-            Slot.KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID,
+            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID,
             "KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID"
         )
         convertedJson = convertedJson.replace(
-            Slot.KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID,
+            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID,
             "KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID"
         )
         convertedJson = convertedJson.replace(
-            Slot.KEY_ADVERTISING_CONTENT_URL_URL,
+            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_URL_URL,
             "KEY_ADVERTISING_CONTENT_URL_URL"
         )
         convertedJson = convertedJson.replace(
-            Slot.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM,
+            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM,
             "KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM"
         )
         return convertedJson
     }
 
     inner class WebAppInterface {
+
         @JavascriptInterface
         fun onDataChanged(slotJsonRaw: String) {
+            Timber.d("Data Change called $slotJsonRaw")
             val slotJson = convertKeysToOriginals(slotJsonRaw)
-
             val slotJS = Gson().fromJson<SlotJS>(slotJson, SlotJS::class.java)
             val slotPosition = arguments!!.getInt(EXTRA_BEACON_SLOT_POSITION)
+            val dataSlot : List<Slot>
 
-            /*val newSlot = Slot(
-                Slot.Type.values()[slotJS.frameType],
-                slotJS.frame
-            )
+            dataSlot = slots.filter {
+                it.getType().tabName == slotJS.frameType
+            }.toHashSet().toList()
 
-            beaconViewModel.beacon.value?.slots?.set(slotPosition, newSlot)
-            Timber.d(newSlot.toString())*/
+            dataSlot.forEach {
+                Timber.d("DataSlot: ${it.name} ${slotJS.frameType}")
+            }
+
+            if(dataSlot.isNotEmpty()) {
+                beaconViewModel.beacon.value?.slots?.set(slotPosition, dataSlot[0])
+            }
         }
 
         private fun convertKeysToOriginals(slotJson: String): String {
             var convertedJson = slotJson.replace(
                 "KEY_ADVERTISING_CONTENT_IBEACON_UUID",
-                Slot.KEY_ADVERTISING_CONTENT_IBEACON_UUID
+                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_UUID
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_IBEACON_MAJOR",
-                Slot.KEY_ADVERTISING_CONTENT_IBEACON_MAJOR
+                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_MAJOR
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_IBEACON_MINOR",
-                Slot.KEY_ADVERTISING_CONTENT_IBEACON_MINOR
+                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_MINOR
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID",
-                Slot.KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID
+                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID",
-                Slot.KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID
+                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_URL_URL",
-                Slot.KEY_ADVERTISING_CONTENT_URL_URL
+                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_URL_URL
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM",
-                Slot.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM
+                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM
             )
             return convertedJson
         }
@@ -204,20 +233,25 @@ class BeaconSlotHtmlFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        view?.let {
+        }
+
+        super.onDestroyView()
+    }
+
     companion object {
+        const val FRAGMENT_TAG_SLOT = "com.aconno.beaconapp.FRAGMENT_SLOT"
+        const val FRAGMENT_TAG_SLOT_TRIGGER = "com.aconno.beaconapp.FRAGMENT_SLOT_TRIGGER"
         const val HTML_FILE_PATH =
             "file:///android_asset/resources/settings/views/slot/Slot.html"
 
-        const val FRAGMENT_TAG_SLOT = "com.aconno.beaconapp.FRAGMENT_SLOT"
-        private const val EXTRA_BEACON_SLOT_POSITION = "com.aconno.beaconapp.BEACON_SLOT_POSITION"
-
         @JvmStatic
         fun newInstance(slotPosition: Int) =
-            BeaconSlotHtmlFragment().apply {
+            BeaconSettingsSlotFragment().apply {
                 arguments = Bundle().apply {
                     putInt(EXTRA_BEACON_SLOT_POSITION, slotPosition)
                 }
             }
-
     }
 }

@@ -6,15 +6,16 @@ $(document).ready(function () {
     if (inited) {
         return;
     }
-
+    console.log("Ready Executed");
     let emptyMenuItem = generateFrameTypeMenuItem("EMPTY");
     //let uidMenuItem = generateFrameTypeMenuItem("UID"); //Not supported yet
     let urlMenuItem = generateFrameTypeMenuItem("URL");
-    let ibeaconMenuItem = generateFrameTypeMenuItem("IBEACON");
     let customMenuItem = generateFrameTypeMenuItem("CUSTOM");
+    let ibeaconMenuItem = generateFrameTypeMenuItem("IBEACON");
+
 
     $('#dropdown_frame_type').append(
-        emptyMenuItem /*+ uidMenuItem*/ + urlMenuItem + ibeaconMenuItem + customMenuItem
+        emptyMenuItem /*+ uidMenuItem*/ + urlMenuItem + customMenuItem + ibeaconMenuItem
     );
 
     //Updates text of dropdown header when selected.
@@ -168,7 +169,7 @@ function hex_to_ascii(str1) {
 function init(slotJson) {
     slot = JSON.parse(slotJson);
 
-    //Selected FrameType, assume empty is selected.
+
     switch (slot.frameType) {
         case FrameType.UID:
             $('#frame_type_uid').click();
@@ -185,6 +186,12 @@ function init(slotJson) {
         default:
             $('#frame_type_empty').click();
     }
+     console.log("Slot name is: "+slot.name);
+     if(slot.name) {
+         $('#slot_name_text').val(slot.name);
+     }
+
+
 }
 
 function getUpdatedSlot() {
@@ -226,7 +233,5 @@ function getUpdatedSlot() {
             slot.frameType = FrameType.EMPTY;
             slot.frame = {};
     }
-
-    //console.log(slot);
     Android.onDataChanged(JSON.stringify(slot));
 }
