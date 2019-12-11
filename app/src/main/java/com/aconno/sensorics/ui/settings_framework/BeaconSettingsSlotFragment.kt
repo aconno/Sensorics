@@ -1,7 +1,6 @@
 package com.aconno.sensorics.ui.settings_framework
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.bluetooth.beacon.Slot.Companion.EXTRA_BEACON_SLOT_POSITION
@@ -18,7 +16,6 @@ import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.Slot
 import com.aconno.sensorics.device.beacon.Slots
 import com.aconno.sensorics.model.javascript.SlotJS
-import com.aconno.sensorics.ui.configure.BeaconSlotHtmlFragment
 import com.aconno.sensorics.ui.configure.ViewPagerSlider
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
@@ -112,7 +109,14 @@ open class BeaconSettingsSlotFragment : Fragment() {
             SlotJS(
                 it.getType().tabName,//Do not change the order
                 it.advertisingContent,
-                it.name
+                it.name,
+                when (it.advertisingMode) {
+                    Slot.AdvertisingModeParameters.Mode.INTERVAL -> false
+                    Slot.AdvertisingModeParameters.Mode.EVENT -> true
+                },
+                it.packetCount,
+                beacon.supportedTxPowers,
+                beacon.supportedTxPowers.indexOf(it.txPower)
             )
         }?.let {
             convertKeysToJavascriptFormat(Gson().toJson(it))
@@ -241,8 +245,6 @@ open class BeaconSettingsSlotFragment : Fragment() {
     }
 
     companion object {
-        const val FRAGMENT_TAG_SLOT = "com.aconno.beaconapp.FRAGMENT_SLOT"
-        const val FRAGMENT_TAG_SLOT_TRIGGER = "com.aconno.beaconapp.FRAGMENT_SLOT_TRIGGER"
         const val HTML_FILE_PATH =
             "file:///android_asset/resources/settings/views/slot/Slot.html"
 

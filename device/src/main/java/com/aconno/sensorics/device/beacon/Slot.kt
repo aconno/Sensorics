@@ -121,7 +121,6 @@ abstract class Slot(
         return JsonObject().apply {
             this.addProperty("type", getType().name)
             this.add("advertisingContent", gson.toJsonTree(advertisingContent))
-            this.add("name", gson.toJsonTree(name))
             this.addProperty("name", name)
         }
     }

@@ -28,12 +28,33 @@
 </head>
 
 <body style="background-color: #fafafa">
+<div class="row margin-sides" style="margin-top: 1em;">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Slot Name</h5>
+                <div id="slot_name" class="panel-body">
+                    <input type="text" id="slot_name_text" value="Submit">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row margin-sides" style="margin-top: 1em;">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body" id="slot_advertising">
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row margin-sides" style="margin-top: 2em;">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Frame Type</h5>
-
                 <div class="dropdown">
                     <button id="btn_frame_type" class="btn btn-primary dropdown-toggle"
                             style="width: 100%; text-align: left !important;" type="button"
@@ -63,16 +84,13 @@
 <div class="row margin-sides" style="margin-top: 1em;">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Slot Name</h5>
-                <div id="slot_name" class="panel-body">
-                    <!-- Content is generated -->
-                    <input type="text"  id="slot_name_text" value="Submit">
-                </div>
+            <div class="card-body" id="base_parameter">
+
             </div>
         </div>
     </div>
 </div>
+
 
 <script src="../../libs/jquery.min.js"></script>
 <script src="../../libs/popper.min.js"></script>

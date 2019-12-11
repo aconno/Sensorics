@@ -4,5 +4,9 @@ package com.aconno.sensorics.model.javascript
 data class SlotJS(
     val frameType: String,
     val frame: MutableMap<String, String>,
-    val name: String
+    val name: String,
+    val advertising: Boolean,
+    val packetCount: Int,
+    val supportedtxPower: List<Byte>,
+    val txPower: Int
 )

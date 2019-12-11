@@ -186,12 +186,30 @@ function init(slotJson) {
         default:
             $('#frame_type_empty').click();
     }
-     console.log("Slot name is: "+slot.name);
-     if(slot.name) {
-         $('#slot_name_text').val(slot.name);
-     }
+
+     $('#slot_name_text').val(slot.name);
 
 
+     let params = generateSwitchContent(slot.advertising, "Slot Advertising");
+     $('#slot_advertising').empty();
+     $('#slot_advertising').append(params);
+
+     $('#base_parameter').empty();
+
+     params = generateBaseParameter();
+     $('#base_parameter').append(params);
+
+      params = generateSwitchContent(slot.advertising, "Internal/Event");
+      $('#base_parameter').append(params);
+
+      params = generateRange("Advertising Interval", 20);
+      $('#base_parameter').append(params);
+
+      params = generateRange("Advertising PacketCount", slot.packetCount);
+      $('#base_parameter').append(params);
+
+      params = generateEnums(slot.supportedtxPower, "tx_power", "Advertising Tx Power", txPower, 0)
+      $('#base_parameter').append(params);
 }
 
 function getUpdatedSlot() {
