@@ -20,6 +20,24 @@ class FormatJsonConverter {
         )
     }
 
+    fun toAdvertisementFormatJsonModel(advertisementFormat: AdvertisementFormat) : FormatJsonModel {
+        val byteFormatsJsonModels = advertisementFormat.getFormat().values.map { toByteFormatJsonModel(it) }.toList()
+        val formatRequiredJsonModels = advertisementFormat.getRequiredFormat().map { toByteFormatRequiredJsonModel(it) }
+
+        return FormatJsonModel(
+                advertisementFormat.id,
+                advertisementFormat.getName(),
+                advertisementFormat.getIcon(),
+                byteFormatsJsonModels,
+                formatRequiredJsonModels,
+                advertisementFormat.isConnectible(),
+                advertisementFormat.getConnectionWriteList()?.map { toConnectionWriteJsonModel(it) },
+                advertisementFormat.getConnectionReadList()?.map { toConnectionReadJsonModel(it) },
+                toSettingsSupportJsonModel(advertisementFormat.getSettingsSupport())
+        )
+
+    }
+
     private fun toSettingsSupport(settingsSupportJsonModel: SettingsSupportJsonModel?): SettingsSupport? {
         settingsSupportJsonModel?.let {
             return SettingsSupport(
@@ -28,6 +46,29 @@ class FormatJsonConverter {
             )
         }
         return null
+    }
+
+    private fun toSettingsSupportJsonModel(settingsSupport : SettingsSupport?) : SettingsSupportJsonModel?{
+        settingsSupport?.let {
+            return SettingsSupportJsonModel(
+                    it.index,
+                    "0x"+it.mask.toString(16)
+            )
+        }
+
+        return null
+    }
+
+    private fun toByteFormatJsonModel(byteFormat: ByteFormat) : ByteFormatJsonModel {
+        return ByteFormatJsonModel(
+                byteFormat.name,
+                byteFormat.startIndexInclusive,
+                byteFormat.endIndexExclusive,
+                byteFormat.isReversed,
+                byteFormat.dataType,
+                byteFormat.formula?.originalExpression,
+                byteFormat.source
+        )
     }
 
     private fun toByteFormat(byteFormatJsonModel: ByteFormatJsonModel): ByteFormat {
@@ -63,6 +104,15 @@ class FormatJsonConverter {
         )
     }
 
+    private fun toByteFormatRequiredJsonModel(byteFormatRequired: ByteFormatRequired) : ByteFormatRequiredJsonModel {
+        return ByteFormatRequiredJsonModel(
+                byteFormatRequired.name,
+                byteFormatRequired.position,
+                "0x"+byteFormatRequired.value.toString(16),
+                byteFormatRequired.source
+        )
+    }
+
     private fun toConnectionWrite(
         connectionWriteJsonModel: ConnectionWriteJsonModel
     ): ConnectionWrite {
@@ -74,11 +124,28 @@ class FormatJsonConverter {
         )
     }
 
+    private fun toConnectionWriteJsonModel(connectionWrite: ConnectionWrite) : ConnectionWriteJsonModel {
+        return ConnectionWriteJsonModel(
+                connectionWrite.serviceUUID,
+                connectionWrite.characteristicUUID,
+                connectionWrite.characteristicName,
+                connectionWrite.values.map { toValueJsonModel(it) }
+        )
+    }
+
     private fun toConnectionRead(connectionReadJsonModel: ConnectionReadJsonModel): ConnectionRead {
         return ConnectionRead(
             connectionReadJsonModel.serviceUUID,
             connectionReadJsonModel.characteristicUUID,
             connectionReadJsonModel.characteristicName
+        )
+    }
+
+    private fun toConnectionReadJsonModel(connectionRead: ConnectionRead) : ConnectionReadJsonModel {
+        return ConnectionReadJsonModel(
+                connectionRead.serviceUUID,
+                connectionRead.characteristicUUID,
+                connectionRead.characteristicName
         )
     }
 
@@ -88,5 +155,9 @@ class FormatJsonConverter {
             valueJsonModel.type,
             valueJsonModel.value
         )
+    }
+
+    private fun toValueJsonModel(value : Value) : ValueJsonModel {
+        return ValueJsonModel(value.name,value.type,value.value)
     }
 }

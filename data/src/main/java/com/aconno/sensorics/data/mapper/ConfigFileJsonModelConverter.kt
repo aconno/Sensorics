@@ -15,4 +15,15 @@ class ConfigFileJsonModelConverter {
             configFileJsonModel.usecaseScreenPath
         )
     }
+
+    fun toConfigFileJsonModel(resourceConfig: ResourceConfig) : ConfigFileJsonModel {
+        return ConfigFileJsonModel(
+                resourceConfig.deviceScreenPath,
+                resourceConfig.formatPath,
+                resourceConfig.iconPath,
+                resourceConfig.id,
+                resourceConfig.name,
+                resourceConfig.usecaseScreenPath
+        )
+    }
 }

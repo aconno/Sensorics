@@ -3,6 +3,7 @@ package com.aconno.sensorics.data.repository.resources
 import com.aconno.sensorics.data.mapper.ConfigFileJsonModelConverter
 import com.aconno.sensorics.data.mapper.FormatJsonConverter
 import com.aconno.sensorics.data.repository.resources.format.FormatJsonModel
+import com.aconno.sensorics.domain.FileStorage
 import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.model.ResourceConfig
 import com.aconno.sensorics.domain.repository.ResourcesRepository
@@ -15,12 +16,23 @@ class ResourcesRepositoryImpl(
     private val cacheFilePath: File,
     private val gson: Gson,
     private val configFileJsonModelConverter: ConfigFileJsonModelConverter,
-    private val formatJsonConverter: FormatJsonConverter
+    private val formatJsonConverter: FormatJsonConverter,
+    private val fileStorage: FileStorage
 ) :
     ResourcesRepository {
 
-    override fun addConfig() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun addConfig(resourceConfig : ResourceConfig) {
+        val configFolder = File(cacheFilePath.absolutePath + CONFIGS_FILE_PATH)
+
+        if (configFolder.exists()) {
+            val configFile = File("${configFolder.path}/${resourceConfig.id}.config")
+            val configFileJsonModel = configFileJsonModelConverter.toConfigFileJsonModel(resourceConfig)
+            val configFileContent = gson.toJson(configFileJsonModel,ConfigFileJsonModel::class.java)
+
+            fileStorage.storeData(configFile.toURI().toString(),configFileContent.toByteArray())
+        } else {
+            throw FileNotFoundException("Folder containing configuration files not found.")
+        }
     }
 
     override fun getConfigs(): List<ResourceConfig> {
@@ -42,8 +54,18 @@ class ResourcesRepositoryImpl(
         }
     }
 
-    override fun addFormat() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun addFormat(advertisementFormat: AdvertisementFormat) {
+        val formatsFolder = File(cacheFilePath.absolutePath + FORMATS_FILE_PATH)
+
+        if (formatsFolder.exists()) {
+            val formatFile = File("${formatsFolder.path}/${advertisementFormat.id}.json")
+            val formatFileJsonModel = formatJsonConverter.toAdvertisementFormatJsonModel(advertisementFormat)
+            val formatFileContent = gson.toJson(formatFileJsonModel,FormatJsonModel::class.java)
+
+            fileStorage.storeData(formatFile.toURI().toString(),formatFileContent.toByteArray())
+        } else {
+            throw FileNotFoundException("Folder containing advertisement formats not found.")
+        }
     }
 
     override fun getFormats(): List<AdvertisementFormat> {

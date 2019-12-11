@@ -5,6 +5,7 @@ import com.aconno.sensorics.data.mapper.ConfigFileJsonModelConverter
 import com.aconno.sensorics.data.mapper.FormatJsonConverter
 import com.aconno.sensorics.data.repository.resources.ResourcesRepositoryImpl
 import com.aconno.sensorics.domain.ConfigListManager
+import com.aconno.sensorics.domain.FileStorage
 import com.aconno.sensorics.domain.FormatListManager
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
@@ -24,13 +25,15 @@ class ResourcesModule {
     @Singleton
     fun provideResourcesRepository(
         application: SensoricsApplication,
-        gson: Gson
+        gson: Gson,
+        fileStorage : FileStorage
     ): ResourcesRepository {
         return ResourcesRepositoryImpl(
             application.cacheDir,
             gson,
             ConfigFileJsonModelConverter(),
-            FormatJsonConverter()
+            FormatJsonConverter(),
+                fileStorage
         )
     }
 

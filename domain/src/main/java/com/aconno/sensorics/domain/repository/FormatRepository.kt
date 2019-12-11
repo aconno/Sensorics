@@ -4,6 +4,6 @@ import com.aconno.sensorics.domain.format.AdvertisementFormat
 
 interface FormatRepository {
 
-    fun addFormat()
+    fun addFormat(advertisementFormat: AdvertisementFormat)
     fun getFormats(): List<AdvertisementFormat>
 }
