@@ -5,4 +5,5 @@ interface Condition {
     val limit: Float
     val type: Int
     fun isSatisfied(input: Input): Boolean
+    fun getConditionTypeAsString() : String
 }

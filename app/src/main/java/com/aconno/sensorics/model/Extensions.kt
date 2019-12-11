@@ -1,18 +1,10 @@
 package com.aconno.sensorics.model
 
-import android.content.Context
 import com.aconno.sensorics.domain.ifttt.Condition
-import com.aconno.sensorics.domain.ifttt.LimitCondition
 
-fun Condition.toString(context: Context): String {
+fun Condition.toStringRepresentation(): String {
     val sensor = readingType
-    //TODO: Refactor constraint type
-    val constraint = when (type) {
-        LimitCondition.MORE_THAN -> ">"
-        LimitCondition.LESS_THAN -> "<"
-        LimitCondition.EQUAL_TO -> "="
-        else -> throw IllegalArgumentException("Int is not valid constraint identifier: $type")
-    }
+    val constraint = getConditionTypeAsString()
     val value = limit.toString()
     return "$sensor $constraint $value"
 }

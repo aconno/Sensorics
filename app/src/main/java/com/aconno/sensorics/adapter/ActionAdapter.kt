@@ -9,7 +9,7 @@ import android.widget.CheckBox
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.actions.Action
-import com.aconno.sensorics.model.toString
+import com.aconno.sensorics.model.toStringRepresentation
 import kotlinx.android.synthetic.main.item_action.view.*
 import java.util.*
 import kotlin.collections.HashMap
@@ -120,7 +120,7 @@ class ActionAdapter(
 
             view.text_name.text = action.name
             view.text_mac_address.text = action.device.macAddress
-            view.text_condition.text = action.condition.toString(view.context)
+            view.text_condition.text = action.condition.toStringRepresentation()
             view.text_outcome.text = action.outcome.toString()
             view.action_switch.isChecked = action.active
 
