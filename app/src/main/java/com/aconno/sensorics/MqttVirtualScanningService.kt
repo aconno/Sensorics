@@ -26,10 +26,9 @@ import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
-import com.aconno.sensorics.domain.model.ScanResult
+import com.aconno.sensorics.domain.mqtt.MqttVirtualScanner
 import com.aconno.sensorics.domain.repository.SyncRepository
 import dagger.android.DaggerService
-import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -39,24 +38,15 @@ import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function4
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.eclipse.paho.android.service.MqttAndroidClient
-import org.eclipse.paho.client.mqttv3.*
 import timber.log.Timber
 import javax.inject.Inject
 
 
-class MqttVirtualScanningService : DaggerService(), MqttCallbackExtended {
-
-    val readingPublisher: PublishSubject<List<Reading>> = PublishSubject.create()
-
-    val readings: Flowable<List<Reading>> = readingPublisher.toFlowable(BackpressureStrategy.BUFFER)
-
-    lateinit var mqttAndroidClient: MqttAndroidClient
+class MqttVirtualScanningService : DaggerService() {
 
     @Inject
     lateinit var generateReadingsUseCase: GenerateReadingsUseCase
@@ -118,6 +108,12 @@ class MqttVirtualScanningService : DaggerService(), MqttCallbackExtended {
     @Inject
     lateinit var syncRepository: SyncRepository
 
+    @Inject
+    lateinit var readings: Flowable<List<Reading>>
+
+    @Inject
+    lateinit var mqttVirtualScanner: MqttVirtualScanner
+
     private var closeConnectionUseCase: CloseConnectionUseCase? = null
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
     private var publishers: MutableList<Publisher>? = null
@@ -140,68 +136,21 @@ class MqttVirtualScanningService : DaggerService(), MqttCallbackExtended {
         val clientId: String? = intent?.getStringExtra(MQTT_VIRTUAL_SCANNING_SERVICE_ID_EXTRA)
 
         if (serverUri != null && clientId != null) {
-            mqttAndroidClient = MqttAndroidClient(
-                this,
-                serverUri, clientId
-            )
+            mqttVirtualScanner.addSource(serverUri, clientId)
 
-            mqttAndroidClient.setCallback(this)
+            getSavedDevicesUseCase.execute()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { devices ->
+                    mqttVirtualScanner.addDevicesToScanFor(devices)
+                }.also {
+                    disposables.add(it)
+                }
 
             startScan()
         }
 
         return START_STICKY
-    }
-
-    override fun connectComplete(reconnect: Boolean, serverURI: String?) {
-        Timber.d("Connection complete to server: %s", serverURI)
-        getSavedDevicesUseCase.execute()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { devices ->
-                devices.forEach { device ->
-                    mqttAndroidClient.subscribe(device.macAddress, 0, null, object : IMqttActionListener {
-                        override fun onSuccess(asyncActionToken: IMqttToken?) {
-                            Timber.d("Successfully subscribed to ${device.macAddress}!")
-                        }
-
-                        override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                            Timber.d("Failed to subscribe to ${device.macAddress}!")
-                            // TODO: Handle error
-                        }
-                    })
-                }
-            }.also {
-                disposables.add(it)
-            }
-    }
-
-    @Suppress("UnnecessaryVariable")
-    override fun messageArrived(topic: String, message: MqttMessage) {
-        val timestamp = System.currentTimeMillis()
-        val macAddress = topic
-        val rssi = 0
-        val rawData = message.payload
-
-        val virtualScanResult = ScanResult(timestamp, macAddress, rssi, rawData)
-
-        generateReadingsUseCase.execute(virtualScanResult)
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { devices ->
-                readingPublisher.onNext(devices)
-            }.also {
-                disposables.add(it)
-            }
-        Timber.d("Message arrived, topic: %s, message: %s", topic, message)
-    }
-
-    override fun connectionLost(cause: Throwable?) {
-        Timber.d(cause, "Connection lost")
-    }
-
-    override fun deliveryComplete(token: IMqttDeliveryToken?) {
-        Timber.d("Delivery complete, token: %s", token)
     }
 
 
@@ -222,8 +171,7 @@ class MqttVirtualScanningService : DaggerService(), MqttCallbackExtended {
 
     private fun startScan(deviceList: List<Device>? = null) {
         TAG.d("Started")
-
-        mqttAndroidClient.connect()
+        mqttVirtualScanner.startScanning()
 
         running = true
         startRecording()
@@ -245,7 +193,7 @@ class MqttVirtualScanningService : DaggerService(), MqttCallbackExtended {
     }
 
     private fun handleInputsForActions() {
-        Timber.i("handle Action..... $readings")
+        TAG.i("handle Action..... $readings")
 
         disposables.add(
             readings
@@ -271,10 +219,9 @@ class MqttVirtualScanningService : DaggerService(), MqttCallbackExtended {
     }
 
     fun stopScanning() {
-        scanTimerDisposable.cancel()
         stopRecording()
         closeConnectionUseCase?.execute()
-        mqttAndroidClient.disconnect()
+        mqttVirtualScanner.stopScanning()
         running = false
         stopSelf()
         publishReadingsUseCase = null

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -343,7 +344,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
             bluetoothScanningViewModel.startScanning(filterByDevice)
-            mqttVirtualScanningViewModel.startScanning("https://192.168.8.158", "test_client_id")
+            mqttVirtualScanningViewModel.startScanning("tcp://192.168.100.107:1883", "test_client_id")
             filterByDevice = true
         }
     }
@@ -355,11 +356,12 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             getString(R.string.snackbar_permission_message),
             Snackbar.LENGTH_LONG
         ).setAction(getString(R.string.snackbar_settings)) {
-            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            intent.data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-            startActivity(intent)
-        }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
-            .show()
+            startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+            })
+        }.setActionTextColor(
+            ContextCompat.getColor(this, R.color.primaryColor)
+        ).show()
     }
 
     override fun showRationale(actionCode: Int) {

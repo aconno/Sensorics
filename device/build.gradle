@@ -46,6 +46,11 @@ dependencies {
 
     implementation "com.udojava:EvalEx:$eval_ex_version"
 
+    implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") {
+        exclude module: 'support-v4'
+    }
+    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.1"
+
     api "com.squareup.retrofit2:retrofit:$retrofit_version"
     api "com.squareup.retrofit2:converter-scalars:$retrofit_version"
 

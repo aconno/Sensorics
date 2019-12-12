@@ -6,6 +6,7 @@ import android.content.IntentFilter
 import com.aconno.sensorics.MqttVirtualScanningService
 import com.aconno.sensorics.MqttVirtualScanningServiceReceiver
 import com.aconno.sensorics.R
+import com.aconno.sensorics.device.mqtt.MqttVirtualScannerImpl
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.device.storage.FileStorageImpl
@@ -15,6 +16,8 @@ import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.ifttt.outcome.*
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
+import com.aconno.sensorics.domain.interactor.consolidation.GenerateReadingsUseCase
+import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllEnabledGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllEnabledMqttPublishUseCase
@@ -24,11 +27,16 @@ import com.aconno.sensorics.domain.interactor.repository.GetRestHttpGetParamsByI
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveSensorReadingsUseCase
 import com.aconno.sensorics.domain.interactor.time.GetLocalTimeOfDayInSecondsUseCase
+import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.model.ScanResult
+import com.aconno.sensorics.domain.mqtt.MqttVirtualScanner
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.time.TimeProvider
 import dagger.Module
 import dagger.Provides
+import io.reactivex.Flowable
+import javax.inject.Singleton
 
 @Module
 class MqttVirtualScanningServiceModule {
@@ -48,6 +56,32 @@ class MqttVirtualScanningServiceModule {
             title,
             content
         )
+    }
+
+    @Provides
+    @Singleton
+    @MqttVirtualScanningServiceScope
+    fun provideMqttVirtualScanner(): MqttVirtualScanner {
+        return MqttVirtualScannerImpl()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideFilteredScanResult(
+        mqttVirtualScanner: MqttVirtualScanner,
+        filterByFormatUseCase: FilterByFormatUseCase
+    ): Flowable<ScanResult> {
+        return mqttVirtualScanner.getScanResults().filter { filterByFormatUseCase.execute(it) }
+    }
+
+    @Provides
+    @Singleton
+    fun provideReadings(
+        filteredScanResult: Flowable<ScanResult>,
+        generateReadingsUseCase: GenerateReadingsUseCase
+    ): Flowable<List<Reading>> {
+        return filteredScanResult.concatMap { generateReadingsUseCase.execute(it).toFlowable() }
     }
 
     @Provides
