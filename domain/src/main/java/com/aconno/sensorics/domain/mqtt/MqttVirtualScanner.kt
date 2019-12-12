@@ -14,4 +14,5 @@ interface MqttVirtualScanner {
     fun addDeviceToScanFor(device: Device)
     fun removeDevicesToScanFor(devices: List<Device>)
     fun removeDeviceToScanFor(device: Device)
+    fun clearSources()
 }

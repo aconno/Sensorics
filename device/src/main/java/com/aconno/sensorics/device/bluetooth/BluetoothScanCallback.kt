@@ -15,6 +15,7 @@ class BluetoothScanCallback(
     override fun onScanResult(callbackType: Int, result: android.bluetooth.le.ScanResult?) {
         result?.let {
             val scanResult = createScanResult(result)
+
             scanResults.onNext(scanResult)
         }
     }

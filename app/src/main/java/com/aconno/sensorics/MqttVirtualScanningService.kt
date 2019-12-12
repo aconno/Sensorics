@@ -122,7 +122,6 @@ class MqttVirtualScanningService : DaggerService() {
 
     private val disposables = CompositeDisposable()
 
-
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
@@ -216,12 +215,15 @@ class MqttVirtualScanningService : DaggerService() {
                 }
 
         )
+
+        TAG.i("handled action")
     }
 
     fun stopScanning() {
         stopRecording()
         closeConnectionUseCase?.execute()
         mqttVirtualScanner.stopScanning()
+        mqttVirtualScanner.clearSources()
         running = false
         stopSelf()
         publishReadingsUseCase = null

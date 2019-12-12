@@ -1,6 +1,7 @@
 package com.aconno.sensorics.dagger.application
 
 import com.aconno.sensorics.SensoricsApplication
+import com.aconno.sensorics.dagger.mqtt.MqttScannerModule
 import com.aconno.sensorics.dagger.worker.WorkerAssistedInjectModule
 import com.aconno.sensorics.dagger.worker.WorkerBindingModule
 import dagger.Component
@@ -13,6 +14,7 @@ import javax.inject.Singleton
         AndroidSupportInjectionModule::class,
         AppModule::class,
         BluetoothModule::class,
+        MqttScannerModule::class,
         DataModule::class,
         ResourcesModule::class,
         ActivityBuilder::class,

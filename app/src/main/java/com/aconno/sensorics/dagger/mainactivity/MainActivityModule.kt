@@ -3,6 +3,7 @@ package com.aconno.sensorics.dagger.mainactivity
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
+import com.aconno.sensorics.dagger.compositescan.CompositeScanResultsModule
 import com.aconno.sensorics.device.permissons.PermissionActionFactory
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
@@ -27,7 +28,9 @@ import dagger.Provides
 import io.reactivex.Flowable
 
 
-@Module
+@Module(includes = [
+    CompositeScanResultsModule::class
+])
 class MainActivityModule {
 
     @Provides

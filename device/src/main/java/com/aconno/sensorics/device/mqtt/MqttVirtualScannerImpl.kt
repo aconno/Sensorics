@@ -1,5 +1,6 @@
 package com.aconno.sensorics.device.mqtt
 
+import android.content.Context
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.mqtt.MqttVirtualScanner
@@ -7,19 +8,20 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import timber.log.Timber
 
-class MqttVirtualScannerImpl : MqttVirtualScanner {
+class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
     private var isScanning: Boolean = false
     private var topics: MutableSet<String> = mutableSetOf()
 
-    private var clients: MutableList<MqttClient> = mutableListOf()
-    private var clientTopics: MutableMap<MqttClient, MqttVirtualScannerCallback> = mutableMapOf()
+    private var clients: MutableList<MqttAndroidClient> = mutableListOf()
+    private var clientTopics: MutableMap<MqttAndroidClient, MqttVirtualScannerCallback> = mutableMapOf()
 
 
     val defaultMqttOptions = MqttConnectOptions().apply {
-        this.isAutomaticReconnect = true
         this.isCleanSession = true
     }
 
@@ -29,10 +31,14 @@ class MqttVirtualScannerImpl : MqttVirtualScanner {
         serverUri: String,
         clientId: String
     ) {
-        val client = MqttClient(
+
+        val client = MqttAndroidClient(
+            context,
             serverUri,
-            clientId
+            clientId,
+            MemoryPersistence()
         )
+
 
         val callback = MqttVirtualScannerCallback(client)
         client.setCallback(callback)
@@ -57,12 +63,16 @@ class MqttVirtualScannerImpl : MqttVirtualScanner {
                 }
         }.let { filteredClients ->
             filteredClients.forEach {
-                if (it.isConnected) {
-                    it.disconnectForcibly()
-                }
+                it.disconnect()
                 clientTopics.remove(it)
                 clients.remove(it)
             }
+        }
+    }
+
+    override fun clearSources() {
+        clients.forEach { client ->
+            removeSource(client.serverURI, null)
         }
     }
 
@@ -95,17 +105,31 @@ class MqttVirtualScannerImpl : MqttVirtualScanner {
 
     override fun stopScanning() {
         clients.filter {
-            it.isConnected
+            it.isConnectedSafe()
         }.forEach {
-            it.disconnect()
+            it.disconnect(null, object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken?) {
+                    Timber.d("Disconnected from ${it.serverURI}")
+                }
+
+                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                    Timber.d("Failed to disconnect from ${it.serverURI}")
+                }
+            })
         }
     }
 
     override fun startScanning(devices: List<Device>) {
-        clients.filter {
-            !it.isConnected
-        }.forEach {
-            it.connect(defaultMqttOptions)
+        clients.forEach {
+            it.connect(defaultMqttOptions, null, object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken?) {
+                    Timber.d("Connected to ${it.serverURI}")
+                }
+
+                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                    Timber.d("Failed to connect to ${it.serverURI}")
+                }
+            })
         }
         addDevicesToScanFor(devices)
         isScanning = true
@@ -115,18 +139,29 @@ class MqttVirtualScannerImpl : MqttVirtualScanner {
         return scanResults.toFlowable(BackpressureStrategy.LATEST).observeOn(Schedulers.io())
     }
 
-    inner class MqttVirtualScannerCallback(var client: MqttClient, var subscribedTopics: MutableSet<String> = mutableSetOf()) : MqttCallbackExtended { // TODO: This might never get garbage collected
+    inner class MqttVirtualScannerCallback(var client: MqttAndroidClient, var subscribedTopics: MutableSet<String> = mutableSetOf()) : MqttCallbackExtended { // TODO: This might never get garbage collected
         fun checkSubscribedTopics(topics: Set<String>) {
-            (topics - subscribedTopics).let { missingTopics ->
-                missingTopics.forEach {
-                    client.subscribe(it)
-                    subscribedTopics.add(it)
+            if (client.isConnectedSafe()) {
+                (topics - subscribedTopics).let { missingTopics ->
+                    missingTopics.forEach {
+                        client.subscribe(it, 2, null, object : IMqttActionListener {
+                            override fun onSuccess(asyncActionToken: IMqttToken?) {
+                                Timber.d("Subscribed to $it successfully")
+                            }
+
+                            override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                                Timber.e(exception, "Failed to subscribe to $it successfully")
+                                subscribedTopics.remove(it)
+                            }
+                        })
+                        subscribedTopics.add(it)
+                    }
                 }
-            }
-            (subscribedTopics - topics).let { extraTopics ->
-                extraTopics.forEach {
-                    client.unsubscribe(it)
-                    subscribedTopics.remove(it)
+                (subscribedTopics - topics).let { extraTopics ->
+                    extraTopics.forEach {
+                        client.unsubscribe(it)
+                        subscribedTopics.remove(it)
+                    }
                 }
             }
         }
@@ -137,7 +172,7 @@ class MqttVirtualScannerImpl : MqttVirtualScanner {
         }
 
         override fun connectionLost(cause: Throwable?) {
-            Timber.e(cause)
+            Timber.e(cause?.message ?: "")
             subscribedTopics.clear()
         }
 
@@ -158,5 +193,13 @@ class MqttVirtualScannerImpl : MqttVirtualScanner {
             // TODO
         }
 
+    }
+}
+
+fun MqttAndroidClient.isConnectedSafe(): Boolean {
+    return try {
+        this.isConnected
+    } catch (e: IllegalArgumentException) {
+        false
     }
 }

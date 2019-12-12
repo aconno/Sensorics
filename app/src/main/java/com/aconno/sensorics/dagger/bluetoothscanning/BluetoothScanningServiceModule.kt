@@ -41,7 +41,4 @@ class BluetoothScanningServiceModule {
     @Provides
     @BluetoothScanningServiceScope
     fun provideBluetoothScanningReceiverIntentFilter() = IntentFilter("com.aconno.sensorics.STOP")
-
-
-
 }
