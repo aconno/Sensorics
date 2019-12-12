@@ -48,7 +48,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             beaconViewModel.beacon.observe(this@SettingsFrameworkActivity, Observer<Beacon> {
                 it?.let {
                     this.beacon = it
-                    this.notifyDataSetChanged()
                 }
             })
         }

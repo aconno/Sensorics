@@ -82,6 +82,15 @@ function generateCustomContent(customValue, isHexModeOn) {
         + '</div>';
 }
 
+function generateDefaultContent(value) {
+
+    return  '<div class="panel-body">'
+              + '<div class="panel-body">'
+              + '<input type="text" value='+value+' id="default_advertising_content"/>'
+              + '</div>'
+              + '</div>';
+}
+
 function generateBaseParameter(interval_checked) {
      return '<div class="row">'
             + '<div class="col-12">'
@@ -91,14 +100,16 @@ function generateBaseParameter(interval_checked) {
 }
 
 function generateEnums(elements, id, name, value, index) {
-        let body = HtmlGenerator.generateEnumsBody(id, elements, index)
-        let html = '<div class="form-group">'
-        html += '<label for="ddl-lbl-' + id + '">' + name + '</label>'
+        let body = generateEnumsBody(id, elements, index)
+        let html =  '<div class="panel-body">';
+        html += '<div class="form-group">';
+        html += '<label for="ddl-lbl-' + id + '">' + name + '</label>';
         html += '<div id="ddl-' + id + '" class="dropdown">';
         html += '<button class="btn btn-secondary dropdown-toggle" type="button" id="ddl-menu-button-' + id + '"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
         html += elements[value];
         html += "</button>";
         html += body;
+        html += '</div>';
         html += '</div>';
         html += '</div>';
         return html;
@@ -107,15 +118,14 @@ function generateEnums(elements, id, name, value, index) {
 function generateEnumsBody(id, elements, index) {
         var html = '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
         elements.forEach((element, position) => {
-            console.log(position);
-            html += HtmlGenerator.generateSingleEnum(id, element, position, index);
+            html += generateSingleEnum(id, element, position, index);
         });
         html += '</div>';
         return html
     }
 
 function generateSingleEnum(id, element, position, index) {
-        return '<a onclick="HtmlActions.dropDownChanged(' + id + ', \'' + element + '\', ' + position + ' ,' + index + ')" class="dropdown-item" >' + element + '</a>';
+        return '<a onclick="dropDownChanged(' + id + ', \'' + element + '\', ' + position + ' ,' + index + ')" class="dropdown-item" >' + element + '</a>';
     }
 
 function generateAdvertisingRange(name, advertisingInterval, value) {

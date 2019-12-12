@@ -8,5 +8,6 @@ data class SlotJS(
     val advertising: Boolean,
     val packetCount: Int,
     val supportedtxPower: List<Byte>,
-    val txPower: Int
+    val txPower: Int,
+    val readOnly: Boolean
 )

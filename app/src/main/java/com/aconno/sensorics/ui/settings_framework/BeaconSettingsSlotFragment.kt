@@ -116,13 +116,13 @@ open class BeaconSettingsSlotFragment : Fragment() {
                 },
                 it.packetCount,
                 beacon.supportedTxPowers,
-                beacon.supportedTxPowers.indexOf(it.txPower)
+                beacon.supportedTxPowers.indexOf(it.txPower),
+                it.readOnly
             )
         }?.let {
             convertKeysToJavascriptFormat(Gson().toJson(it))
                 .replace("\\u0000", "")
         }
-        Timber.d("getSlotJson: $data $slotPosition")
         return data
     }
 
@@ -155,6 +155,11 @@ open class BeaconSettingsSlotFragment : Fragment() {
             com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM,
             "KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM"
         )
+
+        convertedJson = convertedJson.replace(
+            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_DEFAULT_DATA,
+            "KEY_ADVERTISING_CONTENT_DEFAULT_DATA"
+        )
         return convertedJson
     }
 
@@ -162,13 +167,14 @@ open class BeaconSettingsSlotFragment : Fragment() {
 
         @JavascriptInterface
         fun onDataChanged(slotJsonRaw: String) {
-            Timber.d("Data Change called $slotJsonRaw")
+            Timber.d("OnDataChanged: $slotJsonRaw")
             val slotJson = convertKeysToOriginals(slotJsonRaw)
             val slotJS = Gson().fromJson<SlotJS>(slotJson, SlotJS::class.java)
             val slotPosition = arguments!!.getInt(EXTRA_BEACON_SLOT_POSITION)
             val dataSlot : List<Slot>
 
             dataSlot = slots.filter {
+                Timber.d("Tags: ${it.getType().tabName} ${slotJS.frameType}")
                 it.getType().tabName == slotJS.frameType
             }.toHashSet().toList()
 
@@ -209,6 +215,10 @@ open class BeaconSettingsSlotFragment : Fragment() {
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM",
                 com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM
+            )
+            convertedJson = convertedJson.replace(
+                "KEY_ADVERTISING_CONTENT_DEFAULT_DATA",
+                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_DEFAULT_DATA
             )
             return convertedJson
         }

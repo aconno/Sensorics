@@ -6,8 +6,8 @@ $(document).ready(function () {
     if (inited) {
         return;
     }
-    console.log("Ready Executed");
-    let emptyMenuItem = generateFrameTypeMenuItem("EMPTY");
+
+    let emptyMenuItem = generateFrameTypeMenuItem("DEFAULT");
     //let uidMenuItem = generateFrameTypeMenuItem("UID"); //Not supported yet
     let urlMenuItem = generateFrameTypeMenuItem("URL");
     let customMenuItem = generateFrameTypeMenuItem("CUSTOM");
@@ -26,12 +26,32 @@ $(document).ready(function () {
     });
 
     //Dropdown items
-    $('#frame_type_empty').click(
+    $('#frame_type_default').click(
         function () {
             $("#advertising_content").empty();
+                console.log("default is selected");
+                let whatever = "";
+
+                if (slot != null && slot.frameType == FrameType.DEFAULT) {
+                    whatever = generateDefaultContent(slot.frame[KEY_ADVERTISING_CONTENT_DEFAULT_DATA]);
+
+                    } else {
+                            whatever = generateDefaultContent("");
+                    }
+
+                    $("#advertising_content").append(whatever);
+
+                    $("#default_advertising_content").bind("change keyup", function () {
+                         getUpdatedSlot();
+                    });
         }
     );
 
+     $('#frame_type_empty').click(
+            function () {
+                 $("#advertising_content").empty();
+            }
+     );
     $('#frame_type_url').click(
         function () {
             $("#advertising_content").empty();
@@ -183,8 +203,12 @@ function init(slotJson) {
         case FrameType.CUSTOM:
             $('#frame_type_custom').click();
             break;
+        case FrameType.DEFAULT:
+             $('#frame_type_default').click();
+             break;
         default:
             $('#frame_type_empty').click();
+
     }
 
      $('#slot_name_text').val(slot.name);
@@ -208,8 +232,12 @@ function init(slotJson) {
       params = generateRange("Advertising PacketCount", slot.packetCount);
       $('#base_parameter').append(params);
 
-      params = generateEnums(slot.supportedtxPower, "tx_power", "Advertising Tx Power", txPower, 0)
+      params = generateEnums(slot.supportedtxPower, "tx_power", "Advertising Tx Power", slot.txPower, 0)
       $('#base_parameter').append(params);
+
+      if(slot.readOnly == true) {
+        $('#btn_frame_type').prop('disabled', true)
+      }
 }
 
 function getUpdatedSlot() {
@@ -247,6 +275,14 @@ function getUpdatedSlot() {
                 KEY_ADVERTISING_CONTENT_CUSTOM_IS_HEX_MODE_ON: $('#custom_hex_enabled').is(":checked")
             };
             break;
+
+        case "DEFAULT":
+            slot.frameType = FrameType.DEFAULT;
+            slot.frame = {
+                  KEY_ADVERTISING_CONTENT_DEFAULT_DATA: $('#default_advertising_content').val(),
+               };
+            break;
+
         default:
             slot.frameType = FrameType.EMPTY;
             slot.frame = {};

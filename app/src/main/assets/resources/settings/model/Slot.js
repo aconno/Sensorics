@@ -1,12 +1,13 @@
 class Slot {
     constructor() {
-        this.frameType = FrameType.EMPTY
+        this.frameType = FrameType.DEFAULT
         this.frame = {}
         this.name = "Name"
         this.advertising = false
         this.packetCount = 0
         this.supportedtxPower = []
         this.txPower = 0
+        this.readOnly = false
     }
 }
 
@@ -16,7 +17,8 @@ var FrameType = {
     TLM: 2,
     IBEACON: "iBeacon",
     DEVICE_INFO: 4,
-    EMPTY: "DEFAULT",
+    DEFAULT: "DEFAULT",
+    EMPTY: "EMPTY",
     CUSTOM: "Custom (MSD)"
 };
 
