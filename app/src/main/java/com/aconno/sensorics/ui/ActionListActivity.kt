@@ -23,6 +23,7 @@ class ActionListActivity : DaggerAppCompatActivity() {
                 fm.beginTransaction().add(R.id.content_container, fragment).commit()
             }
         }
+
     }
 
     companion object {

@@ -1,8 +1,6 @@
 package com.aconno.sensorics.dagger.gcloudpublisher
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
-import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
@@ -14,10 +12,10 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class GoogleCloudPublisherModule {
+class GoogleCloudPublisherActivityModule {
 
     @Provides
-    @GoogleCloudPublisherScope
+    @GoogleCloudPublisherActivityScope
     fun provideGoogleCloudPublisherViewModel(
         googleCloudPublisherActivity: GoogleCloudPublisherActivity,
         googleCloudPublisherViewModelFactory: GoogleCloudPublisherViewModelFactory
@@ -25,7 +23,7 @@ class GoogleCloudPublisherModule {
         .get(GoogleCloudPublisherViewModel::class.java)
 
     @Provides
-    @GoogleCloudPublisherScope
+    @GoogleCloudPublisherActivityScope
     fun provideGoogleCloudPublisherViewModelFactory(
         addGooglePublishUseCase: AddGooglePublishUseCase,
         googlePublishModelDataMapper: GooglePublishModelDataMapper,
@@ -38,29 +36,5 @@ class GoogleCloudPublisherModule {
         deletePublishDeviceJoinUseCase
     )
 
-    @Provides
-    @GoogleCloudPublisherScope
-    fun provideAddGooglePublishUseCase(
-        googlePublishRepository: GooglePublishRepository
-    ): AddGooglePublishUseCase {
-        return AddGooglePublishUseCase(
-            googlePublishRepository
-        )
-    }
 
-    @Provides
-    @GoogleCloudPublisherScope
-    fun provideSavePublishDeviceJoinUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): SavePublishDeviceJoinUseCase {
-        return SavePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @GoogleCloudPublisherScope
-    fun provideDeletePublishDeviceJoinUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): DeletePublishDeviceJoinUseCase {
-        return DeletePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
 }

@@ -8,23 +8,6 @@ import com.aconno.sensorics.BluetoothScanningServiceReceiver
 import com.aconno.sensorics.R
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationFactory
-import com.aconno.sensorics.device.storage.FileStorageImpl
-import com.aconno.sensorics.domain.AlarmServiceController
-import com.aconno.sensorics.domain.Vibrator
-import com.aconno.sensorics.domain.actions.ActionsRepository
-import com.aconno.sensorics.domain.ifttt.*
-import com.aconno.sensorics.domain.ifttt.outcome.*
-import com.aconno.sensorics.domain.interactor.LogReadingUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllEnabledGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllEnabledMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllEnabledRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetRestHeadersByIdUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetRestHttpGetParamsByIdUseCase
-import com.aconno.sensorics.domain.interactor.repository.SaveSensorReadingsUseCase
-import com.aconno.sensorics.domain.interactor.time.GetLocalTimeOfDayInSecondsUseCase
-import com.aconno.sensorics.domain.repository.InMemoryRepository
-import com.aconno.sensorics.domain.time.TimeProvider
 import dagger.Module
 import dagger.Provides
 
@@ -59,104 +42,6 @@ class BluetoothScanningServiceModule {
     @BluetoothScanningServiceScope
     fun provideBluetoothScanningReceiverIntentFilter() = IntentFilter("com.aconno.sensorics.STOP")
 
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideRecordSensorValuesUseCase(
-        inMemoryRepository: InMemoryRepository
-    ): SaveSensorReadingsUseCase {
-        return SaveSensorReadingsUseCase(inMemoryRepository)
-    }
 
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideLogReadingsUseCase(
-        bluetoothScanningService: BluetoothScanningService
-    ): LogReadingUseCase {
-        return LogReadingUseCase(FileStorageImpl(bluetoothScanningService))
-    }
 
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideHandleInputUseCase(
-        actionsRepository: ActionsRepository,
-        getLocalTimeOfDayInSecondsUseCase: GetLocalTimeOfDayInSecondsUseCase
-    ): InputToOutcomesUseCase {
-        return InputToOutcomesUseCase(actionsRepository, getLocalTimeOfDayInSecondsUseCase)
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideGetLocalTimeOfDayInSecondsUseCase(
-        timeProvider: TimeProvider
-    ): GetLocalTimeOfDayInSecondsUseCase {
-        return GetLocalTimeOfDayInSecondsUseCase(timeProvider)
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideRunOutcomeUseCase(
-        notificationDisplay: NotificationDisplay,
-        textToSpeechPlayer: TextToSpeechPlayer,
-        vibrator: Vibrator,
-        alarmServiceController: AlarmServiceController
-    ): RunOutcomeUseCase {
-        val notificationOutcomeExecutor = NotificationOutcomeExecutor(notificationDisplay)
-        val textToSpeechOutcomeExecutor = TextToSpeechOutcomeExecutor(textToSpeechPlayer)
-        val vibrationOutcomeExecutor = VibrationOutcomeExecutor(vibrator)
-        val alarmOutcomeExecutor = AlarmOutcomeExecutor(alarmServiceController)
-        val outcomeExecutorSelector = OutcomeExecutorSelector(
-            notificationOutcomeExecutor,
-            textToSpeechOutcomeExecutor,
-            vibrationOutcomeExecutor,
-            alarmOutcomeExecutor
-        )
-
-        return RunOutcomeUseCase(outcomeExecutorSelector)
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideGetAllEnabledGooglePublishUseCase(
-        googlePublishRepository: GooglePublishRepository
-    ): GetAllEnabledGooglePublishUseCase {
-        return GetAllEnabledGooglePublishUseCase(
-            googlePublishRepository
-        )
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideGetAllEnabledRESTPublishUseCase(
-        restPublishRepository: RestPublishRepository
-    ): GetAllEnabledRestPublishUseCase {
-        return GetAllEnabledRestPublishUseCase(
-            restPublishRepository
-        )
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideGetAllEnabledMqttPublishUseCase(
-        mqttPublishRepository: MqttPublishRepository
-    ): GetAllEnabledMqttPublishUseCase {
-        return GetAllEnabledMqttPublishUseCase(
-            mqttPublishRepository
-        )
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideGetRESTHeadersByIdUseCase(
-        restPublishRepository: RestPublishRepository
-    ): GetRestHeadersByIdUseCase {
-        return GetRestHeadersByIdUseCase(restPublishRepository)
-    }
-
-    @Provides
-    @BluetoothScanningServiceScope
-    fun provideGetRESTHttpGetParamsByIdUseCase(
-        restPublishRepository: RestPublishRepository
-    ): GetRestHttpGetParamsByIdUseCase {
-        return GetRestHttpGetParamsByIdUseCase(restPublishRepository)
-    }
 }

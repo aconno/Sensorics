@@ -4,11 +4,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.permissons.PermissionActionFactory
-import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionsByDeviceMacAddressUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
@@ -18,8 +14,6 @@ import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
-import com.aconno.sensorics.domain.repository.DeviceRepository
-import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
@@ -130,29 +124,6 @@ class MainActivityModule {
         bluetoothViewModelFactory
     ).get(BluetoothViewModel::class.java)
 
-    @Provides
-    @MainActivityScope
-    fun provideGetAllDevicesUseCase(
-        deviceRepository: DeviceRepository
-    ): GetSavedDevicesUseCase {
-        return GetSavedDevicesUseCase(deviceRepository)
-    }
-
-    @Provides
-    @MainActivityScope
-    fun provideSaveDeviceUseCase(
-        deviceRepository: DeviceRepository
-    ): SaveDeviceUseCase {
-        return SaveDeviceUseCase(deviceRepository)
-    }
-
-    @Provides
-    @MainActivityScope
-    fun provideDeleteDeviceUseCase(
-        deviceRepository: DeviceRepository
-    ): DeleteDeviceUseCase {
-        return DeleteDeviceUseCase(deviceRepository)
-    }
 
     @Provides
     @MainActivityScope
@@ -241,12 +212,6 @@ class MainActivityModule {
 
     @Provides
     @MainActivityScope
-    fun provideGetSensorReadingsUseCase(
-        inMemoryRepository: InMemoryRepository
-    ) = GetReadingsUseCase(inMemoryRepository)
-
-    @Provides
-    @MainActivityScope
     fun provideMainResourceViewModelFactory(
         getMainResourceUseCase: GetMainResourceUseCase
     ) = MainResourceViewModelFactory(getMainResourceUseCase)
@@ -259,24 +224,5 @@ class MainActivityModule {
     ) = ViewModelProviders.of(mainActivity, mainResourceViewModelFactory)
         .get(MainResourceViewModel::class.java)
 
-    @Provides
-    @MainActivityScope
-    fun provideAddActionUseCase(
-        actionsRepository: ActionsRepository
-    ) = AddActionUseCase(actionsRepository)
 
-    @Provides
-    @MainActivityScope
-    fun provideGetActionsByDeviceMacAddressUseCase(
-        actionsRepository: ActionsRepository
-    ) = GetActionsByDeviceMacAddressUseCase(actionsRepository)
-
-    @Provides
-    @MainActivityScope
-    fun provideSetActionActiveByDeviceMacAddressUseCase(
-        addActionUseCase: AddActionUseCase,
-        getActionsByDeviceMacAddressUseCase: GetActionsByDeviceMacAddressUseCase
-    ) = SetActionActiveByDeviceMacAddressUseCase(
-        addActionUseCase, getActionsByDeviceMacAddressUseCase
-    )
 }

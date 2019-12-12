@@ -4,33 +4,43 @@ import com.aconno.sensorics.AlarmService
 import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.MqttVirtualScanningService
-import com.aconno.sensorics.dagger.action_details.ActionDetailsActivityScope
-import com.aconno.sensorics.dagger.action_details.ActionDetailsModule
+import com.aconno.sensorics.dagger.action.ActionModule
+import com.aconno.sensorics.dagger.action.ActionScope
+import com.aconno.sensorics.dagger.actiondetails.ActionDetailsActivityModule
+import com.aconno.sensorics.dagger.actiondetails.ActionDetailsActivityScope
+import com.aconno.sensorics.dagger.actionlist.ActionListActivityModule
+import com.aconno.sensorics.dagger.actionlist.ActionListActivityScope
 import com.aconno.sensorics.dagger.actionlist.ActionListFragmentsModule
-import com.aconno.sensorics.dagger.actionlist.ActionListModule
-import com.aconno.sensorics.dagger.actionlist.ActionListScope
+import com.aconno.sensorics.dagger.actionoutcome.ActionOutcomeModule
+import com.aconno.sensorics.dagger.actionoutcome.ActionOutcomeScope
 import com.aconno.sensorics.dagger.alarm.AlarmServiceModule
 import com.aconno.sensorics.dagger.alarm.AlarmServiceScope
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceScope
-import com.aconno.sensorics.dagger.configure.ConfigurationModule
-import com.aconno.sensorics.dagger.configure.ConfigurationScope
+import com.aconno.sensorics.dagger.configure.ConfigureActivityModule
+import com.aconno.sensorics.dagger.configure.ConfigureActivityScope
+import com.aconno.sensorics.dagger.device.DeviceModule
+import com.aconno.sensorics.dagger.device.DeviceScope
 import com.aconno.sensorics.dagger.deviceselect.DeviceSelectionFragmentsModule
 import com.aconno.sensorics.dagger.dfu.DfuActivityScope
-import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherModule
-import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherScope
+import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherActivityModule
+import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherActivityScope
 import com.aconno.sensorics.dagger.mainactivity.MainActivityFragmentsModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityScope
-import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherModule
-import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherScope
+import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityModule
+import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityScope
 import com.aconno.sensorics.dagger.mqttvirtualscanning.MqttVirtualScanningServiceModule
 import com.aconno.sensorics.dagger.mqttvirtualscanning.MqttVirtualScanningServiceScope
-import com.aconno.sensorics.dagger.publish.PublishListFragmentsModule
-import com.aconno.sensorics.dagger.publish.PublishListModule
-import com.aconno.sensorics.dagger.publish.PublishListScope
-import com.aconno.sensorics.dagger.restpublisher.RESTPublisherModule
-import com.aconno.sensorics.dagger.restpublisher.RESTPublisherScope
+import com.aconno.sensorics.dagger.publisher.PublisherModule
+import com.aconno.sensorics.dagger.publisher.PublisherScope
+import com.aconno.sensorics.dagger.publishlist.PublishListActivityModule
+import com.aconno.sensorics.dagger.publishlist.PublishListActivityScope
+import com.aconno.sensorics.dagger.publishlist.PublishListFragmentsModule
+import com.aconno.sensorics.dagger.readings.SensorReadingsModule
+import com.aconno.sensorics.dagger.readings.SensorReadingsScope
+import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityModule
+import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityScope
 import com.aconno.sensorics.dagger.splash.SplashActivityModule
 import com.aconno.sensorics.dagger.splash.SplashActivityScope
 import com.aconno.sensorics.ui.ActionListActivity
@@ -50,64 +60,104 @@ import dagger.android.ContributesAndroidInjector
 abstract class ActivityBuilder {
 
     @MainActivityScope
-    @ContributesAndroidInjector(
-        modules = [MainActivityModule::class, MainActivityFragmentsModule::class]
-    )
+    @DeviceScope
+    @SensorReadingsScope
+    @ActionScope
+    @ContributesAndroidInjector(modules = [
+        MainActivityModule::class, MainActivityFragmentsModule::class,
+        DeviceModule::class, SensorReadingsModule::class, ActionModule::class
+    ])
     abstract fun bindMainActivity(): MainActivity
 
     @BluetoothScanningServiceScope
-    @ContributesAndroidInjector(modules = [BluetoothScanningServiceModule::class])
+    @SensorReadingsScope
+    @ActionOutcomeScope
+    @PublisherScope
+    @ActionScope
+    @DeviceScope
+    @ContributesAndroidInjector(modules = [
+        BluetoothScanningServiceModule::class,
+        SensorReadingsModule::class, ActionOutcomeModule::class, PublisherModule::class,
+        ActionModule::class,DeviceModule::class
+    ])
     abstract fun bindBluetoothScanningService(): BluetoothScanningService
 
     @MqttVirtualScanningServiceScope
-    @ContributesAndroidInjector(modules = [MqttVirtualScanningServiceModule::class])
+    @DeviceScope
+    @ActionScope
+    @PublisherScope
+    @SensorReadingsScope
+    @ActionOutcomeScope
+    @ContributesAndroidInjector(modules = [MqttVirtualScanningServiceModule::class,
+        DeviceModule::class, ActionModule::class,
+        PublisherModule::class, SensorReadingsModule::class,
+        ActionOutcomeModule::class
+    ])
     abstract fun bindMqttVirtualScanningService(): MqttVirtualScanningService
 
     @ContributesAndroidInjector
     abstract fun bindBluetoothConnectService(): BluetoothConnectService
 
-    @PublishListScope
+    @PublishListActivityScope
+    @PublisherScope
     @ContributesAndroidInjector(
-        modules = [PublishListModule::class, PublishListFragmentsModule::class]
-    )
+            modules = [PublishListActivityModule::class, PublishListFragmentsModule::class,
+                PublisherModule::class
+            ])
     abstract fun bindPublishListActivity(): PublishListActivity
 
-    @ActionListScope
+    @ActionListActivityScope
+    @ActionScope
+    @DeviceScope
     @ContributesAndroidInjector(
-        modules = [ActionListModule::class, ActionListFragmentsModule::class]
-    )
+            modules = [ActionListActivityModule::class, ActionListFragmentsModule::class,
+                DeviceModule::class, ActionModule::class
+            ])
     abstract fun bindActionListActivity(): ActionListActivity
 
     @ActionDetailsActivityScope
-    @ContributesAndroidInjector(modules = [ActionDetailsModule::class])
+    @ActionScope
+    @DeviceScope
+    @ContributesAndroidInjector(modules = [ActionDetailsActivityModule::class,
+        ActionModule::class, DeviceModule::class
+    ])
     abstract fun bindActionDetailsActivity(): ActionDetailsActivity
 
-    @GoogleCloudPublisherScope
+    @GoogleCloudPublisherActivityScope
+    @PublisherScope
+    @DeviceScope
     @ContributesAndroidInjector(
-        modules = [GoogleCloudPublisherModule::class, DeviceSelectionFragmentsModule::class]
-    )
+            modules = [GoogleCloudPublisherActivityModule::class, DeviceSelectionFragmentsModule::class,
+                PublisherModule::class, DeviceModule::class
+            ])
     abstract fun bindGoogleCloudPublisherActivity(): GoogleCloudPublisherActivity
 
-    @MqttPublisherScope
+    @MqttPublisherActivityScope
+    @PublisherScope
+    @DeviceScope
     @ContributesAndroidInjector(
-        modules = [MqttPublisherModule::class, DeviceSelectionFragmentsModule::class]
-    )
+            modules = [MqttPublisherActivityModule::class, DeviceSelectionFragmentsModule::class,
+                PublisherModule::class, DeviceModule::class
+            ])
     abstract fun bindMqttPublisherActivity(): MqttPublisherActivity
 
-    @RESTPublisherScope
+    @RESTPublisherActivityScope
+    @PublisherScope
+    @DeviceScope
     @ContributesAndroidInjector(
-        modules = [RESTPublisherModule::class, DeviceSelectionFragmentsModule::class]
-    )
+            modules = [RESTPublisherActivityModule::class, DeviceSelectionFragmentsModule::class,
+                PublisherModule::class, DeviceModule::class
+            ])
     abstract fun bindRestPublisherActivity(): RestPublisherActivity
 
     @SplashActivityScope
     @ContributesAndroidInjector(
-        modules = [SplashActivityModule::class]
+            modules = [SplashActivityModule::class]
     )
     abstract fun bindSplashActivity(): SplashActivity
 
-    @ConfigurationScope
-    @ContributesAndroidInjector(modules = [ConfigurationModule::class])
+    @ConfigureActivityScope
+    @ContributesAndroidInjector(modules = [ConfigureActivityModule::class])
     abstract fun bindConfigureActivity(): ConfigureActivity
 
     @DfuActivityScope
