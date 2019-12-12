@@ -319,5 +319,7 @@
     <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
     <string name="snackbar_scan_failed_already_started">Scan already started</string>
     <string name="snackbar_scan_failed">Scan failed!</string>
+    <string name="mqtt_server_uri">MQTT server URI</string>
+    <string translatable="false" name="mqtt_client_id">MQTT client id</string>
 
 </resources>
