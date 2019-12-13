@@ -139,12 +139,12 @@ function generateAdvertisingRange(name, advertisingInterval, value) {
           + '</div>';
 }
 
-function generateRange(name, value) {
+function generateRange(name, value, id) {
 
     return  '<div class="panel-body">'
               + '<label>'+ name+' </label> </div>'
               + '<div class="panel-body">'
-              + '<input type="range" value='+value+' id="advertising_interval_time_range"/>'
+              + '<input type="range" value="'+value+'" id="range-' + id + '"/>'
               + '</div>'
               + '</div>';
 }
@@ -169,10 +169,54 @@ function generateSwitchContent(isChecked, name) {
            + '</div>';
 }
 
+function generateAdvertisingIntervalInfo(interval) {
+    return '<div class="row">'
+        + '<div class="col-12">'
+        + '<span id = "advertising-interval-info">' + timeToHighestOrder(interval)+ '</span>'
+        + '</div>'
+        + '</div>';
+}
+
 function generateFrameTypeMenuItem(name) {
     return '<li><a class="dropdown-item" id="frame_type_' + name.toLowerCase() + '" href="#">' + name + '</a></li>'
 }
 
 function onlyPositiveNumberFilter(event) {
     return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 0
+}
+
+
+function timeToHighestOrder(copy) {
+
+    let millis = (copy % 1000);
+    copy -= millis
+    let seconds = ((copy / 1000) % 60);
+    copy -= 1000 * seconds
+    let minutes = ((copy / 60000) % 60);
+    copy -= 60000 * seconds
+    let hours = (copy / 3600000);
+    copy -= 3600000 * hours
+    let days = (copy / 86400000);
+    copy -= 86400000 * days
+    let weeks = (copy / 604800000);
+    copy -= 604800000 * weeks
+    let months = (copy / 2419200000);
+    copy -= 2419200000 * months;
+
+    if (millis != 0)
+        return "Every "+ (millis + seconds * 1000) +" milliseconds";
+
+    else if (seconds != 0)
+        return  "Every "+ (seconds + minutes * 60)+" seconds";
+
+    else if (minutes != 0)
+        return  "Every "+ (minutes + hours * 60) +" minutes";
+    else if (hours != 0)
+        return "Every "+ (hours + days * 24) + " hours";
+    else if (days != 0)
+        return "Every "+ (days + weeks * 7)+ " days";
+    else if (weeks != 0)
+        return "Every " + (weeks + months * 4) + " weeks";
+    else
+        return "Every "+ months +" months";
 }

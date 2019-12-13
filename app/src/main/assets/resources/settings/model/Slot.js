@@ -8,6 +8,7 @@ class Slot {
         this.supportedtxPower = []
         this.txPower = 0
         this.readOnly = false
+        this.addInterval = 0
     }
 }
 

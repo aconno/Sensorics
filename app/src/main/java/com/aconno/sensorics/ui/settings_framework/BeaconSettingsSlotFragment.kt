@@ -15,6 +15,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.Slot
 import com.aconno.sensorics.device.beacon.Slots
+import com.aconno.sensorics.domain.migrate.timeToHighestOrder
 import com.aconno.sensorics.model.javascript.SlotJS
 import com.aconno.sensorics.ui.configure.ViewPagerSlider
 import com.google.gson.Gson
@@ -117,7 +118,8 @@ open class BeaconSettingsSlotFragment : Fragment() {
                 it.packetCount,
                 beacon.supportedTxPowers,
                 beacon.supportedTxPowers.indexOf(it.txPower),
-                it.readOnly
+                it.readOnly,
+                it.advertisingModeParameters.interval
             )
         }?.let {
             convertKeysToJavascriptFormat(Gson().toJson(it))
@@ -174,13 +176,8 @@ open class BeaconSettingsSlotFragment : Fragment() {
             val dataSlot : List<Slot>
 
             dataSlot = slots.filter {
-                Timber.d("Tags: ${it.getType().tabName} ${slotJS.frameType}")
-                it.getType().tabName == slotJS.frameType
+                it.getType().tabName == slotJS.frameType && it.name == slotJS.name
             }.toHashSet().toList()
-
-            dataSlot.forEach {
-                Timber.d("DataSlot: ${it.name} ${slotJS.frameType}")
-            }
 
             if(dataSlot.isNotEmpty()) {
                 beaconViewModel.beacon.value?.slots?.set(slotPosition, dataSlot[0])

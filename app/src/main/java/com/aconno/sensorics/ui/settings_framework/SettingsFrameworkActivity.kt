@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -107,6 +109,34 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
         // Bind the tabs to the ViewPager
         tabs.setViewPager(vp_beacon)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.beacon_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_add_slot -> beaconViewModel.beacon.value?.let { beacon ->
+                beacon.slots.filter { slot -> slot.shownInUI }.let { shownSlots ->
+                    if (shownSlots.size < beacon.slots.size) {
+                        beacon.slots.sortedEmptyLast().find { slot -> !slot.shownInUI }
+                            ?.let { slot ->
+                                slot.shownInUI = true
+                                beaconSettingsPagerAdapter.notifyDataSetChanged()
+                                Timber.d("Current Items in pageAdapter ${vp_beacon?.currentItem} ${beaconSettingsPagerAdapter.count} ${shownSlots.size}")
+                                /* vp_beacon?.setCurrentItem(
+                                    10,
+                                    true
+                                ) */
+                            }
+                    }
+                }
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
     }
 
     override fun onStart() {
@@ -236,6 +266,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             }
         }
     }
+
 
     override fun updateFirmware() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

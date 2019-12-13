@@ -29,7 +29,7 @@ $(document).ready(function () {
     $('#frame_type_default').click(
         function () {
             $("#advertising_content").empty();
-                console.log("default is selected");
+
                 let whatever = "";
 
                 if (slot != null && slot.frameType == FrameType.DEFAULT) {
@@ -189,7 +189,6 @@ function hex_to_ascii(str1) {
 function init(slotJson) {
     slot = JSON.parse(slotJson);
 
-
     switch (slot.frameType) {
         case FrameType.UID:
             $('#frame_type_uid').click();
@@ -208,41 +207,56 @@ function init(slotJson) {
              break;
         default:
             $('#frame_type_empty').click();
-
     }
 
-     $('#slot_name_text').val(slot.name);
+    $('#slot_name_text').val(slot.name);
 
+    let params = generateSwitchContent(slot.advertising, "Slot Advertising");
+    $('#slot_advertising').empty();
+    $('#slot_advertising').append(params);
 
-     let params = generateSwitchContent(slot.advertising, "Slot Advertising");
-     $('#slot_advertising').empty();
-     $('#slot_advertising').append(params);
+    $('#base_parameter').empty();
 
-     $('#base_parameter').empty();
+    params = generateBaseParameter();
+    $('#base_parameter').append(params);
 
-     params = generateBaseParameter();
-     $('#base_parameter').append(params);
+    params = generateSwitchContent(slot.advertising, "Internal/Event");
+    $('#base_parameter').append(params);
 
-      params = generateSwitchContent(slot.advertising, "Internal/Event");
-      $('#base_parameter').append(params);
+     if(slot.addInterval) {
+         params = generateAdvertisingIntervalInfo(slot.addInterval);
+         $('#base_parameter').append(params);
+         params = generateRange("Advertising Interval", slot.addInterval, 'addInterval');
+         $('#base_parameter').append(params);
+     }
 
-      params = generateRange("Advertising Interval", 20);
-      $('#base_parameter').append(params);
+    params = generateRange("Advertising PacketCount", slot.packetCount, 'packetCount');
+    $('#base_parameter').append(params);
 
-      params = generateRange("Advertising PacketCount", slot.packetCount);
-      $('#base_parameter').append(params);
+    params = generateEnums(slot.supportedtxPower, "tx_power", "Advertising Tx Power", slot.txPower, 0)
+    $('#base_parameter').append(params);
 
-      params = generateEnums(slot.supportedtxPower, "tx_power", "Advertising Tx Power", slot.txPower, 0)
-      $('#base_parameter').append(params);
-
-      if(slot.readOnly == true) {
+    if(slot.readOnly == true) {
         $('#btn_frame_type').prop('disabled', true)
-      }
+    }
+
+    $('#range-packetCount').on("change mousemove",function() {
+        console.log("Packet count changed: "+$(this).val());
+        $(this).next().html($(this).val());
+    });
+
+     $('#range-addInterval').on("change mousemove",function() {
+         console.log("Add changed: "+$(this).val()+ " "+ $('#advertising-interval-info').val());
+         $('#advertising-interval-info').text(timeToHighestOrder($(this).val()));
+     });
+
 }
 
 function getUpdatedSlot() {
     //Create new Slot
     let slot = new Slot()
+
+    console.log("Get Updated slot called");
 
     let frameType = $('#btn_frame_type').text().trim();
 

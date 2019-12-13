@@ -9,5 +9,6 @@ data class SlotJS(
     val packetCount: Int,
     val supportedtxPower: List<Byte>,
     val txPower: Int,
-    val readOnly: Boolean
+    val readOnly: Boolean,
+    val addInterval: Long
 )
