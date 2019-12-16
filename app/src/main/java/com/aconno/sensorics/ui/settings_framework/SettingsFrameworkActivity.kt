@@ -126,10 +126,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                                 slot.shownInUI = true
                                 beaconSettingsPagerAdapter.notifyDataSetChanged()
                                 Timber.d("Current Items in pageAdapter ${vp_beacon?.currentItem} ${beaconSettingsPagerAdapter.count} ${shownSlots.size}")
-                                /* vp_beacon?.setCurrentItem(
-                                    10,
-                                    true
-                                ) */
                             }
                     }
                 }
@@ -192,7 +188,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
             beacon.read(object : GenericTask("On Read Completed Task") {
                 override fun onSuccess() {
-                    Timber.d("Test567")
                     Timber.d(Gson().toJson(beacon.toJson()))
                     beaconViewModel.beacon.value = beacon
                     tabs.visibility = View.VISIBLE

@@ -22,7 +22,6 @@ $(document).ready(function () {
     $(".dropdown-menu").on('click', 'li a', function () {
         $(this).parent().parent().siblings(".btn:first-child").html($(this).text() + ' <span class="caret"></span>');
         $(this).parent().parent().siblings(".btn:first-child").val($(this).text());
-        getUpdatedSlot();
     });
 
     //Dropdown items
@@ -188,7 +187,7 @@ function hex_to_ascii(str1) {
 
 function init(slotJson) {
     slot = JSON.parse(slotJson);
-
+    console.log("SlotJson: "+ slotJson)
     switch (slot.frameType) {
         case FrameType.UID:
             $('#frame_type_uid').click();
@@ -211,7 +210,7 @@ function init(slotJson) {
 
     $('#slot_name_text').val(slot.name);
 
-    let params = generateSwitchContent(slot.advertising, "Slot Advertising");
+    let params = generateSwitchContent(true, "Slot Advertising");
     $('#slot_advertising').empty();
     $('#slot_advertising').append(params);
 
@@ -220,7 +219,7 @@ function init(slotJson) {
     params = generateBaseParameter();
     $('#base_parameter').append(params);
 
-    params = generateSwitchContent(slot.advertising, "Internal/Event");
+    params = generateSwitchContent(true, "Internal/Event");
     $('#base_parameter').append(params);
 
      if(slot.addInterval) {
@@ -241,12 +240,10 @@ function init(slotJson) {
     }
 
     $('#range-packetCount').on("change mousemove",function() {
-        console.log("Packet count changed: "+$(this).val());
         $(this).next().html($(this).val());
     });
 
      $('#range-addInterval').on("change mousemove",function() {
-         console.log("Add changed: "+$(this).val()+ " "+ $('#advertising-interval-info').val());
          $('#advertising-interval-info').text(timeToHighestOrder($(this).val()));
      });
 
@@ -267,12 +264,14 @@ function getUpdatedSlot() {
                 KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID: $('#uid_namespace_id').val(),
                 KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID: $('#uid_instance_id').val()
             };
+            slot.name = $('#slot_name_text').val()
             break;
         case "URL":
             slot.frameType = FrameType.URL;
             slot.frame = {
                 KEY_ADVERTISING_CONTENT_URL_URL: $('#url').val()
             };
+            slot.name = $('#slot_name_text').val()
             break;
         case "IBEACON":
             slot.frameType = FrameType.IBEACON;
@@ -281,6 +280,7 @@ function getUpdatedSlot() {
                 KEY_ADVERTISING_CONTENT_IBEACON_MAJOR: $('#ibeacon_major').val(),
                 KEY_ADVERTISING_CONTENT_IBEACON_MINOR: $('#ibeacon_minor').val()
             };
+            slot.name = $('#slot_name_text').val()
             break;
         case "CUSTOM":
             slot.frameType = FrameType.CUSTOM;
@@ -288,6 +288,7 @@ function getUpdatedSlot() {
                 KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM: $('#custom_value').val(),
                 KEY_ADVERTISING_CONTENT_CUSTOM_IS_HEX_MODE_ON: $('#custom_hex_enabled').is(":checked")
             };
+            slot.name = $('#slot_name_text').val()
             break;
 
         case "DEFAULT":
@@ -295,6 +296,7 @@ function getUpdatedSlot() {
             slot.frame = {
                   KEY_ADVERTISING_CONTENT_DEFAULT_DATA: $('#default_advertising_content').val(),
                };
+            slot.name = $('#slot_name_text').val()
             break;
 
         default:

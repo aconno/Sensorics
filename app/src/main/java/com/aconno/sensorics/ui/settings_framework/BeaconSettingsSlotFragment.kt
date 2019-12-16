@@ -15,7 +15,6 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.Slot
 import com.aconno.sensorics.device.beacon.Slots
-import com.aconno.sensorics.domain.migrate.timeToHighestOrder
 import com.aconno.sensorics.model.javascript.SlotJS
 import com.aconno.sensorics.ui.configure.ViewPagerSlider
 import com.google.gson.Gson
@@ -72,14 +71,20 @@ open class BeaconSettingsSlotFragment : Fragment() {
 
     //Prevent running twice or more
     inner class WebAppClient : WebViewClient() {
-        override fun onPageFinished(view: WebView?, url: String?) {
-            super.onPageFinished(view, url)
+        var urlFinished: String = ""
 
-            if (isAdded) {
+        override fun onPageFinished(view: WebView?, url: String?) {
+
+            if (urlFinished != url) {
                 getSlotJson()?.let {
+                    Timber.d("Call the method again")
                     callJavaScript("init", it)
                 }
             }
+            url?.let {
+                urlFinished = it
+            }
+            super.onPageFinished(view, url)
         }
     }
 
