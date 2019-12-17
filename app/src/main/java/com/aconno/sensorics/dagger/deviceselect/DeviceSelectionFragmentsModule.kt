@@ -6,7 +6,7 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class DeviceSelectionFragmentsModule {
-    @DeviceSelectScope
-    @ContributesAndroidInjector(modules = [DeviceSelectModule::class])
+    @DeviceSelectActivityScope
+    @ContributesAndroidInjector(modules = [DeviceSelectActivityModule::class])
     abstract fun bindDeviceSelectFragment(): DeviceSelectFragment
 }
