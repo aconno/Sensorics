@@ -61,6 +61,7 @@ class BeaconSettingsParametersFragment : Fragment() {
             val json = Gson().toJson(defaultParameters)
             return json
         }
+
         return ""
     }
 

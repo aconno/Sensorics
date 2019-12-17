@@ -122,6 +122,10 @@ open class BeaconSettingsSlotFragment : Fragment() {
 
         when (item.itemId) {
             R.id.item_save -> {
+                /*
+                * beaconViewModel.beacon.value?.slots?.get(slotPosition)
+                * should get the latest slots.
+                */
                 Timber.d("Values: ${getSlotJson()}")
             }
         }
@@ -212,6 +216,7 @@ open class BeaconSettingsSlotFragment : Fragment() {
                 it.advertisingModeParameters.interval = slotJS.addInterval
 
             }
+
         }
 
         @JavascriptInterface
