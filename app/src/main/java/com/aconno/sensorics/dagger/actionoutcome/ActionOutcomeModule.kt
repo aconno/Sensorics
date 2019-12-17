@@ -1,0 +1,48 @@
+package com.aconno.sensorics.dagger.actionoutcome
+
+import com.aconno.sensorics.domain.AlarmServiceController
+import com.aconno.sensorics.domain.Vibrator
+import com.aconno.sensorics.domain.actions.ActionsRepository
+import com.aconno.sensorics.domain.ifttt.NotificationDisplay
+import com.aconno.sensorics.domain.ifttt.TextToSpeechPlayer
+import com.aconno.sensorics.domain.ifttt.outcome.*
+import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
+import com.aconno.sensorics.domain.interactor.time.GetLocalTimeOfDayInSecondsUseCase
+import dagger.Module
+import dagger.Provides
+
+@Module
+class ActionOutcomeModule {
+
+    @Provides
+    @ActionOutcomeScope
+    fun provideHandleInputUseCase(
+            actionsRepository: ActionsRepository,
+            getLocalTimeOfDayInSecondsUseCase: GetLocalTimeOfDayInSecondsUseCase
+    ): InputToOutcomesUseCase {
+        return InputToOutcomesUseCase(actionsRepository, getLocalTimeOfDayInSecondsUseCase)
+    }
+
+
+    @Provides
+    @ActionOutcomeScope
+    fun provideRunOutcomeUseCase(
+            notificationDisplay: NotificationDisplay,
+            textToSpeechPlayer: TextToSpeechPlayer,
+            vibrator: Vibrator,
+            alarmServiceController: AlarmServiceController
+    ): RunOutcomeUseCase {
+        val notificationOutcomeExecutor = NotificationOutcomeExecutor(notificationDisplay)
+        val textToSpeechOutcomeExecutor = TextToSpeechOutcomeExecutor(textToSpeechPlayer)
+        val vibrationOutcomeExecutor = VibrationOutcomeExecutor(vibrator)
+        val alarmOutcomeExecutor = AlarmOutcomeExecutor(alarmServiceController)
+        val outcomeExecutorSelector = OutcomeExecutorSelector(
+                notificationOutcomeExecutor,
+                textToSpeechOutcomeExecutor,
+                vibrationOutcomeExecutor,
+                alarmOutcomeExecutor
+        )
+
+        return RunOutcomeUseCase(outcomeExecutorSelector)
+    }
+}

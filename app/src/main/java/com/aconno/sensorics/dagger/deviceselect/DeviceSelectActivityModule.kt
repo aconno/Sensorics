@@ -13,10 +13,10 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class DeviceSelectModule {
+class DeviceSelectActivityModule {
 
     @Provides
-    @DeviceSelectScope
+    @DeviceSelectActivityScope
     fun provideGoogleCloudPublisherViewModel(
         deviceSelectFragment: DeviceSelectFragment,
         deviceSelectViewModelFactory: DeviceSelectViewModelFactory
@@ -24,7 +24,7 @@ class DeviceSelectModule {
         .get(DeviceSelectViewModel::class.java)
 
     @Provides
-    @DeviceSelectScope
+    @DeviceSelectActivityScope
     fun provideDeviceSelectViewModelFactory(
         getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
         getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,

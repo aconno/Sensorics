@@ -1,8 +1,6 @@
 package com.aconno.sensorics.dagger.mqttpublisher
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
-import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
@@ -14,18 +12,18 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class MqttPublisherModule {
+class MqttPublisherActivityModule {
 
     @Provides
-    @MqttPublisherScope
-    fun provideRestPublisherViewModel(
+    @MqttPublisherActivityScope
+    fun provideMqttPublisherViewModel(
         mqttPublisherActivity: MqttPublisherActivity,
         mqttPublisherViewModelFactory: MqttPublisherViewModelFactory
     ) = ViewModelProviders.of(mqttPublisherActivity, mqttPublisherViewModelFactory)
         .get(MqttPublisherViewModel::class.java)
 
     @Provides
-    @MqttPublisherScope
+    @MqttPublisherActivityScope
     fun provideMqttPublisherViewModelFactory(
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
@@ -38,27 +36,5 @@ class MqttPublisherModule {
         mqttPublishModelDataMapper
     )
 
-    @Provides
-    @MqttPublisherScope
-    fun provideSavePublishDeviceJoinUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): SavePublishDeviceJoinUseCase {
-        return SavePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
 
-    @Provides
-    @MqttPublisherScope
-    fun provideDeletePublishDeviceJoinUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): DeletePublishDeviceJoinUseCase {
-        return DeletePublishDeviceJoinUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @MqttPublisherScope
-    fun provideAddMqttPublishUseCase(
-        mqttPublishRepository: MqttPublishRepository
-    ): AddMqttPublishUseCase {
-        return AddMqttPublishUseCase(mqttPublishRepository)
-    }
 }
