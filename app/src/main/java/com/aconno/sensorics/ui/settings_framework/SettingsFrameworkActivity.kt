@@ -117,22 +117,8 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.item_add_slot -> beaconViewModel.beacon.value?.let { beacon ->
-                beacon.slots.filter { slot -> slot.shownInUI }.let { shownSlots ->
-                    if (shownSlots.size < beacon.slots.size) {
-                        beacon.slots.sortedEmptyLast().find { slot -> !slot.shownInUI }
-                            ?.let { slot ->
-                                slot.shownInUI = true
-                                beaconSettingsPagerAdapter.notifyDataSetChanged()
-                                Timber.d("Current Items in pageAdapter ${vp_beacon?.currentItem} ${beaconSettingsPagerAdapter.count} ${shownSlots.size}")
-                            }
-                    }
-                }
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
-        return true
+        super.onOptionsItemSelected(item)
+        return false
     }
 
     override fun onStart() {

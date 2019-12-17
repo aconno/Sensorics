@@ -3,7 +3,7 @@ class Slot {
         this.frameType = FrameType.DEFAULT
         this.frame = {}
         this.name = "Name"
-        this.advertising = false
+        this.advertising = true
         this.packetCount = 0
         this.supportedtxPower = []
         this.txPower = 0

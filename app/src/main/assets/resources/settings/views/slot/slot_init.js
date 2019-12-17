@@ -22,6 +22,37 @@ $(document).ready(function () {
     $(".dropdown-menu").on('click', 'li a', function () {
         $(this).parent().parent().siblings(".btn:first-child").html($(this).text() + ' <span class="caret"></span>');
         $(this).parent().parent().siblings(".btn:first-child").val($(this).text());
+        getUpdatedSlot();
+    });
+
+    $('#slot_name_text').on('change keyup paste',function(){
+        $('#slot_name_text').val($(this).val());
+        getUpdatedSlot();
+    });
+
+    $('#toggle-advertise-switch').change(function() {
+         $('#toggle-advertise-switch').val($(this).val());
+         getUpdatedSlot();
+
+    });
+
+    $('#toggle-internal-switch').change(function() {
+             $('#toggle-internal-switch').val($(this).val());
+             getUpdatedSlot();
+
+        });
+
+
+    $('#range-packetCount').on("change mousemove",function() {
+        $(this).next().html($(this).val());
+        $('#range-packetCount').val($(this).val());
+        getUpdatedSlot();
+    });
+
+    $('#range-addInterval').on("change mousemove",function() {
+         $('#advertising-interval-info').text(timeToHighestOrder($(this).val()));
+         $('#range-addInterval').val($(this).val());
+         getUpdatedSlot();
     });
 
     //Dropdown items
@@ -43,8 +74,7 @@ $(document).ready(function () {
                     $("#default_advertising_content").bind("change keyup", function () {
                          getUpdatedSlot();
                     });
-        }
-    );
+        });
 
      $('#frame_type_empty').click(
             function () {
@@ -210,7 +240,7 @@ function init(slotJson) {
 
     $('#slot_name_text').val(slot.name);
 
-    let params = generateSwitchContent(true, "Slot Advertising");
+    let params = generateSwitchContent(true, "Slot Advertising", "advertise-switch");
     $('#slot_advertising').empty();
     $('#slot_advertising').append(params);
 
@@ -219,7 +249,7 @@ function init(slotJson) {
     params = generateBaseParameter();
     $('#base_parameter').append(params);
 
-    params = generateSwitchContent(true, "Internal/Event");
+    params = generateSwitchContent(true, "Internal/Event", "internal-switch");
     $('#base_parameter').append(params);
 
      if(slot.addInterval) {
@@ -239,69 +269,71 @@ function init(slotJson) {
         $('#btn_frame_type').prop('disabled', true)
     }
 
-    $('#range-packetCount').on("change mousemove",function() {
-        $(this).next().html($(this).val());
-    });
-
-     $('#range-addInterval').on("change mousemove",function() {
-         $('#advertising-interval-info').text(timeToHighestOrder($(this).val()));
-     });
-
 }
 
 function getUpdatedSlot() {
     //Create new Slot
-    let slot = new Slot()
+    let slot_new = new Slot();
 
-    console.log("Get Updated slot called");
-
+    slot_new.name = $('#slot_name_text').val();
     let frameType = $('#btn_frame_type').text().trim();
+    let adv = false;
+    if($('#toggle-advertise-switch').val() == 'on')
+       adv = true;
+
+    slot_new.advertising = adv;
+    console.log("GetJSON IS called: " + slot_new.name+ " "+ frameType+ " "+ $('#range-packetCount').val());
+    slot_new.packetCount = $('#range-packetCount').val();
+    slot_new.addInterval = $('#range-addInterval').val();
+    slot_new.readOnly = $('#range-internal-switch').val();
 
     switch (frameType) {
-        case "UID":
-            slot.frameType = FrameType.UID;
-            slot.frame = {
-                KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID: $('#uid_namespace_id').val(),
-                KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID: $('#uid_instance_id').val()
-            };
-            slot.name = $('#slot_name_text').val()
-            break;
-        case "URL":
-            slot.frameType = FrameType.URL;
-            slot.frame = {
-                KEY_ADVERTISING_CONTENT_URL_URL: $('#url').val()
-            };
-            slot.name = $('#slot_name_text').val()
-            break;
-        case "IBEACON":
-            slot.frameType = FrameType.IBEACON;
-            slot.frame = {
-                KEY_ADVERTISING_CONTENT_IBEACON_UUID: $('#ibeacon_uuid').val(),
-                KEY_ADVERTISING_CONTENT_IBEACON_MAJOR: $('#ibeacon_major').val(),
-                KEY_ADVERTISING_CONTENT_IBEACON_MINOR: $('#ibeacon_minor').val()
-            };
-            slot.name = $('#slot_name_text').val()
-            break;
-        case "CUSTOM":
-            slot.frameType = FrameType.CUSTOM;
-            slot.frame = {
-                KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM: $('#custom_value').val(),
-                KEY_ADVERTISING_CONTENT_CUSTOM_IS_HEX_MODE_ON: $('#custom_hex_enabled').is(":checked")
-            };
-            slot.name = $('#slot_name_text').val()
-            break;
-
-        case "DEFAULT":
-            slot.frameType = FrameType.DEFAULT;
-            slot.frame = {
-                  KEY_ADVERTISING_CONTENT_DEFAULT_DATA: $('#default_advertising_content').val(),
+           case "UID":
+               slot_new.frameType = FrameType.UID;
+               slot_new.frame = {
+                   KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID: $('#uid_namespace_id').val(),
+                   KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID: $('#uid_instance_id').val()
                };
-            slot.name = $('#slot_name_text').val()
-            break;
 
-        default:
-            slot.frameType = FrameType.EMPTY;
-            slot.frame = {};
+               break;
+           case "URL":
+               slot_new.frameType = FrameType.URL;
+               slot_new.frame = {
+                   KEY_ADVERTISING_CONTENT_URL_URL: $('#url').val()
+               };
+
+               break;
+           case "IBEACON":
+               slot_new.frameType = FrameType.IBEACON;
+               slot_new.frame = {
+                   KEY_ADVERTISING_CONTENT_IBEACON_UUID: $('#ibeacon_uuid').val(),
+                   KEY_ADVERTISING_CONTENT_IBEACON_MAJOR: $('#ibeacon_major').val(),
+                   KEY_ADVERTISING_CONTENT_IBEACON_MINOR: $('#ibeacon_minor').val()
+               };
+
+               break;
+           case "CUSTOM":
+               slot_new.frameType = FrameType.CUSTOM;
+               slot_new.frame = {
+                   KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM: $('#custom_value').val(),
+                   KEY_ADVERTISING_CONTENT_CUSTOM_IS_HEX_MODE_ON: $('#custom_hex_enabled').is(":checked")
+               };
+
+               break;
+
+           case "DEFAULT":
+               slot_new.frameType = FrameType.DEFAULT;
+               slot_new.frame = {
+                     KEY_ADVERTISING_CONTENT_DEFAULT_DATA: $('#default_advertising_content').val(),
+                  };
+
+               break;
+
+           default:
+               slot_new.frameType = FrameType.EMPTY;
+               slot_new.frame = {};
+
     }
-    Android.onDataChanged(JSON.stringify(slot));
+
+     Android.onDataChanged(JSON.stringify(slot_new));
 }

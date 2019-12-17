@@ -149,20 +149,15 @@ function generateRange(name, value, id) {
               + '</div>';
 }
 
-function generateSwitchContent(isChecked, name) {
-    let value;
-
-    if(isChecked)
-        value = "checked";
-    else
-        value = "";
+function generateSwitchContent(isChecked, name, id) {
+    let checked = isChecked ? " checked" : "";
 
     return '<div class="row">'
            + '<div class="col-12">'
            + '<div class="form-group">'
            + '<div class="custom-control custom-switch" >'
-           + '<label class="custom-control-label" for="slot_advertising_switch">'+ name +' </label>'
-           + '<input type="checkbox" class="custom-control-input"  data-toggle="toggle" id="slot_advertising_switch" name="" checked="'+ value+'"/>'
+           +'<input type="checkbox" class="custom-control-input" id="toggle-' + id + '"' + checked + ' >'
+           +'<label class="custom-control-label" for="toggle-' + id + '">' + name + '</label>'
            + '</div>'
            + '</div>'
            + '</div>'

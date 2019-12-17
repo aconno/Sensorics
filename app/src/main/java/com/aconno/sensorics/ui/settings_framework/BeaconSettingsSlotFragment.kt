@@ -2,9 +2,7 @@ package com.aconno.sensorics.ui.settings_framework
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -50,6 +48,11 @@ open class BeaconSettingsSlotFragment : Fragment() {
             "Started BeaconSlotFragment without EXTRA_BEACON_SLOT_POSITION argument!"
         )
         return inflater.inflate(R.layout.fragment_beacon_general2, container, false)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -106,6 +109,23 @@ open class BeaconSettingsSlotFragment : Fragment() {
         }
         stringBuilder.append(")}catch(error){Android.onError(error.message);}")
         webview_general.loadUrl(stringBuilder.toString())
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        inflater.inflate(R.menu.beacon_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+            R.id.item_save -> {
+                Timber.d("Values: ${getSlotJson()}")
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun getSlotJson(): String? {
@@ -178,15 +198,25 @@ open class BeaconSettingsSlotFragment : Fragment() {
             val slotJson = convertKeysToOriginals(slotJsonRaw)
             val slotJS = Gson().fromJson<SlotJS>(slotJson, SlotJS::class.java)
             val slotPosition = arguments!!.getInt(EXTRA_BEACON_SLOT_POSITION)
-            val dataSlot : List<Slot>
+            var dataSlot: Slot? = null
 
-            dataSlot = slots.filter {
-                it.getType().tabName == slotJS.frameType && it.name == slotJS.name
-            }.toHashSet().toList()
-
-            if(dataSlot.isNotEmpty()) {
-                beaconViewModel.beacon.value?.slots?.set(slotPosition, dataSlot[0])
+            beaconViewModel.beacon.value?.slots?.get(slotPosition)?.let {
+                dataSlot = it
             }
+
+            dataSlot?.let {
+                it.name = slotJS.name
+                it.advertisingContent.clear()
+                it.advertisingContent.putAll(slotJS.frame)
+                it.packetCount = slotJS.packetCount
+                it.advertisingModeParameters.interval = slotJS.addInterval
+
+            }
+        }
+
+        @JavascriptInterface
+        fun onDataReceived(slotJsonRaw: String) {
+            Timber.d("Data is received: $slotJsonRaw")
         }
 
         private fun convertKeysToOriginals(slotJson: String): String {
