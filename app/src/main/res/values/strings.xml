@@ -320,4 +320,7 @@
     <string name="snackbar_scan_failed_already_started">Scan already started</string>
     <string name="snackbar_scan_failed">Scan failed!</string>
 
+    <string name="no_virtual_scanning_sources_found">There are no virtual scanning sources.\nPress plus (+) to add a new source.</string>
+    <string name="virtual_scanning_sources">Virtual scanning sources</string>
+
 </resources>

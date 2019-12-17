@@ -6,6 +6,7 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.aconno.sensorics.R
+import com.aconno.sensorics.ui.settings.virtualscanningsources.VirtualScanningSourceListActivity
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 
 class SettingsFragment : PreferenceFragmentCompat(),
@@ -39,6 +40,20 @@ class SettingsFragment : PreferenceFragmentCompat(),
                 }
                 true
             }
+
+        findPreference("virtual_scanning_sources")
+                .setOnPreferenceClickListener {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        context?.let {
+                            VirtualScanningSourceListActivity.start(it)
+                        }
+                    } else {
+                        activity?.let {
+                            VirtualScanningSourceListActivity.start(it)
+                        }
+                    }
+                    true
+                }
 
         listPreference = findPreference("scan_mode") as ListPreference
 
