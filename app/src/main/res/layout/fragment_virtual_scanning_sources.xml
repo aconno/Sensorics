@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:id="@+id/virtual_scanning_sources_fragment"
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -19,7 +18,7 @@
         tools:listitem="@layout/item_virtual_scanning_source" />
 
     <TextView
-        android:id="@+id/empty_view"
+        android:id="@+id/no_virtual_scanning_sources"
         style="@style/MessageText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -29,6 +29,8 @@ import com.aconno.sensorics.dagger.mainactivity.MainActivityModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityScope
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityModule
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityScope
+import com.aconno.sensorics.dagger.mqttvirtualscanningsource.MqttVirtualScanningSourceActivityModule
+import com.aconno.sensorics.dagger.mqttvirtualscanningsource.MqttVirtualScanningSourceActivityScope
 import com.aconno.sensorics.dagger.publisher.PublisherModule
 import com.aconno.sensorics.dagger.publisher.PublisherScope
 import com.aconno.sensorics.dagger.publishlist.PublishListFragmentsModule
@@ -40,6 +42,11 @@ import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityModule
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityScope
 import com.aconno.sensorics.dagger.splash.SplashActivityModule
 import com.aconno.sensorics.dagger.splash.SplashActivityScope
+import com.aconno.sensorics.dagger.virtualscanningsource.VirtualScanningSourceModule
+import com.aconno.sensorics.dagger.virtualscanningsource.VirtualScanningSourceScope
+import com.aconno.sensorics.dagger.virtualscanningsourcelist.VirtualScanningSourceListActivityFragmentsModule
+import com.aconno.sensorics.dagger.virtualscanningsourcelist.VirtualScanningSourceListActivityModule
+import com.aconno.sensorics.dagger.virtualscanningsourcelist.VirtualScanningSourceListActivityScope
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.SplashActivity
@@ -50,6 +57,8 @@ import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
+import com.aconno.sensorics.ui.settings.virtualscanningsources.MqttVirtualScanningSourceActivity
+import com.aconno.sensorics.ui.settings.virtualscanningsources.VirtualScanningSourceListActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -90,6 +99,14 @@ abstract class ActivityBuilder {
             ])
     abstract fun bindPublishListActivity(): PublishListActivity
 
+    @VirtualScanningSourceListActivityScope
+    @VirtualScanningSourceScope
+    @ContributesAndroidInjector(
+            modules = [VirtualScanningSourceListActivityModule::class, VirtualScanningSourceListActivityFragmentsModule::class,
+                VirtualScanningSourceModule::class
+            ])
+    abstract fun bindVirtualScanningSourceListActivity(): VirtualScanningSourceListActivity
+
     @ActionListActivityScope
     @ActionScope
     @DeviceScope
@@ -124,6 +141,12 @@ abstract class ActivityBuilder {
                 PublisherModule::class, DeviceModule::class
             ])
     abstract fun bindMqttPublisherActivity(): MqttPublisherActivity
+
+    @MqttVirtualScanningSourceActivityScope
+    @ContributesAndroidInjector(
+            modules = [MqttVirtualScanningSourceActivityModule::class
+            ])
+    abstract fun bindMqttVirtualScanningSourceActivity(): MqttVirtualScanningSourceActivity
 
     @RESTPublisherActivityScope
     @PublisherScope

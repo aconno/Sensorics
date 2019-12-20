@@ -322,5 +322,14 @@
 
     <string name="no_virtual_scanning_sources_found">There are no virtual scanning sources.\nPress plus (+) to add a new source.</string>
     <string name="virtual_scanning_sources">Virtual scanning sources</string>
+    <string name="title_virtual_scanning_sources">Virtual scanning sources</string>
+    <string name="tcp">TCP</string>
+    <string name="websocket">Websocket</string>
+    <string name="mqtt_protocol">Protocol</string>
+    <string name="mqtt_virtual_scanning_source_name">Name</string>
+    <string name="mqtt_virtual_scanning_source_address">Server address</string>
+    <string name="mqtt_virtual_scanning_source_port">Server port</string>
+    <string name="mqtt_virtual_scanning_source_path">Server path</string>
+    <string name="mqtt_virtual_scanning_source">MQTT virtual scanning source</string>
 
 </resources>

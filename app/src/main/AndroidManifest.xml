@@ -32,6 +32,11 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ui.settings.virtualscanningsources.MqttVirtualScanningSourceActivity"
+            android:label="@string/mqtt_virtual_scanning_source"/>
+        <activity
+            android:name=".ui.settings.virtualscanningsources.VirtualScanningSourceListActivity"
+            android:label="@string/title_virtual_scanning_sources"/>
         <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.ActionListActivity" />
 
