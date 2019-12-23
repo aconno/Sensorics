@@ -8,26 +8,21 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.aconno.sensorics.R
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
+import com.aconno.sensorics.ui.settings.virtualscanningsources.VirtualScanningSourceListActivity
 
 class SettingsFragment : PreferenceFragmentCompat(),
     Preference.OnPreferenceChangeListener {
 
     private lateinit var listPreference: ListPreference
-    private lateinit var mqttUriPreference: EditTextPreference
-    private lateinit var mqttClientIdPreference: EditTextPreference
 
     override fun onResume() {
         super.onResume()
         listPreference.onPreferenceChangeListener = this
-        mqttUriPreference.onPreferenceChangeListener = this
-        mqttClientIdPreference.onPreferenceChangeListener = this
     }
 
     override fun onPause() {
         super.onPause()
         listPreference.onPreferenceChangeListener = null
-        mqttUriPreference.onPreferenceChangeListener = null
-        mqttClientIdPreference.onPreferenceChangeListener = null
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -47,10 +42,21 @@ class SettingsFragment : PreferenceFragmentCompat(),
                 true
             }
 
-        listPreference = findPreference(SCAN_MODE_KEY) as ListPreference
+        findPreference(VIRTUAL_SCANNING_SOURCES_KEY)
+                .setOnPreferenceClickListener {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        context?.let {
+                            VirtualScanningSourceListActivity.start(it)
+                        }
+                    } else {
+                        activity?.let {
+                            VirtualScanningSourceListActivity.start(it)
+                        }
+                    }
+                    true
+                }
 
-        mqttUriPreference = findPreference(MQTT_SERVER_URI_KEY) as EditTextPreference
-        mqttClientIdPreference = findPreference(MQTT_CLIENT_ID_KEY) as EditTextPreference
+        listPreference = findPreference(SCAN_MODE_KEY) as ListPreference
 
         initSummaries()
     }
@@ -63,8 +69,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
             setScanModeSummarize(scanMode)
         }
 
-        mqttUriPreference.summary = preferenceManager.sharedPreferences.getString(MQTT_SERVER_URI_KEY,"")
-        mqttClientIdPreference.summary = preferenceManager.sharedPreferences.getString(MQTT_CLIENT_ID_KEY,"")
 
     }
 
@@ -79,8 +83,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
         when(preference?.key) {
             SCAN_MODE_KEY -> setScanModeSummarize(newValue as String)
-            MQTT_SERVER_URI_KEY -> mqttUriPreference.summary = newValue as String
-            MQTT_CLIENT_ID_KEY -> mqttClientIdPreference.summary = newValue as String
             else -> return false
         }
         return true
@@ -88,8 +90,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     companion object {
         private const val SCAN_MODE_KEY = "scan_mode"
-        private const val MQTT_SERVER_URI_KEY = "mqtt_server_uri"
-        private const val MQTT_CLIENT_ID_KEY = "mqtt_client_id"
         private const val PUBLISHERS_KEY = "publishers"
+        private const val VIRTUAL_SCANNING_SOURCES_KEY = "virtual_scanning_sources"
     }
 }

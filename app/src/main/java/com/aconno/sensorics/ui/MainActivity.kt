@@ -344,7 +344,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
             bluetoothScanningViewModel.startScanning(filterByDevice)
-            mqttVirtualScanningViewModel.startScanning("tcp://192.168.100.102:1883", "test_client_id")
+            mqttVirtualScanningViewModel.startScanning()
             filterByDevice = true
         }
     }

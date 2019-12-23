@@ -15,10 +15,10 @@ class MqttVirtualScanningViewModel(
     private val disposables = CompositeDisposable()
 
 
-    fun startScanning(serverURI: String, clientId: String) {
+    fun startScanning() {
         Timber.d("startScanning")
 
-        MqttVirtualScanningService.start(getApplication(), serverURI, clientId)
+        MqttVirtualScanningService.start(getApplication())
     }
 
     fun stopScanning() {

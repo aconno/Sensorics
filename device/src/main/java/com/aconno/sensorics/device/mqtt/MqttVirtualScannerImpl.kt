@@ -79,8 +79,8 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
     }
 
     override fun clearSources() {
-        clients.forEach { client ->
-            removeSource(client.serverURI, null)
+        while(clients.isNotEmpty()) { //iterating using forEach causes concurrent modification exception so it has to be implemented this way
+            removeSource(clients[0].serverURI, null)
         }
     }
 
