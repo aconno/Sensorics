@@ -261,4 +261,16 @@
     <string name="snackbar_scan_failed_already_started">Der Gerätescan wurde bereits gestartet</string>
     <string name="snackbar_scan_failed">Der Gerätescan ist fehlgeschlagen</string>
 
+    <string name="no_virtual_scanning_sources_found">Es sind keine virtuellen Scanquellen vorhanden. Drücke plus (+) um ein virtuelle Scanquelle hinzuzufügen.</string>
+    <string name="virtual_scanning_sources">Virtuelle Scanquellen</string>
+    <string name="title_virtual_scanning_sources">Virtuelle Scanquellen</string>
+    <string name="tcp">TCP</string>
+    <string name="websocket">Websocket</string>
+    <string name="mqtt_protocol">Protokoll</string>
+    <string name="mqtt_virtual_scanning_source_name">Name</string>
+    <string name="mqtt_virtual_scanning_source_address">Serveradresse</string>
+    <string name="mqtt_virtual_scanning_source_port">Server Port</string>
+    <string name="mqtt_virtual_scanning_source_path">Serverpfad</string>
+    <string name="mqtt_virtual_scanning_source">MQTT Scanquelle</string>
+
 </resources>

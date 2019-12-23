@@ -90,7 +90,7 @@ class VirtualScanningSourceListFragment : BaseFragment() {
                     sourcesAdapter.removeSourceModel(position)
 
                     snackbar = Snackbar.make(
-                            container_fragment,
+                            virtual_scanning_sources_fragment_container,
                             "${sourceModel.name} removed!",
                             Snackbar.LENGTH_LONG
                     ).apply {

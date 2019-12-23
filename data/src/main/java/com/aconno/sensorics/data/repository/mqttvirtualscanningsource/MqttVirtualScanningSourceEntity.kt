@@ -7,6 +7,13 @@ import androidx.room.PrimaryKey
 data class MqttVirtualScanningSourceEntity(
         @PrimaryKey(autoGenerate = true) var id: Long,
         var name: String,
-        var enabled: Boolean
-//TODO add other params
+        var enabled: Boolean,
+        val protocol : String,
+        val address : String,
+        val port : Int,
+        val path : String,
+        val clientId : String,
+        val username : String,
+        val password : String,
+        val qualityOfService : Int
 )

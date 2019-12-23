@@ -5,6 +5,4 @@ interface BaseVirtualScanningSource {
     val name: String
     var enabled: Boolean
     val type: VirtualScanningSourceType
-
-    //TODO add other params
 }

@@ -330,6 +330,6 @@
     <string name="mqtt_virtual_scanning_source_address">Server address</string>
     <string name="mqtt_virtual_scanning_source_port">Server port</string>
     <string name="mqtt_virtual_scanning_source_path">Server path</string>
-    <string name="mqtt_virtual_scanning_source">MQTT virtual scanning source</string>
+    <string name="mqtt_virtual_scanning_source">MQTT scanning source</string>
 
 </resources>

@@ -12,7 +12,15 @@ class MqttVirtualScanningSourceModelDataMapper @Inject constructor(){
         return MqttVirtualScanningSourceModel(
                 virtualScanningSource.id,
                 virtualScanningSource.name,
-                virtualScanningSource.enabled
+                virtualScanningSource.enabled,
+                virtualScanningSource.protocol,
+                virtualScanningSource.address,
+                virtualScanningSource.port,
+                virtualScanningSource.path,
+                virtualScanningSource.clientId,
+                virtualScanningSource.username,
+                virtualScanningSource.password,
+                virtualScanningSource.qualityOfService
         )
     }
 
@@ -20,7 +28,15 @@ class MqttVirtualScanningSourceModelDataMapper @Inject constructor(){
         return GeneralMqttVirtualScanningSource(
                 virtualScanningSourceModel.id,
                 virtualScanningSourceModel.name,
-                virtualScanningSourceModel.enabled
+                virtualScanningSourceModel.enabled,
+                virtualScanningSourceModel.protocol,
+                virtualScanningSourceModel.address,
+                virtualScanningSourceModel.port,
+                virtualScanningSourceModel.path,
+                virtualScanningSourceModel.clientId,
+                virtualScanningSourceModel.username,
+                virtualScanningSourceModel.password,
+                virtualScanningSourceModel.qualityOfService
         )
     }
 
