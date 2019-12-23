@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -29,6 +30,7 @@ import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
+import com.aconno.sensorics.viewmodel.MqttVirtualScanningViewModel
 import com.aconno.sensorics.viewmodel.PermissionViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
@@ -45,6 +47,9 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     @Inject
     lateinit var bluetoothScanningViewModel: BluetoothScanningViewModel
+
+    @Inject
+    lateinit var mqttVirtualScanningViewModel: MqttVirtualScanningViewModel
 
     @Inject
     lateinit var permissionViewModel: PermissionViewModel
@@ -313,6 +318,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun stopScanning() {
         bluetoothScanningViewModel.stopScanning()
+        mqttVirtualScanningViewModel.stopScanning()
     }
 
     private fun setScanMenuLabel(menuItem: MenuItem) {
@@ -338,6 +344,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
             bluetoothScanningViewModel.startScanning(filterByDevice)
+            mqttVirtualScanningViewModel.startScanning("tcp://192.168.100.102:1883", "test_client_id")
             filterByDevice = true
         }
     }
@@ -349,11 +356,12 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             getString(R.string.snackbar_permission_message),
             Snackbar.LENGTH_LONG
         ).setAction(getString(R.string.snackbar_settings)) {
-            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            intent.data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-            startActivity(intent)
-        }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
-            .show()
+            startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+            })
+        }.setActionTextColor(
+            ContextCompat.getColor(this, R.color.primaryColor)
+        ).show()
     }
 
     override fun showRationale(actionCode: Int) {

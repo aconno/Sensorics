@@ -273,4 +273,5 @@
     <string name="mqtt_virtual_scanning_source_path">Serverpfad</string>
     <string name="mqtt_virtual_scanning_source">MQTT Scanquelle</string>
 
+    <string name="mqtt_server_uri">MQTT Server-URI</string>
 </resources>

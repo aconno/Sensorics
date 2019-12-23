@@ -21,4 +21,12 @@
         android:defaultValue="false"
         android:key="keep_screen_on"
         android:title="@string/keep_screen_on" />
+
+    <EditTextPreference
+        android:key="mqtt_server_uri"
+        android:title="@string/mqtt_server_uri" />
+
+    <EditTextPreference
+        android:key="mqtt_client_id"
+        android:title="@string/mqtt_client_id" />
 </PreferenceScreen>
