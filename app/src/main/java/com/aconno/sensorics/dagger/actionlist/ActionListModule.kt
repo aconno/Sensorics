@@ -1,3 +1,4 @@
+
 package com.aconno.sensorics.dagger.actionlist
 
 import com.aconno.sensorics.domain.actions.Action
@@ -11,7 +12,6 @@ import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import dagger.Module
 import dagger.Provides
-
 @Module
 class ActionListModule {
 

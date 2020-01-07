@@ -8,9 +8,9 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class ConfigurationModule {
+class ConfigureActivityModule {
     @Provides
-    @ConfigurationScope
+    @ConfigureActivityScope
     fun provideBeaconViewModel(
         configureActivity: ConfigureActivity,
         beaconViewModelFactory: BeaconViewModelFactory
@@ -18,7 +18,7 @@ class ConfigurationModule {
         .get(BeaconViewModel::class.java)
 
     @Provides
-    @ConfigurationScope
+    @ConfigureActivityScope
     fun provideBeaconViewModelFactory(
     ) = BeaconViewModelFactory()
 
