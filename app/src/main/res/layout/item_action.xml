@@ -8,8 +8,8 @@
     android:layout_height="wrap_content"
     android:minHeight="@dimen/list_item_height"
     android:animateLayoutChanges="true"
-    tools:layout_editor_absoluteY="25dp">
-    android:paddingStart="24dp"
+    tools:layout_editor_absoluteY="25dp"
+    android:paddingStart="12dp"
     android:paddingTop="8dp"
     android:paddingEnd="24dp"
     android:paddingBottom="8dp">
