@@ -5,6 +5,7 @@ import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishRepositoryImpl
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishRepositoryImpl
 import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
+import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
 import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
 import com.aconno.sensorics.domain.ifttt.RestPublishRepository
@@ -13,7 +14,7 @@ import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.*
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.*
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.*
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToPublishersUseCase
-import com.aconno.sensorics.domain.interactor.publisher.ConvertPublishersToJsonUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import dagger.Module
 import dagger.Provides
@@ -24,8 +25,8 @@ class PublisherModule {
 
     @Provides
     @PublisherScope
-    fun provideConvertPublishersToJsonUseCase() : ConvertPublishersToJsonUseCase {
-        return ConvertPublishersToJsonUseCase()
+    fun provideConvertPublishersToJsonUseCase() : ConvertObjectsToJsonUseCase<BasePublish> {
+        return ConvertObjectsToJsonUseCase()
     }
 
     @Provides

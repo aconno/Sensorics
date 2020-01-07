@@ -1,8 +1,10 @@
 package com.aconno.sensorics.ui
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -13,24 +15,35 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.ActionAdapter
 import com.aconno.sensorics.adapter.ItemClickListener
 import com.aconno.sensorics.domain.actions.Action
+import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToActionsUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToObjectsUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.google.android.material.snackbar.Snackbar
-import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_action_list.*
+import kotlinx.android.synthetic.main.fragment_action_list.container_fragment
 import javax.inject.Inject
 
 /**
  * @author aconno
  */
-class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
+
+
+class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListener<Action>,
+        ActionAdapter.OnListItemLongClickListener,
+        ActionAdapter.OnListItemSelectedListener {
 
     private lateinit var actionAdapter: ActionAdapter
     private var snackbar: Snackbar? = null
+    override val sharedFileNamePrefix = "actions"
+    override val exportedFileName: String = "actions.json"
+
+    private var selectionStateListener : ItemSelectionStateListener? = null
 
     @Inject
     lateinit var getAllActionsUseCase: GetAllActionsUseCase
@@ -38,7 +51,16 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
     @Inject
     lateinit var deleteActionUseCase: DeleteActionUseCase
 
-    private val disposables = CompositeDisposable()
+    @Inject
+    lateinit var addActionUseCase: AddActionUseCase
+
+    @Inject
+    lateinit var convertActionsToJsonUseCase: ConvertObjectsToJsonUseCase<Action>
+
+    @Inject
+    lateinit var convertJsonToActionsUseCase: ConvertJsonToActionsUseCase
+
+    private var savedInstanceStateSelectedItems : LongArray? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,9 +69,26 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
         return inflater.inflate(R.layout.fragment_action_list, container, false)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if(context is ItemSelectionStateListener) {
+            selectionStateListener = context
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        actionAdapter = ActionAdapter(mutableListOf(), this)
+
+        actionAdapter = ActionAdapter(mutableListOf(), this,this,this)
+        if(savedInstanceState != null) {
+            if(savedInstanceState.getBoolean(ITEM_SELECTION_ENABLED_KEY)) {
+                enableItemSelection()
+                savedInstanceStateSelectedItems = savedInstanceState.getLongArray(SELECTED_ITEMS_KEY)
+            }
+
+        }
+
+
         action_list.adapter = actionAdapter
 
         action_list.itemAnimator = DefaultItemAnimator()
@@ -100,6 +139,126 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
         }
     }
 
+    override fun onListItemLongClick(item: Action) {
+        if(!actionAdapter.itemSelectionEnabled) {
+            enableItemSelection(item)
+        }
+    }
+
+    private fun enableItemSelection(initiallySelectedItem : Action? = null) {
+        actionAdapter.enableItemSelection(initiallySelectedItem)
+        selectionStateListener?.onSelectedItemsCountChanged(actionAdapter.getNumberOfSelectedItems())
+        selectionStateListener?.onItemSelectionStateEntered()
+    }
+
+
+    override fun onListItemDeselected(item: Action) {
+        selectionStateListener?.onSelectedItemsCountChanged(actionAdapter.getNumberOfSelectedItems())
+    }
+
+    override fun onListItemSelected(item: Action) {
+        selectionStateListener?.onSelectedItemsCountChanged(actionAdapter.getNumberOfSelectedItems())
+    }
+
+
+    override fun resolveActionBarEvent(item: MenuItem?) {
+        when(item?.itemId) {
+            android.R.id.home -> exitItemSelectionState()
+            R.id.action_select_all -> selectAllItems()
+            else -> super.resolveActionBarEvent(item)
+        }
+    }
+
+    private fun selectAllItems() {
+        actionAdapter.setItemsAsSelected(actionAdapter.getActions())
+
+    }
+
+    override fun getFileShareSubject(): String {
+        return getString(R.string.actions_file_share_subject)
+    }
+
+    override fun getConvertFromJsonUseCase(): ConvertJsonToObjectsUseCase<Action> {
+        return convertJsonToActionsUseCase
+    }
+
+    override fun getConvertToJsonUseCase(): ConvertObjectsToJsonUseCase<Action> {
+        return convertActionsToJsonUseCase
+    }
+
+    override fun getItems(): List<Action> {
+        return actionAdapter.getActions()
+    }
+
+    override fun getItemsForExport(): List<Action> {
+        if(actionAdapter.itemSelectionEnabled) {
+            return actionAdapter.getSelectedItems()
+        }
+        return getItems()
+    }
+
+    override fun onItemsImportedFromFile(items: List<Action>) {
+        addActions(items)
+    }
+
+    private fun addActions(actions: List<Action>) {
+        var imported = 0
+        var failed = 0
+        val actionsToAddToAdapter : MutableList<Action> = mutableListOf()
+
+        if(actions.isEmpty()) { //in case of user tries to import an empty file
+            Snackbar.make(container_fragment,
+                    getString(R.string.empty_import_file),
+                    Snackbar.LENGTH_SHORT).show()
+        }
+
+        val updateAdapterLazily = { //updates the adapter only when all actions have been (successfully or unsuccessfully) added to db
+            if(actions.size == failed + imported) {
+                addActionsToActionAdapter(actionsToAddToAdapter)
+
+                Snackbar.make(container_fragment,
+                        when(imported) {
+                            0 -> getString(R.string.import_error)
+                            1 -> if(failed == 0) getString(R.string.import_one_action_success)
+                                else getString(R.string.action_import_partial_success, imported, actions.size)
+                            else -> if(failed == 0) getString(R.string.import_multiple_actions_success,imported)
+                                else getString(R.string.action_import_partial_success, imported, actions.size)
+                        },
+                        Snackbar.LENGTH_SHORT).show()
+            }
+        }
+
+        actions.forEach { action ->
+            addActionUseCase.execute(action)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .map {
+                        action.id = it
+                        action
+                    }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe ({
+                        actionsToAddToAdapter.add(it)
+                        imported++
+                        updateAdapterLazily()
+                    }, {
+                        failed++
+                        updateAdapterLazily()
+                    }
+                    )
+                }
+
+    }
+
+
+    private fun addActionsToActionAdapter(actions: List<Action>) {
+        if(actionAdapter.getActions().isEmpty()) {
+            initActionList(actions)
+        } else {
+            actionAdapter.appendActions(actions)
+        }
+    }
+
     private fun startAddActionActivity() {
         context?.let { ActionDetailsActivity.start(it) }
     }
@@ -107,7 +266,7 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
     override fun onResume() {
         super.onResume()
 
-        disposables.add(
+        addDisposable(
             getAllActionsUseCase.execute()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -116,13 +275,13 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
 
     }
 
-    override fun onPause() {
-        super.onPause()
-        disposables.clear()
-    }
 
     private fun initActionList(actions: List<Action>) {
         actionAdapter.setActions(actions)
+        if(savedInstanceStateSelectedItems != null && actionAdapter.itemSelectionEnabled) {
+            actionAdapter.setItemsAsSelected(actionAdapter.getActions().filter { it.id in savedInstanceStateSelectedItems!! })
+        }
+
         if (actions.isEmpty()) {
             action_list_empty_view.visibility = View.VISIBLE
         } else {
@@ -135,10 +294,44 @@ class ActionListFragment : DaggerFragment(), ItemClickListener<Action> {
         context?.let { ActionDetailsActivity.start(it, item.id) }
     }
 
+
+    fun onBackButtonPressed() : Boolean { //returns true if it has handled the back button press
+        if(actionAdapter.itemSelectionEnabled) {
+            exitItemSelectionState()
+            return true
+        }
+        return false
+    }
+
+    private fun exitItemSelectionState() {
+        if (actionAdapter.itemSelectionEnabled) {
+            actionAdapter.disableItemSelection()
+            selectionStateListener?.onItemSelectionStateExited()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean(ITEM_SELECTION_ENABLED_KEY, actionAdapter.itemSelectionEnabled)
+        if (actionAdapter.itemSelectionEnabled) {
+            outState.putLongArray(SELECTED_ITEMS_KEY, actionAdapter.getSelectedItems().map { it.id }.toLongArray())
+        }
+    }
+
+    interface ItemSelectionStateListener {
+        fun onItemSelectionStateEntered()
+        fun onItemSelectionStateExited()
+        fun onSelectedItemsCountChanged(selectedItems : Int)
+    }
+
     companion object {
 
         fun newInstance(): ActionListFragment {
             return ActionListFragment()
         }
+
+        private const val ITEM_SELECTION_ENABLED_KEY = "ITEM_SELECTION_ENABLED_KEY"
+        private const val SELECTED_ITEMS_KEY = "SELECTED_ITEMS_KEY"
     }
 }

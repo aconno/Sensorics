@@ -5,7 +5,7 @@ import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.model.Device
 
 class GeneralAction(
-    override val id: Long,
+    override var id: Long,
     override val name: String,
     override val device: Device,
     override val condition: Condition,

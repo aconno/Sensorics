@@ -16,7 +16,7 @@ interface ActionDao {
     fun getActionsByDeviceMacAddress(macAddress: String): Single<List<ActionEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(action: ActionEntity)
+    fun insert(action: ActionEntity) : Long
 
     @Delete
     fun delete(action: ActionEntity)

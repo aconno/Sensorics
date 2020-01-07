@@ -317,6 +317,24 @@
     <string name="undo">Undo</string>
     <string name="import_error" translatable="false">Import error</string>
     <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
+    <string name="actions_file_share_subject">Sensorics actions list</string>
+    <string name="backends_file_share_subject">Sensorics backends</string>
+
+    <string name="import_one_action_success">Successfully imported 1 action</string>
+    <string name="import_multiple_actions_success">Successfully imported %d actions</string>
+    <string name="action_import_partial_success">Successfully imported %d/%d actions</string>
+    <string name="empty_import_file">File si empty</string>
+
+    <string name="selected_items_count">Items: %d</string>
+    <string name="export_selected">Export</string>
+    <string name="share_selected_as_text">Share JSON text</string>
+    <string name="share_selected_as_file">Share JSON file</string>
+    <string name="select_all">Select all</string>
+
+    <string name="export_no_items">No items to export</string>
+    <string name="share_no_items">No items to share</string>
+    <string name="share_all_as_text">Share all as JSON text</string>
+    <string name="share_all_as_file">Share all as JSON file</string>
     <string name="snackbar_scan_failed_already_started">Scan already started</string>
     <string name="snackbar_scan_failed">Scan failed!</string>
 
