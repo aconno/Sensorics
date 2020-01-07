@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.*
@@ -39,7 +40,8 @@ import javax.inject.Inject
  * Activities containing this fragment MUST implement the
  * [PublishListFragment.OnListFragmentClickListener] interface.
  */
-class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRecyclerViewAdapter.OnListItemLongClickListener {
+class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRecyclerViewAdapter.OnListItemLongClickListener,
+            PublishRecyclerViewAdapter.OnListItemSelectedListener{
 
     private var snackbar: Snackbar? = null
 
@@ -72,8 +74,11 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
     private var listener: OnListFragmentClickListener? = null
     private var listBasePublish: MutableList<BasePublishModel> = mutableListOf()
     private var selectedItem: BasePublishModel? = null
+    private var selectionStateListener : ItemSelectionStateListener? = null
+    private var savedInstanceStateSelectedItems : LongArray? = null
 
     override val exportedFileName: String = "backend.json"
+
 
     private val checkedChangeListener: PublishRecyclerViewAdapter.OnCheckedChangeListener = object :
         PublishRecyclerViewAdapter.OnCheckedChangeListener {
@@ -97,8 +102,16 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
         publishAdapter = PublishRecyclerViewAdapter(
             listBasePublish,
             listener,
-            this
+            this,
+                this
         )
+        if(savedInstanceState != null) {
+            if(savedInstanceState.getBoolean(ITEM_SELECTION_ENABLED_KEY)) {
+                enableItemSelection()
+                savedInstanceStateSelectedItems = savedInstanceState.getLongArray(SELECTED_ITEMS_KEY)
+            }
+
+        }
 
         view_publish_list.apply {
             layoutManager = LinearLayoutManager(context)
@@ -183,10 +196,46 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
     }
 
     override fun onListItemLongClick(item: BasePublishModel?) {
-        item?.let {
-            showExportOptionsDialog(mapModelToPublisher(it))
+        if(!publishAdapter.itemSelectionEnabled) {
+            enableItemSelection(item)
         }
     }
+
+    private fun enableItemSelection(initiallySelectedItem : BasePublishModel? = null) {
+        publishAdapter.enableItemSelection(initiallySelectedItem)
+        selectionStateListener?.onSelectedItemsCountChanged(publishAdapter.getNumberOfSelectedItems())
+        selectionStateListener?.onItemSelectionStateEntered()
+    }
+
+
+    override fun onListItemDeselected(item: BasePublishModel) {
+        selectionStateListener?.onSelectedItemsCountChanged(publishAdapter.getNumberOfSelectedItems())
+    }
+
+    override fun onListItemSelected(item: BasePublishModel) {
+        selectionStateListener?.onSelectedItemsCountChanged(publishAdapter.getNumberOfSelectedItems())
+    }
+
+
+    override fun resolveActionBarEvent(item: MenuItem?) {
+        when(item?.itemId) {
+            android.R.id.home -> exitItemSelectionState()
+            R.id.action_select_all -> selectAllItems()
+            else -> super.resolveActionBarEvent(item)
+        }
+    }
+
+    private fun selectAllItems() {
+        publishAdapter.setItemsAsSelected(publishAdapter.getAllPublishers())
+    }
+
+    override fun getItemsForExport(): List<BasePublish> {
+        if(publishAdapter.itemSelectionEnabled) {
+            return publishAdapter.getSelectedItems().map { mapModelToPublisher(it) }
+        }
+        return getItems()
+    }
+
 
     private fun mapModelsToPublishers(models: List<BasePublishModel>): List<BasePublish> {
         return models.map {
@@ -222,6 +271,9 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
         } else {
             throw RuntimeException("$context must implement OnListFragmentClickListener")
         }
+        if(context is ItemSelectionStateListener) {
+            selectionStateListener = context
+        }
     }
 
     override fun onResume() {
@@ -247,6 +299,10 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
     private fun initPublishList(actions: List<BasePublishModel>) {
         empty_view.visibility = View.GONE
         listBasePublish.addAll(actions)
+        if(savedInstanceStateSelectedItems != null && publishAdapter.itemSelectionEnabled) {
+            publishAdapter.setItemsAsSelected(publishAdapter.getAllPublishers().filter { it.id in savedInstanceStateSelectedItems!! })
+        }
+
         publishAdapter.notifyDataSetChanged()
         publishAdapter.setOnCheckedChangeListener(checkedChangeListener)
     }
@@ -317,6 +373,30 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
         }
     }
 
+    fun onBackButtonPressed() : Boolean { //returns true if it has handled the back button press
+        if(publishAdapter.itemSelectionEnabled) {
+            exitItemSelectionState()
+            return true
+        }
+        return false
+    }
+
+    private fun exitItemSelectionState() {
+        if (publishAdapter.itemSelectionEnabled) {
+            publishAdapter.disableItemSelection()
+            selectionStateListener?.onItemSelectionStateExited()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean(ITEM_SELECTION_ENABLED_KEY, publishAdapter.itemSelectionEnabled)
+        if (publishAdapter.itemSelectionEnabled) {
+            outState.putLongArray(SELECTED_ITEMS_KEY, publishAdapter.getSelectedItems().map { it.id }.toLongArray())
+        }
+    }
+
     override fun onDetach() {
         super.onDetach()
         listener = null
@@ -325,6 +405,9 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
     companion object {
         @JvmStatic
         fun newInstance() = PublishListFragment()
+
+        private const val ITEM_SELECTION_ENABLED_KEY = "ITEM_SELECTION_ENABLED_KEY"
+        private const val SELECTED_ITEMS_KEY = "SELECTED_ITEMS_KEY"
     }
 
     /**
@@ -335,6 +418,12 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
      */
     interface OnListFragmentClickListener {
         fun onListFragmentClick(item: BasePublishModel?)
+    }
+
+    interface ItemSelectionStateListener {
+        fun onItemSelectionStateEntered()
+        fun onItemSelectionStateExited()
+        fun onSelectedItemsCountChanged(selectedItems : Int)
     }
 }
 
