@@ -9,9 +9,15 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_share_all"
+        android:id="@+id/action_share_all_as_text"
         android:orderInCategory="2"
-        android:title="@string/share_all"
+        android:title="@string/share_all_as_text"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_share_all_as_file"
+        android:orderInCategory="2"
+        android:title="@string/share_all_as_file"
         app:showAsAction="never" />
 
     <item

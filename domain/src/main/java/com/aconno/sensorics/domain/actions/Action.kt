@@ -5,7 +5,7 @@ import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.model.Device
 
 interface Action {
-    val id: Long
+    var id: Long
     val name: String
     val device: Device
     val condition: Condition

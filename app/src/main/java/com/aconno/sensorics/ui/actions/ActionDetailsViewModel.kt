@@ -270,7 +270,7 @@ class ActionDetailsViewModel(
             timeTo
         )
 
-        return addActionUseCase.execute(action)
+        return Completable.fromSingle(addActionUseCase.execute(action))
     }
 
     private fun getCompletableIllegalArgumentError(

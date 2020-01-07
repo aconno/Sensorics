@@ -30,8 +30,8 @@ class ActionsRepositoryImpl(
         }
     }
 
-    override fun addAction(action: Action): Completable {
-        return Completable.fromAction {
+    override fun addAction(action: Action): Single<Long> {
+        return Single.fromCallable {
             Timber.i("Inserted Action")
             actionDao.insert(toEntity(action))
         }
