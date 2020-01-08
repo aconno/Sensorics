@@ -39,7 +39,7 @@ class AlarmServiceModule {
 
     @Provides
     @AlarmServiceScope
-    fun proviceAudioAlarm(
+    fun provideAudioAlarm(
         sensoricsApplication: SensoricsApplication,
         telephonyManager: DeviceTelephonyManager,
         audioManager: DeviceAudioManager

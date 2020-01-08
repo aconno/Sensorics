@@ -63,8 +63,8 @@ class BluetoothModule {
     @Provides
     @Singleton
     fun provideDevice(
-        filteredScanResult: Flowable<ScanResult>,
-        generateScanDeviceUseCase: GenerateScanDeviceUseCase
+            filteredScanResult: Flowable<ScanResult>,
+            generateScanDeviceUseCase: GenerateScanDeviceUseCase
     ): Flowable<ScanDevice> {
         return filteredScanResult.concatMap { generateScanDeviceUseCase.execute(it).toFlowable() }
     }

@@ -156,10 +156,10 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun openLiveGraph(macAddress: String, sensorName: String) {
-        supportFragmentManager?.beginTransaction()?.add(
+        supportFragmentManager.beginTransaction().add(
             content_container.id,
             LiveGraphFragment.newInstance(macAddress, sensorName)
-        )?.addToBackStack(null)?.commit()
+        ).addToBackStack(null).commit()
     }
 
     override fun onFABClicked() {
@@ -207,10 +207,19 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     private fun onScanFailedAlreadyStarted() {
-        // Do nothing TODO: Check if this is right
+        Snackbar.make(
+            findViewById(android.R.id.content),
+            getString(R.string.snackbar_scan_failed_already_started),
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     private fun onScanFailed() {
+        Snackbar.make(
+            findViewById(android.R.id.content),
+            getString(R.string.snackbar_scan_failed),
+            Snackbar.LENGTH_SHORT
+        ).show()
         onScanStop()
     }
 

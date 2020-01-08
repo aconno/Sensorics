@@ -319,5 +319,7 @@
     <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
     <string name="settings_framework" translatable="false">Settings Framework</string>
     <string name="add_slot">add</string>
+    <string name="snackbar_scan_failed_already_started">Scan already started</string>
+    <string name="snackbar_scan_failed">Scan failed!</string>
 
 </resources>

@@ -1,4 +1,4 @@
-package com.aconno.sensorics.dagger.publish
+package com.aconno.sensorics.dagger.publishlist
 
 import com.aconno.sensorics.dagger.application.FragmentScope
 import com.aconno.sensorics.ui.settings.publishers.PublishListFragment
