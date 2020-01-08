@@ -8,10 +8,10 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class SettingsFrameworkModule {
+class SettingsFrameworkActivityModule {
 
     @Provides
-    @SettingsFrameworkScope
+    @SettingsFrameworkActivityScope
     fun provideBeaconSettingsViewModel(
         settingsFrameworkActivity: SettingsFrameworkActivity,
         beaconSettingsViewModelFactory: BeaconSettingsViewModelFactory
@@ -19,7 +19,7 @@ class SettingsFrameworkModule {
         .get(BeaconSettingsViewModel::class.java)
 
     @Provides
-    @SettingsFrameworkScope
+    @SettingsFrameworkActivityScope
     fun provideBeaconSettingsViewModelFactory(
     ) = BeaconSettingsViewModelFactory()
 

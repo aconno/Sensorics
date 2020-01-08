@@ -38,6 +38,8 @@ import com.aconno.sensorics.dagger.readings.SensorReadingsModule
 import com.aconno.sensorics.dagger.readings.SensorReadingsScope
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityModule
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityScope
+import com.aconno.sensorics.dagger.settings_framework.SettingsFrameworkActivityModule
+import com.aconno.sensorics.dagger.settings_framework.SettingsFrameworkActivityScope
 import com.aconno.sensorics.dagger.splash.SplashActivityModule
 import com.aconno.sensorics.dagger.splash.SplashActivityScope
 import com.aconno.sensorics.ui.ActionListActivity
@@ -50,6 +52,7 @@ import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
+import com.aconno.sensorics.ui.settings_framework.SettingsFrameworkActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -143,6 +146,10 @@ abstract class ActivityBuilder {
     @ConfigureActivityScope
     @ContributesAndroidInjector(modules = [ConfigureActivityModule::class])
     abstract fun bindConfigureActivity(): ConfigureActivity
+
+    @SettingsFrameworkActivityScope
+    @ContributesAndroidInjector(modules = [SettingsFrameworkActivityModule::class])
+    abstract fun bindSettingsFrameworkActivity(): SettingsFrameworkActivity
 
     @DfuActivityScope
     @ContributesAndroidInjector
