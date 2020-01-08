@@ -27,15 +27,6 @@ import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherActivityS
 import com.aconno.sensorics.dagger.mainactivity.MainActivityFragmentsModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityModule
 import com.aconno.sensorics.dagger.mainactivity.MainActivityScope
-import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherModule
-import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherScope
-import com.aconno.sensorics.dagger.publish.PublishListFragmentsModule
-import com.aconno.sensorics.dagger.publish.PublishListModule
-import com.aconno.sensorics.dagger.publish.PublishListScope
-import com.aconno.sensorics.dagger.restpublisher.RESTPublisherModule
-import com.aconno.sensorics.dagger.restpublisher.RESTPublisherScope
-import com.aconno.sensorics.dagger.settings_framework.SettingsFrameworkModule
-import com.aconno.sensorics.dagger.settings_framework.SettingsFrameworkScope
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityModule
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityScope
 import com.aconno.sensorics.dagger.publisher.PublisherModule
@@ -59,7 +50,6 @@ import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
-import com.aconno.sensorics.ui.settings_framework.SettingsFrameworkActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
