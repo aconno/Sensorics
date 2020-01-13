@@ -4,6 +4,7 @@ import android.app.Activity
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.fragment.app.Fragment
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceRelationModel
 import com.google.android.material.snackbar.Snackbar
@@ -28,10 +29,14 @@ fun Activity.showToast(@StringRes msgRes: Int) = Toast.makeText(this, msgRes, To
 
 fun Activity.showToast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
 
+fun Fragment.showToast(msg: String) = activity?.showToast(msg)
+
+fun Fragment.showToast(@StringRes msgRes: Int) = activity?.showToast(msgRes)
+
 inline fun View.snack(
     @StringRes messageRes: Int, length: Int = Snackbar.LENGTH_LONG,
     f: Snackbar.() -> Unit
-):Snackbar {
+): Snackbar {
     return snack(resources.getString(messageRes), length, f)
 }
 

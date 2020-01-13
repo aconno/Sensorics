@@ -333,18 +333,22 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
 
     override fun updateFirmware() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showNotImplementedToast()
     }
 
     override fun resetFactory() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showNotImplementedToast()
     }
 
     override fun powerOff() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showNotImplementedToast()
     }
 
     override fun addPassword() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showNotImplementedToast()
+    }
+
+    private fun showNotImplementedToast() {
+        showToast(R.string.feature_not_implemented)
     }
 }

@@ -334,4 +334,5 @@
     <string name="oops_cant_do_anything">Oops. Can\'t do anything</string>
     <string name="device_unlocked">Device unlocked!</string>
     <string name="confirm">Confirm</string>
+    <string name="feature_not_implemented">"This feature has not been implemented yet!"</string>
 </resources>

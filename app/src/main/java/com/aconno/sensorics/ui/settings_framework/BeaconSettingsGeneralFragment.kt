@@ -10,27 +10,27 @@ import android.webkit.JavascriptInterface
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
-import com.aconno.sensorics.model.javascript.BeaconInfo
-import com.aconno.sensorics.ui.configure.BeaconGeneral2Fragment
 import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
-import com.aconno.sensorics.ui.configure.BeaconViewModel
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 
-class BeaconSettingsGeneralFragment: Fragment() {
+class BeaconSettingsGeneralFragment : Fragment() {
 
     var beaconInfo: BeaconSettingsInfo? = null
-    private var listener: BeaconGeneralFragmentListener? = null
+    private lateinit var listener: BeaconGeneralFragmentListener
 
     private val beaconViewModel: BeaconSettingsViewModel by lazy {
         ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         beaconInfo =
-            BeaconSettingsInfo.Builder().build(beaconViewModel.beacon.value) //beaconViewModel.beacon.value
+            BeaconSettingsInfo.Builder()
+                .build(beaconViewModel.beacon.value) //beaconViewModel.beacon.value
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_beacon_general2, container, false)
@@ -63,22 +63,22 @@ class BeaconSettingsGeneralFragment: Fragment() {
 
     @JavascriptInterface
     fun updateFirmware() {
-        listener?.updateFirmware()
+        listener.updateFirmware()
     }
 
     @JavascriptInterface
     fun factoryReset() {
-        listener?.resetFactory()
+        listener.resetFactory()
     }
 
     @JavascriptInterface
     fun addPassword() {
-        listener?.addPassword()
+        listener.addPassword()
     }
 
     @JavascriptInterface
     fun powerOff() {
-        listener?.powerOff()
+        listener.powerOff()
     }
 
     @JavascriptInterface
@@ -88,11 +88,8 @@ class BeaconSettingsGeneralFragment: Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        /*if (context is BeaconGeneralFragmentListener) {
-            listener = context
-        } else {
-            throw RuntimeException("$context must implement OnBeaconGeneralFragmentInteractionListener")
-        }*/
+        listener = context as? BeaconGeneralFragmentListener
+            ?: throw RuntimeException("$context must implement OnBeaconGeneralFragmentInteractionListener")
     }
 
     companion object {
