@@ -1,6 +1,8 @@
 package com.aconno.sensorics
 
+import android.app.Activity
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.StringRes
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceRelationModel
@@ -20,6 +22,10 @@ fun String.toHexByte(): Byte {
         16
     ) and 0xff).toByte()
 }
+fun Activity.showToast(@StringRes msgRes: Int) = Toast.makeText(this, msgRes, Toast.LENGTH_LONG)
+    .show()
+
+fun Activity.showToast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
 
 inline fun View.snack(
     @StringRes messageRes: Int, length: Int = Snackbar.LENGTH_LONG,
