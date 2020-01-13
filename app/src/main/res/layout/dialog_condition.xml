@@ -82,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dialog_button_height"
         android:layout_marginEnd="@dimen/dialog_button_margin"
-        android:text="@string/condition_dialog_cancel"
+        android:text="@string/cancel"
         app:layout_constraintBaseline_toBaselineOf="@id/button_set"
         app:layout_constraintEnd_toStartOf="@id/button_set" />
 

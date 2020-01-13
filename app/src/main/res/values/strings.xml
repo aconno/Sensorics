@@ -59,7 +59,7 @@
     <string name="condition_more">More</string>
     <string name="condition_value_hint">Value</string>
     <string name="condition_dialog_set">Set</string>
-    <string name="condition_dialog_cancel">Cancel</string>
+    <string name="cancel">Cancel</string>
 
     <string name="vibration">Vibration</string>
 
@@ -322,4 +322,16 @@
     <string name="settings_framework" translatable="false">Settings Framework</string>
     <string name="add_slot">add</string>
 
+    <!--  Settings framework  -->
+    <string name="connecting_with_dots">Connecting...</string>
+    <string name="reading_with_dots">Reading...</string>
+    <string name="password_required">Password required</string>
+    <string name="connected_unlocking">Connected. Unlocking...</string>
+    <string name="ulocking_with_dots">Unlocking...</string>
+    <string name="cant_connect_without_password">"Cannot connect without a password!"</string>
+    <string name="try_again">Try again</string>
+    <string name="error_occurred">Error occurred</string>
+    <string name="oops_cant_do_anything">Oops. Can\'t do anything</string>
+    <string name="device_unlocked">Device unlocked!</string>
+    <string name="confirm">Confirm</string>
 </resources>

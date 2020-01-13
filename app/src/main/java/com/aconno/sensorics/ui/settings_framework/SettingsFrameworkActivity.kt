@@ -99,7 +99,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         bluetoothService.connect(macAddress)
 
         progressDialog = showProgressDialog().apply {
-            message.text = "Connecting..."
+            message.setText(R.string.connecting_with_dots)
         }
     }
 
@@ -160,7 +160,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         when (payload.action) {
             BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
                 Timber.d("Connected to GATT")
-                progressDialog?.message?.text = "Connected. Unlocking..."
+                progressDialog?.message?.setText(R.string.connected_unlocking)
                 bluetoothConnectService?.let {
                     beacon = BeaconImpl(this, taskProcessor)
                 } ?: throw IllegalStateException(
@@ -184,12 +184,13 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         if (unlocked) {
             Toast.makeText(
                 this,
-                "Device unlocked!",
+                R.string.device_unlocked,
                 Toast.LENGTH_LONG
             ).show()
 
             beacon.read(object : GenericTask("On Read Completed Task") {
                 override fun onSuccess() {
+                    progressDialog?.dismiss()
                     Timber.d(Gson().toJson(beacon.toJson()))
                     beaconViewModel.beacon.value = beacon
                     tabs.visibility = View.VISIBLE
@@ -199,9 +200,10 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                     return true
                 }
             })
+            progressDialog?.message?.setText(R.string.reading_with_dots)
         } else {
             progressDialog?.apply {
-                message.text = "Need password"
+                message.setText(R.string.password_required)
             }?.window?.decorView?.postDelayed({
                 progressDialog?.dismiss()
                 showPasswordDialog()
@@ -221,7 +223,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                 ) // TODO: Do this in a better way
                 if (progressDialog?.isShowing == false) {
                     progressDialog = showProgressDialog().apply {
-                        message.text = "Unlocking..."
+                        message.setText(R.string.ulocking_with_dots)
                     }
                 }
             }
@@ -234,11 +236,11 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
     private fun showTryAgainPasswordSnackBar() {
         indefeniteSnackBar = ll_settings_root.snack(
-            "Cannot connect without a password!",
+            R.string.cant_connect_without_password,
             Snackbar.LENGTH_INDEFINITE
         ) {
             action(
-                "try again",
+                R.string.try_again,
                 ContextCompat.getColor(applicationContext, R.color.primaryColor)
             ) {
                 showPasswordDialog()
@@ -248,15 +250,16 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
 
     private fun showTryAgainToConnectSnackBar() {
-        indefeniteSnackBar = ll_settings_root.snack("Error occurred", Snackbar.LENGTH_INDEFINITE) {
-            action(
-                "try again",
-                ContextCompat.getColor(applicationContext, R.color.primaryColor)
-            ) {
-                bluetoothConnectService?.let { connectToDevice(it) }
-                    ?: showToast("Oops. Can't do anything")
+        indefeniteSnackBar =
+            ll_settings_root.snack(R.string.error_occurred, Snackbar.LENGTH_INDEFINITE) {
+                action(
+                    R.string.try_again,
+                    ContextCompat.getColor(applicationContext, R.color.primaryColor)
+                ) {
+                    bluetoothConnectService?.let { connectToDevice(it) }
+                        ?: showToast(R.string.oops_cant_do_anything)
+                }
             }
-        }
     }
 
     private fun unbindServiceConnectionIfBounded() {
@@ -271,11 +274,11 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         val view: View = layoutInflater.inflate(R.layout.dialog_password, null as ViewGroup?)
         builder.setView(view)
         val etPassword = view.findViewById<EditText>(R.id.et_password)
-        builder.setPositiveButton("Confirm") { dialog, _ ->
+        builder.setPositiveButton(R.string.confirm) { dialog, _ ->
             onPasswordDialogAction.onPasswordEntered(etPassword?.text.toString())
             dialog.dismiss()
         }
-        builder.setNegativeButton("Cancel") { dialog, _ ->
+        builder.setNegativeButton(R.string.cancel) { dialog, _ ->
             onPasswordDialogAction.onDialogCancelled()
             dialog.dismiss()
         }
