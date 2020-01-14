@@ -1,5 +1,6 @@
 package com.aconno.sensorics.ui.settings_framework
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.ComponentName
 import android.content.Context
@@ -7,10 +8,8 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -217,6 +216,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private fun showPasswordDialog() {
         createPasswordDialog(object : OnPasswordDialogAction {
             override fun onPasswordEntered(password: String) {
+                hideKeyboard()
                 beacon.unlock(
                     password,
                     this@SettingsFrameworkActivity
@@ -229,6 +229,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             }
 
             override fun onDialogCancelled() {
+                hideKeyboard()
                 showTryAgainPasswordSnackBar()
             }
         }).show()
@@ -269,14 +270,19 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
     }
 
+    private fun hideKeyboard() {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+    }
+
     private fun createPasswordDialog(onPasswordDialogAction: OnPasswordDialogAction): AlertDialog {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         val view: View = layoutInflater.inflate(R.layout.dialog_password, null as ViewGroup?)
         builder.setView(view)
         val etPassword = view.findViewById<EditText>(R.id.et_password)
-        builder.setPositiveButton(R.string.confirm) { dialog, _ ->
+        builder.setPositiveButton(R.string.confirm) { iDialog, _ ->
             onPasswordDialogAction.onPasswordEntered(etPassword?.text.toString())
-            dialog.dismiss()
+            iDialog.dismiss()
         }
         builder.setNegativeButton(R.string.cancel) { dialog, _ ->
             onPasswordDialogAction.onDialogCancelled()
@@ -284,7 +290,9 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
         builder.setCancelable(false)
         builder.setOnCancelListener { onPasswordDialogAction.onDialogCancelled() }
-        return builder.create()
+        return builder.create().apply {
+            window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        }
     }
 
     private fun showProgressDialog(): AlertDialog {
