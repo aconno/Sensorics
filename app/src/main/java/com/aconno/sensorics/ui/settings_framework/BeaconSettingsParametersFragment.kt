@@ -6,15 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
 import com.aconno.sensorics.device.beacon.Parameter
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_parameter2.*
-import timber.log.Timber
 
-class BeaconSettingsParametersFragment : Fragment() {
+class BeaconSettingsParametersFragment : BeaconSettingsBaseFragment() {
 
     private val beaconViewModel: BeaconSettingsViewModel by lazy {
         ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
@@ -22,6 +20,12 @@ class BeaconSettingsParametersFragment : Fragment() {
 
     private var standartParameters: List<Parameter<Any>>? = null
 
+
+    override fun onBeaconInformationLoaded(beaconInformation: String) {
+            if(webview_parameters != null) {
+                webview_parameters.loadUrl("javascript:ParametersLoader.setBeaconParameters('${beaconInformation}')")
+            }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

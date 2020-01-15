@@ -115,19 +115,34 @@ GeneralView.Views = class {
 }
 
 GeneralView.Actions = class{
-    static setBeaconInformation(beacon){
-        GeneralView.ViewsAction.setConnection(beacon.connectible);
-        GeneralView.ViewsAction.setLabelMacAddress(beacon.address);
-        GeneralView.ViewsAction.setLabelManufacturer(beacon.manufacturer);
-        GeneralView.ViewsAction.setLabelModel(beacon.model);
-        GeneralView.ViewsAction.setLabelSoftwareVersion(beacon.softwareVersion);
-        GeneralView.ViewsAction.setLabelHardwareVersion(beacon.hardwareVersion);
-        GeneralView.ViewsAction.setLabelFirmwareVersion(beacon.firmwareVersion);
-        GeneralView.ViewsAction.setLabelOsVersion(beacon.osVersion);
-        GeneralView.ViewsAction.setLabelSupportedTxPower(beacon.supportedTxPower);
-        GeneralView.ViewsAction.setLabelSupportedSlots(beacon.supportedSlots);
-        GeneralView.ViewsAction.setLabelAdvFeature(beacon.advFeature);
-        GeneralView.ViewsAction.setLabelSlotAmount(beacon.slotAmount);
+
+    static addLinesAfterCommas(text) {
+        let parts = text.split(",");
+        return parts.join(", ");
+    }
+
+    static setBeaconInformation(beaconString){
+        let beacon = JSON.parse(beaconString);
+
+        let generalParams = beacon.parameters.parameters["Basic config"];
+        let paramMap = {};
+        for(var i in generalParams) {
+            paramMap[generalParams[i].name] = generalParams[i].value;
+        }
+
+        let supportedTxPowers = this.addLinesAfterCommas(paramMap["Supported TX powers"]); //this is needed in order to enable automatic word-wrap if there is not enough space for whole text to fit in one line
+
+        GeneralView.ViewsAction.setConnection(true);
+        GeneralView.ViewsAction.setLabelMacAddress(paramMap["MAC"]);
+        GeneralView.ViewsAction.setLabelManufacturer(paramMap["Manufacturer"]);
+        GeneralView.ViewsAction.setLabelModel(paramMap["Model"]);
+        GeneralView.ViewsAction.setLabelSoftwareVersion(paramMap["Softdevice version"]);
+        GeneralView.ViewsAction.setLabelHardwareVersion(paramMap["Hardware version"]);
+        GeneralView.ViewsAction.setLabelFirmwareVersion(paramMap["Firmware version"]);
+        GeneralView.ViewsAction.setLabelOsVersion(paramMap["FreeRTOS version"]);
+        GeneralView.ViewsAction.setLabelSupportedTxPower(supportedTxPowers);
+        GeneralView.ViewsAction.setLabelSupportedSlots("EMPTY, CUSTOM, URL, I_BEACON, DEFAULT");
+        GeneralView.ViewsAction.setLabelSlotAmount(beacon.slots.slots.length);
     }
 
     static updateFirmware(){

@@ -7,31 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
-import com.aconno.sensorics.model.javascript.BeaconInfo
-import com.aconno.sensorics.ui.configure.BeaconGeneral2Fragment
 import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
-import com.aconno.sensorics.ui.configure.BeaconViewModel
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 
-class BeaconSettingsGeneralFragment: Fragment() {
+class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {
 
-    var beaconInfo: BeaconSettingsInfo? = null
     private var listener: BeaconGeneralFragmentListener? = null
-
-    private val beaconViewModel: BeaconSettingsViewModel by lazy {
-        ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-
-        beaconInfo =
-            BeaconSettingsInfo.Builder().build(beaconViewModel.beacon.value) //beaconViewModel.beacon.value
-
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_beacon_general2, container, false)
     }
@@ -40,6 +25,13 @@ class BeaconSettingsGeneralFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initiateWebView()
     }
+
+    override fun onBeaconInformationLoaded(beaconInformation: String) {
+        if(webview_general != null) {
+            webview_general.loadUrl("javascript:GeneralView.Actions.setBeaconInformation('${beaconInformation}')")
+        }
+    }
+
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initiateWebView() {
@@ -51,13 +43,13 @@ class BeaconSettingsGeneralFragment: Fragment() {
         webview_general.settings.allowContentAccess = true
         webview_general.loadUrl(HTML_FILE_PATH)
         webview_general.addJavascriptInterface(this, "native")
+        requestBeaconInfo()
     }
+
+
 
     @JavascriptInterface
     fun retrieveCurrentBeaconInfo(): String {
-        beaconInfo?.let {
-            return Gson().toJson(beaconInfo)
-        }
         return ""
     }
 

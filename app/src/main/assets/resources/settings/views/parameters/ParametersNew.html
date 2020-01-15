@@ -23,64 +23,24 @@
             text-align: right;
         }
 
-
+        .card-view {
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            padding: 10px;
+        }
 
     </style>
 </head>
 
 <body style="background-color: #FAFAFA">
-<div class="container-fluid">
-    <br/>
+<div id="parameters-container" class="container-fluid">
 
 </div>
+
 <script src="../../libs/jquery.min.js"></script>
 <script src="../../libs/popper.min.js"></script>
 <script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
-<script src="parameter_generator.js"></script>
-<script>
-    $(document).ready(function(){
-        let listParametersString = native.getParameters();
-
-        console.log(listParametersString)
-
-        if(listParametersString == "")return;
-
-        let listParameters = JSON.parse(listParametersString)
-
-         for(let index = 0;index<listParameters.length;index++){
-              let parameter = listParameters[index];
-
-              if(parameter.type == "TYPE_PARAMETER_BOOLEAN"){
-                    let param = HtmlGenerator.generateParameterBool(parameter.id, parameter.name, parameter.valueInternal, index);
-                    $(".container-fluid").append(param);
-                    $(".container-fluid").append("<br/>");
-                    continue;
-              }
-                if(parameter.type == "TYPE_PARAMETER_TEXT"){
-                    let param = HtmlGenerator.generateParameterEditText(parameter.id, parameter.name, parameter.valueInternal, parameter.writable, index);
-                    $(".container-fluid").append(param);
-                    $(".container-fluid").append("<br/>");
-                    continue;
-                }
-                if(parameter.type == "TYPE_PARAMETER_NUMBER"){
-                    let param = HtmlGenerator.generateNumberEditText(parameter.id, parameter.name, parameter.valueInternal, parameter.min, parameter.max, parameter.writable, index);
-                    $(".container-fluid").append(param);
-                    $(".container-fluid").append("<br/>");
-                    continue;
-                }
-                if(parameter.type == "TYPE_PARAMETER_ENUM"){
-                // Need to know what choices are for enum
-                    let param = HtmlGenerator.generateParameterEditText(parameter.id, parameter.name, parameter.valueInternal, parameter.writable, index);
-                    $(".container-fluid").append(param);
-                    $(".container-fluid").append("<br/>");
-                    continue;
-                }
-
-         }
-    });
-
-
-</script>
+<script src="Parameters.js"></script>
 </body>
 
 </html>
