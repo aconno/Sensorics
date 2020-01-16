@@ -29,44 +29,32 @@ class HtmlGenerator {
             '</div>'
     }
 
-    static generateNumberEditText(id, name, value, unit, min, max, writable, index) {
+    static generateNumberEditText(id, name, value, unit, min, max, writable, enableFloatInput, index) {
         let disabledText = "";
         if (!writable) disabledText = "disabled";
         let unitText = unit.length > 0 ? " ["+unit+"]" : "";
+        let inputStep = enableFloatInput ? "any" : "1"
+        let rangeInputStep = enableFloatInput ? "0.01" : "1"
+        let onKeyUpFunctionName = enableFloatInput ? "keyUpFloatText" : "keyUpNumText";
         return '<div class="form-group">' +
             '<label for="txt-num-' + id + '">' + name + unitText + '</label>' +
-            '<input type="number" min="' + min + '" max="' + max + '" value="' + value + '" id="txt-num-' + id + '" onkeyup="HtmlActions.keyUpNumText(\'' + id + '\', this.value, ' + index + ')" class="holo" ' + disabledText + ' />' +
-            '<input type="range" min="' + min + '" max="' + max + '" value="' + value + '" id="rng-' + id + '" onchange="HtmlActions.changedNumRange(\'' + id + '\',this.value, ' + index + ')" class="custom-range" name="range" ' + disabledText + ' >' +
+            '<input type="number" min="' + min + '" max="' + max + '" step="'+inputStep+'" value="' + value + '" id="txt-num-' + id + '" onkeyup="HtmlActions.'+onKeyUpFunctionName+'(\'' + id + '\', this.value, ' + index + ')" class="holo" ' + disabledText + ' />' +
+            '<input type="range" min="' + min + '" max="' + max + '" step="'+rangeInputStep+'" value="' + value + '" id="rng-' + id + '" onchange="HtmlActions.changedNumRange(\'' + id + '\',this.value, ' + index + ')" class="custom-range" name="range" ' + disabledText + ' >' +
             '</div>'
     }
 
     static generateEnums(elements, id, name, value, index) {
-        let body = HtmlGenerator.generateEnumsBody(id, elements, index)
-        let html = '<div class="form-group">'
-        html += '<label for="ddl-lbl-' + id + '">' + name + '</label>'
-        html += '<div id="ddl-' + id + '" class="dropdown">';
-        html += '<button class="btn btn-secondary dropdown-toggle" type="button" id="ddl-menu-button-' + id + '"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
-        html += elements[value];
-        html += "</button>";
-        html += body;
-        html += '</div>';
-        html += '</div>';
+
+        let html = '<div class="form-group">'+
+               '<label>' + name + '</label>' +
+                '<br><select id="selector-'+id+'">';
+        for(var i in elements) {
+            html += '<option>'+elements[i]+'</option>';
+        }
+        html += "</select></div>";
         return html;
     }
 
-    static generateEnumsBody(id, elements, index) {
-        var html = '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
-        elements.forEach((element, position) => {
-            console.log(position);
-            html += HtmlGenerator.generateSingleEnum(id, element, position, index);
-        });
-        html += '</div>';
-        return html
-    }
-
-    static generateSingleEnum(id, element, position, index) {
-        return '<a onclick="HtmlActions.dropDownChanged(' + id + ', \'' + element + '\', ' + position + ' ,' + index + ')" class="dropdown-item" >' + element + '</a>';
-    }
 }
 
 class HtmlActions {
@@ -90,19 +78,33 @@ class HtmlActions {
         $(`#rng-${id}`).val(currentVal);
     }
 
+    static keyUpFloatText(id, currentVal, index) {
+        console.log("CURRENT VALUE IS: "+currentVal);
+        if (currentVal == "") {
+            return;
+        }
+
+        if (currentVal[0] == "0" && currentVal[1] != "." && currentVal[1]!="," && currentVal.length > 1) {
+            currentVal = currentVal.substr(1);
+            $(`#txt-num-${id}`).val(currentVal);
+        }
+
+        $(`#rng-${id}`).val(currentVal);
+    }
+
     static dropDownChanged(id, text, position, index) {
         $(`#ddl-menu-button-${id}`).html(text)
-        native.setDropDown(id, text, position, index)
+        //native.setDropDown(id, text, position, index)
     }
 
     static onTextKeyUp(id, text, index) {
         console.log(text);
-        native.setTextEdit(id, text, index)
+       // native.setTextEdit(id, text, index)
     }
 
     static onSwitchChanged(id, index, value) {
         console.log(value);
-        native.onSwitchChanged(id, index, value);
+        //native.onSwitchChanged(id, index, value);
     }
 
 }
@@ -135,6 +137,7 @@ class ParametersLoader {
     static TYPE_PARAMETER_NUMBER = 2;
     static TYPE_PARAMETER_ENUM = 3;
     static TYPE_PARAMETER_TEXT = 4;
+    static TYPE_PARAMETER_FLOAT = 5;
 
     /*
     Beacon parameter types and their identifiers:
@@ -151,7 +154,8 @@ class ParametersLoader {
     */
     static convertParameterTypeToTypeGroup(type) {
         if(type == 0) return this.TYPE_PARAMETER_BOOLEAN;
-        if(type > 0 && type < 8) return this.TYPE_PARAMETER_NUMBER;
+        if(type > 0 && type < 7) return this.TYPE_PARAMETER_NUMBER;
+        if(type == 7) return this.TYPE_PARAMETER_FLOAT;
         if(type == 8) return this.TYPE_PARAMETER_ENUM;
         return this.TYPE_PARAMETER_TEXT;
     }
@@ -179,15 +183,22 @@ class ParametersLoader {
                 continue;
             }
             if(type == this.TYPE_PARAMETER_NUMBER){
-                let param = HtmlGenerator.generateNumberEditText(id, parameter.name, parameter.value, parameter.unit, parameter.min, parameter.max, parameter.writable, index);
+                let param = HtmlGenerator.generateNumberEditText(id, parameter.name, parameter.value, parameter.unit, parameter.min, parameter.max, parameter.writable, false, index);
                 console.log("HTML PARAM FOR NUMBER: "+param);
                 $(container).append(param);
                 $(container).append("<br/>");
                 continue;
             }
+            if(type == this.TYPE_PARAMETER_FLOAT){
+                let param = HtmlGenerator.generateNumberEditText(id, parameter.name, parameter.value, parameter.unit, parameter.min, parameter.max, parameter.writable, true, index);
+                console.log("HTML PARAM FOR FLOAT: "+param);
+                $(container).append(param);
+                $(container).append("<br/>");
+                continue;
+            }
             if(type == this.TYPE_PARAMETER_ENUM){
-                // Need to know what choices are for enum
-                let param = HtmlGenerator.generateParameterEditText(id, parameter.name, parameter.value, parameter.writable, index);
+                let param = HtmlGenerator.generateEnums(parameter.choices, id, parameter.name, parameter.value, index);
+                console.log("HTML PARAM FOR ENUM: "+param);
                 $(container).append(param);
                 $(container).append("<br/>");
                 continue;
