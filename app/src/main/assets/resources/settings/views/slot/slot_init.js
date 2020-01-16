@@ -176,19 +176,6 @@ $(document).ready(function () {
             $("#custom_value").bind("change keyup", function () {
                 getUpdatedSlot();
             });
-
-            $('#custom_hex_enabled').change(function () {
-                let isHexEnabledButtonChecked = $('#custom_hex_enabled').is(":checked");
-                let sad = $('#custom_value').val();
-
-                if (isHexEnabledButtonChecked) {
-                    $('#custom_value').val(ascii_to_hexa(sad));
-                } else {
-                    $('#custom_value').val(hex_to_ascii(sad));
-                }
-
-                getUpdatedSlot();
-            });
         }
     );
 
@@ -316,7 +303,6 @@ function getUpdatedSlot() {
                slot_new.frameType = FrameType.CUSTOM;
                slot_new.frame = {
                    KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM: $('#custom_value').val(),
-                   KEY_ADVERTISING_CONTENT_CUSTOM_IS_HEX_MODE_ON: $('#custom_hex_enabled').is(":checked")
                };
 
                break;
