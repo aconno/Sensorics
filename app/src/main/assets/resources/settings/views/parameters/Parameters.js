@@ -19,13 +19,13 @@ class HtmlGenerator {
             '</div>'
     }
 
-    static generateParameterEditText(id, name, value, writable,maxTextLength, index) {
+    static generateParameterEditText(id, name, value, writable,maxTextSize, index) {
         let disabledText = "";
         if (!writable) disabledText = "disabled=disabled";
 
         return '<div class="form-group">' +
             '<label for="txt-' + id + '">' + name + '</label>' +
-            '<input type="text" maxlength="'+maxTextLength+'"  onkeyup="HtmlActions.onTextKeyUp(\'' + id + '\', this.value, ' + index + ')" value="' + value + '" id="txt-' + id + '" class="holo" ' + disabledText + ' />' +
+            '<input type="text" onkeyup="HtmlActions.onTextKeyUp(\'' + id + '\', this.value, ' + index + ',this,'+maxTextSize+')" value="' + value + '" id="txt-' + id + '" class="holo" ' + disabledText + ' />' +
             '</div>'
     }
 
@@ -79,7 +79,6 @@ class HtmlActions {
     }
 
     static keyUpFloatText(id, currentVal, index) {
-        console.log("CURRENT VALUE IS: "+currentVal);
         if (currentVal == "") {
             return;
         }
@@ -97,8 +96,16 @@ class HtmlActions {
         //native.setDropDown(id, text, position, index)
     }
 
-    static onTextKeyUp(id, text, index) {
-        console.log(text);
+    static onTextKeyUp(id, text, index,inputField,maxTextSize) {
+
+        let textSizeBytes = (new TextEncoder().encode(text)).length;
+        let caretPos = inputField.selectionStart;
+        if(textSizeBytes > maxTextSize) {
+            let previousText = text.substring(0,caretPos-1) + text.substring(caretPos);
+            inputField.value = previousText;
+            inputField.selectionStart = caretPos-1;
+            inputField.selectionEnd = caretPos-1;
+        }
        // native.setTextEdit(id, text, index)
     }
 
@@ -160,7 +167,7 @@ class ParametersLoader {
         return this.TYPE_PARAMETER_TEXT;
     }
 
-    static insertParametersIntoContainer(parameters,containerId,maxTextLength) {
+    static insertParametersIntoContainer(parameters,containerId,maxTextSize) {
         let container = "#"+containerId;
         $(container).append("<br/>");
         for(let index = 0;index<parameters.length;index++){
@@ -176,7 +183,7 @@ class ParametersLoader {
                 continue;
             }
             if(type == this.TYPE_PARAMETER_TEXT){
-                let param = HtmlGenerator.generateParameterEditText(id, parameter.name, parameter.value, parameter.writable,maxTextLength, index);
+                let param = HtmlGenerator.generateParameterEditText(id, parameter.name, parameter.value, parameter.writable,maxTextSize, index);
                 console.log("HTML PARAM FOR TEXT: "+param);
                 $(container).append(param);
                 $(container).append("<br/>");
