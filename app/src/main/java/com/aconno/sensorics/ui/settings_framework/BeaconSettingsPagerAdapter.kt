@@ -13,13 +13,14 @@ class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapte
         return when (position) {
             0 -> BeaconSettingsGeneralFragment.newInstance()
             1 -> BeaconSettingsParametersFragment.newInstance(position)
-            2 -> BeaconSettingsArbitraryDataHtmlFragment.newInstance()
-            else -> BeaconSettingsSlotFragment.newInstance(position - 3)
+            2 -> BeaconSettingsCacheableParamsFragment.newInstance()
+            3 -> BeaconSettingsArbitraryDataHtmlFragment.newInstance()
+            else -> BeaconSettingsSlotFragment.newInstance(position - 5)
         }
     }
 
     override fun getCount(): Int {
-        return 3 + slotCount // TODO: missing cacheable param fragment
+        return 4 + slotCount
     }
 
 
@@ -30,8 +31,9 @@ class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapte
     override fun getPageTitle(position: Int): CharSequence? {
         return when (position) {
             0 -> "General"
-            1 -> "Parameters" // TODO: missing cacheable param fragment
-            2 -> "Arbitrary Data"
+            1 -> "Parameters"
+            2 -> "Cacheable parameters"
+            3 -> "Arbitrary Data"
             else -> "Slot " + (position - 2).toString()
         }
     }
