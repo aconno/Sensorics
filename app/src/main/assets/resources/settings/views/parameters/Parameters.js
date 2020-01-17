@@ -237,4 +237,12 @@ class ParametersLoader {
 
     }
 
+    static sendParametersToBackend(oldBeaconInfo) {
+        let beacon = JSON.parse(oldBeaconInfo);
+        let params = beacon.parameters.parameters
+
+        //TODO: load params from UI to params list
+
+        native.saveChanges(JSON.stringify(beacon))
+    }
 }

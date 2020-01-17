@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework
+package com.aconno.sensorics.ui.settings_framework.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -12,12 +12,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
 import com.aconno.sensorics.model.javascript.ArbitraryDataJS
+import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 import timber.log.Timber
 
-class BeaconSettingsArbitraryDataHtmlFragment: Fragment() {
+class BeaconSettingsArbitraryDataHtmlFragment : Fragment() {
 
     private val beaconSettingsViewModel: BeaconSettingsViewModel by lazy {
         ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
@@ -156,6 +157,6 @@ class BeaconSettingsArbitraryDataHtmlFragment: Fragment() {
 
         @JvmStatic
         fun newInstance() =
-            BeaconSettingsArbitraryDataHtmlFragment()
+                BeaconSettingsArbitraryDataHtmlFragment()
     }
 }

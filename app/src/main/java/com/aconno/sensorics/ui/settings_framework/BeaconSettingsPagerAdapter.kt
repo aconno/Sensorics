@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
+import com.aconno.sensorics.ui.settings_framework.fragments.*
 
 class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
     var slotCount = 0
@@ -11,7 +12,7 @@ class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapte
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> BeaconSettingsGeneralFragment.newInstance()
-            1 -> BeaconSettingsParametersFragment.newInstance() // TODO: missing cacheable param fragment
+            1 -> BeaconSettingsParametersFragment.newInstance(position)
             2 -> BeaconSettingsArbitraryDataHtmlFragment.newInstance()
             else -> BeaconSettingsSlotFragment.newInstance(position - 3)
         }

@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework
+package com.aconno.sensorics.ui.settings_framework.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -9,10 +9,12 @@ import android.webkit.JavascriptInterface
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
 import com.aconno.sensorics.device.beacon.Parameter
+import com.aconno.sensorics.ui.settings_framework.BeaconSettingsDefaultParameter
+import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_parameter2.*
 
-class BeaconSettingsParametersFragment : BeaconSettingsBaseFragment() {
+class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFragment(fragmentId) {
 
     private val beaconViewModel: BeaconSettingsViewModel by lazy {
         ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
@@ -26,6 +28,14 @@ class BeaconSettingsParametersFragment : BeaconSettingsBaseFragment() {
                 webview_parameters.loadUrl("javascript:ParametersLoader.setBeaconParameters('${beaconInformation}')")
             }
     }
+
+    override fun saveChanges() {
+        if(webview_parameters != null) {
+            webview_parameters.loadUrl("javascript:ParametersLoader.sendParametersToBackend('${beaconInformation}')")
+        }
+    }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -89,13 +99,18 @@ class BeaconSettingsParametersFragment : BeaconSettingsBaseFragment() {
         standartParameters?.get(index)?.setValue(value)
     }
 
+    @JavascriptInterface
+    fun saveChanges(beaconParameters : String) {
+        //TODO implement this method
+    }
+
     companion object {
         const val HTML_FILE_PATH =
             "file:///android_asset/resources/settings/views/parameters/ParametersNew.html"
 
         @JvmStatic
-        fun newInstance() =
-            BeaconSettingsParametersFragment()
+        fun newInstance(fragmentId: Int? = null) =
+                BeaconSettingsParametersFragment(fragmentId)
     }
 
 }

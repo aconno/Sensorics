@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework
+package com.aconno.sensorics.ui.settings_framework.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -15,6 +15,7 @@ import com.aconno.sensorics.device.beacon.Slot
 import com.aconno.sensorics.device.beacon.Slots
 import com.aconno.sensorics.model.javascript.SlotJS
 import com.aconno.sensorics.ui.configure.ViewPagerSlider
+import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 import timber.log.Timber

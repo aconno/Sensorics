@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework
+package com.aconno.sensorics.ui.settings_framework.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -93,7 +93,7 @@ class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {
 
         @JvmStatic
         fun newInstance() =
-            BeaconSettingsGeneralFragment()
+                BeaconSettingsGeneralFragment()
     }
 
 }

@@ -127,9 +127,19 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        super.onOptionsItemSelected(item)
-        return false
+        when(item.itemId) {
+            R.id.item_save -> saveChanges()
+            else -> return false
+        }
+        return true
     }
+
+    private fun saveChanges() {
+        val intent = Intent(SAVE_CHANGES_BROADCAST)
+        intent.putExtra(TARGET_FRAGMENT_ID_BROADCAST_EXTRA,vp_beacon.currentItem)
+        LocalBroadcastManager.getInstance(this@SettingsFrameworkActivity).sendBroadcast(intent)
+    }
+
 
     override fun onStart() {
         super.onStart()
@@ -267,6 +277,8 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     companion object {
+        const val TARGET_FRAGMENT_ID_BROADCAST_EXTRA = "TARGET_FRAGMENT_ID_BROADCAST_EXTRA"
+        const val SAVE_CHANGES_BROADCAST = "com.aconno.sensorics.settings.SAVE_CHANGES_BROADCAST"
         const val BEACON_JSON_BROADCAST = "com.aconno.sensorics.settings.BEACON_JSON_RESPONSE_BROADCAST"
         const val BEACON_JSON_REQUEST_BROADCAST = "com.aconno.sensorics.settings.BEACON_JSON_REQUEST_BROADCAST"
         const val BEACON_JSON_BROADCAST_EXTRA = "BEACON_JSON_BROADCAST_EXTRA"
