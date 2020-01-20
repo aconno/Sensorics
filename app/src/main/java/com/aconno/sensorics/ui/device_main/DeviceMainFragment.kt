@@ -434,6 +434,7 @@ class DeviceMainFragment : DaggerFragment() {
         Timber.i("device is $device")
 
         mDevice = connectionCharacteristicsFinder.addCharacteristicsToDevice(device)
+        hasSettings = device.hasSettings
     }
 
     private fun showAlertDialog(mainActivity: MainActivity) {
