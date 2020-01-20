@@ -227,7 +227,7 @@ function init(slotJson) {
 
     $('#slot_name_text').val(slot.name);
 
-    let params = generateSwitchContent(true, "Slot Advertising", "advertise-switch");
+    let params = generateSwitchContent(slot.frameType,slot.advertising, "Slot Advertising", "advertise-switch");
     $('#slot_advertising').empty();
     $('#slot_advertising').append(params);
 

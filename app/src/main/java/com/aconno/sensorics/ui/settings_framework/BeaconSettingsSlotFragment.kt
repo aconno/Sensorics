@@ -147,10 +147,7 @@ open class BeaconSettingsSlotFragment : DaggerFragment() {
                 it.getType().tabName,//Do not change the order
                 convertToReadableAdvContent(it),
                 it.name,
-                when (it.advertisingMode) {
-                    Slot.AdvertisingModeParameters.Mode.INTERVAL -> false
-                    Slot.AdvertisingModeParameters.Mode.EVENT -> true
-                },
+                it.active,
                 it.packetCount,
                 beacon.supportedTxPowers,
                 beacon.supportedTxPowers.indexOf(it.txPower),

@@ -138,15 +138,22 @@ function generateRange(name, value, id) {
               + '</div>';
 }
 
-function generateSwitchContent(isChecked, name, id) {
+function generateSwitchContent(frameType, isChecked, name, id) {
     let checked = isChecked ? " checked" : "";
+    let disabled = frameType == FrameType.DEFAULT;
+
+    let checkbox = '<input type="checkbox" class="custom-control-input" id="toggle-' + id + '"' + checked+' ';
+    if (disabled) {
+        checkbox+="disabled";
+    }
+    checkbox+=' >';
 
     return '<div class="row">'
            + '<div class="col-12">'
            + '<div class="form-group">'
            + '<div class="custom-control custom-switch" >'
-           +'<input type="checkbox" class="custom-control-input" id="toggle-' + id + '"' + checked + ' >'
-           +'<label class="custom-control-label" for="toggle-' + id + '">' + name + '</label>'
+           + checkbox
+           + '<label class="custom-control-label" for="toggle-' + id + '">' + name + '</label>'
            + '</div>'
            + '</div>'
            + '</div>'
