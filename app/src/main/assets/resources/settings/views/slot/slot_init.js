@@ -325,5 +325,5 @@ function getUpdatedSlot() {
 
     }
 
-//     Android.onDataChanged(JSON.stringify(slot_new));
+     Android.onDataChanged(JSON.stringify(slot_new));
 }
