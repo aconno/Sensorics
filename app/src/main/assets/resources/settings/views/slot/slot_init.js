@@ -227,6 +227,10 @@ function init(slotJson) {
 
     $('#slot_name_text').val(slot.name);
 
+    if(slot.frameType == FrameType.DEFAULT){
+        $('#slot_name_text').prop('disabled',true);
+    }
+
     let params = generateSwitchContent(slot.frameType,slot.advertising, "Slot Advertising", "advertise-switch");
     $('#slot_advertising').empty();
     $('#slot_advertising').append(params);
@@ -321,5 +325,5 @@ function getUpdatedSlot() {
 
     }
 
-     Android.onDataChanged(JSON.stringify(slot_new));
+//     Android.onDataChanged(JSON.stringify(slot_new));
 }

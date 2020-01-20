@@ -75,7 +75,7 @@ function generateDefaultContent(value) {
 
     return  '<div class="panel-body">'
               + '<div class="panel-body">'
-              + '<input type="text" value="'+value+'" id="default_advertising_content"/>'
+              + '<input type="text" value="'+value+'" id="default_advertising_content" style="width: 100%"/>'
               + '</div>'
               + '</div>';
 }
