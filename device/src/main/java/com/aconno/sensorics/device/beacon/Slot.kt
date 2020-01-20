@@ -119,9 +119,29 @@ abstract class Slot(
 
     fun toJson(): JsonElement {
         return JsonObject().apply {
+            this.addProperty("name", name)
             this.addProperty("type", getType().name)
             this.add("advertisingContent", gson.toJsonTree(advertisingContent))
-            this.addProperty("name", name)
+            this.addProperty("readOnly", readOnly)
+            this.addProperty("active", active)
+            this.addProperty("txPower", txPower)
+            this.addProperty("packetCount", packetCount)
+            this.addProperty("advertisingMode", advertisingMode.toString())
+            when (advertisingMode) {
+                AdvertisingModeParameters.Mode.EVENT -> {
+                    this.add("advertisingModeParameters", JsonObject().apply {
+                        this.addProperty("parameterId", advertisingModeParameters.parameterId)
+                        this.addProperty("sign", advertisingModeParameters.sign.toString())
+                        this.addProperty("thresholdFloat", advertisingModeParameters.thresholdFloat)
+                        this.addProperty("thresholdInt", advertisingModeParameters.thresholdInt)
+                    })
+                }
+                AdvertisingModeParameters.Mode.INTERVAL -> {
+                    this.add("advertisingModeParameters", JsonObject().apply {
+                        this.addProperty("interval", advertisingModeParameters.interval)
+                    })
+                }
+            }
         }
     }
 
@@ -148,6 +168,8 @@ abstract class Slot(
         this.setType(Type.valueOf(type))
         this.advertisingContent.clear()
         this.advertisingContent.putAll(advertisingContent)
+
+        // TODO: Load other changes
     }
 
 

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
@@ -33,13 +34,15 @@ import kotlinx.android.synthetic.main.activity_configure.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCallback ,
+class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCallback,
     BeaconGeneralFragmentListener {
     private var bluetoothConnectService: BluetoothConnectService? = null
     private var connectResultDisposable: Disposable? = null
     private lateinit var macAddress: String
     private lateinit var taskProcessor: BluetoothTaskProcessor
     private lateinit var beacon: Beacon
+    private var retries: Int = 0
+    private val handler: Handler = Handler()
 
     @Inject
     lateinit var beaconViewModel: BeaconSettingsViewModel
@@ -121,13 +124,18 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
     override fun onStart() {
         super.onStart()
-        Intent(applicationContext, BluetoothConnectService::class.java).also {
+        bindService()
+    }
+
+    private fun bindService() {
+        Intent(applicationContext, BluetoothConnectService::class.java).let {
             bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
         }
     }
 
     override fun onStop() {
         super.onStop()
+        handler.removeCallbacksAndMessages(null)
         unbindService(serviceConnection)
     }
 
@@ -141,6 +149,9 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         when (payload.action) {
             BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
                 Timber.d("Connected to GATT")
+
+                retries = 0
+
                 bluetoothConnectService?.let {
                     beacon = BeaconImpl(this, taskProcessor)
                 } ?: throw IllegalStateException(
@@ -150,11 +161,25 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                 beacon.requestDeviceLockStatus(this)
             }
             BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
-                Toast.makeText(
-                    this,
-                    "Disconnected: ${payload.payload}",
-                    Toast.LENGTH_LONG
-                ).show()
+                if ((payload.payload as Int) == 0x85 && retries < MAX_RETRIES) { // TODO: Something smarter maybe?
+                    Toast.makeText(
+                        this,
+                        "Failure, retrying in 3 seconds...",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    handler.postDelayed({
+                        bluetoothConnectService?.connect(macAddress)
+                        retries++
+                    }, 3000)
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Disconnected: ${payload.payload}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    unbindService(serviceConnection)
+                }
             }
             else -> {
                 return
@@ -176,6 +201,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                     beaconViewModel.beacon.value = beacon
                     tabs.visibility = View.VISIBLE
                 }
+
                 override fun execute(bluetooth: Bluetooth): Boolean {
                     return true
                 }
@@ -237,6 +263,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     companion object {
+        private const val MAX_RETRIES = 3
         private const val DEVICE_MAC_ADDRESS = "device_mac_address"
         fun start(context: Context, deviceMacAddress: String) {
             Intent(context, SettingsFrameworkActivity::class.java).also {
