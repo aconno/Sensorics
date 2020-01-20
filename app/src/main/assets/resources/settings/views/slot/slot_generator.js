@@ -133,7 +133,7 @@ function generateRange(name, value, id) {
     return  '<div class="panel-body">'
               + '<label>'+ name+' </label> </div>'
               + '<div class="panel-body">'
-              + '<input type="range" value="'+value+'" id="range-' + id + '"/>'
+              + '<input style="width:100%" type="range" value="'+value+'" id="range-' + id + '"/>'
               + '</div>'
               + '</div>';
 }
