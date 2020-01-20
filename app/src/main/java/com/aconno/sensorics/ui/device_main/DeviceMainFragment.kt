@@ -211,6 +211,7 @@ class DeviceMainFragment : DaggerFragment() {
                     return true
                 }
                 R.id.action_settings_framework -> {
+                    (context as? MainActivity)?.stopScanOperation()
                     SettingsFrameworkActivity.start(context, mDevice.macAddress)
                     return true
                 }

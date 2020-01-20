@@ -3,7 +3,7 @@ package com.aconno.sensorics.ui.settings_framework
 import com.aconno.sensorics.device.beacon.Beacon
 import java.io.Serializable
 
-class BeaconSettingsInfo: Serializable {
+class BeaconSettingsInfo : Serializable {
 
     var name: String? = ""
     var address: String = "00:00:00:00:00:00"
@@ -32,6 +32,7 @@ class BeaconSettingsInfo: Serializable {
                 beaconInfo.firmwareVersion = currentBeacon.fwVersion
                 beaconInfo.osVersion = currentBeacon.freeRTOSVersion
                 beaconInfo.supportedTxPower = currentBeacon.supportedTxPowersString
+                beaconInfo.supportedSlots = currentBeacon.slots.joinToString(", ") { it.name }
                 beaconInfo.slotAmount = currentBeacon.slotCount.toInt()
             }
             return beaconInfo

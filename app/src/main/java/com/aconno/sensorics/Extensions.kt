@@ -1,7 +1,10 @@
 package com.aconno.sensorics
 
+import android.app.Activity
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.fragment.app.Fragment
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceRelationModel
 import com.google.android.material.snackbar.Snackbar
@@ -21,17 +24,31 @@ fun String.toHexByte(): Byte {
     ) and 0xff).toByte()
 }
 
+fun Activity.showToast(@StringRes msgRes: Int) = Toast.makeText(this, msgRes, Toast.LENGTH_LONG)
+    .show()
+
+fun Activity.showToast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+
+fun Fragment.showToast(msg: String) = activity?.showToast(msg)
+
+fun Fragment.showToast(@StringRes msgRes: Int) = activity?.showToast(msgRes)
+
 inline fun View.snack(
     @StringRes messageRes: Int, length: Int = Snackbar.LENGTH_LONG,
     f: Snackbar.() -> Unit
-) {
-    snack(resources.getString(messageRes), length, f)
+): Snackbar {
+    return snack(resources.getString(messageRes), length, f)
 }
 
-inline fun View.snack(message: String, length: Int = Snackbar.LENGTH_LONG, f: Snackbar.() -> Unit) {
+inline fun View.snack(
+    message: String,
+    length: Int = Snackbar.LENGTH_LONG,
+    f: Snackbar.() -> Unit
+): Snackbar {
     val snack = Snackbar.make(this, message, length)
     snack.f()
     snack.show()
+    return snack
 }
 
 fun Snackbar.action(@StringRes actionRes: Int, color: Int? = null, listener: (View) -> Unit) {

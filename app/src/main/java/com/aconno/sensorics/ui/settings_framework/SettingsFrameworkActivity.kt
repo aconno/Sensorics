@@ -1,5 +1,7 @@
 package com.aconno.sensorics.ui.settings_framework
 
+import android.app.Activity
+import android.app.Dialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -7,16 +9,14 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import com.aconno.sensorics.BluetoothConnectService
-import com.aconno.sensorics.R
+import com.aconno.sensorics.*
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.v2.BeaconImpl
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
@@ -27,14 +27,16 @@ import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
 import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_configure.*
+import kotlinx.android.synthetic.main.dialog_indeterminate_progress.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCallback,
+class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCallback ,
     BeaconGeneralFragmentListener {
     private var bluetoothConnectService: BluetoothConnectService? = null
     private var connectResultDisposable: Disposable? = null
@@ -46,12 +48,16 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
     @Inject
     lateinit var beaconViewModel: BeaconSettingsViewModel
+
+    var progressDialog: Dialog? = null
+    var indefeniteSnackBar: Snackbar? = null
     var device: String = ""
 
     private val beaconSettingsPagerAdapter: BeaconSettingsPagerAdapter by lazy {
         BeaconSettingsPagerAdapter(supportFragmentManager).apply {
             beaconViewModel.beacon.observe(this@SettingsFrameworkActivity, Observer<Beacon> {
                 it?.let {
+                    tabs.visibility = View.VISIBLE
                     this.beacon = it
                 }
             })
@@ -59,6 +65,8 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     private val serviceConnection = object : ServiceConnection {
+
+
         override fun onServiceDisconnected(name: ComponentName?) {
             Timber.d("Disconnected")
             connectResultDisposable?.dispose()
@@ -79,10 +87,18 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
                 taskProcessor = BluetoothTaskProcessorImpl(bluetoothService.bluetooth)
 
-                bluetoothService.startConnectionStream()
-
-                bluetoothService.connect(macAddress)
+                connectToDevice(bluetoothService)
             }
+        }
+    }
+
+    private fun connectToDevice(bluetoothService: BluetoothConnectService) {
+        bluetoothService.startConnectionStream()
+
+        bluetoothService.connect(macAddress)
+
+        progressDialog = showProgressDialog().apply {
+            message.setText(R.string.connecting_with_dots)
         }
     }
 
@@ -91,17 +107,15 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         setContentView(R.layout.activity_configure)
         getDeviceMacAddress(savedInstanceState)
 
-        if (intent.extras != null && intent.extras!!.containsKey(DEVICE_MAC_ADDRESS)) {
-            intent.extras!!.getString(DEVICE_MAC_ADDRESS)?.let {
-                device = it
-            }
-
-        } else {
-            throw IllegalArgumentException("Device not provided.")
-        }
+        device = intent?.extras?.getString(DEVICE_MAC_ADDRESS)
+            ?: throw throw IllegalArgumentException("Device not provided.")
 
         setSupportActionBar(toolbar)
 
+        setupUI()
+    }
+
+    private fun setupUI() {
         /*Set titlebar */
         supportActionBar?.subtitle = device
 
@@ -136,6 +150,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     override fun onStop() {
         super.onStop()
         handler.removeCallbacksAndMessages(null)
+        indefeniteSnackBar?.dismiss()
         unbindService(serviceConnection)
     }
 
@@ -152,6 +167,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
                 retries = 0
 
+                progressDialog?.message?.setText(R.string.connected_unlocking)
                 bluetoothConnectService?.let {
                     beacon = BeaconImpl(this, taskProcessor)
                 } ?: throw IllegalStateException(
@@ -161,6 +177,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                 beacon.requestDeviceLockStatus(this)
             }
             BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
+                progressDialog?.dismiss()
                 if ((payload.payload as Int) == 0x85 && retries < MAX_RETRIES) { // TODO: Something smarter maybe?
                     Toast.makeText(
                         this,
@@ -179,6 +196,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                         Toast.LENGTH_LONG
                     ).show()
                     unbindService(serviceConnection)
+                    showTryAgainToConnectSnackBar()
                 }
             }
             else -> {
@@ -191,12 +209,13 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         if (unlocked) {
             Toast.makeText(
                 this,
-                "Device unlocked!",
+                R.string.device_unlocked,
                 Toast.LENGTH_LONG
             ).show()
 
             beacon.read(object : GenericTask("On Read Completed Task") {
                 override fun onSuccess() {
+                    progressDialog?.dismiss()
                     Timber.d(Gson().toJson(beacon.toJson()))
                     beaconViewModel.beacon.value = beacon
                     tabs.visibility = View.VISIBLE
@@ -206,27 +225,73 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                     return true
                 }
             })
+            progressDialog?.message?.setText(R.string.reading_with_dots)
         } else {
-            runOnUiThread {
-                createPasswordDialog(object : OnPasswordDialogAction {
-                    override fun onPasswordEntered(password: String) {
-                        beacon.unlock(password, this@SettingsFrameworkActivity) // TODO: Do this in a better way
-                    }
-
-                    override fun onDialogCancelled() {
-                        Toast.makeText(
-                            this@SettingsFrameworkActivity,
-                            "Cannot connect without a password!",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        unbindService(serviceConnection)
-                    }
-                }).show()
-            }
+            progressDialog?.apply {
+                message.setText(R.string.password_required)
+            }?.window?.decorView?.postDelayed({
+                progressDialog?.dismiss()
+                showPasswordDialog()
+            }, 1500)
         }
     }
 
     override fun onError(e: Exception) {
+    }
+
+    private fun showPasswordDialog() {
+        createPasswordDialog(object : OnPasswordDialogAction {
+            override fun onPasswordEntered(password: String) {
+                hideKeyboard()
+                beacon.unlock(
+                    password,
+                    this@SettingsFrameworkActivity
+                ) // TODO: Do this in a better way
+                if (progressDialog?.isShowing == false) {
+                    progressDialog = showProgressDialog().apply {
+                        message.setText(R.string.ulocking_with_dots)
+                    }
+                }
+            }
+
+            override fun onDialogCancelled() {
+                hideKeyboard()
+                showTryAgainPasswordSnackBar()
+            }
+        }).show()
+    }
+
+    private fun showTryAgainPasswordSnackBar() {
+        indefeniteSnackBar = ll_settings_root.snack(
+            R.string.cant_connect_without_password,
+            Snackbar.LENGTH_INDEFINITE
+        ) {
+            action(
+                R.string.try_again,
+                ContextCompat.getColor(applicationContext, R.color.primaryColor)
+            ) {
+                showPasswordDialog()
+            }
+        }
+    }
+
+
+    private fun showTryAgainToConnectSnackBar() {
+        indefeniteSnackBar =
+            ll_settings_root.snack(R.string.error_occurred, Snackbar.LENGTH_INDEFINITE) {
+                action(
+                    R.string.try_again,
+                    ContextCompat.getColor(applicationContext, R.color.primaryColor)
+                ) {
+                    bluetoothConnectService?.let { connectToDevice(it) }
+                        ?: showToast(R.string.oops_cant_do_anything)
+                }
+            }
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
     }
 
     private fun createPasswordDialog(onPasswordDialogAction: OnPasswordDialogAction): AlertDialog {
@@ -234,16 +299,37 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         val view: View = layoutInflater.inflate(R.layout.dialog_password, null as ViewGroup?)
         builder.setView(view)
         val etPassword = view.findViewById<EditText>(R.id.et_password)
-        builder.setPositiveButton("Confirm") { dialog, _ ->
+        builder.setPositiveButton(R.string.confirm) { dialog, _ ->
             onPasswordDialogAction.onPasswordEntered(etPassword?.text.toString())
             dialog.dismiss()
         }
-        builder.setNegativeButton("Cancel") { dialog, _ ->
+        builder.setNegativeButton(R.string.cancel) { dialog, _ ->
             onPasswordDialogAction.onDialogCancelled()
             dialog.dismiss()
         }
+        builder.setCancelable(false)
         builder.setOnCancelListener { onPasswordDialogAction.onDialogCancelled() }
-        return builder.create()
+        return builder.create().apply {
+            window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        }
+    }
+
+    private fun showProgressDialog(): AlertDialog {
+        return AlertDialog.Builder(this).apply {
+            setView(
+                layoutInflater.inflate(
+                    R.layout.dialog_indeterminate_progress,
+                    null as ViewGroup?
+                )
+            )
+        }.create().apply {
+            setCancelable(false)
+            setCanceledOnTouchOutside(false)
+        }.also {
+            if (!isFinishing and !isDestroyed) {
+                it.show()
+            }
+        }
     }
 
     private fun getDeviceMacAddress(savedInstanceState: Bundle?) {
@@ -275,18 +361,22 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
 
     override fun updateFirmware() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showNotImplementedToast()
     }
 
     override fun resetFactory() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showNotImplementedToast()
     }
 
     override fun powerOff() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showNotImplementedToast()
     }
 
     override fun addPassword() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showNotImplementedToast()
+    }
+
+    private fun showNotImplementedToast() {
+        showToast(R.string.feature_not_implemented)
     }
 }

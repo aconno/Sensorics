@@ -30,7 +30,7 @@
     <string name="condition_more">Größer</string>
     <string name="condition_value_hint">Wert</string>
     <string name="condition_dialog_set">Festlegen</string>
-    <string name="condition_dialog_cancel">Abbrechen</string>
+    <string name="cancel">Abbrechen</string>
     <string name="vibration">Vibration</string>
     <string name="sensor_card_image_content_description">Bild der Sensorkarte</string>
     <string name="service_notification_title">Sensorics</string>

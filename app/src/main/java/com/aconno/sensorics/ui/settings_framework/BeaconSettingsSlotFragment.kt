@@ -6,7 +6,6 @@ import android.view.*
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.bluetooth.beacon.Slot.Companion.EXTRA_BEACON_SLOT_POSITION
 import com.aconno.sensorics.R
@@ -14,12 +13,15 @@ import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.Slot
 import com.aconno.sensorics.device.beacon.Slots
 import com.aconno.sensorics.model.javascript.SlotJS
+import com.aconno.sensorics.model.mapper.ParametersAdvertisingContentMapper
 import com.aconno.sensorics.ui.configure.ViewPagerSlider
 import com.google.gson.Gson
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 import timber.log.Timber
+import javax.inject.Inject
 
-open class BeaconSettingsSlotFragment : Fragment() {
+open class BeaconSettingsSlotFragment : DaggerFragment() {
 
     private val beaconViewModel: BeaconSettingsViewModel by lazy {
         ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
@@ -31,8 +33,13 @@ open class BeaconSettingsSlotFragment : Fragment() {
 
     private var slotPosition: Int = 0
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    @Inject
+    lateinit var parametersAdContentMapper: ParametersAdvertisingContentMapper
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         arguments?.let {
             slotPosition = it.getInt(EXTRA_BEACON_SLOT_POSITION)
@@ -100,7 +107,7 @@ open class BeaconSettingsSlotFragment : Fragment() {
             val param = params[i]
             if (param is String) {
                 stringBuilder.append("'")
-                stringBuilder.append(param.toString().replace("'", "\\'"))
+                stringBuilder.append(param.toString().replace("'", "\\'").replace("\\\"", "&quot;"))
                 stringBuilder.append("'")
             }
             if (i < params.size - 1) {
@@ -138,12 +145,9 @@ open class BeaconSettingsSlotFragment : Fragment() {
         val data = beaconViewModel.beacon.value?.slots?.get(slotPosition)?.let {
             SlotJS(
                 it.getType().tabName,//Do not change the order
-                it.advertisingContent,
+                convertToReadableAdvContent(it),
                 it.name,
-                when (it.advertisingMode) {
-                    Slot.AdvertisingModeParameters.Mode.INTERVAL -> false
-                    Slot.AdvertisingModeParameters.Mode.EVENT -> true
-                },
+                it.active,
                 it.packetCount,
                 beacon.supportedTxPowers,
                 beacon.supportedTxPowers.indexOf(it.txPower),
@@ -211,7 +215,7 @@ open class BeaconSettingsSlotFragment : Fragment() {
             dataSlot?.let {
                 it.name = slotJS.name
                 it.advertisingContent.clear()
-                it.advertisingContent.putAll(slotJS.frame)
+                it.advertisingContent.putAll(convertToHexAdvContent(slotJS.frame))
                 it.packetCount = slotJS.packetCount
                 it.advertisingModeParameters.interval = slotJS.addInterval
 
@@ -289,6 +293,20 @@ open class BeaconSettingsSlotFragment : Fragment() {
         }
 
         super.onDestroyView()
+    }
+
+    private fun convertToReadableAdvContent(slot: Slot): MutableMap<String, String> {
+        return if (slot.getType() == Slot.Type.CUSTOM || slot.getType() == Slot.Type.DEFAULT) {
+            parametersAdContentMapper.getReadableAdContent(
+                slot.advertisingContent,
+                beacon.parameters
+            )
+        } else slot.advertisingContent
+    }
+
+
+    private fun convertToHexAdvContent(adContent: MutableMap<String, String>): Map<out String, String> {
+        return parametersAdContentMapper.getHexAdContent(adContent, beacon.parameters)
     }
 
     companion object {

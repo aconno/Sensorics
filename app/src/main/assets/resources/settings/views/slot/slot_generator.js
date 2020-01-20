@@ -66,18 +66,7 @@ function generateCustomContent(customValue, isHexModeOn) {
         + '<label>Custom Value</label>'
         + '</div>'
         + '<div class="col-9">'
-        + '<input style="width: 100%;" type="text" id="custom_value" value="' + customValue + '" class="holo">'
-        + '</div>'
-        + '</div>'
-        + '<div class="row" style="margin-top: 1em;">'
-        + '<div class="col-3">'
-        + '<label>Hex Mode</label>'
-        + '</div>'
-        + '<div align="right" class="col-9">'
-        + '<div class="custom-control custom-switch">'
-        + '<input id="custom_hex_enabled" ' + (isHexModeOn ? 'checked' : '') + ' class="custom-control-input" type="checkbox">'
-        + '<label class="custom-control-label" for="custom_hex_enabled"></label>'
-        + '</div>'
+        + '<textarea style="width: 100%"; id="custom_value" class="holo" wrap="soft" rows="4">'+customValue+'</textarea>'
         + '</div>'
         + '</div>';
 }
@@ -149,15 +138,22 @@ function generateRange(name, value, id) {
               + '</div>';
 }
 
-function generateSwitchContent(isChecked, name, id) {
+function generateSwitchContent(frameType, isChecked, name, id) {
     let checked = isChecked ? " checked" : "";
+    let disabled = frameType == FrameType.DEFAULT;
+
+    let checkbox = '<input type="checkbox" class="custom-control-input" id="toggle-' + id + '"' + checked+' ';
+    if (disabled) {
+        checkbox+="disabled";
+    }
+    checkbox+=' >';
 
     return '<div class="row">'
            + '<div class="col-12">'
            + '<div class="form-group">'
            + '<div class="custom-control custom-switch" >'
-           +'<input type="checkbox" class="custom-control-input" id="toggle-' + id + '"' + checked + ' >'
-           +'<label class="custom-control-label" for="toggle-' + id + '">' + name + '</label>'
+           + checkbox
+           + '<label class="custom-control-label" for="toggle-' + id + '">' + name + '</label>'
            + '</div>'
            + '</div>'
            + '</div>'
