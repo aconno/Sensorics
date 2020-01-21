@@ -1,5 +1,6 @@
 package com.aconno.sensorics.ui.settings_framework
 
+import android.content.*
 import android.app.Activity
 import android.app.Dialog
 import android.content.ComponentName
@@ -16,6 +17,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.aconno.sensorics.BluetoothConnectService
+import com.aconno.sensorics.R
 import com.aconno.sensorics.*
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.v2.BeaconImpl
@@ -43,6 +47,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private lateinit var macAddress: String
     private lateinit var taskProcessor: BluetoothTaskProcessor
     private lateinit var beacon: Beacon
+    private val gson : Gson = Gson()
     private var retries: Int = 0
     private val handler: Handler = Handler()
 
@@ -57,8 +62,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         BeaconSettingsPagerAdapter(supportFragmentManager).apply {
             beaconViewModel.beacon.observe(this@SettingsFrameworkActivity, Observer<Beacon> {
                 it?.let {
-                    tabs.visibility = View.VISIBLE
-                    this.beacon = it
+                    this@SettingsFrameworkActivity.beacon = it
                 }
             })
         }
@@ -102,6 +106,12 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
     }
 
+    private val beaconRequestBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            sendBeaconInfoBroadcast()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_configure)
@@ -124,6 +134,15 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
         // Bind the tabs to the ViewPager
         tabs.setViewPager(vp_beacon)
+
+        /*Set titlebar */
+        supportActionBar?.subtitle = device
+
+    }
+
+    private fun onBeaconParamsLoaded() {
+        beaconSettingsPagerAdapter.slotCount = beacon!!.slotCount.toInt()
+        beaconSettingsPagerAdapter.notifyDataSetChanged()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -132,9 +151,19 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        super.onOptionsItemSelected(item)
-        return false
+        when(item.itemId) {
+            R.id.item_save -> saveChanges()
+            else -> return false
+        }
+        return true
     }
+
+    private fun saveChanges() {
+        val intent = Intent(SAVE_CHANGES_BROADCAST)
+        intent.putExtra(TARGET_FRAGMENT_ID_BROADCAST_EXTRA,vp_beacon.currentItem)
+        LocalBroadcastManager.getInstance(this@SettingsFrameworkActivity).sendBroadcast(intent)
+    }
+
 
     override fun onStart() {
         super.onStart()
@@ -145,6 +174,9 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         Intent(applicationContext, BluetoothConnectService::class.java).let {
             bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
         }
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(beaconRequestBroadcastReceiver,
+                IntentFilter(BEACON_JSON_REQUEST_BROADCAST))
     }
 
     override fun onStop() {
@@ -152,6 +184,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         handler.removeCallbacksAndMessages(null)
         indefeniteSnackBar?.dismiss()
         unbindService(serviceConnection)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(beaconRequestBroadcastReceiver)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -174,7 +207,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                     "Something went wrong, connection service uninitialized!"
                 )
 
-                beacon.requestDeviceLockStatus(this)
+                beacon?.requestDeviceLockStatus(this)
             }
             BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
                 progressDialog?.dismiss()
@@ -205,6 +238,14 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
     }
 
+    private fun sendBeaconInfoBroadcast() {
+        beacon?.let {
+            val intent = Intent(BEACON_JSON_BROADCAST)
+            intent.putExtra(BEACON_JSON_BROADCAST_EXTRA,gson.toJson(it.toJson()))
+            LocalBroadcastManager.getInstance(this@SettingsFrameworkActivity).sendBroadcast(intent)
+        }
+    }
+
     override fun onDeviceLockStateRead(unlocked: Boolean) {
         if (unlocked) {
             Toast.makeText(
@@ -213,12 +254,18 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                 Toast.LENGTH_LONG
             ).show()
 
-            beacon.read(object : GenericTask("On Read Completed Task") {
+            beacon?.read(object : GenericTask("On Read Completed Task") {
                 override fun onSuccess() {
-                    progressDialog?.dismiss()
-                    Timber.d(Gson().toJson(beacon.toJson()))
                     beaconViewModel.beacon.value = beacon
+                    progressDialog?.dismiss()
+                    Timber.d(Gson().toJson(beacon!!.toJson()))
+
+                    onBeaconParamsLoaded()
+
                     tabs.visibility = View.VISIBLE
+                    vp_beacon.visibility = View.VISIBLE
+
+                    sendBeaconInfoBroadcast()
                 }
 
                 override fun execute(bluetooth: Bluetooth): Boolean {
@@ -349,6 +396,12 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     companion object {
+        const val TARGET_FRAGMENT_ID_BROADCAST_EXTRA = "TARGET_FRAGMENT_ID_BROADCAST_EXTRA"
+        const val SAVE_CHANGES_BROADCAST = "com.aconno.sensorics.settings.SAVE_CHANGES_BROADCAST"
+        const val BEACON_JSON_BROADCAST = "com.aconno.sensorics.settings.BEACON_JSON_RESPONSE_BROADCAST"
+        const val BEACON_JSON_REQUEST_BROADCAST = "com.aconno.sensorics.settings.BEACON_JSON_REQUEST_BROADCAST"
+        const val BEACON_JSON_BROADCAST_EXTRA = "BEACON_JSON_BROADCAST_EXTRA"
+
         private const val MAX_RETRIES = 3
         private const val DEVICE_MAC_ADDRESS = "device_mac_address"
         fun start(context: Context, deviceMacAddress: String) {

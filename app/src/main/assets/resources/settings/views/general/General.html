@@ -23,159 +23,169 @@
         label.responsive-text {
             font-size: medium;
         }
+        .card-view {
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            padding: 10px;
+        }
+
     </style>
 </head>
 
 <body style="background-color:#FAFAFA">
 <div class="container-fluid">
     <br/>
-    <h5>Settings</h5>
-    <br/>
-    <div class="row d-flex align-content-stretch flex-wrap center">
-        <div align="center" class="col-md-4 col-sm-4 col-4 center">
-            <div class="custom-control custom-switch">
-                <input onchange="GeneralView.Actions.changeConnectible(this.checked)" disabled="disabled" type="checkbox"
-                    class="custom-control-input" id="tglConnection">
-                <br />
-                <label class="custom-control-label responsive-text" for="tglConnection">Connectible</label>
+
+    <div class="card-view">
+
+        <h5>Settings</h5>
+
+        <div class="row d-flex align-content-stretch flex-wrap center">
+            <div align="center" class="col-md-4 col-sm-4 col-4 center">
+                <div class="custom-control custom-switch">
+                    <input onchange="GeneralView.Actions.changeConnectible(this.checked)" type="checkbox"
+                        class="custom-control-input" id="tglConnection">
+                    <br />
+                    <label class="custom-control-label responsive-text" for="tglConnection">Connection</label>
+                </div>
             </div>
         </div>
+        <br />
+        <div class="row d-flex align-content-stretch flex-wrap">
+            <div class="col-md-4 col-sm-4 col-5">
+                <button onclick="GeneralView.Actions.updateFirmware()"
+                        class="responsive-text btn btn-dark btn-block">Update<br/>Firmware
+                </button>
+            </div>
+            <div class="col-md-4 col-sm-4 col-5">
+                <button onclick="GeneralView.Actions.factoryReset()"
+                        class="responsive-text btn btn-dark btn-block">Restart<br/>Factory
+                </button>
+            </div>
+        </div>
+        <br />
+        <div class="row d-flex align-content-stretch flex-wrap">
+            <div class="col-md-4 col-sm-4 col-5">
+                <button onclick="GeneralView.Actions.powerOff()"
+                        class="responsive-text btn btn-dark btn-block">Power<br/>Off
+                </button>
+            </div>
+            <div class="col-md-4 col-sm-4 col-5">
+                <button onclick="GeneralView.Actions.addPassword()"
+                        class="responsive-text btn btn-dark btn-block">Add<br/>Password
+                </button>
+            </div>
+            <div class="col-md-4 col-sm-4 col-4"></div>
+        </div>
+        <br/>
+
     </div>
-    <br />
-    <div class="row d-flex align-content-stretch flex-wrap">
-        <div class="col-md-4 col-sm-4 col-4">
-            <button onclick="GeneralView.Actions.updateFirmware()"
-                    class="responsive-text btn btn-dark btn-block">Update Firmware
-            </button>
-        </div>
-        <div class="col-md-4 col-sm-4 col-4">
-            <button onclick="GeneralView.Actions.factoryReset()"
-                    class="responsive-text btn btn-dark btn-block">Restart Factory
-            </button>
-        </div>
-    </div>
-    <br />
-    <div class="row d-flex align-content-stretch flex-wrap">
-        <div class="col-md-4 col-sm-4 col-4">
-            <button onclick="GeneralView.Actions.powerOff()"
-                    class="responsive-text btn btn-dark btn-block">Power Off
-            </button>
-        </div>
-        <div class="col-md-4 col-sm-4 col-4">
-            <button onclick="GeneralView.Actions.addPassword()"
-                    class="responsive-text btn btn-dark btn-block">Add Password
-            </button>
-        </div>
-        <div class="col-md-4 col-sm-4 col-4"></div>
-    </div>
+
+
     <br/>
+
+    <div class="card-view">
+
+        <h5>Manufacturer Info</h5>
+        <br/>
+        <div class="row">
+            <div class="col-7">
+                <label class="label-description">Manufacturer</label>
+            </div>
+            <div class="col-5 text-right">
+                <label class="label-text" id="lblManufacturer">-</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7">
+                <label class="label-description right">Model</label>
+            </div>
+            <div class="col-5 text-right">
+                <label id="lblModel" class="label-variable  label-text">-</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7">
+                <label class="label-description">Software Version</label>
+            </div>
+            <div class="col-5 text-right">
+                <label id="lblSoftwareVersion" class="label-variable  label-text">-</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7">
+                <label class="label-description">Hardware Version</label>
+            </div>
+            <div class="col-5 text-right">
+                <label id="lblHardwareVersion" class="label-variable  label-text">-</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7">
+                <label class="label-description">Firmware Version</label>
+            </div>
+            <div class="col-5 text-right">
+                <label id="lblFirmwareVersion" class="label-variable  label-text">-</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7">
+                <label class="label-description">Free RTOS Version</label>
+            </div>
+            <div class="col-5 text-right">
+                <label id="lblOsVersion" class="label-variable  label-text">-</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7">
+                <label class="label-description">Mac Address</label>
+            </div>
+            <div class="col-5 text-right">
+                <label id="lblMacAddress" class="label-variable  label-text">-</label>
+            </div>
+        </div>
+        <br/>
+
+    </div>
+
     <br/>
-    <h5>Manufacturer Info</h5>
-    <br/>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description">Manufacturer</label>
+
+    <div class="card-view">
+
+        <h5 class="card-title">Feature Info</h5>
+        <div class="row">
+            <div class="col-7">
+                <label class="label-description">Supported Tx Power</label>
+            </div>
+            <div class="col-5 text-right">
+                <label id="lblSupportedTxPower" class="label-variable  label-text">-</label>
+            </div>
         </div>
-        <div class="col-5 text-right">
-            <label class="label-text" id="lblManufacturer">-</label>
+        <div class="row">
+            <div class="col-7">
+                <label class="label-description">Supported Slots</label>
+            </div>
+            <div class="col-5 text-right">
+                <label id="lblSupportedSlots" class="label-variable  label-text">-</label>
+            </div>
         </div>
+        <div class="row">
+            <div class="col-7">
+                <label class="label-description">Slot Amount</label>
+            </div>
+            <div class="col-5 text-right">
+                <label id="lblSlotAmount" class="label-variable  label-text">-</label>
+            </div>
+        </div>
+
     </div>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description right">Model</label>
-        </div>
-        <div class="col-5 text-right">
-            <label id="lblModel" class="label-variable  label-text">-</label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description">Software Version</label>
-        </div>
-        <div class="col-5 text-right">
-            <label id="lblSoftwareVersion" class="label-variable  label-text">-</label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description">Hardware Version</label>
-        </div>
-        <div class="col-5 text-right">
-            <label id="lblHardwareVersion" class="label-variable  label-text">-</label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description">Firmware Version</label>
-        </div>
-        <div class="col-5 text-right">
-            <label id="lblFirmwareVersion" class="label-variable  label-text">-</label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description">Free RTOS Version</label>
-        </div>
-        <div class="col-5 text-right">
-            <label id="lblOsVersion" class="label-variable  label-text">-</label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description">Mac Address</label>
-        </div>
-        <div class="col-5 text-right">
-            <label id="lblMacAddress" class="label-variable  label-text">-</label>
-        </div>
-    </div>
-    <br/>
-    <br/>
-    <h5 class="card-title">Feature Info</h5>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description">Supported Tx Power</label>
-        </div>
-        <div class="col-5 text-right">
-            <label id="lblSupportedTxPower" class="label-variable  label-text">-</label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description">Supported Slots</label>
-        </div>
-        <div class="col-5 text-right">
-            <label id="lblSupportedSlots" class="label-variable  label-text">-</label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description">Adv Feature</label>
-        </div>
-        <div class="col-5 text-right">
-            <label id="lblAdvFeature" class="label-variable  label-text">-</label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-7">
-            <label class="label-description">Slot Amount</label>
-        </div>
-        <div class="col-5 text-right">
-            <label id="lblSlotAmount" class="label-variable  label-text">-</label>
-        </div>
-    </div>
+
 </div>
 
 <script src="General.js"></script>
 <script src="../../model/Beacon.js"></script>
 <script src="../../libs/jquery.min.js"></script>
 <script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
-<script>
-        $(document).ready(function(){
-            let beaconString = native.retrieveCurrentBeaconInfo();
-            let beacon = JSON.parse(beaconString);
-            GeneralView.Actions.setBeaconInformation(beacon);
-        });
-    </script>
 </body>
 
 </html>

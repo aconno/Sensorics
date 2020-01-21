@@ -22,6 +22,8 @@
         .div-text-right {
             text-align: right;
         }
+
+
     </style>
 </head>
 
@@ -33,13 +35,14 @@
     <script src="../../libs/jquery.min.js"></script>
     <script src="../../libs/popper.min.js"></script>
     <script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
-<script src="parameter_generator.js"></script>
+<script src="Parameters.js"></script>
 <script>
         $(document).ready(function(){
             let listParametersString = native.getParameters();
             if(listParametersString == "")return;
 
             console.log(listParametersString);
+
             let listParameters = JSON.parse(listParametersString)
 
             for(let index = 0;index<listParameters.length;index++){
