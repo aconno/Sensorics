@@ -7,19 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
-import com.aconno.sensorics.model.javascript.BeaconInfo
-import com.aconno.sensorics.ui.configure.BeaconGeneral2Fragment
 import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
-import com.aconno.sensorics.ui.configure.BeaconViewModel
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 
 class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {
 
-    private var listener: BeaconGeneralFragmentListener? = null
     private lateinit var listener: BeaconGeneralFragmentListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

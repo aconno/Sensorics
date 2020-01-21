@@ -1,12 +1,8 @@
 package com.aconno.sensorics.ui.settings_framework
 
-import android.content.*
 import android.app.Activity
 import android.app.Dialog
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -18,8 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.aconno.sensorics.BluetoothConnectService
-import com.aconno.sensorics.R
 import com.aconno.sensorics.*
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.v2.BeaconImpl
@@ -40,14 +34,14 @@ import kotlinx.android.synthetic.main.dialog_indeterminate_progress.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCallback ,
+class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCallback,
     BeaconGeneralFragmentListener {
     private var bluetoothConnectService: BluetoothConnectService? = null
     private var connectResultDisposable: Disposable? = null
     private lateinit var macAddress: String
     private lateinit var taskProcessor: BluetoothTaskProcessor
     private lateinit var beacon: Beacon
-    private val gson : Gson = Gson()
+    private val gson: Gson = Gson()
     private var retries: Int = 0
     private val handler: Handler = Handler()
 
@@ -151,7 +145,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.item_save -> saveChanges()
             else -> return false
         }
@@ -160,7 +154,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
     private fun saveChanges() {
         val intent = Intent(SAVE_CHANGES_BROADCAST)
-        intent.putExtra(TARGET_FRAGMENT_ID_BROADCAST_EXTRA,vp_beacon.currentItem)
+        intent.putExtra(TARGET_FRAGMENT_ID_BROADCAST_EXTRA, vp_beacon.currentItem)
         LocalBroadcastManager.getInstance(this@SettingsFrameworkActivity).sendBroadcast(intent)
     }
 
@@ -176,7 +170,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
 
         LocalBroadcastManager.getInstance(this).registerReceiver(beaconRequestBroadcastReceiver,
-                IntentFilter(BEACON_JSON_REQUEST_BROADCAST))
+            IntentFilter(BEACON_JSON_REQUEST_BROADCAST))
     }
 
     override fun onStop() {
@@ -241,7 +235,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private fun sendBeaconInfoBroadcast() {
         beacon?.let {
             val intent = Intent(BEACON_JSON_BROADCAST)
-            intent.putExtra(BEACON_JSON_BROADCAST_EXTRA,gson.toJson(it.toJson()))
+            intent.putExtra(BEACON_JSON_BROADCAST_EXTRA, gson.toJson(it.toJson()))
             LocalBroadcastManager.getInstance(this@SettingsFrameworkActivity).sendBroadcast(intent)
         }
     }

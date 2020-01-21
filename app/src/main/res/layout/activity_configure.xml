@@ -20,7 +20,6 @@
         android:id="@+id/tabs"
         android:visibility="invisible"
         android:layout_width="match_parent"
-        android:visibility="invisible"
         android:background="?attr/colorPrimary"
         app:pstsTabTextColor="@color/primaryTextColor"
         android:layout_height="?attr/actionBarSize" />
