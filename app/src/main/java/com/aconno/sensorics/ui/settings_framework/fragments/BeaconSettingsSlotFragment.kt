@@ -149,6 +149,7 @@ open class BeaconSettingsSlotFragment : DaggerFragment() {
                 convertToReadableAdvContent(it),
                 it.name,
                 it.active,
+                getAdvertisingModeStatus(it),
                 it.packetCount,
                 beacon.supportedTxPowers,
                 beacon.supportedTxPowers.indexOf(it.txPower),
@@ -160,6 +161,11 @@ open class BeaconSettingsSlotFragment : DaggerFragment() {
                 .replace("\\u0000", "")
         }
         return data
+    }
+
+    private fun getAdvertisingModeStatus(slot: Slot) = when (slot.advertisingMode) {
+        Slot.AdvertisingModeParameters.Mode.INTERVAL -> false
+        Slot.AdvertisingModeParameters.Mode.EVENT -> true
     }
 
     private fun convertKeysToJavascriptFormat(slotJson: String): String {

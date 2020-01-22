@@ -36,8 +36,7 @@ $(document).ready(function() {
         getUpdatedSlot();
     });
 
-    $('#toggle-advertise-switch').change(function() {
-        $('#toggle-advertise-switch').val($(this).val());
+    $(document).on("change", "#toggle-advertise-switch", function() {
         getUpdatedSlot();
 
     });
