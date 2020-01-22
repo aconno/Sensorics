@@ -243,7 +243,7 @@ function init(slotJson) {
         $('#slot_name_text').prop('disabled', true);
     }
 
-    let params = generateSwitchContent(slot.frameType == FrameType.DEFAULT, slot.active, "Slot Advertising", "advertise-switch");
+    let params = generateSwitchContent(slot.readOnly, slot.active, "Slot Advertising", "advertise-switch");
     $('#slot_advertising').empty();
     $('#slot_advertising').append(params);
 
@@ -252,7 +252,7 @@ function init(slotJson) {
     params = generateBaseParameter();
     $('#base_parameter').append(params);
 
-    params = generateSwitchContent(false, slot.advertisingMode, "Interval/Event", "internal-switch");
+    params = generateSwitchContent(slot.readOnly, slot.advertisingMode, "Interval/Event", "internal-switch");
     $('#base_parameter').append(params);
 
     if (slot.addInterval) {
