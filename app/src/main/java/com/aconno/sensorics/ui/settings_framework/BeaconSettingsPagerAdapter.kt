@@ -15,7 +15,7 @@ class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapte
             1 -> BeaconSettingsParametersFragment.newInstance(position)
             2 -> BeaconSettingsCacheableParamsFragment.newInstance()
             3 -> BeaconSettingsArbitraryDataHtmlFragment.newInstance()
-            else -> BeaconSettingsSlotFragment.newInstance(position - 5)
+            else -> BeaconSettingsSlotFragment.newInstance(position - 4)
         }
     }
 
@@ -34,7 +34,7 @@ class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapte
             1 -> "Parameters"
             2 -> "Cacheable parameters"
             3 -> "Arbitrary Data"
-            else -> "Slot " + (position - 2).toString()
+            else -> "Slot " + (position - 3).toString()
         }
     }
 }

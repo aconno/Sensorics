@@ -40,7 +40,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private var connectResultDisposable: Disposable? = null
     private lateinit var macAddress: String
     private lateinit var taskProcessor: BluetoothTaskProcessor
-    private lateinit var beacon: Beacon
+    private var beacon: Beacon? = null
     private val gson: Gson = Gson()
     private var retries: Int = 0
     private val handler: Handler = Handler()
@@ -284,7 +284,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         createPasswordDialog(object : OnPasswordDialogAction {
             override fun onPasswordEntered(password: String) {
                 hideKeyboard()
-                beacon.unlock(
+                beacon?.unlock(
                     password,
                     this@SettingsFrameworkActivity
                 ) // TODO: Do this in a better way

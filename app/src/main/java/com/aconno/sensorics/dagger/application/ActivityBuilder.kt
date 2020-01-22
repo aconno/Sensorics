@@ -38,6 +38,7 @@ import com.aconno.sensorics.dagger.readings.SensorReadingsModule
 import com.aconno.sensorics.dagger.readings.SensorReadingsScope
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityModule
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityScope
+import com.aconno.sensorics.dagger.settings_framework.BeaconSettingsSlotFragmentModule
 import com.aconno.sensorics.dagger.settings_framework.SettingsFrameworkActivityModule
 import com.aconno.sensorics.dagger.settings_framework.SettingsFrameworkActivityScope
 import com.aconno.sensorics.dagger.splash.SplashActivityModule
@@ -148,7 +149,7 @@ abstract class ActivityBuilder {
     abstract fun bindConfigureActivity(): ConfigureActivity
 
     @SettingsFrameworkActivityScope
-    @ContributesAndroidInjector(modules = [SettingsFrameworkActivityModule::class])
+    @ContributesAndroidInjector(modules = [SettingsFrameworkActivityModule::class, BeaconSettingsSlotFragmentModule::class])
     abstract fun bindSettingsFrameworkActivity(): SettingsFrameworkActivity
 
     @DfuActivityScope
