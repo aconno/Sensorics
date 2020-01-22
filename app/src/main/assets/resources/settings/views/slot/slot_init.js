@@ -56,9 +56,8 @@ $(document).ready(function() {
         getUpdatedSlot();
     });
 
-    $(document).on("input","#advertising_interval_time_range", function() {
+    $(document).on("input", "#advertising_interval_time_range", function() {
         let index = $(this).val();
-        console.log("index is "+index+", value is "+INTERVAL_MS[index]);
         $('#advertising_interval_time').text(timeToHighestOrder(INTERVAL_MS[index]));
         getUpdatedSlot();
     });
@@ -190,6 +189,13 @@ $(document).ready(function() {
     inited = true;
 });
 
+// Callback which will be invoked when one of the enum is choosen (now considering only enum with tx power data)
+function dropDownChanged(id, element, position, index) {
+    // For some reason can't do it with jQuery
+    document.getElementById("ddl-menu-button-tx_power").innerHTML = element;
+    getUpdatedSlot()
+}
+
 //Function that converts ascii to hex
 function ascii_to_hexa(str) {
     var arr1 = [];
@@ -252,9 +258,9 @@ function init(slotJson) {
     $('#base_parameter').append(params);
 
     if (slot.addInterval) {
-        let rangePosition = getClosestElementPosition(INTERVAL_MS,slot.addInterval)+1;
+        let rangePosition = getClosestElementPosition(INTERVAL_MS, slot.addInterval) + 1;
         let intervalTextRepresentation = timeToHighestOrder(slot.addInterval);
-        params = generateAdvertisingIntervalRange("Advertising Interval", intervalTextRepresentation, rangePosition,  INTERVAL_MS.length-1);
+        params = generateAdvertisingIntervalRange("Advertising Interval", intervalTextRepresentation, rangePosition, INTERVAL_MS.length - 1);
         $('#base_parameter').append(params);
     }
 
@@ -285,6 +291,15 @@ function getUpdatedSlot() {
     let packetValue = parseInt($('#range-packetCount').val()) + 1
     slot_new.packetCount = packetValue;
     slot_new.addInterval = $('#range-addInterval').val();
+    slot_new.supportedtxPower = slot.supportedtxPower;
+
+    let txPower;
+    if($('#ddl-menu-button-tx_power').text()){
+        txPower = $('#ddl-menu-button-tx_power').text();
+    }else{
+        txPower = slot.txPower;
+    }
+    slot_new.txPower = txPower;
     slot_new.readOnly = $('#range-internal-switch').val();
 
     switch (frameType) {
@@ -334,5 +349,5 @@ function getUpdatedSlot() {
 
     }
 
-     Android.onDataChanged(JSON.stringify(slot_new));
+   Android.onDataChanged(JSON.stringify(slot_new));
 }

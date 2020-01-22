@@ -95,7 +95,7 @@ function generateEnums(elements, id, name, value, index) {
     html += '<label for="ddl-lbl-' + id + '">' + name + '</label>';
     html += '<div id="ddl-' + id + '" class="dropdown">';
     html += '<button class="btn btn-secondary dropdown-toggle" type="button" id="ddl-menu-button-' + id + '"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
-    html += elements[value];
+    html += value;
     html += "</button>";
     html += body;
     html += '</div>';
@@ -114,7 +114,7 @@ function generateEnumsBody(id, elements, index) {
 }
 
 function generateSingleEnum(id, element, position, index) {
-    return '<a onclick="dropDownChanged(' + id + ', \'' + element + '\', ' + position + ' ,' + index + ')" class="dropdown-item" >' + element + '</a>';
+    return '<a onclick="dropDownChanged(\'' + id + '\', \'' + element + '\', ' + position + ' ,' + index + ')" class="dropdown-item" >' + element + '</a>';
 }
 
 function generateAdvertisingIntervalRange(name, advertisingInterval, value, maxValue) {
