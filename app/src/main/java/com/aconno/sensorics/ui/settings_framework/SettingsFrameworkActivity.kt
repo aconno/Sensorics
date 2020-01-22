@@ -44,6 +44,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private val gson: Gson = Gson()
     private var retries: Int = 0
     private val handler: Handler = Handler()
+    private var isServiceBinded = false
 
     @Inject
     lateinit var beaconViewModel: BeaconSettingsViewModel
@@ -72,6 +73,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            isServiceBinded = true
             bluetoothConnectService =
                 (service as? BluetoothConnectService.LocalBinder)?.getService()
             Timber.d("Connected")
@@ -177,7 +179,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         super.onStop()
         handler.removeCallbacksAndMessages(null)
         indefeniteSnackBar?.dismiss()
-        unbindService(serviceConnection)
+        unbindServiceConnectionIfBounded()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(beaconRequestBroadcastReceiver)
     }
 
@@ -222,13 +224,20 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                         "Disconnected: ${payload.payload}",
                         Toast.LENGTH_LONG
                     ).show()
-                    unbindService(serviceConnection)
+                    unbindServiceConnectionIfBounded()
                     showTryAgainToConnectSnackBar()
                 }
             }
             else -> {
                 return
             }
+        }
+    }
+
+    private fun unbindServiceConnectionIfBounded() {
+        if (isServiceBinded) {
+            unbindService(serviceConnection)
+            isServiceBinded = false;
         }
     }
 
