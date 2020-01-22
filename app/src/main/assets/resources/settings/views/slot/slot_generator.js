@@ -140,9 +140,8 @@ function generatePacketCountRange(name, value, id, maxValue) {
         '</div>';
 }
 
-function generateSwitchContent(frameType, isChecked, name, id) {
+function generateSwitchContent(disabled, isChecked, name, id) {
     let checked = isChecked ? " checked" : "";
-    let disabled = frameType == FrameType.DEFAULT;
 
     let checkbox = '<input type="checkbox" class="custom-control-input" id="toggle-' + id + '"' + checked + ' ';
     if (disabled) {

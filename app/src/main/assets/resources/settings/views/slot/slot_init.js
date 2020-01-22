@@ -42,8 +42,7 @@ $(document).ready(function() {
 
     });
 
-    $('#toggle-internal-switch').change(function() {
-        $('#toggle-internal-switch').val($(this).val());
+    $(document).on("change", "#toggle-internal-switch", function() {
         getUpdatedSlot();
 
     });
@@ -245,7 +244,7 @@ function init(slotJson) {
         $('#slot_name_text').prop('disabled', true);
     }
 
-    let params = generateSwitchContent(slot.frameType, slot.advertising, "Slot Advertising", "advertise-switch");
+    let params = generateSwitchContent(slot.frameType == FrameType.DEFAULT, slot.active, "Slot Advertising", "advertise-switch");
     $('#slot_advertising').empty();
     $('#slot_advertising').append(params);
 
@@ -254,7 +253,7 @@ function init(slotJson) {
     params = generateBaseParameter();
     $('#base_parameter').append(params);
 
-    params = generateSwitchContent(true, "Internal/Event", "internal-switch");
+    params = generateSwitchContent(false, slot.advertisingMode, "Interval/Event", "internal-switch");
     $('#base_parameter').append(params);
 
     if (slot.addInterval) {
@@ -282,11 +281,11 @@ function getUpdatedSlot() {
 
     slot_new.name = $('#slot_name_text').val();
     let frameType = $('#btn_frame_type').text().trim();
-    let adv = false;
-    if ($('#toggle-advertise-switch').val() == 'on')
-        adv = true;
 
-    slot_new.advertising = adv;
+    slot_new.active = $('#toggle-advertise-switch').prop("checked");
+
+    slot_new.advertisingMode = $('#toggle-internal-switch').prop("checked");
+
     console.log("GetJSON IS called: " + slot_new.name + " " + frameType + " " + $('#range-packetCount').val());
     let packetValue = parseInt($('#range-packetCount').val()) + 1
     slot_new.packetCount = packetValue;
@@ -294,9 +293,9 @@ function getUpdatedSlot() {
     slot_new.supportedtxPower = slot.supportedtxPower;
 
     let txPower;
-    if($('#ddl-menu-button-tx_power').text()){
+    if ($('#ddl-menu-button-tx_power').text()) {
         txPower = $('#ddl-menu-button-tx_power').text();
-    }else{
+    } else {
         txPower = slot.txPower;
     }
     slot_new.txPower = txPower;
