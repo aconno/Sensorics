@@ -73,11 +73,11 @@ class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        /*if (context is BeaconGeneralFragmentListener) {
+        if (context is BeaconGeneralFragmentListener) {
             listener = context
         } else {
             throw RuntimeException("$context must implement OnBeaconGeneralFragmentInteractionListener")
-        }*/
+        }
     }
 
     companion object {

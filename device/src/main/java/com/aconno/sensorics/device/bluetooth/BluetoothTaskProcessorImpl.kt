@@ -130,6 +130,7 @@ class BluetoothTaskProcessorImpl(
     private fun processQueue() {
         // Do not process queue if we are not connected
         if (!connected) {
+            Timber.w("We are not connected")
             return
         }
 
@@ -138,6 +139,7 @@ class BluetoothTaskProcessorImpl(
 
         // Check that the task isn't already being processed
         if (task.active) {
+            Timber.w("task ${task.name} is already being processed")
             return
         }
 
@@ -152,13 +154,17 @@ class BluetoothTaskProcessorImpl(
         try {
             val success: Boolean = task.execute(bluetooth)
 
-            if(success) {
+            if (success) {
                 if (task is GenericTask) {
                     task.onSuccess()
                     queue.addAllFirst(task.taskQueue)
                     queue.pop()
                 }
-            } // TODO: HANDLE THIS
+            } else {
+                // TODO: HANDLE THIS
+                Timber.d("task is not successful")
+            }
+
         } catch (e: Exception) {
             task.onError(bluetooth, e)
             queue.pop()
