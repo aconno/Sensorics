@@ -7,7 +7,17 @@ import androidx.viewpager.widget.PagerAdapter
 import com.aconno.sensorics.ui.settings_framework.fragments.*
 
 class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+    private var initialData = 0
     var slotCount = 0
+        set(value) {
+            initialData = 4
+            field = value
+        }
+
+    fun clear(){
+        slotCount=0;
+        initialData = 0
+    }
 
     override fun getItem(position: Int): Fragment {
         return when (position) {
@@ -20,7 +30,7 @@ class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapte
     }
 
     override fun getCount(): Int {
-        return 4 + slotCount
+        return initialData + slotCount
     }
 
 

@@ -51,6 +51,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     var progressDialog: Dialog? = null
     var indefeniteSnackBar: Snackbar? = null
     var device: String = ""
+    private var isConnectionServiceRegistered = false
 
     private val beaconSettingsPagerAdapter: BeaconSettingsPagerAdapter by lazy {
         BeaconSettingsPagerAdapter(supportFragmentManager).apply {
@@ -161,13 +162,14 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
     override fun onStart() {
         super.onStart()
-        bindService()
+        cancelScheduleEvents()
+        bindServices()
     }
 
-    private fun bindService() {
-        Intent(applicationContext, BluetoothConnectService::class.java).let {
-            bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
-        }
+    private fun cancelScheduleEvents() = handler.removeCallbacksAndMessages(null)
+
+    private fun bindServices() {
+        registerConnectionServiceIfNeed()
 
         LocalBroadcastManager.getInstance(this).registerReceiver(
             beaconRequestBroadcastReceiver,
@@ -175,12 +177,47 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         )
     }
 
+    private fun registerConnectionServiceIfNeed() {
+        if (!isConnectionServiceRegistered) {
+            Intent(applicationContext, BluetoothConnectService::class.java).let {
+                bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
+                isConnectionServiceRegistered = true
+            }
+        }
+    }
+
+    private fun unregisterConnectionServiceIfNeed(){
+        if (isConnectionServiceRegistered){
+            unbindService(serviceConnection)
+            isConnectionServiceRegistered = false
+        }
+    }
+
     override fun onStop() {
         super.onStop()
-        handler.removeCallbacksAndMessages(null)
-        indefeniteSnackBar?.dismiss()
-        unbindService(serviceConnection)
+        cancelScheduleEvents()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(beaconRequestBroadcastReceiver)
+        scheduleCleaningServiceAndScreen(CLEAN_TIMER)
+    }
+
+    private fun scheduleCleaningServiceAndScreen(timeMs: Long) {
+        handler.postDelayed({
+            unregisterConnectionServiceIfNeed()
+            closeProgressDialog()
+            clearPages()
+            tabs.visibility = View.INVISIBLE
+        },timeMs)
+    }
+
+    private fun clearPages() {
+        beaconSettingsPagerAdapter.clear()
+        beaconSettingsPagerAdapter.notifyDataSetChanged()
+    }
+
+    override fun onDestroy() {
+        cancelScheduleEvents()
+        unregisterConnectionServiceIfNeed()
+        super.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -206,7 +243,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                 beacon?.requestDeviceLockStatus(this)
             }
             BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
-                progressDialog?.dismiss()
+                closeProgressDialog()
                 if ((payload.payload as Int) == 0x85 && retries < MAX_RETRIES) { // TODO: Something smarter maybe?
                     Toast.makeText(
                         this,
@@ -252,7 +289,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             beacon?.read(object : GenericTask("On Read Completed Task") {
                 override fun onSuccess() {
                     beaconViewModel.beacon.value = beacon
-                    progressDialog?.dismiss()
+                    closeProgressDialog()
                     Timber.d(Gson().toJson(beacon!!.toJson()))
 
                     onBeaconParamsLoaded()
@@ -272,10 +309,15 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             progressDialog?.apply {
                 message.setText(R.string.password_required)
             }?.window?.decorView?.postDelayed({
-                progressDialog?.dismiss()
+                closeProgressDialog()
                 showPasswordDialog()
             }, 1500)
         }
+    }
+
+    private fun closeProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     override fun onError(e: Exception) {
@@ -398,6 +440,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         const val BEACON_JSON_BROADCAST_EXTRA = "BEACON_JSON_BROADCAST_EXTRA"
 
         private const val MAX_RETRIES = 3
+        private const val CLEAN_TIMER = 15000L
         private const val DEVICE_MAC_ADDRESS = "device_mac_address"
         fun start(context: Context, deviceMacAddress: String) {
             Intent(context, SettingsFrameworkActivity::class.java).also {
