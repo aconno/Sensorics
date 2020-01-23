@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
 import com.aconno.sensorics.device.beacon.Parameter
@@ -21,20 +22,6 @@ class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFra
     }
 
     private var standartParameters: List<Parameter<Any>>? = null
-
-
-    override fun onBeaconInformationLoaded(beaconInformation: String) {
-            if(webview_parameters != null) {
-                webview_parameters.loadUrl("javascript:ParametersLoader.setBeaconParameters('${beaconInformation}')")
-            }
-    }
-
-    override fun saveChanges() {
-        if(webview_parameters != null) {
-            webview_parameters.loadUrl("javascript:ParametersLoader.sendParametersToBackend('${beaconInformation}')")
-        }
-    }
-
 
 
     override fun onCreateView(
@@ -59,6 +46,19 @@ class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFra
         webview_parameters.settings.allowFileAccessFromFileURLs = true
         webview_parameters.settings.allowUniversalAccessFromFileURLs = true
         webview_parameters.settings.allowContentAccess = true
+        webview_parameters.webViewClient = PageLoadedEventWebViewClient {
+            beaconInfoViewModel.beaconInformation.observe(
+                viewLifecycleOwner,
+                Observer { beaconInfo ->
+                    beaconInfo?.let { webview_parameters?.loadUrl("javascript:ParametersLoader.setBeaconParameters('$it')") }
+                })
+
+            beaconInfoViewModel.saveChangesLiveData.observe(
+                viewLifecycleOwner,
+                Observer { saveEvent ->
+                    saveEvent.let { webview_parameters?.loadUrl("javascript:ParametersLoader.setBeaconParameters('$beaconInformation')") }
+                })
+        }
         webview_parameters.loadUrl(HTML_FILE_PATH)
         webview_parameters.addJavascriptInterface(this, "native")
     }
@@ -100,7 +100,7 @@ class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFra
     }
 
     @JavascriptInterface
-    fun saveChanges(beaconParameters : String) {
+    fun saveChanges(beaconParameters: String) {
         //TODO implement this method
     }
 
@@ -110,7 +110,7 @@ class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFra
 
         @JvmStatic
         fun newInstance(fragmentId: Int? = null) =
-                BeaconSettingsParametersFragment(fragmentId)
+            BeaconSettingsParametersFragment(fragmentId)
     }
 
 }

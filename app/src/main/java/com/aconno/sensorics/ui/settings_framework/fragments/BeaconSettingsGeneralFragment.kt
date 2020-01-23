@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
+import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
 import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
@@ -26,13 +27,6 @@ class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {
         initiateWebView()
     }
 
-    override fun onBeaconInformationLoaded(beaconInformation: String) {
-        if(webview_general != null) {
-            webview_general.loadUrl("javascript:GeneralView.Actions.setBeaconInformation('${beaconInformation}')")
-        }
-    }
-
-
     @SuppressLint("SetJavaScriptEnabled")
     private fun initiateWebView() {
         webview_general.settings.builtInZoomControls = false
@@ -41,6 +35,13 @@ class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {
         webview_general.settings.allowFileAccessFromFileURLs = true
         webview_general.settings.allowUniversalAccessFromFileURLs = true
         webview_general.settings.allowContentAccess = true
+        webview_general.webViewClient = PageLoadedEventWebViewClient {
+            beaconInfoViewModel.beaconInformation.observe(
+                viewLifecycleOwner,
+                Observer { beaconInfo ->
+                    beaconInfo?.let { webview_general?.loadUrl("javascript:GeneralView.Actions.setBeaconInformation('${it}')") }
+                })
+        }
         webview_general.loadUrl(HTML_FILE_PATH)
         webview_general.addJavascriptInterface(this, "native")
         requestBeaconInfo()
