@@ -44,7 +44,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private val gson: Gson = Gson()
     private var retries: Int = 0
     private val handler: Handler = Handler()
-    private var isServiceBinded = false
 
     @Inject
     lateinit var beaconViewModel: BeaconSettingsViewModel
@@ -73,7 +72,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            isServiceBinded = true
             bluetoothConnectService =
                 (service as? BluetoothConnectService.LocalBinder)?.getService()
             Timber.d("Connected")
@@ -171,15 +169,17 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
         }
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(beaconRequestBroadcastReceiver,
-            IntentFilter(BEACON_JSON_REQUEST_BROADCAST))
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            beaconRequestBroadcastReceiver,
+            IntentFilter(BEACON_JSON_REQUEST_BROADCAST)
+        )
     }
 
     override fun onStop() {
         super.onStop()
         handler.removeCallbacksAndMessages(null)
         indefeniteSnackBar?.dismiss()
-        unbindServiceConnectionIfBounded()
+        unbindService(serviceConnection)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(beaconRequestBroadcastReceiver)
     }
 
@@ -224,20 +224,12 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                         "Disconnected: ${payload.payload}",
                         Toast.LENGTH_LONG
                     ).show()
-                    unbindServiceConnectionIfBounded()
-                    showTryAgainToConnectSnackBar()
+                    finish() // TODO: Allow reconnecting in the future but service needs to be reworked
                 }
             }
             else -> {
                 return
             }
-        }
-    }
-
-    private fun unbindServiceConnectionIfBounded() {
-        if (isServiceBinded) {
-            unbindService(serviceConnection)
-            isServiceBinded = false;
         }
     }
 
