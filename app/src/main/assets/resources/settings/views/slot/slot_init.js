@@ -13,175 +13,16 @@ $(document).ready(function() {
         return;
     }
 
-    let emptyMenuItem = generateFrameTypeMenuItem("DEFAULT");
-    //let uidMenuItem = generateFrameTypeMenuItem("UID"); //Not supported yet
+    // generate default frame type later if needed
+    // let uidMenuItem = generateFrameTypeMenuItem("UID"); //Not supported yet
     let urlMenuItem = generateFrameTypeMenuItem("URL");
     let customMenuItem = generateFrameTypeMenuItem("CUSTOM");
     let ibeaconMenuItem = generateFrameTypeMenuItem("IBEACON");
 
 
     $('#dropdown_frame_type').append(
-        emptyMenuItem /*+ uidMenuItem*/ + urlMenuItem + customMenuItem + ibeaconMenuItem
-    );
-
-    //Updates text of dropdown header when selected.
-    $(".dropdown-menu").on('click', 'li a', function() {
-        $(this).parent().parent().siblings(".btn:first-child").html($(this).text() + ' <span class="caret"></span>');
-        $(this).parent().parent().siblings(".btn:first-child").val($(this).text());
-        getUpdatedSlot();
-    });
-
-    $('#slot_name_text').on('change keyup paste', function() {
-        $('#slot_name_text').val($(this).val());
-        getUpdatedSlot();
-    });
-
-    $(document).on("change", "#toggle-advertise-switch", function() {
-        getUpdatedSlot();
-
-    });
-
-    $(document).on("change", "#toggle-internal-switch", function() {
-        getUpdatedSlot();
-
-    });
-
-
-    $(document).on("input", "#range-packetCount", function() {
-        // Real value is range value+1, because range starting position (0) is 1
-        let realValue = parseInt($(this).val()) + 1
-        $('label[for="range-packetCount"]').html(realValue);
-        getUpdatedSlot();
-    });
-
-    $(document).on("input", "#advertising_interval_time_range", function() {
-        let index = $(this).val();
-        $('#advertising_interval_time').text(timeToHighestOrder(INTERVAL_MS[index]));
-        getUpdatedSlot();
-    });
-
-    //Dropdown items
-    $('#frame_type_default').click(
-        function() {
-            $("#advertising_content").empty();
-
-            let whatever = "";
-
-            if (slot != null && slot.frameType == FrameType.DEFAULT) {
-                whatever = generateDefaultContent(slot.frame[KEY_ADVERTISING_CONTENT_DEFAULT_DATA]);
-
-            } else {
-                whatever = generateDefaultContent("");
-            }
-
-            $("#advertising_content").append(whatever);
-
-            $("#default_advertising_content").bind("change keyup", function() {
-                getUpdatedSlot();
-            });
-        });
-
-    $('#frame_type_empty').click(
-        function() {
-            $("#advertising_content").empty();
-        }
-    );
-    $('#frame_type_url').click(
-        function() {
-            $("#advertising_content").empty();
-
-            let whatever = "";
-            if (slot != null && slot.frameType == FrameType.URL) {
-                whatever = generateURLContent(slot.frame[KEY_ADVERTISING_CONTENT_URL_URL].trim());
-            } else {
-                whatever = generateURLContent("");
-            }
-
-            $("#advertising_content").append(whatever);
-
-            $("#url").bind("change keyup", function() {
-                getUpdatedSlot();
-            });
-        }
-    );
-
-    $('#frame_type_uid').click(
-        function() {
-            $("#advertising_content").empty();
-
-            let whatever = "";
-            if (slot != null && slot.frameType == FrameType.UID) {
-                whatever = generateUIDContent(
-                    slot.frame[KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID],
-                    slot.frame[KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID]
-                );
-            } else {
-                whatever = generateUIDContent("", "");
-            }
-
-            $("#advertising_content").append(whatever);
-
-            $("#uid_namespace_id").bind("change keyup", function() {
-                getUpdatedSlot();
-            });
-
-            $("#uid_instance_id").bind("change keyup", function() {
-                getUpdatedSlot();
-            });
-        }
-    );
-
-    $('#frame_type_ibeacon').click(
-        function() {
-            $("#advertising_content").empty();
-
-            let whatever = "";
-            if (slot != null && slot.frameType == FrameType.IBEACON) {
-                whatever = generateIBeaconContent(
-                    slot.frame[KEY_ADVERTISING_CONTENT_IBEACON_UUID],
-                    slot.frame[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR],
-                    slot.frame[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]
-                );
-            } else {
-                whatever = generateIBeaconContent("", "", "");
-            }
-
-            $("#advertising_content").append(whatever);
-
-            $("#ibeacon_uuid").bind("change keyup", function() {
-                getUpdatedSlot();
-            });
-
-            $("#ibeacon_major").bind("change keyup", function() {
-                getUpdatedSlot();
-            });
-
-            $("#ibeacon_minor").bind("change keyup", function() {
-                getUpdatedSlot();
-            });
-        }
-    );
-
-    $('#frame_type_custom').click(
-        function() {
-            $("#advertising_content").empty();
-
-            let whatever = "";
-            if (slot != null && slot.frameType == FrameType.CUSTOM) {
-                whatever = generateCustomContent(
-                    slot.frame[KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM],
-                    false
-                );
-            } else {
-                whatever = generateCustomContent("", "");
-            }
-
-            $("#advertising_content").append(whatever);
-
-            $("#custom_value").bind("change keyup", function() {
-                getUpdatedSlot();
-            });
-        }
+        /*+ uidMenuItem*/
+        urlMenuItem + customMenuItem + ibeaconMenuItem
     );
 
     inited = true;
@@ -219,22 +60,26 @@ function init(slotJson) {
     console.log("SlotJson: " + slotJson)
     switch (slot.frameType) {
         case FrameType.UID:
-            $('#frame_type_uid').click();
+            initUidFrameType();
             break;
         case FrameType.URL:
-            $('#frame_type_url').click();
+            initUrlFrameType();
             break;
         case FrameType.IBEACON:
-            $('#frame_type_ibeacon').click();
+            initIbeaconFrameType();
             break;
         case FrameType.CUSTOM:
-            $('#frame_type_custom').click();
+            initCustomFrameType();
             break;
         case FrameType.DEFAULT:
-            $('#frame_type_default').click();
+            let defaultMenuItem = generateFrameTypeMenuItem("DEFAULT");
+            $('#dropdown_frame_type').prepend(
+                defaultMenuItem
+            );
+            initDefaultFrameType();
             break;
         default:
-            $('#frame_type_empty').click();
+            initEmptyFrameType();
     }
 
     $('#slot_name_text').val(slot.name);
@@ -272,7 +117,206 @@ function init(slotJson) {
         $('#btn_frame_type').prop('disabled', true)
     }
 
+    setupListeners()
 }
+
+function setupListeners() {
+    //Updates text of dropdown header when selected.
+    $(".dropdown-menu").on('click', 'li a', function() {
+        $(this).parent().parent().siblings(".btn:first-child").html($(this).text() + ' <span class="caret"></span>');
+        $(this).parent().parent().siblings(".btn:first-child").val($(this).text());
+        getUpdatedSlot();
+    });
+
+    $('#slot_name_text').on('change keyup paste', function() {
+        $('#slot_name_text').val($(this).val());
+        getUpdatedSlot();
+    });
+
+    $(document).on("change", "#toggle-advertise-switch", function() {
+        getUpdatedSlot();
+
+    });
+
+    $(document).on("change", "#toggle-internal-switch", function() {
+        getUpdatedSlot();
+    });
+
+
+    $(document).on("input", "#range-packetCount", function() {
+        // Real value is range value+1, because range starting position (0) is 1
+        let realValue = parseInt($(this).val()) + 1
+        $('label[for="range-packetCount"]').html(realValue);
+        getUpdatedSlot();
+    });
+
+    $(document).on("input", "#advertising_interval_time_range", function() {
+        let index = $(this).val();
+        $('#advertising_interval_time').text(timeToHighestOrder(INTERVAL_MS[index]));
+        getUpdatedSlot();
+    });
+
+    //Dropdown items
+    $('#frame_type_default').click(defaultFrameTypeClicked);
+
+    $('#frame_type_empty').click(emptyFrameTypeClicked);
+    $('#frame_type_url').click(urlFrameTypeClicked);
+
+    $('#frame_type_uid').click(uidFrameTypeClicked);
+
+    $('#frame_type_ibeacon').click(ibeaconFrameTypeClicked);
+
+    $('#frame_type_custom').click(customFrameTypeClicked);
+}
+
+function initUidFrameType() {
+    setFrameType(FrameType.UID);
+    uidFrameTypeClicked();
+}
+
+function initUrlFrameType() {
+    setFrameType(FrameType.URL);
+    urlFrameTypeClicked();
+}
+
+function initIbeaconFrameType() {
+    setFrameType(FrameType.IBEACON);
+    ibeaconFrameTypeClicked();
+}
+
+function initCustomFrameType() {
+    setFrameType("CUSTOM");
+    customFrameTypeClicked();
+}
+
+function initDefaultFrameType() {
+    setFrameType(FrameType.DEFAULT);
+    defaultFrameTypeClicked();
+}
+
+function initEmptyFrameType() {
+    setFrameType("EMPTY");
+    emptyFrameTypeClicked();
+}
+
+function setFrameType(frameTypeStr) {
+    $("#btn_frame_type").html(frameTypeStr + ' <span class="caret"></span>');
+    $("#btn_frame_type").val(frameTypeStr);
+}
+
+function uidFrameTypeClicked() {
+    $("#advertising_content").empty();
+
+    let whatever = "";
+    if (slot != null && slot.frameType == FrameType.UID) {
+        whatever = generateUIDContent(
+            slot.frame[KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID],
+            slot.frame[KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID]
+        );
+    } else {
+        whatever = generateUIDContent("", "");
+    }
+
+    $("#advertising_content").append(whatever);
+
+    $("#uid_namespace_id").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+
+    $("#uid_instance_id").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+}
+
+function customFrameTypeClicked() {
+    $("#advertising_content").empty();
+
+    let whatever = "";
+    if (slot != null && slot.frameType == FrameType.CUSTOM) {
+        whatever = generateCustomContent(
+            slot.frame[KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM],
+            false
+        );
+    } else {
+        whatever = generateCustomContent("", "");
+    }
+
+    $("#advertising_content").append(whatever);
+
+    $("#custom_value").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+}
+
+function ibeaconFrameTypeClicked() {
+    $("#advertising_content").empty();
+
+    let whatever = "";
+    if (slot != null && slot.frameType == FrameType.IBEACON) {
+        whatever = generateIBeaconContent(
+            slot.frame[KEY_ADVERTISING_CONTENT_IBEACON_UUID],
+            slot.frame[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR],
+            slot.frame[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]
+        );
+    } else {
+        whatever = generateIBeaconContent("", "", "");
+    }
+
+    $("#advertising_content").append(whatever);
+
+    $("#ibeacon_uuid").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+
+    $("#ibeacon_major").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+
+    $("#ibeacon_minor").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+}
+
+function emptyFrameTypeClicked() {
+    $("#advertising_content").empty();
+}
+
+function urlFrameTypeClicked() {
+    $("#advertising_content").empty();
+
+    let whatever = "";
+    if (slot != null && slot.frameType == FrameType.URL) {
+        whatever = generateURLContent(slot.frame[KEY_ADVERTISING_CONTENT_URL_URL].trim());
+    } else {
+        whatever = generateURLContent("");
+    }
+
+    $("#advertising_content").append(whatever);
+
+    $("#url").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+}
+
+function defaultFrameTypeClicked() {
+    $("#advertising_content").empty();
+
+    let whatever = "";
+
+    if (slot != null && slot.frameType == FrameType.DEFAULT) {
+        whatever = generateDefaultContent(slot.frame[KEY_ADVERTISING_CONTENT_DEFAULT_DATA]);
+
+    } else {
+        whatever = generateDefaultContent("");
+    }
+
+    $("#advertising_content").append(whatever);
+
+    $("#default_advertising_content").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+}
+
 
 function getUpdatedSlot() {
     //Create new Slot
@@ -347,5 +391,5 @@ function getUpdatedSlot() {
 
     }
 
-   Android.onDataChanged(JSON.stringify(slot_new));
+    Android.onDataChanged(JSON.stringify(slot_new));
 }

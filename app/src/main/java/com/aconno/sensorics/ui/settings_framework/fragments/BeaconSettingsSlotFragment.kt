@@ -86,9 +86,9 @@ open class BeaconSettingsSlotFragment : DaggerFragment() {
 
         override fun onPageFinished(view: WebView?, url: String?) {
 
-            if (urlFinished != url) {
+            if (urlFinished != url && "$urlFinished#" != url) {
                 getSlotJson()?.let {
-                    Timber.d("Call the method again")
+                    Timber.d("Call the method again. urlFinished=$urlFinished, url = $url")
                     callJavaScript("init", it)
                 }
             }
