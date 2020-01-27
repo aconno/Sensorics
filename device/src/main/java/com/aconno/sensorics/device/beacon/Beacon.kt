@@ -134,6 +134,8 @@ abstract class Beacon(context: Context, taskProcessor: BluetoothTaskProcessor) {
                 "Slots missing!"
             )
         this.slots.loadChangesFromJson(slots)
+
+        TODO("LOAD ARB DATA")
     }
 
     class Factory {

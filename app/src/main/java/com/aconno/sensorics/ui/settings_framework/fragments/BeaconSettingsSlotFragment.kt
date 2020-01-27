@@ -4,25 +4,23 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import android.webkit.JavascriptInterface
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.bluetooth.beacon.Slot.Companion.EXTRA_BEACON_SLOT_POSITION
 import com.aconno.sensorics.R
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.Slot
 import com.aconno.sensorics.device.beacon.Slots
-import com.aconno.sensorics.model.javascript.SlotJS
 import com.aconno.sensorics.model.mapper.ParametersAdvertisingContentMapper
 import com.aconno.sensorics.ui.configure.ViewPagerSlider
 import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
-import com.google.gson.Gson
-import dagger.android.support.DaggerFragment
+import com.google.gson.JsonParser
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 import timber.log.Timber
 import javax.inject.Inject
 
-open class BeaconSettingsSlotFragment : DaggerFragment() {
+open class BeaconSettingsSlotFragment : BeaconSettingsBaseFragment() {
+
 
     private val beaconViewModel: BeaconSettingsViewModel by lazy {
         ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
@@ -73,30 +71,27 @@ open class BeaconSettingsSlotFragment : DaggerFragment() {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initiateWebView() {
+        webview_general.settings.builtInZoomControls = false
         webview_general.settings.javaScriptEnabled = true
-        webview_general.addJavascriptInterface(WebAppInterface(), "Android")
-        webview_general.webViewClient = WebAppClient()
-        webview_general.loadUrl(HTML_FILE_PATH)
-    }
-
-
-    //Prevent running twice or more
-    inner class WebAppClient : WebViewClient() {
-        var urlFinished: String = ""
-
-        override fun onPageFinished(view: WebView?, url: String?) {
-
-            if (urlFinished != url) {
-                getSlotJson()?.let {
-                    Timber.d("Call the method again")
-                    callJavaScript("init", it)
-                }
-            }
-            url?.let {
-                urlFinished = it
-            }
-            super.onPageFinished(view, url)
+        webview_general.settings.allowFileAccess = true
+        webview_general.settings.allowFileAccessFromFileURLs = true
+        webview_general.settings.allowUniversalAccessFromFileURLs = true
+        webview_general.settings.allowContentAccess = true
+        webview_general.webViewClient = PageLoadedEventWebViewClient {
+            beaconInfoViewModel.beaconInformation.observe(
+                viewLifecycleOwner,
+                Observer { beaconInfo ->
+                    beaconInfo?.let {
+                        //                        getSlotJson()?.let {
+//                            Timber.d("Call the method again")
+//                            callJavaScript("init", it)
+//                        }
+                        callJavaScript("init", it, slotPosition)
+                    }
+                })
         }
+        webview_general.loadUrl(HTML_FILE_PATH)
+        requestBeaconInfo()
     }
 
     private fun callJavaScript(methodName: String, vararg params: Any) {
@@ -110,12 +105,14 @@ open class BeaconSettingsSlotFragment : DaggerFragment() {
                 stringBuilder.append("'")
                 stringBuilder.append(param.toString().replace("'", "\\'").replace("\\\"", "&quot;"))
                 stringBuilder.append("'")
+            } else {
+                stringBuilder.append(param)
             }
             if (i < params.size - 1) {
                 stringBuilder.append(",")
             }
         }
-        stringBuilder.append(")}catch(error){Android.onError(error.message);}")
+        stringBuilder.append(")}catch(error){console.log(error.message);}")
         webview_general.loadUrl(stringBuilder.toString())
     }
 
@@ -130,37 +127,10 @@ open class BeaconSettingsSlotFragment : DaggerFragment() {
 
         when (item.itemId) {
             R.id.item_save -> {
-                /*
-                * beaconViewModel.beacon.value?.slots?.get(slotPosition)
-                * should get the latest slots.
-                */
-                Timber.d("Values: ${getSlotJson()}")
+                TODO("Broadcast save request")
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun getSlotJson(): String? {
-        val slotPosition = arguments!!.getInt(EXTRA_BEACON_SLOT_POSITION)
-
-        val data = beaconViewModel.beacon.value?.slots?.get(slotPosition)?.let {
-            SlotJS(
-                it.getType().tabName,//Do not change the order
-                convertToReadableAdvContent(it),
-                it.name,
-                it.active,
-                getAdvertisingModeStatus(it),
-                it.packetCount,
-                beacon.supportedTxPowers,
-                beacon.supportedTxPowers.indexOf(it.txPower),
-                it.readOnly,
-                it.advertisingModeParameters.interval
-            )
-        }?.let {
-            convertKeysToJavascriptFormat(Gson().toJson(it))
-                .replace("\\u0000", "")
-        }
-        return data
     }
 
     private fun getAdvertisingModeStatus(slot: Slot) = when (slot.advertisingMode) {
@@ -210,24 +180,7 @@ open class BeaconSettingsSlotFragment : DaggerFragment() {
         @JavascriptInterface
         fun onDataChanged(slotJsonRaw: String) {
             Timber.d("OnDataChanged: $slotJsonRaw")
-            val slotJson = convertKeysToOriginals(slotJsonRaw)
-            val slotJS = Gson().fromJson<SlotJS>(slotJson, SlotJS::class.java)
-            val slotPosition = arguments!!.getInt(EXTRA_BEACON_SLOT_POSITION)
-            var dataSlot: Slot? = null
-
-            beaconViewModel.beacon.value?.slots?.get(slotPosition)?.let {
-                dataSlot = it
-            }
-
-            dataSlot?.let {
-                it.name = slotJS.name
-                it.advertisingContent.clear()
-                it.advertisingContent.putAll(convertToHexAdvContent(slotJS.frame))
-                it.packetCount = slotJS.packetCount
-                it.advertisingModeParameters.interval = slotJS.addInterval
-
-            }
-
+            beaconViewModel?.beacon?.value?.loadChangesFromJson(JsonParser().parse(slotJsonRaw).asJsonObject)
         }
 
         @JavascriptInterface

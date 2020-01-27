@@ -1,5 +1,6 @@
 //GLOBAL Slot object
-let slot;
+let beacon;
+let index;
 let inited = false
 const INTERVAL_MS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
     11000, 12000, 13000, 14000, 15000, 15000, 20000, 30000, 40000, 50000, 60000, 120000, 180000, 240000, 300000, 360000, 420000, 480000,
@@ -67,8 +68,8 @@ $(document).ready(function() {
 
             let whatever = "";
 
-            if (slot != null && slot.frameType == FrameType.DEFAULT) {
-                whatever = generateDefaultContent(slot.frame[KEY_ADVERTISING_CONTENT_DEFAULT_DATA]);
+            if (beacon["slots"]["slots"][slotIndex] != null && beacon["slots"]["slots"][slotIndex]type == FrameType.DEFAULT) {
+                whatever = generateDefaultContent(beacon["slots"]["slots"][slotIndex]frame[KEY_ADVERTISING_CONTENT_DEFAULT_DATA]);
 
             } else {
                 whatever = generateDefaultContent("");
@@ -91,8 +92,8 @@ $(document).ready(function() {
             $("#advertising_content").empty();
 
             let whatever = "";
-            if (slot != null && slot.frameType == FrameType.URL) {
-                whatever = generateURLContent(slot.frame[KEY_ADVERTISING_CONTENT_URL_URL].trim());
+            if (beacon["slots"]["slots"][slotIndex] != null && beacon["slots"]["slots"][slotIndex]type == FrameType.URL) {
+                whatever = generateURLContent(beacon["slots"]["slots"][slotIndex]frame[KEY_ADVERTISING_CONTENT_URL_URL].trim());
             } else {
                 whatever = generateURLContent("");
             }
@@ -110,10 +111,10 @@ $(document).ready(function() {
             $("#advertising_content").empty();
 
             let whatever = "";
-            if (slot != null && slot.frameType == FrameType.UID) {
+            if (beacon["slots"]["slots"][slotIndex] != null && beacon["slots"]["slots"][slotIndex]type == FrameType.UID) {
                 whatever = generateUIDContent(
-                    slot.frame[KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID],
-                    slot.frame[KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID]
+                    beacon["slots"]["slots"][slotIndex]frame[KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID],
+                    beacon["slots"]["slots"][slotIndex]frame[KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID]
                 );
             } else {
                 whatever = generateUIDContent("", "");
@@ -136,11 +137,11 @@ $(document).ready(function() {
             $("#advertising_content").empty();
 
             let whatever = "";
-            if (slot != null && slot.frameType == FrameType.IBEACON) {
+            if (beacon["slots"]["slots"][slotIndex] != null && beacon["slots"]["slots"][slotIndex]type == FrameType.IBEACON) {
                 whatever = generateIBeaconContent(
-                    slot.frame[KEY_ADVERTISING_CONTENT_IBEACON_UUID],
-                    slot.frame[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR],
-                    slot.frame[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]
+                    beacon["slots"]["slots"][slotIndex]frame[KEY_ADVERTISING_CONTENT_IBEACON_UUID],
+                    beacon["slots"]["slots"][slotIndex]frame[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR],
+                    beacon["slots"]["slots"][slotIndex]frame[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]
                 );
             } else {
                 whatever = generateIBeaconContent("", "", "");
@@ -167,9 +168,9 @@ $(document).ready(function() {
             $("#advertising_content").empty();
 
             let whatever = "";
-            if (slot != null && slot.frameType == FrameType.CUSTOM) {
+            if (beacon["slots"]["slots"][slotIndex] != null && beacon["slots"]["slots"][slotIndex]type == FrameType.CUSTOM) {
                 whatever = generateCustomContent(
-                    slot.frame[KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM],
+                    beacon["slots"]["slots"][slotIndex]frame[KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM],
                     false
                 );
             } else {
@@ -214,10 +215,20 @@ function hex_to_ascii(str1) {
     return str;
 }
 
-function init(slotJson) {
-    slot = JSON.parse(slotJson);
-    console.log("SlotJson: " + slotJson)
-    switch (slot.frameType) {
+function init(slotJson, slotIndex) {
+    index = slotIndex;
+    beacon = JSON.parse(slotJson);
+    console.log("Beacon: " + JSON.stringify(beacon))
+    var slots = beacon["slots"]
+    console.log("Slots: " + JSON.stringify(slots))
+    var slotsData = slots["slots"]
+    console.log("Slots data: " + JSON.stringify(slotsData))
+    console.log("Slots index: " + slotIndex)
+    var slot = slotsData[slotIndex]
+    console.log("Slot: " + JSON.stringify(slot))
+    
+    console.log("Slot: " + slot)
+    switch (beacon["slots"]["slots"][slotIndex]type) {
         case FrameType.UID:
             $('#frame_type_uid').click();
             break;
@@ -237,13 +248,13 @@ function init(slotJson) {
             $('#frame_type_empty').click();
     }
 
-    $('#slot_name_text').val(slot.name);
+    $('#slot_name_text').val(beacon["slots"]["slots"][slotIndex]name);
 
-    if (slot.frameType == FrameType.DEFAULT) {
+    if (beacon["slots"]["slots"][slotIndex]type == FrameType.DEFAULT) {
         $('#slot_name_text').prop('disabled', true);
     }
 
-    let params = generateSwitchContent(slot.readOnly, slot.active, "Slot Advertising", "advertise-switch");
+    let params = generateSwitchContent(beacon["slots"]["slots"][slotIndex]readOnly, beacon["slots"]["slots"][slotIndex]active, "Slot Advertising", "advertise-switch");
     $('#slot_advertising').empty();
     $('#slot_advertising').append(params);
 
@@ -252,23 +263,23 @@ function init(slotJson) {
     params = generateBaseParameter();
     $('#base_parameter').append(params);
 
-    params = generateSwitchContent(slot.readOnly, slot.advertisingMode, "Interval/Event", "internal-switch");
+    params = generateSwitchContent(beacon["slots"]["slots"][slotIndex]readOnly, beacon["slots"]["slots"][slotIndex]advertisingMode, "Interval/Event", "internal-switch");
     $('#base_parameter').append(params);
 
-    if (slot.addInterval) {
-        let rangePosition = getClosestElementPosition(INTERVAL_MS, slot.addInterval) + 1;
-        let intervalTextRepresentation = timeToHighestOrder(slot.addInterval);
+    if (beacon["slots"]["slots"][slotIndex]addInterval) {
+        let rangePosition = getClosestElementPosition(INTERVAL_MS, beacon["slots"]["slots"][slotIndex]addInterval) + 1;
+        let intervalTextRepresentation = timeToHighestOrder(beacon["slots"]["slots"][slotIndex]addInterval);
         params = generateAdvertisingIntervalRange("Advertising Interval", intervalTextRepresentation, rangePosition, INTERVAL_MS.length - 1);
         $('#base_parameter').append(params);
     }
 
-    params = generatePacketCountRange("Advertising PacketCount", slot.packetCount, 'packetCount', 9);
+    params = generatePacketCountRange("Advertising PacketCount", beacon["slots"]["slots"][slotIndex]packetCount, 'packetCount', 9);
     $('#base_parameter').append(params);
 
-    params = generateEnums(slot.supportedtxPower, "tx_power", "Advertising Tx Power", slot.txPower, 0)
+    params = generateEnums(beacon["slots"]["slots"][slotIndex]supportedtxPower, "tx_power", "Advertising Tx Power", beacon["slots"]["slots"][slotIndex]txPower, 0)
     $('#base_parameter').append(params);
 
-    if (slot.readOnly == true) {
+    if (beacon["slots"]["slots"][slotIndex]readOnly == true) {
         $('#btn_frame_type').prop('disabled', true)
     }
 
@@ -276,49 +287,46 @@ function init(slotJson) {
 
 function getUpdatedSlot() {
     //Create new Slot
-    let slot_new = new Slot();
+    beacon["slots"]["slots"][slotIndex]name = $('#slot_name_text').val();
+    let type = $('#btn_frame_type').text().trim();
 
-    slot_new.name = $('#slot_name_text').val();
-    let frameType = $('#btn_frame_type').text().trim();
+    beacon["slots"]["slots"][slotIndex]active = $('#toggle-advertise-switch').prop("checked");
 
-    slot_new.active = $('#toggle-advertise-switch').prop("checked");
+    beacon["slots"]["slots"][slotIndex]advertisingMode = $('#toggle-internal-switch').prop("checked") ? "EVENT" : "INTERVAL";
 
-    slot_new.advertisingMode = $('#toggle-internal-switch').prop("checked");
-
-    console.log("GetJSON IS called: " + slot_new.name + " " + frameType + " " + $('#range-packetCount').val());
+    console.log("GetJSON IS called: " + slot_new.name + " " + type + " " + $('#range-packetCount').val());
     let packetValue = parseInt($('#range-packetCount').val()) + 1
-    slot_new.packetCount = packetValue;
-    slot_new.addInterval = $('#range-addInterval').val();
-    slot_new.supportedtxPower = slot.supportedtxPower;
+    beacon["slots"]["slots"][slotIndex]packetCount = packetValue;
+    beacon["slots"]["slots"][slotIndex]advertisingModeParameters.interval = $('#range-addInterval').val();
 
     let txPower;
     if ($('#ddl-menu-button-tx_power').text()) {
         txPower = $('#ddl-menu-button-tx_power').text();
     } else {
-        txPower = slot.txPower;
+        txPower = beacon["slots"]["slots"][slotIndex]txPower;
     }
-    slot_new.txPower = txPower;
-    slot_new.readOnly = $('#range-internal-switch').val();
+    beacon["slots"]["slots"][slotIndex]txPower = txPower;
+    beacon["slots"]["slots"][slotIndex]readOnly = $('#range-internal-switch').val();
 
-    switch (frameType) {
+    switch (type) {
         case "UID":
-            slot_new.frameType = FrameType.UID;
-            slot_new.frame = {
+            beacon["slots"]["slots"][slotIndex]type = FrameType.UID;
+            beacon["slots"]["slots"][slotIndex]frame = {
                 KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID: $('#uid_namespace_id').val(),
                 KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID: $('#uid_instance_id').val()
             };
 
             break;
         case "URL":
-            slot_new.frameType = FrameType.URL;
-            slot_new.frame = {
+            beacon["slots"]["slots"][slotIndex]type = FrameType.URL;
+            beacon["slots"]["slots"][slotIndex]frame = {
                 KEY_ADVERTISING_CONTENT_URL_URL: $('#url').val()
             };
 
             break;
         case "IBEACON":
-            slot_new.frameType = FrameType.IBEACON;
-            slot_new.frame = {
+            beacon["slots"]["slots"][slotIndex]type = FrameType.IBEACON;
+            beacon["slots"]["slots"][slotIndex]frame = {
                 KEY_ADVERTISING_CONTENT_IBEACON_UUID: $('#ibeacon_uuid').val(),
                 KEY_ADVERTISING_CONTENT_IBEACON_MAJOR: $('#ibeacon_major').val(),
                 KEY_ADVERTISING_CONTENT_IBEACON_MINOR: $('#ibeacon_minor').val()
@@ -326,26 +334,25 @@ function getUpdatedSlot() {
 
             break;
         case "CUSTOM":
-            slot_new.frameType = FrameType.CUSTOM;
-            slot_new.frame = {
+            beacon["slots"]["slots"][slotIndex]type = FrameType.CUSTOM;
+            beacon["slots"]["slots"][slotIndex]frame = {
                 KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM: $('#custom_value').val(),
             };
 
             break;
 
         case "DEFAULT":
-            slot_new.frameType = FrameType.DEFAULT;
-            slot_new.frame = {
+            beacon["slots"]["slots"][slotIndex]type = FrameType.DEFAULT;
+            beacon["slots"]["slots"][slotIndex]frame = {
                 KEY_ADVERTISING_CONTENT_DEFAULT_DATA: $('#default_advertising_content').val(),
             };
 
             break;
 
         default:
-            slot_new.frameType = FrameType.EMPTY;
-            slot_new.frame = {};
-
+            beacon["slots"]["slots"][slotIndex]type = FrameType.EMPTY;
+            beacon["slots"]["slots"][slotIndex]frame = {};
     }
 
-   Android.onDataChanged(JSON.stringify(slot_new));
+   Android.onDataChanged(JSON.stringify(beacon));
 }

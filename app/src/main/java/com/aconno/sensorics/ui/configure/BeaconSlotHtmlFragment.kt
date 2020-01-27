@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.bluetooth.beacon.Slot
 import com.aconno.sensorics.R
-import com.aconno.sensorics.model.javascript.SlotJS
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 import timber.log.Timber
@@ -136,11 +135,10 @@ class BeaconSlotHtmlFragment : Fragment() {
         fun onDataChanged(slotJsonRaw: String) {
             val slotJson = convertKeysToOriginals(slotJsonRaw)
 
-            val slotJS = Gson().fromJson<SlotJS>(slotJson, SlotJS::class.java)
             val slotPosition = arguments!!.getInt(EXTRA_BEACON_SLOT_POSITION)
 
             /*val newSlot = Slot(
-                Slot.Type.values()[slotJS.frameType],
+                Slot.Type.values()[slotJS.type],
                 slotJS.frame
             )
 

@@ -1,6 +1,6 @@
 class Slot {
     constructor() {
-        this.frameType = FrameType.DEFAULT
+        this.type = FrameType.DEFAULT
         this.frame = {}
         this.name = "Name"
         this.active = true

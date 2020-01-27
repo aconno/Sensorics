@@ -86,14 +86,13 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
                 taskProcessor = BluetoothTaskProcessorImpl(bluetoothService.bluetooth)
 
+                bluetoothService.startConnectionStream()
                 connectToDevice(bluetoothService)
             }
         }
     }
 
     private fun connectToDevice(bluetoothService: BluetoothConnectService) {
-        bluetoothService.startConnectionStream()
-
         bluetoothService.connect(macAddress)
 
         progressDialog = showProgressDialog().apply {
@@ -186,8 +185,8 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
     }
 
-    private fun unregisterConnectionServiceIfNeed(){
-        if (isConnectionServiceRegistered){
+    private fun unregisterConnectionServiceIfNeed() {
+        if (isConnectionServiceRegistered) {
             unbindService(serviceConnection)
             isConnectionServiceRegistered = false
         }
@@ -206,7 +205,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             closeProgressDialog()
             clearPages()
             tabs.visibility = View.INVISIBLE
-        },timeMs)
+        }, timeMs)
     }
 
     private fun clearPages() {
@@ -252,7 +251,9 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                     ).show()
 
                     handler.postDelayed({
-                        bluetoothConnectService?.connect(macAddress)
+                        bluetoothConnectService?.let {
+                            connectToDevice(it)
+                        }
                         retries++
                     }, 3000)
                 } else {
