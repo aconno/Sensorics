@@ -52,12 +52,6 @@ class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFra
                 Observer { beaconInfo ->
                     beaconInfo?.let { webview_parameters?.loadUrl("javascript:ParametersLoader.setBeaconParameters('$it')") }
                 })
-
-            beaconInfoViewModel.saveChangesLiveData.observe(
-                viewLifecycleOwner,
-                Observer { saveEvent ->
-                    saveEvent.let { webview_parameters?.loadUrl("javascript:ParametersLoader.setBeaconParameters('$beaconInformation')") }
-                })
         }
         webview_parameters.loadUrl(HTML_FILE_PATH)
         webview_parameters.addJavascriptInterface(this, "native")
