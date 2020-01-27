@@ -1,7 +1,6 @@
 package com.aconno.sensorics.ui.settings_framework
 
 import android.app.Activity
-import android.app.Dialog
 import android.content.*
 import android.os.Bundle
 import android.os.Handler
@@ -25,12 +24,12 @@ import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
 import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
+import com.aconno.sensorics.ui.dialogs.CancelBtnSchedulerProgressDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_configure.*
-import kotlinx.android.synthetic.main.dialog_indeterminate_progress.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -48,8 +47,8 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     @Inject
     lateinit var beaconViewModel: BeaconSettingsViewModel
 
-    var progressDialog: Dialog? = null
-    var indefeniteSnackBar: Snackbar? = null
+    private var progressDialog: CancelBtnSchedulerProgressDialog? = null
+    private var indefiniteSnackBar: Snackbar? = null
     var device: String = ""
     private var isConnectionServiceRegistered = false
 
@@ -96,8 +95,9 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
         bluetoothService.connect(macAddress)
 
-        progressDialog = showProgressDialog().apply {
-            message.setText(R.string.connecting_with_dots)
+        progressDialog = CancelBtnSchedulerProgressDialog(this, handler).apply {
+            progressMessage = getString(R.string.connecting_with_dots)
+            show()
         }
     }
 
@@ -186,8 +186,8 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
     }
 
-    private fun unregisterConnectionServiceIfNeed(){
-        if (isConnectionServiceRegistered){
+    private fun unregisterConnectionServiceIfNeed() {
+        if (isConnectionServiceRegistered) {
             unbindService(serviceConnection)
             isConnectionServiceRegistered = false
         }
@@ -206,7 +206,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             closeProgressDialog()
             clearPages()
             tabs.visibility = View.INVISIBLE
-        },timeMs)
+        }, timeMs)
     }
 
     private fun clearPages() {
@@ -233,7 +233,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
                 retries = 0
 
-                progressDialog?.message?.setText(R.string.connected_unlocking)
+                progressDialog?.progressMessage = getString(R.string.connected_unlocking)
                 bluetoothConnectService?.let {
                     beacon = BeaconImpl(this, taskProcessor)
                 } ?: throw IllegalStateException(
@@ -304,10 +304,10 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                     return true
                 }
             })
-            progressDialog?.message?.setText(R.string.reading_with_dots)
+            progressDialog?.progressMessage = getString(R.string.reading_with_dots)
         } else {
             progressDialog?.apply {
-                message.setText(R.string.password_required)
+                progressMessage = getString(R.string.password_required)
             }?.window?.decorView?.postDelayed({
                 closeProgressDialog()
                 showPasswordDialog()
@@ -331,11 +331,15 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                     password,
                     this@SettingsFrameworkActivity
                 ) // TODO: Do this in a better way
-                if (progressDialog?.isShowing == false) {
-                    progressDialog = showProgressDialog().apply {
-                        message.setText(R.string.ulocking_with_dots)
+                if (!(progressDialog?.isShowing == true)) {
+                    progressDialog = CancelBtnSchedulerProgressDialog(
+                        this@SettingsFrameworkActivity,
+                        handler
+                    ).apply {
+                        show()
                     }
                 }
+                progressDialog?.progressMessage = getString(R.string.ulocking_with_dots)
             }
 
             override fun onDialogCancelled() {
@@ -346,7 +350,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     private fun showTryAgainPasswordSnackBar() {
-        indefeniteSnackBar = ll_settings_root.snack(
+        indefiniteSnackBar = ll_settings_root.snack(
             R.string.cant_connect_without_password,
             Snackbar.LENGTH_INDEFINITE
         ) {
@@ -361,7 +365,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
 
     private fun showTryAgainToConnectSnackBar() {
-        indefeniteSnackBar =
+        indefiniteSnackBar =
             ll_settings_root.snack(R.string.error_occurred, Snackbar.LENGTH_INDEFINITE) {
                 action(
                     R.string.try_again,
@@ -398,28 +402,10 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
     }
 
-    private fun showProgressDialog(): AlertDialog {
-        return AlertDialog.Builder(this).apply {
-            setView(
-                layoutInflater.inflate(
-                    R.layout.dialog_indeterminate_progress,
-                    null as ViewGroup?
-                )
-            )
-        }.create().apply {
-            setCancelable(false)
-            setCanceledOnTouchOutside(false)
-        }.also {
-            if (!isFinishing and !isDestroyed) {
-                it.show()
-            }
-        }
-    }
-
     private fun getDeviceMacAddress(savedInstanceState: Bundle?) {
         macAddress = intent?.getStringExtra(DEVICE_MAC_ADDRESS)
             ?: savedInstanceState?.getString(DEVICE_MAC_ADDRESS)
-                ?: ""
+                    ?: ""
 
         if (macAddress.isBlank()) {
             Timber.e("MAC address not passed to activity!")
@@ -435,8 +421,10 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     companion object {
         const val TARGET_FRAGMENT_ID_BROADCAST_EXTRA = "TARGET_FRAGMENT_ID_BROADCAST_EXTRA"
         const val SAVE_CHANGES_BROADCAST = "com.aconno.sensorics.settings.SAVE_CHANGES_BROADCAST"
-        const val BEACON_JSON_BROADCAST = "com.aconno.sensorics.settings.BEACON_JSON_RESPONSE_BROADCAST"
-        const val BEACON_JSON_REQUEST_BROADCAST = "com.aconno.sensorics.settings.BEACON_JSON_REQUEST_BROADCAST"
+        const val BEACON_JSON_BROADCAST =
+            "com.aconno.sensorics.settings.BEACON_JSON_RESPONSE_BROADCAST"
+        const val BEACON_JSON_REQUEST_BROADCAST =
+            "com.aconno.sensorics.settings.BEACON_JSON_REQUEST_BROADCAST"
         const val BEACON_JSON_BROADCAST_EXTRA = "BEACON_JSON_BROADCAST_EXTRA"
 
         private const val MAX_RETRIES = 3

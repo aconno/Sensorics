@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/root"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_centerHorizontal="true"
+    android:animateLayoutChanges="true"
     android:orientation="horizontal"
     android:padding="13dp">
 
     <ProgressBar
         android:id="@+id/loader"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:indeterminateTint="@color/progress_indicator"
@@ -16,10 +21,25 @@
 
     <TextView
         android:id="@+id/message"
+        app:layout_constraintTop_toTopOf="@id/loader"
+        app:layout_constraintStart_toEndOf="@id/loader"
+        app:layout_constraintBottom_toBottomOf="@id/loader"
         android:layout_width="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:textColor="@android:color/black"
         android:textAppearance="?android:textAppearanceSmall"
         tools:text="Loading..." />
-</LinearLayout>
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/cancelBtn"
+        style="@android:style/Widget.Holo.Button.Borderless"
+        android:textColor="@color/progress_indicator"
+        app:layout_constraintTop_toBottomOf="@id/loader"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
