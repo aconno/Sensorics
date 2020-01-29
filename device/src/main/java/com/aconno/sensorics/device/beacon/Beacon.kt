@@ -129,7 +129,7 @@ abstract class Beacon(context: Context, taskProcessor: BluetoothTaskProcessor) {
             )
         this.parameters.loadChangesFromJson(parameters)
 
-        val slots = obj.getArrayOrNull("slots")
+        val slots = obj.getAsJsonObject("slots").getArrayOrNull("slots")
             ?: throw IllegalArgumentException(
                 "Slots missing!"
             )
