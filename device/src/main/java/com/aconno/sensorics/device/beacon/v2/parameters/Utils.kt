@@ -65,3 +65,19 @@ fun encodeHexAsParameterEmbedString(bytes: ByteArray, parameters: Parameters): S
 
     return builder.toString().trim()
 }
+
+fun <T : Number> getAsGivenTypeOrNull(value: String, type: Class<T>): T? {
+    return try {
+        when (type.name) {
+            Byte::class.java.name -> value.toByte() as T
+            Short::class.java.name -> value.toShort() as T
+            Int::class.java.name -> value.toInt() as T
+            Long::class.java.name -> value.toLong() as T
+            Float::class.java.name -> value.toFloat() as T
+            Double::class.java.name -> value.toDouble() as T
+            else -> throw NotImplementedError("class ${type.name} not implemented")
+        }
+    } catch (e: NumberFormatException) {
+        null
+    }
+}
