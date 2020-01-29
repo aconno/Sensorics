@@ -116,7 +116,7 @@ open class BeaconSettingsSlotFragment : DaggerFragment() {
             }
         }
         stringBuilder.append(")}catch(error){Android.onError(error.message);}")
-        webview_general.loadUrl(stringBuilder.toString())
+        webview_general?.loadUrl(stringBuilder.toString())
     }
 
 
