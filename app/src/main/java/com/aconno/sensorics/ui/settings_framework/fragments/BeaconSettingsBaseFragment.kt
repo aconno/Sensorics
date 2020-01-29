@@ -84,9 +84,15 @@ abstract class BeaconSettingsBaseFragment(private val fragmentId: Int? = null) :
         override fun onPageFinished(view: WebView?, url: String?) {
             Timber.d("page $url loaded")
             super.onPageFinished(view, url)
-            pageLoaded()
+            if (viewIsNotDestroyed()) {
+                pageLoaded()
+            } else {
+                Timber.w("view is destroyed. not invoking pageLoaded callback")
+            }
         }
     }
+
+    fun viewIsNotDestroyed() = view != null
 
     protected fun requestBeaconInfo() {
         val intent = Intent(SettingsFrameworkActivity.BEACON_JSON_REQUEST_BROADCAST)
