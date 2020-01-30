@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.transition.Fade
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -19,7 +18,8 @@ import kotlinx.android.synthetic.main.dialog_indeterminate_progress.view.*
 class CancelBtnSchedulerProgressDialog(
     private val activity: Activity,
     private val handler: Handler,
-    private val cancelBanAppearAfter: Long = 15000
+    private val cancelBanAppearAfter: Long = 15000,
+    private val cancelledByUser: () -> Unit
 ) : AlertDialog(activity) {
 
     private lateinit var cancelBtn: Button
@@ -27,6 +27,7 @@ class CancelBtnSchedulerProgressDialog(
     var progressMessage: String = ""
         set(value) {
             setMessageOrScheduleWhenInitialized(value)
+            rescheduleCancelTask()
             field = value
         }
 
@@ -45,6 +46,18 @@ class CancelBtnSchedulerProgressDialog(
         cancelBtn.visibility = View.VISIBLE
     }
 
+    private fun rescheduleCancelTask() {
+        handler.removeCallbacks(cancelBtnAppearingRunnable)
+        scheduleCancelTaskIfRunning()
+    }
+
+    private fun scheduleCancelTaskIfRunning() {
+        if (!activity.isFinishing and !activity.isDestroyed) {
+            handler.postDelayed(cancelBtnAppearingRunnable, cancelBanAppearAfter)
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val view = layoutInflater.inflate(
             R.layout.dialog_indeterminate_progress,
@@ -57,16 +70,17 @@ class CancelBtnSchedulerProgressDialog(
         }
         setCancelable(false)
         setCanceledOnTouchOutside(false)
-        this@CancelBtnSchedulerProgressDialog.cancelBtn.setOnClickListener { dismiss() }
+        this@CancelBtnSchedulerProgressDialog.cancelBtn.setOnClickListener {
+            cancelledByUser()
+            dismiss()
+        }
         view.message.text = disposableMessage?.value
         super.onCreate(savedInstanceState)
     }
 
     override fun show() {
-        if (!activity.isFinishing and !activity.isDestroyed) {
-            handler.postDelayed(cancelBtnAppearingRunnable, cancelBanAppearAfter)
-            super.show()
-        }
+        scheduleCancelTaskIfRunning()
+        super.show()
     }
 
     override fun dismiss() {

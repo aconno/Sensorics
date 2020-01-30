@@ -259,9 +259,8 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         mainMenu = menu
-        mainMenu?.clear()
         menuInflater.inflate(R.menu.main_menu, menu)
 
         mainMenu?.findItem(R.id.action_toggle_scan)?.let {

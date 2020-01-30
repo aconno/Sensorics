@@ -3,11 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/item_disconnect"
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
-        android:title="@string/disconnect"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/item_save"
         android:icon="@android:drawable/ic_menu_save"
         android:title="@string/save"
@@ -17,10 +12,5 @@
         android:icon="@drawable/ic_done"
         android:title="@string/apply"
         android:visible="false"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/item_add_slot"
-        android:icon="@drawable/ic_add"
-        android:title="@string/add_slot"
         app:showAsAction="ifRoom" />
 </menu>

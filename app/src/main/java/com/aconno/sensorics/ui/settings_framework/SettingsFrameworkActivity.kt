@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui.settings_framework
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.*
 import android.os.Bundle
 import android.os.Handler
@@ -33,6 +34,8 @@ import kotlinx.android.synthetic.main.activity_configure.*
 import timber.log.Timber
 import javax.inject.Inject
 
+// TODO this activity is too complicated. Need refactoring (maybe put bluetooth logic in viewmodel and
+//  make dialog creator classes)
 class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCallback,
     BeaconGeneralFragmentListener {
     private var bluetoothConnectService: BluetoothConnectService? = null
@@ -48,6 +51,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     lateinit var beaconViewModel: BeaconSettingsViewModel
 
     private var progressDialog: CancelBtnSchedulerProgressDialog? = null
+    private var passwordDialog: Dialog? = null
     private var indefiniteSnackBar: Snackbar? = null
     var device: String = ""
     private var isConnectionServiceRegistered = false
@@ -94,10 +98,8 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private fun connectToDevice(bluetoothService: BluetoothConnectService) {
         bluetoothService.connect(macAddress)
 
-        progressDialog = CancelBtnSchedulerProgressDialog(this, handler).apply {
-            progressMessage = getString(R.string.connecting_with_dots)
-            show()
-        }
+        showProgressDialogIfNeeded()
+        progressDialog?.progressMessage = getString(R.string.connecting_with_dots)
     }
 
     private val beaconRequestBroadcastReceiver = object : BroadcastReceiver() {
@@ -203,6 +205,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         handler.postDelayed({
             unregisterConnectionServiceIfNeed()
             closeProgressDialog()
+            closePasswordDialog()
             clearPages()
             tabs.visibility = View.INVISIBLE
         }, timeMs)
@@ -246,16 +249,16 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                 if ((payload.payload as Int) == 0x85 && retries < MAX_RETRIES) { // TODO: Something smarter maybe?
                     Toast.makeText(
                         this,
-                        "Failure, retrying in 3 seconds...",
+                        "Failure...",
                         Toast.LENGTH_LONG
                     ).show()
-
-                    handler.postDelayed({
-                        bluetoothConnectService?.let {
-                            connectToDevice(it)
-                        }
-                        retries++
-                    }, 3000)
+                    finish()
+//                    handler.postDelayed({
+//                        bluetoothConnectService?.let {
+//                            connectToDevice(it)
+//                        }
+//                        retries++
+//                    }, 3000)
                 } else {
                     Toast.makeText(
                         this,
@@ -321,25 +324,23 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         progressDialog = null
     }
 
+    private fun closePasswordDialog() {
+        passwordDialog?.dismiss()
+        progressDialog = null
+    }
+
     override fun onError(e: Exception) {
     }
 
     private fun showPasswordDialog() {
-        createPasswordDialog(object : OnPasswordDialogAction {
+        passwordDialog = createPasswordDialog(object : OnPasswordDialogAction {
             override fun onPasswordEntered(password: String) {
                 hideKeyboard()
                 beacon?.unlock(
                     password,
                     this@SettingsFrameworkActivity
                 ) // TODO: Do this in a better way
-                if (!(progressDialog?.isShowing == true)) {
-                    progressDialog = CancelBtnSchedulerProgressDialog(
-                        this@SettingsFrameworkActivity,
-                        handler
-                    ).apply {
-                        show()
-                    }
-                }
+                showProgressDialogIfNeeded()
                 progressDialog?.progressMessage = getString(R.string.ulocking_with_dots)
             }
 
@@ -347,8 +348,32 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                 hideKeyboard()
                 showTryAgainPasswordSnackBar()
             }
-        }).show()
+        }).apply {
+            show()
+        }
     }
+
+    private fun showProgressDialogIfNeeded() {
+        if (progressDialog?.isShowing != true) {
+            progressDialog = CancelBtnSchedulerProgressDialog(
+                this@SettingsFrameworkActivity,
+                handler
+            ) {
+                if (notDisconnectedFromDevice()) {
+                    // This might be invoke gatt disconnected event and trigger try again snackbar
+                    bluetoothConnectService?.disconnect()
+                } else {
+                    showTryAgainToConnectSnackBar()
+                }
+            }.apply {
+                show()
+            }
+        }
+
+    }
+
+    private fun notDisconnectedFromDevice() =
+        bluetoothConnectService?.getConnectResultsLiveData()?.value?.action != BluetoothGattCallback.ACTION_GATT_DISCONNECTED
 
     private fun showTryAgainPasswordSnackBar() {
         indefiniteSnackBar = ll_settings_root.snack(

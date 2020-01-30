@@ -9,11 +9,10 @@ import android.webkit.JavascriptInterface
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
-import com.aconno.sensorics.device.beacon.Parameter
-import com.aconno.sensorics.ui.settings_framework.BeaconSettingsDefaultParameter
 import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
-import com.google.gson.Gson
+import com.google.gson.JsonParser
 import kotlinx.android.synthetic.main.fragment_beacon_parameter2.*
+import timber.log.Timber
 
 class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFragment(fragmentId) {
 
@@ -21,15 +20,10 @@ class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFra
         ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
     }
 
-    private var standartParameters: List<Parameter<Any>>? = null
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        standartParameters = beaconViewModel.beacon.value?.parameters?.flatMap { x -> x.value }
         return inflater.inflate(R.layout.fragment_beacon_parameter2, container, false)
     }
 
@@ -52,56 +46,16 @@ class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFra
                 Observer { beaconInfo ->
                     beaconInfo?.let { webview_parameters?.loadUrl("javascript:ParametersLoader.setBeaconParameters('$it')") }
                 })
-
-            beaconInfoViewModel.saveChangesLiveData.observe(
-                viewLifecycleOwner,
-                Observer { saveEvent ->
-                    saveEvent.let { webview_parameters?.loadUrl("javascript:ParametersLoader.setBeaconParameters('$beaconInformation')") }
-                })
         }
         webview_parameters.loadUrl(HTML_FILE_PATH)
         webview_parameters.addJavascriptInterface(this, "native")
     }
 
     @JavascriptInterface
-    fun getParameters(): String {
-        standartParameters?.let { parameters ->
-            val defaultParameters =
-                parameters.map { parameter ->
+    fun beaconParametersUpdated(beaconString: String) {
+        Timber.d("beacon parameters updated, $beaconString")
+        beaconViewModel.beacon.value?.loadChangesFromJson(JsonParser().parse(beaconString).asJsonObject)
 
-                    BeaconSettingsDefaultParameter.Builder().buildFromParameter(parameter)
-
-                }
-            val json = Gson().toJson(defaultParameters)
-            return json
-        }
-
-        return ""
-    }
-
-    @JavascriptInterface
-    fun setDropDown(id: Int, value: String, position: Int, index: Int) {
-        standartParameters?.get(index)?.setValue(position)
-    }
-
-    @JavascriptInterface
-    fun setTextEdit(id: Int, value: String, index: Int) {
-        standartParameters?.get(index)?.setValue(value)
-    }
-
-    @JavascriptInterface
-    fun setTextNumber(id: Int, value: Int, index: Int) {
-        standartParameters?.get(index)?.setValue(value)
-    }
-
-    @JavascriptInterface
-    fun onSwitchChanged(id: Int, index: Int, value: Boolean) {
-        standartParameters?.get(index)?.setValue(value)
-    }
-
-    @JavascriptInterface
-    fun saveChanges(beaconParameters: String) {
-        //TODO implement this method
     }
 
     companion object {

@@ -49,7 +49,7 @@ abstract class BaseParameterImpl<T>(
 
 
     constructor(id: Int, typeId: Int, data: ByteArray, config: Config)
-        : this(id, typeId, ValueReaderImpl(data), config)
+            : this(id, typeId, ValueReaderImpl(data), config)
 
     init {
         flags = reader.readUInt16()
@@ -117,8 +117,8 @@ abstract class BaseParameterImpl<T>(
     }
 }
 
-class BooleanParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config)
-    : BaseParameterImpl<Boolean>(id, typeId, reader, config) {
+class BooleanParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config) :
+    BaseParameterImpl<Boolean>(id, typeId, reader, config) {
     init {
         val valueReader = ValueReaderImpl(valueData)
         valueInternal = valueReader.readBoolean()
@@ -170,40 +170,36 @@ open class NumberParameterImpl<T : Number>(
     override fun loadChangesFromJson(obj: JsonObject) {
         super.loadChangesFromJson(obj)
 
+        val value = obj.getNumberOrNull("value")?.let {
+            getAsGivenTypeOrNull(it.toString(), numberClass)
+        } ?: throw IllegalArgumentException(
+            "Value variable does not exist or is not a $numberClass!"
+        )
 
-
-        val value = obj.getBooleanOrNull("value")
-            ?.takeIf { numberClass.isAssignableFrom(it.javaClass) }
-            ?: throw IllegalArgumentException(
-                "Value variable does not exist or is not a $numberClass!"
-            )
-
-        // Asserted because isAssignableFrom has been
-        // performed and null check has been performed
-        setValue(numberClass.cast(value)!!)
+        setValue(value)
     }
 }
 
-class Int8ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config)
-    : NumberParameterImpl<Byte>(id, typeId, reader, config, Byte::class.java)
+class Int8ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config) :
+    NumberParameterImpl<Byte>(id, typeId, reader, config, Byte::class.java)
 
-class UInt8ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config)
-    : NumberParameterImpl<Short>(id, typeId, reader, config, Short::class.java)
+class UInt8ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config) :
+    NumberParameterImpl<Short>(id, typeId, reader, config, Short::class.java)
 
-class Int16ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config)
-    : NumberParameterImpl<Short>(id, typeId, reader, config, Short::class.java)
+class Int16ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config) :
+    NumberParameterImpl<Short>(id, typeId, reader, config, Short::class.java)
 
-class UInt16ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config)
-    : NumberParameterImpl<Int>(id, typeId, reader, config, Int::class.java)
+class UInt16ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config) :
+    NumberParameterImpl<Int>(id, typeId, reader, config, Int::class.java)
 
-class Int32ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config)
-    : NumberParameterImpl<Int>(id, typeId, reader, config, Int::class.java)
+class Int32ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config) :
+    NumberParameterImpl<Int>(id, typeId, reader, config, Int::class.java)
 
-class UInt32ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config)
-    : NumberParameterImpl<Long>(id, typeId, reader, config, Long::class.java)
+class UInt32ParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config) :
+    NumberParameterImpl<Long>(id, typeId, reader, config, Long::class.java)
 
-class FloatParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config)
-    : NumberParameterImpl<Float>(id, typeId, reader, config, Float::class.java)
+class FloatParameterImpl(id: Int, typeId: Int, reader: ValueReader, config: Config) :
+    NumberParameterImpl<Float>(id, typeId, reader, config, Float::class.java)
 
 class EnumParameterImpl(
     id: Int, typeId: Int, reader: ValueReader, config: Config
