@@ -40,12 +40,7 @@ class BeaconSettingsArbitraryDataHtmlFragment : SettingsBaseFragment() {
                 viewLifecycleOwner,
                 Observer { beaconInfo ->
                     beaconInfo?.let {
-                        webview_general?.loadUrl(
-                            javascriptCallGenerator.generateCall(
-                                "init",
-                                it
-                            )
-                        )
+                        webview_general?.loadUrl(jsGenerator.generateCall("init", it))
                     }
                 })
         }

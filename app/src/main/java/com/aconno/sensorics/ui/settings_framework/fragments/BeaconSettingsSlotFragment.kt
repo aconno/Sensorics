@@ -44,7 +44,7 @@ open class BeaconSettingsSlotFragment : SettingsBaseFragment() {
                 viewLifecycleOwner,
                 Observer { beaconJson ->
                     beaconJson?.let {
-                        webview_general.loadUrl(javascriptCallGenerator.generateCall("init", it))
+                        webview_general.loadUrl(jsGenerator.generateCall("init", it))
                     }
                 })
         }
