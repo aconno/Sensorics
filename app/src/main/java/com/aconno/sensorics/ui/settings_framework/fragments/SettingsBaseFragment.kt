@@ -40,7 +40,6 @@ abstract class SettingsBaseFragment() : DaggerFragment() {
     protected inner class UpdateBeaconJsInterfaceImpl {
         @JavascriptInterface
         fun onDataChanged(updatedBeaconJson: String) {
-            Timber.d("OnDataChanged: $updatedBeaconJson")
             sendBeaconsUpdatedJson(updatedBeaconJson)
         }
     }
