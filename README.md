@@ -1,4 +1,4 @@
-# ACNSENSA Demo App
+# Sensorics ![](https://github.com/aconno/Sensorics/workflows/Android%20CI/badge.svg)
 
 Android app for displaying sensor readings from the ACNSENSA aconno board. Sensor readings are
 gotten from the board using only BLE advertisements. For this purpose two advertisements are used:
