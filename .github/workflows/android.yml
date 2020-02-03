@@ -4,9 +4,7 @@ on: [push]
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: set up JDK 1.8
@@ -19,9 +17,8 @@ jobs:
       run: ./gradlew -Psensorics_fabricKey=${SENSORICS_FABRIC_KEY} test
 
   assemble_debug:
-
+    needs: test
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: set up JDK 1.8
