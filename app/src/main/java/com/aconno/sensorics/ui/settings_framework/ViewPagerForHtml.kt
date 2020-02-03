@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.configure
+package com.aconno.sensorics.ui.settings_framework
 
 import android.content.Context
 import android.util.AttributeSet

@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.aconno.sensorics.*
+import com.aconno.sensorics.dagger.settings_framework.BeaconGeneralFragmentListener
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.v2.BeaconImpl
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
@@ -24,7 +25,6 @@ import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
-import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
 import com.aconno.sensorics.ui.dialogs.CancelBtnSchedulerProgressDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson

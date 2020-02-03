@@ -24,7 +24,7 @@
         app:pstsTabTextColor="@color/primaryTextColor"
         android:layout_height="?attr/actionBarSize" />
 
-    <com.aconno.sensorics.ui.configure.ViewPagerForHtml
+    <com.aconno.sensorics.ui.settings_framework.ViewPagerForHtml
         android:id="@+id/vp_beacon"
         android:layout_width="match_parent"
         android:visibility="invisible"

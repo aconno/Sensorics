@@ -54,7 +54,6 @@ dependencies {
     implementation project(':domain')
     implementation project(':device')
     implementation project(':data')
-    implementation project(':bluetooth')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 

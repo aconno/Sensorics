@@ -2,13 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Sensorics.iml" filepath="$PROJECT_DIR$/Sensorics.iml" />
-      <module fileurl="file://$PROJECT_DIR$/bluetooth/Sensorics-bluetooth.iml" filepath="$PROJECT_DIR$/bluetooth/Sensorics-bluetooth.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/bluetooth/bluetooth.iml" filepath="$PROJECT_DIR$/bluetooth/bluetooth.iml" />
-      <module fileurl="file://$PROJECT_DIR$/data/data.iml" filepath="$PROJECT_DIR$/data/data.iml" />
-      <module fileurl="file://$PROJECT_DIR$/device/device.iml" filepath="$PROJECT_DIR$/device/device.iml" />
-      <module fileurl="file://$PROJECT_DIR$/domain/domain.iml" filepath="$PROJECT_DIR$/domain/domain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sensorics.iml" filepath="$PROJECT_DIR$/Sensorics.iml" group="Sensorics" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Sensorics/app" />
+      <module fileurl="file://$PROJECT_DIR$/data/data.iml" filepath="$PROJECT_DIR$/data/data.iml" group="Sensorics/data" />
+      <module fileurl="file://$PROJECT_DIR$/device/device.iml" filepath="$PROJECT_DIR$/device/device.iml" group="Sensorics/device" />
+      <module fileurl="file://$PROJECT_DIR$/domain/domain.iml" filepath="$PROJECT_DIR$/domain/domain.iml" group="Sensorics/domain" />
     </modules>
   </component>
 </project>

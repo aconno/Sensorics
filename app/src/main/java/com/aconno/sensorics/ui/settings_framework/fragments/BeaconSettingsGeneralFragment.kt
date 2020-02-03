@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
-import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
+import com.aconno.sensorics.dagger.settings_framework.BeaconGeneralFragmentListener
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 
 class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {

@@ -5,19 +5,17 @@ import com.aconno.sensorics.BluetoothConnectService
 import com.aconno.sensorics.BluetoothScanningService
 import com.aconno.sensorics.dagger.action.ActionModule
 import com.aconno.sensorics.dagger.action.ActionScope
-import com.aconno.sensorics.dagger.actiondetails.ActionDetailsActivityScope
 import com.aconno.sensorics.dagger.actiondetails.ActionDetailsActivityModule
-import com.aconno.sensorics.dagger.actionoutcome.ActionOutcomeModule
-import com.aconno.sensorics.dagger.actionoutcome.ActionOutcomeScope
-import com.aconno.sensorics.dagger.actionlist.ActionListFragmentsModule
+import com.aconno.sensorics.dagger.actiondetails.ActionDetailsActivityScope
 import com.aconno.sensorics.dagger.actionlist.ActionListActivityModule
 import com.aconno.sensorics.dagger.actionlist.ActionListActivityScope
+import com.aconno.sensorics.dagger.actionlist.ActionListFragmentsModule
+import com.aconno.sensorics.dagger.actionoutcome.ActionOutcomeModule
+import com.aconno.sensorics.dagger.actionoutcome.ActionOutcomeScope
 import com.aconno.sensorics.dagger.alarm.AlarmServiceModule
 import com.aconno.sensorics.dagger.alarm.AlarmServiceScope
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceScope
-import com.aconno.sensorics.dagger.configure.ConfigureActivityModule
-import com.aconno.sensorics.dagger.configure.ConfigureActivityScope
 import com.aconno.sensorics.dagger.device.DeviceModule
 import com.aconno.sensorics.dagger.device.DeviceScope
 import com.aconno.sensorics.dagger.deviceselect.DeviceSelectionFragmentsModule
@@ -31,9 +29,9 @@ import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityModule
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityScope
 import com.aconno.sensorics.dagger.publisher.PublisherModule
 import com.aconno.sensorics.dagger.publisher.PublisherScope
-import com.aconno.sensorics.dagger.publishlist.PublishListFragmentsModule
 import com.aconno.sensorics.dagger.publishlist.PublishListActivityModule
 import com.aconno.sensorics.dagger.publishlist.PublishListActivityScope
+import com.aconno.sensorics.dagger.publishlist.PublishListFragmentsModule
 import com.aconno.sensorics.dagger.readings.SensorReadingsModule
 import com.aconno.sensorics.dagger.readings.SensorReadingsScope
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityModule
@@ -47,7 +45,6 @@ import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.SplashActivity
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
-import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
@@ -143,10 +140,6 @@ abstract class ActivityBuilder {
             modules = [SplashActivityModule::class]
     )
     abstract fun bindSplashActivity(): SplashActivity
-
-    @ConfigureActivityScope
-    @ContributesAndroidInjector(modules = [ConfigureActivityModule::class])
-    abstract fun bindConfigureActivity(): ConfigureActivity
 
     @SettingsFrameworkActivityScope
     @ContributesAndroidInjector(modules = [SettingsFrameworkActivityModule::class, BeaconSettingsSlotFragmentModule::class])

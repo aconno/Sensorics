@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.configure
+package com.aconno.sensorics.ui.settings_framework
 
 interface ViewPagerSlider {
     fun stopViewPager()

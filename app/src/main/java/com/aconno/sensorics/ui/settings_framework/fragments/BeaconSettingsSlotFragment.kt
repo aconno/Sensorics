@@ -8,14 +8,21 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.bluetooth.beacon.Slot.Companion.EXTRA_BEACON_SLOT_POSITION
 import com.aconno.sensorics.R
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.Slot
+import com.aconno.sensorics.device.beacon.Slot.Companion.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM
+import com.aconno.sensorics.device.beacon.Slot.Companion.KEY_ADVERTISING_CONTENT_DEFAULT_DATA
+import com.aconno.sensorics.device.beacon.Slot.Companion.KEY_ADVERTISING_CONTENT_IBEACON_MAJOR
+import com.aconno.sensorics.device.beacon.Slot.Companion.KEY_ADVERTISING_CONTENT_IBEACON_MINOR
+import com.aconno.sensorics.device.beacon.Slot.Companion.KEY_ADVERTISING_CONTENT_IBEACON_UUID
+import com.aconno.sensorics.device.beacon.Slot.Companion.KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID
+import com.aconno.sensorics.device.beacon.Slot.Companion.KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID
+import com.aconno.sensorics.device.beacon.Slot.Companion.KEY_ADVERTISING_CONTENT_URL_URL
 import com.aconno.sensorics.device.beacon.Slots
 import com.aconno.sensorics.model.mapper.ParametersAdvertisingContentMapper
-import com.aconno.sensorics.ui.configure.ViewPagerSlider
 import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
+import com.aconno.sensorics.ui.settings_framework.ViewPagerSlider
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -189,36 +196,36 @@ open class BeaconSettingsSlotFragment : BeaconSettingsBaseFragment() {
 
     private fun convertKeysToJavascriptFormat(slotJson: String): String {
         var convertedJson = slotJson.replace(
-            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_UUID,
+            KEY_ADVERTISING_CONTENT_IBEACON_UUID,
             "KEY_ADVERTISING_CONTENT_IBEACON_UUID"
         )
         convertedJson = convertedJson.replace(
-            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_MAJOR,
+            KEY_ADVERTISING_CONTENT_IBEACON_MAJOR,
             "KEY_ADVERTISING_CONTENT_IBEACON_MAJOR"
         )
         convertedJson = convertedJson.replace(
-            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_MINOR,
+            KEY_ADVERTISING_CONTENT_IBEACON_MINOR,
             "KEY_ADVERTISING_CONTENT_IBEACON_MINOR"
         )
         convertedJson = convertedJson.replace(
-            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID,
+            KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID,
             "KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID"
         )
         convertedJson = convertedJson.replace(
-            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID,
+            KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID,
             "KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID"
         )
         convertedJson = convertedJson.replace(
-            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_URL_URL,
+            KEY_ADVERTISING_CONTENT_URL_URL,
             "KEY_ADVERTISING_CONTENT_URL_URL"
         )
         convertedJson = convertedJson.replace(
-            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM,
+            KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM,
             "KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM"
         )
 
         convertedJson = convertedJson.replace(
-            com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_DEFAULT_DATA,
+            KEY_ADVERTISING_CONTENT_DEFAULT_DATA,
             "KEY_ADVERTISING_CONTENT_DEFAULT_DATA"
         )
         return convertedJson
@@ -239,35 +246,35 @@ open class BeaconSettingsSlotFragment : BeaconSettingsBaseFragment() {
         private fun convertKeysToOriginals(slotJson: String): String {
             var convertedJson = slotJson.replace(
                 "KEY_ADVERTISING_CONTENT_IBEACON_UUID",
-                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_UUID
+                KEY_ADVERTISING_CONTENT_IBEACON_UUID
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_IBEACON_MAJOR",
-                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_MAJOR
+                KEY_ADVERTISING_CONTENT_IBEACON_MAJOR
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_IBEACON_MINOR",
-                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_IBEACON_MINOR
+                KEY_ADVERTISING_CONTENT_IBEACON_MINOR
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID",
-                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID
+                KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID",
-                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID
+                KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_URL_URL",
-                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_URL_URL
+                KEY_ADVERTISING_CONTENT_URL_URL
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM",
-                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM
+                KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM
             )
             convertedJson = convertedJson.replace(
                 "KEY_ADVERTISING_CONTENT_DEFAULT_DATA",
-                com.aconno.bluetooth.beacon.Slot.KEY_ADVERTISING_CONTENT_DEFAULT_DATA
+                KEY_ADVERTISING_CONTENT_DEFAULT_DATA
             )
             return convertedJson
         }
@@ -319,6 +326,7 @@ open class BeaconSettingsSlotFragment : BeaconSettingsBaseFragment() {
     companion object {
         const val HTML_FILE_PATH =
             "file:///android_asset/resources/settings/views/slot/Slot.html"
+        const val EXTRA_BEACON_SLOT_POSITION = "com.aconno.beaconapp.BEACON_SLOT_POSITION"
 
         @JvmStatic
         fun newInstance(slotPosition: Int) =
