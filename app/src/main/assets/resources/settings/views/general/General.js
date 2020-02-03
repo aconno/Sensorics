@@ -1,5 +1,7 @@
 class GeneralView {}
 
+let beacon;
+
 GeneralView.Views = class {
     static get TOGGLE_CONNECTION_ID() { return "tglConnection"; }
     static get LABEL_MANUFACTURER_ID() { return  "lblManufacturer"; }
@@ -18,7 +20,8 @@ GeneralView.Views = class {
  GeneralView.ViewsAction = class{
     static setConnection(value){
         $(`#${GeneralView.Views.TOGGLE_CONNECTION_ID}`).prop("checked",value);
-        native.changeConnectible(value);
+        // not implemented yet
+        // native.onDataChanged(JSON.stringify(beacon));
     }
     
     static setLabelManufacturer(value) {
@@ -122,7 +125,7 @@ GeneralView.Actions = class{
     }
 
     static setBeaconInformation(beaconString){
-        let beacon = JSON.parse(beaconString);
+        beacon = JSON.parse(beaconString);
 
         let generalParams = beacon.parameters.parameters["Basic config"];
         let paramMap = {};

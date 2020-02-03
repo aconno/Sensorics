@@ -68,8 +68,8 @@ class BeaconSettingsGeneralFragment: SettingsBaseFragment() {
     }
 
     @JavascriptInterface
-    fun changeConnectible(checked: Boolean) {
-        //beaconViewModel.beacon.value?.connectible = checked
+    fun onDataChanged(updatedBeaconJson: String) {
+        sendBeaconsUpdatedJson(updatedBeaconJson)
     }
 
     override fun onAttach(context: Context) {
