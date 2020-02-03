@@ -14,14 +14,14 @@ class Slot {
 }
 
 var FrameType = {
-    UID: 0,
+    UID: "UID",
     URL: "URL",
-    TLM: 2,
-    IBEACON: "iBeacon",
-    DEVICE_INFO: 4,
+    TLM: "TLM",
+    IBEACON: "I_BEACON",
+    DEVICE_INFO: "DEVICE_INFO",
     DEFAULT: "DEFAULT",
     EMPTY: "EMPTY",
-    CUSTOM: "Custom (MSD)"
+    CUSTOM: "CUSTOM"
 };
 
 const KEY_ADVERTISING_CONTENT_IBEACON_UUID =

@@ -4,7 +4,6 @@ import android.content.Context
 import com.aconno.sensorics.device.beacon.v2.BeaconImpl
 import com.aconno.sensorics.device.bluetooth.tasks.GenericTask
 import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
-import com.aconno.sensorics.domain.migrate.getArrayOrNull
 import com.aconno.sensorics.domain.migrate.getObjectOrNull
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
 import com.google.gson.Gson
@@ -129,10 +128,10 @@ abstract class Beacon(context: Context, taskProcessor: BluetoothTaskProcessor) {
             )
         this.parameters.loadChangesFromJson(parameters)
 
-        val slots = obj.getAsJsonObject("slots").getArrayOrNull("slots")
+        val slots = obj.getObjectOrNull("slots")
             ?: throw IllegalArgumentException(
                 "Slots missing!"
-            )
+            ) // TODO: Correct
         this.slots.loadChangesFromJson(slots)
 
         TODO("LOAD ARB DATA")

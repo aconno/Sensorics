@@ -2,6 +2,7 @@ package com.aconno.sensorics.device.beacon
 
 import com.aconno.sensorics.device.beacon.Slot.Type
 import com.aconno.sensorics.domain.migrate.asObjectOrNull
+import com.aconno.sensorics.domain.migrate.getArrayOrNull
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -36,19 +37,22 @@ abstract class Slots(
     }
 
     @Throws(IllegalArgumentException::class)
-    fun loadChangesFromJson(obj: JsonArray) {
-
-        forEachIndexed { index, slot ->
-            obj.get(index)?.let { slotElement ->
-                slotElement.asObjectOrNull()?.let {
-                    slot.loadChangesFromJson(it)
+    fun loadChangesFromJson(obj: JsonObject) {
+        obj.getArrayOrNull("slots")?.let { obj ->
+            forEachIndexed { index, slot ->
+                obj.get(index)?.let { slotElement ->
+                    slotElement.asObjectOrNull()?.let {
+                        slot.loadChangesFromJson(it)
+                    } ?: throw IllegalArgumentException(
+                        "Supplied slot at index $index should be object but is not!"
+                    )
                 } ?: throw IllegalArgumentException(
-                    "Supplied slot at index $index should be object but is not!"
+                    "Illegal amount of slots supplied, should be $size"
                 )
-            } ?: throw IllegalArgumentException(
-                "Illegal amount of slots supplied, should be $size"
-            )
-        }
+            }
+        } ?: throw IllegalArgumentException(
+            "Slots attribute missing in slots JSON object!"
+        )
     }
 
     companion object {

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import android.webkit.JavascriptInterface
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.bluetooth.beacon.Slot.Companion.EXTRA_BEACON_SLOT_POSITION
@@ -14,7 +16,6 @@ import com.aconno.sensorics.device.beacon.Slots
 import com.aconno.sensorics.model.mapper.ParametersAdvertisingContentMapper
 import com.aconno.sensorics.ui.configure.ViewPagerSlider
 import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
-import com.google.gson.JsonParser
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -77,6 +78,7 @@ open class BeaconSettingsSlotFragment : BeaconSettingsBaseFragment() {
         webview_general.settings.allowFileAccessFromFileURLs = true
         webview_general.settings.allowUniversalAccessFromFileURLs = true
         webview_general.settings.allowContentAccess = true
+        webview_general.addJavascriptInterface(this, "native")
         webview_general.webViewClient = PageLoadedEventWebViewClient {
             beaconInfoViewModel.beaconInformation.observe(
                 viewLifecycleOwner,
@@ -92,6 +94,26 @@ open class BeaconSettingsSlotFragment : BeaconSettingsBaseFragment() {
         }
         webview_general.loadUrl(HTML_FILE_PATH)
         requestBeaconInfo()
+    }
+
+
+    //Prevent running twice or more
+    inner class WebAppClient : WebViewClient() {
+        var urlFinished: String = ""
+
+        override fun onPageFinished(view: WebView?, url: String?) {
+
+            if (urlFinished != url) {
+                getSlotJson()?.let {
+                    Timber.d("Call the method again")
+                    callJavaScript("init", it, slotPosition)
+                }
+            }
+            url?.let {
+                urlFinished = it
+            }
+            super.onPageFinished(view, url)
+        }
     }
 
     private fun callJavaScript(methodName: String, vararg params: Any) {
@@ -127,10 +149,37 @@ open class BeaconSettingsSlotFragment : BeaconSettingsBaseFragment() {
 
         when (item.itemId) {
             R.id.item_save -> {
-                TODO("Broadcast save request")
+                /*
+                * beaconViewModel.beacon.value?.slots?.get(slotPosition)
+                * should get the latest slots.
+                */
+                Timber.d("Values: ${getSlotJson()}")
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun getSlotJson(): String? {
+        val slotPosition = arguments!!.getInt(EXTRA_BEACON_SLOT_POSITION)
+
+//        val data = beaconViewModel.beacon.value?.slots?.get(slotPosition)?.let {
+//            SlotJS(
+//                it.getType().tabName,//Do not change the order
+//                convertToReadableAdvContent(it),
+//                it.name,
+//                it.active,
+//                getAdvertisingModeStatus(it),
+//                it.packetCount,
+//                beacon.supportedTxPowers,
+//                beacon.supportedTxPowers.indexOf(it.txPower),
+//                it.readOnly,
+//                it.advertisingModeParameters.interval
+//            )
+//        }?.let {
+//            convertKeysToJavascriptFormat(Gson().toJson(it))
+//                .replace("\\u0000", "")
+//        }
+        return ""
     }
 
     private fun getAdvertisingModeStatus(slot: Slot) = when (slot.advertisingMode) {
@@ -175,12 +224,11 @@ open class BeaconSettingsSlotFragment : BeaconSettingsBaseFragment() {
         return convertedJson
     }
 
-    inner class WebAppInterface {
 
         @JavascriptInterface
         fun onDataChanged(slotJsonRaw: String) {
             Timber.d("OnDataChanged: $slotJsonRaw")
-            beaconViewModel?.beacon?.value?.loadChangesFromJson(JsonParser().parse(slotJsonRaw).asJsonObject)
+//            beaconViewModel?.beacon?.value?.loadChangesFromJson(JsonParser().parse(slotJsonRaw).asJsonObject)
         }
 
         @JavascriptInterface
@@ -246,7 +294,6 @@ open class BeaconSettingsSlotFragment : BeaconSettingsBaseFragment() {
         fun onError(string: String) {
             Timber.e(string)
         }
-    }
 
     override fun onDestroyView() {
         view?.let {

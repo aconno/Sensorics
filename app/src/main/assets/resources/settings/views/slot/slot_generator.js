@@ -89,7 +89,7 @@ function generateBaseParameter(interval_checked) {
 }
 
 function generateEnums(elements, id, name, value, index) {
-    let body = generateEnumsBody(id, elements, index)
+    let body = generateEnumsBody(id, elements, index);
     let html = '<div class="panel-body">';
     html += '<div class="form-group">';
     html += '<label for="ddl-lbl-' + id + '">' + name + '</label>';
@@ -166,20 +166,20 @@ function generateFrameTypeMenuItem(name) {
 }
 
 function onlyPositiveNumberFilter(event) {
-    return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 0
+    return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 0
 }
 
 function getClosestElementPosition(intArray, to) {
     let chosen = intArray[0];
     let diff = Math.abs(to - chosen);
 
-    intArray.forEach(function(it) {
+    intArray.forEach(function (it) {
         let newDiff = Math.abs(to - it);
         if (newDiff < diff) {
             chosen = it;
             diff = newDiff;
         }
-    })
+    });
 
     return intArray.indexOf(chosen);
 }
@@ -188,34 +188,33 @@ function getClosestElementPosition(intArray, to) {
 function timeToHighestOrder(copy) {
 
     let millis = (copy % 1000);
-    copy -= millis
+    copy -= millis;
     let seconds = ((copy / 1000) % 60);
-    copy -= 1000 * seconds
+    copy -= 1000 * seconds;
     let minutes = ((copy / 60000) % 60);
-    copy -= 60000 * seconds
+    copy -= 60000 * seconds;
     let hours = (copy / 3600000);
-    copy -= 3600000 * hours
+    copy -= 3600000 * hours;
     let days = (copy / 86400000);
-    copy -= 86400000 * days
+    copy -= 86400000 * days;
     let weeks = (copy / 604800000);
-    copy -= 604800000 * weeks
+    copy -= 604800000 * weeks;
     let months = (copy / 2419200000);
     copy -= 2419200000 * months;
 
-    if (millis != 0)
+    if (millis !== 0) {
         return "Every " + (millis + seconds * 1000) + " milliseconds";
-
-    else if (seconds != 0)
+    } else if (seconds !== 0) {
         return "Every " + (seconds + minutes * 60) + " seconds";
-
-    else if (minutes != 0)
+    } else if (minutes !== 0) {
         return "Every " + (minutes + hours * 60) + " minutes";
-    else if (hours != 0)
+    } else if (hours !== 0) {
         return "Every " + (hours + days * 24) + " hours";
-    else if (days != 0)
+    } else if (days !== 0) {
         return "Every " + (days + weeks * 7) + " days";
-    else if (weeks != 0)
+    } else if (weeks !== 0) {
         return "Every " + (weeks + months * 4) + " weeks";
-    else
+    } else {
         return "Every " + months + " months";
+    }
 }
