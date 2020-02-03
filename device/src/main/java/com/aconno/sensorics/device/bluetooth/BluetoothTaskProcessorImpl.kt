@@ -166,6 +166,7 @@ class BluetoothTaskProcessorImpl(
             }
 
         } catch (e: Exception) {
+            Timber.e(e, "Catched error")
             task.onError(bluetooth, e)
             queue.pop()
         }

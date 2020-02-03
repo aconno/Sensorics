@@ -1,9 +1,8 @@
 package com.aconno.sensorics.dagger.settings_framework
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
-import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModelFactory
 import com.aconno.sensorics.ui.settings_framework.SettingsFrameworkActivity
+import com.aconno.sensorics.ui.settings_framework.fragments.SettingsActivitySharedViewModel
 import dagger.Module
 import dagger.Provides
 
@@ -12,16 +11,16 @@ class SettingsFrameworkActivityModule {
 
     @Provides
     @SettingsFrameworkActivityScope
-    fun provideBeaconSettingsViewModel(
+    fun provideSettingsActivitySharedViewModel(
         settingsFrameworkActivity: SettingsFrameworkActivity,
-        beaconSettingsViewModelFactory: BeaconSettingsViewModelFactory
+        beaconSettingsViewModelFactory: SettingsActivitySharedViewModelFactory
     ) = ViewModelProviders.of(settingsFrameworkActivity, beaconSettingsViewModelFactory)
-        .get(BeaconSettingsViewModel::class.java)
+        .get(SettingsActivitySharedViewModel::class.java)
 
     @Provides
     @SettingsFrameworkActivityScope
-    fun provideBeaconSettingsViewModelFactory(
-    ) = BeaconSettingsViewModelFactory()
+    fun provideSettingsActivitySharedViewModelFactory(
+    ) = SettingsActivitySharedViewModelFactory()
 
 
 }

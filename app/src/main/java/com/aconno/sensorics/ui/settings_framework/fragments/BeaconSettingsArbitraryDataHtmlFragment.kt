@@ -5,24 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.widget.ProgressBar
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
-import com.aconno.sensorics.model.javascript.ArbitraryDataJS
-import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
-import timber.log.Timber
 
-class BeaconSettingsArbitraryDataHtmlFragment : Fragment() {
-
-    private val beaconSettingsViewModel: BeaconSettingsViewModel by lazy {
-        ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
-    }
+class BeaconSettingsArbitraryDataHtmlFragment : SettingsBaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,78 +33,28 @@ class BeaconSettingsArbitraryDataHtmlFragment : Fragment() {
     @SuppressLint("SetJavaScriptEnabled")
     private fun initiateWebView() {
         webview_general.settings.javaScriptEnabled = true
-        webview_general.addJavascriptInterface(WebAppInterface(), "Android")
-        webview_general.webViewClient = WebAppClient()
+        webview_general.addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "Android")
         webview_general.webChromeClient = WebAppChromeClient()
+        webview_general.webViewClient = PageLoadedEventWebViewClient {
+            settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
+                viewLifecycleOwner,
+                Observer { beaconInfo ->
+                    beaconInfo?.let {
+                        webview_general?.loadUrl(
+                            javascriptCallGenerator.generateCall(
+                                "init",
+                                it
+                            )
+                        )
+                    }
+                })
+        }
         webview_general.loadUrl(HTML_FILE_PATH)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         webview_general.saveState(outState)
         super.onSaveInstanceState(outState)
-    }
-
-    private fun callJavaScript(methodName: String, vararg params: Any) {
-        val stringBuilder = StringBuilder()
-        stringBuilder.append("javascript:try{")
-        stringBuilder.append(methodName)
-        stringBuilder.append("(")
-        for (i in params.indices) {
-            val param = params[i]
-            if (param is String) {
-                stringBuilder.append("'")
-                stringBuilder.append(param.toString().replace("'", "\\'"))
-                stringBuilder.append("'")
-            }
-            if (i < params.size - 1) {
-                stringBuilder.append(",")
-            }
-        }
-        stringBuilder.append(")}catch(error){Android.onError(error.message);}")
-        webview_general.loadUrl(stringBuilder.toString())
-    }
-
-    inner class WebAppClient : WebViewClient() {
-        override fun onPageFinished(view: WebView?, url: String?) {
-            super.onPageFinished(view, url)
-            if (isAdded) {
-                getArbitraryJsonArray()?.let {
-                    callJavaScript("init", it)
-                }
-            }
-        }
-    }
-
-    private fun getArbitraryJsonArray(): String? {
-        return beaconSettingsViewModel.beacon.value?.arbitraryData?.map {
-            ArbitraryDataJS(it.key, it.value)
-        }?.takeIf {
-            it.isNotEmpty()
-        }?.let {
-            Gson().toJson(it)
-        }
-    }
-
-    inner class WebAppInterface {
-        @JavascriptInterface
-        fun onDataChanged(arbitraryDataJSONArray: String) {
-            val listType = object : TypeToken<List<ArbitraryDataJS>>() {}.type
-            val arbitraryDataList =
-                Gson().fromJson<List<ArbitraryDataJS>>(arbitraryDataJSONArray, listType)
-
-            beaconSettingsViewModel.beacon.value?.arbitraryData?.clear()
-            arbitraryDataList.forEach {
-                beaconSettingsViewModel.beacon.value?.arbitraryData?.put(
-                    it.key,
-                    it.value
-                )
-            }
-        }
-
-        @JavascriptInterface
-        fun onError(string: String) {
-            Timber.e(string)
-        }
     }
 
     inner class WebAppChromeClient : WebChromeClient() {
@@ -128,27 +68,6 @@ class BeaconSettingsArbitraryDataHtmlFragment : Fragment() {
                 progress_page.visibility = ProgressBar.GONE
             }
         }
-
-        override fun onJsAlert(
-            view: WebView?,
-            url: String?,
-            message: String?,
-            result: JsResult?
-        ): Boolean {
-
-            context?.let {
-                AlertDialog.Builder(it)
-                    .setTitle("Alert")
-                    .setMessage(message)
-                    .setNeutralButton(
-                        android.R.string.ok
-                    ) { dialog, _ -> dialog?.dismiss() }
-                    .show()
-            }
-
-            result?.cancel()
-            return true
-        }
     }
 
     companion object {
@@ -157,6 +76,6 @@ class BeaconSettingsArbitraryDataHtmlFragment : Fragment() {
 
         @JvmStatic
         fun newInstance() =
-                BeaconSettingsArbitraryDataHtmlFragment()
+            BeaconSettingsArbitraryDataHtmlFragment()
     }
 }

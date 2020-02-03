@@ -12,7 +12,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
 import kotlinx.android.synthetic.main.fragment_beacon_general2.*
 
-class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {
+class BeaconSettingsGeneralFragment: SettingsBaseFragment() {
 
     private lateinit var listener: BeaconGeneralFragmentListener
 
@@ -35,16 +35,16 @@ class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {
         webview_general.settings.allowFileAccessFromFileURLs = true
         webview_general.settings.allowUniversalAccessFromFileURLs = true
         webview_general.settings.allowContentAccess = true
+        webview_general.addJavascriptInterface(this, "native")
         webview_general.webViewClient = PageLoadedEventWebViewClient {
-            beaconInfoViewModel.beaconInformation.observe(
+            settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
                 viewLifecycleOwner,
                 Observer { beaconInfo ->
+                    // todo use JavascriptCallGenerator
                     beaconInfo?.let { webview_general?.loadUrl("javascript:GeneralView.Actions.setBeaconInformation('${it}')") }
                 })
         }
         webview_general.loadUrl(HTML_FILE_PATH)
-        webview_general.addJavascriptInterface(this, "native")
-        requestBeaconInfo()
     }
 
     @JavascriptInterface

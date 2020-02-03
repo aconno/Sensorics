@@ -2,7 +2,10 @@ package com.aconno.sensorics.ui.settings_framework
 
 import android.app.Activity
 import android.app.Dialog
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -13,7 +16,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.aconno.sensorics.*
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.v2.BeaconImpl
@@ -24,8 +26,11 @@ import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
+import com.aconno.sensorics.model.mapper.ParametersAdvertisingContentMapper
+import com.aconno.sensorics.model.mapper.WebViewAppBeaconMapper
 import com.aconno.sensorics.ui.configure.BeaconGeneralFragmentListener
 import com.aconno.sensorics.ui.dialogs.CancelBtnSchedulerProgressDialog
+import com.aconno.sensorics.ui.settings_framework.fragments.SettingsActivitySharedViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
@@ -47,9 +52,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private var retries: Int = 0
     private val handler: Handler = Handler()
 
-    @Inject
-    lateinit var beaconViewModel: BeaconSettingsViewModel
-
     private var progressDialog: CancelBtnSchedulerProgressDialog? = null
     private var passwordDialog: Dialog? = null
     private var indefiniteSnackBar: Snackbar? = null
@@ -57,14 +59,13 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private var isConnectionServiceRegistered = false
 
     private val beaconSettingsPagerAdapter: BeaconSettingsPagerAdapter by lazy {
-        BeaconSettingsPagerAdapter(supportFragmentManager).apply {
-            beaconViewModel.beacon.observe(this@SettingsFrameworkActivity, Observer<Beacon> {
-                it?.let {
-                    this@SettingsFrameworkActivity.beacon = it
-                }
-            })
-        }
+        BeaconSettingsPagerAdapter(supportFragmentManager)
     }
+
+    @Inject
+    lateinit var settingsSharedViewModel: SettingsActivitySharedViewModel
+    @Inject
+    lateinit var webViewAppBeaconMapper: WebViewAppBeaconMapper
 
     private val serviceConnection = object : ServiceConnection {
 
@@ -101,12 +102,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
         showProgressDialogIfNeeded()
         progressDialog?.progressMessage = getString(R.string.connecting_with_dots)
-    }
-
-    private val beaconRequestBroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            sendBeaconInfoBroadcast()
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -149,35 +144,21 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.item_save -> saveChanges()
+            R.id.item_save -> {
+                //NOP
+            }
             else -> return false
         }
         return true
     }
 
-    private fun saveChanges() {
-        val intent = Intent(SAVE_CHANGES_BROADCAST)
-        intent.putExtra(TARGET_FRAGMENT_ID_BROADCAST_EXTRA, vp_beacon.currentItem)
-        LocalBroadcastManager.getInstance(this@SettingsFrameworkActivity).sendBroadcast(intent)
-    }
-
-
     override fun onStart() {
         super.onStart()
         cancelScheduleEvents()
-        bindServices()
+        registerConnectionServiceIfNeed()
     }
 
     private fun cancelScheduleEvents() = handler.removeCallbacksAndMessages(null)
-
-    private fun bindServices() {
-        registerConnectionServiceIfNeed()
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-            beaconRequestBroadcastReceiver,
-            IntentFilter(BEACON_JSON_REQUEST_BROADCAST)
-        )
-    }
 
     private fun registerConnectionServiceIfNeed() {
         if (!isConnectionServiceRegistered) {
@@ -198,7 +179,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     override fun onStop() {
         super.onStop()
         cancelScheduleEvents()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(beaconRequestBroadcastReceiver)
         scheduleCleaningServiceAndScreen(CLEAN_TIMER)
     }
 
@@ -256,11 +236,10 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
     }
 
-    private fun sendBeaconInfoBroadcast() {
+    private fun sendBeaconInfo() {
         beacon?.let {
-            val intent = Intent(BEACON_JSON_BROADCAST)
-            intent.putExtra(BEACON_JSON_BROADCAST_EXTRA, gson.toJson(it.toJson()))
-            LocalBroadcastManager.getInstance(this@SettingsFrameworkActivity).sendBroadcast(intent)
+            webViewAppBeaconMapper.prepareForWebView(it)
+            settingsSharedViewModel.sendBeaconJsonToObservers(gson.toJson(it.toJson()))
         }
     }
 
@@ -274,7 +253,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
             beacon?.read(object : GenericTask("On Read Completed Task") {
                 override fun onSuccess() {
-                    beaconViewModel.beacon.value = beacon
                     closeProgressDialog()
                     Timber.d(Gson().toJson(beacon!!.toJson()))
 
@@ -283,7 +261,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                     tabs.visibility = View.VISIBLE
                     vp_beacon.visibility = View.VISIBLE
 
-                    sendBeaconInfoBroadcast()
+                    sendBeaconInfo()
                 }
 
                 override fun execute(bluetooth: Bluetooth): Boolean {
@@ -427,14 +405,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     companion object {
-        const val TARGET_FRAGMENT_ID_BROADCAST_EXTRA = "TARGET_FRAGMENT_ID_BROADCAST_EXTRA"
-        const val SAVE_CHANGES_BROADCAST = "com.aconno.sensorics.settings.SAVE_CHANGES_BROADCAST"
-        const val BEACON_JSON_BROADCAST =
-            "com.aconno.sensorics.settings.BEACON_JSON_RESPONSE_BROADCAST"
-        const val BEACON_JSON_REQUEST_BROADCAST =
-            "com.aconno.sensorics.settings.BEACON_JSON_REQUEST_BROADCAST"
-        const val BEACON_JSON_BROADCAST_EXTRA = "BEACON_JSON_BROADCAST_EXTRA"
-
         private const val CLEAN_TIMER = 15000L
         private const val DEVICE_MAC_ADDRESS = "device_mac_address"
         fun start(context: Context, deviceMacAddress: String) {

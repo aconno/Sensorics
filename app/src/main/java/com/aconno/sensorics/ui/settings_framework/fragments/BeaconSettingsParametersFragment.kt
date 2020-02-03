@@ -5,20 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.JavascriptInterface
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
-import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
-import com.google.gson.JsonParser
 import kotlinx.android.synthetic.main.fragment_beacon_parameter2.*
-import timber.log.Timber
 
-class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFragment(fragmentId) {
-
-    private val beaconViewModel: BeaconSettingsViewModel by lazy {
-        ViewModelProviders.of(requireActivity()).get(BeaconSettingsViewModel::class.java)
-    }
+class BeaconSettingsParametersFragment : SettingsBaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,22 +31,16 @@ class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFra
         webview_parameters.settings.allowFileAccessFromFileURLs = true
         webview_parameters.settings.allowUniversalAccessFromFileURLs = true
         webview_parameters.settings.allowContentAccess = true
+        webview_parameters.addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "native")
         webview_parameters.webViewClient = PageLoadedEventWebViewClient {
-            beaconInfoViewModel.beaconInformation.observe(
+            settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
                 viewLifecycleOwner,
                 Observer { beaconInfo ->
+                    // todo use here javascriptCallGenerator.generateCall("init", it)
                     beaconInfo?.let { webview_parameters?.loadUrl("javascript:ParametersLoader.setBeaconParameters('$it')") }
                 })
         }
         webview_parameters.loadUrl(HTML_FILE_PATH)
-        webview_parameters.addJavascriptInterface(this, "native")
-    }
-
-    @JavascriptInterface
-    fun beaconParametersUpdated(beaconString: String) {
-        Timber.d("beacon parameters updated, $beaconString")
-        beaconViewModel.beacon.value?.loadChangesFromJson(JsonParser().parse(beaconString).asJsonObject)
-
     }
 
     companion object {
@@ -63,8 +48,8 @@ class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFra
             "file:///android_asset/resources/settings/views/parameters/ParametersNew.html"
 
         @JvmStatic
-        fun newInstance(fragmentId: Int? = null) =
-            BeaconSettingsParametersFragment(fragmentId)
+        fun newInstance() =
+            BeaconSettingsParametersFragment()
     }
 
 }
