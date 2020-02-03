@@ -22,7 +22,7 @@ class PermissionViewModel(
 
     private fun checkAndRequestPermission(sensoricsPermission: SensoricsPermission) {
         if (permissionAction.hasSelfPermission(sensoricsPermission.permission)) {
-            permissionCallbacks.permissionAccepted(sensoricsPermission.code)
+            permissionCallbacks.onPermissionGranted(sensoricsPermission.code)
         } else {
             if (permissionAction.shouldShowRequestPermissionRationale(sensoricsPermission.permission)) {
                 //TODO: Rationale not implemented yet
@@ -40,9 +40,9 @@ class PermissionViewModel(
 
     fun checkGrantedPermission(grantResults: IntArray, requestCode: Int) {
         if (verifyGrantedPermission(grantResults)) {
-            permissionCallbacks.permissionAccepted(requestCode)
+            permissionCallbacks.onPermissionGranted(requestCode)
         } else {
-            permissionCallbacks.permissionDenied(requestCode)
+            permissionCallbacks.onPermissionDenied(requestCode)
         }
     }
 
@@ -57,10 +57,8 @@ class PermissionViewModel(
 
     interface PermissionCallbacks {
 
-        fun permissionAccepted(actionCode: Int)
+        fun onPermissionGranted(actionCode: Int)
 
-        fun permissionDenied(actionCode: Int)
-
-        fun showRationale(actionCode: Int)
+        fun onPermissionDenied(actionCode: Int)
     }
 }
