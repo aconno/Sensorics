@@ -17,49 +17,42 @@ private val KEY_DEFAULT = Slot.KEY_ADVERTISING_CONTENT_DEFAULT_DATA
 class ParametersAdvertisingContentMapper @Inject constructor() {
 
     /**
-     * Copy original map, change it's values corresponding to custom and default key to parameters
-     * string and return it
+     * Change map values corresponding to custom and default key to parameters string representation
      */
-    fun getReadableAdContent(
-        originalAdContent: Map<String, String>,
+    fun convertToReadableAdContent(
+        content: MutableMap<String, String>,
         parameters: Parameters
-    ): MutableMap<String, String> {
-        val adContentCopy = HashMap(originalAdContent)
+    ) {
 
-        adContentCopy[KEY_CUSTOM]?.let { hexStr ->
-            adContentCopy[KEY_CUSTOM] =
+        content[KEY_CUSTOM]?.let { hexStr ->
+            content[KEY_CUSTOM] =
                 encodeHexAsParameterEmbedString(hexStr.hexStringToByteArray(), parameters)
         }
 
-        adContentCopy[KEY_DEFAULT]?.let { hexStr ->
-            adContentCopy[KEY_DEFAULT] =
+        content[KEY_DEFAULT]?.let { hexStr ->
+            content[KEY_DEFAULT] =
                 encodeHexAsParameterEmbedString(hexStr.hexStringToByteArray(), parameters)
         }
-
-        return adContentCopy
     }
 
     /**
-     * Copy map, change it's values corresponding to custom and default key to
-     * hex representation and return it
+     * Change map values corresponding to custom and default key to
+     * hex representation
      */
     fun getHexAdContent(
-        readableAdContent: Map<String, String>,
+        content: MutableMap<String, String>,
         parameters: Parameters
-    ): MutableMap<String, String> {
-        val adContentCopy = HashMap(readableAdContent)
+    ) {
 
-        adContentCopy[KEY_CUSTOM]?.let { hexStr ->
-            adContentCopy[KEY_CUSTOM] =
+        content[KEY_CUSTOM]?.let { hexStr ->
+            content[KEY_CUSTOM] =
                 decodeHexParameterEmbedString(hexStr, parameters).toCompactHex()
         }
 
-        adContentCopy[KEY_DEFAULT]?.let { hexStr ->
-            adContentCopy[KEY_DEFAULT] =
+        content[KEY_DEFAULT]?.let { hexStr ->
+            content[KEY_DEFAULT] =
                 decodeHexParameterEmbedString(hexStr, parameters).toCompactHex()
         }
-
-        return adContentCopy
     }
 
 }

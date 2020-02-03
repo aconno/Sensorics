@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
 import kotlinx.android.synthetic.main.fragment_beacon_cacheable.*
 
-class BeaconSettingsCacheableParamsFragment : BeaconSettingsBaseFragment() {
+class BeaconSettingsCacheableParamsFragment : SettingsBaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,16 +32,17 @@ class BeaconSettingsCacheableParamsFragment : BeaconSettingsBaseFragment() {
         webview_cacheable_params.settings.allowFileAccessFromFileURLs = true
         webview_cacheable_params.settings.allowUniversalAccessFromFileURLs = true
         webview_cacheable_params.settings.allowContentAccess = true
+        webview_cacheable_params.addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "native")
         webview_cacheable_params.webViewClient = PageLoadedEventWebViewClient {
-            beaconInfoViewModel.beaconInformation.observe(
+            settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
                 viewLifecycleOwner,
                 Observer { beaconInfo ->
+                    // todo JavascriptCallGenerator
                     beaconInfo?.let { webview_cacheable_params?.loadUrl("javascript:GeneralView.Actions.setBeaconInformation('${it}')") }
                 })
         }
         webview_cacheable_params.loadUrl(HTML_FILE_PATH)
-        webview_cacheable_params.addJavascriptInterface(this, "native")
-        requestBeaconInfo()
+
     }
 
 
