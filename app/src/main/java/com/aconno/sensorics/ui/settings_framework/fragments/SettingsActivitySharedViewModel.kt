@@ -36,6 +36,6 @@ class SettingsActivitySharedViewModel : ViewModel() {
      */
     fun beaconDataChanged(updatedBeaconJson: String) {
         Timber.d("updatedBeaconJson is : $updatedBeaconJson")
-        _beaconUpdatedJsonLiveDataForActivity.value = updatedBeaconJson
+        _beaconUpdatedJsonLiveDataForActivity.postValue(updatedBeaconJson)
     }
 }
