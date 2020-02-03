@@ -30,7 +30,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.activity_configure.*
+import kotlinx.android.synthetic.main.activity_settings_framework.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -110,7 +110,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_configure)
+        setContentView(R.layout.activity_settings_framework)
         getDeviceMacAddress(savedInstanceState)
 
         device = intent?.extras?.getString(DEVICE_MAC_ADDRESS)

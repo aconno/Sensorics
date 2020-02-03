@@ -15,7 +15,7 @@ import com.aconno.sensorics.model.javascript.ArbitraryDataJS
 import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.fragment_beacon_general2.*
+import kotlinx.android.synthetic.main.fragment_beacon_general.*
 import timber.log.Timber
 
 class BeaconSettingsArbitraryDataHtmlFragment : Fragment() {
@@ -28,7 +28,7 @@ class BeaconSettingsArbitraryDataHtmlFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_beacon_general2, container, false)
+        return inflater.inflate(R.layout.fragment_beacon_general, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

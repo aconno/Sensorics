@@ -23,7 +23,7 @@ import com.aconno.sensorics.device.beacon.Slots
 import com.aconno.sensorics.model.mapper.ParametersAdvertisingContentMapper
 import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
 import com.aconno.sensorics.ui.settings_framework.ViewPagerSlider
-import kotlinx.android.synthetic.main.fragment_beacon_general2.*
+import kotlinx.android.synthetic.main.fragment_beacon_general.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -61,7 +61,7 @@ open class BeaconSettingsSlotFragment : BeaconSettingsBaseFragment() {
         } ?: throw IllegalStateException(
             "Started BeaconSlotFragment without EXTRA_BEACON_SLOT_POSITION argument!"
         )
-        return inflater.inflate(R.layout.fragment_beacon_general2, container, false)
+        return inflater.inflate(R.layout.fragment_beacon_general, container, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

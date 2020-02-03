@@ -211,7 +211,6 @@
     <string name="start_scan_popup">"Do you want to start scanning the device?"</string>
     <string name="config">Config</string>
     <string name="logging">Logging</string>
-    <string name="title_configure">Configure</string>
 
     //Not Translated
     <string name="rssi_1m">Rssi @ 1m</string>

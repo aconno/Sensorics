@@ -143,10 +143,6 @@
     <string name="logging">Logging</string>
 
 
-    //Need translation
-
-    <string name="title_configure">Configure</string>
-
     //Not Translated
     <string name="rssi_1m">Rssi @ 1m</string>
     <string name="uuid">UUID</string>

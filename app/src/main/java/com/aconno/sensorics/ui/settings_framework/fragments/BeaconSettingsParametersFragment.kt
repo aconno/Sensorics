@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.R
 import com.aconno.sensorics.ui.settings_framework.BeaconSettingsViewModel
 import com.google.gson.JsonParser
-import kotlinx.android.synthetic.main.fragment_beacon_parameter2.*
+import kotlinx.android.synthetic.main.fragment_beacon_parameter.*
 import timber.log.Timber
 
 class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFragment(fragmentId) {
@@ -24,7 +24,7 @@ class BeaconSettingsParametersFragment(fragmentId: Int?) : BeaconSettingsBaseFra
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_beacon_parameter2, container, false)
+        return inflater.inflate(R.layout.fragment_beacon_parameter, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

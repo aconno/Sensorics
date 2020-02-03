@@ -10,7 +10,7 @@ import android.webkit.JavascriptInterface
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
 import com.aconno.sensorics.dagger.settings_framework.BeaconGeneralFragmentListener
-import kotlinx.android.synthetic.main.fragment_beacon_general2.*
+import kotlinx.android.synthetic.main.fragment_beacon_general.*
 
 class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {
 
@@ -19,7 +19,7 @@ class BeaconSettingsGeneralFragment: BeaconSettingsBaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_beacon_general2, container, false)
+        return inflater.inflate(R.layout.fragment_beacon_general, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
