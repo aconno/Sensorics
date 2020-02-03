@@ -2,6 +2,7 @@ package com.aconno.sensorics.ui.settings_framework.fragments
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import timber.log.Timber
 
 /**
  * This is shared viewModel which is used to communicate between different android components
@@ -26,6 +27,7 @@ class SettingsActivitySharedViewModel : ViewModel() {
      * Use this method to send data from Activity to fragments
      */
     fun sendBeaconJsonToObservers(beaconJson: String) {
+        Timber.d("send beacon json to fragments: $beaconJson")
         _beaconJsonLiveDataForFragments.value = beaconJson
     }
 
@@ -33,6 +35,7 @@ class SettingsActivitySharedViewModel : ViewModel() {
      * Use this method to send data from fragments to Activity
      */
     fun beaconDataChanged(updatedBeaconJson: String) {
+        Timber.d("updatedBeaconJson is : $updatedBeaconJson")
         _beaconUpdatedJsonLiveDataForActivity.value = updatedBeaconJson
     }
 }
