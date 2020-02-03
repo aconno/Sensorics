@@ -32,7 +32,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.MainActivity" />
+        <activity
+            android:name=".ui.MainActivity"
+            android:launchMode="singleTask" />
         <activity android:name=".ui.ActionListActivity" />
 
         <service
@@ -108,7 +110,7 @@
             android:name=".device.notification.AlarmNotificationReceiver"
             android:enabled="true">
             <intent-filter>
-                <action  android:name="com.troido.intent.action.ACTION_ALARM_SNOOZE" />
+                <action android:name="com.troido.intent.action.ACTION_ALARM_SNOOZE" />
             </intent-filter>
         </receiver>
 
@@ -121,8 +123,8 @@
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.aconno.sensorics.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
