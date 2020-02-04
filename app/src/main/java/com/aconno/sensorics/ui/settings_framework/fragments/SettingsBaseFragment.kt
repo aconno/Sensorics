@@ -14,7 +14,7 @@ abstract class SettingsBaseFragment() : DaggerFragment() {
         ViewModelProviders.of(requireActivity()).get(SettingsActivitySharedViewModel::class.java)
     }
 
-    protected var javascriptCallGenerator = JavascriptCallGenerator()
+    protected var jsGenerator = JavascriptCallGenerator()
 
     inner class PageLoadedEventWebViewClient(
         val pageLoaded: () -> Unit
@@ -40,7 +40,6 @@ abstract class SettingsBaseFragment() : DaggerFragment() {
     protected inner class UpdateBeaconJsInterfaceImpl {
         @JavascriptInterface
         fun onDataChanged(updatedBeaconJson: String) {
-            Timber.d("OnDataChanged: $updatedBeaconJson")
             sendBeaconsUpdatedJson(updatedBeaconJson)
         }
     }

@@ -36,8 +36,13 @@ class BeaconSettingsParametersFragment : SettingsBaseFragment() {
             settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
                 viewLifecycleOwner,
                 Observer { beaconInfo ->
-                    // todo use here javascriptCallGenerator.generateCall("init", it)
-                    beaconInfo?.let { webview_parameters?.loadUrl("javascript:ParametersLoader.setBeaconParameters('$it')") }
+                    beaconInfo?.let {
+                        webview_parameters?.loadUrl(
+                            jsGenerator.generateCall(
+                                "ParametersLoader.setBeaconParameters", it
+                            )
+                        )
+                    }
                 })
         }
         webview_parameters.loadUrl(HTML_FILE_PATH)

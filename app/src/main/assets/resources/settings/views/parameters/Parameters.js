@@ -261,7 +261,6 @@ class ParametersLoader {
 
     static updateBeaconParameters() {
         let beaconJson = JSON.stringify(beacon)
-        console.log("beacon parameters updated: " + beaconJson)
-        native.beaconParametersUpdated(beaconJson);
+        native.onDataChanged(beaconJson);
     }
 }

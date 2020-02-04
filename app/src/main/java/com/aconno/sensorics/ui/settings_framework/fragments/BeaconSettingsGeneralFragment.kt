@@ -40,8 +40,11 @@ class BeaconSettingsGeneralFragment: SettingsBaseFragment() {
             settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
                 viewLifecycleOwner,
                 Observer { beaconInfo ->
-                    // todo use JavascriptCallGenerator
-                    beaconInfo?.let { webview_general?.loadUrl("javascript:GeneralView.Actions.setBeaconInformation('${it}')") }
+                    beaconInfo?.let {
+                        webview_general?.loadUrl(
+                            jsGenerator.generateCall("GeneralView.Actions.setBeaconInformation", it)
+                        )
+                    }
                 })
         }
         webview_general.loadUrl(HTML_FILE_PATH)
@@ -68,8 +71,8 @@ class BeaconSettingsGeneralFragment: SettingsBaseFragment() {
     }
 
     @JavascriptInterface
-    fun changeConnectible(checked: Boolean) {
-        //beaconViewModel.beacon.value?.connectible = checked
+    fun onDataChanged(updatedBeaconJson: String) {
+        sendBeaconsUpdatedJson(updatedBeaconJson)
     }
 
     override fun onAttach(context: Context) {
