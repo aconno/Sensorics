@@ -176,7 +176,14 @@ class MqttVirtualScanningService : DaggerService() {
             MqttVirtualScanningSourceProtocol.TCP -> "tcp"
             MqttVirtualScanningSourceProtocol.WEBSOCKET -> "ws"
         }
-        return "$protocol:\\\\${source.address}:${source.port}/${source.path}"
+        val path = if(source.path.isNotEmpty()) {
+                "/{${source.path}}"
+            } else {
+                ""
+            }
+
+        return "$protocol://${source.address}:${source.port}$path"
+
     }
 
     /**ss

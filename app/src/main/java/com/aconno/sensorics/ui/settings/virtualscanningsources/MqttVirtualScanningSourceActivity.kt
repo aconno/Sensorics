@@ -143,9 +143,7 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
                         name,
                         address,
                         port,
-                        clientId,
-                        username,
-                        password
+                        clientId
                 )
         ) {
             Toast.makeText(
