@@ -11,6 +11,7 @@ import android.widget.ProgressBar
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
 import kotlinx.android.synthetic.main.fragment_beacon_general.*
+import timber.log.Timber
 
 class BeaconSettingsArbitraryDataHtmlFragment : SettingsBaseFragment() {
 
@@ -33,14 +34,16 @@ class BeaconSettingsArbitraryDataHtmlFragment : SettingsBaseFragment() {
     @SuppressLint("SetJavaScriptEnabled")
     private fun initiateWebView() {
         webview_general.settings.javaScriptEnabled = true
-        webview_general.addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "Android")
         webview_general.webChromeClient = WebAppChromeClient()
+        webview_general.addJavascriptInterface(UpdateBeaconJsInterfaceImpl(),"native")
         webview_general.webViewClient = PageLoadedEventWebViewClient {
             settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
                 viewLifecycleOwner,
                 Observer { beaconInfo ->
                     beaconInfo?.let {
-                        webview_general?.loadUrl(jsGenerator.generateCall("init", it))
+                        val jsCode = jsGenerator.generateCall("init", it)
+                        Timber.d("generated Js code : $jsCode")
+                        webview_general?.loadUrl(jsCode)
                     }
                 })
         }

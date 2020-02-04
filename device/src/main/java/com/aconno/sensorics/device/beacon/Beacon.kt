@@ -134,12 +134,18 @@ abstract class Beacon(context: Context, taskProcessor: BluetoothTaskProcessor) {
             ) // TODO: Correct
         this.slots.loadChangesFromJson(slots)
 
-        TODO("LOAD ARB DATA")
+        val arbitraryData = obj.getObjectOrNull("arbitraryData")
+            ?: throw java.lang.IllegalArgumentException("Arbitrary data missing")
+
+        this.arbitraryData.loadChangesFromJson(arbitraryData)
     }
 
     class Factory {
         companion object {
-            fun createFromBleDevice(context: Context, taskProcessor: BluetoothTaskProcessor): Beacon {
+            fun createFromBleDevice(
+                context: Context,
+                taskProcessor: BluetoothTaskProcessor
+            ): Beacon {
                 return BeaconImpl(context, taskProcessor)
             }
         }

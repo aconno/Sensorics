@@ -32,6 +32,7 @@ import com.aconno.sensorics.ui.dialogs.CancelBtnSchedulerProgressDialog
 import com.aconno.sensorics.ui.settings_framework.fragments.SettingsActivitySharedViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_settings_framework.*
@@ -114,6 +115,18 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         setSupportActionBar(toolbar)
 
         setupUI()
+        subscribeOnData()
+    }
+
+    private fun subscribeOnData() {
+        settingsSharedViewModel.beaconUpdatedJsonLiveDataForActivity.observe(this, Observer {
+            it?.let { beaconJson ->
+                beacon?.run {
+                    loadChangesFromJson(JsonParser().parse(beaconJson).asJsonObject)
+                    webViewAppBeaconMapper.prepareForApp(this)
+                }
+            }
+        })
     }
 
     private fun setupUI() {
@@ -390,7 +403,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private fun getDeviceMacAddress(savedInstanceState: Bundle?) {
         macAddress = intent?.getStringExtra(DEVICE_MAC_ADDRESS)
             ?: savedInstanceState?.getString(DEVICE_MAC_ADDRESS)
-                ?: ""
+                    ?: ""
 
         if (macAddress.isBlank()) {
             Timber.e("MAC address not passed to activity!")

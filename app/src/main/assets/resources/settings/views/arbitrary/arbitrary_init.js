@@ -1,18 +1,20 @@
-$(document).ready(function () {
+let beacon;
+
+$(document).ready(function() {
     $('#container_arbitrary').on("click", ".btn-danger", function() {
         removeArbitraryDataView(this);
     });
 
-    $('#modal_okay_btn').click(function () {     
+    $('#modal_okay_btn').click(function() {
         let key = $('#modal_key').val().trim();
         let value = $('#modal_value').val().trim();
 
-        if(!key){
+        if (!key) {
             alert("Please Enter a Key");
             return;
         }
 
-        if(!value){
+        if (!value) {
             alert("Please Enter a Value");
             return;
         }
@@ -22,19 +24,20 @@ $(document).ready(function () {
         );
 
         //TriggerUpdate
-        Android.onDataChanged(getUpdatedArbitraryDatas());
+        updatedArbitraryDatas()
+        native.onDataChanged(JSON.stringify(beacon));
         $('#arbitrary_modal').modal('toggle');
         $('#modal_key').val("");
         $('#modal_value').val("");
     });
 });
 
-function init(arbiraryDataJsonArray) {
-    let arbitraryDatas = JSON.parse(arbiraryDataJsonArray);
+function init(beaconInfo) {
+    beacon = JSON.parse(beaconInfo);
 
-    arbitraryDatas.forEach(element => {
+    Object.keys(beacon.arbitraryData).forEach((value, key) => {
         $('#container_arbitrary').append(
-            generateKeyValue(element.key, element.value)
+            generateKeyValue(value, key)
         );
     });
 }
@@ -43,20 +46,19 @@ function removeArbitraryDataView(btn) {
     ((btn.parentNode).parentNode).removeChild(btn.parentNode);
 
     //Trigger Update
-    Android.onDataChanged(getUpdatedArbitraryDatas());
+    updatedArbitraryDatas()
+    native.onDataChanged(JSON.stringify(beacon));
 }
 
-function getUpdatedArbitraryDatas() {
-    let arbitraryDatas = new Array();
+function updatedArbitraryDatas() {
+    let arbitraryDatas = new Map();
 
     let container = $('#container_arbitrary');
     for (let index = 0; index < container.children().length; index++) {
         let child = container.children().eq(index);
-        let element = new ArbitraryData();
-        element.key = child.find("#arbitrary_item_key").text().trim();
-        element.value = child.find("#arbitrary_item_value").val();
-        arbitraryDatas.push(element);
+        let key = child.find("#arbitrary_item_key").text().trim();
+        let value = child.find("#arbitrary_item_value").val();
+        arbitraryDatas[key] = value;
     }
-
-    return JSON.stringify(arbitraryDatas);
+    beacon.arbitraryData = arbitraryDatas;
 }
