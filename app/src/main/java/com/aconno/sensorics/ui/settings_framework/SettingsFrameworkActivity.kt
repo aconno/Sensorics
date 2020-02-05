@@ -34,6 +34,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_settings_framework.*
 import org.apache.commons.text.StringEscapeUtils
@@ -73,7 +74,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
         override fun onServiceDisconnected(name: ComponentName?) {
             Timber.d("Disconnected")
-            connectResultDisposable?.dispose()
             bluetoothConnectService = null
         }
 
@@ -83,11 +83,12 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             Timber.d("Connected")
 
             bluetoothConnectService?.let { bluetoothService ->
-                bluetoothService.getConnectResultsLiveData().observe(this@SettingsFrameworkActivity,
-                    Observer<GattCallbackPayload> {
+                connectResultDisposable = bluetoothService.getConnectResults()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {
                         onNewPayload(it)
                         taskProcessor.accept(it)
-                    })
+                    }
 
                 taskProcessor = BluetoothTaskProcessorImpl(bluetoothService.bluetooth)
 
@@ -211,6 +212,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
     private fun scheduleCleaningServiceAndScreen(timeMs: Long) {
         handler.postDelayed({
+            connectResultDisposable?.dispose()
             unregisterConnectionServiceIfNeed()
             closeProgressDialog()
             closePasswordDialog()
@@ -226,6 +228,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
 
     override fun onDestroy() {
         cancelScheduleEvents()
+        connectResultDisposable?.dispose()
         unregisterConnectionServiceIfNeed()
         super.onDestroy()
     }
