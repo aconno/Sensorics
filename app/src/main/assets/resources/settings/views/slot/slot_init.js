@@ -24,11 +24,124 @@ $(document).ready(function() {
         emptyMenuItem /*+ uidMenuItem*/ + urlMenuItem + customMenuItem + ibeaconMenuItem
     );
 
-    $(".dropdown-menu").on('click', 'li a', function () {
+    $(".dropdown-menu").on('click', 'li a', function() {
         $(this).parent().parent().siblings(".btn:first-child").html($(this).text() + ' <span class="caret"></span>');
         $(this).parent().parent().siblings(".btn:first-child").val($(this).text());
     });
 });
+
+function deafultTypeClicked() {
+    $("#advertising_content").empty();
+
+    let whatever = "";
+
+    if (beacon.slots.slots[index] != null && beacon.slots.slots[index].type == FrameType.DEFAULT) {
+        whatever = generateDefaultContent(beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_DEFAULT_DATA]);
+
+    } else {
+        whatever = generateDefaultContent("");
+    }
+
+    $("#advertising_content").append(whatever);
+
+    $("#default_advertising_content").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+}
+
+function emptyTypeClicked() {
+    $("#advertising_content").empty();
+}
+
+function urlTypeClicked() {
+    $("#advertising_content").empty();
+
+    let whatever = "";
+    if (beacon.slots.slots[index] != null && beacon.slots.slots[index].type == FrameType.URL) {
+        whatever = generateURLContent(beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_URL_URL].trim());
+    } else {
+        whatever = generateURLContent("");
+    }
+
+    $("#advertising_content").append(whatever);
+
+    $("#url").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+}
+
+function uidTypeClicked() {
+    $("#advertising_content").empty();
+
+    let whatever = "";
+    if (beacon.slots.slots[index] != null && beacon.slots.slots[index].type == FrameType.UID) {
+        whatever = generateUIDContent(
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID],
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID]
+        );
+    } else {
+        whatever = generateUIDContent("", "");
+    }
+
+    $("#advertising_content").append(whatever);
+
+    $("#uid_namespace_id").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+
+    $("#uid_instance_id").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+}
+
+function ibeaconTypeClicked() {
+    $("#advertising_content").empty();
+
+    let whatever = "";
+    if (beacon.slots.slots[index] != null && beacon.slots.slots[index].type == FrameType.IBEACON) {
+        whatever = generateIBeaconContent(
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_UUID],
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_MAJOR],
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_MINOR]
+        );
+    } else {
+        whatever = generateIBeaconContent("", "", "");
+    }
+
+    $("#advertising_content").append(whatever);
+
+    $("#ibeacon_uuid").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+
+    $("#ibeacon_major").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+
+    $("#ibeacon_minor").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+}
+
+function customTypeClicked() {
+    $("#advertising_content").empty();
+
+    let whatever = "";
+    if (beacon.slots.slots[index] != null && beacon.slots.slots[index].type == FrameType.CUSTOM) {
+        whatever = generateCustomContent(
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM],
+            false
+        );
+    } else {
+        whatever = generateCustomContent("", "");
+    }
+
+    $("#advertising_content").append(whatever);
+
+    $("#custom_value").bind("change keyup", function() {
+        getUpdatedSlot();
+    });
+}
 
 function initListeners() {
     if (inited) {
@@ -36,162 +149,50 @@ function initListeners() {
     }
 
     //Updates text of dropdown header when selected.
-    $(".dropdown-menu").on('click', 'li a', function () {
+    $(".dropdown-menu").on('click', 'li a', function() {
         getUpdatedSlot();
     });
 
-    $('#slot_name_text').on('change keyup paste', function () {
+    $('#slot_name_text').on('change keyup paste', function() {
         $('#slot_name_text').val($(this).val());
         getUpdatedSlot();
     });
 
-    $(document).on("change", "#toggle-advertise-switch", function () {
+    $(document).on("change", "#toggle-advertise-switch", function() {
         getUpdatedSlot();
 
     });
 
-    $(document).on("change", "#toggle-internal-switch", function () {
+    $(document).on("change", "#toggle-internal-switch", function() {
         getUpdatedSlot();
 
     });
 
 
-    $(document).on("input", "#range-packetCount", function () {
+    $(document).on("input", "#range-packetCount", function() {
         // Real value is range value+1, because range starting position (0) is 1
         let realValue = parseInt($(this).val()) + 1
         $('label[for="range-packetCount"]').html(realValue);
         getUpdatedSlot();
     });
 
-    $(document).on("input", "#advertising_interval_time_range", function () {
+    $(document).on("input", "#advertising_interval_time_range", function() {
         let index = $(this).val();
         $('#advertising_interval_time').text(timeToHighestOrder(INTERVAL_MS[index]));
         getUpdatedSlot();
     });
 
     //Dropdown items
-    $('#frame_type_default').click(
-        function () {
-            $("#advertising_content").empty();
+    $('#frame_type_default').click(deafultTypeClicked);
 
-            let whatever = "";
+    $('#frame_type_empty').click(emptyTypeClicked);
+    $('#frame_type_url').click(urlTypeClicked);
 
-            if (beacon.slots.slots[index] != null && beacon.slots.slots[index].type == FrameType.DEFAULT) {
-                whatever = generateDefaultContent(beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_DEFAULT_DATA]);
+    $('#frame_type_uid').click(uidTypeClicked);
 
-            } else {
-                whatever = generateDefaultContent("");
-            }
+    $('#frame_type_ibeacon').click(ibeaconTypeClicked);
 
-            $("#advertising_content").append(whatever);
-
-            $("#default_advertising_content").bind("change keyup", function () {
-                getUpdatedSlot();
-            });
-        });
-
-    $('#frame_type_empty').click(
-        function () {
-            $("#advertising_content").empty();
-        }
-    );
-    $('#frame_type_url').click(
-        function () {
-            $("#advertising_content").empty();
-
-            let whatever = "";
-            if (beacon.slots.slots[index] != null && beacon.slots.slots[index].type == FrameType.URL) {
-                whatever = generateURLContent(beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_URL_URL].trim());
-            } else {
-                whatever = generateURLContent("");
-            }
-
-            $("#advertising_content").append(whatever);
-
-            $("#url").bind("change keyup", function () {
-                getUpdatedSlot();
-            });
-        }
-    );
-
-    $('#frame_type_uid').click(
-        function () {
-            $("#advertising_content").empty();
-
-            let whatever = "";
-            if (beacon.slots.slots[index] != null && beacon.slots.slots[index].type == FrameType.UID) {
-                whatever = generateUIDContent(
-                    beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID],
-                    beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID]
-                );
-            } else {
-                whatever = generateUIDContent("", "");
-            }
-
-            $("#advertising_content").append(whatever);
-
-            $("#uid_namespace_id").bind("change keyup", function () {
-                getUpdatedSlot();
-            });
-
-            $("#uid_instance_id").bind("change keyup", function () {
-                getUpdatedSlot();
-            });
-        }
-    );
-
-    $('#frame_type_ibeacon').click(
-        function () {
-            $("#advertising_content").empty();
-
-            let whatever = "";
-            if (beacon.slots.slots[index] != null && beacon.slots.slots[index].type == FrameType.IBEACON) {
-                whatever = generateIBeaconContent(
-                    beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_UUID],
-                    beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_MAJOR],
-                    beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_MINOR]
-                );
-            } else {
-                whatever = generateIBeaconContent("", "", "");
-            }
-
-            $("#advertising_content").append(whatever);
-
-            $("#ibeacon_uuid").bind("change keyup", function () {
-                getUpdatedSlot();
-            });
-
-            $("#ibeacon_major").bind("change keyup", function () {
-                getUpdatedSlot();
-            });
-
-            $("#ibeacon_minor").bind("change keyup", function () {
-                getUpdatedSlot();
-            });
-        }
-    );
-
-    $('#frame_type_custom').click(
-        function () {
-            $("#advertising_content").empty();
-
-            let whatever = "";
-            if (beacon.slots.slots[index] != null && beacon.slots.slots[index].type == FrameType.CUSTOM) {
-                whatever = generateCustomContent(
-                    beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM],
-                    false
-                );
-            } else {
-                whatever = generateCustomContent("", "");
-            }
-
-            $("#advertising_content").append(whatever);
-
-            $("#custom_value").bind("change keyup", function () {
-                getUpdatedSlot();
-            });
-        }
-    );
+    $('#frame_type_custom').click(customTypeClicked);
 
     inited = true;
 }
@@ -229,22 +230,28 @@ function init(slotJson, slotIndex) {
 
     switch (beacon.slots.slots[index].type) {
         case FrameType.UID:
-            $('#frame_type_uid').click();
+            uidTypeClicked();
+            $('#btn_frame_type').html(FrameType.UID);
             break;
         case FrameType.URL:
-            $('#frame_type_url').click();
+            urlTypeClicked();
+            $('#btn_frame_type').html(FrameType.URL);
             break;
         case FrameType.IBEACON:
-            $('#frame_type_ibeacon').click();
+            ibeaconTypeClicked();
+            $('#btn_frame_type').html(FrameType.IBEACON);
             break;
         case FrameType.CUSTOM:
-            $('#frame_type_custom').click();
+            customTypeClicked();
+            $('#btn_frame_type').html(FrameType.CUSTOM);
             break;
         case FrameType.DEFAULT:
-            $('#frame_type_default').click();
+            deafultTypeClicked();
+            $('#btn_frame_type').html(FrameType.DEFAULT);
             break;
         default:
-            $('#frame_type_empty').click();
+            emptyTypeClicked();
+            $('#btn_frame_type').html(FrameType.EMPTY);
     }
 
     console.log("Slot name: " + beacon.slots.slots[index].name);
@@ -289,8 +296,6 @@ function init(slotJson, slotIndex) {
 function getUpdatedSlot() {
     beacon.slots.slots[index].name = $('#slot_name_text').val();
     let type = $('#btn_frame_type').text().trim();
-    console.log($('#btn_frame_type'));
-    console.log($('#btn_frame_type').toString());
 
     beacon.slots.slots[index].active = $('#toggle-advertise-switch').prop("checked");
 

@@ -56,12 +56,7 @@ function generateIBeaconContent(uuid, major, minor) {
 }
 
 function generateCustomContent(customValue, isHexModeOn) {
-    return '<div class="row">' +
-        '<div class="col-12">' +
-        '<label>Custom</label>' +
-        '</div>' +
-        '</div>' +
-        '<div class="row" style="margin-top: 1em;">' +
+    return '<div class="row" style="margin-top: 1em;">' +
         '<div class="col-3">' +
         '<label>Custom Value</label>' +
         '</div>' +
@@ -173,7 +168,7 @@ function getClosestElementPosition(intArray, to) {
     let chosen = intArray[0];
     let diff = Math.abs(to - chosen);
 
-    intArray.forEach(function (it) {
+    intArray.forEach(function(it) {
         let newDiff = Math.abs(to - it);
         if (newDiff < diff) {
             chosen = it;
