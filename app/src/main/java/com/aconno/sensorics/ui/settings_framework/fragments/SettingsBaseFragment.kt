@@ -45,7 +45,7 @@ abstract class SettingsBaseFragment() : DaggerFragment() {
                             occurredAfterUpdateSent = false
                         }
                     })
-                isPageAlreadyLoaded = false
+                isPageAlreadyLoaded = true
             } else {
                 Timber.w("view is destroyed or page $url already loaded. not invoking pageLoaded callback")
             }
