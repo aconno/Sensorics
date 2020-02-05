@@ -17,4 +17,23 @@ class GeneralMqttVirtualScanningSource(
         override val qualityOfService : Int
 ) : MqttVirtualScanningSource {
     override val type: VirtualScanningSourceType = VirtualScanningSourceType.MQTT
+
+
+
+    override fun getUri(): String {
+        val protocol = when (protocol) {
+            MqttVirtualScanningSourceProtocol.TCP -> "tcp"
+            MqttVirtualScanningSourceProtocol.WEBSOCKET -> "ws"
+        }
+        val path = if(path.isNotEmpty()) {
+            "/{${path}}"
+        } else {
+            ""
+        }
+
+        return "$protocol://${address}:${port}$path"
+
+    }
+
+
 }

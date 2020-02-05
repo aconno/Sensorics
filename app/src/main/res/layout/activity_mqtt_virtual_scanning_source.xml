@@ -18,307 +18,45 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <ProgressBar
-        android:id="@+id/progressbar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-7dp"
-        android:backgroundTint="@color/white"
-        android:indeterminate="true"
-        android:indeterminateTint="@color/progress_indicator"
-        android:max="100"
-        android:visibility="gone" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp">
+        android:layout_height="match_parent">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/name_card"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="0dp">
+
+            <include layout="@layout/mqtt_virtual_scanning_source_form" />
+
+        </ScrollView>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="@dimen/testing_scanning_source_progress_bar_size"
+            android:layout_height="@dimen/testing_scanning_source_progress_bar_size"
+            android:backgroundTint="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:visibility="gone" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/mqtt_virtual_scanning_source_name_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <EditText
-                    android:id="@+id/mqtt_virtual_scanning_source_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/mqtt_virtual_scanning_source_name"
-                    tools:text="MQTT source name" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/url_card"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/progress_bar_message"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:text="@string/testing_in_progress"
+            android:textColor="@color/darkTextColor"
+            app:layout_constraintTop_toBottomOf="@id/progress_bar"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/name_card">
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center_horizontal"
+            android:visibility="gone"
+            />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp">
-
-                <TextView
-                    android:id="@+id/protocol"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:text="@string/mqtt_protocol"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <RadioGroup
-                    android:id="@+id/radio_group_protocol"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/protocol"
-                    app:layout_constraintTop_toBottomOf="@id/protocol">
-
-                    <Space
-                        android:layout_width="0dip"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <RadioButton
-                        android:id="@+id/protocol_tcp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="true"
-                        android:text="@string/tcp" />
-
-                    <Space
-                        android:layout_width="0dip"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <RadioButton
-                        android:id="@+id/protocol_websocket"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/websocket" />
-
-                    <Space
-                        android:layout_width="0dip"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                </RadioGroup>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/mqtt_source_address_input_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/radio_group_protocol">
-
-                    <EditText
-                        android:id="@+id/mqtt_source_address_input"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/mqtt_virtual_scanning_source_address"
-                        tools:text="mqtt.com" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/mqtt_source_port_input_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mqtt_source_address_input_layout">
-
-                    <EditText
-                        android:id="@+id/mqtt_source_port_input"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:hint="@string/mqtt_virtual_scanning_source_port"
-                        tools:text="53" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/mqtt_source_path_input_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mqtt_source_port_input_layout">
-
-                    <EditText
-                        android:id="@+id/mqtt_source_path_input"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/mqtt_virtual_scanning_source_path"
-                        tools:text="/path" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        </androidx.cardview.widget.CardView>
-
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/connection_data_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/url_card">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/edit_clientid_mqtt_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edit_clientid_mqtt"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/clientId"
-                        android:inputType="text"
-                        tools:text="123" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/edit_username_mqtt_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_clientid_mqtt_layout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edit_username_mqtt"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/username"
-                        android:inputType="text"
-                        tools:text="123" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/edit_password_mqtt_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/edit_username_mqtt_layout"
-                    app:passwordToggleEnabled="true">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edit_password_mqtt"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/password"
-                        android:inputType="textPassword"
-                        tools:text="123" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    android:id="@+id/qos_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:gravity="center"
-                    android:text="@string/quality_of_service"
-                    app:layout_constraintTop_toBottomOf="@id/edit_password_mqtt_layout" />
-
-                <RadioGroup
-                    android:id="@+id/radio_group_mqtt_qos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/qos_text_view">
-
-                    <Space
-                        android:layout_width="0dip"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <RadioButton
-                        android:id="@+id/qos_0"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="true"
-                        android:text="@string/qos_0" />
-
-                    <Space
-                        android:layout_width="0dip"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <RadioButton
-                        android:id="@+id/qos_1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/qos_1" />
-
-                    <Space
-                        android:layout_width="0dip"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <RadioButton
-                        android:id="@+id/qos_2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/qos_2" />
-                </RadioGroup>
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        </androidx.cardview.widget.CardView>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            app:layout_constraintTop_toBottomOf="@id/connection_data_card" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+
+
 </LinearLayout>

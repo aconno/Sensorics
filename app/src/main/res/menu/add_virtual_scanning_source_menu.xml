@@ -3,6 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/test_virtual_scanning_source_action"
+        android:title="@string/test_virtual_scanning_source"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/add_virtual_scanning_source_action"
         android:title="@string/add"
         app:showAsAction="always" />

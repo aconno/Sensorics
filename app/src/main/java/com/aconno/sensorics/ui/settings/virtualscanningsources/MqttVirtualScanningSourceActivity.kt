@@ -9,7 +9,9 @@ import android.view.View
 import android.widget.Toast
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.interactor.virtualscanningsource.mqtt.MqttVirtualScanningSourceProtocol
+import com.aconno.sensorics.domain.mqtt.MqttVirtualScanner
 import com.aconno.sensorics.model.MqttVirtualScanningSourceModel
+import com.aconno.sensorics.model.mapper.MqttVirtualScanningSourceModelDataMapper
 import com.aconno.sensorics.ui.base.BaseActivity
 import com.aconno.sensorics.viewmodel.MqttVirtualScanningSourceViewModel
 import io.reactivex.SingleObserver
@@ -17,12 +19,22 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_mqtt_virtual_scanning_source.*
+import kotlinx.android.synthetic.main.mqtt_virtual_scanning_source_form.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MqttVirtualScanningSourceActivity : BaseActivity() {
+    private var isTestingAlreadyRunning = false
+
     @Inject
     lateinit var mqttSourceViewModel: MqttVirtualScanningSourceViewModel
     private var mqttVirtualScanningSourceModel: MqttVirtualScanningSourceModel? = null
+    @Inject
+    lateinit var mqttMapper : MqttVirtualScanningSourceModelDataMapper
+    @Inject
+    lateinit var mqttVirtualScanner: MqttVirtualScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,11 +67,82 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.add_virtual_scanning_source_action -> addOrUpdate()
+            R.id.test_virtual_scanning_source_action -> testSource()
             else -> return super.onOptionsItemSelected(item)
         }
 
         return true
     }
+
+    private fun testSource() {
+        if (!isTestingAlreadyRunning) {
+            isTestingAlreadyRunning = true
+
+            val model = toMqttVirtualScanningSourceModel()
+
+            if (model == null) {
+                isTestingAlreadyRunning = false
+                return
+            }
+
+            testConnection(model)
+        }
+    }
+
+
+
+    private fun setProgressComponentsVisibility(visibility : Int) {
+        progress_bar.visibility = visibility
+        progress_bar_message.visibility = visibility
+    }
+
+
+    private val testConnectionCallback = object : MqttVirtualScanner.TestConnectionCallback {
+        override fun onConnectionStart() {
+            GlobalScope.launch(Dispatchers.Main) {
+                setProgressComponentsVisibility(View.VISIBLE)
+                isTestingAlreadyRunning = false
+            }
+        }
+
+        override fun onConnectionSuccess() {
+            GlobalScope.launch(Dispatchers.Main) {
+                setProgressComponentsVisibility(View.INVISIBLE)
+                isTestingAlreadyRunning = false
+                Toast.makeText(
+                        this@MqttVirtualScanningSourceActivity,
+                        getString(R.string.test_succeeded),
+                        Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        override fun onConnectionFail(exception: Throwable?) {
+            GlobalScope.launch(Dispatchers.Main) {
+                setProgressComponentsVisibility(View.INVISIBLE)
+                isTestingAlreadyRunning = false
+
+                Toast.makeText(
+                        this@MqttVirtualScanningSourceActivity,
+                        getString(R.string.test_failed),
+                        Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun testConnection(model: MqttVirtualScanningSourceModel) {
+        GlobalScope.launch(Dispatchers.Default) {
+            val scanningSource = mqttMapper
+                    .toMqttVirtualScanningSource(model)
+
+            testConnectionCallback.onConnectionStart()
+
+            mqttVirtualScanner.testConnection(testConnectionCallback,scanningSource)
+
+        }
+    }
+
 
     private fun addOrUpdate() {
         val model = toMqttVirtualScanningSourceModel()
@@ -69,17 +152,17 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(object : SingleObserver<Long> {
                         override fun onSuccess(t: Long) {
-                            progressbar.visibility = View.INVISIBLE
+                            progress_bar.visibility = View.INVISIBLE
                             finish()
                         }
 
                         override fun onSubscribe(d: Disposable) {
                             addDisposable(d)
-                            progressbar.visibility = View.VISIBLE
+                            progress_bar.visibility = View.VISIBLE
                         }
 
                         override fun onError(e: Throwable) {
-                            progressbar.visibility = View.INVISIBLE
+                            progress_bar.visibility = View.INVISIBLE
                             Toast.makeText(
                                     this@MqttVirtualScanningSourceActivity,
                                     e.message,
@@ -176,6 +259,7 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
 
     companion object {
         private const val MQTT_VIRTUAL_SCANNING_SOURCE_ACTIVITY_KEY = "MQTT_VIRTUAL_SCANNING_SOURCE_ACTIVITY_KEY"
+
         fun start(context: Context, mqttVirtualScanningSourceModel: MqttVirtualScanningSourceModel? = null) {
             val intent = Intent(context, MqttVirtualScanningSourceActivity::class.java)
 

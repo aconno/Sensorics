@@ -4,6 +4,7 @@ import android.content.Context
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.mqtt.MqttVirtualScanner
+import com.aconno.sensorics.domain.virtualscanningsources.mqtt.MqttVirtualScanningSource
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
@@ -67,6 +68,56 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
             clients.remove(it)
         }
     }
+
+    override fun testConnection(testConnectionCallback: MqttVirtualScanner.TestConnectionCallback,
+                                mqttVirtualScanningSource: MqttVirtualScanningSource) {
+
+        val client = MqttAndroidClient(
+                context,
+                mqttVirtualScanningSource.getUri(),
+                mqttVirtualScanningSource.clientId,
+                MemoryPersistence()
+        )
+
+        val mqttOptions = MqttConnectOptions()
+        mqttOptions.isCleanSession = true
+        mqttOptions.connectionTimeout = TEST_CONNECTION_TIMEOUT_SECONDS
+
+        if(mqttVirtualScanningSource.username.trim().isNotEmpty()) {
+            mqttOptions.userName = mqttVirtualScanningSource.username
+        }
+        if(mqttVirtualScanningSource.password.trim().isNotEmpty()) {
+            mqttOptions.password = mqttVirtualScanningSource.password.toCharArray()
+        }
+
+        val connectionCallback: IMqttActionListener = object : IMqttActionListener {
+            override fun onSuccess(asyncActionToken: IMqttToken) {
+                testConnectionCallback.onConnectionSuccess()
+                closeConnection(client)
+            }
+
+            override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable?) {
+                testConnectionCallback.onConnectionFail(exception)
+            }
+        }
+
+        try {
+            client.connect(mqttOptions, null, connectionCallback)
+        } catch (ex : Exception) {
+            testConnectionCallback.onConnectionFail(ex)
+        }
+    }
+
+    private fun closeConnection(client : MqttAndroidClient) {
+        try {
+            client.unregisterResources()
+            client.close()
+            client.disconnect()
+        } catch (ex : Exception) {
+            ex.printStackTrace()
+        }
+    }
+
 
     fun disconnectSafe(client: MqttAndroidClient) {
         if (client.isConnectedSafe()) {
@@ -211,6 +262,10 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
             // TODO
         }
 
+    }
+
+    companion object {
+        private const val TEST_CONNECTION_TIMEOUT_SECONDS = 5
     }
 }
 

@@ -274,4 +274,10 @@
     <string name="mqtt_virtual_scanning_source">MQTT Scanquelle</string>
 
     <string name="mqtt_server_uri">MQTT Server-URI</string>
+
+
+    <string name="test_virtual_scanning_source">Test</string>
+    <string name="mqtt_scanning_source_test_succeeded">Test erfolgreich</string>
+    <string name="mqtt_scanning_source_test_failed">Test fehlgeschlagen</string>
+    <string name="testing_in_progress">Test läuft...</string>
 </resources>

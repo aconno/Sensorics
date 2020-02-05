@@ -12,4 +12,6 @@ interface MqttVirtualScanningSource : BaseVirtualScanningSource {
     val username : String
     val password : String
     val qualityOfService : Int
+
+    fun getUri(): String
 }

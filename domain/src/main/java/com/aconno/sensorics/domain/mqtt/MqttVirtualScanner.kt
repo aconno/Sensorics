@@ -2,6 +2,7 @@ package com.aconno.sensorics.domain.mqtt
 
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanResult
+import com.aconno.sensorics.domain.virtualscanningsources.mqtt.MqttVirtualScanningSource
 import io.reactivex.Flowable
 
 interface MqttVirtualScanner {
@@ -15,4 +16,12 @@ interface MqttVirtualScanner {
     fun removeDevicesToScanFor(devices: List<Device>)
     fun removeDeviceToScanFor(device: Device)
     fun clearSources()
+
+    fun testConnection(testConnectionCallback: TestConnectionCallback,mqttVirtualScanningSource: MqttVirtualScanningSource)
+
+    interface TestConnectionCallback {
+        fun onConnectionStart()
+        fun onConnectionSuccess()
+        fun onConnectionFail(exception: Throwable?)
+    }
 }

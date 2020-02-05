@@ -333,5 +333,9 @@
     <string name="mqtt_virtual_scanning_source_port">Server port</string>
     <string name="mqtt_virtual_scanning_source_path">Server path</string>
     <string name="mqtt_virtual_scanning_source">MQTT scanning source</string>
+    <string name="test_virtual_scanning_source">Test</string>
+    <string name="mqtt_scanning_source_test_succeeded">Test succeeded</string>
+    <string name="mqtt_scanning_source_test_failed">Test failed</string>
+    <string name="testing_in_progress">Testing in progress...</string>
 
 </resources>
