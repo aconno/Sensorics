@@ -2,7 +2,7 @@ package com.aconno.sensorics.dagger.settings_framework
 
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.ui.settings_framework.SettingsFrameworkActivity
-import com.aconno.sensorics.ui.settings_framework.fragments.SettingsActivitySharedViewModel
+import com.aconno.sensorics.viewmodel.SettingsActivitySharedViewModel
 import dagger.Module
 import dagger.Provides
 

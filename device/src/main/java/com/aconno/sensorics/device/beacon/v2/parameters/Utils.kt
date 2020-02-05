@@ -50,8 +50,7 @@ fun encodeHexAsParameterEmbedString(bytes: ByteArray, parameters: Parameters): S
                 parameters.flatten().find { it.id == id }?.let {
                     builder.append('$')
                     if (it.name.contains(' ')) {
-                        // For javaScript we need \\\"name\\\" format wich will be parsed into "name"
-                        builder.append("\\\"").append(it.name).append("\\\"")
+                        builder.append("\"").append(it.name).append("\"")
                     } else {
                         builder.append(it.name)
                     }

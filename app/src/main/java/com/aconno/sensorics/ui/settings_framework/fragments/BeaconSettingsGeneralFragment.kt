@@ -7,12 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
-import androidx.lifecycle.Observer
+import android.webkit.WebViewClient
 import com.aconno.sensorics.R
 import com.aconno.sensorics.dagger.settings_framework.BeaconGeneralFragmentListener
 import kotlinx.android.synthetic.main.fragment_beacon_general.*
 
-class BeaconSettingsGeneralFragment: SettingsBaseFragment() {
+class BeaconSettingsGeneralFragment : SettingsBaseFragment() {
 
     private lateinit var listener: BeaconGeneralFragmentListener
 
@@ -22,32 +22,25 @@ class BeaconSettingsGeneralFragment: SettingsBaseFragment() {
         return inflater.inflate(R.layout.fragment_beacon_general, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initiateWebView()
+    @SuppressLint("SetJavaScriptEnabled")
+    override fun setupVebViewWithWebClient(mandatoryWebViewClient: WebViewClient) {
+        with(webview_general) {
+            settings.builtInZoomControls = false
+            settings.javaScriptEnabled = true
+            settings.allowFileAccess = true
+            settings.allowFileAccessFromFileURLs = true
+            settings.allowUniversalAccessFromFileURLs = true
+            settings.allowContentAccess = true
+            addJavascriptInterface(this, "native")
+            webViewClient = mandatoryWebViewClient
+            loadUrl(HTML_FILE_PATH)
+        }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
-    private fun initiateWebView() {
-        webview_general.settings.builtInZoomControls = false
-        webview_general.settings.javaScriptEnabled = true
-        webview_general.settings.allowFileAccess = true
-        webview_general.settings.allowFileAccessFromFileURLs = true
-        webview_general.settings.allowUniversalAccessFromFileURLs = true
-        webview_general.settings.allowContentAccess = true
-        webview_general.addJavascriptInterface(this, "native")
-        webview_general.webViewClient = PageLoadedEventWebViewClient {
-            settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
-                viewLifecycleOwner,
-                Observer { beaconInfo ->
-                    beaconInfo?.let {
-                        webview_general?.loadUrl(
-                            jsGenerator.generateCall("GeneralView.Actions.setBeaconInformation", it)
-                        )
-                    }
-                })
-        }
-        webview_general.loadUrl(HTML_FILE_PATH)
+    override fun receivedBeaconInfo(beaconInfo: String) {
+        webview_general?.loadUrl(
+            jsGenerator.generateCall("GeneralView.Actions.setBeaconInformation", beaconInfo)
+        )
     }
 
     @JavascriptInterface

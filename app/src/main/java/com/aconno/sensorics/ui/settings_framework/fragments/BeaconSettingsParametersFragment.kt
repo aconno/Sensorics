@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
+import android.webkit.WebViewClient
 import com.aconno.sensorics.R
 import kotlinx.android.synthetic.main.fragment_beacon_parameter.*
 
@@ -18,34 +18,25 @@ class BeaconSettingsParametersFragment : SettingsBaseFragment() {
         return inflater.inflate(R.layout.fragment_beacon_parameter, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initiateWebView()
+    @SuppressLint("SetJavaScriptEnabled")
+    override fun setupVebViewWithWebClient(mandatoryWebViewClient: WebViewClient) {
+        with(webview_parameters) {
+            settings.builtInZoomControls = false
+            settings.javaScriptEnabled = true
+            settings.allowFileAccess = true
+            settings.allowFileAccessFromFileURLs = true
+            settings.allowUniversalAccessFromFileURLs = true
+            settings.allowContentAccess = true
+            addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "native")
+            webViewClient = mandatoryWebViewClient
+            loadUrl(HTML_FILE_PATH)
+        }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
-    private fun initiateWebView() {
-        webview_parameters.settings.builtInZoomControls = false
-        webview_parameters.settings.javaScriptEnabled = true
-        webview_parameters.settings.allowFileAccess = true
-        webview_parameters.settings.allowFileAccessFromFileURLs = true
-        webview_parameters.settings.allowUniversalAccessFromFileURLs = true
-        webview_parameters.settings.allowContentAccess = true
-        webview_parameters.addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "native")
-        webview_parameters.webViewClient = PageLoadedEventWebViewClient {
-            settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
-                viewLifecycleOwner,
-                Observer { beaconInfo ->
-                    beaconInfo?.let {
-                        webview_parameters?.loadUrl(
-                            jsGenerator.generateCall(
-                                "ParametersLoader.setBeaconParameters", it
-                            )
-                        )
-                    }
-                })
-        }
-        webview_parameters.loadUrl(HTML_FILE_PATH)
+    override fun receivedBeaconInfo(beaconInfo: String) {
+        webview_parameters?.loadUrl(
+            jsGenerator.generateCall("ParametersLoader.setBeaconParameters", beaconInfo)
+        )
     }
 
     companion object {

@@ -7,11 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ProgressBar
-import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
 import kotlinx.android.synthetic.main.fragment_beacon_general.*
-import timber.log.Timber
 
 class BeaconSettingsArbitraryDataHtmlFragment : SettingsBaseFragment() {
 
@@ -27,27 +26,20 @@ class BeaconSettingsArbitraryDataHtmlFragment : SettingsBaseFragment() {
 
         if (savedInstanceState != null)
             webview_general.restoreState(savedInstanceState)
-
-        initiateWebView()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun initiateWebView() {
+    override fun setupVebViewWithWebClient(mandatoryWebViewClient: WebViewClient) {
         webview_general.settings.javaScriptEnabled = true
         webview_general.webChromeClient = WebAppChromeClient()
-        webview_general.addJavascriptInterface(UpdateBeaconJsInterfaceImpl(),"native")
-        webview_general.webViewClient = PageLoadedEventWebViewClient {
-            settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
-                viewLifecycleOwner,
-                Observer { beaconInfo ->
-                    beaconInfo?.let {
-                        val jsCode = jsGenerator.generateCall("init", it)
-                        Timber.d("generated Js code : $jsCode")
-                        webview_general?.loadUrl(jsCode)
-                    }
-                })
-        }
+        webview_general.addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "native")
+        webview_general.webViewClient = mandatoryWebViewClient
         webview_general.loadUrl(HTML_FILE_PATH)
+    }
+
+    override fun receivedBeaconInfo(beaconInfo: String) {
+        val jsCode = jsGenerator.generateCall("init", beaconInfo)
+        webview_general?.loadUrl(jsCode)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

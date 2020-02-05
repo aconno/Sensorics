@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
+import android.webkit.WebViewClient
 import com.aconno.sensorics.R
 import kotlinx.android.synthetic.main.fragment_beacon_cacheable.*
 
@@ -19,30 +19,26 @@ class BeaconSettingsCacheableParamsFragment : SettingsBaseFragment() {
         return inflater.inflate(R.layout.fragment_beacon_cacheable, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initiateWebView()
+    @SuppressLint("SetJavaScriptEnabled")
+
+    override fun setupVebViewWithWebClient(mandatoryWebViewClient: WebViewClient) {
+        with(webview_cacheable_params) {
+            settings.builtInZoomControls = false
+            settings.javaScriptEnabled = true
+            settings.allowFileAccess = true
+            settings.allowFileAccessFromFileURLs = true
+            settings.allowUniversalAccessFromFileURLs = true
+            settings.allowContentAccess = true
+            addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "native")
+            webViewClient = mandatoryWebViewClient
+            loadUrl(HTML_FILE_PATH)
+        }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
-    private fun initiateWebView() {
-        webview_cacheable_params.settings.builtInZoomControls = false
-        webview_cacheable_params.settings.javaScriptEnabled = true
-        webview_cacheable_params.settings.allowFileAccess = true
-        webview_cacheable_params.settings.allowFileAccessFromFileURLs = true
-        webview_cacheable_params.settings.allowUniversalAccessFromFileURLs = true
-        webview_cacheable_params.settings.allowContentAccess = true
-        webview_cacheable_params.addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "native")
-        webview_cacheable_params.webViewClient = PageLoadedEventWebViewClient {
-            settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
-                viewLifecycleOwner,
-                Observer { beaconInfo ->
-                    // todo JavascriptCallGenerator
-                    beaconInfo?.let { webview_cacheable_params?.loadUrl("javascript:GeneralView.Actions.setBeaconInformation('${it}')") }
-                })
+    override fun receivedBeaconInfo(beaconInfo: String) {
+        webview_cacheable_params?.apply {
+            loadUrl("javascript:GeneralView.Actions.setBeaconInformation('${beaconInfo}')")
         }
-        webview_cacheable_params.loadUrl(HTML_FILE_PATH)
-
     }
 
 

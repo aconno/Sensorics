@@ -29,13 +29,14 @@ import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
 import com.aconno.sensorics.model.mapper.WebViewAppBeaconMapper
 import com.aconno.sensorics.ui.dialogs.CancelBtnSchedulerProgressDialog
-import com.aconno.sensorics.ui.settings_framework.fragments.SettingsActivitySharedViewModel
+import com.aconno.sensorics.viewmodel.SettingsActivitySharedViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_settings_framework.*
+import org.apache.commons.text.StringEscapeUtils
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -123,10 +124,24 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
             it?.let { beaconJson ->
                 beacon?.run {
                     loadChangesFromJson(JsonParser().parse(beaconJson).asJsonObject)
-                    webViewAppBeaconMapper.prepareForApp(this)
+                    sendBeaconInfoAndReturnToNormalState(alreadyPreparedForWebView = true)
                 }
             }
         })
+    }
+
+    private fun sendBeaconInfoAndReturnToNormalState(alreadyPreparedForWebView: Boolean = false) {
+        beacon?.let {
+            if (!alreadyPreparedForWebView) {
+                webViewAppBeaconMapper.prepareAdContentForWebView(it)
+            }
+
+            settingsSharedViewModel.sendBeaconJsonToObservers(
+                StringEscapeUtils.escapeJson(gson.toJson(it.toJson()))
+            )
+            // again return slot advertisement content to normal state (represent data as binary)
+            webViewAppBeaconMapper.prepareAdContentForApp(it)
+        }
     }
 
     private fun setupUI() {
@@ -248,13 +263,6 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         }
     }
 
-    private fun sendBeaconInfo() {
-        beacon?.let {
-            webViewAppBeaconMapper.prepareForWebView(it)
-            settingsSharedViewModel.sendBeaconJsonToObservers(gson.toJson(it.toJson()))
-        }
-    }
-
     override fun onDeviceLockStateRead(unlocked: Boolean) {
         if (unlocked) {
             Toast.makeText(
@@ -273,7 +281,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                     tabs.visibility = View.VISIBLE
                     vp_beacon.visibility = View.VISIBLE
 
-                    sendBeaconInfo()
+                    sendBeaconInfoAndReturnToNormalState()
                 }
 
                 override fun execute(bluetooth: Bluetooth): Boolean {

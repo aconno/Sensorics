@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
+import android.webkit.WebViewClient
 import com.aconno.sensorics.R
 import kotlinx.android.synthetic.main.fragment_beacon_general.*
 
@@ -31,23 +31,22 @@ open class BeaconSettingsSlotFragment : SettingsBaseFragment() {
 
         if (savedInstanceState != null)
             webview_general.restoreState(savedInstanceState)
-        initiateWebView()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun initiateWebView() {
-        webview_general.settings.javaScriptEnabled = true
-        webview_general.addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "Android")
-        webview_general.webViewClient = PageLoadedEventWebViewClient {
-            settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
-                viewLifecycleOwner,
-                Observer { beaconJson ->
-                    beaconJson?.let {
-                        webview_general.loadUrl(jsGenerator.generateCall("init", it, slotPosition))
-                    }
-                })
+    override fun setupVebViewWithWebClient(mandatoryWebViewClient: WebViewClient) {
+        with(webview_general) {
+            settings.javaScriptEnabled = true
+            addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "Android")
+            webViewClient = mandatoryWebViewClient
+            loadUrl(HTML_FILE_PATH)
         }
-        webview_general.loadUrl(HTML_FILE_PATH)
+    }
+
+    override fun receivedBeaconInfo(beaconInfo: String) {
+        webview_general?.apply {
+            loadUrl(jsGenerator.generateCall("init", beaconInfo, slotPosition))
+        }
     }
 
     companion object {

@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework.fragments
+package com.aconno.sensorics.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

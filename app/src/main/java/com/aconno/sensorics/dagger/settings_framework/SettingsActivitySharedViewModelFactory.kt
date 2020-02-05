@@ -2,8 +2,7 @@ package com.aconno.sensorics.dagger.settings_framework
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.ui.settings_framework.fragments.SettingsActivitySharedViewModel
+import com.aconno.sensorics.viewmodel.SettingsActivitySharedViewModel
 import javax.inject.Inject
 
 @Suppress("UNCHECKED_CAST")

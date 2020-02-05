@@ -7,13 +7,13 @@ import javax.inject.Inject
 
 class WebViewAppBeaconMapper @Inject constructor(val parametersAdContentMapper: ParametersAdvertisingContentMapper) {
 
-    fun prepareForWebView(beacon: Beacon) {
+    fun prepareAdContentForWebView(beacon: Beacon) {
         beacon.slots.forEach {
             convertToReadableAdvContent(it, beacon.parameters)
         }
     }
 
-    fun prepareForApp(beacon: Beacon) {
+    fun prepareAdContentForApp(beacon: Beacon) {
         beacon.slots.forEach {
             convertToHexAdvContent(it, beacon.parameters)
         }
@@ -30,11 +30,12 @@ class WebViewAppBeaconMapper @Inject constructor(val parametersAdContentMapper: 
         }
     }
 
-
     private fun convertToHexAdvContent(
         slot: Slot,
         parameters: Parameters
     ) {
-        parametersAdContentMapper.getHexAdContent(slot.advertisingContent, parameters)
+        if (slot.getType() == Slot.Type.CUSTOM || slot.getType() == Slot.Type.DEFAULT) {
+            parametersAdContentMapper.getHexAdContent(slot.advertisingContent, parameters)
+        }
     }
 }
