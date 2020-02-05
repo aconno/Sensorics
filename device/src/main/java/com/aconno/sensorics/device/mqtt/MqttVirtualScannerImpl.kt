@@ -28,14 +28,13 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
     private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
 
     override fun addSource(
-        serverUri: String,
-        clientId: String
+        source: MqttVirtualScanningSource
     ) {
 
         val client = MqttAndroidClient(
             context,
-            serverUri,
-            clientId,
+            source.getUri(),
+            source.clientId,
             MemoryPersistence()
         )
 
@@ -46,8 +45,10 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
         clients.add(client)
         clientTopics[client] = callback
 
+
         if (isScanning) {
-            client.connect(defaultMqttOptions, null, connectionCallback)
+            val mqttOptions = getMqttConnectOptionsForSource(source, SCANNING_CONNECTION_TIMEOUT_SECONDS)
+            client.connect(mqttOptions, null, connectionCallback)
         }
     }
 
@@ -69,6 +70,21 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
         }
     }
 
+    private fun getMqttConnectOptionsForSource(source : MqttVirtualScanningSource, connectionTimeout : Int) : MqttConnectOptions {
+        val mqttOptions = MqttConnectOptions()
+        mqttOptions.isCleanSession = true
+        mqttOptions.connectionTimeout = connectionTimeout
+
+        if(source.username.trim().isNotEmpty()) {
+            mqttOptions.userName = source.username
+        }
+        if(source.password.trim().isNotEmpty()) {
+            mqttOptions.password = source.password.toCharArray()
+        }
+
+        return mqttOptions
+    }
+
     override fun testConnection(testConnectionCallback: MqttVirtualScanner.TestConnectionCallback,
                                 mqttVirtualScanningSource: MqttVirtualScanningSource) {
 
@@ -79,16 +95,8 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
                 MemoryPersistence()
         )
 
-        val mqttOptions = MqttConnectOptions()
-        mqttOptions.isCleanSession = true
-        mqttOptions.connectionTimeout = TEST_CONNECTION_TIMEOUT_SECONDS
-
-        if(mqttVirtualScanningSource.username.trim().isNotEmpty()) {
-            mqttOptions.userName = mqttVirtualScanningSource.username
-        }
-        if(mqttVirtualScanningSource.password.trim().isNotEmpty()) {
-            mqttOptions.password = mqttVirtualScanningSource.password.toCharArray()
-        }
+        val mqttOptions =
+                getMqttConnectOptionsForSource(mqttVirtualScanningSource, TEST_CONNECTION_TIMEOUT_SECONDS)
 
         val connectionCallback: IMqttActionListener = object : IMqttActionListener {
             override fun onSuccess(asyncActionToken: IMqttToken) {
@@ -266,6 +274,7 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
 
     companion object {
         private const val TEST_CONNECTION_TIMEOUT_SECONDS = 5
+        private const val SCANNING_CONNECTION_TIMEOUT_SECONDS = 15
     }
 }
 

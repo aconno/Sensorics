@@ -148,9 +148,8 @@ class MqttVirtualScanningService : DaggerService() {
                     if (sources.isNotEmpty()) {
                         sources.forEach { source ->
                             val mqttSource = source as MqttVirtualScanningSource
-                            val serverUri = buildUriFromScanningSource(source)
                             mqttVirtualScanner.addSource(
-                                    serverUri, mqttSource.clientId
+                                    mqttSource
                             )
                         }
 

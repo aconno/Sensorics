@@ -7,7 +7,7 @@ import io.reactivex.Flowable
 
 interface MqttVirtualScanner {
     fun startScanning(devices: List<Device> = listOf())
-    fun addSource(serverUri: String, clientId: String)
+    fun addSource(source : MqttVirtualScanningSource)
     fun stopScanning()
     fun getScanResults(): Flowable<ScanResult>
     fun removeSource(serverUri: String, clientId: String?)
