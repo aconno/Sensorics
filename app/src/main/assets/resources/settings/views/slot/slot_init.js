@@ -1,6 +1,8 @@
 //GLOBAL Slot object
 let beacon;
 let index;
+let timeoutId;
+const TIMEOUT_INTERVAL = 1000;
 let inited = false;
 const INTERVAL_MS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
     11000, 12000, 13000, 14000, 15000, 15000, 20000, 30000, 40000, 50000, 60000, 120000, 180000, 240000, 300000, 360000, 420000, 480000,
@@ -14,14 +16,15 @@ $(document).ready(function() {
         return;
     }
 
-    let emptyMenuItem = generateFrameTypeMenuItem("DEFAULT");
+    let emptyMenuItem = generateFrameTypeMenuItem("EMPTY");
     //let uidMenuItem = generateFrameTypeMenuItem("UID"); //Not supported yet
     let urlMenuItem = generateFrameTypeMenuItem("URL");
     let customMenuItem = generateFrameTypeMenuItem("CUSTOM");
     let ibeaconMenuItem = generateFrameTypeMenuItem("IBEACON");
 
     $('#dropdown_frame_type').append(
-        emptyMenuItem /*+ uidMenuItem*/ + urlMenuItem + customMenuItem + ibeaconMenuItem
+        /*+ uidMenuItem*/
+        emptyMenuItem + urlMenuItem + customMenuItem + ibeaconMenuItem
     );
 
     $(".dropdown-menu").on('click', 'li a', function() {
@@ -143,7 +146,8 @@ function customTypeClicked() {
 
 
     $("#custom_value").bind("change keyup", function() {
-        getUpdatedSlot();
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(getUpdatedSlot, TIMEOUT_INTERVAL);
     });
 }
 
@@ -252,6 +256,8 @@ function init(slotJson, slotIndex) {
         case FrameType.DEFAULT:
             deafultTypeClicked();
             $('#btn_frame_type').html(FrameType.DEFAULT);
+            let defaultMenuItem = generateFrameTypeMenuItem("DEFAULT");
+            $('#dropdown_frame_type').prepend(defaultMenuItem);
             break;
         default:
             emptyTypeClicked();
@@ -292,7 +298,6 @@ function init(slotJson, slotIndex) {
 
     $('#btn_frame_type').prop('disabled', beacon.slots.slots[index].readOnly)
 
-
     initListeners();
 }
 
@@ -304,7 +309,7 @@ function getUpdatedSlot() {
 
     beacon.slots.slots[index].advertisingMode = $('#toggle-internal-switch').prop("checked") ? "EVENT" : "INTERVAL";
 
-    console.log("GetJSON IS called: " + beacon.slots.slots[index].name + " " + type + " " + $('#range-packetCount').val());
+    console.log("sending updating for slot : " + beacon.slots.slots[index].name + " " + type);
     let packetValue = parseInt($('#range-packetCount').val()) + 1
     beacon.slots.slots[index].packetCount = packetValue;
     beacon.slots.slots[index].advertisingModeParameters.interval = $('#range-addInterval').val();
@@ -364,5 +369,6 @@ function getUpdatedSlot() {
             beacon.slots.slots[index].frame = {};
     }
 
-    //native.onDataChanged(JSON.stringify(beacon));
+    console.log(JSON.stringify(beacon));
+    // native.onDataChanged(JSON.stringify(beacon));
 }
