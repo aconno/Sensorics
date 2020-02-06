@@ -8,14 +8,14 @@ import android.webkit.WebViewClient
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.serialization.JavascriptCallGenerator
-import com.aconno.sensorics.viewmodel.SettingsActivitySharedViewModel
+import com.aconno.sensorics.viewmodel.BeaconSettingsTransporterSharedViewModel
 import dagger.android.support.DaggerFragment
 import timber.log.Timber
 
 abstract class SettingsBaseFragment() : DaggerFragment() {
 
-    private val settingsActivitySharedViewModel by lazy {
-        ViewModelProviders.of(requireActivity()).get(SettingsActivitySharedViewModel::class.java)
+    private val settingsTransporter by lazy {
+        ViewModelProviders.of(requireActivity()).get(BeaconSettingsTransporterSharedViewModel::class.java)
     }
 
     protected var jsGenerator = JavascriptCallGenerator()
@@ -34,7 +34,7 @@ abstract class SettingsBaseFragment() : DaggerFragment() {
             Timber.d("page $url loaded")
             super.onPageFinished(view, url)
             if (viewIsNotDestroyed() && !isPageAlreadyLoaded) {
-                settingsActivitySharedViewModel.beaconJsonLiveDataForFragments.observe(
+                settingsTransporter.beaconJsonLiveDataForFragments.observe(
                     viewLifecycleOwner,
                     Observer {
                         it?.let { beaconInfo ->
@@ -64,7 +64,7 @@ abstract class SettingsBaseFragment() : DaggerFragment() {
     protected fun sendBeaconsUpdatedJson(updatedBeaconJson: String) {
         Timber.d("Sending updated beacon: $updatedBeaconJson")
         occurredAfterUpdateSent = true
-        settingsActivitySharedViewModel.beaconDataChanged(updatedBeaconJson)
+        settingsTransporter.beaconDataChanged(updatedBeaconJson)
     }
 
 

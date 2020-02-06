@@ -8,7 +8,7 @@ import timber.log.Timber
  * This is shared viewModel which is used to communicate between different android components
  * (for example between activity and fragments)
  */
-class SettingsActivitySharedViewModel : ViewModel() {
+class BeaconSettingsTransporterSharedViewModel : ViewModel() {
     private val _beaconJsonLiveDataForFragments = MutableLiveData<String>()
     private val _beaconUpdatedJsonLiveDataForActivity = MutableLiveData<String>()
 

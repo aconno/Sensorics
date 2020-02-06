@@ -29,7 +29,7 @@ import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
 import com.aconno.sensorics.model.mapper.WebViewAppBeaconMapper
 import com.aconno.sensorics.ui.dialogs.CancelBtnSchedulerProgressDialog
-import com.aconno.sensorics.viewmodel.SettingsActivitySharedViewModel
+import com.aconno.sensorics.viewmodel.BeaconSettingsTransporterSharedViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -43,7 +43,7 @@ import javax.inject.Inject
 
 // TODO this activity is too complicated. Need refactoring (maybe put bluetooth logic in viewmodel and
 //  make dialog creator classes)
-class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCallback,
+class BeaconSettingsActivity : DaggerAppCompatActivity(), LockStateRequestCallback,
     BeaconGeneralFragmentListener {
     private var bluetoothConnectService: BluetoothConnectService? = null
     private var connectResultDisposable: Disposable? = null
@@ -65,7 +65,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     @Inject
-    lateinit var settingsSharedViewModel: SettingsActivitySharedViewModel
+    lateinit var settingsTransporter: BeaconSettingsTransporterSharedViewModel
     @Inject
     lateinit var webViewAppBeaconMapper: WebViewAppBeaconMapper
 
@@ -121,7 +121,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     }
 
     private fun subscribeOnData() {
-        settingsSharedViewModel.beaconUpdatedJsonLiveDataForActivity.observe(this, Observer {
+        settingsTransporter.beaconUpdatedJsonLiveDataForActivity.observe(this, Observer {
             it?.let { beaconJson ->
                 beacon?.run {
                     loadChangesFromJson(JsonParser().parse(beaconJson).asJsonObject)
@@ -137,7 +137,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                 webViewAppBeaconMapper.prepareAdContentForWebView(it)
             }
 
-            settingsSharedViewModel.sendBeaconJsonToObservers(
+            settingsTransporter.sendBeaconJsonToObservers(
                 StringEscapeUtils.escapeJson(gson.toJson(it.toJson()))
             )
             // again return slot advertisement content to normal state (represent data as binary)
@@ -321,7 +321,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
                 hideKeyboard()
                 beacon?.unlock(
                     password,
-                    this@SettingsFrameworkActivity
+                    this@BeaconSettingsActivity
                 ) // TODO: Do this in a better way
                 showProgressDialogIfNeeded()
                 progressDialog?.progressMessage = getString(R.string.ulocking_with_dots)
@@ -339,7 +339,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
     private fun showProgressDialogIfNeeded() {
         if (progressDialog?.isShowing != true) {
             progressDialog = CancelBtnSchedulerProgressDialog(
-                this@SettingsFrameworkActivity,
+                this@BeaconSettingsActivity,
                 handler
             ) {
                 if (notDisconnectedFromDevice()) {
@@ -431,7 +431,7 @@ class SettingsFrameworkActivity : DaggerAppCompatActivity(), LockStateRequestCal
         private const val CLEAN_TIMER = 15000L
         private const val DEVICE_MAC_ADDRESS = "device_mac_address"
         fun start(context: Context, deviceMacAddress: String) {
-            Intent(context, SettingsFrameworkActivity::class.java).also {
+            Intent(context, BeaconSettingsActivity::class.java).also {
                 it.putExtra(DEVICE_MAC_ADDRESS, deviceMacAddress)
                 context.startActivity(it)
             }
