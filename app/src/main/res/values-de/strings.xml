@@ -280,4 +280,6 @@
     <string name="mqtt_scanning_source_test_succeeded">Test erfolgreich</string>
     <string name="mqtt_scanning_source_test_failed">Test fehlgeschlagen</string>
     <string name="testing_in_progress">Test läuft...</string>
+
+    <string name="virtual_scanning_source_connection_fail">Verbindung zur virtuellen Scan-Quelle kann nicht hergestellt werden: %s</string>
 </resources>

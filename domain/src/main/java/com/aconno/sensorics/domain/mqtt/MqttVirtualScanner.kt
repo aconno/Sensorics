@@ -6,6 +6,8 @@ import com.aconno.sensorics.domain.virtualscanningsources.mqtt.MqttVirtualScanni
 import io.reactivex.Flowable
 
 interface MqttVirtualScanner {
+    var scanningConnectionCallback : ConnectionCallback?
+
     fun startScanning(devices: List<Device> = listOf())
     fun addSource(source : MqttVirtualScanningSource)
     fun stopScanning()
@@ -17,11 +19,16 @@ interface MqttVirtualScanner {
     fun removeDeviceToScanFor(device: Device)
     fun clearSources()
 
-    fun testConnection(testConnectionCallback: TestConnectionCallback,mqttVirtualScanningSource: MqttVirtualScanningSource)
+    fun testConnection(testConnectionCallback: TestConnectionCallback, mqttVirtualScanningSource: MqttVirtualScanningSource)
 
     interface TestConnectionCallback {
         fun onConnectionStart()
         fun onConnectionSuccess()
         fun onConnectionFail(exception: Throwable?)
+    }
+
+    interface ConnectionCallback {
+        fun onConnectionSuccess(source: MqttVirtualScanningSource)
+        fun onConnectionFail(source: MqttVirtualScanningSource,exception: Throwable?)
     }
 }

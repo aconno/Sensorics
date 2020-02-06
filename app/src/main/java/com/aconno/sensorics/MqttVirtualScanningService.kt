@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.data.publisher.MqttPublisher
@@ -139,6 +140,16 @@ class MqttVirtualScanningService : DaggerService() {
 
         startForeground(1, notification)
 
+        mqttVirtualScanner.scanningConnectionCallback = object : MqttVirtualScanner.ConnectionCallback {
+            override fun onConnectionFail(source: MqttVirtualScanningSource, exception: Throwable?) {
+                Toast.makeText(this@MqttVirtualScanningService,
+                        this@MqttVirtualScanningService.getString(R.string.virtual_scanning_source_connection_fail, source.name),
+                        Toast.LENGTH_SHORT)
+                        .show()
+            }
+
+            override fun onConnectionSuccess(source: MqttVirtualScanningSource) {}
+        }
 
         Single.fromCallable {
             getAllEnabledMqttVirtualScanningSourceUseCase.execute()
@@ -202,6 +213,7 @@ class MqttVirtualScanningService : DaggerService() {
 
     private fun startScan(deviceList: List<Device>? = null) {
         TAG.d("Started")
+
         mqttVirtualScanner.startScanning()
 
         running = true

@@ -338,4 +338,6 @@
     <string name="mqtt_scanning_source_test_failed">Test failed</string>
     <string name="testing_in_progress">Testing in progress...</string>
 
+    <string name="virtual_scanning_source_connection_fail">Unable to establish connection to virtual scanning source: %s</string>
+
 </resources>

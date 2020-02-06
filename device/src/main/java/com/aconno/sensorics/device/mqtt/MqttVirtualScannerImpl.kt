@@ -20,12 +20,12 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
 
     private var clients: MutableList<MqttAndroidClient> = mutableListOf()
     private var clientTopics: MutableMap<MqttAndroidClient, MqttVirtualScannerCallback> = mutableMapOf()
-
-    private val defaultMqttOptions = MqttConnectOptions().apply {
-        this.isCleanSession = true
-    }
+    private var clientConnectOptions : MutableMap<MqttAndroidClient, MqttConnectOptions> = mutableMapOf()
+    private var clientScanningSources : MutableMap<MqttAndroidClient, MqttVirtualScanningSource> = mutableMapOf()
 
     private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
+
+    override var scanningConnectionCallback : MqttVirtualScanner.ConnectionCallback? = null
 
     override fun addSource(
         source: MqttVirtualScanningSource
@@ -39,16 +39,17 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
         )
 
 
-        val callback = MqttVirtualScannerCallback(client)
+        val callback = MqttVirtualScannerCallback(client, source.qualityOfService)
         client.setCallback(callback)
 
         clients.add(client)
         clientTopics[client] = callback
+        clientConnectOptions[client] = getMqttConnectOptionsForSource(source, SCANNING_CONNECTION_TIMEOUT_SECONDS)
+        clientScanningSources[client] = source
 
 
         if (isScanning) {
-            val mqttOptions = getMqttConnectOptionsForSource(source, SCANNING_CONNECTION_TIMEOUT_SECONDS)
-            client.connect(mqttOptions, null, connectionCallback)
+            client.connect(clientConnectOptions[client], null, connectionCallback)
         }
     }
 
@@ -67,6 +68,8 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
             disconnectSafe(it)
             clientTopics.remove(it)
             clients.remove(it)
+            clientConnectOptions.remove(it)
+            clientScanningSources.remove(it)
         }
     }
 
@@ -81,6 +84,7 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
         if(source.password.trim().isNotEmpty()) {
             mqttOptions.password = source.password.toCharArray()
         }
+
 
         return mqttOptions
     }
@@ -105,7 +109,9 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
             }
 
             override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable?) {
+                exception?.printStackTrace()
                 testConnectionCallback.onConnectionFail(exception)
+                closeConnection(client)
             }
         }
 
@@ -113,6 +119,7 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
             client.connect(mqttOptions, null, connectionCallback)
         } catch (ex : Exception) {
             testConnectionCallback.onConnectionFail(ex)
+            closeConnection(client)
         }
     }
 
@@ -177,7 +184,7 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
 
     override fun startScanning(devices: List<Device>) {
         clients.forEach {
-            it.connect(defaultMqttOptions, null, connectionCallback)
+            it.connect(clientConnectOptions[it], null, connectionCallback)
         }
         addDevicesToScanFor(devices)
         isScanning = true
@@ -189,10 +196,17 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
 
     private val connectionCallback: IMqttActionListener = object : IMqttActionListener {
         override fun onSuccess(asyncActionToken: IMqttToken) {
+            clientScanningSources[asyncActionToken.client]?.let {
+                scanningConnectionCallback?.onConnectionSuccess(it)
+            }
             Timber.d("MQTT ${asyncActionToken.client.serverURI}: connected")
         }
 
         override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable?) {
+            clientScanningSources[asyncActionToken.client]?.let {
+                scanningConnectionCallback?.onConnectionFail(it,exception)
+            }
+
             Timber.d("MQTT ${asyncActionToken.client.serverURI}: connection failure: $exception")
         }
     }
@@ -207,15 +221,14 @@ class MqttVirtualScannerImpl(val context: Context) : MqttVirtualScanner {
         }
     }
 
-    inner class MqttVirtualScannerCallback(var client: MqttAndroidClient, var subscribedTopics: MutableSet<String> = mutableSetOf()) : MqttCallbackExtended {
-        private val defaultQos: Int = 2
+    inner class MqttVirtualScannerCallback(var client: MqttAndroidClient, var qos:Int = 0, var subscribedTopics: MutableSet<String> = mutableSetOf()) : MqttCallbackExtended {
         var disconnect: Boolean = false
 
         fun checkSubscribedTopics(topics: Set<String>) {
             if (client.isConnectedSafe()) {
                 (topics - subscribedTopics).let { missingTopics ->
                     missingTopics.forEach {
-                        client.subscribe(it, defaultQos, null, object : IMqttActionListener {
+                        client.subscribe(it, qos, null, object : IMqttActionListener {
                             override fun onSuccess(asyncActionToken: IMqttToken?) {
                                 Timber.d("Subscribed to $it successfully")
                             }
