@@ -331,49 +331,33 @@ function getUpdatedSlot() {
     switch (type) {
         case "UID":
             beacon.slots.slots[index].type = FrameType.UID;
-            beacon.slots.slots[index].frame = {
-                KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID: $('#uid_namespace_id').val(),
-                KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID: $('#uid_instance_id').val()
-            };
-
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID] = $('#uid_namespace_id').val();
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID] = $('#uid_instance_id').val();
             break;
         case "URL":
             beacon.slots.slots[index].type = FrameType.URL;
-            beacon.slots.slots[index].frame = {
-                KEY_ADVERTISING_CONTENT_URL_URL: $('#url').val()
-            };
-
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_URL_URL] = $('#url').val();
             break;
         case "IBEACON":
             beacon.slots.slots[index].type = FrameType.IBEACON;
-            beacon.slots.slots[index].frame = {
-                KEY_ADVERTISING_CONTENT_IBEACON_UUID: $('#ibeacon_uuid').val(),
-                KEY_ADVERTISING_CONTENT_IBEACON_MAJOR: $('#ibeacon_major').val(),
-                KEY_ADVERTISING_CONTENT_IBEACON_MINOR: $('#ibeacon_minor').val()
-            };
-
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_UUID] = $('#ibeacon_uuid').val();
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_MAJOR] = $('#ibeacon_major').val();
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_MINOR] = $('#ibeacon_minor').val();
             break;
         case "CUSTOM":
             beacon.slots.slots[index].type = FrameType.CUSTOM;
-            beacon.slots.slots[index].frame = {
-                KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM: $('#custom_value').val(),
-            };
-
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM]= $('#custom_value').val()
             break;
 
         case "DEFAULT":
             beacon.slots.slots[index].type = FrameType.DEFAULT;
-            beacon.slots.slots[index].frame = {
-                KEY_ADVERTISING_CONTENT_DEFAULT_DATA: $('#default_advertising_content').val(),
-            };
-
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_DEFAULT_DATA] = $('#default_advertising_content').val();
             break;
 
         default:
             beacon.slots.slots[index].type = FrameType.EMPTY;
-            beacon.slots.slots[index].frame = {};
+            beacon.slots.slots[index]["advertisingContent"] = {};
     }
 
-    console.log(JSON.stringify(beacon));
     native.onDataChanged(JSON.stringify(beacon));
 }
