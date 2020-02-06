@@ -181,20 +181,6 @@ class MqttVirtualScanningService : DaggerService() {
         return START_STICKY
     }
 
-    private fun buildUriFromScanningSource(source: MqttVirtualScanningSource): String {
-        val protocol = when (source.protocol) {
-            MqttVirtualScanningSourceProtocol.TCP -> "tcp"
-            MqttVirtualScanningSourceProtocol.WEBSOCKET -> "ws"
-        }
-        val path = if(source.path.isNotEmpty()) {
-                "/{${source.path}}"
-            } else {
-                ""
-            }
-
-        return "$protocol://${source.address}:${source.port}$path"
-
-    }
 
     /**ss
      * Restart scanning before Android BLE Scanning Timeout
