@@ -1,7 +1,9 @@
 //GLOBAL Slot object
 let beacon;
 let index;
-let timeoutId;
+let customContnetnTimeoutId;
+let urlContentTiemoutId;
+let ibeaconUuidTimeoutId;
 const TIMEOUT_INTERVAL = 1000;
 let inited = false;
 const INTERVAL_MS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
@@ -48,7 +50,8 @@ function deafultTypeClicked() {
     $("#advertising_content").append(whatever);
 
     $("#default_advertising_content").bind("change keyup", function() {
-        getUpdatedSlot();
+        clearTimeout(customContnetnTimeoutId);
+        customContnetnTimeoutId = setTimeout(getUpdatedSlot, TIMEOUT_INTERVAL);
     });
 }
 
@@ -69,7 +72,8 @@ function urlTypeClicked() {
     $("#advertising_content").append(whatever);
 
     $("#url").bind("change keyup", function() {
-        getUpdatedSlot();
+        clearTimeout(urlContentTiemoutId);
+        urlContentTiemoutId = setTimeout(getUpdatedSlot, TIMEOUT_INTERVAL);
     });
 }
 
@@ -114,7 +118,8 @@ function ibeaconTypeClicked() {
     $("#advertising_content").append(whatever);
 
     $("#ibeacon_uuid").bind("change keyup", function() {
-        getUpdatedSlot();
+        clearTimeout(ibeaconUuidTimeoutId);
+        ibeaconUuidTimeoutId = setTimeout(getUpdatedSlot, TIMEOUT_INTERVAL);
     });
 
     $("#ibeacon_major").bind("change keyup", function() {
@@ -146,8 +151,8 @@ function customTypeClicked() {
 
 
     $("#custom_value").bind("change keyup", function() {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(getUpdatedSlot, TIMEOUT_INTERVAL);
+        clearTimeout(customContnetnTimeoutId);
+        customContnetnTimeoutId = setTimeout(getUpdatedSlot, TIMEOUT_INTERVAL);
     });
 }
 
@@ -370,5 +375,5 @@ function getUpdatedSlot() {
     }
 
     console.log(JSON.stringify(beacon));
-    // native.onDataChanged(JSON.stringify(beacon));
+    native.onDataChanged(JSON.stringify(beacon));
 }
