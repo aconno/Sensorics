@@ -138,6 +138,10 @@ function customTypeClicked() {
 
     $("#advertising_content").append(whatever);
 
+
+    $("#custom_value").prop('disabled', beacon.slots.slots[index].readOnly)
+
+
     $("#custom_value").bind("change keyup", function() {
         getUpdatedSlot();
     });
@@ -255,11 +259,11 @@ function init(slotJson, slotIndex) {
     }
 
     console.log("Slot name: " + beacon.slots.slots[index].name);
+
     $('#slot_name_text').val(beacon.slots.slots[index].name);
 
-    if (beacon.slots.slots[index].type === FrameType.DEFAULT) {
-        $('#slot_name_text').prop('disabled', true);
-    }
+    $('#slot_name_text').prop('disabled', beacon.slots.slots[index].readOnly)
+
 
     let params = generateSwitchContent(beacon.slots.slots[index].readOnly, beacon.slots.slots[index].active, "Slot Advertising", "advertise-switch");
     $('#slot_advertising').empty();
@@ -286,9 +290,8 @@ function init(slotJson, slotIndex) {
     params = generateEnums(beacon.parameters.parameters["Basic config"].find(e => e.name === "Supported TX powers").value.split(','), "tx_power", "Advertising Tx Power", beacon.slots.slots[index].txPower, 0)
     $('#base_parameter').append(params);
 
-    if (beacon.slots.slots[index].readOnly === true) {
-        $('#btn_frame_type').prop('disabled', true)
-    }
+    $('#btn_frame_type').prop('disabled', beacon.slots.slots[index].readOnly)
+
 
     initListeners();
 }
