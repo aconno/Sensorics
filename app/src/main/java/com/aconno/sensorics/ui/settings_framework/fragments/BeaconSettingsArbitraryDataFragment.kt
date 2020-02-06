@@ -12,7 +12,7 @@ import android.widget.ProgressBar
 import com.aconno.sensorics.R
 import kotlinx.android.synthetic.main.fragment_beacon_general.*
 
-class BeaconSettingsArbitraryDataHtmlFragment : SettingsBaseFragment() {
+class BeaconSettingsArbitraryDataFragment : SettingsBaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,6 +66,6 @@ class BeaconSettingsArbitraryDataHtmlFragment : SettingsBaseFragment() {
 
         @JvmStatic
         fun newInstance() =
-            BeaconSettingsArbitraryDataHtmlFragment()
+            BeaconSettingsArbitraryDataFragment()
     }
 }
