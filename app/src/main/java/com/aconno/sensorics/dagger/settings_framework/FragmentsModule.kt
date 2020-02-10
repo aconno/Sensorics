@@ -17,7 +17,7 @@ abstract class FragmentsModule {
 
     @FragmentScope
     @ContributesAndroidInjector
-    abstract fun bindBeaconSettingsArbitraryDataHtmlFragment(): BeaconSettingsArbitraryDataHtmlFragment
+    abstract fun bindBeaconSettingsArbitraryDataHtmlFragment(): BeaconSettingsArbitraryDataFragment
 
     @FragmentScope
     @ContributesAndroidInjector

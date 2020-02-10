@@ -85,11 +85,9 @@
     <string name="topic">Topic</string>
     <string name="password">Passwort</string>
     <string name="title_select_publish">Wählen Sie den Anbieter</string>
-    <string name="title_settings">Einstellungen</string>
     <string name="no_publishers_found">Es sind keine backends vorhanden. Drücke plus (+) um ein backend hinzuzufügen.</string>
     <string name="no_devices_found">Es sind keine gespeicherten Geräte vorhanden</string>
     <string name="title_publish_list">Backends</string>
-    <string name="settings">Einstellungen</string>
     <string name="title_action_details">Aktion</string>
     <string name="label_device">Gerät</string>
     <string name="hint_action_name">Name der Aktion</string>

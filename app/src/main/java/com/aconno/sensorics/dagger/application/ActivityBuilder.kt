@@ -37,8 +37,8 @@ import com.aconno.sensorics.dagger.readings.SensorReadingsScope
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityModule
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityScope
 import com.aconno.sensorics.dagger.settings_framework.FragmentsModule
-import com.aconno.sensorics.dagger.settings_framework.SettingsFrameworkActivityModule
-import com.aconno.sensorics.dagger.settings_framework.SettingsFrameworkActivityScope
+import com.aconno.sensorics.dagger.settings_framework.BeaconSettingsActivityModule
+import com.aconno.sensorics.dagger.settings_framework.BeaconSettingsActivityScope
 import com.aconno.sensorics.dagger.splash.SplashActivityModule
 import com.aconno.sensorics.dagger.splash.SplashActivityScope
 import com.aconno.sensorics.ui.ActionListActivity
@@ -50,7 +50,7 @@ import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
-import com.aconno.sensorics.ui.settings_framework.SettingsFrameworkActivity
+import com.aconno.sensorics.ui.settings_framework.BeaconSettingsActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -141,9 +141,9 @@ abstract class ActivityBuilder {
     )
     abstract fun bindSplashActivity(): SplashActivity
 
-    @SettingsFrameworkActivityScope
-    @ContributesAndroidInjector(modules = [SettingsFrameworkActivityModule::class, FragmentsModule::class])
-    abstract fun bindSettingsFrameworkActivity(): SettingsFrameworkActivity
+    @BeaconSettingsActivityScope
+    @ContributesAndroidInjector(modules = [BeaconSettingsActivityModule::class, FragmentsModule::class])
+    abstract fun bindBeaconSettingsActivity(): BeaconSettingsActivity
 
     @DfuActivityScope
     @ContributesAndroidInjector

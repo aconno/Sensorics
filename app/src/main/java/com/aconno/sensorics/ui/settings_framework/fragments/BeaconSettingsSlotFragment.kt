@@ -37,7 +37,7 @@ open class BeaconSettingsSlotFragment : SettingsBaseFragment() {
     override fun setupVebViewWithWebClient(mandatoryWebViewClient: WebViewClient) {
         with(webview_general) {
             settings.javaScriptEnabled = true
-            addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "Android")
+            addJavascriptInterface(UpdateBeaconJsInterfaceImpl(), "native")
             webViewClient = mandatoryWebViewClient
             loadUrl(HTML_FILE_PATH)
         }

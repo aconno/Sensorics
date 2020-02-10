@@ -74,7 +74,7 @@
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".ui.settings.SettingsActivity"
-            android:label="@string/title_settings"
+            android:label="@string/title_app_settings"
             android:theme="@style/SettingsTheme" />
 
         <activity
@@ -82,8 +82,8 @@
             android:label="@string/title_dfu" />
         <activity android:name=".ui.cache.CacheActivity" />
         <activity
-            android:name=".ui.settings_framework.SettingsFrameworkActivity"
-            android:label="@string/settings_framework" />
+            android:name=".ui.settings_framework.BeaconSettingsActivity"
+            android:label="@string/beacon_settings" />
 
 
         <activity android:name=".ui.dfu.NotificationActivity" />

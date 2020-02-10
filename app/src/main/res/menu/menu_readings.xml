@@ -39,7 +39,7 @@
 
     <item
         android:id="@+id/action_settings_framework"
-        android:title="@string/settings_framework"
+        android:title="@string/beacon_settings"
         android:visible="false"
         app:showAsAction="never" />
 </menu>
