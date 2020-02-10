@@ -13,7 +13,7 @@ class WebViewAppBeaconMapper @Inject constructor(val parametersAdContentMapper: 
         }
     }
 
-    fun prepareAdContentForApp(beacon: Beacon) {
+    fun restoreAdContent(beacon: Beacon) {
         beacon.slots.forEach {
             convertToHexAdvContent(it, beacon.parameters)
         }

@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework.fragments
+package com.aconno.sensorics.ui.beacon_settings.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebViewClient
 import com.aconno.sensorics.R
-import com.aconno.sensorics.dagger.settings_framework.BeaconGeneralFragmentListener
+import com.aconno.sensorics.dagger.beacon_settings.BeaconGeneralFragmentListener
 import kotlinx.android.synthetic.main.fragment_beacon_general.*
 
 class BeaconSettingsGeneralFragment : SettingsBaseFragment() {

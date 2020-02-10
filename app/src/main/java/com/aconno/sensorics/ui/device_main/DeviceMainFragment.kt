@@ -29,7 +29,7 @@ import com.aconno.sensorics.ui.cache.CacheActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
-import com.aconno.sensorics.ui.settings_framework.BeaconSettingsActivity
+import com.aconno.sensorics.ui.beacon_settings.BeaconSettingsActivity
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson

@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework.fragments
+package com.aconno.sensorics.ui.beacon_settings.fragments
 
 import android.os.Bundle
 import android.view.View

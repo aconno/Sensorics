@@ -1,10 +1,10 @@
-package com.aconno.sensorics.ui.settings_framework
+package com.aconno.sensorics.ui.beacon_settings
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
-import com.aconno.sensorics.ui.settings_framework.fragments.*
+import com.aconno.sensorics.ui.beacon_settings.fragments.*
 
 class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
     private var initialData = 0

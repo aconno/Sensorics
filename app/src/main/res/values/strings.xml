@@ -322,6 +322,7 @@
 
     <!--  Beacon settings  -->
     <string name="connecting_with_dots">Connecting...</string>
+    <string name="connected_with_dots">Connected...</string>
     <string name="reading_with_dots">Reading...</string>
     <string name="password_required">Password required</string>
     <string name="connected_unlocking">Connected. Unlocking...</string>

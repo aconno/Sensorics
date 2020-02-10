@@ -1,4 +1,4 @@
-package com.aconno.sensorics.dagger.settings_framework
+package com.aconno.sensorics.dagger.beacon_settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
