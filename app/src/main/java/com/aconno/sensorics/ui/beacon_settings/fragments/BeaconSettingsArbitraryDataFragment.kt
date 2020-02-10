@@ -42,11 +42,6 @@ class BeaconSettingsArbitraryDataFragment : SettingsBaseFragment() {
         webview_general?.loadUrl(jsCode)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        webview_general.saveState(outState)
-        super.onSaveInstanceState(outState)
-    }
-
     inner class WebAppChromeClient : WebChromeClient() {
         override fun onProgressChanged(view: WebView?, newProgress: Int) {
             if (newProgress < 100 && progress_page.visibility == ProgressBar.GONE) {
