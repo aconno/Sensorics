@@ -25,17 +25,28 @@ class InputToOutcomesUseCase(
         return Single.fromObservable(observable)
     }
 
+    /**
+     * Map of previous conditions
+     * (device address) -> ((action id) -> (was action satisfied))
+     */
+    private val previousConditions: MutableMap<String, MutableMap<Long, Boolean>> = mutableMapOf()
+
     private fun actionsToOutcomes(
         actions: List<Action>,
         input: Input,
         timeOfDayInSeconds: Int
     ): List<Outcome> {
         val result = mutableListOf<Outcome>()
+        val previousDeviceConditions = previousConditions.getOrPut(input.macAddress) {
+            mutableMapOf()
+        }
 
         actions.asSequence().filter {
             it.device.macAddress == input.macAddress
         }.filter { action ->
             action.active
+        }.filter {
+            !(previousDeviceConditions[it.id] ?: false)
         }.filter { action ->
             // Suppressing because of the last else if branch, I wanted it to be readable
             @Suppress("RedundantIf")
@@ -64,7 +75,9 @@ class InputToOutcomesUseCase(
                 false
             }
         }.filter { action ->
-            action.condition.isSatisfied(input)
+            action.condition.isSatisfied(input).also {
+                previousDeviceConditions[action.id] = it
+            }
         }.map { action ->
             action.outcome
         }.toList().let { outcomes ->
