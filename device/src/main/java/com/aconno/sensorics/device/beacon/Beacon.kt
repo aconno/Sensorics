@@ -9,7 +9,7 @@ import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
-abstract class Beacon(context: Context, taskProcessor: BluetoothTaskProcessor) {
+abstract class Beacon(val taskProcessor: BluetoothTaskProcessor) {
     /**
      * Beacon parameter list
      */
@@ -138,16 +138,5 @@ abstract class Beacon(context: Context, taskProcessor: BluetoothTaskProcessor) {
             ?: throw java.lang.IllegalArgumentException("Arbitrary data missing")
 
         this.arbitraryData.loadChangesFromJson(arbitraryData)
-    }
-
-    class Factory {
-        companion object {
-            fun createFromBleDevice(
-                context: Context,
-                taskProcessor: BluetoothTaskProcessor
-            ): Beacon {
-                return BeaconImpl(context, taskProcessor)
-            }
-        }
     }
 }

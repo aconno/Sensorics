@@ -1,6 +1,5 @@
 package com.aconno.sensorics.device.beacon.v2
 
-import android.content.Context
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.Parameters
 import com.aconno.sensorics.device.beacon.Slots
@@ -26,10 +25,9 @@ import com.aconno.sensorics.domain.scanning.Task
  * @property name device name TODO: remove
  */
 class BeaconImpl(
-    context: Context,
-    private val taskProcessor: BluetoothTaskProcessor,
+    taskProcessor: BluetoothTaskProcessor,
     var name: String? = ""
-) : Beacon(context, taskProcessor) {
+) : Beacon(taskProcessor) {
     override var slots: Slots = SlotsImpl(0)
 
     override val parameters: Parameters = ParametersImpl()
