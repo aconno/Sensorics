@@ -13,6 +13,11 @@ abstract class GenericTask(override val name: String = "Generic Task") : TaskBas
     abstract fun onSuccess()
 }
 
+abstract class GenericExecutableTask(override val name: String = "Generic executable tasks") :
+    GenericTask() {
+    override fun execute(bluetooth: Bluetooth) = true
+}
+
 abstract class MtuRequestTask(
     private val mtu: Int,
     final override val name: String = "Mtu Request Task"
@@ -85,10 +90,12 @@ abstract class DescriptorReadTask(
     override val name: String = "Descriptor Read Task"
 ) : ReadTaskBase(), Task, DescriptorTask, ReadTask {
     final override fun read(bluetooth: Bluetooth): Boolean {
-        Timber.d("""
+        Timber.d(
+            """
             Reading data from descriptor: \
             $descriptorUUID (characteristic: $characteristicUUID (service: $serviceUUID))
-            """)
+            """
+        )
         return bluetooth.readDescriptor(serviceUUID, characteristicUUID, descriptorUUID)
     }
 
@@ -116,7 +123,7 @@ abstract class WriteTaskBase : TaskBase(), WriteTask {
             if (it) {
                 bytesWritten += data.size
             }
-        }
+         }
     }
 
     override fun onBluetoothSuccess(bluetooth: Bluetooth) {
@@ -139,10 +146,12 @@ abstract class CharacteristicWriteTask(
     override val name: String = "Characteristic Write Task"
 ) : WriteTaskBase(), Task, CharacteristicTask, WriteTask {
     final override fun write(bluetooth: Bluetooth, data: ByteArray): Boolean {
-        Timber.d("""
+        Timber.d(
+            """
             Writing data to characteristic: \
             ${value.toCompactHex()} -> $characteristicUUID (service: $serviceUUID)
-            """)
+            """
+        )
 
         return bluetooth.writeCharacteristic(
             serviceUUID,
@@ -172,11 +181,13 @@ abstract class DescriptorWriteTask(
     override val name: String = "Descriptor Write Task"
 ) : WriteTaskBase(), Task, DescriptorTask, WriteTask {
     final override fun write(bluetooth: Bluetooth, data: ByteArray): Boolean {
-        Timber.d("""
+        Timber.d(
+            """
             Writing data to descriptor: \
             ${data.toCompactHex()} -> \
             $descriptorUUID (characteristic: $characteristicUUID (service: $serviceUUID))
-            """)
+            """
+        )
 
         return bluetooth.writeDescriptor(
             serviceUUID,
