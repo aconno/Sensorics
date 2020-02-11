@@ -118,8 +118,8 @@ class BeaconImpl(
             tasks.add(task)
         }
 
-        taskProcessor.queueTasks(tasks)
         arbitraryData.write(taskProcessor, full)
+        taskProcessor.queueTasks(tasks)
     }
 
     companion object {
