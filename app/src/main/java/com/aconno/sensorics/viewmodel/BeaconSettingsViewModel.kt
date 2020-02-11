@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.SingleLiveEvent
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
-import com.aconno.sensorics.device.bluetooth.tasks.GenericTask
+import com.aconno.sensorics.device.bluetooth.tasks.GenericExecutableTask
 import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.scanning.Bluetooth
@@ -25,6 +25,8 @@ sealed class BeaconSettingsState {
     object Unlocking : BeaconSettingsState()
     object Unlocked : BeaconSettingsState()
     object Reading : BeaconSettingsState()
+    object Writing : BeaconSettingsState()
+    object SettingsWritten : BeaconSettingsState()
     data class SettingsHasRead(val beaconJson: String, val slotCount: Int) : BeaconSettingsState()
     data class SettingsUpdated(val updatedBeaconJson: String) : BeaconSettingsState()
     object ErrorOccurred : BeaconSettingsState()
@@ -34,8 +36,7 @@ class BeaconSettingsViewModel(
     private val bluetooth: Bluetooth,
     private val beacon: Beacon,
     val webViewAppBeaconMapper: WebViewAppBeaconMapper
-) :
-    ViewModel() {
+) : ViewModel() {
 
     private var resultsDisposable: Disposable? = null
     private val gson = Gson()
@@ -87,6 +88,15 @@ class BeaconSettingsViewModel(
             BeaconSettingsState.Unlocking
     }
 
+    fun writeSettingsToDevice() {
+        _connectionResultEvent.value = BeaconSettingsState.Writing
+            beacon.write(true, object : GenericExecutableTask() {
+                override fun onSuccess() {
+                    _connectionResultEvent.value = BeaconSettingsState.SettingsWritten
+                }
+            })
+    }
+
     fun isDisconnected() = _connectionResultEvent.value?.let {
         it is BeaconSettingsState.Disconnected || it is BeaconSettingsState.Connecting
     } ?: true
@@ -126,7 +136,7 @@ class BeaconSettingsViewModel(
         }
     }
 
-    private val readCompleteCallback = object : GenericTask("On Read Completed Task") {
+    private val readCompleteCallback = object : GenericExecutableTask("On Read Completed Task") {
         override fun onSuccess() {
             webViewAppBeaconMapper.prepareAdContentForWebView(beacon)
             val beaconJs = StringEscapeUtils.escapeJson(gson.toJson(beacon.toJson()))
@@ -136,10 +146,6 @@ class BeaconSettingsViewModel(
                     beacon.slotCount.toInt()
                 )
             webViewAppBeaconMapper.restoreAdContent(beacon)
-        }
-
-        override fun execute(bluetooth: Bluetooth): Boolean {
-            return true
         }
     }
 

@@ -102,7 +102,11 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.item_save -> {
-                //NOP
+                if (viewModel.isConnected()){
+                    viewModel.writeSettingsToDevice()
+                }else{
+                    showToast(R.string.device_not_connected)
+                }
             }
             else -> return false
         }
@@ -195,6 +199,15 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
             }
             is BeaconSettingsState.SettingsUpdated -> {
                 settingsTransporter.sendBeaconJsonToObservers(event.updatedBeaconJson)
+            }
+            is BeaconSettingsState.Writing ->{
+                showProgressDialogIfNeeded()
+                progressDialog?.progressMessage = getString(R.string.writing_with_dots)
+            }
+            is BeaconSettingsState.SettingsWritten->{
+                closeProgressDialog()
+                showToast(R.string.settings_has_been_written_successfully)
+                finish()
             }
             is BeaconSettingsState.ErrorOccurred -> {
                 showToast(R.string.error_occurred)
