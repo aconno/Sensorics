@@ -1,12 +1,9 @@
 package com.aconno.sensorics.device.beacon
 
-import android.content.Context
-import com.aconno.sensorics.device.beacon.v2.BeaconImpl
 import com.aconno.sensorics.device.bluetooth.tasks.GenericTask
 import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
 import com.aconno.sensorics.domain.migrate.getObjectOrNull
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 
 abstract class Beacon(val taskProcessor: BluetoothTaskProcessor) {
@@ -120,6 +117,7 @@ abstract class Beacon(val taskProcessor: BluetoothTaskProcessor) {
         }
     }
 
+    // todo implement this in a way that we know what are happening inside. For example, arbitrary data not loaded changes, because data exceeded limited
     @Throws(IllegalArgumentException::class)
     fun loadChangesFromJson(obj: JsonObject) {
         val parameters = obj.getObjectOrNull("parameters")
