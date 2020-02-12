@@ -30,6 +30,7 @@ $(document).ready(function() {
 function init(beaconInfo) {
     beacon = JSON.parse(beaconInfo);
 
+    $('#arbitrary-bytes-abailable').text(beacon.arbitraryData.available)
     $('#container_arbitrary').empty();
 
     for (let [key, value] of Object.entries(beacon.arbitraryData.arbitraryDataEntries)) {
