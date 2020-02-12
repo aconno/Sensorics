@@ -22,6 +22,4 @@ abstract class FragmentsModule {
     @FragmentScope
     @ContributesAndroidInjector
     abstract fun bindBeaconSettingsParametersFragment(): BeaconSettingsParametersFragment
-
-
 }
