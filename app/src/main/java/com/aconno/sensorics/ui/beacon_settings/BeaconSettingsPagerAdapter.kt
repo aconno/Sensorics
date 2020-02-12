@@ -4,18 +4,23 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
-import com.aconno.sensorics.ui.beacon_settings.fragments.*
+import com.aconno.sensorics.ui.beacon_settings.fragments.BeaconSettingsArbitraryDataFragment
+import com.aconno.sensorics.ui.beacon_settings.fragments.BeaconSettingsGeneralFragment
+import com.aconno.sensorics.ui.beacon_settings.fragments.BeaconSettingsParametersFragment
+import com.aconno.sensorics.ui.beacon_settings.fragments.BeaconSettingsSlotFragment
+
+const val NON_SLOTS_NUMBER_COUNT = 3
 
 class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
     private var initialData = 0
     var slotCount = 0
         set(value) {
-            initialData = 4
+            initialData = NON_SLOTS_NUMBER_COUNT
             field = value
         }
 
-    fun clear(){
-        slotCount=0;
+    fun clear() {
+        slotCount = 0;
         initialData = 0
     }
 
@@ -23,9 +28,8 @@ class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapte
         return when (position) {
             0 -> BeaconSettingsGeneralFragment.newInstance()
             1 -> BeaconSettingsParametersFragment.newInstance()
-            2 -> BeaconSettingsCacheableParamsFragment.newInstance()
-            3 -> BeaconSettingsArbitraryDataFragment.newInstance()
-            else -> BeaconSettingsSlotFragment.newInstance(position - 4)
+            2 -> BeaconSettingsArbitraryDataFragment.newInstance()
+            else -> BeaconSettingsSlotFragment.newInstance(position - NON_SLOTS_NUMBER_COUNT)
         }
     }
 
@@ -42,9 +46,8 @@ class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapte
         return when (position) {
             0 -> "General"
             1 -> "Parameters"
-            2 -> "Cacheable parameters"
-            3 -> "Arbitrary Data"
-            else -> "Slot " + (position - 3).toString()
+            2 -> "Arbitrary Data"
+            else -> "Slot " + (position - NON_SLOTS_NUMBER_COUNT + 1).toString()
         }
     }
 }

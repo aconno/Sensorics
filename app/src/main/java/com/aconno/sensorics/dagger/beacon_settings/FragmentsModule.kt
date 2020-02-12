@@ -21,10 +21,6 @@ abstract class FragmentsModule {
 
     @FragmentScope
     @ContributesAndroidInjector
-    abstract fun bindBeaconSettingsCacheableParamsFragment(): BeaconSettingsCacheableParamsFragment
-
-    @FragmentScope
-    @ContributesAndroidInjector
     abstract fun bindBeaconSettingsParametersFragment(): BeaconSettingsParametersFragment
 
 
