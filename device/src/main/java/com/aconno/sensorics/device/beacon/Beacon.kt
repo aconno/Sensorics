@@ -116,7 +116,7 @@ abstract class Beacon(val taskProcessor: BluetoothTaskProcessor) {
         return JsonObject().apply {
             this.add("parameters", this@Beacon.parameters.toJson())
             this.add("slots", this@Beacon.slots.toJson())
-            this.add("arbitraryData", Gson().toJsonTree(arbitraryData))
+            this.add("arbitraryData", arbitraryData.toJson())
         }
     }
 

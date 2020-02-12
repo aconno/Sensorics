@@ -14,6 +14,8 @@ import kotlinx.android.synthetic.main.fragment_beacon_general.*
 
 class BeaconSettingsArbitraryDataFragment : SettingsBaseFragment() {
 
+    override var receiveInfoAfterSelfUpdating = true
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

@@ -95,6 +95,18 @@ class ArbitraryDataImpl(
         }
     }
 
+    override fun setAll(newMap: Map<String, String>):Boolean {
+        val newAvailable = capacity -serialize(newMap).size
+        return if (newAvailable<0){
+            false
+        }else{
+            this.clear()
+            this.putAll(newMap)
+            available.value = newAvailable
+            true
+        }
+    }
+
     override fun removeEntry(key: String): String? {
         val value: String? = super.remove(key)
         available.value = capacity - serialize().size
@@ -123,6 +135,10 @@ class ArbitraryDataImpl(
 
     override fun serialize(): ByteArray {
         return UTF8_STRING.serialize(gson.toJson(this), order = ByteOrder.BIG_ENDIAN)
+    }
+
+    private fun serialize(map: Map<String, String>):ByteArray{
+        return UTF8_STRING.serialize(gson.toJson(map), order = ByteOrder.BIG_ENDIAN)
     }
 
     companion object {

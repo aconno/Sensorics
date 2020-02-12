@@ -109,10 +109,10 @@ class BeaconSettingsViewModel(
     fun beaconJsonUpdated(updatedJson: String) {
         beacon.loadChangesFromJson(JsonParser().parse(updatedJson).asJsonObject)
         webViewAppBeaconMapper.restoreAdContent(beacon)
-        val escapedJs = StringEscapeUtils.escapeJson(updatedJson)
+        val newEscapedJson = StringEscapeUtils.escapeJson(gson.toJson(beacon.toJson()))
         _connectionResultEvent.value =
             BeaconSettingsState.SettingsUpdated(
-                escapedJs
+                newEscapedJson
             )
     }
 
