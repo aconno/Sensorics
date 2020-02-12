@@ -32,6 +32,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ui.settings.publishers.selectpublish.AzureMqttPublisherActivity"></activity>
         <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.ActionListActivity" />
 
@@ -77,17 +78,13 @@
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_settings"
             android:theme="@style/SettingsTheme" />
-
         <activity
             android:name=".ui.configure.ConfigureActivity"
             android:label="@string/title_configure" />
-
         <activity
             android:name=".ui.dfu.DfuActivity"
             android:label="@string/title_dfu" />
         <activity android:name=".ui.cache.CacheActivity" />
-
-
         <activity android:name=".ui.dfu.NotificationActivity" />
 
         <service android:name=".DfuService" />
@@ -108,7 +105,7 @@
             android:name=".device.notification.AlarmNotificationReceiver"
             android:enabled="true">
             <intent-filter>
-                <action  android:name="com.troido.intent.action.ACTION_ALARM_SNOOZE" />
+                <action android:name="com.troido.intent.action.ACTION_ALARM_SNOOZE" />
             </intent-filter>
         </receiver>
 
@@ -117,12 +114,11 @@
             android:authorities="${applicationId}.workmanager-init"
             android:exported="false"
             tools:node="remove" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.aconno.sensorics.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
@@ -132,4 +128,5 @@
             android:name="io.fabric.ApiKey"
             android:value="${fabricAPIKey}" />
     </application>
+
 </manifest>

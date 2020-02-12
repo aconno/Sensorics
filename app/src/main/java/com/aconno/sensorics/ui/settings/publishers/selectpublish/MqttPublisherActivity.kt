@@ -1,200 +1,71 @@
 package com.aconno.sensorics.ui.settings.publishers.selectpublish
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.widget.ProgressBar
 import android.widget.RadioButton
-import android.widget.TextView
 import android.widget.Toast
 import com.aconno.sensorics.PublisherIntervalConverter
 import com.aconno.sensorics.R
-import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
-import com.aconno.sensorics.domain.repository.SyncRepository
+import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.MqttPublishModel
 import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
-import com.aconno.sensorics.ui.base.BaseActivity
-import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.sensorics.viewmodel.MqttPublisherViewModel
 import io.reactivex.Completable
-import io.reactivex.CompletableObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.Single
 import kotlinx.android.synthetic.main.activity_mqtt_publisher.*
 import kotlinx.android.synthetic.main.layout_datastring.*
 import kotlinx.android.synthetic.main.layout_mqtt.*
 import kotlinx.android.synthetic.main.layout_publisher_header.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
-class MqttPublisherActivity : BaseActivity() {
+class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
 
     @Inject
     lateinit var mqttPublisherViewModel: MqttPublisherViewModel
-
-    @Inject
-    lateinit var syncRepository: SyncRepository
-
     private var mqttPublishModel: MqttPublishModel? = null
-    private var isTestingAlreadyRunning: Boolean = false
 
-    private val testConnectionCallback = object : Publisher.TestConnectionCallback {
-        override fun onConnectionStart() {
-            GlobalScope.launch(Dispatchers.Main) {
-                progressbar.visibility = View.VISIBLE
-                isTestingAlreadyRunning = false
-                Toast.makeText(
-                    this@MqttPublisherActivity,
-                    getString(R.string.testings_started),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+    override var publishModel: MqttPublishModel?
+        get() = mqttPublishModel
+        set(value) { mqttPublishModel = value}
 
-        override fun onConnectionSuccess() {
-            GlobalScope.launch(Dispatchers.Main) {
-                progressbar.visibility = View.INVISIBLE
-                isTestingAlreadyRunning = false
-                edit_url_mqtt?.error = null
-                Toast.makeText(
-                    this@MqttPublisherActivity,
-                    getString(R.string.test_succeeded),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
 
-        override fun onConnectionFail(exception: Throwable?) {
-            GlobalScope.launch(Dispatchers.Main) {
-                progressbar.visibility = View.INVISIBLE
-                isTestingAlreadyRunning = false
-                exception?.message?.let { m ->
-                    if(m.contains(edit_url_mqtt?.text.toString())) {
-                        edit_url_mqtt?.error = getString(R.string.mqtt_format)
-                    } else {
-                        edit_url_mqtt?.error = null
-                    }
-                }
-                Toast.makeText(
-                    this@MqttPublisherActivity,
-                    getString(R.string.test_failed),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
+    override var updating: Boolean = false
+    override var publisherKey: String = MQTT_PUBLISHER_ACTIVITY_KEY
+
+    override var progressBar: ProgressBar
+        get() = progressbar
+        set(_) {}
+    override var layoutId: Int = R.layout.activity_mqtt_publisher
+    override var deviceSelectFrameId: Int = R.id.frame
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_mqtt_publisher)
-
-        setSupportActionBar(custom_toolbar)
-        supportActionBar!!.setDisplayShowTitleEnabled(true)
-
-        initViews()
-        if (intent.hasExtra(MQTT_PUBLISHER_ACTIVITY_KEY)) {
-            mqttPublishModel =
-                    intent.getParcelableExtra(MQTT_PUBLISHER_ACTIVITY_KEY)
-            setFields()
-        }
-
-        val fragment = DeviceSelectFragment.newInstance(mqttPublishModel)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.frame, fragment)
-            .commit()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.add_publish_menu, menu)
-
-        if (menu != null) {
-            val item = menu.findItem(R.id.action_publish_done)
-            if (mqttPublishModel != null) {
-                item.title = getString(R.string.update)
-            }
-        }
-
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id: Int? = item?.itemId
-        when (id) {
-            R.id.action_publish_done -> addOrUpdate()
-            R.id.action_publish_test -> test()
-            android.R.id.home -> onBackPressed()
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun initViews() {
-        btn_info.setOnClickListener {
-            createAndShowInfoDialog()
+        if(publishModel != null) {
+            updating = true
         }
     }
 
-    private fun createAndShowInfoDialog() {
-        val view = View.inflate(this, R.layout.dialog_alert, null)
-        val textView = view.findViewById<TextView>(R.id.message)
-        textView.movementMethod = LinkMovementMethod.getInstance()
-        textView.setText(R.string.publisher_info_text)
-
-        val builder = AlertDialog.Builder(this)
-
-        builder.setTitle(R.string.publisher_info_title)
-            .setView(view)
-            .setNeutralButton(
-                R.string.close
-            ) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
+    override fun onTestConnectionSuccess() {
+        edit_url_mqtt?.error = null
     }
 
-    private fun setFields() {
-        mqttPublishModel?.let { model ->
-            edit_name.setText(model.name)
-
-            edit_interval_count.setText(
-                PublisherIntervalConverter.calculateCountFromMillis(
-                    this,
-                    model.timeMillis,
-                    model.timeType
-                )
-            )
-
-            spinner_interval_time.setSelection(
-                resources.getStringArray(R.array.PublishIntervals).indexOf(
-                    model.timeType
-                )
-            )
-
-            if (model.lastTimeMillis == 0L) {
-                text_lastdatasent.visibility = View.GONE
+    override fun onTestConnectionFail(exception: Throwable?) {
+        exception?.message?.let { m ->
+            if(m.contains(edit_url_mqtt?.text.toString())) {
+                edit_url_mqtt?.error = getString(R.string.mqtt_format)
             } else {
-                text_lastdatasent.visibility = View.VISIBLE
-                val str = getString(R.string.last_data_sent) + " " +
-                    millisToFormattedDateString(
-                        model.lastTimeMillis
-                    )
-                text_lastdatasent.text = str
+                edit_url_mqtt?.error = null
             }
+        }
+    }
 
-
+    override fun setPublisherSpecificFields() {
+        mqttPublishModel?.let { model ->
             edit_url_mqtt.setText(model.url)
             edit_clientid_mqtt.setText(model.clientId)
             edit_username_mqtt.setText(model.username)
@@ -208,76 +79,28 @@ class MqttPublisherActivity : BaseActivity() {
             }
 
             edit_datastring.setText(model.dataString)
-        }
-    }
 
-    private fun millisToFormattedDateString(millis: Long): String {
-        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss,SSS", Locale.US)
-        val date = Date(millis)
-
-        return sdf.format(date)
-    }
-
-    private fun addOrUpdate() {
-        val mqttPublishModel = toMqttPublishModel()
-        if (mqttPublishModel != null) {
-            mqttPublisherViewModel.save(mqttPublishModel)
-                .flatMapCompletable {
-                    addRelationsToMqtt(it)
-                }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : CompletableObserver {
-                    override fun onComplete() {
-                        progressbar.visibility = View.INVISIBLE
-                        finish()
-                    }
-
-                    override fun onSubscribe(d: Disposable) {
-                        addDisposable(d)
-                        progressbar.visibility = View.VISIBLE
-                    }
-
-                    override fun onError(e: Throwable) {
-                        progressbar.visibility = View.INVISIBLE
-                        Toast.makeText(
-                            this@MqttPublisherActivity,
-                            e.message,
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    }
-                })
-        }
-    }
-
-    private fun addRelationsToMqtt(mId: Long): Completable? {
-        val fragment = supportFragmentManager.findFragmentById(R.id.frame) as DeviceSelectFragment
-        val devices = fragment.getDevices()
-
-        val setOfCompletable: MutableSet<Completable> = mutableSetOf()
-
-        devices.forEach {
-            val completable = if (it.related) {
-                mqttPublisherViewModel.addOrUpdateMqttRelation(
-                    deviceId = it.macAddress,
-                    mqttId = mId
-                )
-            } else {
-                mqttPublisherViewModel.deleteRelationMqtt(
-                    deviceId = it.macAddress,
-                    mqttId = mId
-                )
-            }
-
-            setOfCompletable.add(
-                completable
-            )
         }
 
-        return Completable.merge(setOfCompletable)
     }
 
-    private fun toMqttPublishModel(): MqttPublishModel? {
+    override fun savePublisher(publishModel: BasePublishModel): Single<Long> {
+        return mqttPublisherViewModel.save(publishModel as MqttPublishModel)
+    }
+
+    override fun addOrUpdateRelation(deviceId: String, publisherId: Long) : Completable {
+        return mqttPublisherViewModel.addOrUpdateMqttRelation(
+                deviceId = deviceId,
+                mqttId = publisherId
+        )
+    }
+
+    override fun deleteRelation(deviceId: String, publisherId: Long) : Completable {
+        return mqttPublisherViewModel.deleteRelationMqtt(deviceId,publisherId)
+    }
+
+
+    override fun toPublishModel(): MqttPublishModel? {
         val name = edit_name.text.toString().trim()
         val url = edit_url_mqtt.text.toString().trim()
         val clientId = edit_clientid_mqtt.text.toString().trim()
@@ -341,46 +164,14 @@ class MqttPublisherActivity : BaseActivity() {
         )
     }
 
-    private fun isDataStringValid(): Boolean {
 
-        val converter = DataStringConverter()
-
-        val dataString = edit_datastring.text.toString()
-        return converter.parseAndValidateDataString(dataString)
-    }
-
-    private fun test() {
-        if (!isTestingAlreadyRunning) {
-            isTestingAlreadyRunning = true
-
-            Toast.makeText(this, getString(R.string.testings_started), Toast.LENGTH_SHORT).show()
-
-            val toMqttPublishModel = toMqttPublishModel()
-
-            if (toMqttPublishModel == null) {
-                isTestingAlreadyRunning = false
-                return
-            }
-
-            testMqttConnection(toMqttPublishModel)
-        }
-
-    }
-
-    private fun testMqttConnection(toMqttPublishModel: MqttPublishModel) {
-        GlobalScope.launch(Dispatchers.Default) {
-
-            val publisher = MqttPublisher(
+    override fun getPublisherFor(publishModel: MqttPublishModel): Publisher {
+        return MqttPublisher(
                 applicationContext,
-                MqttPublishModelDataMapper().toMqttPublish(toMqttPublishModel),
+                MqttPublishModelDataMapper().toMqttPublish(publishModel),
                 listOf(Device("TestDevice", "Name", "Mac")),
                 syncRepository
-            )
-
-            testConnectionCallback.onConnectionStart()
-
-            publisher.test(testConnectionCallback)
-        }
+        )
     }
 
 

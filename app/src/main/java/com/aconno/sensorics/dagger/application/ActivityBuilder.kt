@@ -14,6 +14,8 @@ import com.aconno.sensorics.dagger.actionlist.ActionListActivityModule
 import com.aconno.sensorics.dagger.actionlist.ActionListActivityScope
 import com.aconno.sensorics.dagger.alarm.AlarmServiceModule
 import com.aconno.sensorics.dagger.alarm.AlarmServiceScope
+import com.aconno.sensorics.dagger.azuremqttpublisher.AzureMqttPublisherActivityModule
+import com.aconno.sensorics.dagger.azuremqttpublisher.AzureMqttPublisherActivityScope
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceScope
 import com.aconno.sensorics.dagger.configure.ConfigureActivityModule
@@ -47,6 +49,7 @@ import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
+import com.aconno.sensorics.ui.settings.publishers.selectpublish.AzureMqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
@@ -124,6 +127,15 @@ abstract class ActivityBuilder {
                 PublisherModule::class, DeviceModule::class
             ])
     abstract fun bindMqttPublisherActivity(): MqttPublisherActivity
+
+    @AzureMqttPublisherActivityScope
+    @DeviceScope
+    @PublisherScope
+    @ContributesAndroidInjector(
+            modules = [AzureMqttPublisherActivityModule::class, DeviceSelectionFragmentsModule::class,
+                PublisherModule::class, DeviceModule::class
+            ])
+    abstract fun bindAzureMqttPublisherActivity(): AzureMqttPublisherActivity
 
     @RESTPublisherActivityScope
     @PublisherScope

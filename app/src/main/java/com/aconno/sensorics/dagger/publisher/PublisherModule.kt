@@ -2,14 +2,13 @@ package com.aconno.sensorics.dagger.publisher
 
 import com.aconno.sensorics.data.mapper.*
 import com.aconno.sensorics.data.repository.SensoricsDatabase
+import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishRepositoryImpl
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishRepositoryImpl
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishRepositoryImpl
 import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
-import com.aconno.sensorics.domain.ifttt.BasePublish
-import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
-import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
-import com.aconno.sensorics.domain.ifttt.RestPublishRepository
+import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.AddAzureMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.*
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.*
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.*
@@ -99,6 +98,14 @@ class PublisherModule {
             mqttPublishRepository: MqttPublishRepository
     ): AddMqttPublishUseCase {
         return AddMqttPublishUseCase(mqttPublishRepository)
+    }
+
+    @Provides
+    @PublisherScope
+    fun provideAddAzureMqttPublishUseCase(
+            azureMqttPublishRepository: AzureMqttPublishRepository
+    ): AddAzureMqttPublishUseCase {
+        return AddAzureMqttPublishUseCase(azureMqttPublishRepository)
     }
 
     @Provides
@@ -282,6 +289,17 @@ class PublisherModule {
         return MqttPublishRepositoryImpl(
                 sensoricsDatabase.mqttPublishDao(),
                 mqttPublishDataMapper
+        )
+    }
+
+    @Provides
+    @PublisherScope
+    fun provideAzureMqttPublishRepository(
+            sensoricsDatabase: SensoricsDatabase,
+            azureMqttPublishDataMapper: AzureMqttPublishDataMapper
+    ): AzureMqttPublishRepository {
+        return AzureMqttPublishRepositoryImpl(sensoricsDatabase.azureMqttPublishDao(),
+                azureMqttPublishDataMapper
         )
     }
 }

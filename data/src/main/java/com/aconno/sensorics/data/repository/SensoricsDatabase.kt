@@ -6,6 +6,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.aconno.sensorics.data.repository.action.ActionDao
 import com.aconno.sensorics.data.repository.action.ActionEntity
+import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishDao
+import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishEntity
 import com.aconno.sensorics.data.repository.devices.DeviceDao
 import com.aconno.sensorics.data.repository.devices.DeviceEntity
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishDao
@@ -29,6 +31,7 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
         DeviceEntity::class,
         GooglePublishDeviceJoinEntity::class,
         GooglePublishEntity::class,
+        AzureMqttPublishEntity::class,
         MqttPublishDeviceJoinEntity::class,
         MqttPublishEntity::class,
         RestHeaderEntity::class,
@@ -37,7 +40,7 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
         RestPublishEntity::class,
         SyncEntity::class
     ],
-    version = 13
+    version = 14
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 
@@ -48,6 +51,8 @@ abstract class SensoricsDatabase : RoomDatabase() {
     abstract fun googlePublishDao(): GooglePublishDao
 
     abstract fun mqttPublishDao(): MqttPublishDao
+
+    abstract fun azureMqttPublishDao(): AzureMqttPublishDao
 
     abstract fun publishDeviceJoinDao(): PublishDeviceJoinDao
 
