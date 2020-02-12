@@ -26,12 +26,11 @@ import javax.inject.Inject
 
 class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentListener {
 
-    private lateinit var macAddress: String
     private val handler: Handler = Handler()
     private var progressDialog: CancelBtnSchedulerProgressDialog? = null
     private var passwordDialog: Dialog? = null
     private var indefiniteSnackBar: Snackbar? = null
-    var deviceMac: String = ""
+    private var deviceMac: String = ""
 
     private val beaconSettingsPagerAdapter: BeaconSettingsPagerAdapter by lazy {
         BeaconSettingsPagerAdapter(supportFragmentManager)
@@ -150,14 +149,11 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
     }
 
     override fun onDestroy() {
-        cancelScheduleEvents()
-        disconnectFromDeviceIfNeeded()
+        if (isFinishing) {
+            cancelScheduleEvents()
+            disconnectFromDeviceIfNeeded()
+        }
         super.onDestroy()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(DEVICE_MAC_ADDRESS, macAddress)
     }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
