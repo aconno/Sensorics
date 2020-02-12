@@ -35,11 +35,11 @@ $(document).ready(function() {
 function init(beaconInfo) {
     beacon = JSON.parse(beaconInfo);
 
-    Object.keys(beacon.arbitraryData).forEach((value, key) => {
+    for (let [key, value] of Object.entries(beacon.arbitraryData)) {
         $('#container_arbitrary').append(
-            generateKeyValue(value, key)
+            generateKeyValue(key, value)
         );
-    });
+    }
 }
 
 function removeArbitraryDataView(btn) {
