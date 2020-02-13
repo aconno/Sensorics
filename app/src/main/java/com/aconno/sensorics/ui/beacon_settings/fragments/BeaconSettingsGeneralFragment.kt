@@ -31,7 +31,7 @@ class BeaconSettingsGeneralFragment : SettingsBaseFragment() {
             settings.allowFileAccessFromFileURLs = true
             settings.allowUniversalAccessFromFileURLs = true
             settings.allowContentAccess = true
-            addJavascriptInterface(this, "native")
+            addJavascriptInterface(this@BeaconSettingsGeneralFragment, "native")
             webViewClient = mandatoryWebViewClient
             loadUrl(HTML_FILE_PATH)
         }
