@@ -115,10 +115,8 @@ dependencies {
             ".inject:assisted-inject-annotations-dagger2:$assisted_inject_dagger_version"
     kapt "com.squareup.inject:assisted-inject-processor-dagger2:$assisted_inject_dagger_version"
 
-    def leak_canary_version = '1.6.2'
+    def leak_canary_version = '2.2'
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_canary_version"
-    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leak_canary_version"
-    debugImplementation "com.squareup.leakcanary:leakcanary-support-fragment:$leak_canary_version"
 
     testImplementation "junit:junit:$junit_version"
 

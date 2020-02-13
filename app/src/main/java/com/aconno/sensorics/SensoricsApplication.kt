@@ -9,7 +9,6 @@ import com.aconno.sensorics.dagger.application.DaggerAppComponent
 import com.aconno.sensorics.dagger.worker.GeneralWorkerFactory
 import com.crashlytics.android.Crashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
-import com.squareup.leakcanary.LeakCanary
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -39,12 +38,6 @@ class SensoricsApplication : Application(), HasActivityInjector, HasServiceInjec
         super.onCreate()
         DaggerAppComponent.builder().create(this).inject(this)
 
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return
-        }
-        LeakCanary.install(this)
         @Suppress("ConstantConditionIf")
         if(BuildConfig.FLAVOR == DEV_BUILD_FLAVOR) {
             Timber.plant(Timber.DebugTree())
