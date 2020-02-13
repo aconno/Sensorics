@@ -167,7 +167,6 @@ GeneralView.Actions = class{
     static changeConnectible(value){
         native.changeConnectible(value);
     }
-
 }
 
 
