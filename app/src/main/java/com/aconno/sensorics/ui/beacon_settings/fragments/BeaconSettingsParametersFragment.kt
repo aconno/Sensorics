@@ -41,7 +41,7 @@ class BeaconSettingsParametersFragment : SettingsBaseFragment() {
 
     companion object {
         const val HTML_FILE_PATH =
-            "file:///android_asset/resources/settings/views/parameters/ParametersNew.html"
+            "file:///android_asset/resources/settings/views/parameters/Parameters.html"
 
         @JvmStatic
         fun newInstance() =

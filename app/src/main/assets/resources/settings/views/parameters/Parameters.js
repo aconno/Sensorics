@@ -205,8 +205,7 @@ class ParametersLoader {
                 continue;
             }
             if (type == this.TYPE_PARAMETER_TEXT) {
-                let param = HtmlGenerator.generateParameterEditText(id, parameter.name, parameter.value, parameter.writable, maxTextSize, index),
-                    paramGroup;
+                let param = HtmlGenerator.generateParameterEditText(id, parameter.name, parameter.value, parameter.writable, maxTextSize, index, paramGroup);
                 $(container).append(param);
                 $(container).append("<br/>");
                 continue;
