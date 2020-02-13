@@ -73,6 +73,7 @@ class BeaconSettingsViewModel(
         when (payload.action) {
             BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
                 Timber.d("Connected to GATT")
+                bluetooth.requestMtu(512)
                 _connectionResultEvent.value =
                     BeaconSettingsState.Connected
                 isConnected = true
