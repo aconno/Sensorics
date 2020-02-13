@@ -54,22 +54,46 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
 
     override fun onStart() {
         super.onStart()
+        // Some events could be scheduled in onStop
         cancelScheduleEvents()
-        connectToDeviceIfNeeded()
+        if (viewModel.isFirstTime) {
+            viewModel.connect(deviceMac)
+        }
     }
 
+    override fun onStop() {
+        super.onStop()
+        // Some events, such as dialog appearing could be scheduled
+        cancelScheduleEvents()
+        scheduleCleaningServiceAndScreen(CLEAN_TIMER)
+    }
 
-    private fun subscribeOnData() {
-        viewModel.connectionResultEvent.observe(this, Observer {
-            it?.let { event ->
-                newEventReceived(event)
+    override fun onDestroy() {
+        cancelScheduleEvents()
+        closeAllDialogs()
+        if (isFinishing) {
+            disconnectFromDeviceIfNeeded()
+        }
+        super.onDestroy()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.beacon_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_save -> {
+                if (viewModel.isConnected) {
+                    viewModel.writeSettingsToDevice()
+                } else {
+                    showToast(R.string.device_not_connected)
+                }
             }
-        })
-        settingsTransporter.beaconUpdatedJsonLiveDataForActivity.observe(this, Observer {
-            it?.let { beaconJson ->
-                viewModel.beaconJsonUpdated(beaconJson)
-            }
-        })
+            else -> return false
+        }
+        return true
     }
 
     private fun setupUI() {
@@ -88,122 +112,76 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
 
     }
 
-    private fun redrawPageAdapter(slotsCount: Int) {
-        beaconSettingsPagerAdapter.slotCount = slotsCount
-        beaconSettingsPagerAdapter.notifyDataSetChanged()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.beacon_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.item_save -> {
-                if (viewModel.isConnected()){
-                    viewModel.writeSettingsToDevice()
-                }else{
-                    showToast(R.string.device_not_connected)
-                }
+    private fun subscribeOnData() {
+        viewModel.connectionResultEvent.observe(this, Observer {
+            it?.let { event ->
+                newEventReceived(event)
             }
-            else -> return false
-        }
-        return true
-    }
-
-
-    private fun cancelScheduleEvents() = handler.removeCallbacksAndMessages(null)
-
-    private fun connectToDeviceIfNeeded() {
-        if (viewModel.isDisconnected()) {
-            viewModel.connect(deviceMac)
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        cancelScheduleEvents()
-        scheduleCleaningServiceAndScreen(CLEAN_TIMER)
-    }
-
-    private fun scheduleCleaningServiceAndScreen(timeMs: Long) {
-        handler.postDelayed({
-            disconnectFromDeviceIfNeeded()
-            closeProgressDialog()
-            closePasswordDialog()
-            clearPages()
-            tabs.invisible()
-        }, timeMs)
-    }
-
-    private fun disconnectFromDeviceIfNeeded() {
-        if (viewModel.isConnected()) {
-            viewModel.disconnect()
-        }
-    }
-
-    private fun clearPages() {
-        beaconSettingsPagerAdapter.clear()
-        beaconSettingsPagerAdapter.notifyDataSetChanged()
-    }
-
-    override fun onDestroy() {
-        if (isFinishing) {
-            cancelScheduleEvents()
-            disconnectFromDeviceIfNeeded()
-        }
-        super.onDestroy()
+        })
+        viewModel.beaconLiveData.observe(this, Observer {
+            it?.let { beaconData ->
+                Timber.i("handle beacon data. slots count ${beaconData.slotCount}")
+                if (!isAdapterInitializedWithData()) {
+                    tabs.visible()
+                    vp_beacon.visible()
+                    redrawPageAdapter(beaconData.slotCount)
+                }
+                settingsTransporter.sendBeaconJsonToObservers(beaconData.beaconJson)
+            }
+        })
+        settingsTransporter.beaconUpdatedJsonLiveDataForActivity.observe(this, Observer {
+            it?.let { beaconJson ->
+                viewModel.beaconJsonUpdated(beaconJson)
+            }
+        })
     }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun newEventReceived(event: BeaconSettingsState) {
-        Timber.i("handle action $event")
+        Timber.i("handle event $event")
         when (event) {
-            is BeaconSettingsState.Connecting -> {
-                showProgressDialogIfNeeded()
-                progressDialog?.progressMessage = getString(R.string.connecting_with_dots)
+            is BeaconSettingsState.Connecting -> getProgressDialog {
+                progressMessage = getString(R.string.connecting_with_dots)
             }
-            is BeaconSettingsState.Connected -> {
-                progressDialog?.progressMessage = getString(R.string.connected_with_dots)
+
+            is BeaconSettingsState.Connected -> getProgressDialog {
+                progressMessage = getString(R.string.connected_with_dots)
             }
-            is BeaconSettingsState.Unlocking -> {
-                showProgressDialogIfNeeded()
-                progressDialog?.progressMessage = getString(R.string.connected_unlocking)
+
+            is BeaconSettingsState.Unlocking -> getProgressDialog {
+                progressMessage = getString(R.string.connected_unlocking)
             }
+
             is BeaconSettingsState.Unlocked -> {
                 showToast(R.string.device_unlocked)
-                progressDialog?.progressMessage = getString(R.string.device_unlocked)
+                getProgressDialog {
+                    progressMessage = getString(R.string.device_unlocked)
+                }
             }
-            is BeaconSettingsState.Reading -> {
-                progressDialog?.progressMessage = getString(R.string.reading_with_dots)
+            is BeaconSettingsState.Reading -> getProgressDialog {
+                progressMessage = getString(R.string.reading_with_dots)
             }
+
             is BeaconSettingsState.RequireUnlock -> {
-                progressDialog?.apply {
+                getProgressDialog {
                     progressMessage = getString(R.string.password_required)
-                }?.window?.decorView?.postDelayed({
+                }
+                handler.postDelayed({
                     closeProgressDialog()
                     showPasswordDialog()
                 }, 400)
             }
-            is BeaconSettingsState.SettingsHasRead -> {
-                closeProgressDialog()
-                tabs.visible()
-                vp_beacon.visible()
-                redrawPageAdapter(event.slotCount)
-                settingsTransporter.sendBeaconJsonToObservers(event.beaconJson)
+            is BeaconSettingsState.Writing -> getProgressDialog {
+                progressMessage = getString(R.string.writing_with_dots)
             }
-            is BeaconSettingsState.SettingsUpdated -> {
-                settingsTransporter.sendBeaconJsonToObservers(event.updatedBeaconJson)
-            }
-            is BeaconSettingsState.Writing ->{
-                showProgressDialogIfNeeded()
-                progressDialog?.progressMessage = getString(R.string.writing_with_dots)
-            }
-            is BeaconSettingsState.SettingsWritten->{
+
+            is BeaconSettingsState.SettingsWritten -> {
                 closeProgressDialog()
                 showToast(R.string.settings_has_been_written_successfully)
                 finish()
+            }
+            is BeaconSettingsState.Done -> {
+                closeProgressDialog()
             }
             is BeaconSettingsState.ErrorOccurred -> {
                 showToast(R.string.error_occurred)
@@ -214,6 +192,57 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
                 showTryAgainToConnectSnackBar()
             }
         }.exhaustive
+    }
+
+    private fun isAdapterInitializedWithData() = beaconSettingsPagerAdapter.totalCount != 0
+
+
+    private fun redrawPageAdapter(slotsCount: Int) {
+        beaconSettingsPagerAdapter.slotCount = slotsCount
+        beaconSettingsPagerAdapter.notifyDataSetChanged()
+    }
+
+    private fun cancelScheduleEvents() = handler.removeCallbacksAndMessages(null)
+
+    private fun scheduleCleaningServiceAndScreen(timeMs: Long) {
+        handler.postDelayed({
+            disconnectFromDeviceIfNeeded()
+            closeAllDialogs()
+            clearPages()
+            tabs.invisible()
+        }, timeMs)
+    }
+
+    private fun disconnectFromDeviceIfNeeded() {
+        if (viewModel.isConnected) {
+            viewModel.disconnect()
+        }
+    }
+
+    private fun clearPages() {
+        beaconSettingsPagerAdapter.clear()
+        beaconSettingsPagerAdapter.notifyDataSetChanged()
+    }
+
+    private fun closeAllDialogs() {
+        closeProgressDialog()
+        closePasswordDialog()
+        indefiniteSnackBar?.dismiss()
+        indefiniteSnackBar = null
+    }
+
+    private fun getProgressDialog(doAfter: CancelBtnSchedulerProgressDialog.() -> Unit) {
+        if (progressDialog == null) {
+            progressDialog = CancelBtnSchedulerProgressDialog(
+                this@BeaconSettingsActivity,
+                handler
+            ) {
+                viewModel.disconnect()
+            }.apply {
+                show()
+            }
+        }
+        doAfter(progressDialog!!)
     }
 
     private fun closeProgressDialog() {
@@ -242,19 +271,6 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
             }).apply { show() }
     }
 
-    private fun showProgressDialogIfNeeded() {
-        if (progressDialog?.isShowing != true) {
-            progressDialog = CancelBtnSchedulerProgressDialog(
-                this@BeaconSettingsActivity,
-                handler
-            ) {
-                viewModel.disconnect()
-            }.apply {
-                show()
-            }
-        }
-    }
-
     private fun showTryAgainPasswordSnackBar() {
         indefiniteSnackBar = ll_settings_root.snack(
             R.string.cant_connect_without_password,
@@ -268,7 +284,6 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
             }
         }
     }
-
 
     private fun showTryAgainToConnectSnackBar() {
         indefiniteSnackBar =

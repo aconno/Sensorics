@@ -18,6 +18,8 @@ class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapte
             initialData = NON_SLOTS_NUMBER_COUNT
             field = value
         }
+    val totalCount
+        get() = initialData + slotCount
 
     fun clear() {
         slotCount = 0;
@@ -34,9 +36,8 @@ class BeaconSettingsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapte
     }
 
     override fun getCount(): Int {
-        return initialData + slotCount
+        return totalCount
     }
-
 
     override fun getItemPosition(`object`: Any): Int {
         return PagerAdapter.POSITION_NONE

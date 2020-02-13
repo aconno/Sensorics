@@ -1,8 +1,8 @@
 package com.aconno.sensorics.viewmodel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.aconno.sensorics.SingleLiveEvent
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.device.bluetooth.tasks.GenericExecutableTask
@@ -27,10 +27,11 @@ sealed class BeaconSettingsState {
     object Reading : BeaconSettingsState()
     object Writing : BeaconSettingsState()
     object SettingsWritten : BeaconSettingsState()
-    data class SettingsHasRead(val beaconJson: String, val slotCount: Int) : BeaconSettingsState()
-    data class SettingsUpdated(val updatedBeaconJson: String) : BeaconSettingsState()
+    object Done : BeaconSettingsState()
     object ErrorOccurred : BeaconSettingsState()
 }
+
+data class BeaconData(val beaconJson: String, val slotCount: Int)
 
 class BeaconSettingsViewModel(
     private val bluetooth: Bluetooth,
@@ -38,11 +39,23 @@ class BeaconSettingsViewModel(
     val webViewAppBeaconMapper: WebViewAppBeaconMapper
 ) : ViewModel() {
 
+    var isFirstTime = true
+        private set
+        get() {
+            val tmp = field
+            field = false
+            return tmp
+        }
     private var resultsDisposable: Disposable? = null
     private val gson = Gson()
-    private val _connectionResultEvent = SingleLiveEvent<BeaconSettingsState>()
+    private val _beaconLiveData = MutableLiveData<BeaconData>()
+    private val _connectionResultEvent = MutableLiveData<BeaconSettingsState>()
     val connectionResultEvent: LiveData<BeaconSettingsState>
         get() = _connectionResultEvent
+    val beaconLiveData: LiveData<BeaconData>
+        get() = _beaconLiveData
+    var isConnected = false
+        private set
 
     init {
         resultsDisposable = bluetooth.getGattResults()
@@ -62,12 +75,15 @@ class BeaconSettingsViewModel(
                 Timber.d("Connected to GATT")
                 _connectionResultEvent.value =
                     BeaconSettingsState.Connected
+                isConnected = true
 
                 beacon.requestDeviceLockStatus(deviceLockStatusCallback)
             }
             BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
                 _connectionResultEvent.value =
                     BeaconSettingsState.Disconnected
+                _beaconLiveData.value = null
+                isConnected = false
             }
         }
     }
@@ -90,30 +106,19 @@ class BeaconSettingsViewModel(
 
     fun writeSettingsToDevice() {
         _connectionResultEvent.value = BeaconSettingsState.Writing
-            beacon.write(true, object : GenericExecutableTask() {
-                override fun onSuccess() {
-                    _connectionResultEvent.value = BeaconSettingsState.SettingsWritten
-                }
-            })
+        beacon.write(true, object : GenericExecutableTask() {
+            override fun onSuccess() {
+                _connectionResultEvent.value = BeaconSettingsState.SettingsWritten
+            }
+        })
     }
-
-    fun isDisconnected() = _connectionResultEvent.value?.let {
-        it is BeaconSettingsState.Disconnected || it is BeaconSettingsState.Connecting
-    } ?: true
-
-
-    fun isConnected() = _connectionResultEvent.value?.let {
-        it !is BeaconSettingsState.Disconnected && it !is BeaconSettingsState.Connecting
-    } ?: false
 
     fun beaconJsonUpdated(updatedJson: String) {
         beacon.loadChangesFromJson(JsonParser().parse(updatedJson).asJsonObject)
         webViewAppBeaconMapper.restoreAdContent(beacon)
         val newEscapedJson = StringEscapeUtils.escapeJson(gson.toJson(beacon.toJson()))
-        _connectionResultEvent.value =
-            BeaconSettingsState.SettingsUpdated(
-                newEscapedJson
-            )
+        _beaconLiveData.value = BeaconData(newEscapedJson, beacon.slotCount.toInt())
+        _connectionResultEvent.value = BeaconSettingsState.Done
     }
 
     private val deviceLockStatusCallback = object : LockStateRequestCallback {
@@ -140,11 +145,8 @@ class BeaconSettingsViewModel(
         override fun onSuccess() {
             webViewAppBeaconMapper.prepareAdContentForWebView(beacon)
             val beaconJs = StringEscapeUtils.escapeJson(gson.toJson(beacon.toJson()))
-            _connectionResultEvent.value =
-                BeaconSettingsState.SettingsHasRead(
-                    beaconJs,
-                    beacon.slotCount.toInt()
-                )
+            _beaconLiveData.value = BeaconData(beaconJs, beacon.slotCount.toInt())
+            _connectionResultEvent.value = BeaconSettingsState.Done
             webViewAppBeaconMapper.restoreAdContent(beacon)
         }
     }
