@@ -82,6 +82,9 @@ class DeviceSelectFragment : BaseFragment() {
                     is MqttPublishModel -> deviceSelectViewModel.getAllDevicesWithMqttRelation(
                         basePublishModel!!.id
                     )
+                    is AzureMqttPublishModel -> deviceSelectViewModel.getAllDevicesWithAzureMqttRelation(
+                            basePublishModel!!.id
+                    )
                     else -> throw IllegalArgumentException()
                 }.firstOrError()
             }

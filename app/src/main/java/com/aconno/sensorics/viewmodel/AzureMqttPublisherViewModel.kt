@@ -20,18 +20,17 @@ class AzureMqttPublisherViewModel(
     fun save(
             azureMqttPublishModel: AzureMqttPublishModel
     ): Single<Long> {
-
         val transform = azureMqttPublishModelDataMapper.toAzureMqttPublish(azureMqttPublishModel)
         return addAzureMqttPublishUseCase.execute(transform)
     }
 
-    fun addOrUpdatePublishDeviceRelation(
+    fun addOrUpdatePublisherDeviceRelation(
             deviceId: String,
-            publishId: Long
+            publisherId: Long
     ): Completable {
         return savePublishDeviceJoinUseCase.execute(
                 GeneralAzureMqttPublishDeviceJoin(
-                        publishId,
+                        publisherId,
                         deviceId
                 )
         )
@@ -39,11 +38,11 @@ class AzureMqttPublisherViewModel(
 
     fun deletePublishDeviceRelation(
             deviceId: String,
-            publishId: Long
+            publisherId: Long
     ): Completable {
         return deletePublishDeviceJoinUseCase.execute(
                 GeneralAzureMqttPublishDeviceJoin(
-                        publishId,
+                        publisherId,
                         deviceId
                 )
         )

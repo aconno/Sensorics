@@ -325,7 +325,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
             deviceRegistry,
             device,
             privateKey,
-            false,
+            googlePublishModel?.enabled ?: true,
             timeType,
             timeMillis,
             lastTimeMillis,

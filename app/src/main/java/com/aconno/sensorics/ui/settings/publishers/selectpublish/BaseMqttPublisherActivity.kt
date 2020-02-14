@@ -223,7 +223,7 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
         if (publishModel != null) {
             savePublisher(publishModel)
                     .flatMapCompletable {
-                        addRelationsToMqtt(it)
+                        addPublishDeviceRelations(it)
                     }.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(object : CompletableObserver {
@@ -253,7 +253,7 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
     protected abstract fun addOrUpdateRelation(deviceId : String, publisherId : Long) : Completable
     protected abstract fun deleteRelation(deviceId : String, publisherId : Long) : Completable
 
-    private fun addRelationsToMqtt(mId: Long): Completable? {
+    private fun addPublishDeviceRelations(publisherId: Long): Completable? {
         val fragment = supportFragmentManager.findFragmentById(deviceSelectFrameId) as DeviceSelectFragment
         val devices = fragment.getDevices()
 
@@ -261,9 +261,9 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
 
         devices.forEach {
             val completable = if (it.related) {
-                addOrUpdateRelation(it.macAddress,mId)
+                addOrUpdateRelation(it.macAddress,publisherId)
             } else {
-                deleteRelation(it.macAddress,mId)
+                deleteRelation(it.macAddress,publisherId)
             }
 
             setOfCompletable.add(
@@ -277,8 +277,6 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
     private fun test() {
         if (!isTestingAlreadyRunning) {
             isTestingAlreadyRunning = true
-
-            Toast.makeText(this, getString(R.string.testings_started), Toast.LENGTH_SHORT).show()
 
             val publishModel = toPublishModel()
 

@@ -27,13 +27,8 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
 
     @Inject
     lateinit var mqttPublisherViewModel: MqttPublisherViewModel
-    private var mqttPublishModel: MqttPublishModel? = null
 
-    override var publishModel: MqttPublishModel?
-        get() = mqttPublishModel
-        set(value) { mqttPublishModel = value}
-
-
+    override var publishModel: MqttPublishModel? = null
     override var updating: Boolean = false
     override var publisherKey: String = MQTT_PUBLISHER_ACTIVITY_KEY
 
@@ -65,7 +60,7 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
     }
 
     override fun setPublisherSpecificFields() {
-        mqttPublishModel?.let { model ->
+        publishModel?.let { model ->
             edit_url_mqtt.setText(model.url)
             edit_clientid_mqtt.setText(model.clientId)
             edit_username_mqtt.setText(model.username)
@@ -144,9 +139,9 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
             }
         }
 
-        val id = if (mqttPublishModel == null) 0 else mqttPublishModel!!.id
+        val id = if (publishModel == null) 0 else publishModel!!.id
         val timeMillis = PublisherIntervalConverter.calculateMillis(this, timeCount, timeType)
-        val lastTimeMillis = if (mqttPublishModel == null) 0 else mqttPublishModel!!.lastTimeMillis
+        val lastTimeMillis = if (publishModel == null) 0 else publishModel!!.lastTimeMillis
         return MqttPublishModel(
             id,
             name,
@@ -156,7 +151,7 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
             password,
             topic,
             qos,
-            false,
+            publishModel?.enabled ?: true,
             timeType,
             timeMillis,
             lastTimeMillis,

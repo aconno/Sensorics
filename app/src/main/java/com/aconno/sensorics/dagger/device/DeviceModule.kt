@@ -106,6 +106,14 @@ class DeviceModule {
 
     @Provides
     @DeviceScope
+    fun provideGetDevicesThatConnectedWithAzureMqttPublishUseCase(
+            publishDeviceJoinRepository: PublishDeviceJoinRepository
+    ): GetDevicesThatConnectedWithAzureMqttPublishUseCase {
+        return GetDevicesThatConnectedWithAzureMqttPublishUseCase(publishDeviceJoinRepository)
+    }
+
+    @Provides
+    @DeviceScope
     fun provideSavePublishDeviceJoinUseCase(
             publishDeviceJoinRepository: PublishDeviceJoinRepository
     ): SavePublishDeviceJoinUseCase {

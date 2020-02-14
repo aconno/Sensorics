@@ -1,10 +1,7 @@
 package com.aconno.sensorics.dagger.deviceselect
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
+import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.sensorics.viewmodel.DeviceSelectViewModel
@@ -26,16 +23,18 @@ class DeviceSelectActivityModule {
     @Provides
     @DeviceSelectActivityScope
     fun provideDeviceSelectViewModelFactory(
-        getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
-        getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
-        getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase,
-        getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase,
-        deviceRelationModelMapper: DeviceRelationModelMapper
+            getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
+            getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
+            getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase,
+            getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase,
+            getDevicesThatConnectedWithAzureMqttPublishUseCase: GetDevicesThatConnectedWithAzureMqttPublishUseCase,
+            deviceRelationModelMapper: DeviceRelationModelMapper
     ) = DeviceSelectViewModelFactory(
         getSavedDevicesMaybeUseCase,
         getDevicesThatConnectedWithGooglePublishUseCase,
         getDevicesThatConnectedWithRestPublishUseCase,
         getDevicesThatConnectedWithMqttPublishUseCase,
+            getDevicesThatConnectedWithAzureMqttPublishUseCase,
         deviceRelationModelMapper
     )
 }

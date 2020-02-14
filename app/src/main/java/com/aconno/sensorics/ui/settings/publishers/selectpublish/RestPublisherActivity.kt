@@ -431,7 +431,7 @@ class RestPublisherActivity : BaseActivity() {
             name,
             url,
             method,
-            false,
+            restPublishModel?.enabled ?: true,
             timeType,
             timeMillis,
             lastTimeMillis,

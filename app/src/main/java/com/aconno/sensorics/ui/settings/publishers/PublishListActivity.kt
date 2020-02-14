@@ -8,10 +8,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.aconno.sensorics.R
-import com.aconno.sensorics.model.BasePublishModel
-import com.aconno.sensorics.model.GooglePublishModel
-import com.aconno.sensorics.model.MqttPublishModel
-import com.aconno.sensorics.model.RestPublishModel
+import com.aconno.sensorics.model.*
+import com.aconno.sensorics.ui.settings.publishers.selectpublish.AzureMqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
@@ -102,6 +100,7 @@ class PublishListActivity : DaggerAppCompatActivity(), PublishListFragment.OnLis
             is GooglePublishModel -> GoogleCloudPublisherActivity.start(this, item)
             is RestPublishModel -> RestPublisherActivity.start(this, item)
             is MqttPublishModel -> MqttPublisherActivity.start(this, item)
+            is AzureMqttPublishModel -> AzureMqttPublisherActivity.start(this, item)
         }
     }
 

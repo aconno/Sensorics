@@ -9,18 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.*
 import com.aconno.sensorics.R
-import com.aconno.sensorics.domain.ifttt.BasePublish
-import com.aconno.sensorics.domain.ifttt.GooglePublish
-import com.aconno.sensorics.domain.ifttt.MqttPublish
-import com.aconno.sensorics.domain.ifttt.RestPublish
+import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.ifttt.outcome.PublishType
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToObjectsUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToPublishersUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
-import com.aconno.sensorics.model.BasePublishModel
-import com.aconno.sensorics.model.GooglePublishModel
-import com.aconno.sensorics.model.MqttPublishModel
-import com.aconno.sensorics.model.RestPublishModel
+import com.aconno.sensorics.model.*
 import com.aconno.sensorics.model.mapper.*
 import com.aconno.sensorics.ui.ShareableItemsListFragment
 import com.aconno.sensorics.ui.SwipeToDeleteCallback
@@ -59,6 +53,9 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
 
     @Inject
     lateinit var mqttPublishModelDataMapper: MqttPublishModelDataMapper
+
+    @Inject
+    lateinit var azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
 
     @Inject
     lateinit var googlePublishModelDataMapper: GooglePublishModelDataMapper
@@ -248,6 +245,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
             is GooglePublishModel -> googlePublishModelDataMapper.transform(model)
             is RestPublishModel -> restPublishModelDataMapper.transform(model)
             is MqttPublishModel -> mqttPublishModelDataMapper.toMqttPublish(model)
+            is AzureMqttPublishModel -> azureMqttPublishModelDataMapper.toAzureMqttPublish(model)
             else -> throw IllegalArgumentException("Invalid publish model.")
         }
     }
@@ -258,6 +256,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
                 PublishType.GOOGLE -> googlePublishDataMapper.transform(it as GooglePublish)
                 PublishType.REST -> restPublishDataMapper.transform(it as RestPublish)
                 PublishType.MQTT -> mqttPublishModelDataMapper.toMqttPublishModel(it as MqttPublish)
+                PublishType.AZURE_MQTT -> azureMqttPublishModelDataMapper.toAzureMqttPublishModel(it as AzureMqttPublish)
                 else -> throw IllegalArgumentException("Invalid publish model.")
             }
         }.toList()
@@ -313,6 +312,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
                 is GooglePublishModel -> publishListViewModel.delete(model)
                 is RestPublishModel -> publishListViewModel.delete(model)
                 is MqttPublishModel -> publishListViewModel.delete(model)
+                is AzureMqttPublishModel -> publishListViewModel.delete(model)
                 else -> throw IllegalArgumentException("Illegal argument provided.")
             }.also {
                 addDisposable(it)
@@ -348,6 +348,9 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
                                 }
                                 is MqttPublish -> {
                                     publishListViewModel.getMqttPublishModelById(id)
+                                }
+                                is AzureMqttPublish -> {
+                                    publishListViewModel.getAzureMqttPublishModelById(id)
                                 }
                                 else -> Maybe.error(IllegalArgumentException("Invalid Publish"))
                             }.subscribeOn(Schedulers.io())

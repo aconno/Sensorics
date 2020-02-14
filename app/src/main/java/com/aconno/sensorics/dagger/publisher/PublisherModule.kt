@@ -8,7 +8,7 @@ import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishRepositoryImp
 import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.AddAzureMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.*
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.*
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.*
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.*
@@ -61,6 +61,16 @@ class PublisherModule {
     ): GetAllEnabledMqttPublishUseCase {
         return GetAllEnabledMqttPublishUseCase(
                 mqttPublishRepository
+        )
+    }
+
+    @Provides
+    @PublisherScope
+    fun provideGetAllEnabledAzureMqttPublishUseCase(
+            azureMqttPublishRepository: AzureMqttPublishRepository
+    ): GetAllEnabledAzureMqttPublishUseCase {
+        return GetAllEnabledAzureMqttPublishUseCase(
+                azureMqttPublishRepository
         )
     }
 
@@ -138,6 +148,16 @@ class PublisherModule {
 
     @Provides
     @PublisherScope
+    fun provideGetAzureMqttPublishByIdUseCase(
+            azureMqttPublishRepository: AzureMqttPublishRepository
+    ): GetAzureMqttPublishByIdUseCase {
+        return GetAzureMqttPublishByIdUseCase(
+                azureMqttPublishRepository
+        )
+    }
+
+    @Provides
+    @PublisherScope
     fun provideGetRestPublishByIdUseCase(
             restPublishRepository: RestPublishRepository
     ): GetRestPublishByIdUseCase {
@@ -178,6 +198,16 @@ class PublisherModule {
 
     @Provides
     @PublisherScope
+    fun provideGetAllAzureMqttPublishUseCase(
+            azureMqttPublishRepository: AzureMqttPublishRepository
+    ): GetAllAzureMqttPublishUseCase {
+        return GetAllAzureMqttPublishUseCase(
+                azureMqttPublishRepository
+        )
+    }
+
+    @Provides
+    @PublisherScope
     fun provideDeleteGooglePublishUseCase(
             googlePublishRepository: GooglePublishRepository
     ): DeleteGooglePublishUseCase {
@@ -203,6 +233,16 @@ class PublisherModule {
     ): DeleteMqttPublishUseCase {
         return DeleteMqttPublishUseCase(
                 mqttPublishRepository
+        )
+    }
+
+    @Provides
+    @PublisherScope
+    fun provideDeleteAzureMqttPublishUseCase(
+            azureMqttPublishRepository: AzureMqttPublishRepository
+    ): DeleteAzureMqttPublishUseCase {
+        return DeleteAzureMqttPublishUseCase(
+                azureMqttPublishRepository
         )
     }
 
@@ -258,9 +298,10 @@ class PublisherModule {
     fun provideUpdatePublishUseCase(
         googlePublishRepository: GooglePublishRepository,
         mqttPublishRepository: MqttPublishRepository,
-        restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository,
+        azureMqttPublishRepository: AzureMqttPublishRepository
     ): UpdatePublishUseCase =
-        UpdatePublishUseCase(googlePublishRepository, mqttPublishRepository, restPublishRepository)
+        UpdatePublishUseCase(googlePublishRepository, mqttPublishRepository, azureMqttPublishRepository,restPublishRepository)
 
     @Provides
     @PublisherScope

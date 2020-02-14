@@ -10,10 +10,7 @@ import android.widget.Switch
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
-import com.aconno.sensorics.model.BasePublishModel
-import com.aconno.sensorics.model.GooglePublishModel
-import com.aconno.sensorics.model.MqttPublishModel
-import com.aconno.sensorics.model.RestPublishModel
+import com.aconno.sensorics.model.*
 import kotlinx.android.synthetic.main.item_publish.view.*
 
 /**
@@ -103,6 +100,7 @@ class PublishRecyclerViewAdapter(
             is GooglePublishModel -> holder.mImageView.setImageResource(R.drawable.google_logo)
             is RestPublishModel -> holder.mImageView.setImageResource(R.drawable.upload_cloud)
             is MqttPublishModel -> holder.mImageView.setImageResource(R.drawable.mqtt_logo)
+            is AzureMqttPublishModel -> holder.mImageView.setImageResource(R.drawable.azure_logo)
         }
 
         with(holder.mView) {

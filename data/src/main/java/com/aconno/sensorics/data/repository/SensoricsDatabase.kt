@@ -14,10 +14,7 @@ import com.aconno.sensorics.data.repository.googlepublish.GooglePublishDao
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishEntity
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishDao
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishEntity
-import com.aconno.sensorics.data.repository.publishdevicejoin.GooglePublishDeviceJoinEntity
-import com.aconno.sensorics.data.repository.publishdevicejoin.MqttPublishDeviceJoinEntity
-import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinDao
-import com.aconno.sensorics.data.repository.publishdevicejoin.RestPublishDeviceJoinEntity
+import com.aconno.sensorics.data.repository.publishdevicejoin.*
 import com.aconno.sensorics.data.repository.restpublish.RESTPublishDao
 import com.aconno.sensorics.data.repository.restpublish.RestHeaderEntity
 import com.aconno.sensorics.data.repository.restpublish.RestHttpGetParamEntity
@@ -34,13 +31,14 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
         AzureMqttPublishEntity::class,
         MqttPublishDeviceJoinEntity::class,
         MqttPublishEntity::class,
+        AzureMqttPublishDeviceJoinEntity::class,
         RestHeaderEntity::class,
         RestHttpGetParamEntity::class,
         RestPublishDeviceJoinEntity::class,
         RestPublishEntity::class,
         SyncEntity::class
     ],
-    version = 14
+    version = 15
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 
