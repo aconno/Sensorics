@@ -97,7 +97,7 @@ infix fun Int.setFlag(pos: Int): Int = this or (0x01 shl pos)
  *
  * @param pos position, 31 = MSB, 0 = LSB
  */
-infix fun Int.clearFlag(pos: Int): Int = this and (0x00 shl pos)
+infix fun Int.clearFlag(pos: Int): Int = this and (0x01 shl pos).inv()
 
 /**
  * Gets flag value
