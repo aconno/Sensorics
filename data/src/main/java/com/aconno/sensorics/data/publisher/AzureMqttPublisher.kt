@@ -1,5 +1,6 @@
 package com.aconno.sensorics.data.publisher
 
+import android.os.AsyncTask
 import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.ifttt.AzureMqttPublish
@@ -12,6 +13,7 @@ import com.microsoft.azure.sdk.iot.device.*
 import com.microsoft.azure.sdk.iot.device.transport.IotHubConnectionStatus
 import timber.log.Timber
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
 
 class AzureMqttPublisher (
         private val azureMqttPublish: AzureMqttPublish,
@@ -26,14 +28,23 @@ class AzureMqttPublisher (
 
     private val dataStringConverter: DataStringConverter = DataStringConverter(azureMqttPublish.dataString)
 
-    private val deviceClient : DeviceClient?
+    private var deviceClient : DeviceClient? = null
 
     @Volatile
     private var connectionOpened = false
 
+    @Volatile
+    private var tryingToConnect = false
+
+    private val messagesQueue: Queue<String> = ConcurrentLinkedQueue<String>()
+
     init {
+        initClient()
+    }
+
+    private fun initClient() {
         deviceClient = try {
-             DeviceClient(buildConnectionString(), IotHubClientProtocol.MQTT)
+            DeviceClient(buildConnectionString(), IotHubClientProtocol.MQTT)
         } catch (ex : Exception) {
             Timber.d("Failed to instantiate device client: ${ex.message}")
             null
@@ -65,14 +76,12 @@ class AzureMqttPublisher (
     }
 
     override fun publish(readings: List<Reading>) {
-        if (readings.isNotEmpty() && isPublishable(readings)) {
-            if(!connectionOpened) {
-                connect()
-                if(!connectionOpened) { //if failed to connect
-                    return
-                }
-            }
+        if(deviceClient == null) {
+            Timber.d("Unable to publish readings since device client has not been instantiated.")
+            return
+        }
 
+        if (readings.isNotEmpty() && isPublishable(readings)) {
             val messages = dataStringConverter.convert(readings)
             for (message in messages) {
                 Timber.tag("Publisher Azure Mqtt ")
@@ -100,8 +109,20 @@ class AzureMqttPublisher (
         }
     }
 
+
     private fun publish(messageText: String) {
-        publishMessage(messageText)
+        if (connectionOpened) {
+            publishMessage(messageText)
+        } else {
+            connectAsync()
+            messagesQueue.add(messageText)
+        }
+    }
+
+    private fun connectAsync() {
+        if(tryingToConnect || connectionOpened) return
+
+        ConnectAsyncTask(this).execute()
     }
 
     private fun connect() {
@@ -109,12 +130,39 @@ class AzureMqttPublisher (
             connectionOpened = false
             return
         }
+
+        tryingToConnect = true
+
         try {
-            deviceClient.open()
+            deviceClient?.open()
             connectionOpened = true
         } catch (ex : Exception) {
             Timber.d("Failed to connect to publisher.")
             ex.printStackTrace()
+        }
+
+        tryingToConnect = false
+    }
+
+    class ConnectAsyncTask(private val publisher: AzureMqttPublisher) : AsyncTask<Void,Void,Boolean>() {
+
+
+        override fun doInBackground(vararg params: Void?): Boolean {
+            publisher.connect()
+            return publisher.connectionOpened
+        }
+
+        override fun onPostExecute(result: Boolean?) {
+            if(result == true) {
+                publisher.publishMessagesFromQueue()
+            }
+        }
+
+    }
+
+    private fun publishMessagesFromQueue() {
+        while (messagesQueue.isNotEmpty()) {
+            publish(messagesQueue.poll())
         }
     }
 
