@@ -7,8 +7,6 @@ android {
     defaultConfig {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode sensorics_version_code
-        versionName sensorics_version_name
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

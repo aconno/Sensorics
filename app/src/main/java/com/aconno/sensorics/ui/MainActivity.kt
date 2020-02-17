@@ -349,19 +349,17 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    override fun permissionDenied(actionCode: Int) {
-        //TODO: Make this nice...
-        Snackbar.make(
-            content_container,
-            getString(R.string.snackbar_permission_message),
-            Snackbar.LENGTH_LONG
-        ).setAction(getString(R.string.snackbar_settings)) {
-            startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-            })
-        }.setActionTextColor(
-            ContextCompat.getColor(this, R.color.primaryColor)
-        ).show()
+    override fun onPermissionDenied(actionCode: Int) {
+        Snackbar.make(content_container, R.string.snackbar_permission_message, Snackbar.LENGTH_LONG)
+            .setAction(R.string.snackbar_settings) {
+                startActivity(
+                    Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                    }
+                )
+            }
+            .setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+            .show()
     }
 
     override fun showRationale(actionCode: Int) {

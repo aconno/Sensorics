@@ -2,8 +2,11 @@ package com.aconno.sensorics.dagger.action
 
 import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.data.repository.action.ActionsRepositoryImpl
+import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.ifttt.action.*
+import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToActionsUseCase
+import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import dagger.Module
 import dagger.Provides
 
@@ -30,6 +33,18 @@ class ActionModule {
         return GetAllActionsUseCase(
                 actionsRepository
         )
+    }
+
+    @Provides
+    @ActionScope
+    fun provideConvertActionsToJsonUseCase() : ConvertObjectsToJsonUseCase<Action> {
+        return ConvertObjectsToJsonUseCase()
+    }
+
+    @Provides
+    @ActionScope
+    fun provideJsonToActionsUseCase() : ConvertJsonToActionsUseCase {
+        return ConvertJsonToActionsUseCase()
     }
 
     @Provides

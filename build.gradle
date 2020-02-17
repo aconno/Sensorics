@@ -49,8 +49,6 @@ task clean(type: Delete) {
 }
 
 ext {
-    sensorics_version_code = 31
-    sensorics_version_name = '5.2.4'
 
     compile_sdk_version = 28
     min_sdk_version = 21
