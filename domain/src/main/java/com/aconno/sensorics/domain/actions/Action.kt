@@ -10,7 +10,7 @@ interface Action {
     val device: Device
     val condition: Condition
     val outcome: Outcome
-    val active: Boolean
+    var active: Boolean
     val timeFrom: Int
     val timeTo: Int
 }

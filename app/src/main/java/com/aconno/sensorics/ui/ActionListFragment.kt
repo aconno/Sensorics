@@ -24,6 +24,7 @@ import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseC
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_action_list.*
 import kotlinx.android.synthetic.main.fragment_action_list.container_fragment
@@ -52,6 +53,10 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
     lateinit var deleteActionUseCase: DeleteActionUseCase
 
     @Inject
+    lateinit var saveActionUseCase: AddActionUseCase
+
+    private val disposables = CompositeDisposable()
+    @Inject
     lateinit var addActionUseCase: AddActionUseCase
 
     @Inject
@@ -61,6 +66,16 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
     lateinit var convertJsonToActionsUseCase: ConvertJsonToActionsUseCase
 
     private var savedInstanceStateSelectedItems : LongArray? = null
+
+    private val checkedChangeListener: ActionAdapter.OnCheckedChangeListener = object :
+            ActionAdapter.OnCheckedChangeListener {
+        override fun onCheckedChange(checked: Boolean, action : Action) {
+            action.active = checked
+            disposables.add(
+                saveActionUseCase.execute(action).subscribeOn(Schedulers.io()).subscribe()
+            )
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -275,6 +290,11 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
 
     }
 
+    override fun onPause() {
+        super.onPause()
+        disposables.clear()
+        actionAdapter.checkedChangeListener = null
+    }
 
     private fun initActionList(actions: List<Action>) {
         actionAdapter.setActions(actions)
@@ -287,6 +307,8 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         } else {
             action_list_empty_view.visibility = View.INVISIBLE
         }
+
+        actionAdapter.checkedChangeListener = checkedChangeListener
     }
 
     override fun onItemClick(item: Action) {

@@ -7,10 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="@dimen/list_item_height"
-    android:paddingStart="@dimen/screen_edge_left_right_margin"
-    android:paddingEnd="@dimen/screen_edge_left_right_margin"
     android:animateLayoutChanges="true"
-    tools:layout_editor_absoluteY="25dp">
+    tools:layout_editor_absoluteY="25dp"
+    android:paddingStart="12dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="8dp">
 
     <CheckBox
         android:id="@+id/item_selected"
@@ -28,50 +30,55 @@
         style="@style/ListItemText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/text_mac_address"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toEndOf="@id/item_selected"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Name of the Action" />
+
+
+    <TextView
+        android:id="@+id/text_condition"
+        style="@style/ListItemSecondaryText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/text_name"
+        app:layout_constraintStart_toStartOf="@id/text_name"
+        app:layout_constraintTop_toBottomOf="@+id/text_name"
+        tools:text="Temperature > 4.0" />
 
     <TextView
         android:id="@+id/text_mac_address"
         style="@style/ListItemSecondaryText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/item_selected"
+        app:layout_constraintEnd_toEndOf="@+id/text_name"
+        app:layout_constraintStart_toStartOf="@id/text_name"
+        app:layout_constraintTop_toBottomOf="@+id/text_condition"
         tools:text="MA:CA:DD:RE:SS:00" />
-
-    <TextView
-        android:id="@+id/text_condition"
-        style="@style/ListItemText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:gravity="end"
-        app:layout_constraintBottom_toTopOf="@+id/text_outcome"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/text_name"
-        app:layout_constraintTop_toTopOf="@+id/text_name"
-        tools:text="Temperature > 4.0" />
 
     <TextView
         android:id="@+id/text_outcome"
         style="@style/ListItemSecondaryText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:gravity="end"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="Notification" />
+        app:layout_constraintStart_toEndOf="@+id/text_mac_address"
+        app:layout_constraintTop_toBottomOf="@+id/text_condition"
+        tools:text="Text to Speech" />
+
+    <Switch
+        android:id="@+id/action_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_name" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.666666" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
