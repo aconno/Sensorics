@@ -26,14 +26,19 @@ class AzureMqttPublisher (
 
     private val dataStringConverter: DataStringConverter = DataStringConverter(azureMqttPublish.dataString)
 
-    private val deviceClient : DeviceClient
+    private val deviceClient : DeviceClient?
 
     @Volatile
     private var connectionOpened = false
 
     init {
-        deviceClient = DeviceClient(buildConnectionString(), IotHubClientProtocol.MQTT)
-        deviceClient.registerConnectionStatusChangeCallback(
+        deviceClient = try {
+             DeviceClient(buildConnectionString(), IotHubClientProtocol.MQTT)
+        } catch (ex : Exception) {
+            Timber.d("Failed to instantiate device client: ${ex.message}")
+            null
+        }
+        deviceClient?.registerConnectionStatusChangeCallback(
                 { status, _, throwable, _ ->
 
                     Timber.d("Azure publisher connection status update: $status")
@@ -100,6 +105,10 @@ class AzureMqttPublisher (
     }
 
     private fun connect() {
+        if(deviceClient == null) {
+            connectionOpened = false
+            return
+        }
         try {
             deviceClient.open()
             connectionOpened = true
@@ -107,8 +116,8 @@ class AzureMqttPublisher (
             Timber.d("Failed to connect to publisher.")
             ex.printStackTrace()
         }
-
     }
+
 
 
     private fun publishMessage(messageText: String) {
@@ -116,7 +125,7 @@ class AzureMqttPublisher (
             val message = Message(messageText)
             message.messageId = UUID.randomUUID().toString()
 
-            deviceClient.sendEventAsync(message,
+            deviceClient?.sendEventAsync(message,
                     { responseStatus, _ -> Timber.d("Message response status: $responseStatus") }
                     , null)
         } catch (e: Exception) {
@@ -135,7 +144,7 @@ class AzureMqttPublisher (
     }
 
     override fun closeConnection() {
-        deviceClient.closeNow()
+        deviceClient?.closeNow()
         connectionOpened = false
     }
 
@@ -151,7 +160,13 @@ class AzureMqttPublisher (
     }
 
     override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
-        val testClient = DeviceClient(buildConnectionString(), IotHubClientProtocol.MQTT)
+        val testClient : DeviceClient
+        try {
+            testClient = DeviceClient(buildConnectionString(), IotHubClientProtocol.MQTT)
+        } catch (ex : Exception) {
+            testConnectionCallback.onConnectionFail(ex)
+            return
+        }
         try {
             testClient.open()
             testConnectionCallback.onConnectionSuccess()
