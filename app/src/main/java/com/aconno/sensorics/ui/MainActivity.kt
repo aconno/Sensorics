@@ -339,7 +339,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         permissionViewModel.checkGrantedPermission(grantResults, requestCode)
     }
 
-    override fun permissionAccepted(actionCode: Int) {
+    override fun onPermissionGranted(actionCode: Int) {
         if (actionCode == SensoricsPermission.ACCESS_FINE_LOCATION.code) {
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
@@ -362,9 +362,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             .show()
     }
 
-    override fun showRationale(actionCode: Int) {
-
-    }
 
     fun onDashboardClicked() {
         supportFragmentManager.beginTransaction()

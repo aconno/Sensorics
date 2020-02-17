@@ -39,9 +39,6 @@
             android:name=".ui.settings.virtualscanningsources.VirtualScanningSourceListActivity"
             android:label="@string/title_virtual_scanning_sources"/>
         <activity android:name=".ui.MainActivity" />
-        <activity
-            android:name=".ui.MainActivity"
-            android:launchMode="singleTask" />
         <activity android:name=".ui.ActionListActivity" />
 
         <service
