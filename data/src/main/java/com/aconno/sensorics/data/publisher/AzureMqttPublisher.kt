@@ -192,7 +192,11 @@ class AzureMqttPublisher (
     }
 
     override fun closeConnection() {
-        deviceClient?.closeNow()
+        try {
+            deviceClient?.closeNow()
+        } catch (ex : Exception) {
+            Timber.d("Exception while closing connection: ${ex.message}")
+        }
         connectionOpened = false
     }
 
