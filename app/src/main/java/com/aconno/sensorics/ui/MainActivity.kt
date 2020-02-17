@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -29,6 +30,7 @@ import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
+import com.aconno.sensorics.viewmodel.MqttVirtualScanningViewModel
 import com.aconno.sensorics.viewmodel.PermissionViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
@@ -45,6 +47,9 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     @Inject
     lateinit var bluetoothScanningViewModel: BluetoothScanningViewModel
+
+    @Inject
+    lateinit var mqttVirtualScanningViewModel: MqttVirtualScanningViewModel
 
     @Inject
     lateinit var permissionViewModel: PermissionViewModel
@@ -313,6 +318,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun stopScanning() {
         bluetoothScanningViewModel.stopScanning()
+        mqttVirtualScanningViewModel.stopScanning()
     }
 
     private fun setScanMenuLabel(menuItem: MenuItem) {
@@ -338,6 +344,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
             bluetoothScanningViewModel.startScanning(filterByDevice)
+            mqttVirtualScanningViewModel.startScanning()
             filterByDevice = true
         }
     }
@@ -354,6 +361,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             .setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
             .show()
     }
+
 
     fun onDashboardClicked() {
         supportFragmentManager.beginTransaction()

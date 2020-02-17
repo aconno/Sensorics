@@ -25,7 +25,8 @@ import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinderImpl
 import com.aconno.sensorics.domain.format.FormatMatcher
-import com.aconno.sensorics.domain.ifttt.*
+import com.aconno.sensorics.domain.ifttt.NotificationDisplay
+import com.aconno.sensorics.domain.ifttt.TextToSpeechPlayer
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateReadingsUseCase
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateScanDeviceUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase

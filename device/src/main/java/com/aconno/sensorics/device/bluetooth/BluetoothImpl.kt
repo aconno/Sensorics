@@ -38,8 +38,9 @@ class BluetoothImpl(
 
     private val scanEvent = PublishSubject.create<ScanEvent>()
 
-    override fun getScanEvent(): Flowable<ScanEvent> =
-        scanEvent.toFlowable(BackpressureStrategy.BUFFER)
+    override fun getScanEvent(): Flowable<ScanEvent> {
+        return scanEvent.toFlowable(BackpressureStrategy.BUFFER)
+    }
 
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
 

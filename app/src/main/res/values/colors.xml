@@ -23,4 +23,5 @@
     <color name="red">#c00</color>
     
     <color name="inactive_action_background_color">#BCCCCBCB</color>
+    <color name="darkTextColor">#000000</color>
 </resources>

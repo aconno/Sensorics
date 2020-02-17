@@ -93,6 +93,8 @@ class PublishListViewModel(
             .subscribe()
     }
 
+
+    //TODO make this a single
     fun getAllPublish(): Flowable<List<BasePublishModel>> {
         return Single.merge(
             getAllGooglePublishUseCase.execute(),
@@ -116,7 +118,7 @@ class PublishListViewModel(
                     else -> throw NullPointerException("Illegal parameter provided. ")
                 }
             }.toList()
-            .toFlowable()
+                .toFlowable()
     }
 
     fun delete(googlePublishModel: GooglePublishModel): Disposable {
