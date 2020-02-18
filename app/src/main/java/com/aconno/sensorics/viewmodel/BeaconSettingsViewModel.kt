@@ -116,9 +116,11 @@ class BeaconSettingsViewModel(
 
     fun beaconJsonUpdated(updatedJson: String) {
         beacon.loadChangesFromJson(JsonParser().parse(updatedJson).asJsonObject)
-        webViewAppBeaconMapper.restoreAdContent(beacon)
         val newEscapedJson = StringEscapeUtils.escapeJson(gson.toJson(beacon.toJson()))
         _beaconLiveData.value = BeaconData(newEscapedJson, beacon.slotCount.toInt())
+        // todo rewrite restore and convert logic. If we restore already restored advertisement content
+        //  in beacon, than we receive empty content and beacon advertisements can't be parse by bluetooth
+        webViewAppBeaconMapper.restoreAdContent(beacon)
         _connectionResultEvent.value = BeaconSettingsState.Done
     }
 
