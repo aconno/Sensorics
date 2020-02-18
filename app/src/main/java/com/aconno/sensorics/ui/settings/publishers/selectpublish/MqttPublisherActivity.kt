@@ -40,7 +40,7 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(publishModel != null) {
+        if (publishModel != null) {
             updating = true
         }
     }
@@ -51,7 +51,7 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
 
     override fun onTestConnectionFail(exception: Throwable?) {
         exception?.message?.let { m ->
-            if(m.contains(edit_url_mqtt?.text.toString())) {
+            if (m.contains(edit_url_mqtt?.text.toString())) {
                 edit_url_mqtt?.error = getString(R.string.mqtt_format)
             } else {
                 edit_url_mqtt?.error = null
@@ -83,15 +83,15 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
         return mqttPublisherViewModel.save(publishModel as MqttPublishModel)
     }
 
-    override fun addOrUpdateRelation(deviceId: String, publisherId: Long) : Completable {
+    override fun addOrUpdateRelation(deviceId: String, publisherId: Long): Completable {
         return mqttPublisherViewModel.addOrUpdateMqttRelation(
-                deviceId = deviceId,
-                mqttId = publisherId
+            deviceId = deviceId,
+            mqttId = publisherId
         )
     }
 
-    override fun deleteRelation(deviceId: String, publisherId: Long) : Completable {
-        return mqttPublisherViewModel.deleteRelationMqtt(deviceId,publisherId)
+    override fun deleteRelation(deviceId: String, publisherId: Long): Completable {
+        return mqttPublisherViewModel.deleteRelationMqtt(deviceId, publisherId)
     }
 
 
@@ -162,10 +162,10 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
 
     override fun getPublisherFor(publishModel: MqttPublishModel): Publisher {
         return MqttPublisher(
-                applicationContext,
-                MqttPublishModelDataMapper().toMqttPublish(publishModel),
-                listOf(Device("TestDevice", "Name", "Mac")),
-                syncRepository
+            applicationContext,
+            MqttPublishModelDataMapper().toMqttPublish(publishModel),
+            listOf(Device("TestDevice", "Name", "Mac")),
+            syncRepository
         )
     }
 

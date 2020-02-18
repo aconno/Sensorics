@@ -81,10 +81,12 @@ abstract class ActivityBuilder {
     @SensorReadingsScope
     @CompositeScanResultsScope
     @ActionScope
-    @ContributesAndroidInjector(modules = [
-        MainActivityModule::class, MainActivityFragmentsModule::class,
-        DeviceModule::class, SensorReadingsModule::class, ActionModule::class
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            MainActivityModule::class, MainActivityFragmentsModule::class,
+            DeviceModule::class, SensorReadingsModule::class, ActionModule::class
+        ]
+    )
     abstract fun bindMainActivity(): MainActivity
 
     @BluetoothScanningServiceScope
@@ -94,11 +96,13 @@ abstract class ActivityBuilder {
     @PublisherScope
     @ActionScope
     @DeviceScope
-    @ContributesAndroidInjector(modules = [
-        BluetoothScanningServiceModule::class, BluetoothScanResultsModule::class,
-        SensorReadingsModule::class, ActionOutcomeModule::class, PublisherModule::class,
-        ActionModule::class, DeviceModule::class
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            BluetoothScanningServiceModule::class, BluetoothScanResultsModule::class,
+            SensorReadingsModule::class, ActionOutcomeModule::class, PublisherModule::class,
+            ActionModule::class, DeviceModule::class
+        ]
+    )
     abstract fun bindBluetoothScanningService(): BluetoothScanningService
 
     @MqttVirtualScanningServiceScope
@@ -109,12 +113,14 @@ abstract class ActivityBuilder {
     @SensorReadingsScope
     @ActionOutcomeScope
     @VirtualScanningSourceScope
-    @ContributesAndroidInjector(modules = [
-        MqttVirtualScanningServiceModule::class, MqttScanResultsModule::class,
-        DeviceModule::class, ActionModule::class,
-        PublisherModule::class, SensorReadingsModule::class,
-        ActionOutcomeModule::class, VirtualScanningSourceModule::class
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            MqttVirtualScanningServiceModule::class, MqttScanResultsModule::class,
+            DeviceModule::class, ActionModule::class,
+            PublisherModule::class, SensorReadingsModule::class,
+            ActionOutcomeModule::class, VirtualScanningSourceModule::class
+        ]
+    )
     abstract fun bindMqttVirtualScanningService(): MqttVirtualScanningService
 
     @ContributesAndroidInjector
@@ -125,15 +131,17 @@ abstract class ActivityBuilder {
     @ContributesAndroidInjector(
         modules = [PublishListActivityModule::class, PublishListFragmentsModule::class,
             PublisherModule::class
-        ])
+        ]
+    )
     abstract fun bindPublishListActivity(): PublishListActivity
 
     @VirtualScanningSourceListActivityScope
     @VirtualScanningSourceScope
     @ContributesAndroidInjector(
-            modules = [VirtualScanningSourceListActivityModule::class, VirtualScanningSourceListActivityFragmentsModule::class,
-                VirtualScanningSourceModule::class
-            ])
+        modules = [VirtualScanningSourceListActivityModule::class, VirtualScanningSourceListActivityFragmentsModule::class,
+            VirtualScanningSourceModule::class
+        ]
+    )
     abstract fun bindVirtualScanningSourceListActivity(): VirtualScanningSourceListActivity
 
     @ActionListActivityScope
@@ -142,15 +150,18 @@ abstract class ActivityBuilder {
     @ContributesAndroidInjector(
         modules = [ActionListActivityModule::class, ActionListFragmentsModule::class,
             DeviceModule::class, ActionModule::class
-        ])
+        ]
+    )
     abstract fun bindActionListActivity(): ActionListActivity
 
     @ActionDetailsActivityScope
     @ActionScope
     @DeviceScope
-    @ContributesAndroidInjector(modules = [ActionDetailsActivityModule::class,
-        ActionModule::class, DeviceModule::class
-    ])
+    @ContributesAndroidInjector(
+        modules = [ActionDetailsActivityModule::class,
+            ActionModule::class, DeviceModule::class
+        ]
+    )
     abstract fun bindActionDetailsActivity(): ActionDetailsActivity
 
     @GoogleCloudPublisherActivityScope
@@ -159,7 +170,8 @@ abstract class ActivityBuilder {
     @ContributesAndroidInjector(
         modules = [GoogleCloudPublisherActivityModule::class, DeviceSelectionFragmentsModule::class,
             PublisherModule::class, DeviceModule::class
-        ])
+        ]
+    )
     abstract fun bindGoogleCloudPublisherActivity(): GoogleCloudPublisherActivity
 
     @MqttPublisherActivityScope
@@ -168,24 +180,27 @@ abstract class ActivityBuilder {
     @ContributesAndroidInjector(
         modules = [MqttPublisherActivityModule::class, DeviceSelectionFragmentsModule::class,
             PublisherModule::class, DeviceModule::class
-        ])
+        ]
+    )
     abstract fun bindMqttPublisherActivity(): MqttPublisherActivity
 
     @MqttVirtualScanningSourceActivityScope
     @VirtualScanningSourceScope
     @ContributesAndroidInjector(
-            modules = [MqttVirtualScanningSourceActivityModule::class,
-                VirtualScanningSourceModule::class
-            ])
+        modules = [MqttVirtualScanningSourceActivityModule::class,
+            VirtualScanningSourceModule::class
+        ]
+    )
     abstract fun bindMqttVirtualScanningSourceActivity(): MqttVirtualScanningSourceActivity
 
     @AzureMqttPublisherActivityScope
     @DeviceScope
     @PublisherScope
     @ContributesAndroidInjector(
-            modules = [AzureMqttPublisherActivityModule::class, DeviceSelectionFragmentsModule::class,
-                PublisherModule::class, DeviceModule::class
-            ])
+        modules = [AzureMqttPublisherActivityModule::class, DeviceSelectionFragmentsModule::class,
+            PublisherModule::class, DeviceModule::class
+        ]
+    )
     abstract fun bindAzureMqttPublisherActivity(): AzureMqttPublisherActivity
 
     @RESTPublisherActivityScope
@@ -194,7 +209,8 @@ abstract class ActivityBuilder {
     @ContributesAndroidInjector(
         modules = [RESTPublisherActivityModule::class, DeviceSelectionFragmentsModule::class,
             PublisherModule::class, DeviceModule::class
-        ])
+        ]
+    )
     abstract fun bindRestPublisherActivity(): RestPublisherActivity
 
     @SplashActivityScope

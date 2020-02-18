@@ -7,19 +7,19 @@ import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUs
 import com.aconno.sensorics.model.mapper.AzureMqttPublishModelDataMapper
 import com.aconno.sensorics.viewmodel.AzureMqttPublisherViewModel
 
-class AzureMqttPublisherViewModelFactory (
+class AzureMqttPublisherViewModelFactory(
     private val savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
     private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
     private val addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
     private val azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
-    ) : BaseViewModelFactory() {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            val viewModel = AzureMqttPublisherViewModel(
-                    savePublishDeviceJoinUseCase,
-                    deletePublishDeviceJoinUseCase,
-                    addAzureMqttPublishUseCase,
-                    azureMqttPublishModelDataMapper
-            )
-            return getViewModel(viewModel, modelClass)
-        }
+) : BaseViewModelFactory() {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        val viewModel = AzureMqttPublisherViewModel(
+            savePublishDeviceJoinUseCase,
+            deletePublishDeviceJoinUseCase,
+            addAzureMqttPublishUseCase,
+            azureMqttPublishModelDataMapper
+        )
+        return getViewModel(viewModel, modelClass)
+    }
 }

@@ -28,7 +28,7 @@ class PublishDeviceJoinRepositoryImpl(
 
     override fun getDevicesThatConnectedWithAzureMqttPublish(azureMqttPublishId: Long): List<Device>? {
         return publishDeviceJoinDao.getDevicesThatConnectedWithAzureMqttPublish(azureMqttPublishId)
-                ?.map(deviceMapper::toDevice)
+            ?.map(deviceMapper::toDevice)
     }
 
     override fun addGooglePublishDeviceJoin(googlePublishDeviceJoin: GooglePublishDeviceJoin) {
@@ -57,9 +57,9 @@ class PublishDeviceJoinRepositoryImpl(
 
     override fun addAzureMqttPublishDeviceJoin(azureMqttPublishDeviceJoin: AzureMqttPublishDeviceJoin) {
         publishDeviceJoinDao.insertAzureMqtt(
-                publishDeviceJoinMapper.toAzureMqttPublishDeviceJoinEntity(
-                        azureMqttPublishDeviceJoin
-                )
+            publishDeviceJoinMapper.toAzureMqttPublishDeviceJoinEntity(
+                azureMqttPublishDeviceJoin
+            )
         )
     }
 
@@ -89,9 +89,9 @@ class PublishDeviceJoinRepositoryImpl(
 
     override fun deleteAzureMqttPublishDeviceJoin(azureMqttPublishDeviceJoin: AzureMqttPublishDeviceJoin) {
         publishDeviceJoinDao.delete(
-                publishDeviceJoinMapper.toAzureMqttPublishDeviceJoinEntity(
-                        azureMqttPublishDeviceJoin
-                )
+            publishDeviceJoinMapper.toAzureMqttPublishDeviceJoinEntity(
+                azureMqttPublishDeviceJoin
+            )
         )
     }
 }

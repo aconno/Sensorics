@@ -21,21 +21,22 @@ class PublishRecyclerViewAdapter(
     private val mValues: MutableList<BasePublishModel>,
     private val mListener: PublishListFragment.OnListFragmentClickListener?,
     private val mLongClickListener: OnListItemLongClickListener?,
-    private val itemSelectedListener : OnListItemSelectedListener? = null
+    private val itemSelectedListener: OnListItemSelectedListener? = null
 ) : RecyclerView.Adapter<PublishRecyclerViewAdapter.ViewHolder>() {
     private var mCheckedChangeListener: OnCheckedChangeListener? = null
 
     var itemSelectionEnabled = false
         private set
-    private var itemSelectedMap : MutableMap<Long, Boolean> = HashMap()//maps item id to current item selection state
+    private var itemSelectedMap: MutableMap<Long, Boolean> =
+        HashMap()//maps item id to current item selection state
 
 
-    fun getAllPublishers() : List<BasePublishModel> {
+    fun getAllPublishers(): List<BasePublishModel> {
         return mValues
     }
 
 
-    fun enableItemSelection(initiallySelectedItem : BasePublishModel? = null) {
+    fun enableItemSelection(initiallySelectedItem: BasePublishModel? = null) {
         itemSelectionEnabled = true
         itemSelectedMap.clear()
         initiallySelectedItem?.let {
@@ -50,25 +51,25 @@ class PublishRecyclerViewAdapter(
         notifyDataSetChanged()
     }
 
-    fun getNumberOfSelectedItems() : Int = itemSelectedMap.count { entry -> entry.value }
+    fun getNumberOfSelectedItems(): Int = itemSelectedMap.count { entry -> entry.value }
 
-    fun getSelectedItems() : List<BasePublishModel> = mValues.filter { itemSelectedMap[it.id] == true}
+    fun getSelectedItems(): List<BasePublishModel> =
+        mValues.filter { itemSelectedMap[it.id] == true }
 
-    fun setItemsAsSelected(items : List<BasePublishModel>) {
-        for(item in items) {
-            onItemSelectionStateChanged(true,item)
+    fun setItemsAsSelected(items: List<BasePublishModel>) {
+        for (item in items) {
+            onItemSelectionStateChanged(true, item)
         }
         notifyDataSetChanged()
     }
 
-    private fun onItemSelectionStateChanged(selected : Boolean, item : BasePublishModel) {
+    private fun onItemSelectionStateChanged(selected: Boolean, item: BasePublishModel) {
         itemSelectedMap[item.id] = selected
         itemSelectedListener?.apply {
-            if(selected) onListItemSelected(item)
+            if (selected) onListItemSelected(item)
             else onListItemDeselected(item)
         }
     }
-
 
 
     fun setOnCheckedChangeListener(checkedChangeListener: OnCheckedChangeListener?) {
@@ -105,7 +106,7 @@ class PublishRecyclerViewAdapter(
 
         with(holder.mView) {
             tag = item
-            setOnLongClickListener{
+            setOnLongClickListener {
                 mLongClickListener?.onListItemLongClick(item)
                 true
             }
@@ -116,16 +117,16 @@ class PublishRecyclerViewAdapter(
         }
 
         holder.mView.setOnClickListener {
-            if(itemSelectionEnabled) {
+            if (itemSelectionEnabled) {
                 holder.selectionButton.isChecked = !holder.selectionButton.isChecked
-                onItemSelectionStateChanged(holder.selectionButton.isChecked,item)
+                onItemSelectionStateChanged(holder.selectionButton.isChecked, item)
             } else {
                 mListener?.onListFragmentClick(item)
             }
         }
 
         holder.selectionButton.setOnClickListener {
-            onItemSelectionStateChanged(holder.selectionButton.isChecked,item)
+            onItemSelectionStateChanged(holder.selectionButton.isChecked, item)
         }
     }
 
@@ -147,7 +148,7 @@ class PublishRecyclerViewAdapter(
         val mNameView: TextView = mView.publish_name
         val mEnableView: Switch = mView.publish_switch
         val mImageView: ImageView = mView.publish_image
-        val selectionButton : CheckBox = mView.item_selected
+        val selectionButton: CheckBox = mView.item_selected
 
         override fun toString(): String {
             return super.toString() + " '" + mEnableView.text + "'"

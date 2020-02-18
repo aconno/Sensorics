@@ -43,66 +43,66 @@ class PublishListActivityModule {
     @Provides
     @PublishListActivityScope
     fun providePublishListViewModelFactory(
-            getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
-            getAllRestPublishUseCase: GetAllRestPublishUseCase,
-            getAllAzureMqttPublishUseCase: GetAllAzureMqttPublishUseCase,
-            getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
+        getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
+        getAllRestPublishUseCase: GetAllRestPublishUseCase,
+        getAllAzureMqttPublishUseCase: GetAllAzureMqttPublishUseCase,
+        getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
 
-            getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
-            getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
-            getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase,
-            getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
+        getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
+        getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
+        getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase,
+        getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
 
-            addGooglePublishUseCase: AddGooglePublishUseCase,
-            addRestPublishUsecase: AddRestPublishUseCase,
-            addMqttPublishUseCase: AddMqttPublishUseCase,
-            addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
+        addGooglePublishUseCase: AddGooglePublishUseCase,
+        addRestPublishUsecase: AddRestPublishUseCase,
+        addMqttPublishUseCase: AddMqttPublishUseCase,
+        addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
 
-            deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
-            deleteRestPublishUseCase: DeleteRestPublishUseCase,
-            deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
-            deleteAzureMqttPublishUseCase: DeleteAzureMqttPublishUseCase,
+        deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
+        deleteRestPublishUseCase: DeleteRestPublishUseCase,
+        deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
+        deleteAzureMqttPublishUseCase: DeleteAzureMqttPublishUseCase,
 
-            updatePublishUseCase: UpdatePublishUseCase,
+        updatePublishUseCase: UpdatePublishUseCase,
 
-            googlePublishDataMapper: GooglePublishDataMapper,
-            restPublishDataMapper: RESTPublishDataMapper,
+        googlePublishDataMapper: GooglePublishDataMapper,
+        restPublishDataMapper: RESTPublishDataMapper,
 
-            googlePublishModelDataMapper: GooglePublishModelDataMapper,
-            restPublishModelDataMapper: RESTPublishModelDataMapper,
-            mqttPublishModelDataMapper: MqttPublishModelDataMapper,
-            azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
+        googlePublishModelDataMapper: GooglePublishModelDataMapper,
+        restPublishModelDataMapper: RESTPublishModelDataMapper,
+        mqttPublishModelDataMapper: MqttPublishModelDataMapper,
+        azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
     ) =
         PublishListViewModelFactory(
             getAllGooglePublishUseCase,
             getAllRestPublishUseCase,
             getAllAzureMqttPublishUseCase,
-                getAllMqttPublishUseCase,
+            getAllMqttPublishUseCase,
 
-                getGooglePublishByIdUseCase,
-                getRestPublishByIdUseCase,
-                getMqttPublishByIdUseCase,
-                getAzureMqttPublishByIdUseCase,
+            getGooglePublishByIdUseCase,
+            getRestPublishByIdUseCase,
+            getMqttPublishByIdUseCase,
+            getAzureMqttPublishByIdUseCase,
 
-                addGooglePublishUseCase,
-                addRestPublishUsecase,
-                addMqttPublishUseCase,
-                addAzureMqttPublishUseCase,
+            addGooglePublishUseCase,
+            addRestPublishUsecase,
+            addMqttPublishUseCase,
+            addAzureMqttPublishUseCase,
 
-                deleteGooglePublishUseCase,
-                deleteRestPublishUseCase,
-                deleteMqttPublishUseCase,
-                deleteAzureMqttPublishUseCase,
+            deleteGooglePublishUseCase,
+            deleteRestPublishUseCase,
+            deleteMqttPublishUseCase,
+            deleteAzureMqttPublishUseCase,
 
-                updatePublishUseCase,
+            updatePublishUseCase,
 
-                googlePublishDataMapper,
-                restPublishDataMapper,
+            googlePublishDataMapper,
+            restPublishDataMapper,
 
-                googlePublishModelDataMapper,
-                restPublishModelDataMapper,
-                mqttPublishModelDataMapper,
-                azureMqttPublishModelDataMapper
+            googlePublishModelDataMapper,
+            restPublishModelDataMapper,
+            mqttPublishModelDataMapper,
+            azureMqttPublishModelDataMapper
         )
 
 

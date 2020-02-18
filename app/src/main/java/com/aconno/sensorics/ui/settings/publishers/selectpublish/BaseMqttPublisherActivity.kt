@@ -40,17 +40,17 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
 
     private var isTestingAlreadyRunning: Boolean = false
 
-    protected abstract var progressBar : ProgressBar
-    protected abstract var publishModel : T?
-    protected abstract var layoutId : Int
-    protected abstract var deviceSelectFrameId : Int
-    protected abstract var publisherKey : String
+    protected abstract var progressBar: ProgressBar
+    protected abstract var publishModel: T?
+    protected abstract var layoutId: Int
+    protected abstract var deviceSelectFrameId: Int
+    protected abstract var publisherKey: String
 
     protected abstract fun onTestConnectionSuccess()
     protected abstract fun onTestConnectionFail(exception: Throwable?)
 
     //true when updating a persisted publisher, false when creating a new one
-    protected abstract var updating : Boolean
+    protected abstract var updating: Boolean
 
     private val testConnectionCallback = object : Publisher.TestConnectionCallback {
         override fun onConnectionStart() {
@@ -58,9 +58,9 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
                 progressBar.visibility = View.VISIBLE
                 isTestingAlreadyRunning = false
                 Toast.makeText(
-                        this@BaseMqttPublisherActivity,
-                        getString(R.string.testings_started),
-                        Toast.LENGTH_SHORT
+                    this@BaseMqttPublisherActivity,
+                    getString(R.string.testings_started),
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -71,9 +71,9 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
                 isTestingAlreadyRunning = false
                 this@BaseMqttPublisherActivity.onTestConnectionSuccess()
                 Toast.makeText(
-                        this@BaseMqttPublisherActivity,
-                        getString(R.string.test_succeeded),
-                        Toast.LENGTH_SHORT
+                    this@BaseMqttPublisherActivity,
+                    getString(R.string.test_succeeded),
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -84,9 +84,9 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
                 isTestingAlreadyRunning = false
                 this@BaseMqttPublisherActivity.onTestConnectionFail(exception)
                 Toast.makeText(
-                        this@BaseMqttPublisherActivity,
-                        getString(R.string.test_failed),
-                        Toast.LENGTH_SHORT
+                    this@BaseMqttPublisherActivity,
+                    getString(R.string.test_failed),
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -102,19 +102,19 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
         initViews()
         if (intent.hasExtra(publisherKey)) {
             publishModel =
-                    intent.getParcelableExtra(publisherKey)
+                intent.getParcelableExtra(publisherKey)
             setFields()
         }
 
         val fragment = DeviceSelectFragment.newInstance(publishModel)
         supportFragmentManager.beginTransaction()
-                .replace(deviceSelectFrameId, fragment)
-                .commit()
+            .replace(deviceSelectFrameId, fragment)
+            .commit()
     }
 
     protected open fun initViews() {
         btn_info.setOnClickListener {
-            createAndShowInfoDialog(R.string.publisher_info_text,R.string.publisher_info_title)
+            createAndShowInfoDialog(R.string.publisher_info_text, R.string.publisher_info_title)
         }
     }
 
@@ -123,17 +123,17 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
             edit_name.setText(model.name)
 
             edit_interval_count.setText(
-                    PublisherIntervalConverter.calculateCountFromMillis(
-                            this,
-                            model.timeMillis,
-                            model.timeType
-                    )
+                PublisherIntervalConverter.calculateCountFromMillis(
+                    this,
+                    model.timeMillis,
+                    model.timeType
+                )
             )
 
             spinner_interval_time.setSelection(
-                    resources.getStringArray(R.array.PublishIntervals).indexOf(
-                            model.timeType
-                    )
+                resources.getStringArray(R.array.PublishIntervals).indexOf(
+                    model.timeType
+                )
             )
 
             if (model.lastTimeMillis == 0L) {
@@ -142,7 +142,7 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
                 text_lastdatasent.visibility = View.VISIBLE
                 val str = getString(R.string.last_data_sent) + " " +
                         millisToFormattedDateString(
-                                model.lastTimeMillis
+                            model.lastTimeMillis
                         )
                 text_lastdatasent.text = str
             }
@@ -180,7 +180,7 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
         return super.onOptionsItemSelected(item)
     }
 
-    protected fun createAndShowInfoDialog(textResourceId : Int, titleResourceId : Int) {
+    protected fun createAndShowInfoDialog(textResourceId: Int, titleResourceId: Int) {
         val view = View.inflate(this, R.layout.dialog_alert, null)
         val textView = view.findViewById<TextView>(R.id.message)
         textView.movementMethod = LinkMovementMethod.getInstance()
@@ -189,13 +189,13 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
         val builder = AlertDialog.Builder(this)
 
         builder.setTitle(titleResourceId)
-                .setView(view)
-                .setNeutralButton(
-                        R.string.close
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+            .setView(view)
+            .setNeutralButton(
+                R.string.close
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     protected fun millisToFormattedDateString(millis: Long): String {
@@ -213,61 +213,62 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
         return converter.parseAndValidateDataString(dataString)
     }
 
-    protected abstract fun toPublishModel() : T?
+    protected abstract fun toPublishModel(): T?
 
     //returns a Single object representing the job of saving the specified publisher
-    protected abstract fun savePublisher(publishModel: BasePublishModel) : Single<Long>
+    protected abstract fun savePublisher(publishModel: BasePublishModel): Single<Long>
 
     private fun addOrUpdate() {
         val publishModel = toPublishModel()
         if (publishModel != null) {
             savePublisher(publishModel)
-                    .flatMapCompletable {
-                        addPublishDeviceRelations(it)
-                    }.subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(object : CompletableObserver {
-                        override fun onComplete() {
-                            progressBar.visibility = View.INVISIBLE
-                            finish()
-                        }
+                .flatMapCompletable {
+                    addPublishDeviceRelations(it)
+                }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : CompletableObserver {
+                    override fun onComplete() {
+                        progressBar.visibility = View.INVISIBLE
+                        finish()
+                    }
 
-                        override fun onSubscribe(d: Disposable) {
-                            addDisposable(d)
-                            progressBar.visibility = View.VISIBLE
-                        }
+                    override fun onSubscribe(d: Disposable) {
+                        addDisposable(d)
+                        progressBar.visibility = View.VISIBLE
+                    }
 
-                        override fun onError(e: Throwable) {
-                            progressBar.visibility = View.INVISIBLE
-                            Toast.makeText(
-                                    this@BaseMqttPublisherActivity,
-                                    e.message,
-                                    Toast.LENGTH_SHORT
-                            )
-                                    .show()
-                        }
-                    })
+                    override fun onError(e: Throwable) {
+                        progressBar.visibility = View.INVISIBLE
+                        Toast.makeText(
+                            this@BaseMqttPublisherActivity,
+                            e.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                })
         }
     }
 
-    protected abstract fun addOrUpdateRelation(deviceId : String, publisherId : Long) : Completable
-    protected abstract fun deleteRelation(deviceId : String, publisherId : Long) : Completable
+    protected abstract fun addOrUpdateRelation(deviceId: String, publisherId: Long): Completable
+    protected abstract fun deleteRelation(deviceId: String, publisherId: Long): Completable
 
     private fun addPublishDeviceRelations(publisherId: Long): Completable? {
-        val fragment = supportFragmentManager.findFragmentById(deviceSelectFrameId) as DeviceSelectFragment
+        val fragment =
+            supportFragmentManager.findFragmentById(deviceSelectFrameId) as DeviceSelectFragment
         val devices = fragment.getDevices()
 
         val setOfCompletable: MutableSet<Completable> = mutableSetOf()
 
         devices.forEach {
             val completable = if (it.related) {
-                addOrUpdateRelation(it.macAddress,publisherId)
+                addOrUpdateRelation(it.macAddress, publisherId)
             } else {
-                deleteRelation(it.macAddress,publisherId)
+                deleteRelation(it.macAddress, publisherId)
             }
 
             setOfCompletable.add(
-                    completable
+                completable
             )
         }
 
@@ -290,7 +291,7 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
 
     }
 
-    protected abstract fun getPublisherFor(publishModel: T) : Publisher
+    protected abstract fun getPublisherFor(publishModel: T): Publisher
 
     private fun testConnection(publishModel: T) {
         GlobalScope.launch(Dispatchers.Default) {
@@ -301,7 +302,6 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
             publisher.test(testConnectionCallback)
         }
     }
-
 
 
 }

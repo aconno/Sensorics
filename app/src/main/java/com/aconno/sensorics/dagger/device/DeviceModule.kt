@@ -19,7 +19,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideGetAllDevicesUseCase(
-            deviceRepository: DeviceRepository
+        deviceRepository: DeviceRepository
     ): GetSavedDevicesUseCase {
         return GetSavedDevicesUseCase(deviceRepository)
     }
@@ -27,7 +27,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideSaveDeviceUseCase(
-            deviceRepository: DeviceRepository
+        deviceRepository: DeviceRepository
     ): SaveDeviceUseCase {
         return SaveDeviceUseCase(deviceRepository)
     }
@@ -35,7 +35,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideDeleteDeviceUseCase(
-            deviceRepository: DeviceRepository
+        deviceRepository: DeviceRepository
     ): DeleteDeviceUseCase {
         return DeleteDeviceUseCase(deviceRepository)
     }
@@ -43,8 +43,8 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideDeviceRepository(
-            sensoricsDatabase: SensoricsDatabase,
-            deviceMapper: DeviceMapper
+        sensoricsDatabase: SensoricsDatabase,
+        deviceMapper: DeviceMapper
     ): DeviceRepository {
         return DeviceRepositoryImpl(sensoricsDatabase.deviceDao(), deviceMapper)
     }
@@ -52,7 +52,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideGetSavedDevicesList(
-            deviceRepository: DeviceRepository
+        deviceRepository: DeviceRepository
     ): Flowable<List<Device>> {
         return GetSavedDevicesUseCase(deviceRepository).execute()
     }
@@ -60,7 +60,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideGetSavedDevicesMaybeUseCase(
-            deviceRepository: DeviceRepository
+        deviceRepository: DeviceRepository
     ): GetSavedDevicesMaybeUseCase {
         return GetSavedDevicesMaybeUseCase(deviceRepository)
     }
@@ -68,14 +68,14 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun providePublishDeviceJoinRepository(
-            sensoricsDatabase: SensoricsDatabase,
-            deviceMapper: DeviceMapper,
-            publishDeviceJoinMapper: PublishDeviceJoinMapper
+        sensoricsDatabase: SensoricsDatabase,
+        deviceMapper: DeviceMapper,
+        publishDeviceJoinMapper: PublishDeviceJoinMapper
     ): PublishDeviceJoinRepository {
         return PublishDeviceJoinRepositoryImpl(
-                sensoricsDatabase.publishDeviceJoinDao(),
-                deviceMapper,
-                publishDeviceJoinMapper
+            sensoricsDatabase.publishDeviceJoinDao(),
+            deviceMapper,
+            publishDeviceJoinMapper
         )
     }
 
@@ -83,7 +83,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideGetDevicesThatConnectedWithGooglePublishUseCase(
-            publishDeviceJoinRepository: PublishDeviceJoinRepository
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
     ): GetDevicesThatConnectedWithGooglePublishUseCase {
         return GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository)
     }
@@ -91,7 +91,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideGetDevicesThatConnectedWithRESTPublishUseCase(
-            publishDeviceJoinRepository: PublishDeviceJoinRepository
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
     ): GetDevicesThatConnectedWithRestPublishUseCase {
         return GetDevicesThatConnectedWithRestPublishUseCase(publishDeviceJoinRepository)
     }
@@ -99,7 +99,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideGetDevicesThatConnectedWithMqttPublishUseCase(
-            publishDeviceJoinRepository: PublishDeviceJoinRepository
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
     ): GetDevicesThatConnectedWithMqttPublishUseCase {
         return GetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository)
     }
@@ -107,7 +107,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideGetDevicesThatConnectedWithAzureMqttPublishUseCase(
-            publishDeviceJoinRepository: PublishDeviceJoinRepository
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
     ): GetDevicesThatConnectedWithAzureMqttPublishUseCase {
         return GetDevicesThatConnectedWithAzureMqttPublishUseCase(publishDeviceJoinRepository)
     }
@@ -115,7 +115,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideSavePublishDeviceJoinUseCase(
-            publishDeviceJoinRepository: PublishDeviceJoinRepository
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
     ): SavePublishDeviceJoinUseCase {
         return SavePublishDeviceJoinUseCase(publishDeviceJoinRepository)
     }
@@ -123,7 +123,7 @@ class DeviceModule {
     @Provides
     @DeviceScope
     fun provideDeletePublishDeviceJoinUseCase(
-            publishDeviceJoinRepository: PublishDeviceJoinRepository
+        publishDeviceJoinRepository: PublishDeviceJoinRepository
     ): DeletePublishDeviceJoinUseCase {
         return DeletePublishDeviceJoinUseCase(publishDeviceJoinRepository)
     }

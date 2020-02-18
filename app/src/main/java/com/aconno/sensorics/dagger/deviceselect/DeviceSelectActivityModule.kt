@@ -23,18 +23,18 @@ class DeviceSelectActivityModule {
     @Provides
     @DeviceSelectActivityScope
     fun provideDeviceSelectViewModelFactory(
-            getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
-            getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
-            getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase,
-            getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase,
-            getDevicesThatConnectedWithAzureMqttPublishUseCase: GetDevicesThatConnectedWithAzureMqttPublishUseCase,
-            deviceRelationModelMapper: DeviceRelationModelMapper
+        getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
+        getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
+        getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase,
+        getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase,
+        getDevicesThatConnectedWithAzureMqttPublishUseCase: GetDevicesThatConnectedWithAzureMqttPublishUseCase,
+        deviceRelationModelMapper: DeviceRelationModelMapper
     ) = DeviceSelectViewModelFactory(
         getSavedDevicesMaybeUseCase,
         getDevicesThatConnectedWithGooglePublishUseCase,
         getDevicesThatConnectedWithRestPublishUseCase,
         getDevicesThatConnectedWithMqttPublishUseCase,
-            getDevicesThatConnectedWithAzureMqttPublishUseCase,
+        getDevicesThatConnectedWithAzureMqttPublishUseCase,
         deviceRelationModelMapper
     )
 }

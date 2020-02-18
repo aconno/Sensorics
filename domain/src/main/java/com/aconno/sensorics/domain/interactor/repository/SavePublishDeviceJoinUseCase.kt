@@ -21,7 +21,7 @@ class SavePublishDeviceJoinUseCase(
                     parameter
                 )
                 is AzureMqttPublishDeviceJoin -> publishDeviceJoinRepository.addAzureMqttPublishDeviceJoin(
-                        parameter
+                    parameter
                 )
                 else -> throw IllegalArgumentException("Illegal argument provided")
             }

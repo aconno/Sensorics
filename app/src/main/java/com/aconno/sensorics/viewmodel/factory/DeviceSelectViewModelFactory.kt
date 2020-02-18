@@ -6,12 +6,12 @@ import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.viewmodel.DeviceSelectViewModel
 
 class DeviceSelectViewModelFactory(
-        private val getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
-        private val getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
-        private val getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase,
-        private val getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase,
-        private val getDevicesThatConnectedWithAzureMqttPublishUseCase: GetDevicesThatConnectedWithAzureMqttPublishUseCase,
-        private val deviceRelationModelMapper: DeviceRelationModelMapper
+    private val getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
+    private val getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
+    private val getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase,
+    private val getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase,
+    private val getDevicesThatConnectedWithAzureMqttPublishUseCase: GetDevicesThatConnectedWithAzureMqttPublishUseCase,
+    private val deviceRelationModelMapper: DeviceRelationModelMapper
 ) : BaseViewModelFactory() {
 
 
@@ -21,7 +21,7 @@ class DeviceSelectViewModelFactory(
             getDevicesThatConnectedWithGooglePublishUseCase,
             getDevicesThatConnectedWithRestPublishUseCase,
             getDevicesThatConnectedWithMqttPublishUseCase,
-                getDevicesThatConnectedWithAzureMqttPublishUseCase,
+            getDevicesThatConnectedWithAzureMqttPublishUseCase,
             deviceRelationModelMapper
         )
         return getViewModel(viewModel, modelClass)

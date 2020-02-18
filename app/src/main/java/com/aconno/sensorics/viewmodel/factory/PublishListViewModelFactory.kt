@@ -22,35 +22,35 @@ import com.aconno.sensorics.model.mapper.*
 import com.aconno.sensorics.viewmodel.PublishListViewModel
 
 class PublishListViewModelFactory(
-        private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
-        private val getAllRestPublishUseCase: GetAllRestPublishUseCase,
-        private val getAllAzureMqttPublishUseCase: GetAllAzureMqttPublishUseCase,
-        private val getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
+    private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
+    private val getAllRestPublishUseCase: GetAllRestPublishUseCase,
+    private val getAllAzureMqttPublishUseCase: GetAllAzureMqttPublishUseCase,
+    private val getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
 
-        private val getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
-        private val getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
-        private val getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase,
-        private val getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
+    private val getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
+    private val getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
+    private val getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase,
+    private val getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
 
-        private val addGooglePublishUseCase: AddGooglePublishUseCase,
-        private val addRestPublishUsecase: AddRestPublishUseCase,
-        private val addMqttPublishUseCase: AddMqttPublishUseCase,
-        private val addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
+    private val addGooglePublishUseCase: AddGooglePublishUseCase,
+    private val addRestPublishUsecase: AddRestPublishUseCase,
+    private val addMqttPublishUseCase: AddMqttPublishUseCase,
+    private val addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
 
-        private val deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
-        private val deleteRestPublishUseCase: DeleteRestPublishUseCase,
-        private val deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
-        private val deleteAzureMqttPublishUseCase: DeleteAzureMqttPublishUseCase,
+    private val deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
+    private val deleteRestPublishUseCase: DeleteRestPublishUseCase,
+    private val deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
+    private val deleteAzureMqttPublishUseCase: DeleteAzureMqttPublishUseCase,
 
-        private val updatePublishUseCase: UpdatePublishUseCase,
+    private val updatePublishUseCase: UpdatePublishUseCase,
 
-        private val googlePublishDataMapper: GooglePublishDataMapper,
-        private val restPublishDataMapper: RESTPublishDataMapper,
+    private val googlePublishDataMapper: GooglePublishDataMapper,
+    private val restPublishDataMapper: RESTPublishDataMapper,
 
-        private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
-        private val restPublishModelDataMapper: RESTPublishModelDataMapper,
-        private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
-        private val azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
+    private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
+    private val restPublishModelDataMapper: RESTPublishModelDataMapper,
+    private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
+    private val azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -58,32 +58,32 @@ class PublishListViewModelFactory(
             getAllGooglePublishUseCase,
             getAllRestPublishUseCase,
             getAllAzureMqttPublishUseCase,
-                getAllMqttPublishUseCase,
+            getAllMqttPublishUseCase,
 
-                getGooglePublishByIdUseCase,
-                getRestPublishByIdUseCase,
-                getMqttPublishByIdUseCase,
-                getAzureMqttPublishByIdUseCase,
+            getGooglePublishByIdUseCase,
+            getRestPublishByIdUseCase,
+            getMqttPublishByIdUseCase,
+            getAzureMqttPublishByIdUseCase,
 
-                addGooglePublishUseCase,
-                addRestPublishUsecase,
-                addMqttPublishUseCase,
-                addAzureMqttPublishUseCase,
+            addGooglePublishUseCase,
+            addRestPublishUsecase,
+            addMqttPublishUseCase,
+            addAzureMqttPublishUseCase,
 
-                deleteGooglePublishUseCase,
-                deleteRestPublishUseCase,
-                deleteMqttPublishUseCase,
-                deleteAzureMqttPublishUseCase,
+            deleteGooglePublishUseCase,
+            deleteRestPublishUseCase,
+            deleteMqttPublishUseCase,
+            deleteAzureMqttPublishUseCase,
 
-                updatePublishUseCase,
+            updatePublishUseCase,
 
-                googlePublishDataMapper,
-                restPublishDataMapper,
+            googlePublishDataMapper,
+            restPublishDataMapper,
 
-                googlePublishModelDataMapper,
-                restPublishModelDataMapper,
-                mqttPublishModelDataMapper,
-                azureMqttPublishModelDataMapper
+            googlePublishModelDataMapper,
+            restPublishModelDataMapper,
+            mqttPublishModelDataMapper,
+            azureMqttPublishModelDataMapper
         )
         return getViewModel(viewModel, modelClass)
     }

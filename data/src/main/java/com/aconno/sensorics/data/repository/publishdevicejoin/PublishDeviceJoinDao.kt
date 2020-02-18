@@ -22,7 +22,7 @@ abstract class PublishDeviceJoinDao {
     abstract fun getDevicesThatConnectedWithMqttPublish(mqttPublishId: Long): List<DeviceEntity>?
 
     @Query(
-            "SELECT * FROM devices WHERE macAddress IN (SELECT dId FROM azure_mqtt_publish_device_join WHERE aId = :azureMqttPublishId)"
+        "SELECT * FROM devices WHERE macAddress IN (SELECT dId FROM azure_mqtt_publish_device_join WHERE aId = :azureMqttPublishId)"
     )
     abstract fun getDevicesThatConnectedWithAzureMqttPublish(azureMqttPublishId: Long): List<DeviceEntity>?
 

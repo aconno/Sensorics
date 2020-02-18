@@ -10,12 +10,12 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 
 class DeviceSelectViewModel(
-        private val getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
-        private val getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
-        private val getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase,
-        private val getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase,
-        private val getDevicesThatConnectedWithAzureMqttPublishUseCase: GetDevicesThatConnectedWithAzureMqttPublishUseCase,
-        private val deviceRelationModelMapper: DeviceRelationModelMapper
+    private val getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
+    private val getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
+    private val getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase,
+    private val getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase,
+    private val getDevicesThatConnectedWithAzureMqttPublishUseCase: GetDevicesThatConnectedWithAzureMqttPublishUseCase,
+    private val deviceRelationModelMapper: DeviceRelationModelMapper
 ) : ViewModel() {
 
     fun getAllDevices(): Single<List<DeviceRelationModel>> {
@@ -98,24 +98,28 @@ class DeviceSelectViewModel(
 
     fun getAllDevicesWithAzureMqttRelation(id: Long): Flowable<List<DeviceRelationModel>> {
         return getSavedDevicesMaybeUseCase.execute().toFlowable()
-                .zipWith(Maybe.fromCallable { getDevicesThatConnectedWithAzureMqttPublishUseCase.execute(id) }.toFlowable())
-                .map {
-                    val list = mutableListOf<DeviceRelationModel>()
+            .zipWith(Maybe.fromCallable {
+                getDevicesThatConnectedWithAzureMqttPublishUseCase.execute(
+                    id
+                )
+            }.toFlowable())
+            .map {
+                val list = mutableListOf<DeviceRelationModel>()
 
-                    loop@ for (i in 0..(it.first.size - 1)) {
-                        for (j in 0..(it.second!!.size - 1)) {
-                            if (it.first[i].macAddress == it.second!![j].macAddress) {
-                                list.add(
-                                        deviceRelationModelMapper.toDeviceRelationModel(it.first[i], true)
-                                )
-                                continue@loop
-                            }
+                loop@ for (i in 0..(it.first.size - 1)) {
+                    for (j in 0..(it.second!!.size - 1)) {
+                        if (it.first[i].macAddress == it.second!![j].macAddress) {
+                            list.add(
+                                deviceRelationModelMapper.toDeviceRelationModel(it.first[i], true)
+                            )
+                            continue@loop
                         }
-                        list.add(
-                                deviceRelationModelMapper.toDeviceRelationModel(it.first[i], false)
-                        )
                     }
-                    list
+                    list.add(
+                        deviceRelationModelMapper.toDeviceRelationModel(it.first[i], false)
+                    )
                 }
+                list
+            }
     }
 }

@@ -17,23 +17,23 @@ class AzureMqttPublisherActivityModule {
     @Provides
     @AzureMqttPublisherActivityScope
     fun provideAzureMqttPublisherViewModel(
-            azureMqttPublisherActivity: AzureMqttPublisherActivity,
-            azureMqttPublisherViewModelFactory: AzureMqttPublisherViewModelFactory
+        azureMqttPublisherActivity: AzureMqttPublisherActivity,
+        azureMqttPublisherViewModelFactory: AzureMqttPublisherViewModelFactory
     ) = ViewModelProviders.of(azureMqttPublisherActivity, azureMqttPublisherViewModelFactory)
-            .get(AzureMqttPublisherViewModel::class.java)
+        .get(AzureMqttPublisherViewModel::class.java)
 
     @Provides
     @AzureMqttPublisherActivityScope
     fun provideAzureMqttPublisherViewModelFactory(
-            savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
-            deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-            addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
-            azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
+        savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
+        deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
+        addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
+        azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
     ) = AzureMqttPublisherViewModelFactory(
-            savePublishDeviceJoinUseCase,
-            deletePublishDeviceJoinUseCase,
-            addAzureMqttPublishUseCase,
-            azureMqttPublishModelDataMapper
+        savePublishDeviceJoinUseCase,
+        deletePublishDeviceJoinUseCase,
+        addAzureMqttPublishUseCase,
+        azureMqttPublishModelDataMapper
     )
 
 }

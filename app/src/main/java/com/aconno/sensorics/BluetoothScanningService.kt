@@ -270,7 +270,7 @@ class BluetoothScanningService : DaggerService() {
                     getGooglePublisherObservable(),
                     getRestPublisherObservable(),
                     getMqttPublishers(),
-                        getAzureMqttPublishers()
+                    getAzureMqttPublishers()
                 )
                     .toList()
                     .observeOn(AndroidSchedulers.mainThread())
@@ -347,7 +347,7 @@ class BluetoothScanningService : DaggerService() {
 
     private fun getAzureMqttPublishers(): Observable<Publisher> {
         return Observable.fromIterable(
-                getAllEnabledAzureMqttPublishUseCase.execute().map(this::basePublishToAzureMqttPublisher)
+            getAllEnabledAzureMqttPublishUseCase.execute().map(this::basePublishToAzureMqttPublisher)
         )
     }
 
@@ -360,7 +360,7 @@ class BluetoothScanningService : DaggerService() {
 
     private fun basePublishToAzureMqttPublisher(basePublish: BasePublish): Publisher {
         val devices = getDevicesThatConnectedWithAzureMqttPublishUseCase.execute(basePublish.id)
-                ?: listOf()
+            ?: listOf()
 
         return AzureMqttPublisher(basePublish as AzureMqttPublish, devices, syncRepository)
     }

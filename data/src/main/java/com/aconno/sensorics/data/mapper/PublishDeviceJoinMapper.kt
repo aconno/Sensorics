@@ -37,8 +37,8 @@ class PublishDeviceJoinMapper @Inject constructor() {
 
     fun toAzureMqttPublishDeviceJoinEntity(azureMqttPublishDeviceJoin: AzureMqttPublishDeviceJoin): AzureMqttPublishDeviceJoinEntity {
         return AzureMqttPublishDeviceJoinEntity(
-                azureMqttPublishDeviceJoin.mId,
-                azureMqttPublishDeviceJoin.dId
+            azureMqttPublishDeviceJoin.mId,
+            azureMqttPublishDeviceJoin.dId
         )
     }
 }

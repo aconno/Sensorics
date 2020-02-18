@@ -11,31 +11,31 @@ class AzureMqttPublishDataMapper @Inject constructor() {
 
     fun toAzureMqttPublish(azureMqttPublishEntity: AzureMqttPublishEntity): AzureMqttPublish {
         return GeneralAzureMqttPublish(
-                azureMqttPublishEntity.id,
-                azureMqttPublishEntity.name,
-                azureMqttPublishEntity.iotHubName,
-                azureMqttPublishEntity.deviceId,
-                azureMqttPublishEntity.sharedAccessKey,
-                azureMqttPublishEntity.enabled,
-                azureMqttPublishEntity.timeType,
-                azureMqttPublishEntity.timeMillis,
-                azureMqttPublishEntity.lastTimeMillis,
-                azureMqttPublishEntity.dataString
+            azureMqttPublishEntity.id,
+            azureMqttPublishEntity.name,
+            azureMqttPublishEntity.iotHubName,
+            azureMqttPublishEntity.deviceId,
+            azureMqttPublishEntity.sharedAccessKey,
+            azureMqttPublishEntity.enabled,
+            azureMqttPublishEntity.timeType,
+            azureMqttPublishEntity.timeMillis,
+            azureMqttPublishEntity.lastTimeMillis,
+            azureMqttPublishEntity.dataString
         )
     }
 
     fun toAzureMqttPublishEntity(azureMqttPublish: AzureMqttPublish): AzureMqttPublishEntity {
         return AzureMqttPublishEntity(
-                azureMqttPublish.id,
-                azureMqttPublish.name,
-                azureMqttPublish.iotHubName,
-                azureMqttPublish.deviceId,
-                azureMqttPublish.sharedAccessKey,
-                azureMqttPublish.enabled,
-                azureMqttPublish.timeType,
-                azureMqttPublish.timeMillis,
-                azureMqttPublish.lastTimeMillis,
-                azureMqttPublish.dataString
+            azureMqttPublish.id,
+            azureMqttPublish.name,
+            azureMqttPublish.iotHubName,
+            azureMqttPublish.deviceId,
+            azureMqttPublish.sharedAccessKey,
+            azureMqttPublish.enabled,
+            azureMqttPublish.timeType,
+            azureMqttPublish.timeMillis,
+            azureMqttPublish.lastTimeMillis,
+            azureMqttPublish.dataString
         )
     }
 

@@ -5,8 +5,8 @@ import com.aconno.sensorics.domain.ifttt.AzureMqttPublishRepository
 import com.aconno.sensorics.domain.interactor.type.CompletableUseCaseWithParameter
 import io.reactivex.Completable
 
-class DeleteAzureMqttPublishUseCase (
-        private val azureMqttPublishRepository: AzureMqttPublishRepository
+class DeleteAzureMqttPublishUseCase(
+    private val azureMqttPublishRepository: AzureMqttPublishRepository
 ) : CompletableUseCaseWithParameter<AzureMqttPublish> {
     override fun execute(parameter: AzureMqttPublish): Completable {
         return Completable.fromAction {

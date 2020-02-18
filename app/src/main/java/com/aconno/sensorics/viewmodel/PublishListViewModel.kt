@@ -30,35 +30,35 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class PublishListViewModel(
-        private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
-        private val getAllRestPublishUseCase: GetAllRestPublishUseCase,
-        private val getAllAzureMqttPublishUseCase: GetAllAzureMqttPublishUseCase,
-        private val getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
+    private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
+    private val getAllRestPublishUseCase: GetAllRestPublishUseCase,
+    private val getAllAzureMqttPublishUseCase: GetAllAzureMqttPublishUseCase,
+    private val getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
 
-        private val getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
-        private val getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
-        private val getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase,
-        private val getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
+    private val getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
+    private val getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
+    private val getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase,
+    private val getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
 
-        private val addGooglePublishUseCase: AddGooglePublishUseCase,
-        private val addRestPublishUsecase: AddRestPublishUseCase,
-        private val addMqttPublishUseCase: AddMqttPublishUseCase,
-        private val addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
+    private val addGooglePublishUseCase: AddGooglePublishUseCase,
+    private val addRestPublishUsecase: AddRestPublishUseCase,
+    private val addMqttPublishUseCase: AddMqttPublishUseCase,
+    private val addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
 
-        private val deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
-        private val deleteRestPublishUseCase: DeleteRestPublishUseCase,
-        private val deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
-        private val deleteAzureMqttPublishUseCase: DeleteAzureMqttPublishUseCase,
+    private val deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
+    private val deleteRestPublishUseCase: DeleteRestPublishUseCase,
+    private val deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
+    private val deleteAzureMqttPublishUseCase: DeleteAzureMqttPublishUseCase,
 
-        private val updatePublishUseCase: UpdatePublishUseCase,
+    private val updatePublishUseCase: UpdatePublishUseCase,
 
-        private val googlePublishDataMapper: GooglePublishDataMapper,
-        private val restPublishDataMapper: RESTPublishDataMapper,
+    private val googlePublishDataMapper: GooglePublishDataMapper,
+    private val restPublishDataMapper: RESTPublishDataMapper,
 
-        private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
-        private val restPublishModelDataMapper: RESTPublishModelDataMapper,
-        private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
-        private val azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
+    private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
+    private val restPublishModelDataMapper: RESTPublishModelDataMapper,
+    private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
+    private val azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
 
 
 ) : ViewModel() {
@@ -73,25 +73,25 @@ class PublishListViewModel(
         }
     }
 
-    fun getGooglePublishModelById(id: Long) : Maybe<GooglePublishModel> {
+    fun getGooglePublishModelById(id: Long): Maybe<GooglePublishModel> {
         return getGooglePublishByIdUseCase.execute(id).flatMap {
             Maybe.just(googlePublishDataMapper.transform(it))
         }
     }
 
-    fun getRestPublishModelById(id: Long) : Maybe<RestPublishModel> {
+    fun getRestPublishModelById(id: Long): Maybe<RestPublishModel> {
         return getRestPublishByIdUseCase.execute(id).flatMap {
             Maybe.just(restPublishDataMapper.transform(it))
         }
     }
 
-    fun getMqttPublishModelById(id: Long) : Maybe<MqttPublishModel> {
+    fun getMqttPublishModelById(id: Long): Maybe<MqttPublishModel> {
         return getMqttPublishByIdUseCase.execute(id).flatMap {
             Maybe.just(mqttPublishModelDataMapper.toMqttPublishModel(it))
         }
     }
 
-    fun getAzureMqttPublishModelById(id: Long) : Maybe<AzureMqttPublishModel> {
+    fun getAzureMqttPublishModelById(id: Long): Maybe<AzureMqttPublishModel> {
         return getAzureMqttPublishByIdUseCase.execute(id).flatMap {
             Maybe.just(azureMqttPublishModelDataMapper.toAzureMqttPublishModel(it))
         }
@@ -102,7 +102,9 @@ class PublishListViewModel(
             is GooglePublishModel -> googlePublishModelDataMapper.transform(publishModel)
             is RestPublishModel -> restPublishModelDataMapper.transform(publishModel)
             is MqttPublishModel -> mqttPublishModelDataMapper.toMqttPublish(publishModel)
-            is AzureMqttPublishModel -> azureMqttPublishModelDataMapper.toAzureMqttPublish(publishModel)
+            is AzureMqttPublishModel -> azureMqttPublishModelDataMapper.toAzureMqttPublish(
+                publishModel
+            )
             else -> throw IllegalArgumentException("Invalid publish model.")
         }
 
@@ -119,7 +121,7 @@ class PublishListViewModel(
             getAllGooglePublishUseCase.execute(),
             getAllRestPublishUseCase.execute(),
             getAllMqttPublishUseCase.execute(),
-                getAllAzureMqttPublishUseCase.execute()
+            getAllAzureMqttPublishUseCase.execute()
         ).flatMapIterable { it }
             .map {
                 when (it) {
@@ -142,7 +144,7 @@ class PublishListViewModel(
                     else -> throw NullPointerException("Illegal parameter provided. ")
                 }
             }.toList()
-                .toFlowable()
+            .toFlowable()
     }
 
     fun delete(googlePublishModel: GooglePublishModel): Disposable {
@@ -170,10 +172,11 @@ class PublishListViewModel(
     }
 
     fun delete(azureMqttPublishModel: AzureMqttPublishModel): Disposable {
-        val azureMqttPublish = azureMqttPublishModelDataMapper.toAzureMqttPublish(azureMqttPublishModel)
+        val azureMqttPublish =
+            azureMqttPublishModelDataMapper.toAzureMqttPublish(azureMqttPublishModel)
 
         return deleteAzureMqttPublishUseCase.execute(azureMqttPublish)
-                .subscribeOn(Schedulers.io())
-                .subscribe()
+            .subscribeOn(Schedulers.io())
+            .subscribe()
     }
 }

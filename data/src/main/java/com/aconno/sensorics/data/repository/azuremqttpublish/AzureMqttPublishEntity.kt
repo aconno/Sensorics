@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "azure_mqtt_publish")
-data class AzureMqttPublishEntity (
+data class AzureMqttPublishEntity(
     @PrimaryKey(autoGenerate = true) var id: Long,
     var name: String,
     var iotHubName: String,

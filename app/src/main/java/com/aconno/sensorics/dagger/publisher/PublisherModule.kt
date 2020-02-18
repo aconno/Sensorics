@@ -24,60 +24,60 @@ class PublisherModule {
 
     @Provides
     @PublisherScope
-    fun provideConvertPublishersToJsonUseCase() : ConvertObjectsToJsonUseCase<BasePublish> {
+    fun provideConvertPublishersToJsonUseCase(): ConvertObjectsToJsonUseCase<BasePublish> {
         return ConvertObjectsToJsonUseCase()
     }
 
     @Provides
     @PublisherScope
-    fun provideConvertJsonToPublishersUseCase() : ConvertJsonToPublishersUseCase {
+    fun provideConvertJsonToPublishersUseCase(): ConvertJsonToPublishersUseCase {
         return ConvertJsonToPublishersUseCase()
     }
 
     @Provides
     @PublisherScope
     fun provideGetAllEnabledGooglePublishUseCase(
-            googlePublishRepository: GooglePublishRepository
+        googlePublishRepository: GooglePublishRepository
     ): GetAllEnabledGooglePublishUseCase {
         return GetAllEnabledGooglePublishUseCase(
-                googlePublishRepository
+            googlePublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetAllEnabledRESTPublishUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): GetAllEnabledRestPublishUseCase {
         return GetAllEnabledRestPublishUseCase(
-                restPublishRepository
+            restPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetAllEnabledMqttPublishUseCase(
-            mqttPublishRepository: MqttPublishRepository
+        mqttPublishRepository: MqttPublishRepository
     ): GetAllEnabledMqttPublishUseCase {
         return GetAllEnabledMqttPublishUseCase(
-                mqttPublishRepository
+            mqttPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetAllEnabledAzureMqttPublishUseCase(
-            azureMqttPublishRepository: AzureMqttPublishRepository
+        azureMqttPublishRepository: AzureMqttPublishRepository
     ): GetAllEnabledAzureMqttPublishUseCase {
         return GetAllEnabledAzureMqttPublishUseCase(
-                azureMqttPublishRepository
+            azureMqttPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetRESTHeadersByIdUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): GetRestHeadersByIdUseCase {
         return GetRestHeadersByIdUseCase(restPublishRepository)
     }
@@ -85,7 +85,7 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideGetRESTHttpGetParamsByIdUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): GetRestHttpGetParamsByIdUseCase {
         return GetRestHttpGetParamsByIdUseCase(restPublishRepository)
     }
@@ -94,10 +94,10 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideAddGooglePublishUseCase(
-            googlePublishRepository: GooglePublishRepository
+        googlePublishRepository: GooglePublishRepository
     ): AddGooglePublishUseCase {
         return AddGooglePublishUseCase(
-                googlePublishRepository
+            googlePublishRepository
         )
     }
 
@@ -105,7 +105,7 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideAddMqttPublishUseCase(
-            mqttPublishRepository: MqttPublishRepository
+        mqttPublishRepository: MqttPublishRepository
     ): AddMqttPublishUseCase {
         return AddMqttPublishUseCase(mqttPublishRepository)
     }
@@ -113,7 +113,7 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideAddAzureMqttPublishUseCase(
-            azureMqttPublishRepository: AzureMqttPublishRepository
+        azureMqttPublishRepository: AzureMqttPublishRepository
     ): AddAzureMqttPublishUseCase {
         return AddAzureMqttPublishUseCase(azureMqttPublishRepository)
     }
@@ -121,7 +121,7 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideAddRESTPublishUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): AddRestPublishUseCase {
         return AddRestPublishUseCase(restPublishRepository)
     }
@@ -129,120 +129,120 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideGetGooglePublishByIdUseCase(
-            googlePublishRepository: GooglePublishRepository
+        googlePublishRepository: GooglePublishRepository
     ): GetGooglePublishByIdUseCase {
         return GetGooglePublishByIdUseCase(
-                googlePublishRepository
+            googlePublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetMqttPublishByIdUseCase(
-            mqttPublishRepository: MqttPublishRepository
+        mqttPublishRepository: MqttPublishRepository
     ): GetMqttPublishByIdUseCase {
         return GetMqttPublishByIdUseCase(
-                mqttPublishRepository
+            mqttPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetAzureMqttPublishByIdUseCase(
-            azureMqttPublishRepository: AzureMqttPublishRepository
+        azureMqttPublishRepository: AzureMqttPublishRepository
     ): GetAzureMqttPublishByIdUseCase {
         return GetAzureMqttPublishByIdUseCase(
-                azureMqttPublishRepository
+            azureMqttPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetRestPublishByIdUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): GetRestPublishByIdUseCase {
         return GetRestPublishByIdUseCase(
-                restPublishRepository
+            restPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetAllGooglePublishUseCase(
-            googlePublishRepository: GooglePublishRepository
+        googlePublishRepository: GooglePublishRepository
     ): GetAllGooglePublishUseCase {
         return GetAllGooglePublishUseCase(
-                googlePublishRepository
+            googlePublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetAllRESTPublishUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): GetAllRestPublishUseCase {
         return GetAllRestPublishUseCase(
-                restPublishRepository
+            restPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetAllMqttPublishUseCase(
-            mqttPublishRepository: MqttPublishRepository
+        mqttPublishRepository: MqttPublishRepository
     ): GetAllMqttPublishUseCase {
         return GetAllMqttPublishUseCase(
-                mqttPublishRepository
+            mqttPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideGetAllAzureMqttPublishUseCase(
-            azureMqttPublishRepository: AzureMqttPublishRepository
+        azureMqttPublishRepository: AzureMqttPublishRepository
     ): GetAllAzureMqttPublishUseCase {
         return GetAllAzureMqttPublishUseCase(
-                azureMqttPublishRepository
+            azureMqttPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideDeleteGooglePublishUseCase(
-            googlePublishRepository: GooglePublishRepository
+        googlePublishRepository: GooglePublishRepository
     ): DeleteGooglePublishUseCase {
         return DeleteGooglePublishUseCase(
-                googlePublishRepository
+            googlePublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideDeleteRESTPublishUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): DeleteRestPublishUseCase {
         return DeleteRestPublishUseCase(
-                restPublishRepository
+            restPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideDeleteMqttPublishUseCase(
-            mqttPublishRepository: MqttPublishRepository
+        mqttPublishRepository: MqttPublishRepository
     ): DeleteMqttPublishUseCase {
         return DeleteMqttPublishUseCase(
-                mqttPublishRepository
+            mqttPublishRepository
         )
     }
 
     @Provides
     @PublisherScope
     fun provideDeleteAzureMqttPublishUseCase(
-            azureMqttPublishRepository: AzureMqttPublishRepository
+        azureMqttPublishRepository: AzureMqttPublishRepository
     ): DeleteAzureMqttPublishUseCase {
         return DeleteAzureMqttPublishUseCase(
-                azureMqttPublishRepository
+            azureMqttPublishRepository
         )
     }
 
@@ -250,7 +250,7 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideSaveRESTHeaderUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): SaveRestHeaderUseCase {
         return SaveRestHeaderUseCase(restPublishRepository)
     }
@@ -258,7 +258,7 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideSaveRESTHttpGetParamUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): SaveRestHttpGetParamUseCase {
         return SaveRestHttpGetParamUseCase(restPublishRepository)
     }
@@ -266,7 +266,7 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideDeleteRESTHeaderUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): DeleteRestHeaderUseCase {
         return DeleteRestHeaderUseCase(restPublishRepository)
     }
@@ -274,7 +274,7 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideDeleteRESTHttpGetParamUseCase(
-            restPublishRepository: RestPublishRepository
+        restPublishRepository: RestPublishRepository
     ): DeleteRestHttpGetParamUseCase {
         return DeleteRestHttpGetParamUseCase(restPublishRepository)
     }
@@ -282,14 +282,14 @@ class PublisherModule {
     @Provides
     @PublisherScope
     fun provideGooglePublishRepository(
-            sensoricsDatabase: SensoricsDatabase,
-            googlePublishEntityDataMapper: GooglePublishEntityDataMapper,
-            googlePublishDataMapper: GooglePublishDataMapper
+        sensoricsDatabase: SensoricsDatabase,
+        googlePublishEntityDataMapper: GooglePublishEntityDataMapper,
+        googlePublishDataMapper: GooglePublishDataMapper
     ): GooglePublishRepository {
         return GooglePublishRepositoryImpl(
-                sensoricsDatabase.googlePublishDao(),
-                googlePublishEntityDataMapper,
-                googlePublishDataMapper
+            sensoricsDatabase.googlePublishDao(),
+            googlePublishEntityDataMapper,
+            googlePublishDataMapper
         )
     }
 
@@ -301,46 +301,52 @@ class PublisherModule {
         restPublishRepository: RestPublishRepository,
         azureMqttPublishRepository: AzureMqttPublishRepository
     ): UpdatePublishUseCase =
-        UpdatePublishUseCase(googlePublishRepository, mqttPublishRepository, azureMqttPublishRepository,restPublishRepository)
+        UpdatePublishUseCase(
+            googlePublishRepository,
+            mqttPublishRepository,
+            azureMqttPublishRepository,
+            restPublishRepository
+        )
 
     @Provides
     @PublisherScope
     fun provideRESTPublishRepository(
-            sensoricsDatabase: SensoricsDatabase,
-            restPublishEntityDataMapper: RestPublishEntityDataMapper,
-            restPublishDataMapper: RestPublishDataMapper,
-            restHeaderDataMapper: RestHeaderDataMapper,
-            restHttpGetParamDataMapper: RestHttpGetParamDataMapper
+        sensoricsDatabase: SensoricsDatabase,
+        restPublishEntityDataMapper: RestPublishEntityDataMapper,
+        restPublishDataMapper: RestPublishDataMapper,
+        restHeaderDataMapper: RestHeaderDataMapper,
+        restHttpGetParamDataMapper: RestHttpGetParamDataMapper
     ): RestPublishRepository {
         return RestPublishRepositoryImpl(
-                sensoricsDatabase.restPublishDao(),
-                restPublishEntityDataMapper,
-                restPublishDataMapper,
-                restHeaderDataMapper,
-                restHttpGetParamDataMapper
+            sensoricsDatabase.restPublishDao(),
+            restPublishEntityDataMapper,
+            restPublishDataMapper,
+            restHeaderDataMapper,
+            restHttpGetParamDataMapper
         )
     }
 
     @Provides
     @PublisherScope
     fun provideMqttPublishRepository(
-            sensoricsDatabase: SensoricsDatabase,
-            mqttPublishDataMapper: MqttPublishDataMapper
+        sensoricsDatabase: SensoricsDatabase,
+        mqttPublishDataMapper: MqttPublishDataMapper
     ): MqttPublishRepository {
         return MqttPublishRepositoryImpl(
-                sensoricsDatabase.mqttPublishDao(),
-                mqttPublishDataMapper
+            sensoricsDatabase.mqttPublishDao(),
+            mqttPublishDataMapper
         )
     }
 
     @Provides
     @PublisherScope
     fun provideAzureMqttPublishRepository(
-            sensoricsDatabase: SensoricsDatabase,
-            azureMqttPublishDataMapper: AzureMqttPublishDataMapper
+        sensoricsDatabase: SensoricsDatabase,
+        azureMqttPublishDataMapper: AzureMqttPublishDataMapper
     ): AzureMqttPublishRepository {
-        return AzureMqttPublishRepositoryImpl(sensoricsDatabase.azureMqttPublishDao(),
-                azureMqttPublishDataMapper
+        return AzureMqttPublishRepositoryImpl(
+            sensoricsDatabase.azureMqttPublishDao(),
+            azureMqttPublishDataMapper
         )
     }
 }

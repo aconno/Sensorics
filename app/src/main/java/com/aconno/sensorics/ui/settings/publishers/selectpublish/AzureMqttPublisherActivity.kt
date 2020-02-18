@@ -38,7 +38,7 @@ class AzureMqttPublisherActivity : BaseMqttPublisherActivity<AzureMqttPublishMod
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(publishModel != null) {
+        if (publishModel != null) {
             updating = true
         }
     }
@@ -46,27 +46,27 @@ class AzureMqttPublisherActivity : BaseMqttPublisherActivity<AzureMqttPublishMod
     override fun initViews() {
         super.initViews()
         iot_credentials_info.setOnClickListener {
-            createAndShowInfoDialog(R.string.iot_hub_info_text,R.string.iot_hub_info_title)
+            createAndShowInfoDialog(R.string.iot_hub_info_text, R.string.iot_hub_info_title)
         }
     }
 
 
     override fun addOrUpdateRelation(deviceId: String, publisherId: Long): Completable {
         return azureMqttPublisherViewModel.addOrUpdatePublisherDeviceRelation(
-                deviceId = deviceId,
-                publisherId = publisherId
+            deviceId = deviceId,
+            publisherId = publisherId
         )
     }
 
     override fun deleteRelation(deviceId: String, publisherId: Long): Completable {
-        return azureMqttPublisherViewModel.deletePublishDeviceRelation(deviceId,publisherId)
+        return azureMqttPublisherViewModel.deletePublishDeviceRelation(deviceId, publisherId)
     }
 
     override fun getPublisherFor(publishModel: AzureMqttPublishModel): Publisher {
         return AzureMqttPublisher(
-                AzureMqttPublishModelDataMapper().toAzureMqttPublish(publishModel),
-                listOf(Device("TestDevice", "Name", "Mac")),
-                syncRepository
+            AzureMqttPublishModelDataMapper().toAzureMqttPublish(publishModel),
+            listOf(Device("TestDevice", "Name", "Mac")),
+            syncRepository
         )
     }
 
@@ -97,29 +97,29 @@ class AzureMqttPublisherActivity : BaseMqttPublisherActivity<AzureMqttPublishMod
         val datastring = edit_datastring.text.toString()
 
         if (azureMqttPublisherViewModel.checkFieldsAreEmpty(
-                        name,
-                        iotHubName,
-                        deviceId,
-                        sharedAccessKey,
-                        timeType,
-                        timeCount,
-                        datastring
-                )
+                name,
+                iotHubName,
+                deviceId,
+                sharedAccessKey,
+                timeType,
+                timeCount,
+                datastring
+            )
         ) {
             Toast.makeText(
-                    this,
-                    getString(R.string.please_fill_blanks),
-                    Toast.LENGTH_SHORT
+                this,
+                getString(R.string.please_fill_blanks),
+                Toast.LENGTH_SHORT
             ).show()
             return null
         } else {
             if (!isDataStringValid()) {
                 Toast.makeText(
-                        this,
-                        getString(R.string.data_string_not_valid),
-                        Toast.LENGTH_SHORT
+                    this,
+                    getString(R.string.data_string_not_valid),
+                    Toast.LENGTH_SHORT
                 )
-                        .show()
+                    .show()
 
                 return null
             }
@@ -129,19 +129,18 @@ class AzureMqttPublisherActivity : BaseMqttPublisherActivity<AzureMqttPublishMod
         val timeMillis = PublisherIntervalConverter.calculateMillis(this, timeCount, timeType)
         val lastTimeMillis = if (publishModel == null) 0 else publishModel!!.lastTimeMillis
         return AzureMqttPublishModel(
-                id,
-                name,
-                iotHubName,
-                deviceId,
-                sharedAccessKey,
-                publishModel?.enabled ?: true,
-                timeType,
-                timeMillis,
-                lastTimeMillis,
-                datastring
+            id,
+            name,
+            iotHubName,
+            deviceId,
+            sharedAccessKey,
+            publishModel?.enabled ?: true,
+            timeType,
+            timeMillis,
+            lastTimeMillis,
+            datastring
         )
     }
-
 
 
     companion object {
@@ -152,8 +151,8 @@ class AzureMqttPublisherActivity : BaseMqttPublisherActivity<AzureMqttPublishMod
 
             azureMqttPublishModel?.let {
                 intent.putExtra(
-                        AZURE_MQTT_PUBLISHER_ACTIVITY_KEY,
-                        azureMqttPublishModel
+                    AZURE_MQTT_PUBLISHER_ACTIVITY_KEY,
+                    azureMqttPublishModel
                 )
             }
 

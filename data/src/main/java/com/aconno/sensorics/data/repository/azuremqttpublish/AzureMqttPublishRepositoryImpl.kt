@@ -7,18 +7,32 @@ import com.aconno.sensorics.domain.ifttt.BasePublish
 import io.reactivex.Maybe
 import io.reactivex.Single
 
-class AzureMqttPublishRepositoryImpl(private val azureMqttPublishDao: AzureMqttPublishDao,
-                                     private val azureMqttPublishDataMapper: AzureMqttPublishDataMapper) : AzureMqttPublishRepository {
+class AzureMqttPublishRepositoryImpl(
+    private val azureMqttPublishDao: AzureMqttPublishDao,
+    private val azureMqttPublishDataMapper: AzureMqttPublishDataMapper
+) : AzureMqttPublishRepository {
     override fun addAzureMqttPublish(azureMqttPublish: AzureMqttPublish): Long {
-        return azureMqttPublishDao.insert(azureMqttPublishDataMapper.toAzureMqttPublishEntity(azureMqttPublish))
+        return azureMqttPublishDao.insert(
+            azureMqttPublishDataMapper.toAzureMqttPublishEntity(
+                azureMqttPublish
+            )
+        )
     }
 
     override fun updateAzureMqttPublish(azureMqttPublish: AzureMqttPublish) {
-        return azureMqttPublishDao.update(azureMqttPublishDataMapper.toAzureMqttPublishEntity(azureMqttPublish))
+        return azureMqttPublishDao.update(
+            azureMqttPublishDataMapper.toAzureMqttPublishEntity(
+                azureMqttPublish
+            )
+        )
     }
 
     override fun deleteAzureMqttPublish(azureMqttPublish: AzureMqttPublish) {
-        azureMqttPublishDao.delete(azureMqttPublishDataMapper.toAzureMqttPublishEntity(azureMqttPublish))
+        azureMqttPublishDao.delete(
+            azureMqttPublishDataMapper.toAzureMqttPublishEntity(
+                azureMqttPublish
+            )
+        )
     }
 
     override fun getAllAzureMqttPublish(): Single<List<BasePublish>> {
@@ -27,12 +41,12 @@ class AzureMqttPublishRepositoryImpl(private val azureMqttPublishDao: AzureMqttP
 
     override fun getAllEnabledAzureMqttPublish(): List<BasePublish> {
         return azureMqttPublishDao.getEnabledAzureMqttPublish()
-                .map(azureMqttPublishDataMapper::toAzureMqttPublish)
+            .map(azureMqttPublishDataMapper::toAzureMqttPublish)
     }
 
     override fun getAzureMqttPublishById(azureMqttPublishId: Long): Maybe<AzureMqttPublish> {
         return azureMqttPublishDao.getAzureMqttPublishById(azureMqttPublishId)
-                .map(azureMqttPublishDataMapper::toAzureMqttPublish)
+            .map(azureMqttPublishDataMapper::toAzureMqttPublish)
     }
 
 }
