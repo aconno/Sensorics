@@ -112,9 +112,9 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
                 .commit()
     }
 
-    private fun initViews() {
+    protected open fun initViews() {
         btn_info.setOnClickListener {
-            createAndShowInfoDialog()
+            createAndShowInfoDialog(R.string.publisher_info_text,R.string.publisher_info_title)
         }
     }
 
@@ -180,15 +180,15 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
         return super.onOptionsItemSelected(item)
     }
 
-    private fun createAndShowInfoDialog() {
+    protected fun createAndShowInfoDialog(textResourceId : Int, titleResourceId : Int) {
         val view = View.inflate(this, R.layout.dialog_alert, null)
         val textView = view.findViewById<TextView>(R.id.message)
         textView.movementMethod = LinkMovementMethod.getInstance()
-        textView.setText(R.string.publisher_info_text)
+        textView.setText(textResourceId)
 
         val builder = AlertDialog.Builder(this)
 
-        builder.setTitle(R.string.publisher_info_title)
+        builder.setTitle(titleResourceId)
                 .setView(view)
                 .setNeutralButton(
                         R.string.close

@@ -43,6 +43,14 @@ class AzureMqttPublisherActivity : BaseMqttPublisherActivity<AzureMqttPublishMod
         }
     }
 
+    override fun initViews() {
+        super.initViews()
+        iot_credentials_info.setOnClickListener {
+            createAndShowInfoDialog(R.string.iot_hub_info_text,R.string.iot_hub_info_title)
+        }
+    }
+
+
     override fun addOrUpdateRelation(deviceId: String, publisherId: Long): Completable {
         return azureMqttPublisherViewModel.addOrUpdatePublisherDeviceRelation(
                 deviceId = deviceId,
