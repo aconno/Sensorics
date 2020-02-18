@@ -37,4 +37,5 @@
     <dimen name="graph_line_width">1dp</dimen>
     <dimen name="graph_circle_radius">1dp</dimen>
     <dimen name="border_height">1dp</dimen>
+    <dimen name="testing_scanning_source_progress_bar_size">100dp</dimen>
 </resources>

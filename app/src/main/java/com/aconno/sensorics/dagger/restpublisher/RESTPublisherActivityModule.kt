@@ -1,7 +1,6 @@
 package com.aconno.sensorics.dagger.restpublisher
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.ifttt.RestPublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
