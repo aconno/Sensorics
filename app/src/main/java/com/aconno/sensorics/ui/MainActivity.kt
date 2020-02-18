@@ -333,7 +333,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         permissionViewModel.checkGrantedPermission(grantResults, requestCode)
     }
 
-    override fun permissionAccepted(actionCode: Int) {
+    override fun onPermissionGranted(actionCode: Int) {
         if (actionCode == SensoricsPermission.ACCESS_FINE_LOCATION.code) {
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
@@ -342,22 +342,17 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    override fun permissionDenied(actionCode: Int) {
-        //TODO: Make this nice...
-        Snackbar.make(
-            content_container,
-            getString(R.string.snackbar_permission_message),
-            Snackbar.LENGTH_LONG
-        ).setAction(getString(R.string.snackbar_settings)) {
-            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            intent.data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-            startActivity(intent)
-        }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+    override fun onPermissionDenied(actionCode: Int) {
+        Snackbar.make(content_container, R.string.snackbar_permission_message, Snackbar.LENGTH_LONG)
+            .setAction(R.string.snackbar_settings) {
+                startActivity(
+                    Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                    }
+                )
+            }
+            .setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
             .show()
-    }
-
-    override fun showRationale(actionCode: Int) {
-
     }
 
     fun onDashboardClicked() {

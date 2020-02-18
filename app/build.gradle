@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
+apply from: "../version.gradle"
 
 android {
     compileSdkVersion compile_sdk_version
@@ -12,8 +13,8 @@ android {
         manifestPlaceholders = [fabricAPIKey: sensorics_fabricKey]
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode sensorics_version_code
-        versionName sensorics_version_name
+        versionCode generateVersionCode()
+        versionName generateVersionName()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         flavorDimensions "version"

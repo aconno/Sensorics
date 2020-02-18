@@ -20,6 +20,7 @@ class ActionAdapter(
     private val longClickListener: OnListItemLongClickListener?,
     private val itemSelectedListener : OnListItemSelectedListener? = null
 ) : RecyclerView.Adapter<ActionAdapter.ViewHolder>() {
+    var checkedChangeListener: OnCheckedChangeListener? = null
     var itemSelectionEnabled = false
         private set
     private var itemSelectedMap : MutableMap<Long, Boolean> = HashMap()//maps item id to current item selection state
@@ -105,18 +106,6 @@ class ActionAdapter(
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(action: Action) {
-            if (!action.active) {
-                val color = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    view.context.resources.getColor(R.color.inactive_action_background_color, view.context.theme)
-                } else {
-
-                    view.context.resources.getColor(R.color.inactive_action_background_color)
-                }
-                view.constraint_layout_action.setBackgroundColor(color)
-            } else {
-                view.constraint_layout_action.setBackgroundColor(Color.TRANSPARENT) // TODO: If default changed change it
-            }
-
             val selectionButton = itemView.findViewById<CheckBox>(R.id.item_selected)
             with(selectionButton) {
                 visibility = if (itemSelectionEnabled) {
@@ -128,10 +117,16 @@ class ActionAdapter(
                 isChecked = itemSelectedMap[action.id] ?: false
             }
 
+
             view.text_name.text = action.name
             view.text_mac_address.text = action.device.macAddress
             view.text_condition.text = action.condition.toString(view.context)
             view.text_outcome.text = action.outcome.toString()
+            view.action_switch.isChecked = action.active
+
+            view.action_switch.setOnCheckedChangeListener { _, isChecked ->
+                checkedChangeListener?.onCheckedChange(isChecked, action)
+            }
             view.setOnClickListener {
                 if(itemSelectionEnabled) {
                     selectionButton.isChecked = !selectionButton.isChecked
@@ -151,6 +146,10 @@ class ActionAdapter(
             }
             view.tag = action.id
         }
+    }
+
+    interface OnCheckedChangeListener {
+        fun onCheckedChange(checked: Boolean, action: Action)
     }
 
 
