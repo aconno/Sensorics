@@ -2,8 +2,10 @@ package com.aconno.sensorics.device.beacon
 
 import com.aconno.sensorics.device.bluetooth.tasks.GenericTask
 import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
+import com.aconno.sensorics.domain.migrate.flatten
 import com.aconno.sensorics.domain.migrate.getObjectOrNull
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
 abstract class Beacon(val taskProcessor: BluetoothTaskProcessor) {
@@ -114,6 +116,21 @@ abstract class Beacon(val taskProcessor: BluetoothTaskProcessor) {
             this.add("parameters", this@Beacon.parameters.toJson())
             this.add("slots", this@Beacon.slots.toJson())
             this.add("arbitraryData", arbitraryData.toJson())
+            this.add("eventableParams",JsonObject().apply {
+                add("params",JsonArray().apply {
+                    parameters.flatten().filter { it.eventable }.forEach {
+                        val paramObject = JsonObject()
+                        paramObject.addProperty("id",it.id)
+                        paramObject.addProperty("name",it.name)
+                        add(paramObject)
+                    }
+                })
+                add("signs",JsonArray().apply {
+                    Slot.AdvertisingModeParameters.Sign.values().forEach {
+                        add(it.name)
+                    }
+                })
+            })
         }
     }
 
