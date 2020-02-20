@@ -1,6 +1,9 @@
 # Changelog
 
 ## [Unreleased]
+
+## [5.3.0]
+- Add Azure IoT Hub support
 - Add publisher backend share
 - Add actions import, export, and share
 - Chnage backend resource url
