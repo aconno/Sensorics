@@ -202,7 +202,7 @@ function initListeners() {
 
     $(document).on("input", "#advertising_interval_time_range", function() {
         let index = $(this).val();
-        console.log('range index is '+index )
+        console.log('range index is ' + index)
         $('#advertising_interval_time').text(timeToHighestOrder(INTERVAL_MS[index]));
         getUpdatedSlot();
     });
@@ -251,7 +251,7 @@ function hex_to_ascii(str1) {
 
 function init(slotJson, slotIndex) {
     index = slotIndex;
-    beacon = JSON.parse(slotJson);
+    beacon = JSON.parse(slotJson.replace(/\\u0000/g, '')); 
 
     switch (beacon.slots.slots[index].type) {
         case FrameType.UID:
@@ -392,12 +392,15 @@ function getUpdatedSlot() {
         let parameterId = parseInt(parameter.split('-')[0]);
         let sign = $('#ddl-menu-button-eventable-params-sings').html();
         let intValue = parseInt($('#eventable-params-value').val());
+        if (!intValue) {
+            intValue = 0;
+        }
         beacon.slots.slots[index].advertisingModeParameters.parameterId = parameterId;
         beacon.slots.slots[index].advertisingModeParameters.sign = sign;
         beacon.slots.slots[index].advertisingModeParameters.thresholdInt = intValue;
     } else {
-      let rangePosition = $('#advertising_interval_time_range').val();
-      let adInterval = INTERVAL_MS[rangePosition];
+        let rangePosition = $('#advertising_interval_time_range').val();
+        let adInterval = INTERVAL_MS[rangePosition];
         beacon.slots.slots[index].advertisingModeParameters.interval = adInterval
     }
 

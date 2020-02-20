@@ -80,11 +80,13 @@ abstract class Slot(
     private var dirty: Boolean = false
         get() = field || !contentBytes().contentEquals(rawAdvertisingContent)
 
-    constructor(value: ByteArray) : this(Type.valueOf(
-        ValueConverters.ASCII_STRING.deserialize(
-            value.copyOfRange(0, value.stringLength()), order = ByteOrder.BIG_ENDIAN
+    constructor(value: ByteArray) : this(
+        Type.valueOf(
+            ValueConverters.ASCII_STRING.deserialize(
+                value.copyOfRange(0, value.stringLength()), order = ByteOrder.BIG_ENDIAN
+            )
         )
-    ))
+    )
 
     /**
      * Gets the type of this slot
@@ -148,6 +150,11 @@ abstract class Slot(
 
     @Throws(IllegalArgumentException::class)
     fun loadChangesFromJson(obj: JsonObject) {
+
+        val name = obj.getStringOrNull("name") ?: throw throwMissingArg("name")
+
+        val active = obj.getBooleanOrNull("active") ?: throw throwMissingArg("active")
+
         val type = obj.getStringOrNull("type")
             ?: throwMissingArg("Type")
 
@@ -167,9 +174,11 @@ abstract class Slot(
         val packetCount = obj.getNumberOrNull("packetCount")
             ?: throw IllegalArgumentException("packet count is missing in slot or it is not a number")
 
+        this.name = name
         this.setType(Type.valueOf(type))
         this.advertisingContent.clear()
         this.advertisingContent.putAll(advertisingContent)
+        this.active = active
         this.txPower = getAsGivenTypeOrNull(txPower.toString(), Byte::class.java)
             ?: throw IllegalArgumentException("txPower is $txPower and it is not a byte")
         this.packetCount = getAsGivenTypeOrNull(packetCount.toString(), Int::class.java)
@@ -185,7 +194,7 @@ abstract class Slot(
                         ?: throwMissingArg("advertising parameter id")
                     val sign = it.getStringOrNull("sign") ?: throwMissingArg("advertising sign")
                     val thresholdInt =
-                        it.getNumberOrNull("thresholdInt") ?: throwMissingArg("advertising sign")
+                        it.getNumberOrNull("thresholdInt") ?: throwMissingArg("threshold")
                     // todo add threshold float
 
                     advertisingModeParameters.parameterId =
@@ -463,7 +472,7 @@ abstract class Slot(
         const val KEY_ADVERTISING_CONTENT_IBEACON_MINOR = "ADVERTISING_CONTENT_IBEACON_MINOR"
         const val KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID = "ADVERTISING_CONTENT_UID_NAMESPACE_ID"
         const val KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID = "ADVERTISING_CONTENT_UID_INSTANCE_ID"
-        const val KEY_ADVERTISING_CONTENT_URL_URL = "ADVERTISING_CONTENT_UID_URL_URL"
+        const val KEY_ADVERTISING_CONTENT_URL_URL = "ADVERTISING_CONTENT_URL_URL"
         const val KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM = "ADVERTISING_CONTENT_CUSTOM_CUSTOM"
 
 
