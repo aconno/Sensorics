@@ -45,8 +45,6 @@ class InputToOutcomesUseCase(
             it.device.macAddress == input.macAddress
         }.filter { action ->
             action.active
-        }.filter {
-            !(previousDeviceConditions[it.id] ?: false)
         }.filter { action ->
             // Suppressing because of the last else if branch, I wanted it to be readable
             @Suppress("RedundantIf")
@@ -75,9 +73,11 @@ class InputToOutcomesUseCase(
                 false
             }
         }.filter { action ->
-            action.condition.isSatisfied(input).also {
-                previousDeviceConditions[action.id] = it
-            }
+            action.condition.isSatisfied(input)?.let { currentResult ->
+                val cachedPreviousResult = previousDeviceConditions[action.id]
+                previousDeviceConditions[action.id] = currentResult
+                (cachedPreviousResult == false) && currentResult
+            } ?: false
         }.map { action ->
             action.outcome
         }.toList().let { outcomes ->
