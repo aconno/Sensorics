@@ -50,6 +50,10 @@ android {
             dimension "version"
         }
     }
+
+    packagingOptions {
+        exclude 'thirdpartynotice.txt'
+    }
 }
 dependencies {
     implementation project(':domain')

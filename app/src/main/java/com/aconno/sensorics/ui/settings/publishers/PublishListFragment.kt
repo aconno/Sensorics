@@ -9,18 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.*
 import com.aconno.sensorics.R
-import com.aconno.sensorics.domain.ifttt.BasePublish
-import com.aconno.sensorics.domain.ifttt.GooglePublish
-import com.aconno.sensorics.domain.ifttt.MqttPublish
-import com.aconno.sensorics.domain.ifttt.RestPublish
+import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.ifttt.outcome.PublishType
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToObjectsUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToPublishersUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
-import com.aconno.sensorics.model.BasePublishModel
-import com.aconno.sensorics.model.GooglePublishModel
-import com.aconno.sensorics.model.MqttPublishModel
-import com.aconno.sensorics.model.RestPublishModel
+import com.aconno.sensorics.model.*
 import com.aconno.sensorics.model.mapper.*
 import com.aconno.sensorics.ui.ShareableItemsListFragment
 import com.aconno.sensorics.ui.SwipeToDeleteCallback
@@ -40,8 +34,9 @@ import javax.inject.Inject
  * Activities containing this fragment MUST implement the
  * [PublishListFragment.OnListFragmentClickListener] interface.
  */
-class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRecyclerViewAdapter.OnListItemLongClickListener,
-            PublishRecyclerViewAdapter.OnListItemSelectedListener{
+class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
+    PublishRecyclerViewAdapter.OnListItemLongClickListener,
+    PublishRecyclerViewAdapter.OnListItemSelectedListener {
 
     private var snackbar: Snackbar? = null
 
@@ -61,6 +56,9 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
     lateinit var mqttPublishModelDataMapper: MqttPublishModelDataMapper
 
     @Inject
+    lateinit var azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
+
+    @Inject
     lateinit var googlePublishModelDataMapper: GooglePublishModelDataMapper
 
     @Inject
@@ -74,8 +72,8 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
     private var listener: OnListFragmentClickListener? = null
     private var listBasePublish: MutableList<BasePublishModel> = mutableListOf()
     private var selectedItem: BasePublishModel? = null
-    private var selectionStateListener : ItemSelectionStateListener? = null
-    private var savedInstanceStateSelectedItems : LongArray? = null
+    private var selectionStateListener: ItemSelectionStateListener? = null
+    private var savedInstanceStateSelectedItems: LongArray? = null
 
     override val exportedFileName: String = "backend.json"
 
@@ -103,12 +101,13 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
             listBasePublish,
             listener,
             this,
-                this
+            this
         )
-        if(savedInstanceState != null) {
-            if(savedInstanceState.getBoolean(ITEM_SELECTION_ENABLED_KEY)) {
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean(ITEM_SELECTION_ENABLED_KEY)) {
                 enableItemSelection()
-                savedInstanceStateSelectedItems = savedInstanceState.getLongArray(SELECTED_ITEMS_KEY)
+                savedInstanceStateSelectedItems =
+                    savedInstanceState.getLongArray(SELECTED_ITEMS_KEY)
             }
 
         }
@@ -196,12 +195,12 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
     }
 
     override fun onListItemLongClick(item: BasePublishModel?) {
-        if(!publishAdapter.itemSelectionEnabled) {
+        if (!publishAdapter.itemSelectionEnabled) {
             enableItemSelection(item)
         }
     }
 
-    private fun enableItemSelection(initiallySelectedItem : BasePublishModel? = null) {
+    private fun enableItemSelection(initiallySelectedItem: BasePublishModel? = null) {
         publishAdapter.enableItemSelection(initiallySelectedItem)
         selectionStateListener?.onSelectedItemsCountChanged(publishAdapter.getNumberOfSelectedItems())
         selectionStateListener?.onItemSelectionStateEntered()
@@ -218,7 +217,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
 
 
     override fun resolveActionBarEvent(item: MenuItem?) {
-        when(item?.itemId) {
+        when (item?.itemId) {
             android.R.id.home -> exitItemSelectionState()
             R.id.action_select_all -> selectAllItems()
             else -> super.resolveActionBarEvent(item)
@@ -230,7 +229,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
     }
 
     override fun getItemsForExport(): List<BasePublish> {
-        if(publishAdapter.itemSelectionEnabled) {
+        if (publishAdapter.itemSelectionEnabled) {
             return publishAdapter.getSelectedItems().map { mapModelToPublisher(it) }
         }
         return getItems()
@@ -243,11 +242,12 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
         }.toList()
     }
 
-    private fun mapModelToPublisher(model : BasePublishModel) : BasePublish {
+    private fun mapModelToPublisher(model: BasePublishModel): BasePublish {
         return when (model) {
             is GooglePublishModel -> googlePublishModelDataMapper.transform(model)
             is RestPublishModel -> restPublishModelDataMapper.transform(model)
             is MqttPublishModel -> mqttPublishModelDataMapper.toMqttPublish(model)
+            is AzureMqttPublishModel -> azureMqttPublishModelDataMapper.toAzureMqttPublish(model)
             else -> throw IllegalArgumentException("Invalid publish model.")
         }
     }
@@ -258,6 +258,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
                 PublishType.GOOGLE -> googlePublishDataMapper.transform(it as GooglePublish)
                 PublishType.REST -> restPublishDataMapper.transform(it as RestPublish)
                 PublishType.MQTT -> mqttPublishModelDataMapper.toMqttPublishModel(it as MqttPublish)
+                PublishType.AZURE_MQTT -> azureMqttPublishModelDataMapper.toAzureMqttPublishModel(it as AzureMqttPublish)
                 else -> throw IllegalArgumentException("Invalid publish model.")
             }
         }.toList()
@@ -271,7 +272,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
         } else {
             throw RuntimeException("$context must implement OnListFragmentClickListener")
         }
-        if(context is ItemSelectionStateListener) {
+        if (context is ItemSelectionStateListener) {
             selectionStateListener = context
         }
     }
@@ -299,7 +300,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
     private fun initPublishList(actions: List<BasePublishModel>) {
         empty_view.visibility = View.GONE
         listBasePublish.addAll(actions)
-        if(savedInstanceStateSelectedItems != null && publishAdapter.itemSelectionEnabled) {
+        if (savedInstanceStateSelectedItems != null && publishAdapter.itemSelectionEnabled) {
             publishAdapter.setItemsAsSelected(publishAdapter.getAllPublishers().filter { it.id in savedInstanceStateSelectedItems!! })
         }
 
@@ -313,6 +314,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
                 is GooglePublishModel -> publishListViewModel.delete(model)
                 is RestPublishModel -> publishListViewModel.delete(model)
                 is MqttPublishModel -> publishListViewModel.delete(model)
+                is AzureMqttPublishModel -> publishListViewModel.delete(model)
                 else -> throw IllegalArgumentException("Illegal argument provided.")
             }.also {
                 addDisposable(it)
@@ -349,12 +351,15 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
                                 is MqttPublish -> {
                                     publishListViewModel.getMqttPublishModelById(id)
                                 }
+                                is AzureMqttPublish -> {
+                                    publishListViewModel.getAzureMqttPublishModelById(id)
+                                }
                                 else -> Maybe.error(IllegalArgumentException("Invalid Publish"))
                             }.subscribeOn(Schedulers.io())
                         }
                 }.observeOn(AndroidSchedulers.mainThread())
                 .toList()
-                .subscribe({list ->
+                .subscribe({ list ->
                     if (offset == 0) {
                         initPublishList(list)
                     } else {
@@ -364,17 +369,19 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
                         publishAdapter.notifyItemRangeChanged(offset, list.size)
                     }
                 }, {
-                    Snackbar.make(container_fragment,
+                    Snackbar.make(
+                        container_fragment,
                         getString(R.string.import_error),
-                        Snackbar.LENGTH_SHORT).show()
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }).also {
                     addDisposable(it)
                 }
         }
     }
 
-    fun onBackButtonPressed() : Boolean { //returns true if it has handled the back button press
-        if(publishAdapter.itemSelectionEnabled) {
+    fun onBackButtonPressed(): Boolean { //returns true if it has handled the back button press
+        if (publishAdapter.itemSelectionEnabled) {
             exitItemSelectionState()
             return true
         }
@@ -393,7 +400,10 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
 
         outState.putBoolean(ITEM_SELECTION_ENABLED_KEY, publishAdapter.itemSelectionEnabled)
         if (publishAdapter.itemSelectionEnabled) {
-            outState.putLongArray(SELECTED_ITEMS_KEY, publishAdapter.getSelectedItems().map { it.id }.toLongArray())
+            outState.putLongArray(
+                SELECTED_ITEMS_KEY,
+                publishAdapter.getSelectedItems().map { it.id }.toLongArray()
+            )
         }
     }
 
@@ -423,7 +433,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(), PublishRe
     interface ItemSelectionStateListener {
         fun onItemSelectionStateEntered()
         fun onItemSelectionStateExited()
-        fun onSelectedItemsCountChanged(selectedItems : Int)
+        fun onSelectedItemsCountChanged(selectedItems: Int)
     }
 }
 

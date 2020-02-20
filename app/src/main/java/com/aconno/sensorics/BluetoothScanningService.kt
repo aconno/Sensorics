@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.aconno.sensorics.data.publisher.AzureMqttPublisher
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.data.publisher.RestPublisher
@@ -17,6 +18,7 @@ import com.aconno.sensorics.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.GetAllEnabledAzureMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllEnabledGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllEnabledMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllEnabledRestPublishUseCase
@@ -69,6 +71,9 @@ class BluetoothScanningService : DaggerService() {
     lateinit var getAllEnabledMqttPublishUseCase: GetAllEnabledMqttPublishUseCase
 
     @Inject
+    lateinit var getAllEnabledAzureMqttPublishUseCase: GetAllEnabledAzureMqttPublishUseCase
+
+    @Inject
     lateinit var getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase
 
     @Inject
@@ -76,6 +81,9 @@ class BluetoothScanningService : DaggerService() {
 
     @Inject
     lateinit var getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase
+
+    @Inject
+    lateinit var getDevicesThatConnectedWithAzureMqttPublishUseCase: GetDevicesThatConnectedWithAzureMqttPublishUseCase
 
     @Inject
     lateinit var getRestHeadersByIdUseCase: GetRestHeadersByIdUseCase
@@ -261,7 +269,8 @@ class BluetoothScanningService : DaggerService() {
                 Observable.merge(
                     getGooglePublisherObservable(),
                     getRestPublisherObservable(),
-                    getMqttPublishers()
+                    getMqttPublishers(),
+                    getAzureMqttPublishers()
                 )
                     .toList()
                     .observeOn(AndroidSchedulers.mainThread())
@@ -336,11 +345,24 @@ class BluetoothScanningService : DaggerService() {
         )
     }
 
+    private fun getAzureMqttPublishers(): Observable<Publisher> {
+        return Observable.fromIterable(
+            getAllEnabledAzureMqttPublishUseCase.execute().map(this::basePublishToAzureMqttPublisher)
+        )
+    }
+
     private fun basePublishToMqttPublisher(basePublish: BasePublish): Publisher {
         val devices = getDevicesThatConnectedWithMqttPublishUseCase.execute(basePublish.id)
             ?: listOf()
 
         return MqttPublisher(this, basePublish as MqttPublish, devices, syncRepository)
+    }
+
+    private fun basePublishToAzureMqttPublisher(basePublish: BasePublish): Publisher {
+        val devices = getDevicesThatConnectedWithAzureMqttPublishUseCase.execute(basePublish.id)
+            ?: listOf()
+
+        return AzureMqttPublisher(basePublish as AzureMqttPublish, devices, syncRepository)
     }
 
     override fun onDestroy() {

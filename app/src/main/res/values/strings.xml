@@ -337,6 +337,24 @@
     <string name="share_all_as_file">Share all as JSON file</string>
     <string name="snackbar_scan_failed_already_started">Scan already started</string>
     <string name="snackbar_scan_failed">Scan failed!</string>
+    <string name="azure_mqtt_backend">Azure MQTT Backend</string>
+    <string name="iot_hub_name">IOT hub name</string>
+    <string name="device_id">Device id</string>
+    <string name="shared_access_key">Shared access key</string>
+    <string name="iot_hub_information">IOT Hub Credentials</string>
+    <string name="iot_hub_info_text" formatted="true">
+        In order to let Sensorics access your Azure IOT hub, you need to provide the required credentials. If you don\'t have an Azure IOT hub, you can find information on how to create it <a href="https://docs.microsoft.com/en-us/azure/iot-hub/quickstart-send-telemetry-android#create-an-iot-hub">here</a>.
+        \n\n
+        To create the required credentials, you need to register your Android device on your Azure IOT hub. That way you will get the required credentials - your device id and a shared access key.
+        \n\n
+        You can find information on how to register your Android device on Azure IOT hub using Azure Cloud Shell <a href="https://docs.microsoft.com/en-us/azure/iot-hub/quickstart-send-telemetry-android#register-a-device">here</a>. If you don\'t want to use Azure Cloud Shell, you can achieve the same thing by installing Azure CLI on your PC and run the same commands in your terminal/command prompt as you would run in Azure Cloud Shell following the instructions in the given link. Find information on how to install Azure CLI on your operating system <a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">here</a>.
+        \n\n
+        Have in mind that if you want to let Sensorics access your hub from multiple Android devices at the same time, you need to register each of them because it is not possible to connect to an Azure IOT hub using the same device id from multiple devices at the same time.
+    </string>
+
+    <string name="iot_hub_info_title"><b>IOT Hub Information</b></string>
+
+
     <string name="mqtt_server_uri">MQTT server URI</string>
     <string translatable="false" name="mqtt_client_id">MQTT client id</string>
 
