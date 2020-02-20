@@ -185,6 +185,15 @@ function onlyPositiveNumberFilter(event) {
     return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 0
 }
 
+function isNumber(evt) {
+    evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    return true;
+}
+
 function generateEventableParams(eventableParams, defaultEventParam, sings, defaultSing, valueName) {
     return '<div id="eventable-params-body">' +
         generateEnums(eventableParams, "eventable-params", "", defaultEventParam, 0) +

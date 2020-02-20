@@ -171,9 +171,11 @@ function initListeners() {
         getUpdatedSlot();
     });
 
-    $('#eventable-params-value').on('change keyup paste', function() {
+    $('#eventable-params-value').on('keyup paste', function() {
         getUpdatedSlot();
     });
+
+    $('#eventable-params-value').on('keypress', isNumber);
 
     $(document).on("change", "#toggle-advertise-switch", function() {
         getUpdatedSlot();
@@ -251,7 +253,7 @@ function hex_to_ascii(str1) {
 
 function init(slotJson, slotIndex) {
     index = slotIndex;
-    beacon = JSON.parse(slotJson.replace(/\\u0000/g, '')); 
+    beacon = JSON.parse(slotJson.replace(/\\u0000/g, ''));
 
     switch (beacon.slots.slots[index].type) {
         case FrameType.UID:
@@ -363,6 +365,7 @@ function insertEventableParams() {
     }
 
     params = generateEventableParams(beacon.eventableParams.params.flatMap(element => element.id + '-' + element.name), eventableParam, beacon.eventableParams.signs, sign, "Value");
+
 
     $('#base_parameter').append(params);
 
