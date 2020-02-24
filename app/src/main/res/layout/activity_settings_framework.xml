@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -16,18 +15,9 @@
         android:elevation="0dp"
         tools:title="Title" />
 
-    <com.astuetz.PagerSlidingTabStrip
-        android:id="@+id/tabs"
-        android:visibility="invisible"
+    <FrameLayout
+        android:id="@+id/content_container"
         android:layout_width="match_parent"
-        android:background="?attr/colorPrimary"
-        app:pstsTabTextColor="@color/primaryTextColor"
-        android:layout_height="?attr/actionBarSize" />
-
-    <com.aconno.sensorics.ui.beacon_settings.ViewPagerForHtml
-        android:id="@+id/vp_beacon"
-        android:layout_width="match_parent"
-        android:visibility="invisible"
         android:layout_height="match_parent" />
 
 </LinearLayout>

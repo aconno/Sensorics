@@ -10,9 +10,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.*
-import com.aconno.sensorics.dagger.beacon_settings.BeaconGeneralFragmentListener
+import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsFragmentListener
+import com.aconno.sensorics.ui.beacon_settings.fragments.BeaconSettingsFragment
 import com.aconno.sensorics.ui.dialogs.CancelBtnSchedulerProgressDialog
 import com.aconno.sensorics.ui.dialogs.PasswordDialog
 import com.aconno.sensorics.viewmodel.BeaconSettingsState
@@ -24,17 +26,13 @@ import kotlinx.android.synthetic.main.activity_settings_framework.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentListener {
+class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragmentListener {
 
     private val handler: Handler = Handler()
     private var progressDialog: CancelBtnSchedulerProgressDialog? = null
     private var passwordDialog: Dialog? = null
     private var indefiniteSnackBar: Snackbar? = null
     private var deviceMac: String = ""
-
-    private val beaconSettingsPagerAdapter: BeaconSettingsPagerAdapter by lazy {
-        BeaconSettingsPagerAdapter(supportFragmentManager)
-    }
 
     @Inject
     lateinit var settingsTransporter: BeaconSettingsTransporterSharedViewModel
@@ -45,6 +43,15 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings_framework)
+
+        val fm = supportFragmentManager
+        if (fm != null) {
+            var fragment: Fragment? = fm.findFragmentById(R.id.content_container)
+            if (fragment == null) {
+                fragment = BeaconSettingsFragment.newInstance()
+                fm.beginTransaction().add(R.id.content_container, fragment).commit()
+            }
+        }
 
         setupUI()
         subscribeOnData()
@@ -101,12 +108,6 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
         /*Set titlebar */
         supportActionBar?.subtitle = deviceMac
 
-        vp_beacon.adapter = beaconSettingsPagerAdapter
-        beaconSettingsPagerAdapter.notifyDataSetChanged()
-
-        // Bind the tabs to the ViewPager
-        tabs.setViewPager(vp_beacon)
-
         /*Set titlebar */
         supportActionBar?.subtitle = deviceMac
 
@@ -121,11 +122,6 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
         viewModel.beaconLiveData.observe(this, Observer {
             it?.let { beaconData ->
                 Timber.i("handle beacon data. slots count ${beaconData.slotCount}")
-                if (!isAdapterInitializedWithData()) {
-                    tabs.visible()
-                    vp_beacon.visible()
-                    redrawPageAdapter(beaconData.slotCount)
-                }
                 settingsTransporter.sendBeaconJsonToObservers(beaconData.beaconJson)
             }
         })
@@ -194,22 +190,12 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
         }.exhaustive
     }
 
-    private fun isAdapterInitializedWithData() = beaconSettingsPagerAdapter.totalCount != 0
-
-
-    private fun redrawPageAdapter(slotsCount: Int) {
-        beaconSettingsPagerAdapter.slotCount = slotsCount
-        beaconSettingsPagerAdapter.notifyDataSetChanged()
-    }
-
     private fun cancelScheduleEvents() = handler.removeCallbacksAndMessages(null)
 
     private fun scheduleCleaningServiceAndScreen(timeMs: Long) {
         handler.postDelayed({
             disconnectFromDeviceIfNeeded()
             closeAllDialogs()
-            clearPages()
-            tabs.invisible()
         }, timeMs)
     }
 
@@ -219,10 +205,6 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconGeneralFragmentL
         }
     }
 
-    private fun clearPages() {
-        beaconSettingsPagerAdapter.clear()
-        beaconSettingsPagerAdapter.notifyDataSetChanged()
-    }
 
     private fun closeAllDialogs() {
         closeProgressDialog()

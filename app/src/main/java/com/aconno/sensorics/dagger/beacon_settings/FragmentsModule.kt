@@ -7,19 +7,8 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class FragmentsModule {
-    @FragmentScope
-    @ContributesAndroidInjector
-    abstract fun bindBeaconSettingsSlotFragment(): BeaconSettingsSlotFragment
 
     @FragmentScope
     @ContributesAndroidInjector
-    abstract fun bindBeaconSettingsGeneralFragment(): BeaconSettingsGeneralFragment
-
-    @FragmentScope
-    @ContributesAndroidInjector
-    abstract fun bindBeaconSettingsArbitraryDataHtmlFragment(): BeaconSettingsArbitraryDataFragment
-
-    @FragmentScope
-    @ContributesAndroidInjector
-    abstract fun bindBeaconSettingsParametersFragment(): BeaconSettingsParametersFragment
+    abstract fun bindBeaconSettingsFragment(): BeaconSettingsFragment
 }

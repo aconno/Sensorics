@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.beacon_settings
 
-interface BeaconGeneralFragmentListener {
+interface BeaconSettingsFragmentListener {
     fun updateFirmware()
     fun resetFactory()
     fun powerOff()
