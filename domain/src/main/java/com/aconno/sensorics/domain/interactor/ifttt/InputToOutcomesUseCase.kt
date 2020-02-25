@@ -44,6 +44,8 @@ class InputToOutcomesUseCase(
         actions.asSequence().filter {
             it.device.macAddress == input.macAddress
         }.filter { action ->
+            action.condition.readingType == input.type
+        }.filter { action ->
             action.active
         }.filter { action ->
             // Suppressing because of the last else if branch, I wanted it to be readable
@@ -73,11 +75,11 @@ class InputToOutcomesUseCase(
                 false
             }
         }.filter { action ->
-            action.condition.isSatisfied(input)?.let { currentResult ->
+            action.condition.isSatisfied(input).let { currentResult ->
                 val cachedPreviousResult = previousDeviceConditions[action.id]
                 previousDeviceConditions[action.id] = currentResult
                 (cachedPreviousResult == false) && currentResult
-            } ?: false
+            }
         }.map { action ->
             action.outcome
         }.toList().let { outcomes ->

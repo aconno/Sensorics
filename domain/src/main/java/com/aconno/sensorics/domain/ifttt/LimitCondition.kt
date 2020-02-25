@@ -6,16 +6,12 @@ class LimitCondition(
     override val type: Int
 ) : Condition {
 
-    override fun isSatisfied(input: Input): Boolean? {
-        return if (input.type == readingType) {
-            when (type) {
-                LESS_THAN -> input.value <= limit
-                MORE_THAN -> input.value >= limit
-                EQUAL_TO -> input.value == limit
-                else -> false
-            }
-        } else {
-            null
+    override fun isSatisfied(input: Input): Boolean {
+        return when (type) {
+            LESS_THAN -> input.value <= limit
+            MORE_THAN -> input.value >= limit
+            EQUAL_TO -> input.value == limit
+            else -> false
         }
     }
 
