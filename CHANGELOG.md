@@ -21,4 +21,5 @@
 - Small code improvements
 
 [Unreleased]: https://github.com/aconno/Sensorics/compare/master...develop
+[5.3.0]: https://github.com/aconno/Sensorics/releases/tag/v5.3.0
 
