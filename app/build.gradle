@@ -22,6 +22,8 @@ android {
     buildTypes {
 
         debug {
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
             applicationVariants.all { variant ->
                 variant.outputs.all {
                     outputFileName =
@@ -38,17 +40,6 @@ android {
 
     lintOptions {
         checkReleaseBuilds false
-    }
-
-    productFlavors {
-        dev {
-            dimension "version"
-            applicationIdSuffix ".dev"
-            versionNameSuffix "-dev"
-        }
-        prod {
-            dimension "version"
-        }
     }
 
     packagingOptions {
