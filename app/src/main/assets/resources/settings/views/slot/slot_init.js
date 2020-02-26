@@ -1,5 +1,5 @@
 //GLOBAL Slot object
-let beacon;
+//let beacon;
 let index;
 let customContnetnTimeoutId;
 let urlContentTiemoutId;
@@ -13,7 +13,7 @@ const INTERVAL_MS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000
     61200000, 64800000, 68400000, 72000000, 75600000, 79200000, 82800000, 86400000
 ];
 
-$(document).ready(function() {
+function onSlotDocumentReady(slot_index) {
     if (inited) {
         return;
     }
@@ -33,7 +33,7 @@ $(document).ready(function() {
         $(this).parent().parent().siblings(".btn:first-child").html($(this).text() + ' <span class="caret"></span>');
         $(this).parent().parent().siblings(".btn:first-child").val($(this).text());
     });
-});
+};
 
 function deafultTypeClicked() {
     $("#advertising_content").empty();

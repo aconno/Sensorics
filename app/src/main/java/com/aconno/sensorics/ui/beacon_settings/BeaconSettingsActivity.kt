@@ -44,14 +44,17 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings_framework)
 
-        val fm = supportFragmentManager
-        if (fm != null) {
-            var fragment: Fragment? = fm.findFragmentById(R.id.content_container)
-            if (fragment == null) {
-                fragment = BeaconSettingsFragment.newInstance()
-                fm.beginTransaction().add(R.id.content_container, fragment).commit()
+        if(savedInstanceState == null) {
+            val fm = supportFragmentManager
+            if (fm != null) {
+                var fragment: Fragment? = fm.findFragmentById(R.id.content_container)
+                if (fragment == null) {
+                    fragment = BeaconSettingsFragment.newInstance()
+                    fm.beginTransaction().add(R.id.content_container, fragment).commit()
+                }
             }
         }
+
 
         setupUI()
         subscribeOnData()

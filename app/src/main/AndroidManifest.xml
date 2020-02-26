@@ -93,6 +93,7 @@
         <activity android:name=".ui.cache.CacheActivity" />
         <activity
             android:name=".ui.beacon_settings.BeaconSettingsActivity"
+            android:windowSoftInputMode="adjustNothing"
             android:label="@string/beacon_settings" />
 
 

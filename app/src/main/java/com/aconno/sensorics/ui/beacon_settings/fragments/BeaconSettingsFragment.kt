@@ -28,7 +28,7 @@ open class BeaconSettingsFragment() : DaggerFragment() {
         ViewModelProviders.of(requireActivity()).get(BeaconSettingsTransporterSharedViewModel::class.java)
     }
 
-    protected var jsGenerator = JavascriptCallGenerator()
+    private var jsGenerator = JavascriptCallGenerator()
 
     /**
      * When we invoke [sendBeaconsUpdatedJson] method it sends data to the settings activity. Then
@@ -39,7 +39,7 @@ open class BeaconSettingsFragment() : DaggerFragment() {
     /**
      * In some cases we need retrieve data after updating it in current fragment
      */
-    protected open var receiveInfoAfterSelfUpdating = false
+    protected open var receiveInfoAfterSelfUpdating = true
 
     inner class SettingsFragmentsWebViewClient : WebViewClient() {
         private var isPageAlreadyLoaded = false
@@ -73,7 +73,7 @@ open class BeaconSettingsFragment() : DaggerFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_beacon_settings,container)
+        return inflater.inflate(R.layout.fragment_beacon_settings,container,false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,7 +84,7 @@ open class BeaconSettingsFragment() : DaggerFragment() {
             web_view.restoreState(savedInstanceState)
     }
 
-    open fun setupVebViewWithWebClient(mandatoryWebViewClient: WebViewClient) {
+    private fun setupVebViewWithWebClient(mandatoryWebViewClient: WebViewClient) {
         with(web_view) {
             settings.builtInZoomControls = false
             settings.javaScriptEnabled = true
@@ -99,7 +99,7 @@ open class BeaconSettingsFragment() : DaggerFragment() {
         }
     }
 
-    open fun receivedBeaconInfo(beaconInfo: String) {
+    fun receivedBeaconInfo(beaconInfo: String) {
         web_view?.loadUrl(
             jsGenerator.generateCall("setBeaconInformation", beaconInfo)
         )
@@ -164,7 +164,7 @@ open class BeaconSettingsFragment() : DaggerFragment() {
 
     companion object {
         const val HTML_FILE_PATH =
-            "file:///android_asset/resources/settings/views/SettingsMain.html"
+            "file:///android_asset/resources/settings/views/main/SettingsMain.html"
 
 
         fun newInstance() : BeaconSettingsFragment {

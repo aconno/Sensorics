@@ -1,6 +1,7 @@
-let beacon;
+//let beacon;
 
-$(document).ready(function() {
+
+function onArbitraryDataDocumentLoaded() {
     $('#container_arbitrary').on("click", ".btn-danger", function() {
         removeArbitraryDataView(this);
     });
@@ -24,10 +25,16 @@ $(document).ready(function() {
         $('#arbitrary_modal').modal('toggle');
         $('#modal_key').val("");
         $('#modal_value').val("");
-    });
-});
 
-function init(beaconInfo) {
+    });
+
+    $('#arbitrary_modal').on('shown.bs.modal', function () {
+      $('#modal_key').focus()
+    })
+
+}
+
+function initArbitraryData(beaconInfo) {
     beacon = JSON.parse(beaconInfo);
 
     $('#arbitrary-bytes-abailable').text(beacon.arbitraryData.available)
@@ -37,7 +44,13 @@ function init(beaconInfo) {
         $('#container_arbitrary').append(
             generateKeyValue(key, value)
         );
+
     }
+}
+
+function onValueUpdate(key,value,source) {
+     beacon.arbitraryData.arbitraryDataEntries[key]=value;
+     native.onDataChanged(JSON.stringify(beacon));
 }
 
 function removeArbitraryDataView(btn) {

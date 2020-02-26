@@ -1,4 +1,4 @@
-var beacon;
+//var beacon;
 class HtmlGenerator {
     static generateParameterInteger(id, name, value, index) {
         return '<div class="form-group">' +

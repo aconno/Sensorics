@@ -1,35 +1,4 @@
-<html>
-
-<head>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="../../commons/holo.css" />
-  <style>
-    .margin-sides {
-      margin-left: 0.1em;
-      margin-right: 0.1em;
-    }
-
-    .button22 {
-      background: black;
-      display: inline-block;
-      height: 1.4em;
-      width: 1.4em;
-      position: fixed;
-      bottom: 0px;
-      right: 0px;
-      color: white;
-      border: none;
-      margin-bottom: 0.6em;
-      margin-right: 0.6em;
-      border-radius: 50%;
-      font-size: 3em;
-      line-height: 0px;
-    }
-  </style>
-</head>
-
-<body style="background-color: #fafafa">
+<div id="arbitrary-data-body" style="background-color: #fafafa">
   <div class="row margin-sides" style="margin-top: 2em;">
     <div class="col-md-12">
       <div class="card card-body">
@@ -39,7 +8,7 @@
       <!-- Add arbitrary data in here -->
     </div>
   </div>
-  <button type="button" data-toggle="modal" id="fab_arbitrary" data-target="#arbitrary_modal" class="btn btn-primary button22" data-whatever="new">+
+  <button type="button" data-toggle="modal" id="fab_arbitrary" data-target="#arbitrary_modal" class="btn btn-primary button22" data-whatever="new" data-backdrop="false">+
   </button>
   <div class="modal fade" id="arbitrary_modal" tabindex="-1" role="dialog" aria-labelledby="arbitrary_modal_label" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -66,11 +35,6 @@
       </div>
     </div>
   </div>
-  <script src="../../libs/jquery.min.js"></script>
-  <script src="../../libs/popper.min.js"></script>
-  <script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
-  <script src="arbitrary_generator.js"></script>
-  <script src="arbitrary_init.js"></script>
-</body>
 
-</html>
+</div>
+
