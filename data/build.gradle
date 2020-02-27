@@ -71,10 +71,8 @@ dependencies {
 
     implementation "com.udojava:EvalEx:$eval_ex_version"
 
-    //current version 4.0.1 not compiling on clean build
-    def okhttp3_data_version = '3.14.2'
-    implementation "com.squareup.okhttp3:okhttp:$okhttp3_data_version"
-    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3_data_version"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp3_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3_version"
 
     testImplementation "junit:junit:$junit_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
