@@ -62,10 +62,10 @@ dependencies {
 
     implementation "com.jakewharton.timber:timber:$timber_version"
 
-    implementation("org.eclipse.paho:org.eclipse.paho.android.service:$eclipse_paho_mqttv3_version") {
+    implementation("org.eclipse.paho:org.eclipse.paho.android.service:$eclipse_paho_android_service_version") {
         exclude module: 'support-v4'
     }
-    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$eclipse_paho_android_service_version"
+    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$eclipse_paho_mqttv3_version"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
 
