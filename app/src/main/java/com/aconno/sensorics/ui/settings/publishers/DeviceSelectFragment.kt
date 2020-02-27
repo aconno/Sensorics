@@ -97,7 +97,7 @@ class DeviceSelectFragment : BaseFragment() {
                     deviceList.clear()
                     deviceList.addAll(it)
                     adapter.notifyDataSetChanged()
-                    Timber.d("${it.size}")
+                    Timber.d("devices size is ${it.size}")
                 }
 
             addDisposable(subscribe)
