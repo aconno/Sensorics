@@ -169,9 +169,11 @@ class BluetoothScanningService : DaggerService() {
         //Launches non-blocking coroutine
         scanTimerDisposable = GlobalScope.launch(context = Dispatchers.Main) {
             delay(ANDROID_N_MAX_SCAN_DURATION - 60 * 1000)
-            Timber.tag("Sensorics - BLE").d("Stopping")
+            Timber.tag("Sensorics - BLE")
+            Timber.d("Stopping")
             stopScanning()
-            Timber.tag("Sensorics - BLE").d("Restarting")
+            Timber.tag("Sensorics - BLE")
+            Timber.d("Restarting")
             startScan(deviceList)
         }
     }
