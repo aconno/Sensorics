@@ -22,6 +22,11 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     packagingOptions {
         exclude 'thirdpartynotice.txt'
     }

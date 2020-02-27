@@ -43,6 +43,11 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     lintOptions {
         checkReleaseBuilds false
     }
@@ -111,6 +116,7 @@ dependencies {
 
     implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+
     implementation "com.squareup.okhttp3:logging-interceptor:4.0.1"
 
     def assisted_inject_dagger_version = '0.4.0'
