@@ -117,7 +117,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
-    implementation "com.squareup.okhttp3:logging-interceptor:4.0.1"
+    implementation "com.squareup.okhttp3:logging-interceptor:$logging_interceptor_version"
 
     def assisted_inject_dagger_version = '0.4.0'
     compileOnly "com.squareup" +
