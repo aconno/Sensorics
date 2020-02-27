@@ -133,7 +133,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 
     androidTestImplementation "androidx.test:runner:$test_runner_version"
-    testImplementation "androidx.arch.core:core-testing:2.1.0-alpha01"
+    testImplementation "androidx.arch.core:core-testing:$arch_core_testing_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
 
     androidTestImplementation "org.mockito:mockito-inline:$mockito_inline_version"
