@@ -88,6 +88,7 @@ ext {
     timber_version = '4.7.1'
     threetenabp_version = '1.2.2'
 
+    leak_canary_version = '2.2'
     eval_ex_version = '2.1'
 
     retrofit_version = '2.7.2'
