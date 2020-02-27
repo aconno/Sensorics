@@ -98,7 +98,7 @@ dependencies {
 
     implementation "com.jpardogo.materialtabstrip:library:$materialtabstrip_version"
 
-    implementation "com.github.lzyzsd:circleprogress:1.2.1"
+    implementation "com.github.lzyzsd:circleprogress:$circleprogress_version"
 
     implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") {
         exclude module: 'support-v4'
