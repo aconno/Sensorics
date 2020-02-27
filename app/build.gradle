@@ -89,7 +89,7 @@ dependencies {
     implementation "com.google.android:flexbox:$flexbox_version"
     implementation "com.google.code.gson:gson:$gson_version"
 
-    implementation "no.nordicsemi.android:dfu:1.9.0"
+    implementation "no.nordicsemi.android:dfu:$nordic_dfu_version"
 
     implementation "com.jakewharton.timber:timber:$timber_version"
     implementation "com.jakewharton.threetenabp:threetenabp:$threetenabp_version"
