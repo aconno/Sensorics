@@ -63,6 +63,7 @@ ext {
     recyclerview_version = '1.1.0'
     preference_version = '1.1.0'
     work_runtime_ktx_version = '2.3.2'
+    material_version = '1.1.0-rc02' // TODO: Move to any stable version after 1.0.0 when it becomes available
 
     //Current version 2.24 not compiling on clean build
     dagger_version = '2.26'
