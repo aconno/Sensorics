@@ -69,7 +69,6 @@ dependencies {
 
     implementation "androidx.cardview:cardview:$cardview_version"
     implementation "androidx.recyclerview:recyclerview:$recyclerview_version"
-    implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "androidx.preference:preference:1.0.0"
     implementation "androidx.work:work-runtime-ktx:2.1.0-alpha02"
 
