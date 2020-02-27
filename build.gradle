@@ -69,10 +69,10 @@ ext {
     javax_annotation_version = '1.0'
     javax_inject_version = '1'
 
-    rx_java_version = '2.2.11'
+    rx_java_version = '2.2.18'
     rx_android_version = '2.1.1'
     //Current version 2.4.0 not compiling on clean build
-    rx_kotlin_version = '2.3.0'
+    rx_kotlin_version = '2.4.0'
 
     gson_version = '2.8.5'
 

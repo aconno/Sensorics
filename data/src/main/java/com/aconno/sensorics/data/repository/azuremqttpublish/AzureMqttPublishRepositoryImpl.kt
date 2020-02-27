@@ -39,9 +39,9 @@ class AzureMqttPublishRepositoryImpl(
         return azureMqttPublishDao.all.map(azureMqttPublishDataMapper::toAzureMqttPublishList)
     }
 
-    override fun getAllEnabledAzureMqttPublish(): List<BasePublish> {
+    override fun getAllEnabledAzureMqttPublish(): Single<List<BasePublish>> {
         return azureMqttPublishDao.getEnabledAzureMqttPublish()
-            .map(azureMqttPublishDataMapper::toAzureMqttPublish)
+            .map(azureMqttPublishDataMapper::toAzureMqttPublishList)
     }
 
     override fun getAzureMqttPublishById(azureMqttPublishId: Long): Maybe<AzureMqttPublish> {

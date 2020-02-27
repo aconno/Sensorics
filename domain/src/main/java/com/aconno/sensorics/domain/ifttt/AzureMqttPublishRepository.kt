@@ -8,6 +8,6 @@ interface AzureMqttPublishRepository {
     fun updateAzureMqttPublish(azureMqttPublish: AzureMqttPublish)
     fun deleteAzureMqttPublish(azureMqttPublish: AzureMqttPublish)
     fun getAllAzureMqttPublish(): Single<List<BasePublish>>
-    fun getAllEnabledAzureMqttPublish(): List<BasePublish>
+    fun getAllEnabledAzureMqttPublish(): Single<List<BasePublish>>
     fun getAzureMqttPublishById(azureMqttPublishId: Long): Maybe<AzureMqttPublish>
 }
