@@ -67,8 +67,8 @@ ext {
     material_version = '1.1.0-rc02'
     flexbox_version = '1.0.0'
 
-    //Current version 2.24 not compiling on clean build
     dagger_version = '2.26'
+    assisted_inject_dagger_version = '0.5.2'
     javax_annotation_version = '1.0'
     javax_inject_version = '1'
 
