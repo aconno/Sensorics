@@ -67,7 +67,7 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$androidx_room_version"
     kapt "androidx.room:room-compiler:$androidx_room_version"
 
-    implementation "androidx.cardview:cardview:1.0.0"
+    implementation "androidx.cardview:cardview:$cardview_version"
     implementation "androidx.recyclerview:recyclerview:1.0.0"
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "androidx.preference:preference:1.0.0"
