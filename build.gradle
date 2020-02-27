@@ -62,6 +62,7 @@ ext {
     cardview_version = '1.0.0'
     recyclerview_version = '1.1.0'
     preference_version = '1.1.0'
+    work_runtime_ktx_version = '2.3.2'
 
     //Current version 2.24 not compiling on clean build
     dagger_version = '2.23.2'
