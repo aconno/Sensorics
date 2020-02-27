@@ -19,6 +19,7 @@ android {
         multiDexEnabled true
         flavorDimensions "version"
     }
+
     buildTypes {
 
         debug {
@@ -36,6 +37,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
     lintOptions {
