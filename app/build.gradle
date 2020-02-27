@@ -96,7 +96,7 @@ dependencies {
 
     implementation "com.github.PhilJay:MPAndroidChart:$mpandroidchart_version"
 
-    implementation "com.jpardogo.materialtabstrip:library:1.1.1"
+    implementation "com.jpardogo.materialtabstrip:library:$materialtabstrip_version"
 
     implementation "com.github.lzyzsd:circleprogress:1.2.1"
 
