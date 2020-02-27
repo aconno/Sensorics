@@ -58,7 +58,7 @@ dependencies {
 
     implementation "com.google.code.gson:gson:$gson_version"
 
-    implementation "io.jsonwebtoken:jjwt:0.9.1"
+    implementation "io.jsonwebtoken:jjwt:$json_web_token_version"
 
     implementation "com.jakewharton.timber:timber:$timber_version"
 

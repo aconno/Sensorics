@@ -82,6 +82,8 @@ ext {
     materialtabstrip_version = '1.1.1'
     circleprogress_version = '1.2.1'
 
+    json_web_token_version = '0.9.1'
+
     eclipse_paho_mqttv3_version = '1.2.2'
     eclipse_paho_android_service_version = '1.1.1'
 
