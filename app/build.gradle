@@ -56,6 +56,8 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
     implementation "androidx.constraintlayout:constraintlayout-solver:$constraintlayout_version"
 
@@ -65,7 +67,6 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$androidx_room_version"
     kapt "androidx.room:room-compiler:$androidx_room_version"
 
-    implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.recyclerview:recyclerview:1.0.0"
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
