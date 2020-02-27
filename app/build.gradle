@@ -100,10 +100,10 @@ dependencies {
 
     implementation "com.github.lzyzsd:circleprogress:$circleprogress_version"
 
-    implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") {
+    implementation("org.eclipse.paho:org.eclipse.paho.android.service:$eclipse_paho_android_service_version") {
         exclude module: 'support-v4'
     }
-    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.1"
+    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$eclipse_paho_mqttv3_version"
 
     implementation("com.crashlytics.sdk.android:crashlytics:2.10.1@aar") {
         transitive = true
