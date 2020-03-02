@@ -101,7 +101,7 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         initViews()
         if (intent.hasExtra(GOOGLE_PUBLISHER_ACTIVITY_KEY)) {
             googlePublishModel =
-                    intent.getParcelableExtra(GOOGLE_PUBLISHER_ACTIVITY_KEY)
+                intent.getParcelableExtra(GOOGLE_PUBLISHER_ACTIVITY_KEY)
 
             setFields()
         }
@@ -221,9 +221,9 @@ class GoogleCloudPublisherActivity : BaseActivity() {
         } else {
             text_lastdatasent.visibility = View.VISIBLE
             val str = getString(R.string.last_data_sent) + " " +
-                    millisToFormattedDateString(
-                        googlePublishModel!!.lastTimeMillis
-                    )
+                millisToFormattedDateString(
+                    googlePublishModel!!.lastTimeMillis
+                )
             text_lastdatasent.text = str
         }
 
