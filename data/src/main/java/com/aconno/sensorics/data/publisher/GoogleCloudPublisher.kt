@@ -210,7 +210,9 @@ class GoogleCloudPublisher(
 
     private fun publishMessagesFromQueue() {
         while (messagesQueue.isNotEmpty()) {
-            publish(messagesQueue.poll())
+            messagesQueue.poll()?.let {
+                publish(it)
+            }
         }
     }
 

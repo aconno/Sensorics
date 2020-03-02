@@ -6,7 +6,11 @@ import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishRep
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishRepositoryImpl
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishRepositoryImpl
 import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
-import com.aconno.sensorics.domain.ifttt.*
+import com.aconno.sensorics.domain.ifttt.BasePublish
+import com.aconno.sensorics.domain.ifttt.publish.AzureMqttPublishRepository
+import com.aconno.sensorics.domain.ifttt.publish.GooglePublishRepository
+import com.aconno.sensorics.domain.ifttt.publish.MqttPublishRepository
+import com.aconno.sensorics.domain.ifttt.publish.RestPublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.*
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.*
@@ -283,12 +287,10 @@ class PublisherModule {
     @PublisherScope
     fun provideGooglePublishRepository(
         sensoricsDatabase: SensoricsDatabase,
-        googlePublishEntityDataMapper: GooglePublishEntityDataMapper,
         googlePublishDataMapper: GooglePublishDataMapper
     ): GooglePublishRepository {
         return GooglePublishRepositoryImpl(
             sensoricsDatabase.googlePublishDao(),
-            googlePublishEntityDataMapper,
             googlePublishDataMapper
         )
     }
@@ -312,14 +314,12 @@ class PublisherModule {
     @PublisherScope
     fun provideRESTPublishRepository(
         sensoricsDatabase: SensoricsDatabase,
-        restPublishEntityDataMapper: RestPublishEntityDataMapper,
         restPublishDataMapper: RestPublishDataMapper,
         restHeaderDataMapper: RestHeaderDataMapper,
         restHttpGetParamDataMapper: RestHttpGetParamDataMapper
     ): RestPublishRepository {
         return RestPublishRepositoryImpl(
             sensoricsDatabase.restPublishDao(),
-            restPublishEntityDataMapper,
             restPublishDataMapper,
             restHeaderDataMapper,
             restHttpGetParamDataMapper
