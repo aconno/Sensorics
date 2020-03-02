@@ -2,13 +2,8 @@ package com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish
 
 import com.aconno.sensorics.domain.ifttt.AzureMqttPublish
 import com.aconno.sensorics.domain.ifttt.publish.AzureMqttPublishRepository
-import com.aconno.sensorics.domain.interactor.type.MaybeUseCaseWithParameter
-import io.reactivex.Maybe
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetPublishByIdUseCase
 
 class GetAzureMqttPublishByIdUseCase(
-    private val azureMqttPublishRepository: AzureMqttPublishRepository
-) : MaybeUseCaseWithParameter<AzureMqttPublish, Long> {
-    override fun execute(parameter: Long): Maybe<AzureMqttPublish> {
-        return azureMqttPublishRepository.getPublishById(parameter)
-    }
-}
+    azureMqttPublishRepository: AzureMqttPublishRepository
+) : GetPublishByIdUseCase<AzureMqttPublish>(azureMqttPublishRepository)
