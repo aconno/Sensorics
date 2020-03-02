@@ -1,7 +1,7 @@
 package com.aconno.sensorics.domain.interactor.ifttt
 
 import com.aconno.sensorics.domain.ifttt.GeneralMqttPublish
-import com.aconno.sensorics.domain.ifttt.MqttPublishRepository
+import com.aconno.sensorics.domain.ifttt.publish.MqttPublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.*
 import org.junit.Before
 import org.junit.Test
@@ -64,7 +64,7 @@ class MqttPublishUseCasesTest {
     fun testAddMqttPublishUseCase() {
         addMqttPublishUseCase.execute(mqttPublish).blockingGet()
 
-        verify(mockMqttPublishRepository).addMqttPublish(mqttPublish)
+        verify(mockMqttPublishRepository).addPublish(mqttPublish)
         verifyNoMoreInteractions(mockMqttPublishRepository)
     }
 
@@ -72,7 +72,7 @@ class MqttPublishUseCasesTest {
     fun testDeleteMqttPublishUseCase() {
         deleteMqttPublishUseCase.execute(mqttPublish).blockingGet()
 
-        verify(mockMqttPublishRepository).deleteMqttPublish(mqttPublish)
+        verify(mockMqttPublishRepository).deletePublish(mqttPublish)
         verifyNoMoreInteractions(mockMqttPublishRepository)
     }
 
@@ -80,7 +80,7 @@ class MqttPublishUseCasesTest {
     fun testGetAllEnabledMqttPublishUseCase() {
         getAllEnabledMqttPublishUseCase.execute()
 
-        verify(mockMqttPublishRepository).getAllEnabledMqttPublish()
+        verify(mockMqttPublishRepository).allEnabled
         verifyNoMoreInteractions(mockMqttPublishRepository)
     }
 
@@ -88,7 +88,7 @@ class MqttPublishUseCasesTest {
     fun testGetAllMqttPublishUseCase() {
         getAllMqttPublishUseCase.execute()
 
-        verify(mockMqttPublishRepository).getAllMqttPublish()
+        verify(mockMqttPublishRepository).all
         verifyNoMoreInteractions(mockMqttPublishRepository)
     }
 
@@ -96,7 +96,7 @@ class MqttPublishUseCasesTest {
     fun testGetMqttPublishByIdUseCase() {
         getMqttPublishByIdUseCase.execute(id)
 
-        verify(mockMqttPublishRepository).getMqttPublishById(id)
+        verify(mockMqttPublishRepository).getPublishById(id)
         verifyNoMoreInteractions(mockMqttPublishRepository)
     }
 }

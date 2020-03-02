@@ -7,50 +7,40 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MqttPublishDataMapper @Inject constructor() {
-
-    fun toMqttPublish(mqttPublishEntity: MqttPublishEntity): MqttPublish {
-        return GeneralMqttPublish(
-            mqttPublishEntity.id,
-            mqttPublishEntity.name,
-            mqttPublishEntity.url,
-            mqttPublishEntity.clientId,
-            mqttPublishEntity.username,
-            mqttPublishEntity.password,
-            mqttPublishEntity.topic,
-            mqttPublishEntity.qos,
-            mqttPublishEntity.enabled,
-            mqttPublishEntity.timeType,
-            mqttPublishEntity.timeMillis,
-            mqttPublishEntity.lastTimeMillis,
-            mqttPublishEntity.dataString
-        )
-    }
-
-    fun toMqttPublishEntity(mqttPublish: MqttPublish): MqttPublishEntity {
+class MqttPublishDataMapper @Inject constructor() : PublishEntityMapper<MqttPublish, MqttPublishEntity> {
+    override fun toEntity(data: MqttPublish): MqttPublishEntity {
         return MqttPublishEntity(
-            mqttPublish.id,
-            mqttPublish.name,
-            mqttPublish.url,
-            mqttPublish.clientId,
-            mqttPublish.username,
-            mqttPublish.password,
-            mqttPublish.topic,
-            mqttPublish.qos,
-            mqttPublish.enabled,
-            mqttPublish.timeType,
-            mqttPublish.timeMillis,
-            mqttPublish.lastTimeMillis,
-            mqttPublish.dataString
+            data.id,
+            data.name,
+            data.url,
+            data.clientId,
+            data.username,
+            data.password,
+            data.topic,
+            data.qos,
+            data.enabled,
+            data.timeType,
+            data.timeMillis,
+            data.lastTimeMillis,
+            data.dataString
         )
     }
 
-    fun toMqttPublishList(mqttPublishEntities: Collection<MqttPublishEntity>): List<MqttPublish> {
-        val mqttPublishList = mutableListOf<MqttPublish>()
-        for (mqttPublishEntity in mqttPublishEntities) {
-            val user = toMqttPublish(mqttPublishEntity)
-            mqttPublishList.add(user)
-        }
-        return mqttPublishList
+    override fun fromEntity(entity: MqttPublishEntity): MqttPublish {
+        return GeneralMqttPublish(
+            entity.id,
+            entity.name,
+            entity.url,
+            entity.clientId,
+            entity.username,
+            entity.password,
+            entity.topic,
+            entity.qos,
+            entity.enabled,
+            entity.timeType,
+            entity.timeMillis,
+            entity.lastTimeMillis,
+            entity.dataString
+        )
     }
 }

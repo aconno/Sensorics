@@ -7,45 +7,35 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AzureMqttPublishDataMapper @Inject constructor() {
+class AzureMqttPublishDataMapper @Inject constructor() : PublishEntityMapper<AzureMqttPublish, AzureMqttPublishEntity> {
 
-    fun toAzureMqttPublish(azureMqttPublishEntity: AzureMqttPublishEntity): AzureMqttPublish {
-        return GeneralAzureMqttPublish(
-            azureMqttPublishEntity.id,
-            azureMqttPublishEntity.name,
-            azureMqttPublishEntity.iotHubName,
-            azureMqttPublishEntity.deviceId,
-            azureMqttPublishEntity.sharedAccessKey,
-            azureMqttPublishEntity.enabled,
-            azureMqttPublishEntity.timeType,
-            azureMqttPublishEntity.timeMillis,
-            azureMqttPublishEntity.lastTimeMillis,
-            azureMqttPublishEntity.dataString
-        )
-    }
-
-    fun toAzureMqttPublishEntity(azureMqttPublish: AzureMqttPublish): AzureMqttPublishEntity {
+    override fun toEntity(data: AzureMqttPublish): AzureMqttPublishEntity {
         return AzureMqttPublishEntity(
-            azureMqttPublish.id,
-            azureMqttPublish.name,
-            azureMqttPublish.iotHubName,
-            azureMqttPublish.deviceId,
-            azureMqttPublish.sharedAccessKey,
-            azureMqttPublish.enabled,
-            azureMqttPublish.timeType,
-            azureMqttPublish.timeMillis,
-            azureMqttPublish.lastTimeMillis,
-            azureMqttPublish.dataString
+            data.id,
+            data.name,
+            data.iotHubName,
+            data.deviceId,
+            data.sharedAccessKey,
+            data.enabled,
+            data.timeType,
+            data.timeMillis,
+            data.lastTimeMillis,
+            data.dataString
         )
     }
 
-    fun toAzureMqttPublishList(azureMqttPublishEntities: List<AzureMqttPublishEntity>): List<AzureMqttPublish> {
-        val azureMqttPublishList = mutableListOf<AzureMqttPublish>()
-        for (azureMqttPublishEntity in azureMqttPublishEntities) {
-            val publish = toAzureMqttPublish(azureMqttPublishEntity)
-            azureMqttPublishList.add(publish)
-        }
-        return azureMqttPublishList
+    override fun fromEntity(entity: AzureMqttPublishEntity): AzureMqttPublish {
+        return GeneralAzureMqttPublish(
+            entity.id,
+            entity.name,
+            entity.iotHubName,
+            entity.deviceId,
+            entity.sharedAccessKey,
+            entity.enabled,
+            entity.timeType,
+            entity.timeMillis,
+            entity.lastTimeMillis,
+            entity.dataString
+        )
     }
-
 }
