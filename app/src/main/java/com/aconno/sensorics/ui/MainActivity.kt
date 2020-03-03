@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -59,7 +58,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private var mainMenu: Menu? = null
 
-    private var snackbar: Snackbar? = null
+    private lateinit var bluetoothStatusSnackbar: Snackbar
 
     private var filterByDevice: Boolean = true
 
@@ -67,11 +66,13 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar)
 
-        snackbar =
-            Snackbar.make(content_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
-
-        snackbar?.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+        bluetoothStatusSnackbar = Snackbar.make(
+            content_container,
+            R.string.bt_disabled,
+            Snackbar.LENGTH_INDEFINITE
+        ).setAction(R.string.enable) {
+            bluetoothViewModel.enableBluetooth()
+        }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
 
         toolbar.title = getString(R.string.app_name)
         setSupportActionBar(toolbar)
@@ -113,7 +114,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
         bluetoothViewModel.observeBluetoothState()
         bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
-
     }
 
     override fun onPause() {
@@ -122,42 +122,28 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
-        when (bluetoothState?.state) {
+        when (bluetoothState) {
             BluetoothState.BLUETOOTH_OFF -> onBluetoothOff()
             BluetoothState.BLUETOOTH_ON -> onBluetoothOn()
         }
     }
 
     private fun onBluetoothOff() {
-        mainMenu?.let {
-            val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
-            menuItem?.setVisible(false)
-        }
-        snackbar?.show()
+        mainMenu?.findItem(R.id.action_toggle_scan)?.isVisible = false
+        bluetoothStatusSnackbar.show()
 
         //Hide FAB
-        val fragment = supportFragmentManager.findFragmentById(content_container.id)
-        fragment?.let {
-            if (it is SavedDevicesFragment) {
-                it.onBluetoothOff()
-            }
-        }
+        (supportFragmentManager.findFragmentById(content_container.id)
+            as? SavedDevicesFragment)?.onBluetoothOff()
     }
 
     private fun onBluetoothOn() {
-        mainMenu?.let {
-            val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
-            menuItem?.setVisible(true)
-        }
-        snackbar?.dismiss()
+        mainMenu?.findItem(R.id.action_toggle_scan)?.isVisible = true
+        bluetoothStatusSnackbar.dismiss()
 
         //Show FAB
-        val fragment = supportFragmentManager.findFragmentById(content_container.id)
-        fragment?.let {
-            if (it is SavedDevicesFragment) {
-                it.onBluetoothOn()
-            }
-        }
+        (supportFragmentManager.findFragmentById(content_container.id)
+            as? SavedDevicesFragment)?.onBluetoothOn()
     }
 
     override fun openLiveGraph(macAddress: String, sensorName: String) {
@@ -192,22 +178,16 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     private fun onScanStart() {
-        mainMenu?.let { mainMenu ->
-            val menuItem = mainMenu.findItem(R.id.action_toggle_scan)
-            menuItem?.let {
-                it.isChecked = true
-                it.setTitle(getString(R.string.stop_scan))
-            }
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
+            it.isChecked = true
+            it.setTitle(getString(R.string.stop_scan))
         }
     }
 
     private fun onScanStop() {
-        mainMenu?.let { mainMenu ->
-            val menuItem = mainMenu.findItem(R.id.action_toggle_scan)
-            menuItem?.let {
-                it.isChecked = false
-                it.setTitle(getString(R.string.start_scan))
-            }
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
+            it.isChecked = false
+            it.setTitle(getString(R.string.start_scan))
         }
     }
 
@@ -231,10 +211,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     //call the html page
     fun showSensorValues(device: Device) {
         supportFragmentManager.beginTransaction()
-            .replace(
-                content_container.id,
-                getReadingListFragment(device)
-            )
+            .replace(content_container.id, getReadingListFragment(device))
             .addToBackStack(null)
             .commit()
     }
@@ -245,9 +222,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
         }
 
-        return DeviceMainFragment.newInstance(
-            device
-        )
+        return DeviceMainFragment.newInstance(device)
     }
 
     private fun showSavedDevicesFragment() {
@@ -257,11 +232,9 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun onDevicesDialogItemClick(item: Device) {
-        supportFragmentManager.fragments.map {
-            if (it is ScannedDevicesDialogListener) {
-                it.onDevicesDialogItemClick(item)
-            }
-        }
+        supportFragmentManager.fragments
+            .filterIsInstance(ScannedDevicesDialogListener::class.java)
+            .forEach { it.onDevicesDialogItemClick(item) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -270,19 +243,14 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
         mainMenu?.findItem(R.id.action_toggle_scan)?.let {
             setScanMenuLabel(it)
-            val state = bluetoothViewModel.bluetoothState.value
-            when (state?.state) {
-                BluetoothState.BLUETOOTH_ON -> it.setVisible(true)
-                else -> it.setVisible(false)
-            }
+            it.isVisible = bluetoothViewModel.bluetoothState.value == BluetoothState.BLUETOOTH_ON
         }
 
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id: Int? = item?.itemId
-        when (id) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.action_toggle_scan -> toggleScanFromMenuItem(item)
             R.id.action_start_settings_activity -> startSettingsActivity()
         }
@@ -310,7 +278,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    fun startScanning(filterByDevice: Boolean = true) {
+    private fun startScanning(filterByDevice: Boolean = true) {
         this.filterByDevice = filterByDevice
         permissionViewModel.requestAccessFineLocation()
     }
@@ -387,25 +355,13 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     fun startScanOperation() {
-        mainMenu.let {
-            val menuItem: MenuItem = it!!.findItem(R.id.action_toggle_scan)
-            toggleScanFromMenuItem(menuItem)
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let { item ->
+            toggleScanFromMenuItem(item)
         }
-    }
-
-    fun stopScanOperation() {
-        if (isScanning()) {
-            changeToogleState()
-            stopScanning()
-        }
-    }
-
-    private fun changeToogleState() {
-        mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
     }
 
     companion object {
-        const val WORK_TAG = "My_WORKER_TAG_00123"
-        const val WORK_NAME = "MyWorkName"
+        const val WORK_TAG = "RESOURCE_SYNC_WORKER"
+        const val WORK_NAME = "Resource Synchronization"
     }
 }
