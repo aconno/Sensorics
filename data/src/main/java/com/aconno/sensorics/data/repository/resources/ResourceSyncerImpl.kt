@@ -31,7 +31,9 @@ class ResourceSyncerImpl(
     ) {
         var allDownloadsSucceeded = true
 
-        filesToBeUpdated.forEach { fileModel ->
+        filesToBeUpdated.filter { fileModel ->
+            getFileVersion(fileModel) < fileModel.fileLastModifiedDate
+        }.forEach { fileModel ->
             api.downloadFile(fileModel.fileName)?.tryUse({ downloadStream ->
                 // Local cache file path
                 val filePath = "${cacheFilePath.absolutePath}${fileModel.fileName}"
@@ -50,6 +52,8 @@ class ResourceSyncerImpl(
                     if (allDownloadsSucceeded) {
                         updateVersion(fileModel.fileLastModifiedDate)
                     }
+
+                    updateFileVersion(fileModel)
                     true
                 }, { it ->
                     Timber.e(it, "Failed to open local file stream!")
@@ -73,6 +77,16 @@ class ResourceSyncerImpl(
 
         sharedPreferences.edit()
             .putLong(LATEST_VERSION, fileLastModifiedDate)
+            .apply()
+    }
+
+    private fun getFileVersion(fileModel: LatestVersionJsonModel.FilesToBeUpdatedJsonModel): Long {
+        return sharedPreferences.getLong("$LATEST_VERSION${fileModel.fileName}", LATEST_ASSETS_VERSION)
+    }
+
+    private fun updateFileVersion(fileModel: LatestVersionJsonModel.FilesToBeUpdatedJsonModel) {
+        sharedPreferences.edit()
+            .putLong("$LATEST_VERSION${fileModel.fileName}", fileModel.fileLastModifiedDate)
             .apply()
     }
 
