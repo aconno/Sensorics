@@ -13,30 +13,30 @@ class ResourceSyncerImpl(
     private val sharedPreferences: SharedPreferences
 ) : ResourceSyncer {
 
-    private var latestVersion = getResourcesVersion()
+    private var localVersion = getResourcesVersion()
 
     override fun sync(): Boolean {
         Timber.d("Syncing...")
-        val latestVersionJsonModel = api.getLatestVersion(latestVersion)
+        val latestVersionJsonModel = api.getResourceVersionDelta(localVersion)
 
-        if (latestVersionJsonModel.isUpdateNeeded) {
-            updateFiles(latestVersionJsonModel.filesToBeUpdated)
+        if (latestVersionJsonModel.updateNeeded) {
+            updateFiles(latestVersionJsonModel.files)
         }
 
-        return latestVersionJsonModel.isUpdateNeeded
+        return latestVersionJsonModel.updateNeeded
     }
 
     private fun updateFiles(
-        filesToBeUpdated: List<LatestVersionJsonModel.FilesToBeUpdatedJsonModel>
+        files: List<ResourceDelta.VersionedFile>
     ) {
         var allDownloadsSucceeded = true
 
-        filesToBeUpdated.filter { fileModel ->
-            getFileVersion(fileModel) < fileModel.fileLastModifiedDate
-        }.forEach { fileModel ->
-            api.downloadFile(fileModel.fileName)?.tryUse({ downloadStream ->
+        files.filter { versionedFile ->
+            getFileVersion(versionedFile) < versionedFile.fileLastModifiedDate
+        }.forEach { versionedFile ->
+            api.downloadFile(versionedFile.fileName)?.tryUse({ downloadStream ->
                 // Local cache file path
-                val filePath = "${cacheFilePath.absolutePath}${fileModel.fileName}"
+                val filePath = "${cacheFilePath.absolutePath}${versionedFile.fileName}"
                 val targetFile = File(filePath)
 
                 // Create file path if missing
@@ -50,10 +50,10 @@ class ResourceSyncerImpl(
                     downloadStream.copyTo(fileStream)
 
                     if (allDownloadsSucceeded) {
-                        updateVersion(fileModel.fileLastModifiedDate)
+                        updateVersion(versionedFile.fileLastModifiedDate)
                     }
 
-                    updateFileVersion(fileModel)
+                    updateFileVersion(versionedFile)
                     true
                 }, { it ->
                     Timber.e(it, "Failed to open local file stream!")
@@ -73,20 +73,20 @@ class ResourceSyncerImpl(
     }
 
     private fun updateVersion(fileLastModifiedDate: Long) {
-        latestVersion = fileLastModifiedDate
+        localVersion = fileLastModifiedDate
 
         sharedPreferences.edit()
             .putLong(LATEST_VERSION, fileLastModifiedDate)
             .apply()
     }
 
-    private fun getFileVersion(fileModel: LatestVersionJsonModel.FilesToBeUpdatedJsonModel): Long {
-        return sharedPreferences.getLong("$LATEST_VERSION${fileModel.fileName}", LATEST_ASSETS_VERSION)
+    private fun getFileVersion(versionedFile: ResourceDelta.VersionedFile): Long {
+        return sharedPreferences.getLong("$LATEST_VERSION${versionedFile.fileName}", LATEST_ASSETS_VERSION)
     }
 
-    private fun updateFileVersion(fileModel: LatestVersionJsonModel.FilesToBeUpdatedJsonModel) {
+    private fun updateFileVersion(versionedFile: ResourceDelta.VersionedFile) {
         sharedPreferences.edit()
-            .putLong("$LATEST_VERSION${fileModel.fileName}", fileModel.fileLastModifiedDate)
+            .putLong("$LATEST_VERSION${versionedFile.fileName}", versionedFile.fileLastModifiedDate)
             .apply()
     }
 
