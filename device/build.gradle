@@ -16,6 +16,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 repositories {
@@ -30,6 +39,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.localbroadcastmanager:localbroadcastmanager:$localbroadcastmanager_version"
 
     compileOnly "javax.annotation:jsr250-api:$javax_annotation_version"
     implementation "javax.inject:javax.inject:$javax_inject_version"
@@ -44,10 +54,10 @@ dependencies {
 
     implementation "com.udojava:EvalEx:$eval_ex_version"
 
-    implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") {
+    implementation("org.eclipse.paho:org.eclipse.paho.android.service:$eclipse_paho_android_service_version") {
         exclude module: 'support-v4'
     }
-    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.1"
+    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$eclipse_paho_mqttv3_version"
 
     api "com.squareup.retrofit2:retrofit:$retrofit_version"
     api "com.squareup.retrofit2:converter-scalars:$retrofit_version"

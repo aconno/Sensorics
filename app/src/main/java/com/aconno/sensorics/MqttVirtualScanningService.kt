@@ -26,7 +26,6 @@ import com.aconno.sensorics.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.interactor.virtualscanningsource.mqtt.GetAllEnabledMqttVirtualScanningSourceUseCase
-import com.aconno.sensorics.domain.interactor.virtualscanningsource.mqtt.MqttVirtualScanningSourceProtocol
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.mqtt.MqttVirtualScanner
@@ -39,6 +38,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function4
 import io.reactivex.rxkotlin.zipWith
@@ -357,16 +357,20 @@ class MqttVirtualScanningService : DaggerService() {
     }
 
     private fun getMqttPublishers(): Observable<Publisher> {
-        return Observable.fromIterable(
-            getAllEnabledMqttPublishUseCase.execute().map(this::basePublishToMqttPublisher)
-        )
-    }
-
-    private fun basePublishToMqttPublisher(basePublish: BasePublish): Publisher {
-        val devices = getDevicesThatConnectedWithMqttPublishUseCase.execute(basePublish.id)
-            ?: listOf()
-
-        return MqttPublisher(this, basePublish as MqttPublish, devices, syncRepository)
+        return getAllEnabledMqttPublishUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .toObservable()
+            .flatMapIterable { it }
+            .map { it as MqttPublish }
+            .flatMap {
+                Observable.zip(
+                    Observable.just(it),
+                    getDevicesThatConnectedWithMqttPublishUseCase.execute(it.id).toObservable(),
+                    BiFunction<MqttPublish, List<Device>, Publisher> { t1, t2 ->
+                        MqttPublisher(this, t1, t2, syncRepository)
+                    }
+                )
+            }
     }
 
     override fun onDestroy() {

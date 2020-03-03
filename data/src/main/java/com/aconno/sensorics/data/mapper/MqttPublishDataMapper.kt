@@ -45,7 +45,7 @@ class MqttPublishDataMapper @Inject constructor() {
         )
     }
 
-    fun toMqttPublishList(mqttPublishEntities: List<MqttPublishEntity>): List<MqttPublish> {
+    fun toMqttPublishList(mqttPublishEntities: Collection<MqttPublishEntity>): List<MqttPublish> {
         val mqttPublishList = mutableListOf<MqttPublish>()
         for (mqttPublishEntity in mqttPublishEntities) {
             val user = toMqttPublish(mqttPublishEntity)

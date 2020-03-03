@@ -27,9 +27,9 @@ class MqttPublishRepositoryImpl(
         return mqttPublishDao.all.map(mqttPublishDataMapper::toMqttPublishList)
     }
 
-    override fun getAllEnabledMqttPublish(): List<BasePublish> {
+    override fun getAllEnabledMqttPublish(): Single<List<BasePublish>>{
         return mqttPublishDao.getEnabledMqttPublish()
-            .map(mqttPublishDataMapper::toMqttPublish)
+            .map(mqttPublishDataMapper::toMqttPublishList)
     }
 
     override fun getMqttPublishById(mqttPublishId: Long): Maybe<MqttPublish> {

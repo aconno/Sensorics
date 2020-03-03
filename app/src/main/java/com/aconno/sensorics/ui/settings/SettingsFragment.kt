@@ -2,7 +2,6 @@ package com.aconno.sensorics.ui.settings
 
 import android.os.Build
 import android.os.Bundle
-import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -13,23 +12,23 @@ import com.aconno.sensorics.ui.settings.virtualscanningsources.VirtualScanningSo
 class SettingsFragment : PreferenceFragmentCompat(),
     Preference.OnPreferenceChangeListener {
 
-    private lateinit var listPreference: ListPreference
+    private var listPreference: ListPreference? = null
 
     override fun onResume() {
         super.onResume()
-        listPreference.onPreferenceChangeListener = this
+        listPreference?.onPreferenceChangeListener = this
     }
 
     override fun onPause() {
         super.onPause()
-        listPreference.onPreferenceChangeListener = null
+        listPreference?.onPreferenceChangeListener = null
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        findPreference(PUBLISHERS_KEY)
-            .setOnPreferenceClickListener {
+        findPreference<Preference>(PUBLISHERS_KEY)
+            ?.setOnPreferenceClickListener {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     context?.let {
                         PublishListActivity.start(it)
@@ -42,21 +41,21 @@ class SettingsFragment : PreferenceFragmentCompat(),
                 true
             }
 
-        findPreference(VIRTUAL_SCANNING_SOURCES_KEY)
-                .setOnPreferenceClickListener {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        context?.let {
-                            VirtualScanningSourceListActivity.start(it)
-                        }
-                    } else {
-                        activity?.let {
-                            VirtualScanningSourceListActivity.start(it)
-                        }
+        findPreference<Preference>(VIRTUAL_SCANNING_SOURCES_KEY)
+            ?.setOnPreferenceClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    context?.let {
+                        VirtualScanningSourceListActivity.start(it)
                     }
-                    true
+                } else {
+                    activity?.let {
+                        VirtualScanningSourceListActivity.start(it)
+                    }
                 }
+                true
+            }
 
-        listPreference = findPreference(SCAN_MODE_KEY) as ListPreference
+        listPreference = findPreference(SCAN_MODE_KEY)
 
         initSummaries()
     }
@@ -73,15 +72,16 @@ class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     private fun setScanModeSummarize(scanMode: String) {
-        when (scanMode.toInt()) {
-            1 -> listPreference.summary = getString(R.string.scan_mode_low_power)
-            2 -> listPreference.summary = getString(R.string.scan_mode_balanced)
-            3 -> listPreference.summary = getString(R.string.scan_mode_low_latency)
+        listPreference?.summary = when (scanMode.toInt()) {
+            1 -> getString(R.string.scan_mode_low_power)
+            2 -> getString(R.string.scan_mode_balanced)
+            3 -> getString(R.string.scan_mode_low_latency)
+            else -> getString(R.string.scan_mode_invalid)
         }
     }
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-        when(preference?.key) {
+        when (preference?.key) {
             SCAN_MODE_KEY -> setScanModeSummarize(newValue as String)
             else -> return false
         }

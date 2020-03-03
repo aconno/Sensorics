@@ -35,6 +35,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function4
 import io.reactivex.rxkotlin.zipWith
@@ -342,29 +343,37 @@ class BluetoothScanningService : DaggerService() {
     }
 
     private fun getMqttPublishers(): Observable<Publisher> {
-        return Observable.fromIterable(
-            getAllEnabledMqttPublishUseCase.execute().map(this::basePublishToMqttPublisher)
-        )
+        return getAllEnabledMqttPublishUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .toObservable()
+            .flatMapIterable { it }
+            .map { it as MqttPublish }
+            .flatMap {
+                Observable.zip(
+                    Observable.just(it),
+                    getDevicesThatConnectedWithMqttPublishUseCase.execute(it.id).toObservable(),
+                    BiFunction<MqttPublish, List<Device>, Publisher> { t1, t2 ->
+                        MqttPublisher(this, t1, t2, syncRepository)
+                    }
+                )
+            }
     }
 
     private fun getAzureMqttPublishers(): Observable<Publisher> {
-        return Observable.fromIterable(
-            getAllEnabledAzureMqttPublishUseCase.execute().map(this::basePublishToAzureMqttPublisher)
-        )
-    }
-
-    private fun basePublishToMqttPublisher(basePublish: BasePublish): Publisher {
-        val devices = getDevicesThatConnectedWithMqttPublishUseCase.execute(basePublish.id)
-            ?: listOf()
-
-        return MqttPublisher(this, basePublish as MqttPublish, devices, syncRepository)
-    }
-
-    private fun basePublishToAzureMqttPublisher(basePublish: BasePublish): Publisher {
-        val devices = getDevicesThatConnectedWithAzureMqttPublishUseCase.execute(basePublish.id)
-            ?: listOf()
-
-        return AzureMqttPublisher(basePublish as AzureMqttPublish, devices, syncRepository)
+        return getAllEnabledAzureMqttPublishUseCase.execute()
+            .subscribeOn(Schedulers.io())
+            .toObservable()
+            .flatMapIterable { it }
+            .map { it as AzureMqttPublish }
+            .flatMap {
+                Observable.zip(
+                    Observable.just(it),
+                    getDevicesThatConnectedWithAzureMqttPublishUseCase.execute(it.id).toObservable(),
+                    BiFunction<AzureMqttPublish, List<Device>, Publisher> { t1, t2 ->
+                        AzureMqttPublisher( t1, t2, syncRepository)
+                    }
+                )
+            }
     }
 
     override fun onDestroy() {

@@ -19,12 +19,12 @@ abstract class PublishDeviceJoinDao {
     @Query(
         "SELECT * FROM devices WHERE macAddress IN (SELECT dId FROM mqtt_publish_device_join WHERE mId = :mqttPublishId)"
     )
-    abstract fun getDevicesThatConnectedWithMqttPublish(mqttPublishId: Long): List<DeviceEntity>?
+    abstract fun getDevicesThatConnectedWithMqttPublish(mqttPublishId: Long): Maybe<List<DeviceEntity>>
 
     @Query(
         "SELECT * FROM devices WHERE macAddress IN (SELECT dId FROM azure_mqtt_publish_device_join WHERE aId = :azureMqttPublishId)"
     )
-    abstract fun getDevicesThatConnectedWithAzureMqttPublish(azureMqttPublishId: Long): List<DeviceEntity>?
+    abstract fun getDevicesThatConnectedWithAzureMqttPublish(azureMqttPublishId: Long): Maybe<List<DeviceEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insertGoogle(googlePublishDeviceJoinEntity: GooglePublishDeviceJoinEntity): Long

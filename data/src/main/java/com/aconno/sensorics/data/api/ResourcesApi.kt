@@ -2,7 +2,7 @@ package com.aconno.sensorics.data.api
 
 import com.aconno.sensorics.data.repository.resources.LatestVersionJsonModel
 import com.google.gson.Gson
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.InputStream
@@ -15,7 +15,7 @@ class ResourcesApi(
 
     fun getLatestVersion(version: Long): LatestVersionJsonModel {
 
-        HttpUrl.parse("$SERVER_URL/sensorics/api/getLatestVersion.php")
+        "$SERVER_URL/sensorics/api/getLatestVersion.php".toHttpUrlOrNull()
             ?.let {
                 val httpBuilder = it.newBuilder()
 
@@ -28,7 +28,7 @@ class ResourcesApi(
 
                 val response = okHttpClient.newCall(request).execute()
 
-                response.body()?.let {
+                response.body?.let {
                     val stringRepresentations = it.string()
                     return gson.fromJson<LatestVersionJsonModel>(
                         stringRepresentations,
@@ -50,7 +50,7 @@ class ResourcesApi(
         val response = okHttpClient.newCall(request).execute()
 
         return if (response.isSuccessful) {
-            response.body()?.byteStream()
+            response.body?.byteStream()
         } else {
             null
         }
