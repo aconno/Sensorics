@@ -3,6 +3,8 @@ package com.aconno.sensorics.data.repository.resources
 import android.content.SharedPreferences
 import com.aconno.sensorics.data.api.ResourcesApi
 import com.aconno.sensorics.domain.ResourceSyncer
+import com.aconno.sensorics.domain.tryUse
+import timber.log.Timber
 import java.io.File
 
 class ResourceSyncerImpl(
@@ -11,9 +13,10 @@ class ResourceSyncerImpl(
     private val sharedPreferences: SharedPreferences
 ) : ResourceSyncer {
 
-    private var latestVersion = sharedPreferences.getLong(LATEST_VERSION, LATEST_ASSETS_VERSION)
+    private var latestVersion = getResourcesVersion()
 
     override fun sync(): Boolean {
+        Timber.d("Syncing...")
         val latestVersionJsonModel = api.getLatestVersion(latestVersion)
 
         if (latestVersionJsonModel.isUpdateNeeded) {
@@ -26,38 +29,43 @@ class ResourceSyncerImpl(
     private fun updateFiles(
         filesToBeUpdated: List<LatestVersionJsonModel.FilesToBeUpdatedJsonModel>
     ) {
+        var allDownloadsSucceeded = true
 
-        var isDownloadFailed = false
+        filesToBeUpdated.forEach { fileModel ->
+            api.downloadFile(fileModel.fileName)?.tryUse({ downloadStream ->
+                // Local cache file path
+                val filePath = "${cacheFilePath.absolutePath}${fileModel.fileName}"
+                val targetFile = File(filePath)
 
-        filesToBeUpdated.forEach { model ->
-            val downloadedContentInputStream = api.downloadFile(model.fileName)
-
-            if (downloadedContentInputStream != null) {
-                val fileToBeSaved =
-                    File(cacheFilePath.absolutePath + model.fileName)
-                if (!fileToBeSaved.parentFile.exists()) {
-                    fileToBeSaved.parentFile.mkdir()
+                // Create file path if missing
+                if (targetFile.parentFile?.exists() != true) {
+                    targetFile.mkdirs()
                 }
 
-                fileToBeSaved.parentFile.takeIf {
-                    !it.exists()
-                }?.let {
-                    it.mkdirs()
-                }
+                // Open local file stream
+                targetFile.outputStream().tryUse({ fileStream ->
+                    // Copy
+                    downloadStream.copyTo(fileStream)
 
-                //Saving IS into the file
-                fileToBeSaved.outputStream().use { downloadedContentInputStream.copyTo(it) }
-
-                //If a download failed stop updating LastModified date
-                //So next time it can start from where it failed.
-                if (isDownloadFailed) {
-                    //Successfully saved update Version in SharedPref
-                    updateVersion(model.fileLastModifiedDate)
-                }
-            } else {
-                isDownloadFailed = true
+                    if (allDownloadsSucceeded) {
+                        updateVersion(fileModel.fileLastModifiedDate)
+                    }
+                    true
+                }, { it ->
+                    Timber.e(it, "Failed to open local file stream!")
+                    false
+                })
+            }, {
+                Timber.e(it, "Failed to open download stream!")
+                false
+            }).let { downloadSucceeded ->
+                allDownloadsSucceeded = allDownloadsSucceeded and (downloadSucceeded == true)
             }
         }
+    }
+
+    private fun getResourcesVersion(): Long {
+        return sharedPreferences.getLong(LATEST_VERSION, LATEST_ASSETS_VERSION)
     }
 
     private fun updateVersion(fileLastModifiedDate: Long) {
