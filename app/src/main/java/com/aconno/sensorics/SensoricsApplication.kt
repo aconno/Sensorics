@@ -44,7 +44,7 @@ class SensoricsApplication : Application(), HasActivityInjector, HasServiceInjec
         }
         LeakCanary.install(this)
         @Suppress("ConstantConditionIf")
-        if(BuildConfig.FLAVOR == DEV_BUILD_FLAVOR) {
+        if(BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
         Fabric.with(this, Crashlytics())
