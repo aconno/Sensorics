@@ -106,10 +106,12 @@ abstract class BaseMqttPublisherActivity<T : BasePublishModel> : BaseActivity() 
             setFields()
         }
 
-        val fragment = DeviceSelectFragment.newInstance(publishModel)
-        supportFragmentManager.beginTransaction()
-            .replace(deviceSelectFrameId, fragment)
-            .commit()
+        if (savedInstanceState==null) {
+            val fragment = DeviceSelectFragment.newInstance(publishModel)
+            supportFragmentManager.beginTransaction()
+                .replace(deviceSelectFrameId, fragment)
+                .commit()
+        }
     }
 
     protected open fun initViews() {
