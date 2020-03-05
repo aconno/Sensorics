@@ -19,17 +19,17 @@ class MqttVirtualScanningSourceModel(
 
     constructor(parcel: Parcel) : this(
             parcel.readLong(),
-            parcel.readString()!!,
+        parcel.readString() ?: ""!!,
             parcel.readByte() != 0.toByte(),
             MqttVirtualScanningSourceProtocol.valueOf(
-                    parcel.readString()!!
+                parcel.readString() ?: ""!!
             ),
-            parcel.readString()!!,
+        parcel.readString() ?: ""!!,
             parcel.readInt(),
-            parcel.readString()!!,
-            parcel.readString()!!,
-            parcel.readString()!!,
-            parcel.readString()!!,
+        parcel.readString() ?: ""!!,
+        parcel.readString() ?: ""!!,
+        parcel.readString() ?: ""!!,
+        parcel.readString() ?: ""!!,
             parcel.readInt()
     )
 

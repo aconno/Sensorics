@@ -19,17 +19,17 @@ class GooglePublishModel(
 ) : BasePublishModel(id, name, enabled, timeType, timeMillis, lastTimeMillis, dataString) {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
         parcel.readByte() != 0.toByte(),
-        parcel.readString(),
+        parcel.readString() ?: "",
         parcel.readLong(),
         parcel.readLong(),
-        parcel.readString()
+        parcel.readString() ?: ""
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
