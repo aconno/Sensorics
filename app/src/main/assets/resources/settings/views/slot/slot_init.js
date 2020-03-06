@@ -13,7 +13,7 @@ const INTERVAL_MS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000
     61200000, 64800000, 68400000, 72000000, 75600000, 79200000, 82800000, 86400000
 ];
 
-function onSlotDocumentReady(slot_index) {
+function onSlotDocumentReady(slotIndex) {
     if (inited) {
         return;
     }
@@ -24,7 +24,7 @@ function onSlotDocumentReady(slot_index) {
     let customMenuItem = generateFrameTypeMenuItem("CUSTOM");
     let ibeaconMenuItem = generateFrameTypeMenuItem("IBEACON");
 
-    $('#dropdown_frame_type').append(
+    $('#dropdown_frame_type-'+slotIndex).append(
         /*+ uidMenuItem*/
         emptyMenuItem + urlMenuItem + customMenuItem + ibeaconMenuItem
     );
@@ -35,7 +35,7 @@ function onSlotDocumentReady(slot_index) {
     });
 };
 
-function deafultTypeClicked() {
+function defaultTypeClicked() {
     $("#advertising_content").empty();
 
     let whatever = "";
@@ -166,8 +166,8 @@ function initListeners() {
         getUpdatedSlot();
     });
 
-    $('#slot_name_text').on('change keyup paste', function() {
-        $('#slot_name_text').val($(this).val());
+    $('#slot-name-text').on('change keyup paste', function() {
+        $('#slot-name-text').val($(this).val());
         getUpdatedSlot();
     });
 
@@ -202,32 +202,32 @@ function initListeners() {
         getUpdatedSlot();
     });
 
-    $(document).on("input", "#advertising_interval_time_range", function() {
+    $(document).on("input", "#advertising-interval-time-range", function() {
         let index = $(this).val();
         console.log('range index is ' + index)
-        $('#advertising_interval_time').text(timeToHighestOrder(INTERVAL_MS[index]));
+        $('#advertising-interval-time').text(timeToHighestOrder(INTERVAL_MS[index]));
         getUpdatedSlot();
     });
 
     //Dropdown items
-    $('#frame_type_default').click(deafultTypeClicked);
+    $('#frame-type-default').click(defaultTypeClicked);
 
-    $('#frame_type_empty').click(emptyTypeClicked);
-    $('#frame_type_url').click(urlTypeClicked);
+    $('#frame-type-empty').click(emptyTypeClicked);
+    $('#frame-type-url').click(urlTypeClicked);
 
-    $('#frame_type_uid').click(uidTypeClicked);
+    $('#frame-type-uid').click(uidTypeClicked);
 
-    $('#frame_type_ibeacon').click(ibeaconTypeClicked);
+    $('#frame-type-ibeacon').click(ibeaconTypeClicked);
 
-    $('#frame_type_custom').click(customTypeClicked);
+    $('#frame-type-custom').click(customTypeClicked);
 
     inited = true;
 }
 
 // Callback which will be invoked when one of the enum is choosen (now considering only enum with tx power data)
-function dropDownChanged(id, element, position, index) {
+function dropDownChanged(id, element, position, index,slotIndex) {
     // For some reason can't do it with jQuery
-    document.getElementById("ddl-menu-button-" + id).innerHTML = element;
+    document.getElementById("ddl-menu-button-" + id + '-' + slotIndex).innerHTML = element;
     getUpdatedSlot()
 }
 
@@ -251,56 +251,56 @@ function hex_to_ascii(str1) {
     return str;
 }
 
-function init(slotJson, slotIndex) {
+function initSlot(slotJson, slotIndex) {
     index = slotIndex;
     beacon = JSON.parse(slotJson.replace(/\\u0000/g, ''));
 
     switch (beacon.slots.slots[index].type) {
         case FrameType.UID:
-            uidTypeClicked();
-            $('#btn_frame_type').html(FrameType.UID);
+            uidTypeClicked(slotIndex);
+            $('#btn-frame-type').html(FrameType.UID);
             break;
         case FrameType.URL:
-            urlTypeClicked();
-            $('#btn_frame_type').html(FrameType.URL);
+            urlTypeClicked(slotIndex);
+            $('#btn-frame-type').html(FrameType.URL);
             break;
         case FrameType.IBEACON:
-            ibeaconTypeClicked();
-            $('#btn_frame_type').html(FrameType.IBEACON);
+            ibeaconTypeClicked(slotIndex);
+            $('#btn-frame-type').html(FrameType.IBEACON);
             break;
         case FrameType.CUSTOM:
-            customTypeClicked();
-            $('#btn_frame_type').html(FrameType.CUSTOM);
+            customTypeClicked(slotIndex);
+            $('#btn-frame-type').html(FrameType.CUSTOM);
             break;
         case FrameType.DEFAULT:
-            deafultTypeClicked();
-            $('#btn_frame_type').html(FrameType.DEFAULT);
-            let defaultMenuItem = generateFrameTypeMenuItem("DEFAULT");
-            $('#dropdown_frame_type').prepend(defaultMenuItem);
+            defaultTypeClicked(slotIndex);
+            $('#btn-frame-type').html(FrameType.DEFAULT);
+            let defaultMenuItem = generateFrameTypeMenuItem("DEFAULT",slotIndex);
+            $('#dropdown-frame-type').prepend(defaultMenuItem);
             break;
         default:
-            emptyTypeClicked();
-            $('#btn_frame_type').html(FrameType.EMPTY);
+            emptyTypeClicked(slotIndex);
+            $('#btn-frame-type').html(FrameType.EMPTY);
     }
 
     console.log("Slot name: " + beacon.slots.slots[index].name);
 
-    $('#slot_name_text').val(beacon.slots.slots[index].name);
+    $('#slot-name-text').val(beacon.slots.slots[index].name);
 
-    $('#slot_name_text').prop('disabled', beacon.slots.slots[index].readOnly)
+    $('#slot-name-text').prop('disabled', beacon.slots.slots[index].readOnly)
 
 
     let params = generateSwitchContent(beacon.slots.slots[index].readOnly, beacon.slots.slots[index].active, "Slot Advertising", "advertise-switch");
-    $('#slot_advertising').empty();
-    $('#slot_advertising').append(params);
+    $('#slot-advertising').empty();
+    $('#slot-advertising').append(params);
 
-    $('#base_parameter').empty();
+    $('#base-parameter').empty();
 
     params = generateBaseParameter();
-    $('#base_parameter').append(params);
+    $('#base-parameter').append(params);
 
     params = generateSwitchContent(beacon.slots.slots[index].readOnly, beacon.slots.slots[index].advertisingMode == "EVENT", "Interval/Event", "internal-switch");
-    $('#base_parameter').append(params);
+    $('#base-parameter').append(params);
 
     insertEventableParams()
 
@@ -313,12 +313,12 @@ function init(slotJson, slotIndex) {
     }
 
     params = generatePacketCountRange("Advertising PacketCount", beacon.slots.slots[index].packetCount, 'packetCount', 9);
-    $('#base_parameter').append(params);
+    $('#base-parameter').append(params);
 
     params = generateEnums(beacon.parameters.parameters["Basic config"].find(e => e.name === "Supported TX powers").value.split(','), "tx_power", "Advertising Tx Power", beacon.slots.slots[index].txPower, 0)
-    $('#base_parameter').append(params);
+    $('#base-parameter').append(params);
 
-    $('#btn_frame_type').prop('disabled', beacon.slots.slots[index].readOnly)
+    $('#btn-frame-type').prop('disabled', beacon.slots.slots[index].readOnly)
 
     initListeners();
 }
@@ -327,7 +327,7 @@ function insertAdvIntervalParams() {
     let advInterval = beacon.slots.slots[index].advertisingModeParameters.interval
     if (!advInterval) advInterval = 250;
     params = generateAdvertisingIntervalInfo(advInterval);
-    $('#base_parameter').append('<div id="advertising-interval-body"></div>');
+    $('#base-parameter').append('<div id="advertising-interval-body"></div>');
     $('#advertising-interval-body');
     let rangePosition = getClosestElementPosition(INTERVAL_MS, advInterval) + 1;
     let intervalTextRepresentation = timeToHighestOrder(advInterval);
@@ -367,7 +367,7 @@ function insertEventableParams() {
     params = generateEventableParams(beacon.eventableParams.params.flatMap(element => element.id + '-' + element.name), eventableParam, beacon.eventableParams.signs, sign, "Value");
 
 
-    $('#base_parameter').append(params);
+    $('#base-parameter').append(params);
 
     if (beacon.slots.slots[index].readOnly) {
         $('#ddl-menu-button-eventable-params').prop('disabled', true);
@@ -382,8 +382,8 @@ function insertEventableParams() {
 }
 
 function getUpdatedSlot() {
-    beacon.slots.slots[index].name = $('#slot_name_text').val();
-    let type = $('#btn_frame_type').text().trim();
+    beacon.slots.slots[index].name = $('#slot-name-text').val();
+    let type = $('#btn-frame-type').text().trim();
 
     beacon.slots.slots[index].active = $('#toggle-advertise-switch').prop("checked");
 
@@ -402,7 +402,7 @@ function getUpdatedSlot() {
         beacon.slots.slots[index].advertisingModeParameters.sign = sign;
         beacon.slots.slots[index].advertisingModeParameters.thresholdInt = intValue;
     } else {
-        let rangePosition = $('#advertising_interval_time_range').val();
+        let rangePosition = $('#advertising-interval-time-range').val();
         let adInterval = INTERVAL_MS[rangePosition];
         beacon.slots.slots[index].advertisingModeParameters.interval = adInterval
     }
@@ -412,8 +412,8 @@ function getUpdatedSlot() {
     beacon.slots.slots[index].packetCount = packetValue;
 
     let txPower;
-    if ($('#ddl-menu-button-tx_power').text()) {
-        txPower = parseInt($('#ddl-menu-button-tx_power').text());
+    if ($('#ddl-menu-button-tx-power').text()) {
+        txPower = parseInt($('#ddl-menu-button-tx-power').text());
     } else {
         txPower = beacon.slots.slots[index].txPower;
     }
@@ -423,8 +423,8 @@ function getUpdatedSlot() {
     switch (type) {
         case "UID":
             beacon.slots.slots[index].type = FrameType.UID;
-            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID] = $('#uid_namespace_id').val();
-            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID] = $('#uid_instance_id').val();
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID] = $('#uid-namespace-id').val();
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID] = $('#uid-instance-id').val();
             break;
         case "URL":
             beacon.slots.slots[index].type = FrameType.URL;
@@ -432,18 +432,18 @@ function getUpdatedSlot() {
             break;
         case "IBEACON":
             beacon.slots.slots[index].type = FrameType.IBEACON;
-            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_UUID] = $('#ibeacon_uuid').val();
-            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_MAJOR] = $('#ibeacon_major').val();
-            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_MINOR] = $('#ibeacon_minor').val();
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_UUID] = $('#ibeacon-uuid').val();
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_MAJOR] = $('#ibeacon-major').val();
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_IBEACON_MINOR] = $('#ibeacon-minor').val();
             break;
         case "CUSTOM":
             beacon.slots.slots[index].type = FrameType.CUSTOM;
-            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM] = $('#custom_value').val()
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM] = $('#custom-value').val()
             break;
 
         case "DEFAULT":
             beacon.slots.slots[index].type = FrameType.DEFAULT;
-            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_DEFAULT_DATA] = $('#default_advertising_content').val();
+            beacon.slots.slots[index]["advertisingContent"][KEY_ADVERTISING_CONTENT_DEFAULT_DATA] = $('#default-advertising-content').val();
             break;
 
         default:

@@ -1,10 +1,10 @@
-function generateUIDContent(namespaceId, instanceId) {
+function generateUIDContent(namespaceId, instanceId,slotIndex) {
     return '<div class="row">' +
         '<div class="col-2">' +
         '<label>Namespace Id</label>' +
         '</div>' +
         '<div class="col-9">' +
-        '<input type="text" style="width: 100%;" id="uid_namespace_id" value="' + namespaceId + '" class="holo">' +
+        '<input type="text" style="width: 100%;" id="uid-namespace-id-'+slotIndex+'" value="' + namespaceId + '" class="holo">' +
         '</div>' +
         '</div>' +
         '<div class="row" style="margin-top: 1em;">' +
@@ -12,12 +12,12 @@ function generateUIDContent(namespaceId, instanceId) {
         ' <label>Instance Id</label>' +
         '</div>' +
         '<div class="col-9">' +
-        '<input type="text" style="width: 100%;" id="uid_instance_id" value="' + instanceId + '" class="holo">' +
+        '<input type="text" style="width: 100%;" id="uid-instance-id-'+slotIndex+'" value="' + instanceId + '" class="holo">' +
         '</div>' +
         '</div>';
 }
 
-function generateTexInput(id, label) {
+function generateTexInput(id, label,slotIndex) {
     return '<div class="row">' +
         '<div class="col-3">' +
         '<label>' + label + '</label>' +
@@ -28,24 +28,24 @@ function generateTexInput(id, label) {
         '</div>';
 }
 
-function generateURLContent(url) {
+function generateURLContent(url,slotIndex) {
     return '<div class="row">' +
         '<div class="col-3">' +
         '<label>URL</label>' +
         '</div>' +
         '<div class="col-9">' +
-        '<input style="width: 100%;" type="text" id="url" value="' + url + '" class="holo">' +
+        '<input style="width: 100%;" type="text" id="url-'+slotIndex+'" value="' + url + '" class="holo">' +
         '</div>' +
         '</div>';
 }
 
-function generateIBeaconContent(uuid, major, minor) {
+function generateIBeaconContent(uuid, major, minor,slotIndex) {
     return '<div class="row">' +
         '<div class="col-3">' +
         '<label>UUID</label>' +
         '</div>' +
         '<div class="col-9">' +
-        '<input style="width: 100%;" type="text" id="ibeacon_uuid" value="' + uuid + '" class="holo">' +
+        '<input style="width: 100%;" type="text" id="ibeacon-uuid-'+slotIndex+'" value="' + uuid + '" class="holo">' +
         '</div>' +
         '</div>' +
         '<div class="row" style="margin-top: 1em;">' +
@@ -53,7 +53,7 @@ function generateIBeaconContent(uuid, major, minor) {
         '<label>Major</label>' +
         '</div>' +
         '<div class="col-9">' +
-        '<input style="width: 100%;" type="number" min="0" id="ibeacon_major" value="' + major + '" onkeypress="return onlyPositiveNumberFilter(event);" class="holo">' +
+        '<input style="width: 100%;" type="number" min="0" id="ibeacon-major-'+slotIndex+'" value="' + major + '" onkeypress="return onlyPositiveNumberFilter(event);" class="holo">' +
         '</div>' +
         '</div>' +
         '<div class="row" style="margin-top: 1em;">' +
@@ -61,31 +61,31 @@ function generateIBeaconContent(uuid, major, minor) {
         '<label>Minor</label>' +
         '</div>' +
         '<div class="col-9">' +
-        '<input style="width: 100%;" type="number" min="0" id="ibeacon_minor" value="' + minor + '" onkeypress="return onlyPositiveNumberFilter(event);" class="holo">' +
+        '<input style="width: 100%;" type="number" min="0" id="ibeacon-minor-'+slotIndex+'" value="' + minor + '" onkeypress="return onlyPositiveNumberFilter(event);" class="holo">' +
         '</div>' +
         '</div>';
 }
 
-function generateCustomContent(customValue, isHexModeOn) {
+function generateCustomContent(customValue, isHexModeOn,slotIndex) {
     return '<div class="row" style="margin-top: 1em;">' +
         '<div class="col-3">' +
         '<label>Custom Value</label>' +
         '</div>' +
         '<div class="col-9">' +
-        '<textarea style="width: 100%"; id="custom_value" class="holo" wrap="soft" rows="4">' + customValue + '</textarea>' +
+        '<textarea style="width: 100%"; id="custom-value-'+slotIndex+'" class="holo" wrap="soft" rows="4">' + customValue + '</textarea>' +
         '</div>' +
         '</div>';
 }
 
-function generateDefaultContent(value) {
+function generateDefaultContent(value,slotIndex) {
     return '<div class="panel-body">' +
         '<div class="panel-body">' +
-        '<input type="text" value="' + value + '" id="default_advertising_content" disabled style="width: 100%"/>' +
+        '<input type="text" value="' + value + '" id="default-advertising-content-'+slotIndex+'" disabled style="width: 100%"/>' +
         '</div>' +
         '</div>';
 }
 
-function generateBaseParameter(interval_checked) {
+function generateBaseParameter(interval_checked,slotIndex) {
     return '<div class="row">' +
         '<div class="col-12">' +
         '<label>Base Parameter</label>' +
@@ -93,16 +93,16 @@ function generateBaseParameter(interval_checked) {
         '</div>';
 }
 
-function generateEnums(elements, id, name, value, index) {
+function generateEnums(elements, id, name, value, index,slotIndex) {
     let body = generateEnumsBody(id, elements, index);
     let html = '<div class="panel-body">';
     html += '<div class="form-group">';
     if (name.trim()) {
         // Not empty
-        html += '<label for="ddl-lbl-' + id + '">' + name + '</label>';
+        html += '<label for="ddl-lbl-' + id + '-' + slotIndex + '">' + name + '</label>';
     }
-    html += '<div id="ddl-' + id + '" class="dropdown">';
-    html += '<button class="btn btn-secondary dropdown-toggle" type="button" id="ddl-menu-button-' + id + '"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
+    html += '<div id="ddl-' + id + '-' + slotIndex + '" class="dropdown">';
+    html += '<button class="btn btn-secondary dropdown-toggle" type="button" id="ddl-menu-button-' + id + '-' + slotIndex + '"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
     html += value;
     html += "</button>";
     html += body;
@@ -121,17 +121,17 @@ function generateEnumsBody(id, elements, index) {
     return html
 }
 
-function generateSingleEnum(id, element, position, index) {
-    return '<a onclick="dropDownChanged(\'' + id + '\', \'' + element + '\', ' + position + ' ,' + index + ')" class="dropdown-item" >' + element + '</a>';
+function generateSingleEnum(id, element, position, index,slotIndex) {
+    return '<a onclick="dropDownChanged(\'' + id + '\', \'' + element + '\', ' + position + ' ,' + index + ',' + slotIndex + ')" class="dropdown-item" >' + element + '</a>';
 }
 
-function generateAdvertisingIntervalRange(name, advertisingInterval, value, maxValue) {
+function generateAdvertisingIntervalRange(name, advertisingInterval, value, maxValue,slotIndex) {
 
     return '<div class="panel-body">' +
         '<label>' + name + ' </label> </div>' +
         '<div class="panel-body">' +
-        '<label id="advertising_interval_time">' + advertisingInterval + '</label> <br>' +
-        '<input type="range" style="width:90%" value=' + value + ' id="advertising_interval_time_range" max ="' + maxValue + '"/>' +
+        '<label id="advertising-interval-time-'+slotIndex+'">' + advertisingInterval + '</label> <br>' +
+        '<input type="range" style="width:90%" value=' + value + ' id="advertising-interval-time-range-" max ="' + maxValue + '"/>' +
         '</div>' +
         '</div>';
 }
