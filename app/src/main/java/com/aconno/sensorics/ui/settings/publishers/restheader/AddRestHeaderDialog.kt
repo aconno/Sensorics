@@ -43,7 +43,7 @@ class AddRestHeaderDialog : DialogFragment() {
         valueText = view.findViewById(R.id.edit_value)
 
         val adapter = ArrayAdapter<String>(
-            context,
+            requireContext(),
             android.R.layout.simple_dropdown_item_1line,
             resources.getStringArray(R.array.header_keys)
         )

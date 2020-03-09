@@ -142,15 +142,15 @@ class GoogleCloudPublisherActivity : BaseActivity() {
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == PICKFILE_REQUEST_CODE) {
-            data?.let {
-                val path = it.data.toString()
+            data?.data?.let {
+                val path = it.toString()
 
                 applicationContext.contentResolver.takePersistableUriPermission(
-                    data.data,
+                    it,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
 
-                if (isFileValidPKCS8(getPrivateKeyData(it.data.toString()))) {
+                if (isFileValidPKCS8(getPrivateKeyData(path))) {
                     edit_privatekey.text = path
                 } else {
                     Toast.makeText(

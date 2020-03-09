@@ -88,13 +88,11 @@ class GoogleCloudPublisher(
 
     private fun getPrivateKeyData(context: Context): ByteArray {
         val uri = Uri.parse(googlePublish.privateKey)
-        val stream = context.contentResolver.openInputStream(uri)
-
-        val size = stream.available()
-        val buffer = ByteArray(size)
-        stream.read(buffer)
-        stream.close()
-        return buffer
+        return context.contentResolver.openInputStream(uri)?.use { stream ->
+            ByteArray(stream.available()).apply {
+                stream.read(this)
+            }
+        } ?: byteArrayOf()
     }
 
     override fun getPublishData(): BasePublish {
@@ -107,7 +105,7 @@ class GoogleCloudPublisher(
             lastSyncs[Pair(reading?.device?.macAddress, reading?.advertisementId)] ?: 0
 
         return System.currentTimeMillis() - latestTimestamp > this.googlePublish.timeMillis
-                && reading != null && listDevices.contains(reading.device)
+            && reading != null && listDevices.contains(reading.device)
     }
 
     override fun publish(readings: List<Reading>) {
