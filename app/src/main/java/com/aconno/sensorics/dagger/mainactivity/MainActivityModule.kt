@@ -1,14 +1,10 @@
 package com.aconno.sensorics.dagger.mainactivity
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
+import com.aconno.sensorics.dagger.compositescan.CompositeScanResultsModule
 import com.aconno.sensorics.device.permissons.PermissionActionFactory
-import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionsByDeviceMacAddressUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
@@ -18,8 +14,6 @@ import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
-import com.aconno.sensorics.domain.repository.DeviceRepository
-import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
@@ -33,7 +27,11 @@ import dagger.Provides
 import io.reactivex.Flowable
 
 
-@Module
+@Module(
+    includes = [
+        CompositeScanResultsModule::class
+    ]
+)
 class MainActivityModule {
 
     @Provides
@@ -82,11 +80,27 @@ class MainActivityModule {
 
     @Provides
     @MainActivityScope
+    fun provideMqttVirtualScanningViewModel(
+        mainActivity: MainActivity,
+        mqttVirtualScanningViewModelFactory: MqttVirtualScanningViewModelFactory
+    ) = ViewModelProviders.of(mainActivity, mqttVirtualScanningViewModelFactory)
+        .get(MqttVirtualScanningViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
     fun provideBluetoothScanningViewModelFactory(
         bluetooth: Bluetooth,
         sensoricsApplication: SensoricsApplication
     ) = BluetoothScanningViewModelFactory(
         bluetooth,
+        sensoricsApplication
+    )
+
+    @Provides
+    @MainActivityScope
+    fun provideMqttVirtualScanningViewModelFactory(
+        sensoricsApplication: SensoricsApplication
+    ) = MqttVirtualScanningViewModelFactory(
         sensoricsApplication
     )
 
@@ -100,10 +114,8 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideBluetoothViewModelFactory(
-        mainActivity: MainActivity,
-        bluetooth: Bluetooth,
-        bluetoothStateReceiver: BluetoothStateReceiver
-    ) = BluetoothViewModelFactory(bluetooth, bluetoothStateReceiver, mainActivity.application)
+        bluetooth: Bluetooth
+    ) = BluetoothViewModelFactory(bluetooth)
 
     @Provides
     @MainActivityScope

@@ -13,6 +13,7 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -32,13 +33,22 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ui.settings.publishers.selectpublish.AzureMqttPublisherActivity" />
+        <activity android:name=".ui.MainActivity"
+            android:launchMode="singleTop"/>
         <activity
-            android:name=".ui.MainActivity"
-            android:launchMode="singleTop" />
+            android:name=".ui.settings.virtualscanningsources.MqttVirtualScanningSourceActivity"
+            android:label="@string/mqtt_virtual_scanning_source" />
+        <activity
+            android:name=".ui.settings.virtualscanningsources.VirtualScanningSourceListActivity"
+            android:label="@string/title_virtual_scanning_sources" />
         <activity android:name=".ui.ActionListActivity" />
 
         <service
             android:name=".BluetoothScanningService"
+            android:exported="false" />
+        <service
+            android:name=".MqttVirtualScanningService"
             android:exported="false" />
         <service
             android:name=".BluetoothConnectService"
@@ -115,7 +125,6 @@
             android:authorities="${applicationId}.workmanager-init"
             android:exported="false"
             tools:node="remove" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.aconno.sensorics.fileprovider"

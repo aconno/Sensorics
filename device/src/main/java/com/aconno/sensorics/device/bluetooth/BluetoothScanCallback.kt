@@ -15,6 +15,7 @@ class BluetoothScanCallback(
     override fun onScanResult(callbackType: Int, result: android.bluetooth.le.ScanResult?) {
         result?.let {
             val scanResult = createScanResult(result)
+
             scanResults.onNext(scanResult)
         }
     }
@@ -24,6 +25,7 @@ class BluetoothScanCallback(
         val macAddress = result.device.address
         val rssi = result.rssi
         val bytes = result.scanRecord!!.bytes
+        val tmp = bytes.joinToString { "\\x%02x".format(it) }
         return ScanResult(timestamp, macAddress, rssi, bytes)
     }
 

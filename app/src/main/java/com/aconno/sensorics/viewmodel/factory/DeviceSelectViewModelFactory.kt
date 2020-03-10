@@ -1,10 +1,7 @@
 package com.aconno.sensorics.viewmodel.factory
 
 import androidx.lifecycle.ViewModel
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
+import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.viewmodel.DeviceSelectViewModel
 
@@ -13,6 +10,7 @@ class DeviceSelectViewModelFactory(
     private val getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase,
     private val getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase,
     private val getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase,
+    private val getDevicesThatConnectedWithAzureMqttPublishUseCase: GetDevicesThatConnectedWithAzureMqttPublishUseCase,
     private val deviceRelationModelMapper: DeviceRelationModelMapper
 ) : BaseViewModelFactory() {
 
@@ -23,6 +21,7 @@ class DeviceSelectViewModelFactory(
             getDevicesThatConnectedWithGooglePublishUseCase,
             getDevicesThatConnectedWithRestPublishUseCase,
             getDevicesThatConnectedWithMqttPublishUseCase,
+            getDevicesThatConnectedWithAzureMqttPublishUseCase,
             deviceRelationModelMapper
         )
         return getViewModel(viewModel, modelClass)

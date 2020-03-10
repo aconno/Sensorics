@@ -41,8 +41,9 @@ class BluetoothImpl(
 
     private val scanEvent = PublishSubject.create<ScanEvent>()
 
-    override fun getScanEvent(): Flowable<ScanEvent> =
-        scanEvent.toFlowable(BackpressureStrategy.BUFFER)
+    override fun getScanEvent(): Flowable<ScanEvent> {
+        return scanEvent.toFlowable(BackpressureStrategy.BUFFER)
+    }
 
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
 
@@ -68,7 +69,7 @@ class BluetoothImpl(
     ): Pair<List<ScanFilter>?, ScanSettings> {
         val settingsBuilder = ScanSettings.Builder()
 
-        val scanMode = sharedPrefs.getString("scan_mode", "3").toInt()
+        val scanMode = sharedPrefs.getString("scan_mode", null)?.toInt() ?: 3
         when (scanMode) {
             1 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
             2 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_BALANCED)
@@ -100,19 +101,13 @@ class BluetoothImpl(
     }
 
     override fun enable() {
-        if (bluetoothPermission.isGranted) {
-            bluetoothAdapter.enable()
-        } else {
-            throw BluetoothException("Bluetooth permission not granted")
-        }
+        checkPermissionState()
+        bluetoothAdapter.enable()
     }
 
     override fun disable() {
-        if (bluetoothPermission.isGranted) {
-            bluetoothAdapter.disable()
-        } else {
-            throw BluetoothException("Bluetooth permission not granted")
-        }
+        checkPermissionState()
+        bluetoothAdapter.disable()
     }
 
     override fun readCharacteristic(serviceUUID: UUID, characteristicUUID: UUID): Boolean {
@@ -214,26 +209,29 @@ class BluetoothImpl(
     }
 
     override fun startScanning(devices: List<Device>) {
-        Timber.i("Start Bluetooth scanning, devices: $devices")
-        val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
-        if (bluetoothPermission.isGranted) {
+        checkPermissionState()
+        if (bluetoothAdapter.isEnabled) {
+            Timber.i("Start Bluetooth scanning, devices: $devices")
+            val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
             val scanSettings = getScanSettings(devices)
             scanEvent.onNext(ScanEvent.start())
             bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
         } else {
-            throw BluetoothException("Bluetooth permission not granted")
+            Timber.w("Bluetooth is not enabled. Can't start scanning")
         }
     }
 
+
     override fun startScanning() {
-        Timber.i("Start Bluetooth scanning")
-        val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
-        if (bluetoothPermission.isGranted) {
+        checkPermissionState()
+        if (bluetoothAdapter.isEnabled) {
+            Timber.i("Start Bluetooth scanning")
+            val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
             val scanSettings = getScanSettings()
             scanEvent.onNext(ScanEvent.start())
             bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
         } else {
-            throw BluetoothException("Bluetooth permission not granted")
+            Timber.w("Bluetooth is not enabled. Can't start scanning")
         }
     }
 
@@ -263,7 +261,7 @@ class BluetoothImpl(
         }
 
         return currentState.mergeWith(bluetoothStateListener.getBluetoothStates())
-            .toFlowable(BackpressureStrategy.LATEST)
+            .toFlowable(BackpressureStrategy.BUFFER)
     }
 
     override fun enableCharacteristicNotification(
@@ -293,6 +291,10 @@ class BluetoothImpl(
         }
 
         return false
+    }
+
+    private fun checkPermissionState() {
+        if (!bluetoothPermission.isGranted) throw BluetoothException("Bluetooth permission not granted")
     }
 
     companion object {

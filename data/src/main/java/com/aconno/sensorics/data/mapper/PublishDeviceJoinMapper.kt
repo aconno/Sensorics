@@ -1,8 +1,10 @@
 package com.aconno.sensorics.data.mapper
 
+import com.aconno.sensorics.data.repository.publishdevicejoin.AzureMqttPublishDeviceJoinEntity
 import com.aconno.sensorics.data.repository.publishdevicejoin.GooglePublishDeviceJoinEntity
 import com.aconno.sensorics.data.repository.publishdevicejoin.MqttPublishDeviceJoinEntity
 import com.aconno.sensorics.data.repository.publishdevicejoin.RestPublishDeviceJoinEntity
+import com.aconno.sensorics.domain.ifttt.AzureMqttPublishDeviceJoin
 import com.aconno.sensorics.domain.ifttt.GooglePublishDeviceJoin
 import com.aconno.sensorics.domain.ifttt.MqttPublishDeviceJoin
 import com.aconno.sensorics.domain.ifttt.RestPublishDeviceJoin
@@ -30,6 +32,13 @@ class PublishDeviceJoinMapper @Inject constructor() {
         return MqttPublishDeviceJoinEntity(
             mqttPublishDeviceJoin.mId,
             mqttPublishDeviceJoin.dId
+        )
+    }
+
+    fun toAzureMqttPublishDeviceJoinEntity(azureMqttPublishDeviceJoin: AzureMqttPublishDeviceJoin): AzureMqttPublishDeviceJoinEntity {
+        return AzureMqttPublishDeviceJoinEntity(
+            azureMqttPublishDeviceJoin.mId,
+            azureMqttPublishDeviceJoin.dId
         )
     }
 }

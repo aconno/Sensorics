@@ -6,6 +6,7 @@ import com.aconno.sensorics.domain.ifttt.GooglePublishDeviceJoin
 import com.aconno.sensorics.domain.ifttt.MqttPublishDeviceJoin
 import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.ifttt.RestPublishDeviceJoin
+import com.aconno.sensorics.domain.ifttt.AzureMqttPublishDeviceJoin
 import com.aconno.sensorics.domain.model.Device
 import io.reactivex.Maybe
 
@@ -26,6 +27,11 @@ class PublishDeviceJoinRepositoryImpl(
 
     override fun getDevicesThatConnectedWithMqttPublish(mqttPublishId: Long): Maybe<List<Device>> {
         return publishDeviceJoinDao.getDevicesThatConnectedWithMqttPublish(mqttPublishId)
+            .map(deviceMapper::toDeviceList)
+    }
+
+    override fun getDevicesThatConnectedWithAzureMqttPublish(azureMqttPublishId: Long): Maybe<List<Device>> {
+        return publishDeviceJoinDao.getDevicesThatConnectedWithAzureMqttPublish(azureMqttPublishId)
             .map(deviceMapper::toDeviceList)
     }
 
@@ -53,6 +59,14 @@ class PublishDeviceJoinRepositoryImpl(
         )
     }
 
+    override fun addAzureMqttPublishDeviceJoin(azureMqttPublishDeviceJoin: AzureMqttPublishDeviceJoin) {
+        publishDeviceJoinDao.insertAzureMqtt(
+            publishDeviceJoinMapper.toAzureMqttPublishDeviceJoinEntity(
+                azureMqttPublishDeviceJoin
+            )
+        )
+    }
+
     override fun deleteGooglePublishDeviceJoin(googlePublishDeviceJoin: GooglePublishDeviceJoin) {
         publishDeviceJoinDao.delete(
             publishDeviceJoinMapper.toGooglePublishDeviceJoinEntity(
@@ -73,6 +87,14 @@ class PublishDeviceJoinRepositoryImpl(
         publishDeviceJoinDao.delete(
             publishDeviceJoinMapper.toMqttPublishDeviceJoinEntity(
                 mqttPublishDeviceJoin
+            )
+        )
+    }
+
+    override fun deleteAzureMqttPublishDeviceJoin(azureMqttPublishDeviceJoin: AzureMqttPublishDeviceJoin) {
+        publishDeviceJoinDao.delete(
+            publishDeviceJoinMapper.toAzureMqttPublishDeviceJoinEntity(
+                azureMqttPublishDeviceJoin
             )
         )
     }

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -29,6 +30,7 @@ import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
+import com.aconno.sensorics.viewmodel.MqttVirtualScanningViewModel
 import com.aconno.sensorics.viewmodel.PermissionViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
@@ -38,13 +40,16 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCallbacks,
-        ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener {
+    ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener {
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
 
     @Inject
     lateinit var bluetoothScanningViewModel: BluetoothScanningViewModel
+
+    @Inject
+    lateinit var mqttVirtualScanningViewModel: MqttVirtualScanningViewModel
 
     @Inject
     lateinit var permissionViewModel: PermissionViewModel
@@ -63,8 +68,8 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         setContentView(R.layout.activity_toolbar)
 
         snackbar =
-                Snackbar.make(content_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
+            Snackbar.make(content_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
 
         snackbar?.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
 
@@ -83,16 +88,16 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun scheduleWork() {
         val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
 
         val build = PeriodicWorkRequestBuilder<SyncConfigurationWorker>(15, TimeUnit.MINUTES)
-                .addTag(WORK_TAG)
-                .setConstraints(constraints)
-                .build()
+            .addTag(WORK_TAG)
+            .setConstraints(constraints)
+            .build()
 
         WorkManager.getInstance(applicationContext)
-                .enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, build)
+            .enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, build)
     }
 
     override fun onResume() {
@@ -157,8 +162,8 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     override fun openLiveGraph(macAddress: String, sensorName: String) {
         supportFragmentManager.beginTransaction().add(
-                content_container.id,
-                LiveGraphFragment.newInstance(macAddress, sensorName)
+            content_container.id,
+            LiveGraphFragment.newInstance(macAddress, sensorName)
         ).addToBackStack(null).commit()
     }
 
@@ -173,7 +178,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun observeScanEvents() {
         bluetoothScanningViewModel.getScanEvent()
-                .observe(this, Observer { handleScanEvent(it) })
+            .observe(this, Observer { handleScanEvent(it) })
     }
 
     private fun handleScanEvent(scanEvent: ScanEvent?) {
@@ -208,17 +213,17 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun onScanFailedAlreadyStarted() {
         Snackbar.make(
-                findViewById(android.R.id.content),
-                getString(R.string.snackbar_scan_failed_already_started),
-                Snackbar.LENGTH_SHORT
+            findViewById(android.R.id.content),
+            getString(R.string.snackbar_scan_failed_already_started),
+            Snackbar.LENGTH_SHORT
         ).show()
     }
 
     private fun onScanFailed() {
         Snackbar.make(
-                findViewById(android.R.id.content),
-                getString(R.string.snackbar_scan_failed),
-                Snackbar.LENGTH_SHORT
+            findViewById(android.R.id.content),
+            getString(R.string.snackbar_scan_failed),
+            Snackbar.LENGTH_SHORT
         ).show()
         onScanStop()
     }
@@ -226,12 +231,12 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     //call the html page
     fun showSensorValues(device: Device) {
         supportFragmentManager.beginTransaction()
-                .replace(
-                        content_container.id,
-                        getReadingListFragment(device)
-                )
-                .addToBackStack(null)
-                .commit()
+            .replace(
+                content_container.id,
+                getReadingListFragment(device)
+            )
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun getReadingListFragment(device: Device): Fragment {
@@ -241,14 +246,14 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
 
         return DeviceMainFragment.newInstance(
-                device
+            device
         )
     }
 
     private fun showSavedDevicesFragment() {
         supportFragmentManager.beginTransaction()
-                .replace(content_container.id, SavedDevicesFragment())
-                .commit()
+            .replace(content_container.id, SavedDevicesFragment())
+            .commit()
     }
 
     override fun onDevicesDialogItemClick(item: Device) {
@@ -288,9 +293,9 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     private fun startSettingsActivity() {
         if (BluetoothScanningService.isRunning()) {
             Snackbar.make(
-                    findViewById(android.R.id.content),
-                    getString(R.string.snackbar_stop_scanning),
-                    Snackbar.LENGTH_SHORT
+                findViewById(android.R.id.content),
+                getString(R.string.snackbar_stop_scanning),
+                Snackbar.LENGTH_SHORT
             ).show()
         } else {
             SettingsActivity.start(this)
@@ -312,6 +317,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private fun stopScanning() {
         bluetoothScanningViewModel.stopScanning()
+        mqttVirtualScanningViewModel.stopScanning()
     }
 
     private fun setScanMenuLabel(menuItem: MenuItem) {
@@ -325,58 +331,55 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         permissionViewModel.checkGrantedPermission(grantResults, requestCode)
     }
 
-    override fun permissionAccepted(actionCode: Int) {
+    override fun onPermissionGranted(actionCode: Int) {
         if (actionCode == SensoricsPermission.ACCESS_FINE_LOCATION.code) {
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
             bluetoothScanningViewModel.startScanning(filterByDevice)
+            mqttVirtualScanningViewModel.startScanning()
             filterByDevice = true
         }
     }
 
-    override fun permissionDenied(actionCode: Int) {
-        //TODO: Make this nice...
-        Snackbar.make(
-                content_container,
-                getString(R.string.snackbar_permission_message),
-                Snackbar.LENGTH_LONG
-        ).setAction(getString(R.string.snackbar_settings)) {
-            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            intent.data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-            startActivity(intent)
-        }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
-                .show()
+    override fun onPermissionDenied(actionCode: Int) {
+        Snackbar.make(content_container, R.string.snackbar_permission_message, Snackbar.LENGTH_LONG)
+            .setAction(R.string.snackbar_settings) {
+                startActivity(
+                    Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                    }
+                )
+            }
+            .setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+            .show()
     }
 
-    override fun showRationale(actionCode: Int) {
-
-    }
 
     fun onDashboardClicked() {
         supportFragmentManager.beginTransaction()
-                .replace(
-                        content_container.id,
-                        DashboardFragment.newInstance()
-                )
-                .addToBackStack(null)
-                .commit()
+            .replace(
+                content_container.id,
+                DashboardFragment.newInstance()
+            )
+            .addToBackStack(null)
+            .commit()
     }
 
     fun onUseCaseClicked(macAddress: String, deviceName: String) {
         supportFragmentManager.beginTransaction()
-                .replace(
-                        content_container.id,
-                        UseCasesFragment.newInstance(macAddress, deviceName)
-                )
-                .addToBackStack(null)
-                .commit()
+            .replace(
+                content_container.id,
+                UseCasesFragment.newInstance(macAddress, deviceName)
+            )
+            .addToBackStack(null)
+            .commit()
     }
 
     fun isScanning(): Boolean {

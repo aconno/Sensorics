@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#FD9B27</color>
+    <color name="primaryColor">#FF9C00</color>
     <color name="primaryLightColor">#f7cb96</color>
     <color name="primaryDarkColor">#965c17</color>
     <color name="secondaryColor">#333333</color>
@@ -23,4 +23,5 @@
     <color name="red">#c00</color>
     
     <color name="inactive_action_background_color">#BCCCCBCB</color>
+    <color name="darkTextColor">#000000</color>
 </resources>
