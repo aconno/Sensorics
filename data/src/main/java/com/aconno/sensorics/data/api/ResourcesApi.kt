@@ -1,6 +1,6 @@
 package com.aconno.sensorics.data.api
 
-import com.aconno.sensorics.data.repository.resources.LatestVersionJsonModel
+import com.aconno.sensorics.data.repository.resources.ResourceDelta
 import com.google.gson.Gson
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
@@ -13,7 +13,7 @@ class ResourcesApi(
     private val okHttpClient: OkHttpClient
 ) {
 
-    fun getLatestVersion(version: Long): LatestVersionJsonModel {
+    fun getResourceVersionDelta(version: Long): ResourceDelta {
 
         "$SERVER_URL/sensorics/api/getLatestVersion.php".toHttpUrlOrNull()
             ?.let {
@@ -30,9 +30,9 @@ class ResourcesApi(
 
                 response.body?.let {
                     val stringRepresentations = it.string()
-                    return gson.fromJson<LatestVersionJsonModel>(
+                    return gson.fromJson<ResourceDelta>(
                         stringRepresentations,
-                        LatestVersionJsonModel::class.java
+                        ResourceDelta::class.java
                     )
                 }
             }
