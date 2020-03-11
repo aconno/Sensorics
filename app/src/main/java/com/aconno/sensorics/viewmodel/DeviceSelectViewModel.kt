@@ -1,10 +1,7 @@
 package com.aconno.sensorics.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetDevicesThatConnectedWithRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
+import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.DeviceRelationModel
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import io.reactivex.Flowable

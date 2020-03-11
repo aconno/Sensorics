@@ -43,6 +43,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Named
 
 
 class BluetoothScanningService : DaggerService() {
@@ -51,6 +52,7 @@ class BluetoothScanningService : DaggerService() {
     lateinit var bluetooth: Bluetooth
 
     @Inject
+    @Named("bluetoothReadings")
     lateinit var readings: Flowable<List<Reading>>
 
     @Inject

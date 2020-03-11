@@ -43,6 +43,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -52,6 +53,7 @@ class DeviceMainFragment : DaggerFragment() {
     lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
 
     @Inject
+    @Named("composite")
     lateinit var sensorReadingFlow: Flowable<List<Reading>> //TODO: Move this to the view model
 
     @Inject
