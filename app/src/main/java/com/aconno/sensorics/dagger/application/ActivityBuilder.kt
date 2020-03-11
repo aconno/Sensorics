@@ -17,6 +17,9 @@ import com.aconno.sensorics.dagger.alarm.AlarmServiceModule
 import com.aconno.sensorics.dagger.alarm.AlarmServiceScope
 import com.aconno.sensorics.dagger.azuremqttpublisher.AzureMqttPublisherActivityModule
 import com.aconno.sensorics.dagger.azuremqttpublisher.AzureMqttPublisherActivityScope
+import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsActivityModule
+import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsActivityScope
+import com.aconno.sensorics.dagger.beacon_settings.FragmentsModule
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanResultsModule
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanResultsScope
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceModule
@@ -48,12 +51,6 @@ import com.aconno.sensorics.dagger.readings.SensorReadingsModule
 import com.aconno.sensorics.dagger.readings.SensorReadingsScope
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityModule
 import com.aconno.sensorics.dagger.restpublisher.RESTPublisherActivityScope
-import com.aconno.sensorics.dagger.settings_framework.BeaconSettingsActivityModule
-import com.aconno.sensorics.dagger.settings_framework.BeaconSettingsActivityScope
-import com.aconno.sensorics.dagger.settings_framework.FragmentsModule
-import com.aconno.sensorics.dagger.beacon_settings.FragmentsModule
-import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsActivityModule
-import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsActivityScope
 import com.aconno.sensorics.dagger.splash.SplashActivityModule
 import com.aconno.sensorics.dagger.splash.SplashActivityScope
 import com.aconno.sensorics.dagger.virtualscanningsource.VirtualScanningSourceModule
@@ -65,6 +62,7 @@ import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.SplashActivity
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
+import com.aconno.sensorics.ui.beacon_settings.BeaconSettingsActivity
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.AzureMqttPublisherActivity
@@ -73,8 +71,6 @@ import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherAc
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
 import com.aconno.sensorics.ui.settings.virtualscanningsources.MqttVirtualScanningSourceActivity
 import com.aconno.sensorics.ui.settings.virtualscanningsources.VirtualScanningSourceListActivity
-import com.aconno.sensorics.ui.settings_framework.BeaconSettingsActivity
-import com.aconno.sensorics.ui.beacon_settings.BeaconSettingsActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
