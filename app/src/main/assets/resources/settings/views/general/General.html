@@ -1,8 +1,8 @@
 <html>
 
 <head>
-    <meta name=“viewport” content=“width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css" />
+    <meta name=“viewport” content=“width=device-width,initial-scale=1.0"/>
+    <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css"/>
     <style>
         .margin-sides {
             margin-left: 0.1em;
@@ -43,14 +43,16 @@
         <div class="row d-flex align-content-stretch flex-wrap center">
             <div align="center" class="col-md-4 col-sm-4 col-4 center">
                 <div class="custom-control custom-switch">
-                    <input onchange="GeneralView.Actions.changeConnectible(this.checked)" type="checkbox"
-                        class="custom-control-input" id="tglConnection">
-                    <br />
-                    <label class="custom-control-label responsive-text" for="tglConnection">Connection</label>
+                    <!--                    This feature has not been implemented yet-->
+                    <input onchange="GeneralView.Actions.changeConnectible(this.checked)"
+                           type="checkbox"
+                           class="custom-control-input" id="tglConnection" disabled>
+                    <br/>
+                    <label class="custom-control-label responsive-text" for="tglConnection">Connectible</label>
                 </div>
             </div>
         </div>
-        <br />
+        <br/>
         <div class="row d-flex align-content-stretch flex-wrap">
             <div class="col-md-4 col-sm-4 col-5">
                 <button onclick="GeneralView.Actions.updateFirmware()"
@@ -63,7 +65,7 @@
                 </button>
             </div>
         </div>
-        <br />
+        <br/>
         <div class="row d-flex align-content-stretch flex-wrap">
             <div class="col-md-4 col-sm-4 col-5">
                 <button onclick="GeneralView.Actions.powerOff()"

@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework.fragments
+package com.aconno.sensorics.ui.beacon_settings.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -41,7 +41,7 @@ class BeaconSettingsParametersFragment : SettingsBaseFragment() {
 
     companion object {
         const val HTML_FILE_PATH =
-            "file:///android_asset/resources/settings/views/parameters/ParametersNew.html"
+            "file:///android_asset/resources/settings/views/parameters/Parameters.html"
 
         @JvmStatic
         fun newInstance() =

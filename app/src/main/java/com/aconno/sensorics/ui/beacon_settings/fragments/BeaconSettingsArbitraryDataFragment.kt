@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework.fragments
+package com.aconno.sensorics.ui.beacon_settings.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -13,6 +13,8 @@ import com.aconno.sensorics.R
 import kotlinx.android.synthetic.main.fragment_beacon_general.*
 
 class BeaconSettingsArbitraryDataFragment : SettingsBaseFragment() {
+
+    override var receiveInfoAfterSelfUpdating = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,11 +42,6 @@ class BeaconSettingsArbitraryDataFragment : SettingsBaseFragment() {
     override fun receivedBeaconInfo(beaconInfo: String) {
         val jsCode = jsGenerator.generateCall("init", beaconInfo)
         webview_general?.loadUrl(jsCode)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        webview_general.saveState(outState)
-        super.onSaveInstanceState(outState)
     }
 
     inner class WebAppChromeClient : WebChromeClient() {

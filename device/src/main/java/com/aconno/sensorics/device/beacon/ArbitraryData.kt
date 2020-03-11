@@ -14,20 +14,24 @@ abstract class ArbitraryData(open var capacity: Int = 0) : LinkedHashMap<String,
 
     abstract fun serialize(): ByteArray
     abstract fun set(key: String, value: String): Boolean
+    abstract fun setAll(newMap: Map<String, String>): Boolean
 
     abstract fun removeEntry(key: String): String?
 
     fun toJson(): JsonElement {
-        return gson.toJsonTree(this, typeToken)
+        return JsonObject().apply {
+            addProperty("available", available.value)
+            add("arbitraryDataEntries", gson.toJsonTree(this@ArbitraryData, typeToken))
+        }
     }
 
     @Throws(IllegalArgumentException::class)
     fun loadChangesFromJson(obj: JsonObject) {
         try {
-            gson.fromJson<Map<String, String>>(obj, typeToken).let {
-                this.clear()
-                this.putAll(it)
-            }
+            gson.fromJson<Map<String, String>>(obj.get("arbitraryDataEntries"), typeToken)
+                .let {
+                    this.setAll(it)
+                }
         } catch (e: Exception) {
             throw IllegalArgumentException(
                 "Invalid ArbitraryData format, should be $typeToken!", e

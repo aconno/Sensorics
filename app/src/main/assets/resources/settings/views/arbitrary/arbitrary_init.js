@@ -19,12 +19,7 @@ $(document).ready(function() {
             return;
         }
 
-        $('#container_arbitrary').append(
-            generateKeyValue(key, value)
-        );
-
-        //TriggerUpdate
-        updatedArbitraryDatas()
+        beacon.arbitraryData.arbitraryDataEntries[key]=value;
         native.onDataChanged(JSON.stringify(beacon));
         $('#arbitrary_modal').modal('toggle');
         $('#modal_key').val("");
@@ -35,11 +30,14 @@ $(document).ready(function() {
 function init(beaconInfo) {
     beacon = JSON.parse(beaconInfo);
 
-    Object.keys(beacon.arbitraryData).forEach((value, key) => {
+    $('#arbitrary-bytes-abailable').text(beacon.arbitraryData.available)
+    $('#container_arbitrary').empty();
+
+    for (let [key, value] of Object.entries(beacon.arbitraryData.arbitraryDataEntries)) {
         $('#container_arbitrary').append(
-            generateKeyValue(value, key)
+            generateKeyValue(key, value)
         );
-    });
+    }
 }
 
 function removeArbitraryDataView(btn) {
@@ -51,14 +49,14 @@ function removeArbitraryDataView(btn) {
 }
 
 function updatedArbitraryDatas() {
-    let arbitraryDatas = new Map();
+    let arbitraryDataEntries = new Map();
 
     let container = $('#container_arbitrary');
     for (let index = 0; index < container.children().length; index++) {
         let child = container.children().eq(index);
         let key = child.find("#arbitrary_item_key").text().trim();
         let value = child.find("#arbitrary_item_value").val();
-        arbitraryDatas[key] = value;
+        arbitraryDataEntries[key] = value;
     }
-    beacon.arbitraryData = arbitraryDatas;
+    beacon.arbitraryData.arbitraryDataEntries = arbitraryDataEntries;
 }

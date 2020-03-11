@@ -1,15 +1,14 @@
 package com.aconno.sensorics.device.beacon
 
-import android.content.Context
-import com.aconno.sensorics.device.beacon.v2.BeaconImpl
 import com.aconno.sensorics.device.bluetooth.tasks.GenericTask
 import com.aconno.sensorics.device.bluetooth.tasks.lock.LockStateRequestCallback
+import com.aconno.sensorics.domain.migrate.flatten
 import com.aconno.sensorics.domain.migrate.getObjectOrNull
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
-import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
-abstract class Beacon(context: Context, taskProcessor: BluetoothTaskProcessor) {
+abstract class Beacon(val taskProcessor: BluetoothTaskProcessor) {
     /**
      * Beacon parameter list
      */
@@ -116,10 +115,26 @@ abstract class Beacon(context: Context, taskProcessor: BluetoothTaskProcessor) {
         return JsonObject().apply {
             this.add("parameters", this@Beacon.parameters.toJson())
             this.add("slots", this@Beacon.slots.toJson())
-            this.add("arbitraryData", Gson().toJsonTree(arbitraryData))
+            this.add("arbitraryData", arbitraryData.toJson())
+            this.add("eventableParams",JsonObject().apply {
+                add("params",JsonArray().apply {
+                    parameters.flatten().filter { it.eventable }.forEach {
+                        val paramObject = JsonObject()
+                        paramObject.addProperty("id",it.id)
+                        paramObject.addProperty("name",it.name)
+                        add(paramObject)
+                    }
+                })
+                add("signs",JsonArray().apply {
+                    Slot.AdvertisingModeParameters.Sign.values().forEach {
+                        add(it.name)
+                    }
+                })
+            })
         }
     }
 
+    // todo implement this in a way that we know what are happening inside. For example, arbitrary data not loaded changes, because data exceeded limited
     @Throws(IllegalArgumentException::class)
     fun loadChangesFromJson(obj: JsonObject) {
         val parameters = obj.getObjectOrNull("parameters")
@@ -138,16 +153,5 @@ abstract class Beacon(context: Context, taskProcessor: BluetoothTaskProcessor) {
             ?: throw java.lang.IllegalArgumentException("Arbitrary data missing")
 
         this.arbitraryData.loadChangesFromJson(arbitraryData)
-    }
-
-    class Factory {
-        companion object {
-            fun createFromBleDevice(
-                context: Context,
-                taskProcessor: BluetoothTaskProcessor
-            ): Beacon {
-                return BeaconImpl(context, taskProcessor)
-            }
-        }
     }
 }

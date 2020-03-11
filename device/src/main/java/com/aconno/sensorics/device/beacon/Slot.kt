@@ -1,5 +1,6 @@
 package com.aconno.sensorics.device.beacon
 
+import com.aconno.sensorics.device.beacon.v2.parameters.getAsGivenTypeOrNull
 import com.aconno.sensorics.domain.migrate.*
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.FLOAT
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.UINT16
@@ -79,11 +80,13 @@ abstract class Slot(
     private var dirty: Boolean = false
         get() = field || !contentBytes().contentEquals(rawAdvertisingContent)
 
-    constructor(value: ByteArray) : this(Type.valueOf(
-        ValueConverters.ASCII_STRING.deserialize(
-            value.copyOfRange(0, value.stringLength()), order = ByteOrder.BIG_ENDIAN
+    constructor(value: ByteArray) : this(
+        Type.valueOf(
+            ValueConverters.ASCII_STRING.deserialize(
+                value.copyOfRange(0, value.stringLength()), order = ByteOrder.BIG_ENDIAN
+            )
         )
-    ))
+    )
 
     /**
      * Gets the type of this slot
@@ -147,30 +150,75 @@ abstract class Slot(
 
     @Throws(IllegalArgumentException::class)
     fun loadChangesFromJson(obj: JsonObject) {
+
+        val name = obj.getStringOrNull("name") ?: throw throwMissingArg("name")
+
+        val active = obj.getBooleanOrNull("active") ?: throw throwMissingArg("active")
+
         val type = obj.getStringOrNull("type")
-            ?: throw IllegalArgumentException(
-                "Type missing in slot!"
-            )
+            ?: throwMissingArg("Type")
 
-        val advertisingContent: Map<String, String> = obj.getObjectOrNull("advertisingContent")?.let {
-            try {
-                gson.fromJson<Map<String, String>>(it, mapStringStringTypeToken)
-            } catch (e: Exception) {
-                throw IllegalArgumentException(
-                    "Invalid advertisingContent format!", e
-                )
-            }
-        }
-            ?: throw IllegalArgumentException(
-                "Advertising content missing in slot!"
-            )
+        val advertisingContent: Map<String, String> =
+            obj.getObjectOrNull("advertisingContent")?.let {
+                try {
+                    gson.fromJson<Map<String, String>>(it, mapStringStringTypeToken)
+                } catch (e: Exception) {
+                    throw IllegalArgumentException(
+                        "Invalid advertisingContent format!", e
+                    )
+                }
+            } ?: throwMissingArg("Advertising content")
 
+        val txPower = obj.getNumberOrNull("txPower")
+            ?: throw IllegalArgumentException("Tx power content is missing in slot or it is not a number")
+        val packetCount = obj.getNumberOrNull("packetCount")
+            ?: throw IllegalArgumentException("packet count is missing in slot or it is not a number")
+
+        this.name = name
         this.setType(Type.valueOf(type))
         this.advertisingContent.clear()
         this.advertisingContent.putAll(advertisingContent)
+        this.active = active
+        this.txPower = getAsGivenTypeOrNull(txPower.toString(), Byte::class.java)
+            ?: throw IllegalArgumentException("txPower is $txPower and it is not a byte")
+        this.packetCount = getAsGivenTypeOrNull(packetCount.toString(), Int::class.java)
+            ?: throw IllegalArgumentException("packetCount is $packetCount and it is not a integer")
+        obj.getStringOrNull("advertisingMode")?.let {
+            advertisingMode = AdvertisingModeParameters.Mode.valueOf(it)
+        } ?: throwMissingArg("advertising mode")
 
-        // TODO: Load other changes
+        obj.getObjectOrNull("advertisingModeParameters")?.let {
+            when (advertisingMode) {
+                AdvertisingModeParameters.Mode.EVENT -> {
+                    val parameterId = it.getNumberOrNull("parameterId")
+                        ?: throwMissingArg("advertising parameter id")
+                    val sign = it.getStringOrNull("sign") ?: throwMissingArg("advertising sign")
+                    val thresholdInt =
+                        it.getNumberOrNull("thresholdInt") ?: throwMissingArg("threshold")
+                    // todo add threshold float
+
+                    advertisingModeParameters.parameterId =
+                        getAsGivenTypeOrNull(parameterId.toString(), Int::class.java)
+                            ?: throw  IllegalArgumentException("parameter id $parameterId is not int")
+                    advertisingModeParameters.sign = AdvertisingModeParameters.Sign.valueOf(sign)
+                    advertisingModeParameters.thresholdInt =
+                        getAsGivenTypeOrNull(thresholdInt.toString(), Long::class.java)
+                            ?: throw  IllegalArgumentException("thresholdInt $parameterId is not long")
+
+                }
+                AdvertisingModeParameters.Mode.INTERVAL -> {
+                    val interval =
+                        it.getNumberOrNull("interval") ?: throwMissingArg("advertising interval")
+                    advertisingModeParameters.interval =
+                        getAsGivenTypeOrNull(interval.toString(), Long::class.java)
+                            ?: throw  IllegalArgumentException("interval $interval is not long")
+                }
+            }
+        }
     }
+
+    private fun throwMissingArg(missingArg: String): Nothing =
+        throw IllegalArgumentException("$missingArg mode is missing in slot")
 
 
     enum class Type(
@@ -192,61 +240,128 @@ abstract class Slot(
                 put(KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID, it.copyOfRange(10, 16).toCompactHex())
             }
         }, {
-            byteArrayOf(0x02, 0x01, 0x06, 0x03, 0x03, 0xAA.toByte(), 0xFE.toByte(), 0x24, 0x16, 0xAA.toByte(), 0xFE.toByte()) +
-                byteArrayOf(0x00, 0x10) + // TODO TODO TODO
-                (it[KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID] ?: "").hexStringToByteArray() +
-                (it[KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID] ?: "").hexStringToByteArray() +
-                byteArrayOf(0x00, 0x00)
+            byteArrayOf(
+                0x02,
+                0x01,
+                0x06,
+                0x03,
+                0x03,
+                0xAA.toByte(),
+                0xFE.toByte(),
+                0x24,
+                0x16,
+                0xAA.toByte(),
+                0xFE.toByte()
+            ) +
+                    byteArrayOf(0x00, 0x10) + // TODO TODO TODO
+                    (it[KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID] ?: "").hexStringToByteArray() +
+                    (it[KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID] ?: "").hexStringToByteArray() +
+                    byteArrayOf(0x00, 0x00)
         }),
         URL("URL", true, {
             mutableMapOf<String, String>().apply {
-                put(KEY_ADVERTISING_CONTENT_URL_URL, when (it[13].toInt()) {
-                    0 -> "http://www."
-                    1 -> "https://www."
-                    2 -> "http://"
-                    3 -> "https://"
-                    else -> "invalid"
-                } + it.copyOfRange(14, it.size).toString(charset = Charset.defaultCharset()))
+                put(
+                    KEY_ADVERTISING_CONTENT_URL_URL, when (it[13].toInt()) {
+                        0 -> "http://www."
+                        1 -> "https://www."
+                        2 -> "http://"
+                        3 -> "https://"
+                        else -> "invalid"
+                    } + it.copyOfRange(14, it.size).toString(charset = Charset.defaultCharset())
+                )
             }
         }, {
             var url = it[KEY_ADVERTISING_CONTENT_URL_URL] ?: ""
-            val bytes = byteArrayOf(0x02, 0x01, 0x06, 0x03, 0x03, 0xAA.toByte(), 0xFE.toByte(), 0x03 + 0x03, 0x16, 0xAA.toByte(), 0xFE.toByte()) +
-                byteArrayOf(0x10, 0x10) +
-                byteArrayOf(when {
-                    url.startsWith("http://www.") -> {
-                        url = url.replace("http://www.", "")
-                        0x00
-                    }
-                    url.startsWith("https://www.") -> {
-                        url = url.replace("https://www.", "")
-                        0x01
-                    }
-                    url.startsWith("http://") -> {
-                        url = url.replace("http://", "")
-                        0x02
-                    }
-                    url.startsWith("https://") -> {
-                        url = url.replace("https://", "")
-                        0x03
-                    }
-                    else -> 0x04
-                }) + url.substring(0, if (url.length > 17) 17 else url.length).toByteArray()
+            val bytes = byteArrayOf(
+                0x02,
+                0x01,
+                0x06,
+                0x03,
+                0x03,
+                0xAA.toByte(),
+                0xFE.toByte(),
+                0x03 + 0x03,
+                0x16,
+                0xAA.toByte(),
+                0xFE.toByte()
+            ) +
+                    byteArrayOf(0x10, 0x10) +
+                    byteArrayOf(
+                        when {
+                            url.startsWith("http://www.") -> {
+                                url = url.replace("http://www.", "")
+                                0x00
+                            }
+                            url.startsWith("https://www.") -> {
+                                url = url.replace("https://www.", "")
+                                0x01
+                            }
+                            url.startsWith("http://") -> {
+                                url = url.replace("http://", "")
+                                0x02
+                            }
+                            url.startsWith("https://") -> {
+                                url = url.replace("https://", "")
+                                0x03
+                            }
+                            else -> 0x04
+                        }
+                    ) + url.substring(0, if (url.length > 17) 17 else url.length).toByteArray()
             bytes.apply {
-                this[7] = (this[7] + url.substring(0, if (url.length > 17) 17 else url.length).length).toByte()
+                this[7] = (this[7] + url.substring(
+                    0,
+                    if (url.length > 17) 17 else url.length
+                ).length).toByte()
             }
         }),
         TLM("TLM", true, {
             mutableMapOf<String, String>()
         }, {
             // TODO: Embed parameter values in here, talk to Dominik
-            byteArrayOf(0x02, 0x01, 0x06, 0x03, 0x03, 0xAA.toByte(), 0xFE.toByte(), 0x03 + 0x03, 0x16, 0xAA.toByte(), 0xFE.toByte()) +
-                byteArrayOf(0x20, 0x00, 0x00, 0x01, 0x00, 0x02, 0x12, 0x34, 0x56, 0x78, 0x87.toByte(), 0x65, 0x43, 0x21)
+            byteArrayOf(
+                0x02,
+                0x01,
+                0x06,
+                0x03,
+                0x03,
+                0xAA.toByte(),
+                0xFE.toByte(),
+                0x03 + 0x03,
+                0x16,
+                0xAA.toByte(),
+                0xFE.toByte()
+            ) +
+                    byteArrayOf(
+                        0x20,
+                        0x00,
+                        0x00,
+                        0x01,
+                        0x00,
+                        0x02,
+                        0x12,
+                        0x34,
+                        0x56,
+                        0x78,
+                        0x87.toByte(),
+                        0x65,
+                        0x43,
+                        0x21
+                    )
         }),
         I_BEACON("iBeacon", true, {
             mutableMapOf<String, String>().apply {
-                put(KEY_ADVERTISING_CONTENT_IBEACON_UUID, bytesToUUID(it.copyOfRange(9, 25)).toString())
-                put(KEY_ADVERTISING_CONTENT_IBEACON_MAJOR, ValueConverters.UINT16.deserialize(it.copyOfRange(25, 27)).toString())
-                put(KEY_ADVERTISING_CONTENT_IBEACON_MINOR, ValueConverters.UINT16.deserialize(it.copyOfRange(27, 29)).toString())
+                put(
+                    KEY_ADVERTISING_CONTENT_IBEACON_UUID,
+                    bytesToUUID(it.copyOfRange(9, 25)).toString()
+                )
+                put(
+                    KEY_ADVERTISING_CONTENT_IBEACON_MAJOR,
+                    ValueConverters.UINT16.deserialize(it.copyOfRange(25, 27)).toString()
+                )
+                put(
+                    KEY_ADVERTISING_CONTENT_IBEACON_MINOR,
+                    ValueConverters.UINT16.deserialize(it.copyOfRange(27, 29)).toString()
+                )
             }
         }, {
             val uuid: UUID = UUID.fromString(
@@ -255,10 +370,10 @@ abstract class Slot(
             val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR]?.toInt() ?: 0
             val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]?.toInt() ?: 0
             byteArrayOf(0x02, 0x01, 0x06, 0x1A, 0xFF.toByte(), 0x00, 0x4C, 0x02, 0x15) +
-                uuid.toBytes() +
-                ValueConverters.UINT16.serialize(major) +
-                ValueConverters.UINT16.serialize(minor) +
-                byteArrayOf(0x01)
+                    uuid.toBytes() +
+                    ValueConverters.UINT16.serialize(major) +
+                    ValueConverters.UINT16.serialize(minor) +
+                    byteArrayOf(0x01)
         }),
         DEVICE_INFO("DeviceInfo", false),
         EMPTY("-", false),
@@ -341,9 +456,9 @@ abstract class Slot(
 
         companion object {
             val SCALE: List<Int> = listOf(50) + (100..900 step 100) + // MILLIS
-                ((1..15) + listOf(15) + (20..50 step 10)).map { it * 1000 } + // SECONDS
-                ((1..15) + listOf(15) + (20..50 step 10)).map { it * 1000 * 60 } + // MINUTES
-                ((1..24).map { it * 1000 * 60 * 60 }) // HOURS
+                    ((1..15) + listOf(15) + (20..50 step 10)).map { it * 1000 } + // SECONDS
+                    ((1..15) + listOf(15) + (20..50 step 10)).map { it * 1000 * 60 } + // MINUTES
+                    ((1..24).map { it * 1000 * 60 * 60 }) // HOURS
         }
     }
 
@@ -357,7 +472,7 @@ abstract class Slot(
         const val KEY_ADVERTISING_CONTENT_IBEACON_MINOR = "ADVERTISING_CONTENT_IBEACON_MINOR"
         const val KEY_ADVERTISING_CONTENT_UID_NAMESPACE_ID = "ADVERTISING_CONTENT_UID_NAMESPACE_ID"
         const val KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID = "ADVERTISING_CONTENT_UID_INSTANCE_ID"
-        const val KEY_ADVERTISING_CONTENT_URL_URL = "ADVERTISING_CONTENT_UID_URL_URL"
+        const val KEY_ADVERTISING_CONTENT_URL_URL = "ADVERTISING_CONTENT_URL_URL"
         const val KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM = "ADVERTISING_CONTENT_CUSTOM_CUSTOM"
 
 

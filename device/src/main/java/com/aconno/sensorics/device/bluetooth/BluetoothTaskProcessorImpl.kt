@@ -119,7 +119,7 @@ class BluetoothTaskProcessorImpl(
     }
 
     override fun queueTasks(tasks: List<Task>): Boolean {
-        return if (queue.addAllFirst(tasks)) {
+        return if (queue.addAll(tasks)) {
             processQueue()
             true
         } else {
@@ -139,7 +139,6 @@ class BluetoothTaskProcessorImpl(
 
         // Check that the task isn't already being processed
         if (task.active) {
-            Timber.w("task ${task.name} is already being processed")
             return
         }
 
@@ -150,7 +149,7 @@ class BluetoothTaskProcessorImpl(
         task.onPreExecute()
 
         // Execute
-        Timber.d("Executing: ${task.name}")
+        Timber.d("\nExecuting: ${task.name}")
         try {
             val success: Boolean = task.execute(bluetooth)
 

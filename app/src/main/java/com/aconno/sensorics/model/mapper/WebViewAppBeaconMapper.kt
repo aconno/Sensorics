@@ -5,7 +5,7 @@ import com.aconno.sensorics.device.beacon.Parameters
 import com.aconno.sensorics.device.beacon.Slot
 import javax.inject.Inject
 
-class WebViewAppBeaconMapper @Inject constructor(val parametersAdContentMapper: ParametersAdvertisingContentMapper) {
+class WebViewAppBeaconMapper @Inject constructor(private val parametersAdContentMapper: ParametersAdvertisingContentMapper) {
 
     fun prepareAdContentForWebView(beacon: Beacon) {
         beacon.slots.forEach {
@@ -13,7 +13,7 @@ class WebViewAppBeaconMapper @Inject constructor(val parametersAdContentMapper: 
         }
     }
 
-    fun prepareAdContentForApp(beacon: Beacon) {
+    fun restoreAdContent(beacon: Beacon) {
         beacon.slots.forEach {
             convertToHexAdvContent(it, beacon.parameters)
         }

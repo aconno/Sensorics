@@ -92,7 +92,7 @@
             android:label="@string/title_dfu" />
         <activity android:name=".ui.cache.CacheActivity" />
         <activity
-            android:name=".ui.settings_framework.BeaconSettingsActivity"
+            android:name=".ui.beacon_settings.BeaconSettingsActivity"
             android:label="@string/beacon_settings" />
 
 

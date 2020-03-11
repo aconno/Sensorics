@@ -17,6 +17,17 @@ function generateUIDContent(namespaceId, instanceId) {
         '</div>';
 }
 
+function generateTexInput(id, label) {
+    return '<div class="row">' +
+        '<div class="col-3">' +
+        '<label>' + label + '</label>' +
+        '</div>' +
+        '<div class="col-9">' +
+        '<input style="width: 100%;" type="text" id=' + id + ' class="holo">' +
+        '</div>' +
+        '</div>';
+}
+
 function generateURLContent(url) {
     return '<div class="row">' +
         '<div class="col-3">' +
@@ -86,7 +97,10 @@ function generateEnums(elements, id, name, value, index) {
     let body = generateEnumsBody(id, elements, index);
     let html = '<div class="panel-body">';
     html += '<div class="form-group">';
-    html += '<label for="ddl-lbl-' + id + '">' + name + '</label>';
+    if (name.trim()) {
+        // Not empty
+        html += '<label for="ddl-lbl-' + id + '">' + name + '</label>';
+    }
     html += '<div id="ddl-' + id + '" class="dropdown">';
     html += '<button class="btn btn-secondary dropdown-toggle" type="button" id="ddl-menu-button-' + id + '"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
     html += value;
@@ -120,6 +134,14 @@ function generateAdvertisingIntervalRange(name, advertisingInterval, value, maxV
         '<input type="range" style="width:90%" value=' + value + ' id="advertising_interval_time_range" max ="' + maxValue + '"/>' +
         '</div>' +
         '</div>';
+}
+
+function generateAdvertisingIntervalInfo(interval) {
+    return '<div class="row">'
+        + '<div class="col-12">'
+        + '<span id = "advertising-interval-info">' + timeToHighestOrder(interval)+ '</span>'
+        + '</div>'
+        + '</div>';
 }
 
 function generatePacketCountRange(name, value, id, maxValue) {
@@ -161,6 +183,22 @@ function generateFrameTypeMenuItem(name) {
 
 function onlyPositiveNumberFilter(event) {
     return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 0
+}
+
+function isNumber(evt) {
+    evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    return true;
+}
+
+function generateEventableParams(eventableParams, defaultEventParam, sings, defaultSing, valueName) {
+    return '<div id="eventable-params-body">' +
+        generateEnums(eventableParams, "eventable-params", "", defaultEventParam, 0) +
+        generateEnums(sings, "eventable-params-sings", "", defaultSing, 0) +
+        generateTexInput("eventable-params-value", valueName) + '</br>';
 }
 
 function getClosestElementPosition(intArray, to) {

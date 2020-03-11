@@ -24,6 +24,24 @@ fun String.toHexByte(): Byte {
     ) and 0xff).toByte()
 }
 
+fun View.visible(){
+    visibility = View.VISIBLE
+}
+
+fun View.invisible(){
+    visibility = View.INVISIBLE
+}
+
+fun View.gone(){
+    visibility = View.GONE
+}
+
+/**
+ * Need to make "when" exhaustive
+ */
+val <T> T.exhaustive: T
+    get() = this
+
 fun Activity.showToast(@StringRes msgRes: Int) = Toast.makeText(this, msgRes, Toast.LENGTH_LONG)
     .show()
 

@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework
+package com.aconno.sensorics.ui.beacon_settings
 
 import com.aconno.sensorics.device.beacon.Beacon
 import java.io.Serializable

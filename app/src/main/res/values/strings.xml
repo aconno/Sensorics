@@ -379,6 +379,7 @@
 
     <!--  Beacon settings  -->
     <string name="connecting_with_dots">Connecting...</string>
+    <string name="connected_with_dots">Connected...</string>
     <string name="reading_with_dots">Reading...</string>
     <string name="password_required">Password required</string>
     <string name="connected_unlocking">Connected. Unlocking...</string>
@@ -390,4 +391,7 @@
     <string name="device_unlocked">Device unlocked!</string>
     <string name="confirm">Confirm</string>
     <string name="feature_not_implemented">"This feature has not been implemented yet!"</string>
+    <string name="device_not_connected">Device not connected</string>
+    <string name="writing_with_dots">Writing...</string>
+    <string name="settings_has_been_written_successfully">Settings has been written successfully</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.settings_framework.fragments
+package com.aconno.sensorics.ui.beacon_settings.fragments
 
 import android.os.Bundle
 import android.view.View
@@ -26,6 +26,10 @@ abstract class SettingsBaseFragment() : DaggerFragment() {
      * again in the current fragment. So we need to avoid event circularity
      */
     private var occurredAfterUpdateSent = false
+    /**
+     * In some cases we need retrieve data after updating it in current fragment
+     */
+    protected open var receiveInfoAfterSelfUpdating = false
 
     inner class SettingsFragmentsWebViewClient : WebViewClient() {
         private var isPageAlreadyLoaded = false
@@ -38,7 +42,7 @@ abstract class SettingsBaseFragment() : DaggerFragment() {
                     viewLifecycleOwner,
                     Observer {
                         it?.let { beaconInfo ->
-                            if (!occurredAfterUpdateSent) {
+                            if (shouldPropagate()) {
                                 Timber.d("received beaconInfo : $beaconInfo")
                                 receivedBeaconInfo(beaconInfo)
                             }
@@ -50,6 +54,8 @@ abstract class SettingsBaseFragment() : DaggerFragment() {
                 Timber.w("view is destroyed or page $url already loaded. not invoking pageLoaded callback")
             }
         }
+
+        private fun shouldPropagate() = receiveInfoAfterSelfUpdating || !occurredAfterUpdateSent
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

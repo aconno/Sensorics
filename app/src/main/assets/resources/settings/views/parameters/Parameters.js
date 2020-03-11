@@ -117,7 +117,6 @@ class HtmlActions {
     }
 
     static onSwitchChanged(id, index, value, groupName) {
-        console.log(value);
         ApropriateValueUpdater.update(beacon.parameters.parameters[groupName], index, value);
     }
 }
@@ -145,7 +144,6 @@ class ApropriateValueUpdater {
 
 class ParametersLoader {
 
-
     static convertNameToIdFormat(name) {
         let parts = name.split(" ");
         let result = ""
@@ -161,7 +159,6 @@ class ParametersLoader {
                 }
             }
         }
-        console.log("CONVERTING NAME TO ID FORMAT: " + name + "->" + result);
         return result;
     }
 
@@ -203,36 +200,30 @@ class ParametersLoader {
 
             if (type == this.TYPE_PARAMETER_BOOLEAN) {
                 let param = HtmlGenerator.generateParameterBool(id, parameter.name, parameter.value, parameter.writable, index, paramGroup);
-                console.log("HTML PARAM FOR BOOLEAN: " + param);
                 $(container).append(param);
                 $(container).append("<br/>");
                 continue;
             }
             if (type == this.TYPE_PARAMETER_TEXT) {
-                let param = HtmlGenerator.generateParameterEditText(id, parameter.name, parameter.value, parameter.writable, maxTextSize, index),
-                    paramGroup;
-                console.log("HTML PARAM FOR TEXT: " + param);
+                let param = HtmlGenerator.generateParameterEditText(id, parameter.name, parameter.value, parameter.writable, maxTextSize, index, paramGroup);
                 $(container).append(param);
                 $(container).append("<br/>");
                 continue;
             }
             if (type == this.TYPE_PARAMETER_NUMBER) {
                 let param = HtmlGenerator.generateNumberEditText(id, parameter.name, parameter.value, parameter.unit, parameter.min, parameter.max, parameter.writable, false, index, paramGroup);
-                console.log("HTML PARAM FOR NUMBER: " + param);
                 $(container).append(param);
                 $(container).append("<br/>");
                 continue;
             }
             if (type == this.TYPE_PARAMETER_FLOAT) {
                 let param = HtmlGenerator.generateNumberEditText(id, parameter.name, parameter.value, parameter.unit, parameter.min, parameter.max, parameter.writable, true, index, paramGroup);
-                console.log("HTML PARAM FOR FLOAT: " + param);
                 $(container).append(param);
                 $(container).append("<br/>");
                 continue;
             }
             if (type == this.TYPE_PARAMETER_ENUM) {
                 let param = HtmlGenerator.generateEnums(parameter.choices, id, parameter.name, parameter.value, index);
-                console.log("HTML PARAM FOR ENUM: " + param);
                 $(container).append(param);
                 $(container).append("<br/>");
                 continue;
