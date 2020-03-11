@@ -37,7 +37,10 @@ $(document).ready(function() {
 
 })
 
-function openTab(evt, tabName) {
+var currentTabIndex = -1;
+function openTab(evt, tabIndex) {
+     let tabName = "fragment-"+tabIndex;
+     currentTabIndex = tabIndex;
      console.log("open tab: "+tabName);
 
      var i, tabcontent, tablinks;
@@ -51,7 +54,7 @@ function openTab(evt, tabName) {
      }
      document.getElementById(tabName).style.display = "block";
      evt.currentTarget.className += " active";
-   }
+}
 
 
 var informationAlreadyLoaded = false;
@@ -117,6 +120,7 @@ function loadViewPagerPagesWithBeaconInfo(beaconInfo) {
         fragmentsContainer.appendChild(fragmentDiv);
 
         const fragment = fragments[i];
+        const fragmentIndex = i;
 
         $.get(fragment.pageUrl, function(data, status){
             console.log("loaded fragment "+fragment.pageUrl+" :data: "+data);
@@ -134,13 +138,25 @@ function loadViewPagerPagesWithBeaconInfo(beaconInfo) {
         tabButton.id = "tab-"+i;
         tabButton.classList.add("tablinks");
         tabButton.innerHTML = fragment.name;
-        tabButton.setAttribute("onclick","openTab(event,'"+fragmentDiv.id+"')");
+        tabButton.setAttribute("onclick","openTab(event,"+fragmentIndex+")");
         tabDiv.appendChild(tabButton);
 
     }
 
     fragmentsContainer.style.height = (window.innerHeight - tabDiv.clientHeight)+"px";
     fragmentsContainer.style.width = (window.innerWidth)+"px";
+
+    detectSwipeOnElement("#fragments-container", function(element,swipeDirection) {
+        let tabIndex = currentTabIndex;
+        if(swipeDirection == SWIPE_DIRECTION_RIGHT && currentTabIndex > 0) {
+            tabIndex-=1;
+        } else if(swipeDirection == SWIPE_DIRECTION_LEFT && currentTabIndex < fragments.length - 1) {
+            tabIndex+=1;
+        }
+        document.getElementById("tab-"+tabIndex).click();
+    });
+
+    document.getElementById("tab-0").click();
 
 }
 
@@ -149,15 +165,19 @@ const SWIPE_DIRECTION_RIGHT = 1;
 const SWIPE_DIRECTION_LEFT = 2;
 const SWIPE_DIRECTION_UP = 3;
 const SWIPE_DIRECTION_DOWN = 4;
-const MINIMAL_SWIPE_DISTANCE_FACTOR = 0.03;
+const MINIMAL_SWIPE_DISTANCE_FACTOR = 0.1;
 
 function detectSwipeOnElement(elementSelector,onSwipeDetected) {
     var swipeStartX = -1;
     var swipeStartY = -1;
 
-    $(elementSelector).on('pointermove', function (e) {
-        let deltaX = e.clientX - swipeStartX;
-        let deltaY = e.clientY - swipeStartY;
+    $(elementSelector).on('touchmove', function (e) {
+        if(swipeStartX == -1) {
+            return;
+        }
+
+        let deltaX = e.touches[0].clientX - swipeStartX;
+        let deltaY = e.touches[0].clientY - swipeStartY;
 
         let minimalSwipeDistance = MINIMAL_SWIPE_DISTANCE_FACTOR*window.innerWidth;
         let swipeDirection = 0;
@@ -178,11 +198,14 @@ function detectSwipeOnElement(elementSelector,onSwipeDetected) {
         }
 
         onSwipeDetected(this,swipeDirection);
+        swipeStartX = -1;
+        swipeStartY = -1;
 
     })
-    $(elementSelector).on('pointerdown', function (e) {
-        swipeStartX = e.clientX;
-        swipeStartY = e.clientY;
+    $(elementSelector).on('touchstart', function (e) {
+        const swipeStart = (e.touches || e.originalEvent.touches)[0];
+        swipeStartX = swipeStart.clientX;
+        swipeStartY = swipeStart.clientY;
     })
 
 
