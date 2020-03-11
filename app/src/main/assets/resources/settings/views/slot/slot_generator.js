@@ -23,7 +23,7 @@ function generateTexInput(id, label,slotIndex) {
         '<label>' + label + '</label>' +
         '</div>' +
         '<div class="col-9">' +
-        '<input style="width: 100%;" type="text" id=' + id + ' class="holo">' +
+        '<input style="width: 100%;" type="text" id="' + id + '-' + slotIndex + '" class="holo">' +
         '</div>' +
         '</div>';
 }
@@ -85,7 +85,7 @@ function generateDefaultContent(value,slotIndex) {
         '</div>';
 }
 
-function generateBaseParameter(interval_checked,slotIndex) {
+function generateBaseParameter() {
     return '<div class="row">' +
         '<div class="col-12">' +
         '<label>Base Parameter</label>' +
@@ -93,8 +93,8 @@ function generateBaseParameter(interval_checked,slotIndex) {
         '</div>';
 }
 
-function generateEnums(elements, id, name, value, index,slotIndex) {
-    let body = generateEnumsBody(id, elements, index);
+function generateEnums(elements, id, name, value, index, slotIndex) {
+    let body = generateEnumsBody(id, elements, index, slotIndex);
     let html = '<div class="panel-body">';
     html += '<div class="form-group">';
     if (name.trim()) {
@@ -109,13 +109,14 @@ function generateEnums(elements, id, name, value, index,slotIndex) {
     html += '</div>';
     html += '</div>';
     html += '</div>';
+
     return html;
 }
 
-function generateEnumsBody(id, elements, index) {
+function generateEnumsBody(id, elements, index,slotIndex) {
     var html = '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
     elements.forEach((element, position) => {
-        html += generateSingleEnum(id, element, position, index);
+        html += generateSingleEnum(id, element, position, index,slotIndex);
     });
     html += '</div>';
     return html
@@ -131,35 +132,35 @@ function generateAdvertisingIntervalRange(name, advertisingInterval, value, maxV
         '<label>' + name + ' </label> </div>' +
         '<div class="panel-body">' +
         '<label id="advertising-interval-time-'+slotIndex+'">' + advertisingInterval + '</label> <br>' +
-        '<input type="range" style="width:90%" value=' + value + ' id="advertising-interval-time-range-" max ="' + maxValue + '"/>' +
+        '<input type="range" style="width:90%" value=' + value + ' id="advertising-interval-time-range-'+slotIndex+'" max ="' + maxValue + '"/>' +
         '</div>' +
         '</div>';
 }
 
-function generateAdvertisingIntervalInfo(interval) {
+function generateAdvertisingIntervalInfo(interval,slotIndex) {
     return '<div class="row">'
         + '<div class="col-12">'
-        + '<span id = "advertising-interval-info">' + timeToHighestOrder(interval)+ '</span>'
+        + '<span id = "advertising-interval-info-'+slotIndex+'">' + timeToHighestOrder(interval)+ '</span>'
         + '</div>'
         + '</div>';
 }
 
-function generatePacketCountRange(name, value, id, maxValue) {
+function generatePacketCountRange(name, value, id, maxValue,slotIndex) {
     // Range starting position is 1
     let rangeValue = value - 1;
 
     return '<div class="panel-body">' +
-        '<label>' + name + ' </label> <label for="range-' + id + '">' + value + '</label></div>' +
+        '<label>' + name + ' </label> <label for="range-' + id + '-' + slotIndex + '">' + value + '</label></div>' +
         '<div class="panel-body">' +
-        '<input style="width:90%" type="range" value="' + rangeValue + '" id="range-' + id + '" max="' + maxValue + '"/>' +
+        '<input style="width:90%" type="range" value="' + rangeValue + '" id="range-' + id + '-' + slotIndex + '" max="' + maxValue + '"/>' +
         '</div>' +
         '</div>';
 }
 
-function generateSwitchContent(disabled, isChecked, name, id) {
+function generateSwitchContent(disabled, isChecked, name, id,slotIndex) {
     let checked = isChecked ? " checked" : "";
 
-    let checkbox = '<input type="checkbox" class="custom-control-input" id="toggle-' + id + '"' + checked + ' ';
+    let checkbox = '<input type="checkbox" class="custom-control-input" id="toggle-' + id + '-' + slotIndex + '"' + checked + ' ';
     if (disabled) {
         checkbox += "disabled";
     }
@@ -170,15 +171,15 @@ function generateSwitchContent(disabled, isChecked, name, id) {
         '<div class="form-group">' +
         '<div class="custom-control custom-switch" >' +
         checkbox +
-        '<label class="custom-control-label" for="toggle-' + id + '">' + name + '</label>' +
+        '<label class="custom-control-label" for="toggle-' + id + '-' + slotIndex + '">' + name + '</label>' +
         '</div>' +
         '</div>' +
         '</div>' +
         '</div>';
 }
 
-function generateFrameTypeMenuItem(name) {
-    return '<li><a class="dropdown-item" id="frame_type_' + name.toLowerCase() + '" href="#">' + name + '</a></li>'
+function generateFrameTypeMenuItem(name,slotIndex) {
+    return '<li><a class="dropdown-item" id="frame-type-' + name.toLowerCase() + '-' + slotIndex + '" href="#">' + name + '</a></li>'
 }
 
 function onlyPositiveNumberFilter(event) {
@@ -194,11 +195,11 @@ function isNumber(evt) {
     return true;
 }
 
-function generateEventableParams(eventableParams, defaultEventParam, sings, defaultSing, valueName) {
-    return '<div id="eventable-params-body">' +
-        generateEnums(eventableParams, "eventable-params", "", defaultEventParam, 0) +
-        generateEnums(sings, "eventable-params-sings", "", defaultSing, 0) +
-        generateTexInput("eventable-params-value", valueName) + '</br>';
+function generateEventableParams(eventableParams, defaultEventParam, sings, defaultSing, valueName,slotIndex) {
+    return '<div id="eventable-params-body-' + slotIndex +'">' +
+        generateEnums(eventableParams, "eventable-params", "", defaultEventParam, 0,slotIndex) +
+        generateEnums(sings, "eventable-params-sings", "", defaultSing, 0,slotIndex) +
+        generateTexInput("eventable-params-value", valueName,slotIndex) + '</br>';
 }
 
 function getClosestElementPosition(intArray, to) {

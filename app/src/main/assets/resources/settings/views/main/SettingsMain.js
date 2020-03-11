@@ -80,6 +80,7 @@ function addSlotFragmentsToFragmentsList(beaconInfo) {
         const slotIndex = i;
         let onInformationLoaded =
                 function(beaconInfo) {
+                    onSlotDocumentReady(slotIndex);
                     initSlot(beaconInfo,slotIndex);
                 }
         let preprocessPage = function(pageContent) {
