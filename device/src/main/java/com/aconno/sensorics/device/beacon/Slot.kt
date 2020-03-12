@@ -304,7 +304,7 @@ abstract class Slot(
                                 url = url.replace("https://", "")
                                 0x03
                             }
-                            else -> 0x04
+                            else -> 0x02
                         }
                     ) + url.substring(0, if (url.length > 17) 17 else url.length).toByteArray()
             bytes.apply {
@@ -364,11 +364,28 @@ abstract class Slot(
                 )
             }
         }, {
-            val uuid: UUID = UUID.fromString(
-                it[KEY_ADVERTISING_CONTENT_IBEACON_UUID] ?: "00000000-0000-0000-0000-000000000000"
-            )
-            val major: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR]?.toInt() ?: 0
-            val minor: Int = it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]?.toInt() ?: 0
+
+            val uuid: UUID =
+                try {
+                    UUID.fromString(
+                        it[KEY_ADVERTISING_CONTENT_IBEACON_UUID]
+                            ?: DEFAULT_ADVERTISING_CONTENT_IBEACON_UUID
+                    )
+                } catch (ex : IllegalArgumentException) {
+                    UUID.fromString(DEFAULT_ADVERTISING_CONTENT_IBEACON_UUID)
+                }
+
+            val major: Int = if(it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR]?.isNotEmpty() != true) {
+                0
+            } else {
+                it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR]?.toInt() ?: 0
+            }
+            val minor: Int = if(it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]?.isNotEmpty() != true) {
+                0
+            } else {
+                it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]?.toInt() ?: 0
+            }
+
             byteArrayOf(0x02, 0x01, 0x06, 0x1A, 0xFF.toByte(), 0x00, 0x4C, 0x02, 0x15) +
                     uuid.toBytes() +
                     ValueConverters.UINT16.serialize(major) +
@@ -474,6 +491,8 @@ abstract class Slot(
         const val KEY_ADVERTISING_CONTENT_UID_INSTANCE_ID = "ADVERTISING_CONTENT_UID_INSTANCE_ID"
         const val KEY_ADVERTISING_CONTENT_URL_URL = "ADVERTISING_CONTENT_URL_URL"
         const val KEY_ADVERTISING_CONTENT_CUSTOM_CUSTOM = "ADVERTISING_CONTENT_CUSTOM_CUSTOM"
+
+        const val DEFAULT_ADVERTISING_CONTENT_IBEACON_UUID = "00000000-0000-0000-0000-000000000000"
 
 
         fun advertisementToMap(advertisement: ByteArray): Map<Byte, ByteArray> {

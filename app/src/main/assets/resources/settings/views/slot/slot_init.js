@@ -234,6 +234,15 @@ function initListeners(slotIndex) {
           customTypeClicked(slotIndex);
       });
 
+    $('#ibeacon-uuid-'+slotIndex).on('input',function() {
+        let uuid = $(this).val();
+        if(!isValidUUID(uuid)) {
+            $(this).css('background-color', '#ffe6e6');
+        } else {
+            $(this).css('background-color', '');
+        }
+    });
+
     slotInitialized.set(slotIndex,true);
 }
 
@@ -462,4 +471,12 @@ function getUpdatedSlot(slotIndex) {
     }
 
     native.onDataChanged(JSON.stringify(beacon));
+}
+
+function isValidUUID(uuid) {
+    validatedUuid = uuid.match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
+    if (validatedUuid === null) {
+      return false;
+    }
+    return true;
 }
