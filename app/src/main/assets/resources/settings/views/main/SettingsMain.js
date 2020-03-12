@@ -54,6 +54,21 @@ function openTab(evt, tabIndex) {
      }
      document.getElementById(tabName).style.display = "block";
      evt.currentTarget.className += " active";
+
+     scrollTabList();
+}
+
+function scrollTabList() {
+    let tablist = document.getElementById("tab-container");
+    let tablistRect = tablist.getBoundingClientRect();
+    let activeTabRect = document.getElementById("tab-"+currentTabIndex).getBoundingClientRect();
+    if(activeTabRect.right > tablistRect.right) {
+        let outOfBoundWidth = activeTabRect.right - tablistRect.right;
+        tablist.scrollTo(tablist.scrollLeft + outOfBoundWidth,0);
+    } else if(activeTabRect.left < tablistRect.left) {
+        let outOfBoundWidth = tablistRect.left - activeTabRect.left;
+        tablist.scrollTo(tablist.scrollLeft - outOfBoundWidth,0);
+    }
 }
 
 
@@ -134,7 +149,7 @@ function loadViewPagerPagesWithBeaconInfo(beaconInfo) {
         });
 
 
-        var tabButton = document.createElement("button");
+        var tabButton = document.createElement("a");
         tabButton.id = "tab-"+i;
         tabButton.classList.add("tablinks");
         tabButton.innerHTML = fragment.name;
