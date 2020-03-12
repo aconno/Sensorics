@@ -180,14 +180,21 @@ const SWIPE_DIRECTION_RIGHT = 1;
 const SWIPE_DIRECTION_LEFT = 2;
 const SWIPE_DIRECTION_UP = 3;
 const SWIPE_DIRECTION_DOWN = 4;
-const MINIMAL_SWIPE_DISTANCE_FACTOR = 0.1;
+const MINIMAL_SWIPE_DISTANCE_FACTOR = 0.2;
+const MAX_SWIPE_DURATION = 1000;
 
 function detectSwipeOnElement(elementSelector,onSwipeDetected) {
     var swipeStartX = -1;
     var swipeStartY = -1;
+    var swipeStartTime = -1;
 
     $(elementSelector).on('touchmove', function (e) {
         if(swipeStartX == -1) {
+            return;
+        }
+
+        let swipeDuration = new Date().getTime() - swipeStartTime;
+        if(swipeDuration > MAX_SWIPE_DURATION) {
             return;
         }
 
@@ -215,12 +222,14 @@ function detectSwipeOnElement(elementSelector,onSwipeDetected) {
         onSwipeDetected(this,swipeDirection);
         swipeStartX = -1;
         swipeStartY = -1;
+        swipeStartTime = -1;
 
     })
     $(elementSelector).on('touchstart', function (e) {
         const swipeStart = (e.touches || e.originalEvent.touches)[0];
         swipeStartX = swipeStart.clientX;
         swipeStartY = swipeStart.clientY;
+        swipeStartTime = new Date().getTime();
     })
 
 
