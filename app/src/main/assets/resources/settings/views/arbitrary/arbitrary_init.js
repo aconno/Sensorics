@@ -46,6 +46,11 @@ function initArbitraryData(beaconInfo) {
         );
 
     }
+
+    $('.arbitrary-item-value').on('change', function () {
+        let key = $(this).data("key");
+        onValueUpdate(key,$(this).val());
+    });
 }
 
 function onValueUpdate(key,value,source) {
@@ -68,7 +73,7 @@ function updatedArbitraryDatas() {
     for (let index = 0; index < container.children().length; index++) {
         let child = container.children().eq(index);
         let key = child.find("#arbitrary_item_key").text().trim();
-        let value = child.find("#arbitrary_item_value").val();
+        let value = child.find("#arbitrary-item-value-"+key).val();
         arbitraryDataEntries[key] = value;
     }
     beacon.arbitraryData.arbitraryDataEntries = arbitraryDataEntries;
