@@ -2,13 +2,13 @@
 
 
 function onArbitraryDataDocumentLoaded() {
-    $('#container_arbitrary').on("click", ".btn-danger", function() {
+    $('#container-arbitrary').on("click", ".btn-danger", function() {
         removeArbitraryDataView(this);
     });
 
-    $('#modal_okay_btn').click(function() {
-        let key = $('#modal_key').val().trim();
-        let value = $('#modal_value').val().trim();
+    $('#modal-okay-btn').click(function() {
+        let key = $('#modal-key').val().trim();
+        let value = $('#modal-value').val().trim();
 
         if (!key) {
             alert("Please Enter a Key");
@@ -22,14 +22,14 @@ function onArbitraryDataDocumentLoaded() {
 
         beacon.arbitraryData.arbitraryDataEntries[key]=value;
         native.onDataChanged(JSON.stringify(beacon));
-        $('#arbitrary_modal').modal('toggle');
-        $('#modal_key').val("");
-        $('#modal_value').val("");
+        $('#arbitrary-modal').modal('toggle');
+        $('#modal-key').val("");
+        $('#modal-value').val("");
 
     });
 
-    $('#arbitrary_modal').on('shown.bs.modal', function () {
-      $('#modal_key').focus()
+    $('#arbitrary-modal').on('shown.bs.modal', function () {
+      $('#modal-key').focus()
     })
 
 }
@@ -38,10 +38,10 @@ function initArbitraryData(beaconInfo) {
     beacon = JSON.parse(beaconInfo);
 
     $('#arbitrary-bytes-abailable').text(beacon.arbitraryData.available)
-    $('#container_arbitrary').empty();
+    $('#container-arbitrary').empty();
 
     for (let [key, value] of Object.entries(beacon.arbitraryData.arbitraryDataEntries)) {
-        $('#container_arbitrary').append(
+        $('#container-arbitrary').append(
             generateKeyValue(key, value)
         );
 
@@ -69,10 +69,10 @@ function removeArbitraryDataView(btn) {
 function updatedArbitraryDatas() {
     let arbitraryDataEntries = new Map();
 
-    let container = $('#container_arbitrary');
+    let container = $('#container-arbitrary');
     for (let index = 0; index < container.children().length; index++) {
         let child = container.children().eq(index);
-        let key = child.find("#arbitrary_item_key").text().trim();
+        let key = child.find("#arbitrary-item-key").text().trim();
         let value = child.find("#arbitrary-item-value-"+key).val();
         arbitraryDataEntries[key] = value;
     }

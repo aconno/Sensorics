@@ -3,18 +3,18 @@ class GeneralView {}
 let beacon;
 
 GeneralView.Views = class {
-    static get TOGGLE_CONNECTION_ID() { return "tglConnection"; }
-    static get LABEL_MANUFACTURER_ID() { return  "lblManufacturer"; }
-    static get LABEL_MODEL_ID() { return  "lblModel"; }
-    static get LABEL_SOFTWARE_VERSION_ID() { return  "lblSoftwareVersion"; }
-    static get LABEL_HARDWARE_VERSION_ID() { return  "lblHardwareVersion"; }
-    static get LABEL_FIRMWARE_VERSION_ID() { return  "lblFirmwareVersion"; }
-    static get LABEL_OS_VERSION_ID() { return  "lblOsVersion"; }
-    static get LABEL_MAC_ADDRESS_ID() { return  "lblMacAddress"; }
-    static get LABEL_SUPPORTED_TX_POWER_ID() { return  "lblSupportedTxPower"; }
-    static get LABEL_SUPPORTED_SLOTS_ID() { return  "lblSupportedSlots"; }
-    static get LABEL_ADV_FEATURED_ID() { return  "lblAdvFeature"; }
-    static get LABEL_SLOT_AMOUNT_ID() { return  "lblSlotAmount"; }
+    static get TOGGLE_CONNECTION_ID() { return "tgl-connection"; }
+    static get LABEL_MANUFACTURER_ID() { return  "lbl-manufacturer"; }
+    static get LABEL_MODEL_ID() { return  "lbl-model"; }
+    static get LABEL_SOFTWARE_VERSION_ID() { return  "lbl-software-version"; }
+    static get LABEL_HARDWARE_VERSION_ID() { return  "lbl-hardware-version"; }
+    static get LABEL_FIRMWARE_VERSION_ID() { return  "lbl-firmware-version"; }
+    static get LABEL_OS_VERSION_ID() { return  "lbl-os-version"; }
+    static get LABEL_MAC_ADDRESS_ID() { return  "lbl-mac-address"; }
+    static get LABEL_SUPPORTED_TX_POWER_ID() { return  "lbl-supported-tx-power"; }
+    static get LABEL_SUPPORTED_SLOTS_ID() { return  "lbl-supported-slots"; }
+    static get LABEL_ADV_FEATURED_ID() { return  "lbl-adv-feature"; }
+    static get LABEL_SLOT_AMOUNT_ID() { return  "lbl-slot-amount"; }
  }
 
  GeneralView.ViewsAction = class{
