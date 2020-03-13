@@ -31,12 +31,6 @@ var fragments = [
 const SLOT_PAGE_URL = "../slot/Slot.html";
 
 
-$(document).ready(function() {
-
-
-
-})
-
 var currentTabIndex = -1;
 function openTab(evt, tabIndex) {
      let tabName = "fragment-"+tabIndex;
