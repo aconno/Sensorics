@@ -234,16 +234,16 @@ function initListeners(slotIndex) {
           customTypeClicked(slotIndex);
       });
 
-    $('#ibeacon-uuid-'+slotIndex).on('input',function() {
-        let uuid = $(this).val();
-        if(!isValidUUID(uuid)) {
-            $(this).css('background-color', '#ffe6e6');
-        } else {
-            $(this).css('background-color', '');
-        }
-    });
-
     slotInitialized.set(slotIndex,true);
+}
+
+function onUuidInput(source) {
+    let uuid = $(source).val();
+    if(!isValidUUID(uuid)) {
+        $(source).css('background-color', '#ffe6e6');
+    } else {
+        $(source).css('background-color', '');
+    }
 }
 
 // Callback which will be invoked when one of the enum is choosen (now considering only enum with tx power data)

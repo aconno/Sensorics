@@ -45,7 +45,7 @@ function generateIBeaconContent(uuid, major, minor,slotIndex) {
         '<label>UUID</label>' +
         '</div>' +
         '<div class="col-9">' +
-        '<input style="width: 100%;" type="text" id="ibeacon-uuid-'+slotIndex+'" value="' + uuid + '" class="holo">' +
+        '<input style="width: 100%;" oninput="onUuidInput(this)" type="text" id="ibeacon-uuid-'+slotIndex+'" value="' + uuid + '" class="holo">' +
         '</div>' +
         '</div>' +
         '<div class="row" style="margin-top: 1em;">' +
