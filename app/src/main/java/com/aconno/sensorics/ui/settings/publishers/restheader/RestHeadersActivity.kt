@@ -21,12 +21,13 @@ class RestHeadersActivity : AppCompatActivity(),
     AddRestHeaderDialog.OnFragmentInteractionListener,
     LongItemClickListener<RestHeaderModel> {
 
+    private lateinit var initialHeaders: ArrayList<RestHeaderModel>
     private lateinit var headers: ArrayList<RestHeaderModel>
     private lateinit var rvAdapter: RestHeadersAdapter
     private var onItemClickListener: ItemClickListenerWithPos<RestHeaderModel>
     private var selectedItem: RestHeaderModel? = null
 
-    private var dialogClickListener: DialogInterface.OnClickListener =
+    private var deleteDialogClickListener: DialogInterface.OnClickListener =
         DialogInterface.OnClickListener { dialog, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
@@ -36,6 +37,20 @@ class RestHeadersActivity : AppCompatActivity(),
 
                 DialogInterface.BUTTON_NEGATIVE -> {
                     dialog.dismiss()
+                }
+            }
+        }
+
+    private var unsavedChangesDialogClickListener: DialogInterface.OnClickListener =
+        DialogInterface.OnClickListener { dialog, which ->
+            when (which) {
+                DialogInterface.BUTTON_POSITIVE -> {
+                    finishActivityWithResult()
+                }
+
+                DialogInterface.BUTTON_NEGATIVE -> {
+                    setResult(Activity.RESULT_CANCELED)
+                    finish()
                 }
             }
         }
@@ -59,6 +74,7 @@ class RestHeadersActivity : AppCompatActivity(),
         setupActionBar()
 
         headers = intent.getParcelableArrayListExtra(REST_HEADERS_ACTIVITY_LIST_KEY)
+        initialHeaders = ArrayList(headers)
 
         initView()
     }
@@ -104,8 +120,8 @@ class RestHeadersActivity : AppCompatActivity(),
         val builder = AlertDialog.Builder(this)
 
         builder.setMessage(getString(R.string.are_you_sure))
-            .setPositiveButton(getString(R.string.yes), dialogClickListener)
-            .setNegativeButton(getString(R.string.no), dialogClickListener)
+            .setPositiveButton(getString(R.string.yes), deleteDialogClickListener)
+            .setNegativeButton(getString(R.string.no), deleteDialogClickListener)
             .show()
     }
 
@@ -123,13 +139,24 @@ class RestHeadersActivity : AppCompatActivity(),
                 return true
             }
             android.R.id.home -> {
-                setResult(Activity.RESULT_CANCELED)
-                finish()
+                onBackPressed()
                 return true
             }
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        if(initialHeaders != headers) {
+            AlertDialog.Builder(this).setMessage(getString(R.string.unsaved_changes_dialog_message))
+                .setPositiveButton(getString(R.string.save_changes), unsavedChangesDialogClickListener)
+                .setNegativeButton(getString(R.string.discard_changes),unsavedChangesDialogClickListener)
+                .show()
+
+        } else {
+            super.onBackPressed()
+        }
     }
 
     private fun deleteSelectedItem() {
