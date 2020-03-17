@@ -4,18 +4,26 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.model.RestHttpGetParamModel
+import com.aconno.sensorics.ui.SwipeToDeleteCallback
 import com.aconno.sensorics.ui.settings.publishers.restheader.ItemClickListenerWithPos
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_rest_httpgetparams.*
+import kotlinx.android.synthetic.main.activity_rest_httpgetparams.empty_view
+import kotlinx.android.synthetic.main.activity_rest_httpgetparams.recyclerView
+import kotlinx.android.synthetic.main.activity_rest_httpgetparams.toolbar
 
 
 class RestHttpGetParamsActivity : AppCompatActivity(),
@@ -27,6 +35,7 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
     private lateinit var rvAdapter: RestHttpGetParamsAdapter
     private var onItemClickListener: ItemClickListenerWithPos<RestHttpGetParamModel>
     private var selectedItem: RestHttpGetParamModel? = null
+    private var snackbar: Snackbar? = null
 
     private var deleteDialogClickListener: DialogInterface.OnClickListener =
         DialogInterface.OnClickListener { dialog, which ->
@@ -114,6 +123,39 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
                 .show(supportFragmentManager, null)
         }
 
+        initSwipeToDelete()
+    }
+
+    private fun initSwipeToDelete() {
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback(this) {
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val parameter = rvAdapter.getParameterAt(position)
+                rvAdapter.removeParameterAt(position)
+
+                snackbar = Snackbar
+                    .make(empty_view, "Parameter ${parameter.key} removed!", Snackbar.LENGTH_LONG)
+                snackbar?.setAction("UNDO") {
+                    rvAdapter.addParameterAtPosition(parameter, position)
+                }
+
+                snackbar?.addCallback(object : Snackbar.Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        if (event == DISMISS_EVENT_TIMEOUT
+                            || event == DISMISS_EVENT_CONSECUTIVE
+                            || event == DISMISS_EVENT_SWIPE
+                            || event == DISMISS_EVENT_MANUAL
+                        ) {
+                            deleteItem(parameter)
+                        }
+                    }
+                })
+                snackbar?.setActionTextColor(Color.YELLOW)
+                snackbar?.show()
+            }
+        }
+        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(recyclerView)
     }
 
     override fun onBackPressed() {
@@ -160,15 +202,19 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
         return super.onOptionsItemSelected(item)
     }
 
+    private fun deleteItem(item : RestHttpGetParamModel) {
+        val index = httpgetParams.indexOf(item)
+        httpgetParams.remove(item)
+        rvAdapter.notifyItemRemoved(index)
+
+        if (httpgetParams.isEmpty()) {
+            empty_view.visibility = View.VISIBLE
+        }
+    }
+
     private fun deleteSelectedItem() {
         selectedItem?.let {
-            val index = httpgetParams.indexOf(selectedItem!!)
-            httpgetParams.remove(selectedItem!!)
-            rvAdapter.notifyItemRemoved(index)
-
-            if (httpgetParams.isEmpty()) {
-                empty_view.visibility = View.VISIBLE
-            }
+            deleteItem(it)
             //Let GC collect removed instance
             selectedItem = null
         }
