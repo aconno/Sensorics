@@ -4,17 +4,24 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.model.RestHeaderModel
+import com.aconno.sensorics.ui.SwipeToDeleteCallback
+import com.google.android.material.snackbar.Snackbar
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_rest_headers.*
+import kotlinx.android.synthetic.main.fragment_action_list.*
 
 
 class RestHeadersActivity : AppCompatActivity(),
@@ -26,6 +33,7 @@ class RestHeadersActivity : AppCompatActivity(),
     private lateinit var rvAdapter: RestHeadersAdapter
     private var onItemClickListener: ItemClickListenerWithPos<RestHeaderModel>
     private var selectedItem: RestHeaderModel? = null
+    private var snackbar: Snackbar? = null
 
     private var deleteDialogClickListener: DialogInterface.OnClickListener =
         DialogInterface.OnClickListener { dialog, which ->
@@ -113,7 +121,42 @@ class RestHeadersActivity : AppCompatActivity(),
                 .show(supportFragmentManager, null)
         }
 
+        initSwipeToDelete()
+
     }
+
+    private fun initSwipeToDelete() {
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback(this) {
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val header = rvAdapter.getHeaderAt(position)
+                rvAdapter.removeHeaderAt(position)
+
+                snackbar = Snackbar
+                    .make(empty_view, "Header ${header.key} removed!", Snackbar.LENGTH_LONG)
+                snackbar?.setAction("UNDO") {
+                    rvAdapter.addHeaderAtPosition(header, position)
+                }
+
+                snackbar?.addCallback(object : Snackbar.Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        if (event == DISMISS_EVENT_TIMEOUT
+                            || event == DISMISS_EVENT_CONSECUTIVE
+                            || event == DISMISS_EVENT_SWIPE
+                            || event == DISMISS_EVENT_MANUAL
+                        ) {
+                            deleteItem(header)
+                        }
+                    }
+                })
+                snackbar?.setActionTextColor(Color.YELLOW)
+                snackbar?.show()
+            }
+        }
+        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(recyclerView)
+    }
+
 
     override fun onLongClick(param: RestHeaderModel) {
         selectedItem = param
@@ -159,15 +202,19 @@ class RestHeadersActivity : AppCompatActivity(),
         }
     }
 
+    private fun deleteItem(item : RestHeaderModel) {
+        val index = headers.indexOf(item)
+        headers.remove(item)
+        rvAdapter.notifyItemRemoved(index)
+
+        if (headers.isEmpty()) {
+            empty_view.visibility = View.VISIBLE
+        }
+    }
+
     private fun deleteSelectedItem() {
         selectedItem?.let {
-            val index = headers.indexOf(selectedItem!!)
-            headers.remove(selectedItem!!)
-            rvAdapter.notifyItemRemoved(index)
-
-            if (headers.isEmpty()) {
-                empty_view.visibility = View.VISIBLE
-            }
+            deleteItem(it)
             //Let GC collect removed instance
             selectedItem = null
         }
