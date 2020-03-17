@@ -376,5 +376,8 @@
     <string name="testing_in_progress">Testing in progress...</string>
 
     <string name="virtual_scanning_source_connection_fail">Unable to establish connection to virtual scanning source: %s</string>
+    <string name="unsaved_changes_dialog_message">There are unsaved changes. Do you want to discard them or to save them?</string>
+    <string name="save_changes">Save</string>
+    <string name="discard_changes">Discard</string>
 
 </resources>

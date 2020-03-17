@@ -22,12 +22,13 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
     AddRestHttpGetParamDialog.OnFragmentInteractionListener,
     LongItemClickListener<RestHttpGetParamModel> {
 
+    private lateinit var initialHttpGetParams: ArrayList<RestHttpGetParamModel>
     private lateinit var httpgetParams: ArrayList<RestHttpGetParamModel>
     private lateinit var rvAdapter: RestHttpGetParamsAdapter
     private var onItemClickListener: ItemClickListenerWithPos<RestHttpGetParamModel>
     private var selectedItem: RestHttpGetParamModel? = null
 
-    private var dialogClickListener: DialogInterface.OnClickListener =
+    private var deleteDialogClickListener: DialogInterface.OnClickListener =
         DialogInterface.OnClickListener { dialog, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
@@ -37,6 +38,20 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
 
                 DialogInterface.BUTTON_NEGATIVE -> {
                     dialog.dismiss()
+                }
+            }
+        }
+
+    private var unsavedChangesDialogClickListener: DialogInterface.OnClickListener =
+        DialogInterface.OnClickListener { dialog, which ->
+            when (which) {
+                DialogInterface.BUTTON_POSITIVE -> {
+                    finishActivityWithResult()
+                }
+
+                DialogInterface.BUTTON_NEGATIVE -> {
+                    setResult(Activity.RESULT_CANCELED)
+                    finish()
                 }
             }
         }
@@ -60,6 +75,7 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
         setupActionBar()
 
         httpgetParams = intent.getParcelableArrayListExtra(REST_HTTPGET_PARAMS_ACTIVITY_LIST_KEY)
+        initialHttpGetParams = ArrayList(httpgetParams)
 
         initView()
     }
@@ -100,13 +116,25 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
 
     }
 
+    override fun onBackPressed() {
+        if(initialHttpGetParams != httpgetParams) {
+            AlertDialog.Builder(this).setMessage(getString(R.string.unsaved_changes_dialog_message))
+                .setPositiveButton(getString(R.string.save_changes), unsavedChangesDialogClickListener)
+                .setNegativeButton(getString(R.string.discard_changes),unsavedChangesDialogClickListener)
+                .show()
+
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun onLongClick(param: RestHttpGetParamModel) {
         selectedItem = param
         val builder = AlertDialog.Builder(this)
 
         builder.setMessage(getString(R.string.are_you_sure))
-            .setPositiveButton(getString(R.string.yes), dialogClickListener)
-            .setNegativeButton(getString(R.string.no), dialogClickListener)
+            .setPositiveButton(getString(R.string.yes), deleteDialogClickListener)
+            .setNegativeButton(getString(R.string.no), deleteDialogClickListener)
             .show()
     }
 
@@ -124,8 +152,7 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
                 return true
             }
             android.R.id.home -> {
-                setResult(Activity.RESULT_CANCELED)
-                finish()
+                onBackPressed()
                 return true
             }
         }
