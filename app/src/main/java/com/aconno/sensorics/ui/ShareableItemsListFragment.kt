@@ -98,7 +98,8 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
             putExtra(Intent.EXTRA_TEXT, data)
             type = "text/plain"
         }
-        startActivity(Intent.createChooser(sendIntent, resources.getText(R.string.export)))
+        startActivityForResult(Intent.createChooser(sendIntent, resources.getText(R.string.export)),
+            CODE_SHARE_TEXT)
     }
 
     abstract fun getConvertToJsonUseCase() : ConvertObjectsToJsonUseCase<T>
@@ -190,6 +191,7 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         when (requestCode) {
             CODE_SHARE -> tempSharedFile.delete()
             CODE_EXPORT -> if (resultCode == Activity.RESULT_OK) {
@@ -231,6 +233,7 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
         private const val CODE_SHARE = 1
         private const val CODE_EXPORT = 2
         private const val CODE_IMPORT = 3
+        private const val CODE_SHARE_TEXT = 4
     }
 
 }
