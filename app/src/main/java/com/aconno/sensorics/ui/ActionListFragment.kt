@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -150,6 +151,7 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
 
         add_action_button.setOnClickListener {
             snackbar?.dismiss()
+            exitItemSelectionState()
             startAddActionActivity()
         }
     }
@@ -182,6 +184,11 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
             R.id.action_select_all -> selectAllItems()
             else -> super.resolveActionBarEvent(item)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        exitItemSelectionState()
     }
 
     private fun selectAllItems() {
