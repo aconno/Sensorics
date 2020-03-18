@@ -34,6 +34,25 @@ function onArbitraryDataDocumentLoaded() {
 
 }
 
+class TextInputElementState {
+    constructor(elementId, cursorPosition) {
+        this.elementId = elementId;
+        this.cursorPosition = cursorPosition;
+    }
+}
+
+var updatedElementState = null;
+function updateArbitraryData(beaconInfo) {
+    initArbitraryData(beaconInfo);
+
+    if(updatedElementState != null) {
+        $("#"+updatedElementState.elementId).focus();
+        $("#"+updatedElementState.elementId).prop('selectionStart', updatedElementState.cursorPosition);
+        $("#"+updatedElementState.elementId).prop('selectionEnd', updatedElementState.cursorPosition);
+        updatedElementState = null;
+    }
+}
+
 function initArbitraryData(beaconInfo) {
     beacon = JSON.parse(beaconInfo);
 
@@ -47,8 +66,9 @@ function initArbitraryData(beaconInfo) {
 
     }
 
-    $('.arbitrary-item-value').on('change', function () {
+    $('.arbitrary-item-value').on('keyup', function () {
         let key = $(this).data("key");
+        updatedElementState = new TextInputElementState($(this).attr("id"), $(this).prop('selectionStart'));
         onValueUpdate(key,$(this).val());
     });
 }

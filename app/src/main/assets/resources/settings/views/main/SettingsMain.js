@@ -21,7 +21,7 @@ var fragments = [
         initArbitraryData(beaconInfo);
     },
     function(beaconInfo) {
-        initArbitraryData(beaconInfo);
+        updateArbitraryData(beaconInfo);
     },null
     ),
     new Fragment("Parameters","../parameters/Parameters.html",function(beaconInfo) {
