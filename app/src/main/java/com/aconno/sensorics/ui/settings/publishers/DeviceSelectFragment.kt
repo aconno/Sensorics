@@ -82,6 +82,9 @@ class DeviceSelectFragment : BaseFragment() {
                     is MqttPublishModel -> deviceSelectViewModel.getAllDevicesWithMqttRelation(
                         basePublishModel!!.id
                     )
+                    is AzureMqttPublishModel -> deviceSelectViewModel.getAllDevicesWithAzureMqttRelation(
+                        basePublishModel!!.id
+                    )
                     else -> throw IllegalArgumentException()
                 }.firstOrError()
             }
@@ -94,7 +97,7 @@ class DeviceSelectFragment : BaseFragment() {
                     deviceList.clear()
                     deviceList.addAll(it)
                     adapter.notifyDataSetChanged()
-                    Timber.d("${it.size}")
+                    Timber.d("devices size is ${it.size}")
                 }
 
             addDisposable(subscribe)

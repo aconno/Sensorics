@@ -1,7 +1,6 @@
 package com.aconno.sensorics.dagger.mainactivity
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.dagger.compositescan.CompositeScanResultsModule
 import com.aconno.sensorics.device.permissons.PermissionActionFactory
@@ -28,9 +27,11 @@ import dagger.Provides
 import io.reactivex.Flowable
 
 
-@Module(includes = [
-    CompositeScanResultsModule::class
-])
+@Module(
+    includes = [
+        CompositeScanResultsModule::class
+    ]
+)
 class MainActivityModule {
 
     @Provides
@@ -113,10 +114,8 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideBluetoothViewModelFactory(
-        mainActivity: MainActivity,
-        bluetooth: Bluetooth,
-        bluetoothStateReceiver: BluetoothStateReceiver
-    ) = BluetoothViewModelFactory(bluetooth, bluetoothStateReceiver, mainActivity.application)
+        bluetooth: Bluetooth
+    ) = BluetoothViewModelFactory(bluetooth)
 
     @Provides
     @MainActivityScope

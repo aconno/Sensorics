@@ -13,7 +13,7 @@ abstract class MqttPublishDao {
     abstract fun getMqttPublishById(mqttPublishId: Long): Maybe<MqttPublishEntity>
 
     @Query("SELECT * FROM mqtt_publish WHERE enabled = 1")
-    abstract fun getEnabledMqttPublish(): List<MqttPublishEntity>
+    abstract fun getEnabledMqttPublish(): Single<List<MqttPublishEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insert(mqttPublishEntity: MqttPublishEntity): Long

@@ -24,9 +24,22 @@ class ConvertJsonToPublishersUseCase : ConvertJsonToObjectsUseCase<BasePublish>(
                 BASE_PUBLISH_TYPE
             ).mapIndexedNotNull { index, publisher ->
                 when (publisher.type) {
-                    PublishType.MQTT -> gson.fromJson(list[index], GeneralMqttPublish::class.java)
-                    PublishType.REST -> gson.fromJson(list[index], GeneralRestPublish::class.java)
-                    PublishType.GOOGLE -> gson.fromJson(list[index], GeneralGooglePublish::class.java)
+                    PublishType.MQTT -> gson.fromJson(
+                        list[index],
+                        GeneralMqttPublish::class.java
+                    )
+                    PublishType.REST -> gson.fromJson(
+                        list[index],
+                        GeneralRestPublish::class.java
+                    )
+                    PublishType.GOOGLE -> gson.fromJson(
+                        list[index],
+                        GeneralGooglePublish::class.java
+                    )
+                    PublishType.AZURE_MQTT -> gson.fromJson(
+                        list[index],
+                        GeneralAzureMqttPublish::class.java
+                    )
                 }
             })
         } catch (e: JsonSyntaxException) {

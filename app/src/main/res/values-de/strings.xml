@@ -302,5 +302,18 @@
 
     <string name="share_all_as_text">Alles teilen als JSON-Text</string>
     <string name="share_all_as_file">Alles teilen als JSON-Datei</string>
+    <string name="iot_hub_info_title"><b>IOT Hub Information</b></string>
+    <string name="iot_hub_information">IOT Hub Referenzen</string>
+    <string name="iot_hub_name">IOT Hub Name</string>
+    <string name="iot_hub_info_text" formatted="true">
+        Damit Sensorics auf Ihren Azure IOT Hub zugreifen kann, müssen Sie die erforderlichen Anmeldeinformationen angeben. Wenn Sie über kein Azure IOT Hub Konto verfügen, finden Sie <a href="https://docs.microsoft.com/en-us/azure/iot-hub/quickstart-send-telemetry-android#create-an-iot-hub">hier</a> Informationen darüber, wie Sie es erstellen können.
+        \n\n
+        Um die erforderlichen Anmeldeinformationen zu erstellen, müssen Sie zunächst Ihr Android-Gerät in Ihrem Azure IOT Hub registrieren. Auf diese Weise erhalten Sie die erforderlichen Anmeldeinformationen - Ihre Geräte-ID und einen gemeinsamen Zugangsschlüssel.
+        \n\n
+        Informationen zur Registrierung Ihres Android-Geräts im Azure IOT Hub mit der Azure Cloud Shell finden Sie <a href="https://docs.microsoft.com/en-us/azure/iot-hub/quickstart-send-telemetry-android#register-a-device">hier</a>. Wenn Sie nicht die Azure Cloud Shell verwenden möchten, können Sie dasselbe erreichen, indem Sie Azure CLI auf Ihrem PC installieren und die gleichen Befehle in Ihrem Terminal/Command Prompt ausführen, wie Sie sie in der Azure Cloud Shell ausführen würden, indem Sie den Anweisungen im angegebenen Link folgen. Informationen über die Installation von Azure CLI in Ihrem Betriebssystem finden Sie <a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">hier</a>.
+        \n\n
+        Denken Sie daran, dass Sie, wenn Sie Sensorics von mehreren Android-Geräten gleichzeitig auf Ihren Hub zugreifen lassen wollen, jedes einzelne Gerät registrieren müssen, da es nicht möglich ist, sich mit einem Azure IOT Hub unter Verwendung derselben Geräte-ID von mehreren Geräten gleichzeitig zu verbinden.
+    </string>
+    <string name="shared_access_key">Gemeinsamen Zugangsschlüssel</string>
 
 </resources>

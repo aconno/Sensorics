@@ -3,6 +3,8 @@ package com.aconno.sensorics.data.repository.resources
 import android.content.SharedPreferences
 import com.aconno.sensorics.data.api.ResourcesApi
 import com.aconno.sensorics.domain.ResourceSyncer
+import com.aconno.sensorics.domain.tryUse
+import timber.log.Timber
 import java.io.File
 
 class ResourceSyncerImpl(
@@ -11,60 +13,80 @@ class ResourceSyncerImpl(
     private val sharedPreferences: SharedPreferences
 ) : ResourceSyncer {
 
-    private var latestVersion = sharedPreferences.getLong(LATEST_VERSION, LATEST_ASSETS_VERSION)
+    private var localVersion = getResourcesVersion()
 
     override fun sync(): Boolean {
-        val latestVersionJsonModel = api.getLatestVersion(latestVersion)
+        Timber.d("Syncing...")
+        val latestVersionJsonModel = api.getResourceVersionDelta(localVersion)
 
-        if (latestVersionJsonModel.isUpdateNeeded) {
-            updateFiles(latestVersionJsonModel.filesToBeUpdated)
+        if (latestVersionJsonModel.updateNeeded) {
+            updateFiles(latestVersionJsonModel.files)
         }
 
-        return latestVersionJsonModel.isUpdateNeeded
+        return latestVersionJsonModel.updateNeeded
     }
 
     private fun updateFiles(
-        filesToBeUpdated: List<LatestVersionJsonModel.FilesToBeUpdatedJsonModel>
+        files: List<ResourceDelta.VersionedFile>
     ) {
+        var allDownloadsSucceeded = true
 
-        var isDownloadFailed = false
+        files.filter { versionedFile ->
+            getFileVersion(versionedFile) < versionedFile.fileLastModifiedDate
+        }.forEach { versionedFile ->
+            api.downloadFile(versionedFile.fileName)?.tryUse({ downloadStream ->
+                // Local cache file path
+                val filePath = "${cacheFilePath.absolutePath}${versionedFile.fileName}"
+                val targetFile = File(filePath)
 
-        filesToBeUpdated.forEach { model ->
-            val downloadedContentInputStream = api.downloadFile(model.fileName)
-
-            if (downloadedContentInputStream != null) {
-                val fileToBeSaved =
-                    File(cacheFilePath.absolutePath + model.fileName)
-                if (!fileToBeSaved.parentFile.exists()) {
-                    fileToBeSaved.parentFile.mkdir()
+                // Create file path if missing
+                if (targetFile.parentFile?.exists() != true) {
+                    targetFile.mkdirs()
                 }
 
-                fileToBeSaved.parentFile.takeIf {
-                    !it.exists()
-                }?.let {
-                    it.mkdirs()
-                }
+                // Open local file stream
+                targetFile.outputStream().tryUse({ fileStream ->
+                    // Copy
+                    downloadStream.copyTo(fileStream)
 
-                //Saving IS into the file
-                fileToBeSaved.outputStream().use { downloadedContentInputStream.copyTo(it) }
+                    if (allDownloadsSucceeded) {
+                        updateVersion(versionedFile.fileLastModifiedDate)
+                    }
 
-                //If a download failed stop updating LastModified date
-                //So next time it can start from where it failed.
-                if (isDownloadFailed) {
-                    //Successfully saved update Version in SharedPref
-                    updateVersion(model.fileLastModifiedDate)
-                }
-            } else {
-                isDownloadFailed = true
+                    updateFileVersion(versionedFile)
+                    true
+                }, { it ->
+                    Timber.e(it, "Failed to open local file stream!")
+                    false
+                })
+            }, {
+                Timber.e(it, "Failed to open download stream!")
+                false
+            }).let { downloadSucceeded ->
+                allDownloadsSucceeded = allDownloadsSucceeded and (downloadSucceeded == true)
             }
         }
     }
 
+    private fun getResourcesVersion(): Long {
+        return sharedPreferences.getLong(LATEST_VERSION, LATEST_ASSETS_VERSION)
+    }
+
     private fun updateVersion(fileLastModifiedDate: Long) {
-        latestVersion = fileLastModifiedDate
+        localVersion = fileLastModifiedDate
 
         sharedPreferences.edit()
             .putLong(LATEST_VERSION, fileLastModifiedDate)
+            .apply()
+    }
+
+    private fun getFileVersion(versionedFile: ResourceDelta.VersionedFile): Long {
+        return sharedPreferences.getLong("$LATEST_VERSION${versionedFile.fileName}", LATEST_ASSETS_VERSION)
+    }
+
+    private fun updateFileVersion(versionedFile: ResourceDelta.VersionedFile) {
+        sharedPreferences.edit()
+            .putLong("$LATEST_VERSION${versionedFile.fileName}", versionedFile.fileLastModifiedDate)
             .apply()
     }
 

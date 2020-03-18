@@ -8,9 +8,9 @@ abstract class BaseFragment : DaggerFragment() {
 
     private var compositeDisposable: CompositeDisposable? = null
 
-    override fun onDetach() {
+    override fun onDestroyView() {
         clearCompositeDisposable()
-        super.onDetach()
+        super.onDestroyView()
     }
 
     protected open fun addDisposable(vararg disposable: Disposable) {

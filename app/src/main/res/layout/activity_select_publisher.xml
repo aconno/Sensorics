@@ -88,4 +88,29 @@
             android:text="@string/mqtt_backend"
             android:textSize="18sp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/azure_mqtt_backend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/contentDescriptionUseless"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:src="@drawable/azure_logo" />
+
+        <TextView
+            style="@style/ListItemText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+            android:text="@string/azure_mqtt_backend"
+            android:textSize="18sp" />
+    </LinearLayout>
 </LinearLayout>

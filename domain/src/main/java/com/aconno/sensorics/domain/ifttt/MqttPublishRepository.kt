@@ -8,6 +8,6 @@ interface MqttPublishRepository {
     fun updateMqttPublish(mqttPublish: MqttPublish)
     fun deleteMqttPublish(mqttPublish: MqttPublish)
     fun getAllMqttPublish(): Single<List<BasePublish>>
-    fun getAllEnabledMqttPublish(): List<BasePublish>
+    fun getAllEnabledMqttPublish(): Single<List<BasePublish>>
     fun getMqttPublishById(mqttPublishId: Long): Maybe<MqttPublish>
 }

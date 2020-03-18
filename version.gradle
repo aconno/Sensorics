@@ -1,7 +1,7 @@
 // Version information
 ext.versionMajor = 5
-ext.versionMinor = 2
-ext.versionPatch = 4
+ext.versionMinor = 3
+ext.versionPatch = 0
 
 ext.generateVersionCode = {
     return 1000000 * ext.versionMajor + 1000 * ext.versionMinor + ext.versionPatch

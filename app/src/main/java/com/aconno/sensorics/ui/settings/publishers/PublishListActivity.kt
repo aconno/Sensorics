@@ -8,10 +8,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.aconno.sensorics.R
-import com.aconno.sensorics.model.BasePublishModel
-import com.aconno.sensorics.model.GooglePublishModel
-import com.aconno.sensorics.model.MqttPublishModel
-import com.aconno.sensorics.model.RestPublishModel
+import com.aconno.sensorics.model.*
+import com.aconno.sensorics.ui.settings.publishers.selectpublish.AzureMqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
@@ -22,11 +20,12 @@ import kotlinx.android.synthetic.main.activity_publish_list.*
 /**
  * @author aconno
  */
-class PublishListActivity : DaggerAppCompatActivity(), PublishListFragment.OnListFragmentClickListener,
-        PublishListFragment.ItemSelectionStateListener {
+class PublishListActivity : DaggerAppCompatActivity(),
+    PublishListFragment.OnListFragmentClickListener,
+    PublishListFragment.ItemSelectionStateListener {
 
     private var mainMenu: Menu? = null
-    private var menuResource : Int = R.menu.share_all_menu
+    private var menuResource: Int = R.menu.share_all_menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +43,6 @@ class PublishListActivity : DaggerAppCompatActivity(), PublishListFragment.OnLis
 
         setSupportActionBar(custom_toolbar)
     }
-
 
 
     override fun onItemSelectionStateEntered() {
@@ -67,11 +65,8 @@ class PublishListActivity : DaggerAppCompatActivity(), PublishListFragment.OnLis
     }
 
     override fun onSelectedItemsCountChanged(selectedItems: Int) {
-        custom_toolbar.title = getString(R.string.selected_items_count,selectedItems)
+        custom_toolbar.title = getString(R.string.selected_items_count, selectedItems)
     }
-
-
-
 
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -83,10 +78,10 @@ class PublishListActivity : DaggerAppCompatActivity(), PublishListFragment.OnLis
 
     override fun onBackPressed() {
         val publishListFragment = supportFragmentManager
-                .findFragmentById(R.id.publish_list_container) as PublishListFragment
+            .findFragmentById(R.id.publish_list_container) as PublishListFragment
 
         val handled = publishListFragment.onBackButtonPressed()
-        if(!handled) super.onBackPressed()
+        if (!handled) super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -102,6 +97,7 @@ class PublishListActivity : DaggerAppCompatActivity(), PublishListFragment.OnLis
             is GooglePublishModel -> GoogleCloudPublisherActivity.start(this, item)
             is RestPublishModel -> RestPublisherActivity.start(this, item)
             is MqttPublishModel -> MqttPublisherActivity.start(this, item)
+            is AzureMqttPublishModel -> AzureMqttPublisherActivity.start(this, item)
         }
     }
 

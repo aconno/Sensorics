@@ -25,15 +25,26 @@ class InputToOutcomesUseCase(
         return Single.fromObservable(observable)
     }
 
+    /**
+     * Map of previous conditions
+     * (device address) -> ((action id) -> (was action satisfied))
+     */
+    private val previousConditions: MutableMap<String, MutableMap<Long, Boolean>> = mutableMapOf()
+
     private fun actionsToOutcomes(
         actions: List<Action>,
         input: Input,
         timeOfDayInSeconds: Int
     ): List<Outcome> {
         val result = mutableListOf<Outcome>()
+        val previousDeviceConditions = previousConditions.getOrPut(input.macAddress) {
+            mutableMapOf()
+        }
 
         actions.asSequence().filter {
             it.device.macAddress == input.macAddress
+        }.filter { action ->
+            action.condition.readingType == input.type
         }.filter { action ->
             action.active
         }.filter { action ->
@@ -64,7 +75,11 @@ class InputToOutcomesUseCase(
                 false
             }
         }.filter { action ->
-            action.condition.isSatisfied(input)
+            action.condition.isSatisfied(input).let { currentResult ->
+                val cachedPreviousResult = previousDeviceConditions[action.id]
+                previousDeviceConditions[action.id] = currentResult
+                (cachedPreviousResult == false) && currentResult
+            }
         }.map { action ->
             action.outcome
         }.toList().let { outcomes ->

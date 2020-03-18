@@ -1,6 +1,9 @@
 # Changelog
 
 ## [Unreleased]
+
+## [5.3.0]
+- Add Azure IoT Hub support
 - Add publisher backend share
 - Add actions import, export, and share
 - Chnage backend resource url
@@ -18,4 +21,5 @@
 - Small code improvements
 
 [Unreleased]: https://github.com/aconno/Sensorics/compare/master...develop
+[5.3.0]: https://github.com/aconno/Sensorics/releases/tag/v5.3.0
 

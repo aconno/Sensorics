@@ -6,12 +6,15 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.aconno.sensorics.data.repository.action.ActionDao
 import com.aconno.sensorics.data.repository.action.ActionEntity
+import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishDao
+import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishEntity
 import com.aconno.sensorics.data.repository.devices.DeviceDao
 import com.aconno.sensorics.data.repository.devices.DeviceEntity
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishDao
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishEntity
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishDao
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishEntity
+import com.aconno.sensorics.data.repository.publishdevicejoin.*
 import com.aconno.sensorics.data.repository.mqttvirtualscanningsource.MqttVirtualScanningSourceDao
 import com.aconno.sensorics.data.repository.mqttvirtualscanningsource.MqttVirtualScanningSourceEntity
 import com.aconno.sensorics.data.repository.publishdevicejoin.GooglePublishDeviceJoinEntity
@@ -31,8 +34,10 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
         DeviceEntity::class,
         GooglePublishDeviceJoinEntity::class,
         GooglePublishEntity::class,
+        AzureMqttPublishEntity::class,
         MqttPublishDeviceJoinEntity::class,
         MqttPublishEntity::class,
+        AzureMqttPublishDeviceJoinEntity::class,
         RestHeaderEntity::class,
         RestHttpGetParamEntity::class,
         RestPublishDeviceJoinEntity::class,
@@ -40,7 +45,7 @@ import com.aconno.sensorics.data.repository.sync.SyncEntity
         SyncEntity::class,
         MqttVirtualScanningSourceEntity::class
     ],
-    version = 14
+    version = 15
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 
@@ -52,6 +57,8 @@ abstract class SensoricsDatabase : RoomDatabase() {
 
     abstract fun mqttPublishDao(): MqttPublishDao
 
+    abstract fun azureMqttPublishDao(): AzureMqttPublishDao
+
     abstract fun mqttVirtualScanningSourceDao(): MqttVirtualScanningSourceDao
 
     abstract fun publishDeviceJoinDao(): PublishDeviceJoinDao
@@ -61,12 +68,12 @@ abstract class SensoricsDatabase : RoomDatabase() {
     abstract fun syncDao(): SyncDao
 
     companion object {
-        val MIGRATION_11_12 = object: Migration(11, 12) {
+        val MIGRATION_11_12 = object : Migration(11, 12) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE actions ADD COLUMN active INTEGER NOT NULL DEFAULT 1")
             }
         }
-        val MIGRATION_12_13 = object: Migration(12, 13) {
+        val MIGRATION_12_13 = object : Migration(12, 13) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE actions ADD COLUMN timeFrom INTEGER NOT NULL DEFAULT 0")
                 database.execSQL("ALTER TABLE actions ADD COLUMN timeTo INTEGER NOT NULL DEFAULT 0")
