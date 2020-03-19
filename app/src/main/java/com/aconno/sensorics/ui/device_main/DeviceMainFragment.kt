@@ -25,8 +25,8 @@ import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.beacon_settings.BeaconSettingsActivity
 import com.aconno.sensorics.ui.cache.CacheActivity
-import com.aconno.sensorics.ui.configure.ConfigureActivity
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
@@ -43,6 +43,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -52,6 +53,7 @@ class DeviceMainFragment : DaggerFragment() {
     lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
 
     @Inject
+    @Named("composite")
     lateinit var sensorReadingFlow: Flowable<List<Reading>> //TODO: Move this to the view model
 
     @Inject
@@ -133,7 +135,8 @@ class DeviceMainFragment : DaggerFragment() {
         if (!mainActivity.isScanning() &&
             !mDevice.connectable &&
             bluetoothAdapter != null &&
-            bluetoothAdapter.isEnabled) {
+            bluetoothAdapter.isEnabled
+        ) {
             showAlertDialog(mainActivity)
         }
     }
@@ -144,14 +147,18 @@ class DeviceMainFragment : DaggerFragment() {
         super.onDetach()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
         if (mDevice.connectable) {
             menu.clear()
             this.menu = menu
         }
+        setMenuItemsVisibility(menu)
+    }
 
-        activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
         setMenuItemsVisibility(menu)
     }
 
@@ -160,10 +167,11 @@ class DeviceMainFragment : DaggerFragment() {
             it.findItem(R.id.action_start_usecases_activity).isVisible =
                 BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
             it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
-            it.findItem(R.id.action_start_config_activity).isVisible = hasSettings
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
             it.findItem(R.id.action_dfu).isVisible = hasSettings
-            //it.findItem(R.id.action_cache).isVisible = hasCache
+            it.findItem(R.id.action_settings_framework).isVisible =
+                if (BuildConfig.DEBUG) hasSettings else false
+            it.findItem(R.id.action_cache).isVisible = hasCache
         }
     }
 
@@ -191,17 +199,6 @@ class DeviceMainFragment : DaggerFragment() {
                     (activity as MainActivity).onUseCaseClicked(mDevice.macAddress, mDevice.name)
                     return true
                 }
-                R.id.action_start_config_activity -> {
-                    this.view?.let {
-                        Snackbar.make(it, "Functionality coming soon.", Snackbar.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    activity?.let {
-                        ConfigureActivity.start(it, device = mDevice)
-                    }
-                    return true
-                }
                 R.id.action_start_logging_activity -> {
                     this.view?.let {
                         Snackbar.make(
@@ -219,6 +216,11 @@ class DeviceMainFragment : DaggerFragment() {
                 }
                 R.id.action_cache -> {
                     CacheActivity.start(context, mDevice.macAddress)
+                    return true
+                }
+                R.id.action_settings_framework -> {
+                    (context as? MainActivity)?.stopScanOperation()
+                    BeaconSettingsActivity.start(context, mDevice.macAddress)
                     return true
                 }
                 else -> {
@@ -440,6 +442,7 @@ class DeviceMainFragment : DaggerFragment() {
         Timber.i("device is $device")
 
         mDevice = connectionCharacteristicsFinder.addCharacteristicsToDevice(device)
+        hasSettings = device.hasSettings
     }
 
     private fun showAlertDialog(mainActivity: MainActivity) {

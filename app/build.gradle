@@ -60,7 +60,6 @@ dependencies {
     implementation project(':domain')
     implementation project(':device')
     implementation project(':data')
-    implementation project(':bluetooth')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -114,6 +113,9 @@ dependencies {
         transitive = true
     }
 
+    // TODO: Move version
+    implementation "org.apache.commons:commons-text:1.8"
+
     implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
@@ -134,6 +136,9 @@ dependencies {
     androidTestImplementation "androidx.test:runner:$test_runner_version"
     testImplementation "androidx.arch.core:core-testing:$arch_core_testing_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
+
+    // TODO: Move version
+    implementation 'com.github.AllanHasegawa.Tempo:tempo:0.2.0'
 
     androidTestImplementation "org.mockito:mockito-inline:$mockito_inline_version"
     testImplementation "org.mockito:mockito-inline:$mockito_inline_version"

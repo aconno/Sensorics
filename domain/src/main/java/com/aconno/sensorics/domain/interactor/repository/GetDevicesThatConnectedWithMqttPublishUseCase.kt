@@ -9,9 +9,7 @@ import io.reactivex.Maybe
 class GetDevicesThatConnectedWithMqttPublishUseCase(
     private val publishDeviceJoinRepository: PublishDeviceJoinRepository
 ) : MaybeUseCaseWithParameter<List<Device>, Long> {
-
     override fun execute(parameter: Long): Maybe<List<Device>> {
         return publishDeviceJoinRepository.getDevicesThatConnectedWithMqttPublish(parameter)
-
     }
 }

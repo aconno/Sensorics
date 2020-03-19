@@ -1,11 +1,10 @@
 package com.aconno.sensorics.dagger.application
 
 import android.bluetooth.BluetoothAdapter
-import android.content.IntentFilter
 import android.content.SharedPreferences
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
+import com.aconno.sensorics.device.BluetoothGattAttributeValueConverter
 import com.aconno.sensorics.device.bluetooth.BluetoothImpl
 import com.aconno.sensorics.device.bluetooth.BluetoothPermission
 import com.aconno.sensorics.device.bluetooth.BluetoothPermissionImpl
@@ -20,31 +19,31 @@ class BluetoothModule {
 
     @Provides
     @Singleton
+    fun provideBluetoothStateReceiver(bluetoothStateListener: BluetoothStateListener) =
+        BluetoothStateReceiver(bluetoothStateListener)
+
+    @Provides
+    @Singleton
+    fun provideBluetoothStateListener() = BluetoothStateListener()
+
+    @Provides
+    @Singleton
     fun provideBluetooth(
         sensoricsApplication: SensoricsApplication,
         sharedPreferences: SharedPreferences,
         bluetoothAdapter: BluetoothAdapter,
         bluetoothPermission: BluetoothPermission,
-        bluetoothCharacteristicValueConverter: BluetoothCharacteristicValueConverter
-    ): Bluetooth {
-
-        val listener = BluetoothStateListener()
-        BluetoothStateReceiver(listener).also {
-            sensoricsApplication.registerReceiver(
-                it,
-                IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-            )
-        }
-
-        return BluetoothImpl(
+        bluetoothStateListener: BluetoothStateListener,
+        bluetoothGattAttributeValueConverter: BluetoothGattAttributeValueConverter
+    ): Bluetooth =
+        BluetoothImpl(
             sensoricsApplication,
             sharedPreferences,
             bluetoothAdapter,
             bluetoothPermission,
-            listener,
-            bluetoothCharacteristicValueConverter
+            bluetoothStateListener,
+            bluetoothGattAttributeValueConverter
         )
-    }
 
     @Provides
     @Singleton
