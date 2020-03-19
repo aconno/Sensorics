@@ -68,6 +68,8 @@ dependencies {
     androidTestImplementation "androidx.test:runner:$test_runner_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
 
+    implementation "com.google.protobuf:protobuf-java:$protobuf_version"
+
     // TODO: Move version
     implementation 'com.github.AllanHasegawa.Tempo:tempo:0.2.0'
 }

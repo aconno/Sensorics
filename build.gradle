@@ -106,6 +106,7 @@ ext {
     arch_core_testing_version = '2.1.0'
     test_runner_version = '1.2.0'
     espresso_core_version = '3.2.0'
+    protobuf_version = '3.11.4'
 
     mockito_inline_version = '3.3.0'
 }

@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package com.aconno.protobufs;
+
+option java_package = "com.aconno.sensorics.device.beacon.protobufmodel";
+option java_outer_classname = "ParametersProtobufModel";
+
+message Parameters {
+  uint32 crc = 1;
+  map<string,ParameterGroup> groups = 2;
+  Config config = 3;
+
+
+  message Config {
+    uint32 name_size = 1;
+    uint32 unit_size = 2;
+    uint32 max_value_size = 3;
+  }
+}
+
+message ParameterGroup {
+  repeated BooleanParameter boolean_parameter = 1;
+  repeated Int32Parameter int32_parameter = 2;
+  repeated UInt32Parameter uint32_parameter = 3;
+  repeated FloatParameter float_parameter = 4;
+  repeated EnumParameter enum_parameter = 5;
+  repeated StringParameter string_parameter = 6;
+}
+
+
+message BooleanParameter {
+  bool value = 1;
+}
+
+message NumberParameterSettings {
+  string unit = 1;
+  int32 min = 2;
+  int32 max = 3;
+}
+
+message Int32Parameter {
+  int32 value = 1;
+  NumberParameterSettings settings = 2;
+}
+
+message UInt32Parameter {
+  uint32 value = 1;
+  NumberParameterSettings settings = 2;
+}
+
+message FloatParameter {
+  float value = 1;
+  NumberParameterSettings settings = 2;
+}
+
+message StringParameter {
+  string value = 1;
+}
+
+message EnumParameter {
+  int32 value = 1;
+  string unit = 2;
+  repeated string choice = 3;
+}
+
+
