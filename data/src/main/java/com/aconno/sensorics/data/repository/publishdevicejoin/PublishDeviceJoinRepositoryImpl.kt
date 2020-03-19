@@ -2,7 +2,11 @@ package com.aconno.sensorics.data.repository.publishdevicejoin
 
 import com.aconno.sensorics.data.mapper.PublishDeviceJoinMapper
 import com.aconno.sensorics.data.repository.devices.DeviceMapper
-import com.aconno.sensorics.domain.ifttt.*
+import com.aconno.sensorics.domain.ifttt.GooglePublishDeviceJoin
+import com.aconno.sensorics.domain.ifttt.MqttPublishDeviceJoin
+import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
+import com.aconno.sensorics.domain.ifttt.RestPublishDeviceJoin
+import com.aconno.sensorics.domain.ifttt.AzureMqttPublishDeviceJoin
 import com.aconno.sensorics.domain.model.Device
 import io.reactivex.Maybe
 

@@ -10,29 +10,33 @@ import com.aconno.sensorics.domain.scanning.Bluetooth
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
+import javax.inject.Named
 
 @Module
 class BluetoothScanResultsModule {
 
     @Provides
+    @Named("bluetoothDevice")
     @BluetoothScanResultsScope
     fun provideDevice(
-        filteredScanResult: Flowable<ScanResult>,
+        @Named("bluetoothFilteredScanResult") filteredScanResult: Flowable<ScanResult>,
         generateScanDeviceUseCase: GenerateScanDeviceUseCase
     ): Flowable<ScanDevice> {
         return filteredScanResult.concatMap { generateScanDeviceUseCase.execute(it).toFlowable() }
     }
 
     @Provides
+    @Named("bluetoothReadings")
     @BluetoothScanResultsScope
     fun provideReadings(
-        filteredScanResult: Flowable<ScanResult>,
+        @Named("bluetoothFilteredScanResult") filteredScanResult: Flowable<ScanResult>,
         generateReadingsUseCase: GenerateReadingsUseCase
     ): Flowable<List<Reading>> {
         return filteredScanResult.concatMap { generateReadingsUseCase.execute(it).toFlowable() }
     }
 
     @Provides
+    @Named("bluetoothFilteredScanResult")
     @BluetoothScanResultsScope
     fun provideFilteredScanResult(
         bluetooth: Bluetooth,

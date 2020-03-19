@@ -17,13 +17,14 @@ import com.aconno.sensorics.dagger.alarm.AlarmServiceModule
 import com.aconno.sensorics.dagger.alarm.AlarmServiceScope
 import com.aconno.sensorics.dagger.azuremqttpublisher.AzureMqttPublisherActivityModule
 import com.aconno.sensorics.dagger.azuremqttpublisher.AzureMqttPublisherActivityScope
+import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsActivityModule
+import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsActivityScope
+import com.aconno.sensorics.dagger.beacon_settings.FragmentsModule
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanResultsModule
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanResultsScope
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceModule
 import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceScope
 import com.aconno.sensorics.dagger.compositescan.CompositeScanResultsScope
-import com.aconno.sensorics.dagger.configure.ConfigureActivityModule
-import com.aconno.sensorics.dagger.configure.ConfigureActivityScope
 import com.aconno.sensorics.dagger.device.DeviceModule
 import com.aconno.sensorics.dagger.device.DeviceScope
 import com.aconno.sensorics.dagger.deviceselect.DeviceSelectionFragmentsModule
@@ -37,10 +38,10 @@ import com.aconno.sensorics.dagger.mqtt.MqttScanResultsModule
 import com.aconno.sensorics.dagger.mqtt.MqttScanResultsScope
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityModule
 import com.aconno.sensorics.dagger.mqttpublisher.MqttPublisherActivityScope
-import com.aconno.sensorics.dagger.mqttvirtualscanningsource.MqttVirtualScanningSourceActivityModule
-import com.aconno.sensorics.dagger.mqttvirtualscanningsource.MqttVirtualScanningSourceActivityScope
 import com.aconno.sensorics.dagger.mqttvirtualscanning.MqttVirtualScanningServiceModule
 import com.aconno.sensorics.dagger.mqttvirtualscanning.MqttVirtualScanningServiceScope
+import com.aconno.sensorics.dagger.mqttvirtualscanningsource.MqttVirtualScanningSourceActivityModule
+import com.aconno.sensorics.dagger.mqttvirtualscanningsource.MqttVirtualScanningSourceActivityScope
 import com.aconno.sensorics.dagger.publisher.PublisherModule
 import com.aconno.sensorics.dagger.publisher.PublisherScope
 import com.aconno.sensorics.dagger.publishlist.PublishListActivityModule
@@ -61,7 +62,7 @@ import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.SplashActivity
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
-import com.aconno.sensorics.ui.configure.ConfigureActivity
+import com.aconno.sensorics.ui.beacon_settings.BeaconSettingsActivity
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.AzureMqttPublisherActivity
@@ -79,6 +80,8 @@ abstract class ActivityBuilder {
     @MainActivityScope
     @DeviceScope
     @SensorReadingsScope
+    @BluetoothScanResultsScope
+    @MqttScanResultsScope
     @CompositeScanResultsScope
     @ActionScope
     @ContributesAndroidInjector(
@@ -98,9 +101,13 @@ abstract class ActivityBuilder {
     @DeviceScope
     @ContributesAndroidInjector(
         modules = [
-            BluetoothScanningServiceModule::class, BluetoothScanResultsModule::class,
-            SensorReadingsModule::class, ActionOutcomeModule::class, PublisherModule::class,
-            ActionModule::class, DeviceModule::class
+            BluetoothScanningServiceModule::class,
+            BluetoothScanResultsModule::class,
+            ActionModule::class,
+            ActionOutcomeModule::class,
+            DeviceModule::class,
+            SensorReadingsModule::class,
+            PublisherModule::class
         ]
     )
     abstract fun bindBluetoothScanningService(): BluetoothScanningService
@@ -115,10 +122,14 @@ abstract class ActivityBuilder {
     @VirtualScanningSourceScope
     @ContributesAndroidInjector(
         modules = [
-            MqttVirtualScanningServiceModule::class, MqttScanResultsModule::class,
-            DeviceModule::class, ActionModule::class,
-            PublisherModule::class, SensorReadingsModule::class,
-            ActionOutcomeModule::class, VirtualScanningSourceModule::class
+            MqttVirtualScanningServiceModule::class,
+            MqttScanResultsModule::class,
+            VirtualScanningSourceModule::class,
+            ActionModule::class,
+            ActionOutcomeModule::class,
+            DeviceModule::class,
+            PublisherModule::class,
+            SensorReadingsModule::class
         ]
     )
     abstract fun bindMqttVirtualScanningService(): MqttVirtualScanningService
@@ -219,9 +230,9 @@ abstract class ActivityBuilder {
     )
     abstract fun bindSplashActivity(): SplashActivity
 
-    @ConfigureActivityScope
-    @ContributesAndroidInjector(modules = [ConfigureActivityModule::class])
-    abstract fun bindConfigureActivity(): ConfigureActivity
+    @BeaconSettingsActivityScope
+    @ContributesAndroidInjector(modules = [BeaconSettingsActivityModule::class, FragmentsModule::class])
+    abstract fun bindBeaconSettingsActivity(): BeaconSettingsActivity
 
     @DfuActivityScope
     @ContributesAndroidInjector

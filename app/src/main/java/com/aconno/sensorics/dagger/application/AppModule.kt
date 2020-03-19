@@ -5,6 +5,7 @@ import android.preference.PreferenceManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.room.Room
 import com.aconno.sensorics.AlarmServiceControllerImpl
+import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.IntentProviderImpl
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.dagger.time.TimeModule
@@ -102,7 +103,13 @@ class AppModule {
         )
             .addMigrations(SensoricsDatabase.MIGRATION_11_12)
             .addMigrations(SensoricsDatabase.MIGRATION_12_13)
-            .fallbackToDestructiveMigration()
+            .addMigrations(SensoricsDatabase.MIGRATION_13_14)
+            .addMigrations(SensoricsDatabase.MIGRATION_14_15)
+            .apply {
+                if(!BuildConfig.DEBUG) {
+                    fallbackToDestructiveMigration()
+                }
+            }
             .build()
     }
 

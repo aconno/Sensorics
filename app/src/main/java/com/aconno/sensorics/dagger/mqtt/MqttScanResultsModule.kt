@@ -10,21 +10,24 @@ import com.aconno.sensorics.domain.mqtt.MqttVirtualScanner
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
+import javax.inject.Named
 
 @Module
 class MqttScanResultsModule {
 
 
     @Provides
+    @Named("mqttDevice")
     @MqttScanResultsScope
     fun provideDevice(
-        filteredScanResult: Flowable<ScanResult>,
+        @Named("mqttFilteredScanResult") filteredScanResult: Flowable<ScanResult>,
         generateScanDeviceUseCase: GenerateScanDeviceUseCase
     ): Flowable<ScanDevice> {
         return filteredScanResult.concatMap { generateScanDeviceUseCase.execute(it).toFlowable() }
     }
 
     @Provides
+    @Named("mqttFilteredScanResult")
     @MqttScanResultsScope
     fun provideFilteredScanResult(
         mqttVirtualScanner: MqttVirtualScanner,
@@ -34,9 +37,10 @@ class MqttScanResultsModule {
     }
 
     @Provides
+    @Named("mqttReadings")
     @MqttScanResultsScope
     fun provideReadings(
-        filteredScanResult: Flowable<ScanResult>,
+        @Named("mqttFilteredScanResult") filteredScanResult: Flowable<ScanResult>,
         generateReadingsUseCase: GenerateReadingsUseCase
     ): Flowable<List<Reading>> {
         return filteredScanResult.concatMap { generateReadingsUseCase.execute(it).toFlowable() }

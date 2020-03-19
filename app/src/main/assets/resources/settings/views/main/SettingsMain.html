@@ -1,0 +1,134 @@
+<html>
+
+<head>
+    <meta name=“viewport” content=“width=device-width,initial-scale=1.0"/>
+    <link rel="stylesheet" href="../../libs/bootstrap-4.3.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../commons/holo.css"/>
+    <style>
+        .margin-sides {
+            margin-left: 0.1em;
+            margin-right: 0.1em;
+        }
+        .fullscreen {
+            width: 100vw;
+            height: 100vh;
+            overflow: scroll;
+        }
+        .label-description {
+            font-size: small;
+            font-weight: bold;
+            color: #666666
+        }
+        .label-text {
+            font-size: smaller;
+            font-weight: bold;
+        }
+        button.responsive-text {
+            font-size: medium;
+        }
+        label.responsive-text {
+            font-size: medium;
+        }
+        .card-view {
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            padding: 10px;
+        }
+        .div-text-right {
+            text-align: right;
+        }
+        .button22 {
+            background: black;
+            display: inline-block;
+            height: 1.4em;
+            width: 1.4em;
+            position: fixed;
+            bottom: 0px;
+            right: 0px;
+            color: white;
+            border: none;
+            margin-bottom: 0.6em;
+            margin-right: 0.6em;
+            border-radius: 50%;
+            font-size: 3em;
+            line-height: 0px;
+        }
+
+        #slider.slider-selection {
+            background: #BABABA;
+        }
+
+        .tab {
+            white-space : nowrap;
+            overflow: auto;
+            background-color: #FD9B27;
+        }
+
+        .tab a {
+            display: inline-block;
+            color: white;
+            text-align: center;
+            padding: 14px;
+            text-decoration: none;
+}
+
+
+        .tab a.active {
+            background-color: #d68320;
+        }
+
+        .tabcontent {
+            display: none;
+            padding: 10px 2px;
+            overflow: scroll;
+            -webkit-animation: fadeEffect 1s;
+            animation: fadeEffect 1s;
+        }
+
+        /* Fade in tabs */
+        @-webkit-keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        #fragments-container {
+            overflow: scroll;
+        }
+
+    </style>
+</head>
+
+<body style="background-color:#FAFAFA">
+
+<div class="tab" id="tab-container">
+</div>
+
+<div id="fragments-container">
+
+</div>
+
+
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../libs/popper.min.js"></script>
+<script src="../../libs/bootstrap-4.3.1/js/bootstrap.min.js"></script>
+<script src="../general/General.js"></script>
+<script src="../arbitrary/arbitrary_generator.js"></script>
+<script src="../arbitrary/arbitrary_init.js"></script>
+<script src="../parameters/Parameters.js"></script>
+<script src="../../model/Slot.js"></script>
+<script src="../slot/slot_generator.js"></script>
+<script src="../slot/slot_init.js"></script>
+<script src="SettingsMain.js"></script>
+
+</body>
+
+</html>
