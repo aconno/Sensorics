@@ -1,62 +1,100 @@
-$(document).ready(function () {
-    $('#container_arbitrary').on("click", ".btn-danger", function() {
+//let beacon;
+
+
+function onArbitraryDataDocumentLoaded() {
+    $('#container-arbitrary').on("click", ".btn-danger", function() {
         removeArbitraryDataView(this);
     });
 
-    $('#modal_okay_btn').click(function () {     
-        let key = $('#modal_key').val().trim();
-        let value = $('#modal_value').val().trim();
+    $('#modal-okay-btn').click(function() {
+        let key = $('#modal-key').val().trim();
+        let value = $('#modal-value').val().trim();
 
-        if(!key){
+        if (!key) {
             alert("Please Enter a Key");
             return;
         }
 
-        if(!value){
+        if (!value) {
             alert("Please Enter a Value");
             return;
         }
 
-        $('#container_arbitrary').append(
+        beacon.arbitraryData.arbitraryDataEntries[key]=value;
+        native.onDataChanged(JSON.stringify(beacon));
+        $('#arbitrary-modal').modal('toggle');
+        $('#modal-key').val("");
+        $('#modal-value').val("");
+
+    });
+
+    $('#arbitrary-modal').on('shown.bs.modal', function () {
+      $('#modal-key').focus()
+    })
+
+}
+
+class TextInputElementState {
+    constructor(elementId, cursorPosition) {
+        this.elementId = elementId;
+        this.cursorPosition = cursorPosition;
+    }
+}
+
+var updatedElementState = null;
+function updateArbitraryData(beaconInfo) {
+    initArbitraryData(beaconInfo);
+
+    if(updatedElementState != null) {
+        $("#"+updatedElementState.elementId).focus();
+        $("#"+updatedElementState.elementId).prop('selectionStart', updatedElementState.cursorPosition);
+        $("#"+updatedElementState.elementId).prop('selectionEnd', updatedElementState.cursorPosition);
+        updatedElementState = null;
+    }
+}
+
+function initArbitraryData(beaconInfo) {
+    beacon = JSON.parse(beaconInfo);
+
+    $('#arbitrary-bytes-abailable').text(beacon.arbitraryData.available)
+    $('#container-arbitrary').empty();
+
+    for (let [key, value] of Object.entries(beacon.arbitraryData.arbitraryDataEntries)) {
+        $('#container-arbitrary').append(
             generateKeyValue(key, value)
         );
 
-        //TriggerUpdate
-        Android.onDataChanged(getUpdatedArbitraryDatas());
-        $('#arbitrary_modal').modal('toggle');
-        $('#modal_key').val("");
-        $('#modal_value').val("");
-    });
-});
+    }
 
-function init(arbiraryDataJsonArray) {
-    let arbitraryDatas = JSON.parse(arbiraryDataJsonArray);
-
-    arbitraryDatas.forEach(element => {
-        $('#container_arbitrary').append(
-            generateKeyValue(element.key, element.value)
-        );
+    $('.arbitrary-item-value').on('keyup', function () {
+        let key = $(this).data("key");
+        updatedElementState = new TextInputElementState($(this).attr("id"), $(this).prop('selectionStart'));
+        onValueUpdate(key,$(this).val());
     });
+}
+
+function onValueUpdate(key,value,source) {
+     beacon.arbitraryData.arbitraryDataEntries[key]=value;
+     native.onDataChanged(JSON.stringify(beacon));
 }
 
 function removeArbitraryDataView(btn) {
     ((btn.parentNode).parentNode).removeChild(btn.parentNode);
 
     //Trigger Update
-    Android.onDataChanged(getUpdatedArbitraryDatas());
+    updatedArbitraryDatas()
+    native.onDataChanged(JSON.stringify(beacon));
 }
 
-function getUpdatedArbitraryDatas() {
-    let arbitraryDatas = new Array();
+function updatedArbitraryDatas() {
+    let arbitraryDataEntries = new Map();
 
-    let container = $('#container_arbitrary');
+    let container = $('#container-arbitrary');
     for (let index = 0; index < container.children().length; index++) {
         let child = container.children().eq(index);
-        let element = new ArbitraryData();
-        element.key = child.find("#arbitrary_item_key").text().trim();
-        element.value = child.find("#arbitrary_item_value").val();
-        arbitraryDatas.push(element);
+        let key = child.find("#arbitrary-item-key").text().trim();
+        let value = child.find("#arbitrary-item-value-"+key).val();
+        arbitraryDataEntries[key] = value;
     }
-
-    return JSON.stringify(arbitraryDatas);
+    beacon.arbitraryData.arbitraryDataEntries = arbitraryDataEntries;
 }

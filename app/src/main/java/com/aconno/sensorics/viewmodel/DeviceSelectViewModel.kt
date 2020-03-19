@@ -32,9 +32,9 @@ class DeviceSelectViewModel(
             .map {
                 val list = mutableListOf<DeviceRelationModel>()
 
-                loop@ for (i in 0..(it.first.size - 1)) {
-                    for (j in 0..(it.second.size - 1)) {
-                        if (it.first[i].macAddress == it.second[j].macAddress) {
+                loop@ for (i in it.first.indices) {
+                    for (element in it.second) {
+                        if (it.first[i].macAddress == element.macAddress) {
                             list.add(
                                 deviceRelationModelMapper.toDeviceRelationModel(it.first[i], true)
                             )
@@ -55,9 +55,9 @@ class DeviceSelectViewModel(
             .map {
                 val list = mutableListOf<DeviceRelationModel>()
 
-                loop@ for (i in 0..(it.first.size - 1)) {
-                    for (j in 0..(it.second.size - 1)) {
-                        if (it.first[i].macAddress == it.second[j].macAddress) {
+                loop@ for (i in it.first.indices) {
+                    for (element in it.second) {
+                        if (it.first[i].macAddress == element.macAddress) {
                             list.add(
                                 deviceRelationModelMapper.toDeviceRelationModel(it.first[i], true)
                             )

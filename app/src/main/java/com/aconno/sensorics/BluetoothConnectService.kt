@@ -58,6 +58,9 @@ class BluetoothConnectService : DaggerService() {
         )
     }
 
+    /**
+     * LiveData can drop some results if they come quickly
+     */
     fun getConnectResultsLiveData(): LiveData<GattCallbackPayload> = connectResultsLiveData
 
     fun startConnectionStream() {

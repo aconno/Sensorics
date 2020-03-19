@@ -25,6 +25,7 @@ import com.aconno.sensorics.viewmodel.resources.MainResourceViewModelFactory
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
+import javax.inject.Named
 
 
 @Module(
@@ -45,7 +46,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideSensorListViewModelFactory(
-        readingsStream: Flowable<List<Reading>>,
+        @Named("composite") readingsStream: Flowable<List<Reading>>,
         filterByMacUseCase: FilterByMacUseCase
     ) = SensorListViewModelFactory(
         readingsStream,
@@ -63,7 +64,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideReadingListViewModelFactory(
-        readingsStream: Flowable<List<Reading>>,
+        @Named("composite") readingsStream: Flowable<List<Reading>>,
         filterByMacUseCase: FilterByMacUseCase
     ) = ReadingListViewModelFactory(
         readingsStream,
@@ -148,7 +149,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideDeviceListViewModelFactory(
-        scanDeviceStream: Flowable<ScanDevice>,
+        @Named("composite") scanDeviceStream: Flowable<ScanDevice>,
         getSavedDevicesUseCase: GetSavedDevicesUseCase,
         saveDeviceUseCase: SaveDeviceUseCase,
         deleteDeviceUseCase: DeleteDeviceUseCase,
@@ -167,7 +168,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideUseCasesViewModelFactory(
-        readingsStream: Flowable<List<Reading>>,
+        @Named("composite") readingsStream: Flowable<List<Reading>>,
         filterByMacUseCase: FilterByMacUseCase,
         getUseCaseResourceUseCase: GetUseCaseResourceUseCase
     ) = UseCasesViewModelFactory(
@@ -187,7 +188,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideDashboardViewModelFactory(
-        readingsStream: Flowable<List<Reading>>
+        @Named("composite") readingsStream: Flowable<List<Reading>>
     ) = DashboardViewModelFactory(
         readingsStream
     )

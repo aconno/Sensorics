@@ -33,13 +33,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.settings.publishers.selectpublish.AzureMqttPublisherActivity"></activity>
-        <activity android:name=".ui.MainActivity" />
-        <activity android:name=".ui.settings.virtualscanningsources.MqttVirtualScanningSourceActivity"
-            android:label="@string/mqtt_virtual_scanning_source"/>
+        <activity android:name=".ui.settings.publishers.selectpublish.AzureMqttPublisherActivity" />
+        <activity android:name=".ui.MainActivity"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name=".ui.settings.virtualscanningsources.MqttVirtualScanningSourceActivity"
+            android:label="@string/mqtt_virtual_scanning_source" />
         <activity
             android:name=".ui.settings.virtualscanningsources.VirtualScanningSourceListActivity"
-            android:label="@string/title_virtual_scanning_sources"/>
+            android:label="@string/title_virtual_scanning_sources" />
         <activity android:name=".ui.ActionListActivity" />
 
         <service
@@ -50,9 +52,6 @@
             android:exported="false" />
         <service
             android:name=".BluetoothConnectService"
-            android:exported="false" />
-        <service
-            android:name="com.aconno.bluetooth.BluetoothDeviceService"
             android:exported="false" />
         <service
             android:name=".AlarmService"
@@ -85,17 +84,16 @@
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".ui.settings.SettingsActivity"
-            android:label="@string/title_settings"
+            android:label="@string/title_app_settings"
             android:theme="@style/SettingsTheme" />
-
-        <activity
-            android:name=".ui.configure.ConfigureActivity"
-            android:label="@string/title_configure" />
 
         <activity
             android:name=".ui.dfu.DfuActivity"
             android:label="@string/title_dfu" />
         <activity android:name=".ui.cache.CacheActivity" />
+        <activity
+            android:name=".ui.beacon_settings.BeaconSettingsActivity"
+            android:label="@string/beacon_settings" />
 
 
         <activity android:name=".ui.dfu.NotificationActivity" />
