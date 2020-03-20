@@ -179,11 +179,11 @@ class RestHeadersActivity : AppCompatActivity(),
         const val EDIT_HEADERS_REQUEST_CODE: Int = 10214
         const val REST_HEADERS_ACTIVITY_LIST_KEY = "REST_HEADERS_ACTIVITY_LIST_KEY"
 
-        fun start(activity: AppCompatActivity, headers: ArrayList<RestHeaderModel>) {
+        fun start(activity: AppCompatActivity, headers: MutableList<RestHeaderModel>) {
             val intent = Intent(activity, RestHeadersActivity::class.java)
-            intent.putParcelableArrayListExtra(
+            intent.putExtra(
                 REST_HEADERS_ACTIVITY_LIST_KEY,
-                headers
+                headers.toTypedArray()
             )
 
             activity.startActivityForResult(

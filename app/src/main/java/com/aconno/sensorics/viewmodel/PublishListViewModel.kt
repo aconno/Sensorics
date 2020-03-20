@@ -2,22 +2,13 @@ package com.aconno.sensorics.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.ifttt.*
-import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.AddAzureMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.DeleteAzureMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.GetAllAzureMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.UpdateAnyPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.GetAzureMqttPublishByIdUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetMqttPublishByIdUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.DeleteAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllPublishersUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
 import com.aconno.sensorics.model.*
 import com.aconno.sensorics.model.mapper.*
@@ -30,47 +21,26 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class PublishListViewModel(
-    private val getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
-    private val getAllRestPublishUseCase: GetAllRestPublishUseCase,
-    private val getAllAzureMqttPublishUseCase: GetAllAzureMqttPublishUseCase,
-    private val getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
-
-    private val getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
     private val getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
+    private val getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
     private val getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase,
     private val getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
 
-    private val addGooglePublishUseCase: AddGooglePublishUseCase,
-    private val addRestPublishUsecase: AddRestPublishUseCase,
-    private val addMqttPublishUseCase: AddMqttPublishUseCase,
-    private val addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
+    private val getAllPublishersUseCase: GetAllPublishersUseCase,
+    private val deleteAnyPublishUseCase: DeleteAnyPublishUseCase,
+    private val addAnyPublishUseCase: AddAnyPublishUseCase,
+    private val updateAnyPublishUseCase: UpdateAnyPublishUseCase,
 
-    private val deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
-    private val deleteRestPublishUseCase: DeleteRestPublishUseCase,
-    private val deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
-    private val deleteAzureMqttPublishUseCase: DeleteAzureMqttPublishUseCase,
-
-    private val updatePublishUseCase: UpdatePublishUseCase,
-
-    private val googlePublishDataMapper: GooglePublishDataMapper,
-    private val restPublishDataMapper: RESTPublishDataMapper,
-
+    private val googlePublishDataMapper: GooglePublishDataMapper, // TODO: Standardize
     private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
+    private val restPublishDataMapper: RESTPublishDataMapper,
     private val restPublishModelDataMapper: RESTPublishModelDataMapper,
     private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
     private val azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
-
-
 ) : ViewModel() {
 
     fun add(publish: BasePublish): Single<Long> {
-        return when (publish) {
-            is GooglePublish -> addGooglePublishUseCase.execute(publish)
-            is RestPublish -> addRestPublishUsecase.execute(publish)
-            is MqttPublish -> addMqttPublishUseCase.execute(publish)
-            is AzureMqttPublish -> addAzureMqttPublishUseCase.execute(publish)
-            else -> throw IllegalArgumentException("Invalid publish type.")
-        }
+        return addAnyPublishUseCase.execute(publish)
     }
 
     fun getGooglePublishModelById(id: Long): Maybe<GooglePublishModel> {
@@ -108,7 +78,7 @@ class PublishListViewModel(
             else -> throw IllegalArgumentException("Invalid publish model.")
         }
 
-        return Completable.fromAction { updatePublishUseCase.execute(mappedPublish) }
+        return Completable.fromAction { updateAnyPublishUseCase.execute(mappedPublish) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe()
@@ -117,65 +87,40 @@ class PublishListViewModel(
 
     //TODO make this a single
     fun getAllPublish(): Flowable<List<BasePublishModel>> {
-        return Single.merge(
-            getAllGooglePublishUseCase.execute(),
-            getAllRestPublishUseCase.execute(),
-            getAllMqttPublishUseCase.execute(),
-            getAllAzureMqttPublishUseCase.execute()
-        ).flatMapIterable { it }
-            .map {
-                when (it) {
-                    is GooglePublish -> {
-                        val transform = googlePublishDataMapper.transform(it)
-                        transform
-                    }
-                    is RestPublish -> {
-                        val transform = restPublishDataMapper.transform(it)
-                        transform
-                    }
-                    is MqttPublish -> {
-                        val transform = mqttPublishModelDataMapper.toMqttPublishModel(it)
-                        transform
-                    }
-                    is AzureMqttPublish -> {
-                        val transform = azureMqttPublishModelDataMapper.toAzureMqttPublishModel(it)
-                        transform
-                    }
-                    else -> throw NullPointerException("Illegal parameter provided. ")
-                }
-            }.toList()
+        return getAllPublishersUseCase.execute()
+            .toFlowable()
+            .flatMapIterable { it }
+            .map { dataToModel(it) }
+            .toList()
             .toFlowable()
     }
 
-    fun delete(googlePublishModel: GooglePublishModel): Disposable {
-        val googlePublish = googlePublishModelDataMapper.transform(googlePublishModel)
-
-        return deleteGooglePublishUseCase.execute(googlePublish)
-            .subscribeOn(Schedulers.io())
-            .subscribe()
+    private fun modelToData(publishModel: BasePublishModel): BasePublish {
+        return when (publishModel) {
+            is GooglePublishModel -> googlePublishModelDataMapper.transform(publishModel)
+            is RestPublishModel -> restPublishModelDataMapper.transform(publishModel)
+            is MqttPublishModel -> mqttPublishModelDataMapper.toMqttPublish(publishModel)
+            is AzureMqttPublishModel -> azureMqttPublishModelDataMapper.toAzureMqttPublish(
+                publishModel
+            )
+            else -> throw IllegalArgumentException("Invalid publish model.")
+        }
     }
 
-    fun delete(restPublishModel: RestPublishModel): Disposable {
-        val restPublish = restPublishModelDataMapper.transform(restPublishModel)
-
-        return deleteRestPublishUseCase.execute(restPublish)
-            .subscribeOn(Schedulers.io())
-            .subscribe()
+    private fun dataToModel(publish: BasePublish): BasePublishModel {
+        return when (publish) {
+            is GooglePublish -> googlePublishDataMapper.transform(publish)
+            is RestPublish -> restPublishDataMapper.transform(publish)
+            is MqttPublish -> mqttPublishModelDataMapper.toMqttPublishModel(publish)
+            is AzureMqttPublish -> azureMqttPublishModelDataMapper.toAzureMqttPublishModel(
+                publish
+            )
+            else -> throw IllegalArgumentException("Invalid publish model.")
+        }
     }
 
-    fun delete(mqttPublishModel: MqttPublishModel): Disposable {
-        val mqttPublish = mqttPublishModelDataMapper.toMqttPublish(mqttPublishModel)
-
-        return deleteMqttPublishUseCase.execute(mqttPublish)
-            .subscribeOn(Schedulers.io())
-            .subscribe()
-    }
-
-    fun delete(azureMqttPublishModel: AzureMqttPublishModel): Disposable {
-        val azureMqttPublish =
-            azureMqttPublishModelDataMapper.toAzureMqttPublish(azureMqttPublishModel)
-
-        return deleteAzureMqttPublishUseCase.execute(azureMqttPublish)
+    fun delete(publishModel: BasePublishModel): Disposable {
+        return deleteAnyPublishUseCase.execute(modelToData(publishModel))
             .subscribeOn(Schedulers.io())
             .subscribe()
     }

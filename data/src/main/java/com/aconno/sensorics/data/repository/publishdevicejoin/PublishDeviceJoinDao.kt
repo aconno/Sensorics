@@ -7,47 +7,14 @@ import io.reactivex.Maybe
 @Dao
 abstract class PublishDeviceJoinDao {
     @Query(
-        "SELECT * FROM devices WHERE macAddress IN (SELECT dId FROM google_publish_device_join WHERE gId = :googlePublishId)"
+        "SELECT * FROM devices WHERE macAddress IN (SELECT deviceId FROM publish_device_join WHERE publishId = :publishId AND publishType= :publishType)"
     )
-    abstract fun getDevicesThatConnectedWithGooglePublish(googlePublishId: Long): Maybe<List<DeviceEntity>>
-
-    @Query(
-        "SELECT * FROM devices WHERE macAddress IN (SELECT dId FROM rest_publish_device_join WHERE rId = :restPublishId)"
-    )
-    abstract fun getDevicesThatConnectedWithRestPublish(restPublishId: Long): Maybe<List<DeviceEntity>>
-
-    @Query(
-        "SELECT * FROM devices WHERE macAddress IN (SELECT dId FROM mqtt_publish_device_join WHERE mId = :mqttPublishId)"
-    )
-    abstract fun getDevicesThatConnectedWithMqttPublish(mqttPublishId: Long): Maybe<List<DeviceEntity>>
-
-    @Query(
-        "SELECT * FROM devices WHERE macAddress IN (SELECT dId FROM azure_mqtt_publish_device_join WHERE aId = :azureMqttPublishId)"
-    )
-    abstract fun getDevicesThatConnectedWithAzureMqttPublish(azureMqttPublishId: Long): Maybe<List<DeviceEntity>>
+    abstract fun getDevicesConnectedWithPublish(publishId: Long, publishType: String): Maybe<List<DeviceEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertGoogle(googlePublishDeviceJoinEntity: GooglePublishDeviceJoinEntity): Long
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertRest(restPublishDeviceJoinEntity: RestPublishDeviceJoinEntity): Long
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertMqtt(mqttPublishDeviceJoinEntity: MqttPublishDeviceJoinEntity): Long
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertAzureMqtt(azureMqttPublishDeviceJoinEntity: AzureMqttPublishDeviceJoinEntity): Long
+    abstract fun insert(genericPublishDeviceJoinEntity: GenericPublishDeviceJoinEntity): Long
 
     @Delete
-    abstract fun delete(googlePublishDeviceJoinEntity: GooglePublishDeviceJoinEntity)
-
-    @Delete
-    abstract fun delete(restPublishDeviceJoinEntity: RestPublishDeviceJoinEntity)
-
-    @Delete
-    abstract fun delete(mqttPublishDeviceJoinEntity: MqttPublishDeviceJoinEntity)
-
-    @Delete
-    abstract fun delete(azureMqttPublishDeviceJoinEntity: AzureMqttPublishDeviceJoinEntity)
+    abstract fun delete(genericPublishDeviceJoinEntity: GenericPublishDeviceJoinEntity)
 }
 

@@ -1,6 +1,7 @@
 package com.aconno.sensorics.domain.interactor.repository
 
-import com.aconno.sensorics.domain.ifttt.*
+import com.aconno.sensorics.domain.ifttt.PublishDeviceJoin
+import com.aconno.sensorics.domain.ifttt.PublishDeviceJoinRepository
 import com.aconno.sensorics.domain.interactor.type.CompletableUseCaseWithParameter
 import io.reactivex.Completable
 
@@ -10,21 +11,7 @@ class SavePublishDeviceJoinUseCase(
 
     override fun execute(parameter: PublishDeviceJoin): Completable {
         return Completable.fromAction {
-            when (parameter) {
-                is GooglePublishDeviceJoin -> publishDeviceJoinRepository.addGooglePublishDeviceJoin(
-                    parameter
-                )
-                is RestPublishDeviceJoin -> publishDeviceJoinRepository.addRestPublishDeviceJoin(
-                    parameter
-                )
-                is MqttPublishDeviceJoin -> publishDeviceJoinRepository.addMqttPublishDeviceJoin(
-                    parameter
-                )
-                is AzureMqttPublishDeviceJoin -> publishDeviceJoinRepository.addAzureMqttPublishDeviceJoin(
-                    parameter
-                )
-                else -> throw IllegalArgumentException("Illegal argument provided")
-            }
+            publishDeviceJoinRepository.addPublishDeviceJoin(parameter)
         }
     }
 }

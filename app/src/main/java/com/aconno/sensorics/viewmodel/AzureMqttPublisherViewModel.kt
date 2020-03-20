@@ -1,63 +1,42 @@
 package com.aconno.sensorics.viewmodel
 
-import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.ifttt.GeneralAzureMqttPublishDeviceJoin
-import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.AddAzureMqttPublishUseCase
+import com.aconno.sensorics.domain.ifttt.PublishDeviceJoin
+import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.GetAzureMqttPublishByIdUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import com.aconno.sensorics.model.AzureMqttPublishModel
 import com.aconno.sensorics.model.mapper.AzureMqttPublishModelDataMapper
-import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 class AzureMqttPublisherViewModel(
-    private val savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
-    private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-    private val addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
+    private val addAnyPublishUseCase: AddAnyPublishUseCase,
+    private val getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
+    savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
+    deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
     private val azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
-) : ViewModel() {
-
-    fun save(
-        azureMqttPublishModel: AzureMqttPublishModel
-    ): Single<Long> {
-        val transform = azureMqttPublishModelDataMapper.toAzureMqttPublish(azureMqttPublishModel)
-        return addAzureMqttPublishUseCase.execute(transform)
-    }
-
-    fun addOrUpdatePublisherDeviceRelation(
-        deviceId: String,
-        publisherId: Long
-    ): Completable {
-        return savePublishDeviceJoinUseCase.execute(
-            GeneralAzureMqttPublishDeviceJoin(
-                publisherId,
-                deviceId
-            )
-        )
-    }
-
-    fun deletePublishDeviceRelation(
-        deviceId: String,
-        publisherId: Long
-    ): Completable {
-        return deletePublishDeviceJoinUseCase.execute(
-            GeneralAzureMqttPublishDeviceJoin(
-                publisherId,
-                deviceId
-            )
-        )
-    }
-
-    fun checkFieldsAreEmpty(
-        vararg strings: String
-    ): Boolean {
-
-        strings.forEach {
-            if (it.isBlank()) {
-                return true
-            }
+) : PublisherViewModel<AzureMqttPublishModel>(
+    savePublishDeviceJoinUseCase, deletePublishDeviceJoinUseCase
+) {
+    override fun getById(id: Long): Maybe<AzureMqttPublishModel> {
+        return getAzureMqttPublishByIdUseCase.execute(id).map {
+            azureMqttPublishModelDataMapper.toAzureMqttPublishModel(it)
         }
+    }
 
-        return false
+    override fun save(
+        model: AzureMqttPublishModel
+    ): Single<Long> {
+        val transform = azureMqttPublishModelDataMapper.toAzureMqttPublish(model)
+        return addAnyPublishUseCase.execute(transform)
+    }
+
+    override fun createPublishDeviceJoin(deviceId: String, publishId: Long): PublishDeviceJoin {
+        return GeneralAzureMqttPublishDeviceJoin(
+            publishId,
+            deviceId
+        )
     }
 }

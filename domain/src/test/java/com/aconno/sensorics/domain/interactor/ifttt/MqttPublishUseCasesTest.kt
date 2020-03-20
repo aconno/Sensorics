@@ -2,7 +2,7 @@ package com.aconno.sensorics.domain.interactor.ifttt
 
 import com.aconno.sensorics.domain.ifttt.GeneralMqttPublish
 import com.aconno.sensorics.domain.ifttt.publish.MqttPublishRepository
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.*
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetMqttPublishByIdUseCase
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,7 +16,6 @@ class MqttPublishUseCasesTest {
 
     private lateinit var addMqttPublishUseCase: AddMqttPublishUseCase
     private lateinit var deleteMqttPublishUseCase: DeleteMqttPublishUseCase
-    private lateinit var getAllEnabledMqttPublishUseCase: GetAllEnabledMqttPublishUseCase
     private lateinit var getAllMqttPublishUseCase: GetAllMqttPublishUseCase
     private lateinit var getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase
 

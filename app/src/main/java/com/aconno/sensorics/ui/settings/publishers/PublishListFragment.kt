@@ -264,7 +264,6 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
         }.toList()
     }
 
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnListFragmentClickListener) {

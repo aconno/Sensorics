@@ -82,34 +82,10 @@ class DeviceModule {
 
     @Provides
     @DeviceScope
-    fun provideGetDevicesThatConnectedWithGooglePublishUseCase(
+    fun provideGetDevicesConnectedWithPublishUseCase(
         publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): GetDevicesThatConnectedWithGooglePublishUseCase {
-        return GetDevicesThatConnectedWithGooglePublishUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @DeviceScope
-    fun provideGetDevicesThatConnectedWithRESTPublishUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): GetDevicesThatConnectedWithRestPublishUseCase {
-        return GetDevicesThatConnectedWithRestPublishUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @DeviceScope
-    fun provideGetDevicesThatConnectedWithMqttPublishUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): GetDevicesThatConnectedWithMqttPublishUseCase {
-        return GetDevicesThatConnectedWithMqttPublishUseCase(publishDeviceJoinRepository)
-    }
-
-    @Provides
-    @DeviceScope
-    fun provideGetDevicesThatConnectedWithAzureMqttPublishUseCase(
-        publishDeviceJoinRepository: PublishDeviceJoinRepository
-    ): GetDevicesThatConnectedWithAzureMqttPublishUseCase {
-        return GetDevicesThatConnectedWithAzureMqttPublishUseCase(publishDeviceJoinRepository)
+    ): GetDevicesConnectedWithPublishUseCase {
+        return GetDevicesConnectedWithPublishUseCase(publishDeviceJoinRepository)
     }
 
     @Provides

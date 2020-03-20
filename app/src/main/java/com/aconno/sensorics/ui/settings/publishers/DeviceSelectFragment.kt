@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
-import com.aconno.sensorics.model.*
+import com.aconno.sensorics.domain.ifttt.outcome.PublishType
+import com.aconno.sensorics.model.BasePublishModel
+import com.aconno.sensorics.model.DeviceRelationModel
 import com.aconno.sensorics.ui.base.BaseFragment
 import com.aconno.sensorics.viewmodel.DeviceSelectViewModel
 import io.reactivex.Single
@@ -25,7 +27,8 @@ class DeviceSelectFragment : BaseFragment() {
     @Inject
     lateinit var deviceSelectViewModel: DeviceSelectViewModel
 
-    private var basePublishModel: BasePublishModel? = null
+    private var publisherId: Long? = null
+    private var publisherType: PublishType? = null
     private var deviceList: MutableList<DeviceRelationModel> = mutableListOf()
     private lateinit var adapter: DeviceSelectAdapter
 
@@ -38,8 +41,11 @@ class DeviceSelectFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (arguments != null && arguments!!.containsKey(DEVICE_SELECT_FRAGMENT_KEY)) {
-            basePublishModel = arguments!!.getParcelable(DEVICE_SELECT_FRAGMENT_KEY)
+        arguments?.let { args ->
+            args.getString(DEVICE_SELECT_PUBLISHER_TYPE_KEY)?.let { type ->
+                publisherId = args.getLong(DEVICE_SELECT_PUBLISHER_ID_KEY)
+                publisherType = args.getSerializable(DEVICE_SELECT_PUBLISHER_TYPE_KEY) as? PublishType
+            }
         }
     }
 
@@ -67,29 +73,13 @@ class DeviceSelectFragment : BaseFragment() {
     private fun queryDevices() {
         GlobalScope.launch(Dispatchers.Default) {
 
-            val single: Single<List<DeviceRelationModel>>
+            val single: Single<List<DeviceRelationModel>> = (publisherType?.let { type ->
+                publisherId?.let { id ->
+                    deviceSelectViewModel.getAllDevicesWithRelation(id, type).firstOrError()
+                }
+            }) ?: deviceSelectViewModel.getAllDevices()
 
-            if (basePublishModel == null) {
-                single = deviceSelectViewModel.getAllDevices()
-            } else {
-                single = when (basePublishModel) {
-                    is GooglePublishModel -> deviceSelectViewModel.getAllDevicesWithGoogleRelation(
-                        basePublishModel!!.id
-                    )
-                    is RestPublishModel -> deviceSelectViewModel.getAllDevicesWithRESTRelation(
-                        basePublishModel!!.id
-                    )
-                    is MqttPublishModel -> deviceSelectViewModel.getAllDevicesWithMqttRelation(
-                        basePublishModel!!.id
-                    )
-                    is AzureMqttPublishModel -> deviceSelectViewModel.getAllDevicesWithAzureMqttRelation(
-                        basePublishModel!!.id
-                    )
-                    else -> throw IllegalArgumentException()
-                }.firstOrError()
-            }
-
-            val subscribe = single.filter { !it.isEmpty() }
+            val subscribe = single.filter { it.isNotEmpty() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
@@ -109,17 +99,18 @@ class DeviceSelectFragment : BaseFragment() {
     }
 
     companion object {
-        private const val DEVICE_SELECT_FRAGMENT_KEY = "DEVICE_SELECT_FRAGMENT_KEY"
+        private const val DEVICE_SELECT_PUBLISHER_ID_KEY = "DEVICE_SELECT_PUBLISHER_ID_KEY"
+        private const val DEVICE_SELECT_PUBLISHER_TYPE_KEY = "DEVICE_SELECT_PUBLISHER_TYPE_KEY"
 
         @JvmStatic
-        fun newInstance(basePublishModel: BasePublishModel? = null): DeviceSelectFragment {
+        fun newInstance(model: BasePublishModel? = null): DeviceSelectFragment {
             val fragment = DeviceSelectFragment()
 
-            basePublishModel?.let {
-                val bundle = Bundle()
-                bundle.putParcelable(DEVICE_SELECT_FRAGMENT_KEY, basePublishModel)
-
-                fragment.arguments = bundle
+            model?.let {
+                fragment.arguments = Bundle().apply {
+                    putLong(DEVICE_SELECT_PUBLISHER_ID_KEY, it.id)
+                    putSerializable(DEVICE_SELECT_PUBLISHER_TYPE_KEY, it.type)
+                }
             }
 
             return fragment

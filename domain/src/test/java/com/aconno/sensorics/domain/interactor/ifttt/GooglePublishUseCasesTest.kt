@@ -2,7 +2,10 @@ package com.aconno.sensorics.domain.interactor.ifttt
 
 import com.aconno.sensorics.domain.ifttt.GeneralGooglePublish
 import com.aconno.sensorics.domain.ifttt.publish.GooglePublishRepository
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.*
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
+import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,12 +16,11 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class GooglePublishUseCasesTest {
-
-    private lateinit var addGooglePublishUseCase: AddGooglePublishUseCase
-    private lateinit var deleteGooglePublishUseCase: DeleteGooglePublishUseCase
-    private lateinit var getAllEnabledGooglePublishUseCase: GetAllEnabledGooglePublishUseCase
-    private lateinit var getAllGooglePublishUseCase: GetAllGooglePublishUseCase
+    private lateinit var addAnyPublishUseCase: AddAnyPublishUseCase
     private lateinit var getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase
+    private lateinit var savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase
+    private lateinit var deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase
+    private lateinit var getAllGooglePublishUseCase: GetAllGooglePublishUseCase
 
     private val id: Long = 0
 
@@ -42,7 +44,7 @@ class GooglePublishUseCasesTest {
 
     @Before
     fun setUp() {
-        addGooglePublishUseCase = AddGooglePublishUseCase(
+        addAnyPublishUseCase = AddAnyPublishUseCase(
             mockGooglePublishRepository
         )
         deleteGooglePublishUseCase = DeleteGooglePublishUseCase(

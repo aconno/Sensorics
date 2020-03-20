@@ -3,7 +3,10 @@ package com.aconno.sensorics.data.publisher
 import android.annotation.SuppressLint
 import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.domain.Publisher
-import com.aconno.sensorics.domain.ifttt.*
+import com.aconno.sensorics.domain.ifttt.GeneralRestHttpGetParam
+import com.aconno.sensorics.domain.ifttt.RestHeader
+import com.aconno.sensorics.domain.ifttt.RestHttpGetParam
+import com.aconno.sensorics.domain.ifttt.RestPublish
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.Sync
@@ -28,18 +31,14 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 class RestPublisher(
-    private val restPublish: RestPublish,
-    private val listDevices: List<Device>,
+    publish: RestPublish,
+    listDevices: List<Device>,
     private val listHeaders: List<RestHeader>,
     private val listHttpGetParams: List<RestHttpGetParam>,
-    private val syncRepository: SyncRepository
-) : Publisher {
-    private val lastSyncs: MutableMap<Pair<String, String>, Long> =
-        syncRepository.getSync("rest" + restPublish.id)
-            .map { Pair(it.macAddress, it.advertisementId) to it.lastSyncTimestamp }
-            .toMap()
-            .toMutableMap()
-
+    syncRepository: SyncRepository
+) : Publisher<RestPublish>(
+    publish, listDevices, syncRepository
+) {
     private val httpClient: OkHttpClient
     private val readingToStringParser: DataStringConverter
 
@@ -92,7 +91,7 @@ class RestPublisher(
     override fun publish(readings: List<Reading>) {
         if (readings.isNotEmpty() && isPublishable(readings)) {
             Timber.tag("Publisher HTTP")
-                .d("${restPublish.name} publishes from ${readings[0].device}")
+                .d("${publish.name} publishes from ${readings[0].device}")
             getRequestObservable(readings)
                 .flatMapIterable { it }
                 .map { it }
@@ -109,7 +108,7 @@ class RestPublisher(
             Timber.tag("ConvertedString").d("Syncing")
             syncRepository.save(
                 Sync(
-                    "rest" + restPublish.id,
+                    "rest" + publish.id,
                     reading.device.macAddress,
                     reading.advertisementId,
                     time
@@ -158,7 +157,7 @@ class RestPublisher(
         Timber.tag("ConvertedString").d("getRequestObservable")
         return Observable.fromCallable {
             val responseList = mutableListOf<Response>()
-            when (restPublish.method) {
+            when (publish.method) {
                 "GET" -> {
                     val json = Gson().toJson(listHttpGetParams)
                     val convert = readingToStringParser.convert(message, json)
@@ -168,7 +167,7 @@ class RestPublisher(
                             object : TypeToken<List<GeneralRestHttpGetParam>>() {}.type
                         val list = Gson().fromJson<List<GeneralRestHttpGetParam>>(it, httpGetType)
 
-                        val httpBuilder = restPublish.url.toHttpUrlOrNull()!!.newBuilder()
+                        val httpBuilder = publish.url.toHttpUrlOrNull()!!.newBuilder()
 
                         list.forEach {
                             httpBuilder.addQueryParameter(
@@ -199,7 +198,7 @@ class RestPublisher(
                 "POST" -> {
                     val i = Random().nextInt(16)
 
-                    val convert = readingToStringParser.convert(message, restPublish.dataString)
+                    val convert = readingToStringParser.convert(message, publish.dataString)
 
                     convert.forEach {
                         val body = RequestBody.create(
@@ -211,7 +210,7 @@ class RestPublisher(
                         addHeaders(builder, message[0])
 
                         val request = builder
-                            .url(restPublish.url)
+                            .url(publish.url)
                             .post(body)
                             .build()
 
@@ -229,7 +228,7 @@ class RestPublisher(
                     }
                 }
                 "PUT" -> {
-                    val convert = readingToStringParser.convert(message, restPublish.dataString)
+                    val convert = readingToStringParser.convert(message, publish.dataString)
 
                     convert.forEach {
                         val body = RequestBody.create(
@@ -241,7 +240,7 @@ class RestPublisher(
                         addHeaders(builder, message[0])
 
                         val request = builder
-                            .url(restPublish.url)
+                            .url(publish.url)
                             .put(body)
                             .build()
 
@@ -285,19 +284,6 @@ class RestPublisher(
                 readingToStringParser.convertDeviceAndTS(message, it.value)
             )
         }
-    }
-
-    override fun getPublishData(): BasePublish {
-        return restPublish
-    }
-
-    private fun isPublishable(readings: List<Reading>): Boolean {
-        val reading = readings.firstOrNull()
-        val latestTimestamp =
-            lastSyncs[Pair(reading?.device?.macAddress, reading?.advertisementId)] ?: 0
-
-        return System.currentTimeMillis() - latestTimestamp > this.restPublish.timeMillis
-            && reading != null && listDevices.contains(reading.device)
     }
 
     override fun closeConnection() {

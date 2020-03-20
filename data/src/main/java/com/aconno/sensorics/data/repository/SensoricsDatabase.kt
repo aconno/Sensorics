@@ -14,38 +14,33 @@ import com.aconno.sensorics.data.repository.googlepublish.GooglePublishDao
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishEntity
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishDao
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishEntity
-import com.aconno.sensorics.data.repository.publishdevicejoin.*
 import com.aconno.sensorics.data.repository.mqttvirtualscanningsource.MqttVirtualScanningSourceDao
 import com.aconno.sensorics.data.repository.mqttvirtualscanningsource.MqttVirtualScanningSourceEntity
-import com.aconno.sensorics.data.repository.publishdevicejoin.GooglePublishDeviceJoinEntity
-import com.aconno.sensorics.data.repository.publishdevicejoin.MqttPublishDeviceJoinEntity
+import com.aconno.sensorics.data.repository.publishdevicejoin.GenericPublishDeviceJoinEntity
 import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinDao
-import com.aconno.sensorics.data.repository.publishdevicejoin.RestPublishDeviceJoinEntity
 import com.aconno.sensorics.data.repository.restpublish.RESTPublishDao
 import com.aconno.sensorics.data.repository.restpublish.RestHeaderEntity
 import com.aconno.sensorics.data.repository.restpublish.RestHttpGetParamEntity
 import com.aconno.sensorics.data.repository.restpublish.RestPublishEntity
 import com.aconno.sensorics.data.repository.sync.SyncDao
 import com.aconno.sensorics.data.repository.sync.SyncEntity
+import com.aconno.sensorics.domain.ifttt.PublishTypeStrings
 
 @Database(
     entities = [
         ActionEntity::class,
         DeviceEntity::class,
-        GooglePublishDeviceJoinEntity::class,
+        GenericPublishDeviceJoinEntity::class,
         GooglePublishEntity::class,
         AzureMqttPublishEntity::class,
-        MqttPublishDeviceJoinEntity::class,
         MqttPublishEntity::class,
-        AzureMqttPublishDeviceJoinEntity::class,
         RestHeaderEntity::class,
         RestHttpGetParamEntity::class,
-        RestPublishDeviceJoinEntity::class,
         RestPublishEntity::class,
         SyncEntity::class,
         MqttVirtualScanningSourceEntity::class
     ],
-    version = 15
+    version = 16
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 
@@ -77,6 +72,27 @@ abstract class SensoricsDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE actions ADD COLUMN timeFrom INTEGER NOT NULL DEFAULT 0")
                 database.execSQL("ALTER TABLE actions ADD COLUMN timeTo INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        val MIGRATION_15_16 = object : Migration(15, 16) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "INSERT INTO publish_device_join (publishId, deviceId, publishType) SELECT aId, dId, '${PublishTypeStrings.AZURE}' FROM azure_mqtt_publish_device_join"
+                )
+                database.execSQL(
+                    "INSERT INTO publish_device_join (publishId, deviceId, publishType) SELECT gId, dId, '${PublishTypeStrings.GOOGLE}' FROM google_publish_device_join"
+                )
+                database.execSQL(
+                    "INSERT INTO publish_device_join (publishId, deviceId, publishType) SELECT mId, dId, '${PublishTypeStrings.MQTT}' FROM mqtt_publish_device_join"
+                )
+                database.execSQL(
+                    "INSERT INTO publish_device_join (publishId, deviceId, publishType) SELECT rId, dId, '${PublishTypeStrings.REST}' FROM rest_publish_device_join"
+                )
+
+                database.execSQL("DROP TABLE azure_mqtt_publish_device_join")
+                database.execSQL("DROP TABLE google_publish_device_join")
+                database.execSQL("DROP TABLE mqtt_publish_device_join")
+                database.execSQL("DROP TABLE rest_publish_device_join")
             }
         }
     }

@@ -2,7 +2,7 @@ package com.aconno.sensorics.domain.interactor.ifttt
 
 import com.aconno.sensorics.domain.ifttt.GeneralRestPublish
 import com.aconno.sensorics.domain.ifttt.publish.RestPublishRepository
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.*
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,7 +16,6 @@ class RestPublishUseCasesTest {
 
     private lateinit var addRestPublishUseCase: AddRestPublishUseCase
     private lateinit var deleteRestPublishUseCase: DeleteRestPublishUseCase
-    private lateinit var getAllEnabledRestPublishUseCase: GetAllEnabledRestPublishUseCase
     private lateinit var getAllRestPublishUseCase: GetAllRestPublishUseCase
     private lateinit var getRestPublishByIdUseCase: GetRestPublishByIdUseCase
 

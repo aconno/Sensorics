@@ -180,11 +180,11 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
         const val EDIT_HTTPGET_PARAMS_REQUEST_CODE: Int = 10218
         const val REST_HTTPGET_PARAMS_ACTIVITY_LIST_KEY = "REST_HTTPGET_PARAMS_ACTIVITY_LIST_KEY"
 
-        fun start(activity: AppCompatActivity, httpGetParams: ArrayList<RestHttpGetParamModel>) {
+        fun start(activity: AppCompatActivity, httpGetParams: MutableList<RestHttpGetParamModel>) {
             val intent = Intent(activity, RestHttpGetParamsActivity::class.java)
-            intent.putParcelableArrayListExtra(
+            intent.putExtra(
                 REST_HTTPGET_PARAMS_ACTIVITY_LIST_KEY,
-                httpGetParams
+                httpGetParams.toTypedArray()
             )
 
             activity.startActivityForResult(
