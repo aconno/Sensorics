@@ -25,6 +25,25 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    task generateBeaconArbitraryDataProtobufModel(type: Exec, description: 'Generates beacon arbitrary data protobuf model') {
+        commandLine 'protoc', '-I', './src/main/assets/protobuffers' , '--java_out=./src/main/java',  'beacon_arbitrary_data.proto'
+    }
+
+    task generateBeaconParametersProtobufModel(type: Exec, description: 'Generates beacon parameters protobuf model') {
+        commandLine 'protoc', '-I', './src/main/assets/protobuffers' , '--java_out=./src/main/java',  'beacon_parameters.proto'
+    }
+
+    task generateBeaconSlotsProtobufModel(type: Exec, description: 'Generates beacon arbitrary data protobuf model') {
+        commandLine 'protoc', '-I', './src/main/assets/protobuffers' , '--java_out=./src/main/java',  'beacon_slots.proto'
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask ->
+            compileTask.dependsOn generateBeaconArbitraryDataProtobufModel
+            compileTask.dependsOn generateBeaconParametersProtobufModel
+            compileTask.dependsOn generateBeaconSlotsProtobufModel
+    }
 }
 
 repositories {
