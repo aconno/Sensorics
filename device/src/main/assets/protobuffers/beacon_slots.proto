@@ -2,51 +2,123 @@ syntax = "proto3";
 
 package com.aconno.protobufs;
 
-option java_package = "com.aconno.sensorics.device.beacon.protobufmodel";
+option java_package = "com.aconno.sensorics.device.beacon.protobuffers.generatedmodel";
 option java_outer_classname = "SlotsProtobufModel";
 
 message Slots {
-  uint32 crc = 1;
-  uint32 number_of_slots = 2;
-  uint32 slot_name_size = 3;
-  uint32 frame_type_size = 4;
-  uint32 advertising_format_size = 5;
+    uint32 crc = 1;
+    uint32 number_of_slots = 2;
+    uint32 slot_name_size = 3;
+    uint32 frame_type_size = 4;
+    uint32 advertising_format_size = 5;
 
-  repeated Slot slot = 6;
+    repeated Slot slot = 6;
 }
 
 message Slot {
-  enum AdvertisingMode {
-    INTERVAL = 0;
-    EVENT = 1;
-  }
-  AdvertisingMode advertising_mode = 1;
+    enum AdvertisingMode {
+        INTERVAL = 0;
+        EVENT = 1;
+    }
 
-  //only one of these two messages should be set, depending on advertising mode for this slot (and the other should be null)
-  IntervalAdvertisingModeParameters interval_parameters = 2;
-  EventAdvertisingModeParameters event_parameters = 3;
+    enum SlotType {
+        DEFAULT = 0;
+        UID = 1;
+        URL = 2;
+        TLM = 3;
+        I_BEACON = 4;
+        DEVICE_INFO = 5;
+        EMPTY = 6;
+        CUSTOM = 7;
+    }
 
+    AdvertisingMode advertising_mode = 1;
 
-  //TODO: add other attributes
+    //only one of these two messages should be set, depending on advertising mode for this slot (and the other should be null)
+    IntervalAdvertisingModeParameters interval_parameters = 2;
+    EventAdvertisingModeParameters event_parameters = 3;
+
+    bool read_only = 4;
+    bool active = 5;
+    uint32 packet_count = 6;
+    string slot_name = 7;
+    SlotType slot_type = 8;
+
+    //only one of these messages should be set, depending on slot type
+    DefaultFrameTypeParameters default_frame_type_parameters = 9;
+    UidFrameTypeParameters uid_frame_type_parameters = 10;
+    UrlFrameTypeParameters url_frame_type_parameters = 11;
+    TlmFrameTypeParameters tlm_frame_type_parameters = 12;
+    IBeaconFrameTypeParameters ibeacon_frame_type_parameters = 13;
+    CustomFrameTypeParameters custom_frame_type_parameters = 14;
+
+    int32 txPower = 15;
 }
 
+
+
+/////////////////////////////////////////////////////////////
+//PARAMETERS FOR DIFFERENT ADVERTISING MODES /////////////////
+///////////////////////////////////////////////////////////
+
 message IntervalAdvertisingModeParameters {
-  int64 interval = 1;
+    int64 interval = 1;
 }
 
 message EventAdvertisingModeParameters {
-  int32 parameter_id = 1;
+    enum Sign {
+        LESS = 0;
+        LESS_OR_EQUAL = 1;
+        EQUAL = 2;
+        GREATER_OR_EQUAL = 3;
+        GREATER = 4;
+    }
 
-  enum Sign {
-    LESS = 0;
-    LESS_OR_EQUAL = 1;
-    EQUAL = 2;
-    GREATER_OR_EQUAL = 3;
-    GREATER = 4;
-  }
-  Sign sign = 2;
+    int32 parameter_id = 1;
+    Sign sign = 2;
 
-  //only one of these two values should be set (and the other one should be 0)
-  int32 threshold_int = 3;
-  float threshold_float = 4;
+    //only one of these two values should be set (and the other one should be 0)
+    int32 threshold_int = 3;
+    float threshold_float = 4;
+}
+
+
+
+/////////////////////////////////////////////////////////////
+//PARAMETERS FOR DIFFERENT FRAME TYPES /////////////////////
+///////////////////////////////////////////////////////////
+
+message DefaultFrameTypeParameters {
+    bytes default_data = 1;
+}
+
+message UidFrameTypeParameters {
+    bytes namespace_id = 1;
+    bytes instance_id = 2;
+}
+
+message UrlFrameTypeParameters {
+    enum UrlPrefix {
+        HTTP_WWW = 0;   // http://www.
+        HTTPS_WWW = 1;  // https://www.
+        HTTP = 2;       // http://
+        HTTPS = 3;      // https://
+    }
+
+    UrlPrefix url_prefix = 1;
+    string url = 2;
+}
+
+message TlmFrameTypeParameters {
+    bytes content = 1;
+}
+
+message IBeaconFrameTypeParameters {
+    string uuid = 1;
+    string major = 2;
+    string minor = 3;
+}
+
+message CustomFrameTypeParameters {
+    bytes custom_content = 1;
 }

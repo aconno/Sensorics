@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package com.aconno.protobufs;
 
-option java_package = "com.aconno.sensorics.device.beacon.protobufmodel";
+option java_package = "com.aconno.sensorics.device.beacon.protobuffers.generatedmodel";
 option java_outer_classname = "ArbitraryDataProtobufModel";
 
 message ArbitraryData {
-  uint32 crc = 1;
-  uint32 capacity = 2;
-  map<string,string> arbitrary_data = 3;
+    uint32 crc = 1;
+    uint32 capacity = 2;
+    map<string,string> arbitrary_data = 3;
 }
