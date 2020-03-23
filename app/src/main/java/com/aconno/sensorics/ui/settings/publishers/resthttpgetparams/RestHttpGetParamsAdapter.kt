@@ -11,7 +11,7 @@ import com.aconno.sensorics.model.RestHttpGetParamModel
 import com.aconno.sensorics.ui.settings.publishers.restheader.ItemClickListenerWithPos
 
 class RestHttpGetParamsAdapter(
-    private val list: List<RestHttpGetParamModel>,
+    private val list: MutableList<RestHttpGetParamModel>,
     private val onItemClickListener: ItemClickListenerWithPos<RestHttpGetParamModel>,
     private val mLongItemClickListener: LongItemClickListener<RestHttpGetParamModel>?
 ) : RecyclerView.Adapter<RestHttpGetParamsAdapter.ItemViewHolder>() {
@@ -65,4 +65,20 @@ class RestHttpGetParamsAdapter(
     override fun getItemViewType(position: Int): Int {
         return if (position == 0) 0 else 1
     }
+
+    fun getParameterAt(position: Int): RestHttpGetParamModel {
+        return list[position]
+    }
+
+    fun removeParameterAt(position: Int) {
+        list.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+    fun addParameterAtPosition(parameter: RestHttpGetParamModel, position: Int) {
+        list.add(position, parameter)
+        notifyItemInserted(position)
+    }
+
+
 }
