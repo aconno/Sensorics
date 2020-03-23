@@ -27,7 +27,7 @@ class PublishRecyclerViewAdapter(
 
     var itemSelectionEnabled = false
         private set
-    private var itemSelectedMap: MutableMap<Long, Boolean> =
+    private var itemSelectedMap: MutableMap<BasePublishModel, Boolean> =
         HashMap()//maps item id to current item selection state
 
 
@@ -40,7 +40,7 @@ class PublishRecyclerViewAdapter(
         itemSelectionEnabled = true
         itemSelectedMap.clear()
         initiallySelectedItem?.let {
-            itemSelectedMap[it.id] = true
+            itemSelectedMap[it] = true
         }
         notifyDataSetChanged()
     }
@@ -54,7 +54,7 @@ class PublishRecyclerViewAdapter(
     fun getNumberOfSelectedItems(): Int = itemSelectedMap.count { entry -> entry.value }
 
     fun getSelectedItems(): List<BasePublishModel> =
-        mValues.filter { itemSelectedMap[it.id] == true }
+        mValues.filter { itemSelectedMap[it] == true }
 
     fun setItemsAsSelected(items: List<BasePublishModel>) {
         for (item in items) {
@@ -64,7 +64,7 @@ class PublishRecyclerViewAdapter(
     }
 
     private fun onItemSelectionStateChanged(selected: Boolean, item: BasePublishModel) {
-        itemSelectedMap[item.id] = selected
+        itemSelectedMap[item] = selected
         itemSelectedListener?.apply {
             if (selected) onListItemSelected(item)
             else onListItemDeselected(item)
@@ -94,7 +94,7 @@ class PublishRecyclerViewAdapter(
                 View.GONE
             }
 
-            isChecked = itemSelectedMap[item.id] ?: false
+            isChecked = itemSelectedMap[item] ?: false
         }
 
         when (item) {
