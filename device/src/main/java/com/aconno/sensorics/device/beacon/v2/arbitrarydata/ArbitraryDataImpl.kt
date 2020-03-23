@@ -1,5 +1,6 @@
 package com.aconno.sensorics.device.beacon.v2.arbitrarydata
 
+import com.aconno.sensorics.device.beacon.baseimpl.ArbitraryData
 import com.aconno.sensorics.device.bluetooth.tasks.CharacteristicReadTask
 import com.aconno.sensorics.device.bluetooth.tasks.CharacteristicWriteTask
 import com.aconno.sensorics.domain.UUIDProvider

@@ -1,4 +1,4 @@
-package com.aconno.sensorics.device.beacon.v2.arbitrarydata
+package com.aconno.sensorics.device.beacon.baseimpl
 
 import com.aconno.sensorics.device.beacon.ArbitraryData
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
