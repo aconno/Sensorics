@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui.settings.publishers
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -168,6 +169,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
 
         button_add_publisher.setOnClickListener {
             snackbar?.dismiss()
+            exitItemSelectionState()
             SelectPublisherActivity.start(context!!)
         }
     }
@@ -385,6 +387,11 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
             return true
         }
         return false
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        exitItemSelectionState()
     }
 
     private fun exitItemSelectionState() {

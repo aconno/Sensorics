@@ -1,45 +1,50 @@
 package com.aconno.sensorics.dagger.compositescan
 
+import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanResultsModule
+import com.aconno.sensorics.dagger.mqtt.MqttScanResultsModule
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateReadingsUseCase
 import com.aconno.sensorics.domain.interactor.consolidation.GenerateScanDeviceUseCase
-import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.model.ScanResult
-import com.aconno.sensorics.domain.mqtt.MqttVirtualScanner
-import com.aconno.sensorics.domain.scanning.Bluetooth
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
+import javax.inject.Named
 
-@Module
+@Module(
+    includes = [
+        MqttScanResultsModule::class,
+        BluetoothScanResultsModule::class
+    ]
+)
 class CompositeScanResultsModule {
 
     @Provides
+    @Named("composite")
     @CompositeScanResultsScope
     fun provideDevice(
-        filteredScanResult: Flowable<ScanResult>,
+        @Named("composite") filteredScanResult: Flowable<ScanResult>,
         generateScanDeviceUseCase: GenerateScanDeviceUseCase
     ): Flowable<ScanDevice> {
         return filteredScanResult.concatMap { generateScanDeviceUseCase.execute(it).toFlowable() }
     }
 
     @Provides
+    @Named("composite")
     @CompositeScanResultsScope
     fun provideFilteredScanResult(
-        mqttVirtualScanner: MqttVirtualScanner,
-        bluetooth: Bluetooth,
-        filterByFormatUseCase: FilterByFormatUseCase
+        @Named("mqttFilteredScanResult") mqttFilteredScanResult: Flowable<ScanResult>,
+        @Named("bluetoothFilteredScanResult") bluetoothFilteredScanResult: Flowable<ScanResult>
     ): Flowable<ScanResult> {
-        return mqttVirtualScanner.getScanResults()
-            .mergeWith(bluetooth.getScanResults())
-            .filter { filterByFormatUseCase.execute(it) }
+        return mqttFilteredScanResult.mergeWith(bluetoothFilteredScanResult)
     }
 
     @Provides
+    @Named("composite")
     @CompositeScanResultsScope
     fun provideReadings(
-        filteredScanResult: Flowable<ScanResult>,
+        @Named("composite") filteredScanResult: Flowable<ScanResult>,
         generateReadingsUseCase: GenerateReadingsUseCase
     ): Flowable<List<Reading>> {
         return filteredScanResult.concatMap { generateReadingsUseCase.execute(it).toFlowable() }

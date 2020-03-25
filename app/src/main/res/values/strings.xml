@@ -59,7 +59,7 @@
     <string name="condition_more">More</string>
     <string name="condition_value_hint">Value</string>
     <string name="condition_dialog_set">Set</string>
-    <string name="condition_dialog_cancel">Cancel</string>
+    <string name="cancel">Cancel</string>
 
     <string name="vibration">Vibration</string>
 
@@ -143,7 +143,7 @@
     <string name="publisher_info_text" formatted="true" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$rssi</i> => rssi \n<i>$name</i> => key \n<i>$value</i> => sensor value \n<b>Specific Values:</b> \n<i>$temperature,$light,$battery_level</i> etc. \nStrings not fully substituted (if a value is missing from the reading) will not be sent. $ should not be used since any detected unknown embeddable values will result in the data not sending. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a></string>
     <string name="publisher_info_title">Info</string>
     <string name="title_select_publish">Select Publisher</string>
-    <string name="title_settings">Settings</string>
+    <string name="title_app_settings">App Settings</string>
     <string name="default_data_string" translatable="false">
         {\"value\" : \"$value\",\"timestamp\" : \"$ts\",\"type\" : \"$name\",\"device\" : \"$device\",\"rssi\" : \"$rssi\"}
     </string>
@@ -152,7 +152,6 @@
     <string name="reading_value_acnrange" translatable="false">%1$d mm</string>
     <string name="rssi" translatable="false">RSSI</string>
     <string name="title_publish_list">Backends</string>
-    <string name="settings">Settings</string>
 
     <string name="contentDescriptionUseless" translatable="false">deco</string>
     <string name="title_action_details">Action</string>
@@ -212,7 +211,6 @@
     <string name="start_scan_popup">"Do you want to start scanning the device?"</string>
     <string name="config">Config</string>
     <string name="logging">Logging</string>
-    <string name="title_configure">Configure</string>
 
     //Not Translated
     <string name="rssi_1m">Rssi @ 1m</string>
@@ -318,6 +316,8 @@
     <string name="undo">Undo</string>
     <string name="import_error" translatable="false">Import error</string>
     <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
+    <string name="beacon_settings">Beacon Settings</string>
+    <string name="add_slot">add</string>
     <string name="actions_file_share_subject">Sensorics actions list</string>
     <string name="backends_file_share_subject">Sensorics backends</string>
 
@@ -376,5 +376,25 @@
     <string name="testing_in_progress">Testing in progress...</string>
 
     <string name="virtual_scanning_source_connection_fail">Unable to establish connection to virtual scanning source: %s</string>
+    <string name="unsaved_changes_dialog_message">There are unsaved changes. Do you want to discard them or to save them?</string>
+    <string name="save_changes">Save</string>
+    <string name="discard_changes">Discard</string>
 
+    <!--  Beacon settings  -->
+    <string name="connecting_with_dots">Connecting...</string>
+    <string name="connected_with_dots">Connected...</string>
+    <string name="reading_with_dots">Reading...</string>
+    <string name="password_required">Password required</string>
+    <string name="connected_unlocking">Connected. Unlocking...</string>
+    <string name="ulocking_with_dots">Unlocking...</string>
+    <string name="cant_connect_without_password">"Cannot connect without a password!"</string>
+    <string name="try_again">Try again</string>
+    <string name="error_occurred">Error occurred</string>
+    <string name="oops_cant_do_anything">Oops. Can\'t do anything</string>
+    <string name="device_unlocked">Device unlocked!</string>
+    <string name="confirm">Confirm</string>
+    <string name="feature_not_implemented">"This feature has not been implemented yet!"</string>
+    <string name="device_not_connected">Device not connected</string>
+    <string name="writing_with_dots">Writing...</string>
+    <string name="settings_has_been_written_successfully">Settings has been written successfully</string>
 </resources>

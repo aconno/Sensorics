@@ -67,7 +67,7 @@
             var readingCounter = null;
 
             JSON.parse(json_values, function (key, value) {
-                console.log("KEY" + key);
+                console.log("KEY" + key + ", value: "+value);
                 if (key == BUTTON_STATE_KEY) {
                     onButtonStatusChanged(value);
                 } else if (key == BUTTON_COUNTER_KEY) {
@@ -113,11 +113,12 @@
 
         function onCountUpdated(value) {
             readingCounter = parseInt(value);
+
             if (readingCounter > deviceCounter) {
                 deviceCounter = readingCounter;
-            } else {
-                setCount(readingCounter);
             }
+            setCount(readingCounter);
+
         }
 
         function setTextValue(elementId, value) {
@@ -134,7 +135,6 @@
                 setCount(counter);
             }
             await sleep(400);
-            setCounter();
         }
     </script>
 </body>

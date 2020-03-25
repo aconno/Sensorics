@@ -8,6 +8,8 @@ import java.util.*
 
 interface Bluetooth {
 
+    var mtu: Int
+
     fun enable()
 
     fun disable()
@@ -44,9 +46,27 @@ interface Bluetooth {
         value: Any
     ): Boolean
 
+    fun readDescriptor(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+        descriptorUUID: UUID
+    ): Boolean
+
+    fun writeDescriptor(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+        descriptorUUID: UUID,
+        type: String,
+        value: Any
+    ): Boolean
+
     fun enableCharacteristicNotification(
         characteristicUUID: UUID,
         serviceUUID: UUID,
         isEnabled: Boolean
+    ): Boolean
+
+    fun requestMtu(
+        mtu: Int
     ): Boolean
 }

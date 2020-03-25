@@ -18,6 +18,7 @@ import com.aconno.sensorics.data.repository.mqttvirtualscanningsource.MqttVirtua
 import com.aconno.sensorics.data.repository.mqttvirtualscanningsource.MqttVirtualScanningSourceEntity
 import com.aconno.sensorics.data.repository.publishdevicejoin.GenericPublishDeviceJoinEntity
 import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinDao
+import com.aconno.sensorics.data.repository.publishdevicejoin.*
 import com.aconno.sensorics.data.repository.restpublish.RESTPublishDao
 import com.aconno.sensorics.data.repository.restpublish.RestHeaderEntity
 import com.aconno.sensorics.data.repository.restpublish.RestHttpGetParamEntity
@@ -72,6 +73,18 @@ abstract class SensoricsDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE actions ADD COLUMN timeFrom INTEGER NOT NULL DEFAULT 0")
                 database.execSQL("ALTER TABLE actions ADD COLUMN timeTo INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        val MIGRATION_13_14 = object : Migration(13, 14) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `azure_mqtt_publish` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `iotHubName` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `sharedAccessKey` TEXT NOT NULL, `enabled` INTEGER NOT NULL, `timeType` TEXT NOT NULL, `timeMillis` INTEGER NOT NULL, `lastTimeMillis` INTEGER NOT NULL, `dataString` TEXT NOT NULL)")
+                database.execSQL("CREATE TABLE IF NOT EXISTS `mqtt_virtual_scanning_source` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `enabled` INTEGER NOT NULL, `protocol` TEXT NOT NULL, `address` TEXT NOT NULL, `port` INTEGER NOT NULL, `path` TEXT NOT NULL, `clientId` TEXT NOT NULL, `username` TEXT NOT NULL, `password` TEXT NOT NULL, `qualityOfService` INTEGER NOT NULL)");
+
+            }
+        }
+        val MIGRATION_14_15 = object : Migration(14, 15) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `azure_mqtt_publish_device_join` (`aId` INTEGER NOT NULL, `dId` TEXT NOT NULL, PRIMARY KEY(`aId`, `dId`), FOREIGN KEY(`aId`) REFERENCES `azure_mqtt_publish`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`dId`) REFERENCES `devices`(`macAddress`) ON UPDATE NO ACTION ON DELETE CASCADE )")
             }
         }
         val MIGRATION_15_16 = object : Migration(15, 16) {

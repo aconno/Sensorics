@@ -40,6 +40,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Named
 
 
 class BluetoothScanningService : DaggerService() {
@@ -48,6 +49,7 @@ class BluetoothScanningService : DaggerService() {
     lateinit var bluetooth: Bluetooth
 
     @Inject
+    @Named("bluetoothReadings")
     lateinit var readings: Flowable<List<Reading>>
 
     @Inject
@@ -149,11 +151,9 @@ class BluetoothScanningService : DaggerService() {
         //Launches non-blocking coroutine
         scanTimerDisposable = GlobalScope.launch(context = Dispatchers.Main) {
             delay(ANDROID_N_MAX_SCAN_DURATION - 60 * 1000)
-            Timber.tag("Sensorics - BLE")
-            Timber.d("Stopping")
+            Timber.tag("Sensorics - BLE").d("Stopping")
             stopScanning()
-            Timber.tag("Sensorics - BLE")
-            Timber.d("Restarting")
+            Timber.tag("Sensorics - BLE").d("Restarting")
             startScan(deviceList)
         }
     }

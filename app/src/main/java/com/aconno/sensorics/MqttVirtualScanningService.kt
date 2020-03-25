@@ -48,6 +48,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Named
 
 
 class MqttVirtualScanningService : DaggerService() {
@@ -104,6 +105,7 @@ class MqttVirtualScanningService : DaggerService() {
     lateinit var syncRepository: SyncRepository
 
     @Inject
+    @Named("mqttReadings")
     lateinit var readings: Flowable<List<Reading>>
 
     @Inject

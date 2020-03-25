@@ -57,13 +57,14 @@ class DeviceSelectFragment : BaseFragment() {
         val view = inflater.inflate(R.layout.fragment_devices, container, false)
         val listView = view.findViewById<RecyclerView>(R.id.list_devices)
 
+
         adapter = DeviceSelectAdapter(
             deviceList,
             itemCheckChangeListener
         )
         listView.layoutManager = LinearLayoutManager(context)
         listView.adapter = adapter
-        listView.isNestedScrollingEnabled = true
+        listView.isNestedScrollingEnabled = false
 
         queryDevices()
 
