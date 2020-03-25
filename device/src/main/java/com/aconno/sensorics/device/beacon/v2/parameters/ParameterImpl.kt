@@ -13,7 +13,7 @@ abstract class BaseParameterImpl<T>(
     val reader: ValueReader,
     val config: Config
 ) : Parameter<T>() {
-    final override val type: ValueConverterBase<T> = ValueConverters.Factory.createFromTypeId(typeId)
+    val type: ValueConverterBase<T> = ValueConverters.Factory.createFromTypeId(typeId)
 
     @Suppress("JoinDeclarationAndAssignment")
     private var flags: Int

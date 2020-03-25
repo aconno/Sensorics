@@ -1,9 +1,8 @@
 package com.aconno.sensorics.device.beacon.v2.arbitrarydata
 
-import com.aconno.sensorics.device.beacon.baseimpl.ArbitraryData
+import com.aconno.sensorics.device.beacon.baseimpl.ArbitraryDataBaseImpl
 import com.aconno.sensorics.device.bluetooth.tasks.CharacteristicReadTask
 import com.aconno.sensorics.device.bluetooth.tasks.CharacteristicWriteTask
-import com.aconno.sensorics.domain.UUIDProvider
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.UINT32
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.UTF8_STRING
 import com.aconno.sensorics.domain.migrate.ValueReader
@@ -25,7 +24,7 @@ import java.util.zip.CRC32
 class ArbitraryDataImpl(
     var serviceUuid: UUID = DEFAULT_ARBITRARY_DATA_SERVICE_UUID,
     var uuid: UUID = DEFAULT_ARBITRARY_DATA_CHARACTERISTIC_UUID
-) : ArbitraryData(0) {
+) : ArbitraryDataBaseImpl(0) {
     override val dirty: Boolean
         get() = gson.toJson(this) != initialSerialized
 
@@ -73,45 +72,11 @@ class ArbitraryDataImpl(
                     } catch (e: JsonSyntaxException) {
                         Timber.d("Error invalid JSON!")
                     } finally {
-                        available.postValue(capacity - serialize().size)
+                        available.postValue(capacity - getSerializedSize())
                     }
                 }
             }
         }
-    }
-
-    override operator fun set(key: String, value: String): Boolean {
-        val oldValue: String? = put(key, value)
-        val newAvailable: Int = capacity - serialize().size
-
-        return if (newAvailable < 0) {
-            oldValue?.let {
-                put(key, oldValue)
-            } ?: remove(key)
-            available.value = newAvailable
-            false
-        } else {
-            available.value = newAvailable
-            true
-        }
-    }
-
-    override fun setAll(newMap: Map<String, String>):Boolean {
-        val newAvailable = capacity -serialize(newMap).size
-        return if (newAvailable<0){
-            false
-        }else{
-            this.clear()
-            this.putAll(newMap)
-            available.value = newAvailable
-            true
-        }
-    }
-
-    override fun removeEntry(key: String): String? {
-        val value: String? = super.remove(key)
-        available.value = capacity - serialize().size
-        return value
     }
 
     // TODO Rewrite proper
@@ -138,12 +103,13 @@ class ArbitraryDataImpl(
         return UTF8_STRING.serialize(gson.toJson(this), order = ByteOrder.BIG_ENDIAN)
     }
 
-    private fun serialize(map: Map<String, String>):ByteArray{
+    override fun serialize(map: Map<String, String>):ByteArray{
         return UTF8_STRING.serialize(gson.toJson(map), order = ByteOrder.BIG_ENDIAN)
     }
 
-    companion object {
-        val DEFAULT_ARBITRARY_DATA_SERVICE_UUID = UUIDProvider.provideFullUUID("E000")
-        val DEFAULT_ARBITRARY_DATA_CHARACTERISTIC_UUID = UUIDProvider.provideFullUUID("E001")
+    override fun getSerializedSize(map: Map<String, String>): Int {
+        return serialize(map).size
     }
+
+
 }

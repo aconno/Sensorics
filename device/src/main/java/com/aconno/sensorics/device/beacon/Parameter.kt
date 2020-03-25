@@ -1,14 +1,11 @@
 package com.aconno.sensorics.device.beacon
 
-import com.aconno.sensorics.domain.migrate.ValueConverterBase
 import com.google.gson.JsonObject
 
 abstract class Parameter<T> {
     abstract val id: Int
 
     var dirty: Boolean = false
-
-    abstract val type: ValueConverterBase<T>
 
     abstract val writable: Boolean
 

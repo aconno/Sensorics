@@ -1,9 +1,9 @@
 package com.aconno.sensorics.device.beacon.protobuffers.arbitrarydata
 
-import com.aconno.sensorics.device.beacon.baseimpl.ArbitraryData
+import com.aconno.sensorics.device.beacon.baseimpl.ArbitraryDataBaseImpl
 import com.aconno.sensorics.device.beacon.protobuffers.generatedmodel.ArbitraryDataProtobufModel
-import com.aconno.sensorics.device.beacon.v2.arbitrarydata.ArbitraryDataImpl
 import com.aconno.sensorics.device.bluetooth.tasks.CharacteristicReadTask
+import com.aconno.sensorics.device.bluetooth.tasks.CharacteristicWriteTask
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.UINT32
 import com.aconno.sensorics.domain.migrate.getValueForUpdate
 import com.aconno.sensorics.domain.scanning.BluetoothTaskProcessor
@@ -12,10 +12,12 @@ import java.util.*
 import java.util.zip.CRC32
 
 class ArbitraryDataProtobufImpl(
-    var serviceUuid: UUID = ArbitraryDataImpl.DEFAULT_ARBITRARY_DATA_SERVICE_UUID,
-    var uuid: UUID = ArbitraryDataImpl.DEFAULT_ARBITRARY_DATA_CHARACTERISTIC_UUID
-) : ArbitraryData() {
+    var serviceUuid: UUID = DEFAULT_ARBITRARY_DATA_SERVICE_UUID,
+    var uuid: UUID = DEFAULT_ARBITRARY_DATA_CHARACTERISTIC_UUID
+) : ArbitraryDataBaseImpl() {
     private lateinit var arbitraryDataModel : ArbitraryDataProtobufModel.ArbitraryData
+
+    var initialState : Map<String,String>? = null
 
     override fun read(taskProcessor: BluetoothTaskProcessor): Task {
         return object : CharacteristicReadTask(
@@ -48,8 +50,12 @@ class ArbitraryDataProtobufImpl(
                         throw IllegalStateException("CRC doesn't match!")
                     }
 
-                    arbitraryDataModel.arbitraryDataMap.entries.forEach {
+                    arbitraryDataModel.arbitraryData.valuesMap.entries.forEach {
                         this@ArbitraryDataProtobufImpl[it.key] = it.value
+                    }
+
+                    initialState = emptyMap<String,String>().apply {
+                        putAll(this)
                     }
 
                     available.postValue(capacity - getSerializedSize())
@@ -59,34 +65,53 @@ class ArbitraryDataProtobufImpl(
         }
     }
 
+    override fun getSerializedSize(map: Map<String, String>): Int {
+        val protobufModel = buildProtobufModelForMap(map)
+        return protobufModel.arbitraryData.serializedSize
+    }
+
+    private fun updateProtobufModel() {
+        arbitraryDataModel = buildProtobufModelForMap(this)
+    }
+
+    private fun buildProtobufModelForMap(map: Map<String, String>) : ArbitraryDataProtobufModel.ArbitraryData {
+        return ArbitraryDataProtobufModel.ArbitraryData.newBuilder()
+            .setCapacity(capacity)
+            .setArbitraryData(ArbitraryDataProtobufModel.Values.newBuilder().putAllValues(map))
+            .build()
+    }
 
     override fun write(taskProcessor: BluetoothTaskProcessor, full: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if(!dirty && !full) {
+            return
+        }
+        updateProtobufModel()
+
+        arbitraryDataModel.arbitraryData.toByteArray()
+            .let { it + UINT32.serialize(CRC32().getValueForUpdate(it)) }
+            .also {
+                taskProcessor.queueTask(object : CharacteristicWriteTask(
+                    name = "Arbitrary Data Write Task",
+                    serviceUUID = serviceUuid,
+                    characteristicUUID = uuid,
+                    value = it
+                ) {
+                    override fun onSuccess() {
+                    }
+                })
+            }
     }
 
     override val dirty: Boolean
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        get() = initialState != this
 
     override fun serialize(): ByteArray {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        updateProtobufModel()
+        return arbitraryDataModel.arbitraryData.toByteArray()
     }
 
-
-    //TODO: first update arbitraryDataModel, then just return arbitraryDataModel.serializedSize
-    private fun getSerializedSize() : Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun set(key: String, value: String): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun setAll(newMap: Map<String, String>): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun removeEntry(key: String): String? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun serialize(map: Map<String, String>): ByteArray {
+        return buildProtobufModelForMap(map).arbitraryData.toByteArray()
     }
 
 
