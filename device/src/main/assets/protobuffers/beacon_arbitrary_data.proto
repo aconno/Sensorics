@@ -6,6 +6,12 @@ option java_package = "com.aconno.sensorics.device.beacon.protobuffers.generated
 option java_outer_classname = "ArbitraryDataProtobufModel";
 
 message ArbitraryData {
-    uint32 capacity = 2;
-    map<string,string> arbitrary_data = 3;
+    uint32 capacity = 1;
+
+    //only this message gets written to beacon (so beacon should expect only Values message, not ArbitraryData message)
+    Values arbitrary_data = 2;
+}
+
+message Values {
+    map<string,string> values = 1;
 }

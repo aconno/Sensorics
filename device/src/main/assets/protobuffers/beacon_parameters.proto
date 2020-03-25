@@ -6,9 +6,8 @@ option java_package = "com.aconno.sensorics.device.beacon.protobuffers.generated
 option java_outer_classname = "ParametersProtobufModel";
 
 message Parameters {
-    uint32 crc = 1;
-    map<string,ParameterGroup> groups = 2;
-    Config config = 3;
+    map<string,ParameterGroup> groups = 1;
+    Config config = 2;
 
 
     message Config {
@@ -20,11 +19,15 @@ message Parameters {
 
 message ParameterGroup {
     repeated BooleanParameter boolean_parameter = 1;
-    repeated Int32Parameter int32_parameter = 2;
-    repeated UInt32Parameter uint32_parameter = 3;
-    repeated FloatParameter float_parameter = 4;
-    repeated EnumParameter enum_parameter = 5;
-    repeated StringParameter string_parameter = 6;
+    repeated UIntParameter uint8_parameter = 2;
+    repeated UIntParameter uint16_parameter = 3;
+    repeated UIntParameter uint32_parameter = 4;
+    repeated IntParameter int8_parameter = 5;
+    repeated IntParameter int16_parameter = 6;
+    repeated IntParameter int32_parameter = 7;
+    repeated FloatParameter float_parameter = 8;
+    repeated EnumParameter enum_parameter = 9;
+    repeated StringParameter string_parameter = 10;
 }
 
 
@@ -32,6 +35,14 @@ message NumberParameterSettings {
     string unit = 1;
     int32 min = 2;
     int32 max = 3;
+}
+
+message CommonParameterAttributes {
+    bool writable = 1;
+    bool eventable = 2;
+    bool cacheSupported = 3;
+    bool cacheEnabled = 4;
+    string name = 5;
 }
 
 
@@ -42,32 +53,38 @@ message NumberParameterSettings {
 
 
 message BooleanParameter {
-    bool value = 1;
+    CommonParameterAttributes common_attributes = 1;
+    bool value = 2;
 }
 
-message Int32Parameter {
-    int32 value = 1;
-    NumberParameterSettings settings = 2;
+message IntParameter {
+    CommonParameterAttributes common_attributes = 1;
+    int32 value = 2;
+    NumberParameterSettings settings = 3;
 }
 
-message UInt32Parameter {
-    uint32 value = 1;
-    NumberParameterSettings settings = 2;
+message UIntParameter {
+    CommonParameterAttributes common_attributes = 1;
+    uint32 value = 2;
+    NumberParameterSettings settings = 3;
 }
 
 message FloatParameter {
-    float value = 1;
-    NumberParameterSettings settings = 2;
+    CommonParameterAttributes common_attributes = 1;
+    float value = 2;
+    NumberParameterSettings settings = 3;
 }
 
 message StringParameter {
-    string value = 1;
+    CommonParameterAttributes common_attributes = 1;
+    string value = 2;
 }
 
 message EnumParameter {
-    int32 value = 1;
-    string unit = 2;
-    repeated string choice = 3;
+    CommonParameterAttributes common_attributes = 1;
+    int32 value = 2;
+    string unit = 3;
+    repeated string choice = 4;
 }
 
 
