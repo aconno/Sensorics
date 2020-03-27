@@ -93,7 +93,7 @@ class ParametersProtobufImpl : Parameters() {
     //this method serializes Parameters protobuf message but leaving Config message as null since config is not supposed to change
     override fun toBytes(): ByteArray {
         updateProtobufModel()
-        return parametersProtobufModel.toByteArray()
+        return parametersProtobufModel.toByteArray().let { it + ValueConverters.UINT32.serialize(CRC32().getValueForUpdate(it)) }
     }
 
     //this method does not update config attributes since they are not supposed to change
