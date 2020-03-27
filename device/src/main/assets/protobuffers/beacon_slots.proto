@@ -6,13 +6,11 @@ option java_package = "com.aconno.sensorics.device.beacon.protobuffers.generated
 option java_outer_classname = "SlotsProtobufModel";
 
 message Slots {
-    uint32 crc = 1;
-    uint32 number_of_slots = 2;
-    uint32 slot_name_size = 3;
-    uint32 frame_type_size = 4;
-    uint32 advertising_format_size = 5;
+    uint32 slot_name_size = 1;
+    uint32 frame_type_size = 2;
+    uint32 advertising_format_size = 3;
 
-    repeated Slot slot = 6;
+    repeated Slot slot = 4;
 }
 
 message Slot {
