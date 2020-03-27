@@ -3,7 +3,11 @@ package com.aconno.sensorics.device.beacon.protobuffers.parameters
 import com.aconno.sensorics.device.beacon.Parameter
 import com.aconno.sensorics.device.beacon.Parameters
 import com.aconno.sensorics.device.beacon.protobuffers.generatedmodel.ParametersProtobufModel
+import com.aconno.sensorics.device.beacon.v2.parameters.getAsGivenTypeOrNull
 import com.aconno.sensorics.domain.migrate.getBooleanOrNull
+import com.aconno.sensorics.domain.migrate.getNumberOrNull
+import com.aconno.sensorics.domain.migrate.getStringOrNull
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
 enum class ParameterType(val typeId : Int) {
@@ -119,85 +123,285 @@ class BooleanParamProtobufImpl(
 
 }
 
-abstract class UInt8ParamProtobufImpl : Parameter<Any>(){
+abstract class NumberParameterProtobufImpl<T : Number>(
+    id : Int, paramType: ParameterType,
+    config : Parameters.Config,
+    private val numberClass: Class<T>,
+    commonParameterAttributes: ParametersProtobufModel.CommonParameterAttributes,
+    numberSettings : ParametersProtobufModel.NumberParameterSettings,
+    parameterValue : T?
+) : BaseParameterProtobufImpl<T>(id,paramType,config,commonParameterAttributes) {
+    final override val min: Int
+    final override val max: Int
+    final override val unit: String
 
-    abstract fun toProtobufModel() : ParametersProtobufModel.UIntParameter
-
-}
-
-abstract class UInt16ParamProtobufImpl : Parameter<Any>(){
-
-    abstract fun toProtobufModel() : ParametersProtobufModel.UIntParameter
-
-}
-
-abstract class UInt32ParamProtobufImpl : Parameter<Any>(){
-
-    abstract fun toProtobufModel() : ParametersProtobufModel.UIntParameter
-
-}
-
-abstract class Int8ParamProtobufImpl : Parameter<Any>(){
-
-    abstract fun toProtobufModel() : ParametersProtobufModel.IntParameter
-
-}
-
-abstract class Int16ParamProtobufImpl : Parameter<Any>(){
-
-    abstract fun toProtobufModel() : ParametersProtobufModel.IntParameter
-
-}
-
-abstract class Int32ParamProtobufImpl : Parameter<Any>(){
-
-    abstract fun toProtobufModel() : ParametersProtobufModel.IntParameter
-
-}
-
-
-abstract class FloatParamProtobufImpl : Parameter<Any>(){
-
-    abstract fun toProtobufModel() : ParametersProtobufModel.FloatParameter
-
-}
-
-abstract class EnumParamProtobufImpl : Parameter<Any>(){
-
-    abstract fun toProtobufModel() : ParametersProtobufModel.EnumParameter
-
-}
-
-abstract class StringParamProtobufImpl : Parameter<Any>(){
-
-    abstract fun toProtobufModel() : ParametersProtobufModel.StringParameter
-
-}
-
-object ParameterProtobufMapper {
-
-    fun mapBooleanProtobufModelToParameter(booleanParamProtobufModel : ParametersProtobufModel.BooleanParameter) : Parameter<Any> {
-        TODO()
+    init {
+        valueInternal = parameterValue
+        unit = numberSettings.unit
+        min = numberSettings.min
+        max = numberSettings.max
     }
 
-    fun mapInt32ProtobufModelToParameter(int32ParamProtobufModel: ParametersProtobufModel.IntParameter) : Parameter<Any> {
-        TODO()
+    override fun toJson(): JsonObject {
+        return super.toJson().apply {
+            addProperty("value", getValue())
+            addProperty("unit", unit)
+            addProperty("min", min)
+            addProperty("max", max)
+        }
     }
 
-    fun mapUInt32ProtobufModelToParameter(uint32ParamProtobufModel: ParametersProtobufModel.UIntParameter) : Parameter<Any> {
-        TODO()
+    override fun loadChangesFromJson(obj: JsonObject) {
+        super.loadChangesFromJson(obj)
+
+        val value = obj.getNumberOrNull("value")?.let {
+            getAsGivenTypeOrNull(it.toString(), numberClass)
+        } ?: throw IllegalArgumentException(
+            "Value variable does not exist or is not a $numberClass!"
+        )
+
+        setValue(value)
     }
 
-    fun mapFloatProtobufModelToParameter(floatParamProtobufModel: ParametersProtobufModel.FloatParameter) : Parameter<Any> {
-        TODO()
+}
+
+class UIntParamProtobufImpl(
+    id : Int,
+    paramType: ParameterType,
+    config : Parameters.Config,
+    protobufModel: ParametersProtobufModel.UIntParameter
+) :
+    NumberParameterProtobufImpl<Long>(id,paramType,config,Long::class.java,
+        protobufModel.commonAttributes,protobufModel.settings,
+
+        //this conversion is necessary because proto compiler translates uint to java signed int type,
+        //using the sign bit as top bit -> so this conversion makes sure that very large values are not
+        //misinterpreted as negative
+        convertToUnsignedValue(protobufModel.value)
+        ) {
+
+    override fun toProtobufModel() : ParametersProtobufModel.UIntParameter {
+        return ParametersProtobufModel.UIntParameter.newBuilder().
+            setCommonAttributes(buildCommonAtrributesProtobufModel())
+            .apply {
+                valueInternal?.let {
+                    setValue(it)
+                }
+            }
+            .build()
     }
 
-    fun mapEnumProtobufModelToParameter(enumParamProtobufModel: ParametersProtobufModel.EnumParameter) : Parameter<Any>{
-        TODO()
+    override fun toBytes(): ByteArray {
+        return toProtobufModel().toByteArray()
     }
 
-    fun mapStringProtobufModelToParameter(stringParamProtobufModel: ParametersProtobufModel.StringParameter) : Parameter<Any> {
-        TODO()
+    companion object {
+
+        //TODO: test this
+        private fun convertToUnsignedValue(value : Int) : Long {
+            if(value >= 0) {
+                return value.toLong()
+            }
+            val valueWithoutSignBit = (value shl 1) shr 1 //sets the sign bit to 0
+            val longValue = valueWithoutSignBit.toLong()
+            return longValue and 0x80000000 //sets the top bit (top bit of int value) using this mask
+        }
+    }
+
+}
+
+class IntParamProtobufImpl(
+    id : Int,
+    paramType: ParameterType,
+    config : Parameters.Config,
+    protobufModel: ParametersProtobufModel.IntParameter
+) :
+    NumberParameterProtobufImpl<Int>(id,paramType,config,Int::class.java,
+        protobufModel.commonAttributes,protobufModel.settings,
+        protobufModel.value
+    ) {
+
+    override fun toProtobufModel(): ParametersProtobufModel.IntParameter {
+        return ParametersProtobufModel.IntParameter.newBuilder()
+            .setCommonAttributes(buildCommonAtrributesProtobufModel())
+            .apply {
+                valueInternal?.let {
+                    setValue(it)
+                }
+            }
+            .build()
+    }
+
+    override fun toBytes(): ByteArray {
+        return toProtobufModel().toByteArray()
+    }
+}
+
+
+class FloatParamProtobufImpl(
+    id : Int,
+    config : Parameters.Config,
+    protobufModel: ParametersProtobufModel.FloatParameter
+) :
+    NumberParameterProtobufImpl<Float>(id,ParameterType.FLOAT,config,Float::class.java,
+        protobufModel.commonAttributes,protobufModel.settings,
+        protobufModel.value
+    ) {
+
+    override fun toProtobufModel() : ParametersProtobufModel.FloatParameter {
+        return ParametersProtobufModel.FloatParameter.newBuilder()
+            .setCommonAttributes(buildCommonAtrributesProtobufModel())
+            .apply {
+                valueInternal?.let {
+                    setValue(it)
+                }
+            }
+            .build()
+    }
+
+    override fun toBytes(): ByteArray {
+        return toProtobufModel().toByteArray()
+    }
+
+}
+
+class EnumParamProtobufImpl (
+    override val id : Int,
+    config : Parameters.Config,
+    protobufModel: ParametersProtobufModel.EnumParameter
+) : BaseParameterProtobufImpl<Long>(id,ParameterType.ENUM,config,protobufModel.commonAttributes){
+    override val unit: String
+    override val choices: List<String>
+
+    init {
+        valueInternal = protobufModel.value.toLong()
+        unit = protobufModel.unit
+        choices = protobufModel.choiceList
+    }
+
+    override fun toProtobufModel() : ParametersProtobufModel.EnumParameter {
+        return ParametersProtobufModel.EnumParameter.newBuilder()
+            .setCommonAttributes(buildCommonAtrributesProtobufModel())
+            .apply {
+                valueInternal?.let {
+                    setValue(it)
+                }
+            }
+            .build()
+    }
+
+    override fun toBytes(): ByteArray {
+        return toProtobufModel().toByteArray()
+    }
+
+
+    override fun toJson(): JsonObject {
+        return super.toJson().apply {
+            addProperty("value", getValue())
+            addProperty("unit", unit)
+            add("choices", JsonArray().apply { choices.forEach { add(it) } })
+        }
+    }
+
+    override fun loadChangesFromJson(obj: JsonObject) {
+        super.loadChangesFromJson(obj)
+
+        val value = obj.getNumberOrNull("value")
+            ?.toLong()
+            ?: throw IllegalArgumentException(
+                "Value variable does not exist or is not a long!"
+            )
+
+        setValue(value)
+    }
+}
+
+class StringParamProtobufImpl(
+    id : Int,
+    config : Parameters.Config,
+    protobufModel: ParametersProtobufModel.StringParameter
+) : BaseParameterProtobufImpl<String>(id,ParameterType.STRING,config,protobufModel.commonAttributes){
+
+    override fun toProtobufModel() : ParametersProtobufModel.StringParameter {
+        return ParametersProtobufModel.StringParameter.newBuilder()
+            .setCommonAttributes(buildCommonAtrributesProtobufModel())
+            .apply {
+                valueInternal?.let {
+                    setValue(it)
+                }
+            }
+            .build()
+    }
+
+    override fun toBytes(): ByteArray {
+        return toProtobufModel().toByteArray()
+    }
+
+    override fun toJson(): JsonObject {
+        return super.toJson().apply {
+            addProperty("value", getValue())
+        }
+    }
+
+    override fun loadChangesFromJson(obj: JsonObject) {
+        super.loadChangesFromJson(obj)
+
+        val value = obj.getStringOrNull("value")
+            ?: throw IllegalArgumentException(
+                "Value variable does not exist or is not a string!"
+            )
+
+        setValue(value)
+    }
+}
+
+class ParameterProtobufMapper(
+    private val config : Parameters.Config,
+    private val idGenerator: IdGenerator
+) {
+
+    interface IdGenerator {
+        fun generateId() : Int
+    }
+
+    fun mapBooleanProtobufModelToParameter(protobufModel : ParametersProtobufModel.BooleanParameter) : Parameter<Boolean> {
+        return BooleanParamProtobufImpl(idGenerator.generateId(),config,protobufModel)
+    }
+
+    fun mapInt8ProtobufModelToParameter(protobufModel: ParametersProtobufModel.IntParameter) : Parameter<Int> {
+        return IntParamProtobufImpl(idGenerator.generateId(),ParameterType.INT8,config,protobufModel)
+    }
+
+    fun mapInt16ProtobufModelToParameter(protobufModel: ParametersProtobufModel.IntParameter) : Parameter<Int> {
+        return IntParamProtobufImpl(idGenerator.generateId(),ParameterType.INT16,config,protobufModel)
+    }
+
+    fun mapInt32ProtobufModelToParameter(protobufModel: ParametersProtobufModel.IntParameter) : Parameter<Int> {
+        return IntParamProtobufImpl(idGenerator.generateId(),ParameterType.INT32,config,protobufModel)
+    }
+
+    fun mapUInt8ProtobufModelToParameter(protobufModel: ParametersProtobufModel.UIntParameter) : Parameter<Long> {
+        return UIntParamProtobufImpl(idGenerator.generateId(),ParameterType.UINT8,config,protobufModel)
+    }
+
+    fun mapUInt16ProtobufModelToParameter(protobufModel: ParametersProtobufModel.UIntParameter) : Parameter<Long> {
+        return UIntParamProtobufImpl(idGenerator.generateId(),ParameterType.UINT16,config,protobufModel)
+    }
+
+    fun mapUInt32ProtobufModelToParameter(protobufModel: ParametersProtobufModel.UIntParameter) : Parameter<Long> {
+        return UIntParamProtobufImpl(idGenerator.generateId(),ParameterType.UINT32,config,protobufModel)
+    }
+
+    fun mapFloatProtobufModelToParameter(protobufModel: ParametersProtobufModel.FloatParameter) : Parameter<Float> {
+        return FloatParamProtobufImpl(idGenerator.generateId(),config,protobufModel)
+    }
+
+    fun mapEnumProtobufModelToParameter(protobufModel: ParametersProtobufModel.EnumParameter) : Parameter<Long>{
+        return EnumParamProtobufImpl(idGenerator.generateId(),config,protobufModel)
+    }
+
+    fun mapStringProtobufModelToParameter(protobufModel: ParametersProtobufModel.StringParameter) : Parameter<String> {
+        return StringParamProtobufImpl(idGenerator.generateId(),config,protobufModel)
     }
 
 }

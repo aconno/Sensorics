@@ -1,6 +1,7 @@
 package com.aconno.sensorics.device.beacon.protobuffers.parameters
 
 
+import com.aconno.sensorics.device.beacon.Parameter
 import com.aconno.sensorics.device.beacon.Parameters
 import com.aconno.sensorics.device.beacon.protobuffers.generatedmodel.ParametersProtobufModel
 import com.aconno.sensorics.device.beacon.protobuffers.generatedmodel.ParametersProtobufModel.*
@@ -15,6 +16,7 @@ class ParametersProtobufImpl : Parameters() {
 
     private lateinit var parametersProtobufModel : ParametersProtobufModel.Parameters
 
+    @Suppress("UNCHECKED_CAST")
     override fun fromBytes(data: ByteArray) {
         val crcGiven: Long = ValueConverters.UINT32.deserialize(data, data.size - 4)
         val crcCalculated: Long = CRC32().getValueForUpdate(data.copyOf(data.size - 4))
@@ -35,30 +37,52 @@ class ParametersProtobufImpl : Parameters() {
             )
         }
 
+        val paramMapper = ParameterProtobufMapper(
+            config,
+            object : ParameterProtobufMapper.IdGenerator {
+                var counter = 0
+
+                override fun generateId() : Int {
+                    counter++
+                    return counter
+                }
+            }
+        )
         parametersProtobufModel.groupsMap.entries.forEach { entry ->
             val group = entry.value
             this[entry.key] =
-                ParameterProtobufMapper.let { m ->
+                paramMapper.let { m ->
                     mutableListOf(
                         group.booleanParameterList.map {
-                            m.mapBooleanProtobufModelToParameter(it)
+                            m.mapBooleanProtobufModelToParameter(it) as Parameter<Any>
+                        },
+                        group.int8ParameterList.map {
+                            m.mapInt8ProtobufModelToParameter(it) as Parameter<Any>
+                        },
+                        group.int16ParameterList.map {
+                            m.mapInt16ProtobufModelToParameter(it) as Parameter<Any>
                         },
                         group.int32ParameterList.map {
-                            m.mapInt32ProtobufModelToParameter(it)
+                            m.mapInt32ProtobufModelToParameter(it) as Parameter<Any>
+                        },
+                        group.uint8ParameterList.map {
+                            m.mapUInt8ProtobufModelToParameter(it) as Parameter<Any>
+                        },
+                        group.uint16ParameterList.map {
+                            m.mapUInt16ProtobufModelToParameter(it) as Parameter<Any>
                         },
                         group.uint32ParameterList.map {
-                            m.mapUInt32ProtobufModelToParameter(it)
+                            m.mapUInt32ProtobufModelToParameter(it) as Parameter<Any>
                         },
                         group.floatParameterList.map {
-                            m.mapFloatProtobufModelToParameter(it)
+                            m.mapFloatProtobufModelToParameter(it) as Parameter<Any>
                         },
                         group.enumParameterList.map {
-                            m.mapEnumProtobufModelToParameter(it)
+                            m.mapEnumProtobufModelToParameter(it) as Parameter<Any>
                         },
                         group.stringParameterList.map {
-                            m.mapStringProtobufModelToParameter(it)
+                            m.mapStringProtobufModelToParameter(it) as Parameter<Any>
                         }
-                    //TODO add other params
                     ).flatten().toMutableList()
                 }
 
