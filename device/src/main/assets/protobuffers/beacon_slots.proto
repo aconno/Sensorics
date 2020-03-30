@@ -42,17 +42,20 @@ message Slot {
     string slot_name = 7;
     SlotType slot_type = 8;
 
-    //only one of these messages should be set, depending on slot type
-    DefaultFrameTypeParameters default_frame_type_parameters = 9;
-    UidFrameTypeParameters uid_frame_type_parameters = 10;
-    UrlFrameTypeParameters url_frame_type_parameters = 11;
-    TlmFrameTypeParameters tlm_frame_type_parameters = 12;
-    IBeaconFrameTypeParameters ibeacon_frame_type_parameters = 13;
-    CustomFrameTypeParameters custom_frame_type_parameters = 14;
+    AdvertisingContent adv_content = 9;
 
-    int32 txPower = 15;
+    int32 txPower = 10;
 }
 
+message AdvertisingContent {
+    //only one of these messages should be set, depending on advertising content type
+    DefaultAdvContentTypeParameters default_adv_content_type_parameters = 1;
+    UidAdvContentTypeParameters uid_adv_content_type_parameters = 2;
+    UrlAdvContentTypeParameters url_adv_content_type_parameters = 3;
+    TlmAdvContentTypeParameters tlm_adv_content_type_parameters = 4;
+    IBeaconAdvContentTypeParameters ibeacon_adv_content_type_parameters = 5;
+    CustomAdvContentTypeParameters custom_adv_content_type_parameters = 6;
+}
 
 
 /////////////////////////////////////////////////////////////
@@ -83,19 +86,19 @@ message EventAdvertisingModeParameters {
 
 
 /////////////////////////////////////////////////////////////
-//PARAMETERS FOR DIFFERENT FRAME TYPES /////////////////////
+//PARAMETERS FOR DIFFERENT ADVERTISING CONTENT TYPES /////////////////////
 ///////////////////////////////////////////////////////////
 
-message DefaultFrameTypeParameters {
+message DefaultAdvContentTypeParameters {
     bytes default_data = 1;
 }
 
-message UidFrameTypeParameters {
+message UidAdvContentTypeParameters {
     bytes namespace_id = 1;
     bytes instance_id = 2;
 }
 
-message UrlFrameTypeParameters {
+message UrlAdvContentTypeParameters {
     enum UrlPrefix {
         HTTP_WWW = 0;   // http://www.
         HTTPS_WWW = 1;  // https://www.
@@ -107,16 +110,16 @@ message UrlFrameTypeParameters {
     string url = 2;
 }
 
-message TlmFrameTypeParameters {
+message TlmAdvContentTypeParameters {
     bytes content = 1;
 }
 
-message IBeaconFrameTypeParameters {
+message IBeaconAdvContentTypeParameters {
     string uuid = 1;
-    string major = 2;
-    string minor = 3;
+    int32 major = 2;
+    int32 minor = 3;
 }
 
-message CustomFrameTypeParameters {
+message CustomAdvContentTypeParameters {
     bytes custom_content = 1;
 }
