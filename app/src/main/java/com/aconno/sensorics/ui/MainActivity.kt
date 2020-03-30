@@ -360,6 +360,17 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
+    fun stopScanOperation() {
+        if (isScanning()) {
+            changeToggleState()
+            stopScanning()
+        }
+    }
+
+    private fun changeToggleState() {
+        mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
+    }
+
     companion object {
         const val WORK_TAG = "RESOURCE_SYNC_WORKER"
         const val WORK_NAME = "Resource Synchronization"
