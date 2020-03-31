@@ -1,7 +1,7 @@
 package com.aconno.sensorics.domain.interactor.ifttt
 
 import com.aconno.sensorics.domain.ifttt.GeneralRestPublish
-import com.aconno.sensorics.domain.ifttt.RestPublishRepository
+import com.aconno.sensorics.domain.ifttt.publish.RestPublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.*
 import org.junit.Before
 import org.junit.Test
@@ -60,7 +60,7 @@ class RestPublishUseCasesTest {
     fun testAddRestPublishUseCase() {
         addRestPublishUseCase.execute(restPublish).blockingGet()
 
-        verify(mockRestPublishRepository).addRESTPublish(restPublish)
+        verify(mockRestPublishRepository).addPublish(restPublish)
         verifyNoMoreInteractions(mockRestPublishRepository)
     }
 
@@ -68,7 +68,7 @@ class RestPublishUseCasesTest {
     fun testDeleteRestPublishUseCase() {
         deleteRestPublishUseCase.execute(restPublish).blockingGet()
 
-        verify(mockRestPublishRepository).deleteRESTPublish(restPublish)
+        verify(mockRestPublishRepository).deletePublish(restPublish)
         verifyNoMoreInteractions(mockRestPublishRepository)
     }
 
@@ -76,7 +76,7 @@ class RestPublishUseCasesTest {
     fun testGetAllEnabledRestPublishUseCase() {
         getAllEnabledRestPublishUseCase.execute()
 
-        verify(mockRestPublishRepository).getAllEnabledRESTPublish()
+        verify(mockRestPublishRepository).allEnabled
         verifyNoMoreInteractions(mockRestPublishRepository)
     }
 
@@ -84,7 +84,7 @@ class RestPublishUseCasesTest {
     fun testGetAllRestPublishUseCase() {
         getAllRestPublishUseCase.execute()
 
-        verify(mockRestPublishRepository).getAllRESTPublish()
+        verify(mockRestPublishRepository).all
         verifyNoMoreInteractions(mockRestPublishRepository)
     }
 
@@ -92,7 +92,7 @@ class RestPublishUseCasesTest {
     fun testGetRestPublishByIdUseCase() {
         getRestPublishByIdUseCase.execute(id)
 
-        verify(mockRestPublishRepository).getRESTPublishById(id)
+        verify(mockRestPublishRepository).getPublishById(id)
         verifyNoMoreInteractions(mockRestPublishRepository)
     }
 }

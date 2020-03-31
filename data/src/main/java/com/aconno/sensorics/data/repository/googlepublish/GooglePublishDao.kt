@@ -1,27 +1,27 @@
 package com.aconno.sensorics.data.repository.googlepublish
 
 import androidx.room.*
+import com.aconno.sensorics.data.repository.PublishDao
 import io.reactivex.Maybe
 import io.reactivex.Single
 
 @Dao
-abstract class GooglePublishDao {
-
+abstract class GooglePublishDao : PublishDao<GooglePublishEntity> {
     @get:Query("SELECT * FROM google_publish")
-    abstract val all: Single<List<GooglePublishEntity>>
+    abstract override val all: Single<List<GooglePublishEntity>>
 
-    @Query("SELECT * FROM google_publish WHERE id = :googlePublishId")
-    abstract fun getGooglePublishById(googlePublishId: Long): Maybe<GooglePublishEntity>
+    @get:Query("SELECT * FROM google_publish WHERE enabled = 1")
+    abstract override val allEnabled: Single<List<GooglePublishEntity>>
 
-    @Query("SELECT * FROM google_publish WHERE enabled = 1")
-    abstract fun getEnabledGooglePublish(): Single<List<GooglePublishEntity>>
+    @Query("SELECT * FROM google_publish WHERE id = :id")
+    abstract override fun getById(id: Long): Maybe<GooglePublishEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(googlePublishEntity: GooglePublishEntity): Long
+    abstract override fun insert(entity: GooglePublishEntity): Long
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(googlePublishEntity: GooglePublishEntity)
+    abstract override fun update(entity: GooglePublishEntity)
 
     @Delete
-    abstract fun delete(googlePublishEntity: GooglePublishEntity)
+    abstract override fun delete(entity: GooglePublishEntity)
 }

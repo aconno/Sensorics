@@ -97,7 +97,7 @@ class DeviceMainFragment : DaggerFragment() {
 
                         activity?.takeIf { isAdded }?.let { fragmentActivity ->
                             bluetoothService.getConnectResultsLiveData()
-                                .observe(fragmentActivity, Observer<GattCallbackPayload> {
+                                .observe(fragmentActivity, Observer {
                                     onConnectionPayloadReceived(it)
                                 })
 
