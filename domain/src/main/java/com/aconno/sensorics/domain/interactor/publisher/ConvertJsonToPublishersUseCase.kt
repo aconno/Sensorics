@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.MalformedJsonException
 import io.reactivex.Single
 
-class ConvertJsonToPublishersUseCase : SingleUseCaseWithParameter<List<BasePublish>, String> {
+class ConvertJsonToPublishersUseCase : ConvertJsonToObjectsUseCase<BasePublish>() {
     private val gson = Gson()
     override fun execute(parameter: String): Single<List<BasePublish>> {
         try {
@@ -24,9 +24,22 @@ class ConvertJsonToPublishersUseCase : SingleUseCaseWithParameter<List<BasePubli
                 BASE_PUBLISH_TYPE
             ).mapIndexedNotNull { index, publisher ->
                 when (publisher.type) {
-                    PublishType.MQTT -> gson.fromJson(list[index], GeneralMqttPublish::class.java)
-                    PublishType.REST -> gson.fromJson(list[index], GeneralRestPublish::class.java)
-                    PublishType.GOOGLE -> gson.fromJson(list[index], GeneralGooglePublish::class.java)
+                    PublishType.MQTT -> gson.fromJson(
+                        list[index],
+                        GeneralMqttPublish::class.java
+                    )
+                    PublishType.REST -> gson.fromJson(
+                        list[index],
+                        GeneralRestPublish::class.java
+                    )
+                    PublishType.GOOGLE -> gson.fromJson(
+                        list[index],
+                        GeneralGooglePublish::class.java
+                    )
+                    PublishType.AZURE_MQTT -> gson.fromJson(
+                        list[index],
+                        GeneralAzureMqttPublish::class.java
+                    )
                 }
             })
         } catch (e: JsonSyntaxException) {

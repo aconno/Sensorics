@@ -14,6 +14,8 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
 import java.io.IOException
@@ -83,7 +85,7 @@ class RestPublisher(
     }
 
     companion object {
-        private val JSON = MediaType.parse("application/json")
+        private val JSON = "application/json".toMediaTypeOrNull()
     }
 
     @SuppressLint("CheckResult")
@@ -96,7 +98,7 @@ class RestPublisher(
                 .map { it }
                 .subscribe(
                     {
-                        Timber.d(it.body().toString())
+                        Timber.d(it.body.toString())
                     }, {
                     //No-Op
                 }
@@ -166,7 +168,7 @@ class RestPublisher(
                             object : TypeToken<List<GeneralRestHttpGetParam>>() {}.type
                         val list = Gson().fromJson<List<GeneralRestHttpGetParam>>(it, httpGetType)
 
-                        val httpBuilder = HttpUrl.parse(restPublish.url)!!.newBuilder()
+                        val httpBuilder = restPublish.url.toHttpUrlOrNull()!!.newBuilder()
 
                         list.forEach {
                             httpBuilder.addQueryParameter(
@@ -266,7 +268,7 @@ class RestPublisher(
     private fun getMediaType(): MediaType? {
         listHeaders.forEach {
             if (it.key == "Content-Type") {
-                return MediaType.parse(it.value)
+                return it.value.toMediaTypeOrNull()
             }
         }
 

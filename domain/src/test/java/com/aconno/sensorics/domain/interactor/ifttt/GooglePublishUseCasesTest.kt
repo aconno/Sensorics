@@ -1,7 +1,7 @@
 package com.aconno.sensorics.domain.interactor.ifttt
 
 import com.aconno.sensorics.domain.ifttt.GeneralGooglePublish
-import com.aconno.sensorics.domain.ifttt.GooglePublishRepository
+import com.aconno.sensorics.domain.ifttt.publish.GooglePublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.*
 import org.junit.Before
 import org.junit.Test
@@ -63,7 +63,7 @@ class GooglePublishUseCasesTest {
     fun testAddGooglePublishUseCase() {
         addGooglePublishUseCase.execute(googlePublish).blockingGet()
 
-        verify(mockGooglePublishRepository).addGooglePublish(googlePublish)
+        verify(mockGooglePublishRepository).addPublish(googlePublish)
         verifyNoMoreInteractions(mockGooglePublishRepository)
     }
 
@@ -71,7 +71,7 @@ class GooglePublishUseCasesTest {
     fun testDeleteGooglePublishUseCase() {
         deleteGooglePublishUseCase.execute(googlePublish).blockingGet()
 
-        verify(mockGooglePublishRepository).deleteGooglePublish(googlePublish)
+        verify(mockGooglePublishRepository).deletePublish(googlePublish)
         verifyNoMoreInteractions(mockGooglePublishRepository)
     }
 
@@ -79,7 +79,7 @@ class GooglePublishUseCasesTest {
     fun testGetAllEnabledGooglePublishUseCase() {
         getAllEnabledGooglePublishUseCase.execute()
 
-        verify(mockGooglePublishRepository).getAllEnabledGooglePublish()
+        verify(mockGooglePublishRepository).allEnabled
         verifyNoMoreInteractions(mockGooglePublishRepository)
     }
 
@@ -87,7 +87,7 @@ class GooglePublishUseCasesTest {
     fun testGetAllGooglePublishUseCase() {
         getAllGooglePublishUseCase.execute()
 
-        verify(mockGooglePublishRepository).getAllGooglePublish()
+        verify(mockGooglePublishRepository).all
         verifyNoMoreInteractions(mockGooglePublishRepository)
     }
 
@@ -95,7 +95,7 @@ class GooglePublishUseCasesTest {
     fun testGetGooglePublishByIdUseCase() {
         getGooglePublishByIdUseCase.execute(id)
 
-        verify(mockGooglePublishRepository).getGooglePublishById(id)
+        verify(mockGooglePublishRepository).getPublishById(id)
         verifyNoMoreInteractions(mockGooglePublishRepository)
     }
 }

@@ -33,6 +33,10 @@ class SelectPublisherActivity : AppCompatActivity() {
                 this@SelectPublisherActivity
             )
         }
+
+        azure_mqtt_backend.setOnClickListener {
+            AzureMqttPublisherActivity.start(this@SelectPublisherActivity)
+        }
     }
 
     companion object {

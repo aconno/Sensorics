@@ -39,9 +39,9 @@ class FileStorageImpl(private val context: Context) : FileStorage {
     }
 
     @Throws(IllegalArgumentException::class, IOException::class, SecurityException::class)
-    override fun storeTempData(data: ByteArray): Pair<String, File> {
+    override fun storeTempData(data: ByteArray, fileNamePrefix : String): Pair<String, File> {
         return File.createTempFile(
-            "backend",
+            fileNamePrefix,
             ".json",
             context.cacheDir
         ).let {

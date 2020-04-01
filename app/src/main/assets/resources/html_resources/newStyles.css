@@ -29,15 +29,6 @@
     width: 50%;
 }
 
-.container{
-	width: 100%;
-    height: 0;
-    padding-bottom: 100%;
-	margin:auto;
-   	align-content:center;
-   	text-align:center;
-}
-
 .acnact-btn-div{
 	margin-left: auto;
     margin-right: auto;
@@ -112,6 +103,19 @@
     margin-top: 60px
 }
 
+.ledvance-center-value-small{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+	font-size: 28px;
+    font-weight: bold;
+}
+
+.ledadvance-value-small{
+    margin-top: 10px;
+    text-align: center;
+}
+
 .acnact-value-tiny{
     margin-left: auto;
     margin-right: auto;
@@ -140,4 +144,16 @@
       border: 4px solid black;
       background: white;
       align-content: center;
+}
+
+#new-circle {
+    margin: auto;
+    width: 200px;
+    height: 200px;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
+    border: 4px solid white;
+    background: #ff6600;
+    align-content: center;
 }

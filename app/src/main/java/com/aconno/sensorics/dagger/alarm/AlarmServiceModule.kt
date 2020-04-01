@@ -9,6 +9,7 @@ import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.domain.AudioAlarm
 import com.aconno.sensorics.domain.DeviceAudioManager
+import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.telephony.DeviceTelephonyManager
 import dagger.Module
 import dagger.Provides
@@ -39,13 +40,15 @@ class AlarmServiceModule {
 
     @Provides
     @AlarmServiceScope
-    fun proviceAudioAlarm(
+    fun provideAudioAlarm(
         sensoricsApplication: SensoricsApplication,
         telephonyManager: DeviceTelephonyManager,
-        audioManager: DeviceAudioManager
+        audioManager: DeviceAudioManager,
+        vibrator: Vibrator
     ): AudioAlarm = AudioAlarmImpl(
         sensoricsApplication.applicationContext,
         telephonyManager,
-        audioManager
+        audioManager,
+            vibrator
     )
 }

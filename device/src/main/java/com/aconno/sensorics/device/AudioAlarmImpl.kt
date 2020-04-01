@@ -9,15 +9,22 @@ import android.net.Uri
 import android.telephony.TelephonyManager
 import com.aconno.sensorics.domain.AudioAlarm
 import com.aconno.sensorics.domain.DeviceAudioManager
+import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.telephony.DeviceTelephonyManager
+import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class AudioAlarmImpl(
     val context: Context,
     val telephonyManager: DeviceTelephonyManager,
-    val audioManager: DeviceAudioManager
+    val audioManager: DeviceAudioManager,
+    val vibrator : Vibrator
 ) : AudioAlarm {
     private var mediaPlayer: MediaPlayer? = null
+    private var isVibratorRunning = false
+    private var vibratorDisposable : Disposable? = null
 
     private val uriAlert: Uri
         get() {
@@ -53,8 +60,20 @@ class AudioAlarmImpl(
                 player.start()
             }
 
-            // TODO: Use vibrator
+            vibrate()
+
         }
+    }
+
+    private fun vibrate() {
+        vibrator.vibrate(VIBRATION_WAVE_DURATION_MILIS)
+        isVibratorRunning = true
+
+        vibratorDisposable?.dispose()
+        vibratorDisposable = Observable.timer(VIBRATION_WAVE_DURATION_MILIS,TimeUnit.MILLISECONDS)
+                .subscribe {
+                    if(isVibratorRunning) vibrate()
+                }
     }
 
     override fun stop() {
@@ -66,15 +85,17 @@ class AudioAlarmImpl(
 
             mediaPlayer = null
 
-            // TODO: Stop vibrator
         }
+        isVibratorRunning = false
+        vibratorDisposable?.dispose()
     }
 
     override fun isRunning(): Boolean {
-        return mediaPlayer?.isPlaying ?: false
+        return mediaPlayer?.isPlaying?: false || isVibratorRunning
     }
 
     companion object {
         const val IN_CALL_VOLUME = 0.125f
+        const val VIBRATION_WAVE_DURATION_MILIS = 1000L
     }
 }

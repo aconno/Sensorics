@@ -40,6 +40,7 @@ class DeviceViewModel(
                 savedDevices?.forEach {
                     if (scannedDevice == it.device && !it.active) {
                         it.active = true
+                        it.updateDevice(scannedDevice)
                         deviceActiveObservable.onNext(savedDevices)
                         return@forEach
                     }

@@ -1,20 +1,15 @@
 package com.aconno.sensorics.viewmodel
 
-import android.app.Application
 import android.bluetooth.BluetoothAdapter
-import android.content.IntentFilter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SingleLiveEvent
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import io.reactivex.disposables.Disposable
 
 class BluetoothViewModel(
-    private val bluetooth: Bluetooth,
-    private val bluetoothStateReceiver: BluetoothStateReceiver,
-    private val application: Application
+    private val bluetooth: Bluetooth
 ) : ViewModel() {
 
     val bluetoothState: MutableLiveData<BluetoothState> = SingleLiveEvent()
@@ -27,16 +22,11 @@ class BluetoothViewModel(
     }
 
     fun observeBluetoothState() {
-        application.applicationContext.registerReceiver(
-            bluetoothStateReceiver,
-            IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-        )
         val bluetoothStates = bluetooth.getStateEvents()
         bluetoothStatesSubscription = bluetoothStates.subscribe { bluetoothState.value = it }
     }
 
     fun stopObservingBluetoothState() {
-        application.applicationContext.unregisterReceiver(bluetoothStateReceiver)
         bluetoothStatesSubscription?.dispose()
     }
 }

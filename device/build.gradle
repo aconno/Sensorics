@@ -7,8 +7,6 @@ android {
     defaultConfig {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode sensorics_version_code
-        versionName sensorics_version_name
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -17,6 +15,15 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -32,6 +39,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.localbroadcastmanager:localbroadcastmanager:$localbroadcastmanager_version"
 
     compileOnly "javax.annotation:jsr250-api:$javax_annotation_version"
     implementation "javax.inject:javax.inject:$javax_inject_version"
@@ -46,6 +54,11 @@ dependencies {
 
     implementation "com.udojava:EvalEx:$eval_ex_version"
 
+    implementation("org.eclipse.paho:org.eclipse.paho.android.service:$eclipse_paho_android_service_version") {
+        exclude module: 'support-v4'
+    }
+    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$eclipse_paho_mqttv3_version"
+
     api "com.squareup.retrofit2:retrofit:$retrofit_version"
     api "com.squareup.retrofit2:converter-scalars:$retrofit_version"
 
@@ -54,6 +67,9 @@ dependencies {
 
     androidTestImplementation "androidx.test:runner:$test_runner_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
+
+    // TODO: Move version
+    implementation 'com.github.AllanHasegawa.Tempo:tempo:0.2.0'
 }
 
 apply plugin: 'kotlin-android-extensions'

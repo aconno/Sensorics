@@ -21,7 +21,7 @@ class DashboardViewModel(
     val url: LiveData<String> = mutableUrl
 
     fun initViewModel() {
-        mutableUrl.postValue("http://playground.simvelop.de:8095/resources/sensorics_files/html_files/dashboard.html?timestamp=${System.currentTimeMillis()}")
+        mutableUrl.postValue("https://aconno.de/sensorics/dashboard/dashboard.html?timestamp=${System.currentTimeMillis()}")
     }
 
     fun subscribe() {

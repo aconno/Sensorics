@@ -1,24 +1,27 @@
 class GeneralView {}
 
+let beacon;
+
 GeneralView.Views = class {
-    static get TOGGLE_CONNECTION_ID() { return "tglConnection"; }
-    static get LABEL_MANUFACTURER_ID() { return  "lblManufacturer"; }
-    static get LABEL_MODEL_ID() { return  "lblModel"; }
-    static get LABEL_SOFTWARE_VERSION_ID() { return  "lblSoftwareVersion"; }
-    static get LABEL_HARDWARE_VERSION_ID() { return  "lblHardwareVersion"; }
-    static get LABEL_FIRMWARE_VERSION_ID() { return  "lblFirmwareVersion"; }
-    static get LABEL_OS_VERSION_ID() { return  "lblOsVersion"; }
-    static get LABEL_MAC_ADDRESS_ID() { return  "lblMacAddress"; }
-    static get LABEL_SUPPORTED_TX_POWER_ID() { return  "lblSupportedTxPower"; }
-    static get LABEL_SUPPORTED_SLOTS_ID() { return  "lblSupportedSlots"; }
-    static get LABEL_ADV_FEATURED_ID() { return  "lblAdvFeature"; }
-    static get LABEL_SLOT_AMOUNT_ID() { return  "lblSlotAmount"; }
+    static get TOGGLE_CONNECTION_ID() { return "tgl-connection"; }
+    static get LABEL_MANUFACTURER_ID() { return  "lbl-manufacturer"; }
+    static get LABEL_MODEL_ID() { return  "lbl-model"; }
+    static get LABEL_SOFTWARE_VERSION_ID() { return  "lbl-software-version"; }
+    static get LABEL_HARDWARE_VERSION_ID() { return  "lbl-hardware-version"; }
+    static get LABEL_FIRMWARE_VERSION_ID() { return  "lbl-firmware-version"; }
+    static get LABEL_OS_VERSION_ID() { return  "lbl-os-version"; }
+    static get LABEL_MAC_ADDRESS_ID() { return  "lbl-mac-address"; }
+    static get LABEL_SUPPORTED_TX_POWER_ID() { return  "lbl-supported-tx-power"; }
+    static get LABEL_SUPPORTED_SLOTS_ID() { return  "lbl-supported-slots"; }
+    static get LABEL_ADV_FEATURED_ID() { return  "lbl-adv-feature"; }
+    static get LABEL_SLOT_AMOUNT_ID() { return  "lbl-slot-amount"; }
  }
 
  GeneralView.ViewsAction = class{
     static setConnection(value){
         $(`#${GeneralView.Views.TOGGLE_CONNECTION_ID}`).prop("checked",value);
-        native.changeConnectible(value);
+        // not implemented yet
+        // native.onDataChanged(JSON.stringify(beacon));
     }
     
     static setLabelManufacturer(value) {
@@ -115,19 +118,34 @@ GeneralView.Views = class {
 }
 
 GeneralView.Actions = class{
-    static setBeaconInformation(beacon){
-        GeneralView.ViewsAction.setConnection(beacon.connectible);
-        GeneralView.ViewsAction.setLabelMacAddress(beacon.address);
-        GeneralView.ViewsAction.setLabelManufacturer(beacon.manufacturer);
-        GeneralView.ViewsAction.setLabelModel(beacon.model);
-        GeneralView.ViewsAction.setLabelSoftwareVersion(beacon.softwareVersion);
-        GeneralView.ViewsAction.setLabelHardwareVersion(beacon.hardwareVersion);
-        GeneralView.ViewsAction.setLabelFirmwareVersion(beacon.firmwareVersion);
-        GeneralView.ViewsAction.setLabelOsVersion(beacon.osVersion);
-        GeneralView.ViewsAction.setLabelSupportedTxPower(beacon.supportedTxPower);
-        GeneralView.ViewsAction.setLabelSupportedSlots(beacon.supportedSlots);
-        GeneralView.ViewsAction.setLabelAdvFeature(beacon.advFeature);
-        GeneralView.ViewsAction.setLabelSlotAmount(beacon.slotAmount);
+
+    static addLinesAfterCommas(text) {
+        let parts = text.split(",");
+        return parts.join(", ");
+    }
+
+    static setBeaconInformation(beaconString){
+        beacon = JSON.parse(beaconString);
+
+        let generalParams = beacon.parameters.parameters["Basic config"];
+        let paramMap = {};
+        for(var i in generalParams) {
+            paramMap[generalParams[i].name] = generalParams[i].value;
+        }
+
+        let supportedTxPowers = this.addLinesAfterCommas(paramMap["Supported TX powers"]); //this is needed in order to enable automatic word-wrap if there is not enough space for whole text to fit in one line
+
+        GeneralView.ViewsAction.setConnection(true);
+        GeneralView.ViewsAction.setLabelMacAddress(paramMap["MAC"]);
+        GeneralView.ViewsAction.setLabelManufacturer(paramMap["Manufacturer"]);
+        GeneralView.ViewsAction.setLabelModel(paramMap["Model"]);
+        GeneralView.ViewsAction.setLabelSoftwareVersion(paramMap["Softdevice version"]);
+        GeneralView.ViewsAction.setLabelHardwareVersion(paramMap["Hardware version"]);
+        GeneralView.ViewsAction.setLabelFirmwareVersion(paramMap["Firmware version"]);
+        GeneralView.ViewsAction.setLabelOsVersion(paramMap["FreeRTOS version"]);
+        GeneralView.ViewsAction.setLabelSupportedTxPower(supportedTxPowers);
+        GeneralView.ViewsAction.setLabelSupportedSlots("EMPTY, CUSTOM, URL, I_BEACON, DEFAULT");
+        GeneralView.ViewsAction.setLabelSlotAmount(beacon.slots.slots.length);
     }
 
     static updateFirmware(){
@@ -149,7 +167,6 @@ GeneralView.Actions = class{
     static changeConnectible(value){
         native.changeConnectible(value);
     }
-
 }
 
 

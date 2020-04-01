@@ -7,11 +7,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.LongItemClickListener
+import com.aconno.sensorics.domain.ifttt.RestHeader
 import com.aconno.sensorics.model.RestHeaderModel
 
 
 class RestHeadersAdapter(
-    private val list: List<RestHeaderModel>,
+    private val list: MutableList<RestHeaderModel>,
     private val onItemClickListener: ItemClickListenerWithPos<RestHeaderModel>,
     private val mLongItemClickListener: LongItemClickListener<RestHeaderModel>?
 ) : RecyclerView.Adapter<RestHeadersAdapter.ItemViewHolder>() {
@@ -60,9 +61,23 @@ class RestHeadersAdapter(
         }
     }
 
+    fun getHeaderAt(position : Int) : RestHeaderModel{
+        return list[position]
+    }
+
+    fun removeHeaderAt(position : Int) {
+        list.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     inner class Item(val model: RestHeaderModel, val position: Int)
 
     override fun getItemViewType(position: Int): Int {
         return if (position == 0) 0 else 1
+    }
+
+    fun addHeaderAtPosition(header: RestHeaderModel, position: Int) {
+        list.add(position, header)
+        notifyItemInserted(position)
     }
 }

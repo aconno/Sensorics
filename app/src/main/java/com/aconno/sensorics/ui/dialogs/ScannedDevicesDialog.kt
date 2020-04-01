@@ -20,10 +20,12 @@ import kotlinx.android.synthetic.main.dialog_devices.*
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Named
 
 class ScannedDevicesDialog : DisposerDialogFragment() {
 
     @Inject
+    @Named("composite")
     lateinit var scanDeviceStream: Flowable<ScanDevice>
 
     @Inject

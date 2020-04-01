@@ -8,7 +8,7 @@ import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.SharedPreferences
-import com.aconno.sensorics.device.BluetoothCharacteristicValueConverter
+import com.aconno.sensorics.device.BluetoothGattAttributeValueConverter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.model.ScanResult
@@ -18,6 +18,7 @@ import com.aconno.sensorics.domain.scanning.ScanEvent
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
@@ -30,16 +31,19 @@ class BluetoothImpl(
     private val bluetoothAdapter: BluetoothAdapter,
     private val bluetoothPermission: BluetoothPermission,
     private val bluetoothStateListener: BluetoothStateListener,
-    private val bluetoothCharacteristicValueConverter: BluetoothCharacteristicValueConverter
-) : Bluetooth {
+    private val bluetoothGattAttributeValueConverter: BluetoothGattAttributeValueConverter
+) : Bluetooth, Consumer<GattCallbackPayload> {
+
+    override var mtu: Int = 20
 
     private val scanResults: PublishSubject<ScanResult> = PublishSubject.create()
     private val connectGattResults: PublishSubject<GattCallbackPayload> = PublishSubject.create()
 
     private val scanEvent = PublishSubject.create<ScanEvent>()
 
-    override fun getScanEvent(): Flowable<ScanEvent> =
-        scanEvent.toFlowable(BackpressureStrategy.BUFFER)
+    override fun getScanEvent(): Flowable<ScanEvent> {
+        return scanEvent.toFlowable(BackpressureStrategy.BUFFER)
+    }
 
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
 
@@ -47,12 +51,25 @@ class BluetoothImpl(
     private var lastConnectedDeviceAddress: String? = null
     private var lastConnectedGatt: BluetoothGatt? = null
 
+    init {
+        getGattResults().subscribe(this)
+    }
+
+    override fun accept(payload: GattCallbackPayload) {
+        Timber.i(payload.action)
+        when (payload.action) {
+            BluetoothGattCallback.ACTION_GATT_MTU_CHANGED -> {
+                this.mtu = (payload.payload as? Int) ?: mtu
+            }
+        }
+    }
+
     private fun getScanSettings(
         devices: List<Device>? = null
     ): Pair<List<ScanFilter>?, ScanSettings> {
         val settingsBuilder = ScanSettings.Builder()
 
-        val scanMode = sharedPrefs.getString("scan_mode", "3").toInt()
+        val scanMode = sharedPrefs.getString("scan_mode", null)?.toInt() ?: 3
         when (scanMode) {
             1 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
             2 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_BALANCED)
@@ -84,33 +101,23 @@ class BluetoothImpl(
     }
 
     override fun enable() {
-        if (bluetoothPermission.isGranted) {
-            bluetoothAdapter.enable()
-        } else {
-            throw BluetoothException("Bluetooth permission not granted")
-        }
+        checkPermissionState()
+        bluetoothAdapter.enable()
     }
 
     override fun disable() {
-        if (bluetoothPermission.isGranted) {
-            bluetoothAdapter.disable()
-        } else {
-            throw BluetoothException("Bluetooth permission not granted")
-        }
+        checkPermissionState()
+        bluetoothAdapter.disable()
     }
 
     override fun readCharacteristic(serviceUUID: UUID, characteristicUUID: UUID): Boolean {
-        return lastConnectedGatt?.let {
-            val characteristic = it.getService(serviceUUID)
-                .getCharacteristic(characteristicUUID)
-
-            if (characteristic != null) {
-                it.readCharacteristic(characteristic)
-                true
-            } else {
-                false
-            }
-        }!!
+        return lastConnectedGatt?.let { gatt ->
+            gatt.getService(serviceUUID)
+                ?.getCharacteristic(characteristicUUID)
+                ?.let { characteristic ->
+                    gatt.readCharacteristic(characteristic)
+                }
+        } ?: false
     }
 
     override fun writeCharacteristic(
@@ -119,18 +126,51 @@ class BluetoothImpl(
         type: String,
         value: Any
     ): Boolean {
-        return lastConnectedGatt?.let {
-            val characteristic = it.getService(serviceUUID)
-                .getCharacteristic(characteristicUUID)
+        return lastConnectedGatt?.let { gatt ->
+            gatt.getService(serviceUUID)
+                ?.getCharacteristic(characteristicUUID)
+                ?.let { characteristic ->
+                    bluetoothGattAttributeValueConverter.setValue(characteristic, type, value)
+                    gatt.writeCharacteristic(characteristic)
+                }
+        } ?: false
+    }
 
-            bluetoothCharacteristicValueConverter.setValue(characteristic, type, value)
-            if (characteristic != null) {
-                it.writeCharacteristic(characteristic)
-                true
-            } else {
-                false
-            }
-        }!!
+    override fun readDescriptor(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+        descriptorUUID: UUID
+    ): Boolean {
+        return lastConnectedGatt?.let { gatt ->
+            gatt.getService(serviceUUID)
+                ?.getCharacteristic(characteristicUUID)
+                ?.getDescriptor(descriptorUUID)
+                ?.let { descriptor ->
+                    gatt.readDescriptor(descriptor)
+                }
+        } ?: false
+    }
+
+    override fun writeDescriptor(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+        descriptorUUID: UUID,
+        type: String,
+        value: Any
+    ): Boolean {
+        return lastConnectedGatt?.let { gatt ->
+            gatt.getService(serviceUUID)
+                ?.getCharacteristic(characteristicUUID)
+                ?.getDescriptor(descriptorUUID)
+                ?.let { descriptor ->
+                    bluetoothGattAttributeValueConverter.setValue(descriptor, type, value)
+                    gatt.readDescriptor(descriptor)
+                }
+        } ?: false
+    }
+
+    override fun requestMtu(mtu: Int): Boolean {
+        return lastConnectedGatt?.requestMtu(mtu) ?: false
     }
 
     override fun connect(address: String) {
@@ -169,26 +209,29 @@ class BluetoothImpl(
     }
 
     override fun startScanning(devices: List<Device>) {
-        Timber.i("Start Bluetooth scanning, devices: $devices")
-        val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
-        if (bluetoothPermission.isGranted) {
+        checkPermissionState()
+        if (bluetoothAdapter.isEnabled) {
+            Timber.i("Start Bluetooth scanning, devices: $devices")
+            val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
             val scanSettings = getScanSettings(devices)
             scanEvent.onNext(ScanEvent.start())
             bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
         } else {
-            throw BluetoothException("Bluetooth permission not granted")
+            Timber.w("Bluetooth is not enabled. Can't start scanning")
         }
     }
 
+
     override fun startScanning() {
-        Timber.i("Start Bluetooth scanning")
-        val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
-        if (bluetoothPermission.isGranted) {
+        checkPermissionState()
+        if (bluetoothAdapter.isEnabled) {
+            Timber.i("Start Bluetooth scanning")
+            val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
             val scanSettings = getScanSettings()
             scanEvent.onNext(ScanEvent.start())
             bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
         } else {
-            throw BluetoothException("Bluetooth permission not granted")
+            Timber.w("Bluetooth is not enabled. Can't start scanning")
         }
     }
 
@@ -211,14 +254,14 @@ class BluetoothImpl(
     override fun getStateEvents(): Flowable<BluetoothState> {
         val currentState = Observable.just(bluetoothAdapter.state).map {
             when (it) {
-                BluetoothAdapter.STATE_ON -> BluetoothState(BluetoothState.BLUETOOTH_ON)
-                BluetoothAdapter.STATE_OFF -> BluetoothState(BluetoothState.BLUETOOTH_OFF)
-                else -> BluetoothState(BluetoothState.BLUETOOTH_OFF)
+                BluetoothAdapter.STATE_ON -> BluetoothState.BLUETOOTH_ON
+                BluetoothAdapter.STATE_OFF -> BluetoothState.BLUETOOTH_OFF
+                else -> BluetoothState.BLUETOOTH_OFF
             }
         }
 
         return currentState.mergeWith(bluetoothStateListener.getBluetoothStates())
-            .toFlowable(BackpressureStrategy.LATEST)
+            .toFlowable(BackpressureStrategy.BUFFER)
     }
 
     override fun enableCharacteristicNotification(
@@ -248,6 +291,10 @@ class BluetoothImpl(
         }
 
         return false
+    }
+
+    private fun checkPermissionState() {
+        if (!bluetoothPermission.isGranted) throw BluetoothException("Bluetooth permission not granted")
     }
 
     companion object {

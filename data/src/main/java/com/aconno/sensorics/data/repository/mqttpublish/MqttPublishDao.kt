@@ -1,26 +1,27 @@
 package com.aconno.sensorics.data.repository.mqttpublish
 
 import androidx.room.*
+import com.aconno.sensorics.data.repository.PublishDao
 import io.reactivex.Maybe
 import io.reactivex.Single
 
 @Dao
-abstract class MqttPublishDao {
+abstract class MqttPublishDao : PublishDao<MqttPublishEntity> {
     @get:Query("SELECT * FROM mqtt_publish")
-    abstract val all: Single<List<MqttPublishEntity>>
+    abstract override val all: Single<List<MqttPublishEntity>>
 
-    @Query("SELECT * FROM mqtt_publish WHERE id = :mqttPublishId")
-    abstract fun getMqttPublishById(mqttPublishId: Long): Maybe<MqttPublishEntity>
+    @get:Query("SELECT * FROM mqtt_publish WHERE enabled = 1")
+    abstract override val allEnabled: Single<List<MqttPublishEntity>>
 
-    @Query("SELECT * FROM mqtt_publish WHERE enabled = 1")
-    abstract fun getEnabledMqttPublish(): List<MqttPublishEntity>
+    @Query("SELECT * FROM mqtt_publish WHERE id = :id")
+    abstract override fun getById(id: Long): Maybe<MqttPublishEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(mqttPublishEntity: MqttPublishEntity): Long
+    abstract override fun insert(entity: MqttPublishEntity): Long
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun update(mqttPublishEntity: MqttPublishEntity)
+    abstract override fun update(entity: MqttPublishEntity)
 
     @Delete
-    abstract fun delete(mqttPublishEntity: MqttPublishEntity)
+    abstract override fun delete(entity: MqttPublishEntity)
 }

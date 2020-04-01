@@ -20,6 +20,9 @@ class DeletePublishDeviceJoinUseCase(
                 is MqttPublishDeviceJoin -> publishDeviceJoinRepository.deleteMqttPublishDeviceJoin(
                     parameter
                 )
+                is AzureMqttPublishDeviceJoin -> publishDeviceJoinRepository.deleteAzureMqttPublishDeviceJoin(
+                    parameter
+                )
                 else -> throw IllegalArgumentException("Illegal argument provided")
             }
         }

@@ -108,7 +108,7 @@ class RestPublisherActivity : BaseActivity() {
         initViews()
         if (intent.hasExtra(REST_PUBLISHER_ACTIVITY_KEY)) {
             restPublishModel =
-                    intent.getParcelableExtra(REST_PUBLISHER_ACTIVITY_KEY)
+                intent.getParcelableExtra(REST_PUBLISHER_ACTIVITY_KEY)
 
             setFields()
         }
@@ -431,7 +431,7 @@ class RestPublisherActivity : BaseActivity() {
             name,
             url,
             method,
-            false,
+            restPublishModel?.enabled ?: true,
             timeType,
             timeMillis,
             lastTimeMillis,

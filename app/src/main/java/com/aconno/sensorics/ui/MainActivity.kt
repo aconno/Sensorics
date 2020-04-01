@@ -29,6 +29,7 @@ import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.ui.settings.SettingsActivity
 import com.aconno.sensorics.viewmodel.BluetoothScanningViewModel
 import com.aconno.sensorics.viewmodel.BluetoothViewModel
+import com.aconno.sensorics.viewmodel.MqttVirtualScanningViewModel
 import com.aconno.sensorics.viewmodel.PermissionViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
@@ -47,6 +48,9 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     lateinit var bluetoothScanningViewModel: BluetoothScanningViewModel
 
     @Inject
+    lateinit var mqttVirtualScanningViewModel: MqttVirtualScanningViewModel
+
+    @Inject
     lateinit var permissionViewModel: PermissionViewModel
 
     @Inject
@@ -54,7 +58,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     private var mainMenu: Menu? = null
 
-    private var snackbar: Snackbar? = null
+    private lateinit var bluetoothStatusSnackbar: Snackbar
 
     private var filterByDevice: Boolean = true
 
@@ -62,11 +66,13 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar)
 
-        snackbar =
-            Snackbar.make(content_container, R.string.bt_disabled, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.enable) { bluetoothViewModel.enableBluetooth() }
-
-        snackbar?.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+        bluetoothStatusSnackbar = Snackbar.make(
+            content_container,
+            R.string.bt_disabled,
+            Snackbar.LENGTH_INDEFINITE
+        ).setAction(R.string.enable) {
+            bluetoothViewModel.enableBluetooth()
+        }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
 
         toolbar.title = getString(R.string.app_name)
         setSupportActionBar(toolbar)
@@ -108,7 +114,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
         bluetoothViewModel.observeBluetoothState()
         bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
-
     }
 
     override fun onPause() {
@@ -117,49 +122,35 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
-        when (bluetoothState?.state) {
+        when (bluetoothState) {
             BluetoothState.BLUETOOTH_OFF -> onBluetoothOff()
             BluetoothState.BLUETOOTH_ON -> onBluetoothOn()
         }
     }
 
     private fun onBluetoothOff() {
-        mainMenu?.let {
-            val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
-            menuItem?.setVisible(false)
-        }
-        snackbar?.show()
+        mainMenu?.findItem(R.id.action_toggle_scan)?.isVisible = false
+        bluetoothStatusSnackbar.show()
 
         //Hide FAB
-        val fragment = supportFragmentManager.findFragmentById(content_container.id)
-        fragment?.let {
-            if (it is SavedDevicesFragment) {
-                it.onBluetoothOff()
-            }
-        }
+        (supportFragmentManager.findFragmentById(content_container.id)
+            as? SavedDevicesFragment)?.onBluetoothOff()
     }
 
     private fun onBluetoothOn() {
-        mainMenu?.let {
-            val menuItem: MenuItem? = it.findItem(R.id.action_toggle_scan)
-            menuItem?.setVisible(true)
-        }
-        snackbar?.dismiss()
+        mainMenu?.findItem(R.id.action_toggle_scan)?.isVisible = true
+        bluetoothStatusSnackbar.dismiss()
 
         //Show FAB
-        val fragment = supportFragmentManager.findFragmentById(content_container.id)
-        fragment?.let {
-            if (it is SavedDevicesFragment) {
-                it.onBluetoothOn()
-            }
-        }
+        (supportFragmentManager.findFragmentById(content_container.id)
+            as? SavedDevicesFragment)?.onBluetoothOn()
     }
 
     override fun openLiveGraph(macAddress: String, sensorName: String) {
-        supportFragmentManager?.beginTransaction()?.add(
+        supportFragmentManager.beginTransaction().add(
             content_container.id,
             LiveGraphFragment.newInstance(macAddress, sensorName)
-        )?.addToBackStack(null)?.commit()
+        ).addToBackStack(null).commit()
     }
 
     override fun onFABClicked() {
@@ -187,40 +178,40 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     private fun onScanStart() {
-        mainMenu?.let { mainMenu ->
-            val menuItem = mainMenu.findItem(R.id.action_toggle_scan)
-            menuItem?.let {
-                it.isChecked = true
-                it.setTitle(getString(R.string.stop_scan))
-            }
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
+            it.isChecked = true
+            it.setTitle(getString(R.string.stop_scan))
         }
     }
 
     private fun onScanStop() {
-        mainMenu?.let { mainMenu ->
-            val menuItem = mainMenu.findItem(R.id.action_toggle_scan)
-            menuItem?.let {
-                it.isChecked = false
-                it.setTitle(getString(R.string.start_scan))
-            }
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let {
+            it.isChecked = false
+            it.setTitle(getString(R.string.start_scan))
         }
     }
 
     private fun onScanFailedAlreadyStarted() {
-        // Do nothing TODO: Check if this is right
+        Snackbar.make(
+            findViewById(android.R.id.content),
+            getString(R.string.snackbar_scan_failed_already_started),
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     private fun onScanFailed() {
+        Snackbar.make(
+            findViewById(android.R.id.content),
+            getString(R.string.snackbar_scan_failed),
+            Snackbar.LENGTH_SHORT
+        ).show()
         onScanStop()
     }
 
     //call the html page
     fun showSensorValues(device: Device) {
         supportFragmentManager.beginTransaction()
-            .replace(
-                content_container.id,
-                getReadingListFragment(device)
-            )
+            .replace(content_container.id, getReadingListFragment(device))
             .addToBackStack(null)
             .commit()
     }
@@ -231,9 +222,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
             mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
         }
 
-        return DeviceMainFragment.newInstance(
-            device
-        )
+        return DeviceMainFragment.newInstance(device)
     }
 
     private fun showSavedDevicesFragment() {
@@ -243,33 +232,25 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun onDevicesDialogItemClick(item: Device) {
-        supportFragmentManager.fragments.map {
-            if (it is ScannedDevicesDialogListener) {
-                it.onDevicesDialogItemClick(item)
-            }
-        }
+        supportFragmentManager.fragments
+            .filterIsInstance(ScannedDevicesDialogListener::class.java)
+            .forEach { it.onDevicesDialogItemClick(item) }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         mainMenu = menu
-        mainMenu?.clear()
         menuInflater.inflate(R.menu.main_menu, menu)
 
         mainMenu?.findItem(R.id.action_toggle_scan)?.let {
             setScanMenuLabel(it)
-            val state = bluetoothViewModel.bluetoothState.value
-            when (state?.state) {
-                BluetoothState.BLUETOOTH_ON -> it.setVisible(true)
-                else -> it.setVisible(false)
-            }
+            it.isVisible = bluetoothViewModel.bluetoothState.value == BluetoothState.BLUETOOTH_ON
         }
 
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id: Int? = item?.itemId
-        when (id) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.action_toggle_scan -> toggleScanFromMenuItem(item)
             R.id.action_start_settings_activity -> startSettingsActivity()
         }
@@ -297,13 +278,14 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         }
     }
 
-    fun startScanning(filterByDevice: Boolean = true) {
+    private fun startScanning(filterByDevice: Boolean = true) {
         this.filterByDevice = filterByDevice
         permissionViewModel.requestAccessFineLocation()
     }
 
     private fun stopScanning() {
         bluetoothScanningViewModel.stopScanning()
+        mqttVirtualScanningViewModel.stopScanning()
     }
 
     private fun setScanMenuLabel(menuItem: MenuItem) {
@@ -324,32 +306,29 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         permissionViewModel.checkGrantedPermission(grantResults, requestCode)
     }
 
-    override fun permissionAccepted(actionCode: Int) {
+    override fun onPermissionGranted(actionCode: Int) {
         if (actionCode == SensoricsPermission.ACCESS_FINE_LOCATION.code) {
             permissionViewModel.requestAccessToReadExternalStorage()
         } else {
             bluetoothScanningViewModel.startScanning(filterByDevice)
+            mqttVirtualScanningViewModel.startScanning()
             filterByDevice = true
         }
     }
 
-    override fun permissionDenied(actionCode: Int) {
-        //TODO: Make this nice...
-        Snackbar.make(
-            content_container,
-            getString(R.string.snackbar_permission_message),
-            Snackbar.LENGTH_LONG
-        ).setAction(getString(R.string.snackbar_settings)) {
-            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            intent.data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-            startActivity(intent)
-        }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
+    override fun onPermissionDenied(actionCode: Int) {
+        Snackbar.make(content_container, R.string.snackbar_permission_message, Snackbar.LENGTH_LONG)
+            .setAction(R.string.snackbar_settings) {
+                startActivity(
+                    Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                    }
+                )
+            }
+            .setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
             .show()
     }
 
-    override fun showRationale(actionCode: Int) {
-
-    }
 
     fun onDashboardClicked() {
         supportFragmentManager.beginTransaction()
@@ -376,15 +355,24 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     fun startScanOperation() {
-
-        mainMenu.let {
-            val menuItem: MenuItem = it!!.findItem(R.id.action_toggle_scan)
-            toggleScanFromMenuItem(menuItem)
+        mainMenu?.findItem(R.id.action_toggle_scan)?.let { item ->
+            toggleScanFromMenuItem(item)
         }
     }
 
+    fun stopScanOperation() {
+        if (isScanning()) {
+            changeToggleState()
+            stopScanning()
+        }
+    }
+
+    private fun changeToggleState() {
+        mainMenu?.findItem(R.id.action_toggle_scan)?.isChecked = false
+    }
+
     companion object {
-        const val WORK_TAG = "My_WORKER_TAG_00123"
-        const val WORK_NAME = "MyWorkName"
+        const val WORK_TAG = "RESOURCE_SYNC_WORKER"
+        const val WORK_NAME = "Resource Synchronization"
     }
 }

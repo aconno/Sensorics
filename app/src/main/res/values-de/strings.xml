@@ -30,7 +30,7 @@
     <string name="condition_more">Größer</string>
     <string name="condition_value_hint">Wert</string>
     <string name="condition_dialog_set">Festlegen</string>
-    <string name="condition_dialog_cancel">Abbrechen</string>
+    <string name="cancel">Abbrechen</string>
     <string name="vibration">Vibration</string>
     <string name="sensor_card_image_content_description">Bild der Sensorkarte</string>
     <string name="service_notification_title">Sensorics</string>
@@ -85,11 +85,9 @@
     <string name="topic">Topic</string>
     <string name="password">Passwort</string>
     <string name="title_select_publish">Wählen Sie den Anbieter</string>
-    <string name="title_settings">Einstellungen</string>
     <string name="no_publishers_found">Es sind keine backends vorhanden. Drücke plus (+) um ein backend hinzuzufügen.</string>
     <string name="no_devices_found">Es sind keine gespeicherten Geräte vorhanden</string>
     <string name="title_publish_list">Backends</string>
-    <string name="settings">Einstellungen</string>
     <string name="title_action_details">Aktion</string>
     <string name="label_device">Gerät</string>
     <string name="hint_action_name">Name der Aktion</string>
@@ -142,10 +140,6 @@
     <string name="config">Konfigurieren</string>
     <string name="logging">Logging</string>
 
-
-    //Need translation
-
-    <string name="title_configure">Configure</string>
 
     //Not Translated
     <string name="rssi_1m">Rssi @ 1m</string>
@@ -257,6 +251,70 @@
     <string name="share_file">JSON Datei teilen</string>
     <string name="share_text">JSON Text teilen</string>
     <string name="undo">Undo</string>
-    <string name="error_converting_data_to_json">Error converting data to JSON</string>
+
+    <string name="import_one_backend_success">1 Backend erfolgreich importiert</string>
+    <string name="import_multiple_backends_success">%d Backends erfolgreich importiert</string>
+
+    <string name="snackbar_scan_failed_already_started">Der Gerätescan wurde bereits gestartet</string>
+    <string name="snackbar_scan_failed">Der Gerätescan ist fehlgeschlagen</string>
+
+    <string name="no_virtual_scanning_sources_found">Es sind keine virtuellen Scanquellen vorhanden. Drücke plus (+) um ein virtuelle Scanquelle hinzuzufügen.</string>
+    <string name="virtual_scanning_sources">Virtuelle Scanquellen</string>
+    <string name="title_virtual_scanning_sources">Virtuelle Scanquellen</string>
+    <string name="tcp">TCP</string>
+    <string name="websocket">Websocket</string>
+    <string name="mqtt_protocol">Protokoll</string>
+    <string name="mqtt_virtual_scanning_source_name">Name</string>
+    <string name="mqtt_virtual_scanning_source_address">Serveradresse</string>
+    <string name="mqtt_virtual_scanning_source_port">Server Port</string>
+    <string name="mqtt_virtual_scanning_source_path">Serverpfad</string>
+    <string name="mqtt_virtual_scanning_source">MQTT Scanquelle</string>
+
+    <string name="mqtt_server_uri">MQTT Server-URI</string>
+
+
+    <string name="test_virtual_scanning_source">Test</string>
+    <string name="mqtt_scanning_source_test_succeeded">Test erfolgreich</string>
+    <string name="mqtt_scanning_source_test_failed">Test fehlgeschlagen</string>
+    <string name="testing_in_progress">Test läuft...</string>
+
+    <string name="virtual_scanning_source_connection_fail">Verbindung zur virtuellen Scan-Quelle kann nicht hergestellt werden: %s</string>
+    <string name="actions_file_share_subject">Sensorics Aktionsliste</string>
+    <string name="backends_file_share_subject">Sensorics Backends</string>
+
+    <string name="import_one_action_success">1 Aktion erfolgreich importiert</string>
+    <string name="import_multiple_actions_success">%d Aktionen erfolgreich importiert</string>
+
+    <string name="action_import_partial_success">%d/%d Aktionen erfolgreich importiert</string>
+    <string name="empty_import_file">Die Datei ist leer</string>
+
+    <string name="selected_items_count">Artikel: %d</string>
+    <string name="export_selected">Exportieren</string>
+    <string name="share_selected_as_text">JSON Text teilen</string>
+    <string name="share_selected_as_file">JSON Datei teilen</string>
+    <string name="select_all">Alle Wählen</string>
+
+    <string name="export_no_items">Keine Artikel zum Exportieren</string>
+    <string name="share_no_items">Keine Artikel zum Teilen</string>
+
+    <string name="share_all_as_text">Alles teilen als JSON-Text</string>
+    <string name="share_all_as_file">Alles teilen als JSON-Datei</string>
+    <string name="iot_hub_info_title"><b>IOT Hub Information</b></string>
+    <string name="iot_hub_information">IOT Hub Referenzen</string>
+    <string name="iot_hub_name">IOT Hub Name</string>
+    <string name="iot_hub_info_text" formatted="true">
+        Damit Sensorics auf Ihren Azure IOT Hub zugreifen kann, müssen Sie die erforderlichen Anmeldeinformationen angeben. Wenn Sie über kein Azure IOT Hub Konto verfügen, finden Sie <a href="https://docs.microsoft.com/en-us/azure/iot-hub/quickstart-send-telemetry-android#create-an-iot-hub">hier</a> Informationen darüber, wie Sie es erstellen können.
+        \n\n
+        Um die erforderlichen Anmeldeinformationen zu erstellen, müssen Sie zunächst Ihr Android-Gerät in Ihrem Azure IOT Hub registrieren. Auf diese Weise erhalten Sie die erforderlichen Anmeldeinformationen - Ihre Geräte-ID und einen gemeinsamen Zugangsschlüssel.
+        \n\n
+        Informationen zur Registrierung Ihres Android-Geräts im Azure IOT Hub mit der Azure Cloud Shell finden Sie <a href="https://docs.microsoft.com/en-us/azure/iot-hub/quickstart-send-telemetry-android#register-a-device">hier</a>. Wenn Sie nicht die Azure Cloud Shell verwenden möchten, können Sie dasselbe erreichen, indem Sie Azure CLI auf Ihrem PC installieren und die gleichen Befehle in Ihrem Terminal/Command Prompt ausführen, wie Sie sie in der Azure Cloud Shell ausführen würden, indem Sie den Anweisungen im angegebenen Link folgen. Informationen über die Installation von Azure CLI in Ihrem Betriebssystem finden Sie <a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">hier</a>.
+        \n\n
+        Denken Sie daran, dass Sie, wenn Sie Sensorics von mehreren Android-Geräten gleichzeitig auf Ihren Hub zugreifen lassen wollen, jedes einzelne Gerät registrieren müssen, da es nicht möglich ist, sich mit einem Azure IOT Hub unter Verwendung derselben Geräte-ID von mehreren Geräten gleichzeitig zu verbinden.
+    </string>
+    <string name="shared_access_key">Gemeinsamen Zugangsschlüssel</string>
+
+    <string name="unsaved_changes_dialog_message">Es gibt ungespeicherte Änderungen. Wollen Sie diese verwerfen oder speichern?</string>
+    <string name="save_changes">Speichern</string>
+    <string name="discard_changes">Verwerfen</string>
 
 </resources>

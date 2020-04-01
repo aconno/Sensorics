@@ -1,15 +1,10 @@
 package com.aconno.sensorics.dagger.mainactivity
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
-import com.aconno.sensorics.dagger.action_details.ActionDetailsActivityScope
+import com.aconno.sensorics.dagger.compositescan.CompositeScanResultsModule
 import com.aconno.sensorics.device.permissons.PermissionActionFactory
-import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionsByDeviceMacAddressUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
@@ -19,8 +14,6 @@ import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
-import com.aconno.sensorics.domain.repository.DeviceRepository
-import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
@@ -32,9 +25,14 @@ import com.aconno.sensorics.viewmodel.resources.MainResourceViewModelFactory
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Flowable
+import javax.inject.Named
 
 
-@Module
+@Module(
+    includes = [
+        CompositeScanResultsModule::class
+    ]
+)
 class MainActivityModule {
 
     @Provides
@@ -48,7 +46,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideSensorListViewModelFactory(
-        readingsStream: Flowable<List<Reading>>,
+        @Named("composite") readingsStream: Flowable<List<Reading>>,
         filterByMacUseCase: FilterByMacUseCase
     ) = SensorListViewModelFactory(
         readingsStream,
@@ -66,7 +64,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideReadingListViewModelFactory(
-        readingsStream: Flowable<List<Reading>>,
+        @Named("composite") readingsStream: Flowable<List<Reading>>,
         filterByMacUseCase: FilterByMacUseCase
     ) = ReadingListViewModelFactory(
         readingsStream,
@@ -83,11 +81,27 @@ class MainActivityModule {
 
     @Provides
     @MainActivityScope
+    fun provideMqttVirtualScanningViewModel(
+        mainActivity: MainActivity,
+        mqttVirtualScanningViewModelFactory: MqttVirtualScanningViewModelFactory
+    ) = ViewModelProviders.of(mainActivity, mqttVirtualScanningViewModelFactory)
+        .get(MqttVirtualScanningViewModel::class.java)
+
+    @Provides
+    @MainActivityScope
     fun provideBluetoothScanningViewModelFactory(
         bluetooth: Bluetooth,
         sensoricsApplication: SensoricsApplication
     ) = BluetoothScanningViewModelFactory(
         bluetooth,
+        sensoricsApplication
+    )
+
+    @Provides
+    @MainActivityScope
+    fun provideMqttVirtualScanningViewModelFactory(
+        sensoricsApplication: SensoricsApplication
+    ) = MqttVirtualScanningViewModelFactory(
         sensoricsApplication
     )
 
@@ -101,10 +115,8 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideBluetoothViewModelFactory(
-        mainActivity: MainActivity,
-        bluetooth: Bluetooth,
-        bluetoothStateReceiver: BluetoothStateReceiver
-    ) = BluetoothViewModelFactory(bluetooth, bluetoothStateReceiver, mainActivity.application)
+        bluetooth: Bluetooth
+    ) = BluetoothViewModelFactory(bluetooth)
 
     @Provides
     @MainActivityScope
@@ -115,29 +127,6 @@ class MainActivityModule {
         bluetoothViewModelFactory
     ).get(BluetoothViewModel::class.java)
 
-    @Provides
-    @MainActivityScope
-    fun provideGetAllDevicesUseCase(
-        deviceRepository: DeviceRepository
-    ): GetSavedDevicesUseCase {
-        return GetSavedDevicesUseCase(deviceRepository)
-    }
-
-    @Provides
-    @MainActivityScope
-    fun provideSaveDeviceUseCase(
-        deviceRepository: DeviceRepository
-    ): SaveDeviceUseCase {
-        return SaveDeviceUseCase(deviceRepository)
-    }
-
-    @Provides
-    @MainActivityScope
-    fun provideDeleteDeviceUseCase(
-        deviceRepository: DeviceRepository
-    ): DeleteDeviceUseCase {
-        return DeleteDeviceUseCase(deviceRepository)
-    }
 
     @Provides
     @MainActivityScope
@@ -160,7 +149,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideDeviceListViewModelFactory(
-        scanDeviceStream: Flowable<ScanDevice>,
+        @Named("composite") scanDeviceStream: Flowable<ScanDevice>,
         getSavedDevicesUseCase: GetSavedDevicesUseCase,
         saveDeviceUseCase: SaveDeviceUseCase,
         deleteDeviceUseCase: DeleteDeviceUseCase,
@@ -179,7 +168,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideUseCasesViewModelFactory(
-        readingsStream: Flowable<List<Reading>>,
+        @Named("composite") readingsStream: Flowable<List<Reading>>,
         filterByMacUseCase: FilterByMacUseCase,
         getUseCaseResourceUseCase: GetUseCaseResourceUseCase
     ) = UseCasesViewModelFactory(
@@ -199,7 +188,7 @@ class MainActivityModule {
     @Provides
     @MainActivityScope
     fun provideDashboardViewModelFactory(
-        readingsStream: Flowable<List<Reading>>
+        @Named("composite") readingsStream: Flowable<List<Reading>>
     ) = DashboardViewModelFactory(
         readingsStream
     )
@@ -226,12 +215,6 @@ class MainActivityModule {
 
     @Provides
     @MainActivityScope
-    fun provideGetSensorReadingsUseCase(
-        inMemoryRepository: InMemoryRepository
-    ) = GetReadingsUseCase(inMemoryRepository)
-
-    @Provides
-    @MainActivityScope
     fun provideMainResourceViewModelFactory(
         getMainResourceUseCase: GetMainResourceUseCase
     ) = MainResourceViewModelFactory(getMainResourceUseCase)
@@ -244,24 +227,5 @@ class MainActivityModule {
     ) = ViewModelProviders.of(mainActivity, mainResourceViewModelFactory)
         .get(MainResourceViewModel::class.java)
 
-    @Provides
-    @MainActivityScope
-    fun provideAddActionUseCase(
-        actionsRepository: ActionsRepository
-    ) = AddActionUseCase(actionsRepository)
 
-    @Provides
-    @MainActivityScope
-    fun provideGetActionsByDeviceMacAddressUseCase(
-        actionsRepository: ActionsRepository
-    ) = GetActionsByDeviceMacAddressUseCase(actionsRepository)
-
-    @Provides
-    @MainActivityScope
-    fun provideSetActionActiveByDeviceMacAddressUseCase(
-        addActionUseCase: AddActionUseCase,
-        getActionsByDeviceMacAddressUseCase: GetActionsByDeviceMacAddressUseCase
-    ) = SetActionActiveByDeviceMacAddressUseCase(
-        addActionUseCase, getActionsByDeviceMacAddressUseCase
-    )
 }

@@ -12,69 +12,28 @@ class FormatMatcher(
         get() = getFormatsUseCase.execute()
 
     fun matches(rawData: ByteArray): Boolean {
-        return supportedFormats.any { format ->
-            val advertisementMap = ByteOperations.isolateAdvertisementTypes(rawData)
+        val advertisementMap = ByteOperations.isolateAdvertisementTypes(rawData)
+        val advertisementLength = advertisementMap.map { it.value }.sumBy { it.size }
 
-            if (advertisementMap.map {
-                    it.value
-                }.sumBy {
-                    it.size
-                } >= format.getRequiredFormat().size) {
-
-                format.getRequiredFormat().groupBy { requiredFormat ->
-                    requiredFormat.source
-                }.all { entry ->
-                    val type = entry.key
-                    val requiredBytes = entry.value
-                    advertisementMap[type]?.let { data ->
-                        matches(
-                            data,
-                            requiredBytes,
-                            if (type == 0xFF.toByte()) format.getSettingsSupport() else null
-                        )
-                    } ?: false
-                }
-            } else {
-                false
-            }
-        }
+        return supportedFormats.filter { format ->
+            advertisementLength >= format.getRequiredFormat().size // Eliminate advertisements that are too short
+        }.firstOrNull { format ->
+            checkAdvertisementFormatCompatibility(advertisementMap, format)
+        } != null
     }
 
     fun findFormat(rawData: ByteArray): AdvertisementFormat? {
-        val matchedFormats = mutableListOf<AdvertisementFormat>()
+        val advertisementMap = ByteOperations.isolateAdvertisementTypes(rawData)
+        val advertisementLength = advertisementMap.map { it.value }.sumBy { it.size }
 
-        supportedFormats.forEach {format ->
-            val advertisementMap = ByteOperations.isolateAdvertisementTypes(rawData)
-
-            if (advertisementMap.map {
-                    it.value
-                }.sumBy {
-                    it.size
-                } < format.getRequiredFormat().size) {
-                return@forEach
-            }
-
-            val matched = format.getRequiredFormat().groupBy { requiredFormat ->
-                requiredFormat.source
-            }.all { entry ->
-                val type = entry.key
-                val requiredBytes = entry.value
-                advertisementMap[type]?.let { data ->
-                    matches(
-                        data,
-                        requiredBytes,
-                        if (type == 0xFF.toByte()) format.getSettingsSupport() else null
-                    )
-                } ?: false
-            }
-
-            if (matched) {
-                matchedFormats.add(format)
-            }
-        }
+        val matchedFormats = supportedFormats.filter { format ->
+            advertisementLength >= format.getRequiredFormat().size // Eliminate advertisements that are too short
+        }.filter { format ->
+            checkAdvertisementFormatCompatibility(advertisementMap, format)
+        }.toList()
 
         return when {
-            matchedFormats.size == 0 -> null
+            matchedFormats.isEmpty() -> null
             matchedFormats.size == 1 -> matchedFormats[0]
             else -> {
                 var bestFormatForThisAdvertisement = matchedFormats[0]
@@ -90,18 +49,25 @@ class FormatMatcher(
         }
     }
 
-    private fun matches(
-        bytes: ByteArray,
-        requiredBytes: List<ByteFormatRequired>,
-        settingsSupport: SettingsSupport?
+    private fun checkAdvertisementFormatCompatibility(
+        advertisementMap: Map<Byte, ByteArray>,
+        format: AdvertisementFormat
     ): Boolean {
-        return bytes.let { data ->
-            settingsSupport?.let { support ->
-                data[support.index] = data[support.index] and support.mask.inv()
-            }
-            requiredBytes.all { format ->
-                data[format.position] == format.value
-            }
+        return format.getRequiredFormat().groupBy { it.source }.all { entry ->
+            val type = entry.key
+            val requiredBytes = entry.value
+            advertisementMap[type]?.let { advertisementTypeData ->
+                // Clear up settings support byte if we are looking at manufacturers data
+                format.getSettingsSupport()?.takeIf { type == 0xFF.toByte() }?.let { support ->
+                    advertisementTypeData[support.index] = advertisementTypeData[support.index] and support.mask.inv()
+                }
+
+                requiredBytes.all { byteFormatRequired ->
+                    advertisementTypeData.getOrNull(byteFormatRequired.position)?.let { actualByte ->
+                        actualByte == byteFormatRequired.value
+                    } ?: false // else return false because such byte does not exist
+                }
+            } ?: false // else return false because the required type of data is not provided
         }
     }
 

@@ -5,6 +5,11 @@
         android:key="publishers"
         android:title="@string/title_publish_list" />
 
+    <Preference
+        android:defaultValue="0"
+        android:key="virtual_scanning_sources"
+        android:title="@string/virtual_scanning_sources" />
+
     <ListPreference
         android:defaultValue="3"
         android:entries="@array/SettingsScanMode"
@@ -16,4 +21,5 @@
         android:defaultValue="false"
         android:key="keep_screen_on"
         android:title="@string/keep_screen_on" />
+
 </PreferenceScreen>

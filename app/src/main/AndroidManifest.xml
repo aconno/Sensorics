@@ -13,6 +13,7 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -32,17 +33,25 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.MainActivity" />
+        <activity android:name=".ui.settings.publishers.selectpublish.AzureMqttPublisherActivity" />
+        <activity android:name=".ui.MainActivity"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name=".ui.settings.virtualscanningsources.MqttVirtualScanningSourceActivity"
+            android:label="@string/mqtt_virtual_scanning_source" />
+        <activity
+            android:name=".ui.settings.virtualscanningsources.VirtualScanningSourceListActivity"
+            android:label="@string/title_virtual_scanning_sources" />
         <activity android:name=".ui.ActionListActivity" />
 
         <service
             android:name=".BluetoothScanningService"
             android:exported="false" />
         <service
-            android:name=".BluetoothConnectService"
+            android:name=".MqttVirtualScanningService"
             android:exported="false" />
         <service
-            android:name="com.aconno.bluetooth.BluetoothDeviceService"
+            android:name=".BluetoothConnectService"
             android:exported="false" />
         <service
             android:name=".AlarmService"
@@ -75,17 +84,16 @@
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".ui.settings.SettingsActivity"
-            android:label="@string/title_settings"
+            android:label="@string/title_app_settings"
             android:theme="@style/SettingsTheme" />
-
-        <activity
-            android:name=".ui.configure.ConfigureActivity"
-            android:label="@string/title_configure" />
 
         <activity
             android:name=".ui.dfu.DfuActivity"
             android:label="@string/title_dfu" />
         <activity android:name=".ui.cache.CacheActivity" />
+        <activity
+            android:name=".ui.beacon_settings.BeaconSettingsActivity"
+            android:label="@string/beacon_settings" />
 
 
         <activity android:name=".ui.dfu.NotificationActivity" />
@@ -108,7 +116,7 @@
             android:name=".device.notification.AlarmNotificationReceiver"
             android:enabled="true">
             <intent-filter>
-                <action  android:name="com.troido.intent.action.ACTION_ALARM_SNOOZE" />
+                <action android:name="com.troido.intent.action.ACTION_ALARM_SNOOZE" />
             </intent-filter>
         </receiver>
 
@@ -117,12 +125,11 @@
             android:authorities="${applicationId}.workmanager-init"
             android:exported="false"
             tools:node="remove" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.aconno.sensorics.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />

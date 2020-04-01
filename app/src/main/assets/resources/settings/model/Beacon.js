@@ -16,7 +16,8 @@ class Beacon {
         this._supportedSlots = new Array();
         this._slotAmmount = 0;
         this._slots = new Array();
-        this._parameters = {}; 
+        this._arbitraryData = {};
+        this._parameters = {};
         this._abstractData = "";
         this._abstractDataMapped = {};
     }
@@ -110,6 +111,12 @@ class Beacon {
     }
     set slots(value) {
         this._slots = value;
+    }
+    get arbitraryData(){
+        return this._arbitraryData;
+    }
+    set arbitraryData(value){
+        this._arbitraryData = value;
     }
     get parameters() {
         return this._parameters;

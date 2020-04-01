@@ -51,13 +51,14 @@ class DeviceSelectFragment : BaseFragment() {
         val view = inflater.inflate(R.layout.fragment_devices, container, false)
         val listView = view.findViewById<RecyclerView>(R.id.list_devices)
 
+
         adapter = DeviceSelectAdapter(
             deviceList,
             itemCheckChangeListener
         )
         listView.layoutManager = LinearLayoutManager(context)
         listView.adapter = adapter
-        listView.isNestedScrollingEnabled = true
+        listView.isNestedScrollingEnabled = false
 
         queryDevices()
 
@@ -82,6 +83,9 @@ class DeviceSelectFragment : BaseFragment() {
                     is MqttPublishModel -> deviceSelectViewModel.getAllDevicesWithMqttRelation(
                         basePublishModel!!.id
                     )
+                    is AzureMqttPublishModel -> deviceSelectViewModel.getAllDevicesWithAzureMqttRelation(
+                        basePublishModel!!.id
+                    )
                     else -> throw IllegalArgumentException()
                 }.firstOrError()
             }
@@ -94,7 +98,7 @@ class DeviceSelectFragment : BaseFragment() {
                     deviceList.clear()
                     deviceList.addAll(it)
                     adapter.notifyDataSetChanged()
-                    Timber.d("${it.size}")
+                    Timber.d("devices size is ${it.size}")
                 }
 
             addDisposable(subscribe)

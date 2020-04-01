@@ -11,7 +11,6 @@ class SyncUseCase(
      * return Success
      */
     override fun execute(): Boolean {
-
         try {
             return resourceSyncer.sync()
         } catch (exception: Exception) {
@@ -19,7 +18,5 @@ class SyncUseCase(
         }
 
         return false
-
     }
-
 }
