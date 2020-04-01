@@ -1,7 +1,5 @@
 package com.aconno.sensorics.adapter
 
-import android.graphics.Color
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +7,6 @@ import android.widget.CheckBox
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.actions.Action
-import com.aconno.sensorics.model.toStringRepresentation
 import kotlinx.android.synthetic.main.item_action.view.*
 import java.util.*
 import kotlin.collections.HashMap
@@ -18,14 +15,14 @@ class ActionAdapter(
     private val actions: MutableList<Action>,
     private val clickListener: ItemClickListener<Action>,
     private val longClickListener: OnListItemLongClickListener?,
-    private val itemSelectedListener : OnListItemSelectedListener? = null
+    private val itemSelectedListener: OnListItemSelectedListener? = null
 ) : RecyclerView.Adapter<ActionAdapter.ViewHolder>() {
     var checkedChangeListener: OnCheckedChangeListener? = null
     var itemSelectionEnabled = false
         private set
-    private var itemSelectedMap : MutableMap<Long, Boolean> = HashMap()//maps item id to current item selection state
+    private var itemSelectedMap: MutableMap<Long, Boolean> = HashMap()//maps item id to current item selection state
 
-    fun enableItemSelection(initiallySelectedItem : Action? = null) {
+    fun enableItemSelection(initiallySelectedItem: Action? = null) {
         itemSelectionEnabled = true
         itemSelectedMap.clear()
         initiallySelectedItem?.let {
@@ -40,21 +37,21 @@ class ActionAdapter(
         notifyDataSetChanged()
     }
 
-    fun getNumberOfSelectedItems() : Int = itemSelectedMap.count { entry -> entry.value }
+    fun getNumberOfSelectedItems(): Int = itemSelectedMap.count { entry -> entry.value }
 
-    fun getSelectedItems() : List<Action> = actions.filter { itemSelectedMap[it.id] == true}
+    fun getSelectedItems(): List<Action> = actions.filter { itemSelectedMap[it.id] == true }
 
-    fun setItemsAsSelected(items : List<Action>) {
-        for(item in items) {
-            onItemSelectionStateChanged(true,item)
+    fun setItemsAsSelected(items: List<Action>) {
+        for (item in items) {
+            onItemSelectionStateChanged(true, item)
         }
         notifyDataSetChanged()
     }
 
-    private fun onItemSelectionStateChanged(selected : Boolean, item : Action) {
+    private fun onItemSelectionStateChanged(selected: Boolean, item: Action) {
         itemSelectedMap[item.id] = selected
         itemSelectedListener?.apply {
-            if(selected) onListItemSelected(item)
+            if (selected) onListItemSelected(item)
             else onListItemDeselected(item)
         }
     }
@@ -65,7 +62,7 @@ class ActionAdapter(
         notifyDataSetChanged()
     }
 
-    fun getActions() : List<Action>{
+    fun getActions(): List<Action> {
         return Collections.unmodifiableList(actions)
     }
 
@@ -100,7 +97,7 @@ class ActionAdapter(
     fun appendActions(newActions: List<Action>) {
         val offset = actions.size
         actions.addAll(newActions)
-        notifyItemRangeChanged(offset,newActions.size)
+        notifyItemRangeChanged(offset, newActions.size)
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
@@ -128,16 +125,16 @@ class ActionAdapter(
                 checkedChangeListener?.onCheckedChange(isChecked, action)
             }
             view.setOnClickListener {
-                if(itemSelectionEnabled) {
+                if (itemSelectionEnabled) {
                     selectionButton.isChecked = !selectionButton.isChecked
-                    onItemSelectionStateChanged(selectionButton.isChecked,action)
+                    onItemSelectionStateChanged(selectionButton.isChecked, action)
                 } else {
                     clickListener.onItemClick(action)
                 }
             }
 
             selectionButton.setOnClickListener {
-                onItemSelectionStateChanged(selectionButton.isChecked,action)
+                onItemSelectionStateChanged(selectionButton.isChecked, action)
             }
 
             view.setOnLongClickListener {
