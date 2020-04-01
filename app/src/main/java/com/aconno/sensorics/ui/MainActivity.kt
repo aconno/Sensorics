@@ -34,6 +34,7 @@ import com.aconno.sensorics.viewmodel.PermissionViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_toolbar.*
+import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -317,7 +318,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     }
 
     override fun onPermissionDenied(actionCode: Int) {
-        Snackbar.make(content_container, R.string.snackbar_permission_message, Snackbar.LENGTH_LONG)
+        Snackbar.make(container_fragment, R.string.snackbar_permission_message, Snackbar.LENGTH_LONG)
             .setAction(R.string.snackbar_settings) {
                 startActivity(
                     Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
