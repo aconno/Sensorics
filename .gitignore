@@ -68,3 +68,5 @@ app/prod/
 
 mainframer
 /.mainframer
+!/.idea/markdown-navigator.xml
+!/.idea/markdown-navigator-enh.xml
