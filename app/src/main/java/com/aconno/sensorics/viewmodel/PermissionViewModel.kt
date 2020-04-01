@@ -2,63 +2,60 @@ package com.aconno.sensorics.viewmodel
 
 import android.content.pm.PackageManager
 import com.aconno.sensorics.device.permissons.PermissionAction
-import com.aconno.sensorics.model.SensoricsPermission
 
-/**
- * TODO Refactor // This class has to take multiple permissions at the same time.//
- */
 class PermissionViewModel(
     private val permissionAction: PermissionAction,
     private val permissionCallbacks: PermissionCallbacks
 ) {
 
-    fun requestAccessFineLocation() {
-        checkAndRequestPermission(SensoricsPermission.ACCESS_FINE_LOCATION)
-    }
+    fun requestPermissions(requestCode: Int,vararg permissions : String ) {
+        val permissionsToBeGranted = permissions.filter {
+            !permissionAction.hasSelfPermission(it)
+        }
 
-    fun requestAccessToReadExternalStorage() {
-        checkAndRequestPermission(SensoricsPermission.READ_EXTERNAL_STORAGE)
-    }
+        if(permissionsToBeGranted.isEmpty()) {
+            permissionCallbacks.onPermissionGranted(requestCode)
+            return
+        }
 
-    private fun checkAndRequestPermission(sensoricsPermission: SensoricsPermission) {
-        if (permissionAction.hasSelfPermission(sensoricsPermission.permission)) {
-            permissionCallbacks.onPermissionGranted(sensoricsPermission.code)
-        } else {
-            if (permissionAction.shouldShowRequestPermissionRationale(sensoricsPermission.permission)) {
-                //TODO: Rationale not implemented yet
-                //permissionCallbacks.showRationale(sensoricsPermission.code)
-                requestPermission(sensoricsPermission)
-            } else {
-                requestPermission(sensoricsPermission)
+        val permissionsToShowRationaleFor = permissionsToBeGranted.filter {
+            permissionAction.shouldShowRequestPermissionRationale(it)
+        }
+
+        if(permissionsToShowRationaleFor.isNotEmpty()) {
+            permissionCallbacks.showRationaleForPermissions(permissionsToShowRationaleFor) {
+                requestPermissions(permissionsToBeGranted,requestCode)
             }
+        } else {
+            requestPermissions(permissionsToBeGranted,requestCode)
         }
     }
 
-    private fun requestPermission(sensoricsPermission: SensoricsPermission) {
-        permissionAction.requestPermission(sensoricsPermission.permission, sensoricsPermission.code)
+    private fun requestPermissions(permissions : List<String>,requestCode: Int) {
+        permissionAction.requestPermissions(permissions, requestCode)
     }
 
-    fun checkGrantedPermission(grantResults: IntArray, requestCode: Int) {
-        if (verifyGrantedPermission(grantResults)) {
+    fun checkPermissionsRequestResult(permissions: Array<String>,grantResults: IntArray, requestCode: Int) {
+        val deniedPermissions = mutableListOf<String>()
+        for((index,permissionGranted) in grantResults.withIndex()) {
+            if(permissionGranted != PackageManager.PERMISSION_GRANTED) {
+                deniedPermissions.add(permissions[index])
+            }
+        }
+        if (deniedPermissions.isEmpty()) {
             permissionCallbacks.onPermissionGranted(requestCode)
         } else {
-            permissionCallbacks.onPermissionDenied(requestCode)
+            permissionCallbacks.onPermissionDenied(requestCode,deniedPermissions)
         }
     }
 
-    private fun verifyGrantedPermission(grantResults: IntArray): Boolean {
-        grantResults.forEach {
-            if (it != PackageManager.PERMISSION_GRANTED) {
-                return false
-            }
-        }
-        return true
-    }
 
     interface PermissionCallbacks {
 
-        fun onPermissionGranted(actionCode: Int)
+        fun onPermissionGranted(requestCode: Int)
 
-        fun onPermissionDenied(actionCode: Int)
+        fun onPermissionDenied(requestCode: Int, deniedPermissions : List<String>)
+
+        fun showRationaleForPermissions(permissions : List<String>, onRationaleClosed : () -> Unit)
     }
 }

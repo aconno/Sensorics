@@ -1,10 +1,7 @@
 package com.aconno.sensorics.ui
 
-import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -13,13 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.work.*
 import com.aconno.sensorics.BluetoothScanningService
-import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.SyncConfigurationWorker
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
-import com.aconno.sensorics.model.SensoricsPermission
 import com.aconno.sensorics.ui.dashboard.DashboardFragment
 import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
@@ -39,7 +34,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCallbacks,
+class MainActivity : DaggerAppCompatActivity(),
     ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener {
 
     @Inject
@@ -52,7 +47,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     lateinit var mqttVirtualScanningViewModel: MqttVirtualScanningViewModel
 
     @Inject
-    lateinit var permissionViewModel: PermissionViewModel
+    lateinit var permissionHandler : SensoricsPermissionsHandler
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -62,6 +57,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
     private var snackbar: Snackbar? = null
 
     private var filterByDevice: Boolean = true
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +80,8 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
         scheduleWork()
         observeScanEvents()
+
+        permissionHandler.contentContainer = content_container
     }
 
     private fun scheduleWork() {
@@ -312,7 +310,13 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     fun startScanning(filterByDevice: Boolean = true) {
         this.filterByDevice = filterByDevice
-        permissionViewModel.requestAccessFineLocation()
+        permissionHandler.handleScanningPermissions (object : SensoricsPermissionsHandler.PermissionGrantedListener{
+            override fun onPermissionGranted() {
+                bluetoothScanningViewModel.startScanning(filterByDevice)
+                mqttVirtualScanningViewModel.startScanning()
+                this@MainActivity.filterByDevice = true
+            }
+        })
     }
 
     private fun stopScanning() {
@@ -335,30 +339,7 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        permissionViewModel.checkGrantedPermission(grantResults, requestCode)
-    }
-
-    override fun onPermissionGranted(actionCode: Int) {
-        if (actionCode == SensoricsPermission.ACCESS_FINE_LOCATION.code) {
-            permissionViewModel.requestAccessToReadExternalStorage()
-        } else {
-            bluetoothScanningViewModel.startScanning(filterByDevice)
-            mqttVirtualScanningViewModel.startScanning()
-            filterByDevice = true
-        }
-    }
-
-    override fun onPermissionDenied(actionCode: Int) {
-        Snackbar.make(content_container, R.string.snackbar_permission_message, Snackbar.LENGTH_LONG)
-            .setAction(R.string.snackbar_settings) {
-                startActivity(
-                    Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-                    }
-                )
-            }
-            .setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
-            .show()
+        permissionHandler.onRequestPermissionsResult(requestCode,permissions,grantResults)
     }
 
 

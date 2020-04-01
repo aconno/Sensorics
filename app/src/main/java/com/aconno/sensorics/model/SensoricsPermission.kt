@@ -1,17 +1,15 @@
 package com.aconno.sensorics.model
 
 import android.Manifest
+import com.aconno.sensorics.R
 
-class SensoricsPermission(val code: Int, val permission: String) {
+object SensoricsPermission {
 
-    companion object {
+    val RATIONALE_MAP = mapOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE to R.string.read_external_storage_permission_rationale,
+        Manifest.permission.ACCESS_FINE_LOCATION to R.string.access_fine_location_permission_rationale
+    )
 
-        private const val ACCESS_FINE_LOCATION_CODE = 1
-        private const val READ_EXTERNAL_STORAGE_CODE = 2
-
-        val ACCESS_FINE_LOCATION =
-                SensoricsPermission(ACCESS_FINE_LOCATION_CODE, Manifest.permission.ACCESS_FINE_LOCATION)
-        val READ_EXTERNAL_STORAGE =
-                SensoricsPermission(READ_EXTERNAL_STORAGE_CODE, Manifest.permission.READ_EXTERNAL_STORAGE)
-    }
+    const val SCANNING_PERMISSIONS_REQUEST_CODE = 10
+    val SCANNING_PERMISSIONS = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE)
 }

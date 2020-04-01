@@ -16,6 +16,7 @@ import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.ui.MainActivity
+import com.aconno.sensorics.ui.SensoricsPermissionsHandler
 import com.aconno.sensorics.ui.readings.ReadingListViewModel
 import com.aconno.sensorics.ui.readings.ReadingListViewModelFactory
 import com.aconno.sensorics.viewmodel.*
@@ -105,11 +106,15 @@ class MainActivityModule {
         sensoricsApplication
     )
 
+
     @Provides
     @MainActivityScope
-    fun providePermissionsViewModel(mainActivity: MainActivity): PermissionViewModel {
+    fun providePermissionsHandler(mainActivity: MainActivity): SensoricsPermissionsHandler {
         val permissionAction = PermissionActionFactory.getPermissionAction(mainActivity)
-        return PermissionViewModel(permissionAction, mainActivity)
+        val permissionsHandler = SensoricsPermissionsHandler(mainActivity)
+        val permissionViewModel = PermissionViewModel(permissionAction, permissionsHandler)
+        permissionsHandler.permissionViewModel = permissionViewModel
+        return permissionsHandler
     }
 
     @Provides
