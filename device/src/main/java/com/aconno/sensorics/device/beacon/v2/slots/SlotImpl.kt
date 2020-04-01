@@ -3,7 +3,6 @@ package com.aconno.sensorics.device.beacon.v2.slots
 import com.aconno.sensorics.device.beacon.Slot
 import com.aconno.sensorics.device.beacon.Slot.AdvertisingModeParameters.Mode.EVENT
 import com.aconno.sensorics.device.beacon.Slot.AdvertisingModeParameters.Mode.INTERVAL
-import com.aconno.sensorics.device.beacon.SlotCopy.Companion.DEFAULT_ADVERTISING_CONTENT_IBEACON_UUID
 import com.aconno.sensorics.device.beacon.Slots.Config
 import com.aconno.sensorics.domain.migrate.*
 import com.aconno.sensorics.domain.migrate.ValueConverters.Companion.ASCII_STRING
