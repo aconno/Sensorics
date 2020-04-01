@@ -16,13 +16,17 @@ class LimitCondition(
     }
 
     override fun toString(): String {
-        val sign = when (type) {
+        val sign = getConditionTypeAsString()
+        return "$readingType $sign $limit"
+    }
+
+    override fun getConditionTypeAsString(): String {
+        return when (type) {
             LESS_THAN -> "<"
             MORE_THAN -> ">"
             EQUAL_TO -> "="
             else -> throw IllegalArgumentException("Invalid constraint type: $type")
         }
-        return "$readingType $sign $limit"
     }
 
     companion object {

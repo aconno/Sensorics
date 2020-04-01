@@ -5,4 +5,12 @@ interface Condition {
     val limit: Float
     val type: Int
     fun isSatisfied(input: Input): Boolean
+    fun getConditionTypeAsString() : String
+
+    fun toStringRepresentation(): String {
+        val sensor = readingType
+        val constraint = getConditionTypeAsString()
+        val value = limit.toString()
+        return "$sensor $constraint $value"
+    }
 }
