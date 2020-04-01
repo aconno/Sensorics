@@ -312,10 +312,12 @@
     <string name="file_not_loaded">File not loaded</string>
     <string name="sharing_failed">Sharing failed</string>
     <string name="parsing_json_error">Couldn\'t parse JSON file</string>
-    <string name="error_converting_data_to_json">Error converting data to JSON</string>
+    <string name="error_converting_data_to_json" translatable="false">Error converting data to JSON</string>
     <string name="undo">Undo</string>
     <string name="import_error" translatable="false">Import error</string>
     <string name="mqtt_format" translatable="false">prot(tcp/ws/wss)://host:PORT</string>
+    <string name="import_one_backend_success">Successfully imported 1 backend</string>
+    <string name="import_multiple_backends_success">Successfuly imported %d backends</string>
     <string name="beacon_settings">Beacon Settings</string>
     <string name="add_slot">add</string>
     <string name="actions_file_share_subject">Sensorics actions list</string>
