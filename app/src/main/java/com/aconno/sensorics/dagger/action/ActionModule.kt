@@ -1,6 +1,7 @@
 package com.aconno.sensorics.dagger.action
 
 import com.aconno.sensorics.data.repository.SensoricsDatabase
+import com.aconno.sensorics.data.repository.action.ActionMapper
 import com.aconno.sensorics.data.repository.action.ActionsRepositoryImpl
 import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.actions.ActionsRepository
@@ -16,63 +17,65 @@ class ActionModule {
     @Provides
     @ActionScope
     fun provideGetActionByIdUseCase(
-            actionsRepository: ActionsRepository
+        actionsRepository: ActionsRepository
     ) = GetActionByIdUseCase(actionsRepository)
 
     @Provides
     @ActionScope
     fun provideAddActionUseCase(
-            actionsRepository: ActionsRepository
+        actionsRepository: ActionsRepository
     ) = AddActionUseCase(actionsRepository)
 
     @Provides
     @ActionScope
     fun provideGetAllActionsUseCase(
-            actionsRepository: ActionsRepository
+        actionsRepository: ActionsRepository
     ): GetAllActionsUseCase {
         return GetAllActionsUseCase(
-                actionsRepository
+            actionsRepository
         )
     }
 
     @Provides
     @ActionScope
-    fun provideConvertActionsToJsonUseCase() : ConvertObjectsToJsonUseCase<Action> {
+    fun provideConvertActionsToJsonUseCase(): ConvertObjectsToJsonUseCase<Action> {
         return ConvertObjectsToJsonUseCase()
     }
 
     @Provides
     @ActionScope
-    fun provideJsonToActionsUseCase() : ConvertJsonToActionsUseCase {
+    fun provideJsonToActionsUseCase(): ConvertJsonToActionsUseCase {
         return ConvertJsonToActionsUseCase()
     }
 
     @Provides
     @ActionScope
     fun provideDeleteActionUseCase(
-            actionsRepository: ActionsRepository
+        actionsRepository: ActionsRepository
     ) = DeleteActionUseCase(actionsRepository)
 
     @Provides
     @ActionScope
     fun provideGetActionsByDeviceMacAddressUseCase(
-            actionsRepository: ActionsRepository
+        actionsRepository: ActionsRepository
     ) = GetActionsByDeviceMacAddressUseCase(actionsRepository)
 
     @Provides
     @ActionScope
     fun provideSetActionActiveByDeviceMacAddressUseCase(
-            addActionUseCase: AddActionUseCase,
-            getActionsByDeviceMacAddressUseCase: GetActionsByDeviceMacAddressUseCase
+        addActionUseCase: AddActionUseCase,
+        getActionsByDeviceMacAddressUseCase: GetActionsByDeviceMacAddressUseCase
     ) = SetActionActiveByDeviceMacAddressUseCase(
-            addActionUseCase, getActionsByDeviceMacAddressUseCase
+        addActionUseCase, getActionsByDeviceMacAddressUseCase
     )
+
 
     @Provides
     @ActionScope
     fun provideActionsRepository(
-        sensoricsDatabase: SensoricsDatabase
+        sensoricsDatabase: SensoricsDatabase,
+        actionMapper: ActionMapper
     ): ActionsRepository {
-        return ActionsRepositoryImpl(sensoricsDatabase.actionDao())
+        return ActionsRepositoryImpl(sensoricsDatabase.actionDao(), actionMapper)
     }
 }

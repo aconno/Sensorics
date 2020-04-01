@@ -1,8 +1,5 @@
 package com.aconno.sensorics.domain.scanning
 
-data class BluetoothState(val state: Int) {
-    companion object {
-        const val BLUETOOTH_OFF = 0
-        const val BLUETOOTH_ON = 1
-    }
+enum class BluetoothState {
+    BLUETOOTH_OFF, BLUETOOTH_ON
 }

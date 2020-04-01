@@ -369,6 +369,14 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
                         }
                         publishAdapter.notifyItemRangeChanged(offset, list.size)
                     }
+
+                    Snackbar.make(container_fragment,
+                            when(list.size) {
+                                1 -> getString(R.string.import_one_backend_success)
+                                else -> getString(R.string.import_multiple_backends_success, list.size)
+                            },
+                            Snackbar.LENGTH_SHORT).show()
+
                 }, {
                     Snackbar.make(
                         container_fragment,

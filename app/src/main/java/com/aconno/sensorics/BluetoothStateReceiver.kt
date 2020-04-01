@@ -29,9 +29,9 @@ class BluetoothStateReceiver(private val bluetoothStateListener: BluetoothStateL
         Timber.d("Bluetooth state has been changed. New state. state = $bluetoothState")
 
         return when (bluetoothState) {
-            BluetoothAdapter.STATE_ON ->  BluetoothState(BluetoothState.BLUETOOTH_ON)
-            BluetoothAdapter.STATE_OFF ->  BluetoothState(BluetoothState.BLUETOOTH_OFF)
-            else -> null
+            BluetoothAdapter.STATE_ON -> BluetoothState.BLUETOOTH_ON
+            BluetoothAdapter.STATE_OFF -> BluetoothState.BLUETOOTH_OFF
+            else -> BluetoothState.BLUETOOTH_OFF
         }
     }
 }

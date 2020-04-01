@@ -251,7 +251,10 @@
     <string name="share_file">JSON Datei teilen</string>
     <string name="share_text">JSON Text teilen</string>
     <string name="undo">Undo</string>
-    <string name="error_converting_data_to_json">Error converting data to JSON</string>
+
+    <string name="import_one_backend_success">1 Backend erfolgreich importiert</string>
+    <string name="import_multiple_backends_success">%d Backends erfolgreich importiert</string>
+
     <string name="snackbar_scan_failed_already_started">Der Gerätescan wurde bereits gestartet</string>
     <string name="snackbar_scan_failed">Der Gerätescan ist fehlgeschlagen</string>
 

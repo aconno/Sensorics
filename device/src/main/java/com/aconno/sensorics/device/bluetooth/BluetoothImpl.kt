@@ -254,9 +254,9 @@ class BluetoothImpl(
     override fun getStateEvents(): Flowable<BluetoothState> {
         val currentState = Observable.just(bluetoothAdapter.state).map {
             when (it) {
-                BluetoothAdapter.STATE_ON -> BluetoothState(BluetoothState.BLUETOOTH_ON)
-                BluetoothAdapter.STATE_OFF -> BluetoothState(BluetoothState.BLUETOOTH_OFF)
-                else -> BluetoothState(BluetoothState.BLUETOOTH_OFF)
+                BluetoothAdapter.STATE_ON -> BluetoothState.BLUETOOTH_ON
+                BluetoothAdapter.STATE_OFF -> BluetoothState.BLUETOOTH_OFF
+                else -> BluetoothState.BLUETOOTH_OFF
             }
         }
 
