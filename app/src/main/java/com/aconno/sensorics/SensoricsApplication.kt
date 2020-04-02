@@ -6,6 +6,7 @@ import androidx.work.WorkManager
 import com.aconno.sensorics.dagger.application.DaggerAppComponent
 import com.aconno.sensorics.dagger.worker.GeneralWorkerFactory
 import com.crashlytics.android.Crashlytics
+import com.crashlytics.android.core.CrashlyticsCore
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -17,10 +18,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class SensoricsApplication : Application(), HasAndroidInjector {
-
-    companion object {
-        private const val DEV_BUILD_FLAVOR = "dev"
-    }
 
     @Inject
     lateinit var workerFactory: GeneralWorkerFactory
@@ -34,10 +31,11 @@ class SensoricsApplication : Application(), HasAndroidInjector {
         DaggerAppComponent.builder().create(this).inject(this)
 
         @Suppress("ConstantConditionIf")
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
-        Fabric.with(this, Crashlytics())
+
+        initializeFabric()
 
         WorkManager.initialize(
             this,
@@ -47,6 +45,15 @@ class SensoricsApplication : Application(), HasAndroidInjector {
         AndroidThreeTen.init(this)
 
         Tempo.initialize(this, timeSources = listOf(SlackSntpTimeSource()))
+    }
+
+    private fun initializeFabric() {
+        Crashlytics.Builder()
+            .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+            .build()
+            .also { crashlytics ->
+                Fabric.with(this, crashlytics)
+            }
     }
 
     override fun androidInjector(): AndroidInjector<Any> {
