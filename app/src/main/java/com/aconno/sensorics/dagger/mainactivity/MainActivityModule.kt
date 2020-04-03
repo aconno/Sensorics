@@ -3,7 +3,6 @@ package com.aconno.sensorics.dagger.mainactivity
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.dagger.compositescan.CompositeScanResultsModule
-import com.aconno.sensorics.device.permissons.PermissionActionFactory
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
@@ -104,13 +103,6 @@ class MainActivityModule {
     ) = MqttVirtualScanningViewModelFactory(
         sensoricsApplication
     )
-
-    @Provides
-    @MainActivityScope
-    fun providePermissionsViewModel(mainActivity: MainActivity): PermissionViewModel {
-        val permissionAction = PermissionActionFactory.getPermissionAction(mainActivity)
-        return PermissionViewModel(permissionAction, mainActivity)
-    }
 
     @Provides
     @MainActivityScope
