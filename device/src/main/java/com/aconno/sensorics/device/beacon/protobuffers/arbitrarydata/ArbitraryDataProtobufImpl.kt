@@ -54,9 +54,7 @@ class ArbitraryDataProtobufImpl(
                         this@ArbitraryDataProtobufImpl[it.key] = it.value
                     }
 
-                    initialState = emptyMap<String,String>().apply {
-                        putAll(this)
-                    }
+                    initialState = this@ArbitraryDataProtobufImpl.toMap()
 
                     available.postValue(capacity - getSerializedSize())
 
@@ -103,7 +101,7 @@ class ArbitraryDataProtobufImpl(
     }
 
     override val dirty: Boolean
-        get() = initialState != this
+        get() = this != initialState
 
     override fun serialize(): ByteArray {
         updateProtobufModel()
@@ -113,6 +111,4 @@ class ArbitraryDataProtobufImpl(
     override fun serialize(map: Map<String, String>): ByteArray {
         return buildProtobufModelForMap(map).arbitraryData.toByteArray()
     }
-
-
 }

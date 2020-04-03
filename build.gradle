@@ -109,4 +109,5 @@ ext {
     protobuf_version = '3.11.4'
 
     mockito_inline_version = '3.3.0'
+    android_arch_core_version = '1.1.1'
 }

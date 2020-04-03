@@ -91,6 +91,9 @@ dependencies {
 
     // TODO: Move version
     implementation 'com.github.AllanHasegawa.Tempo:tempo:0.2.0'
+
+    testImplementation "org.mockito:mockito-inline:$mockito_inline_version"
+    testImplementation group: 'android.arch.core', name: 'core-testing', version: "$android_arch_core_version"
 }
 
 apply plugin: 'kotlin-android-extensions'
