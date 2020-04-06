@@ -106,10 +106,10 @@ class SavedDevicesFragment : DaggerFragment(),
         setHasOptionsMenu(true)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        activity?.menuInflater?.inflate(R.menu.menu_devices, menu)
-        menu?.findItem(R.id.action_start_dashboard)?.isVisible = BuildConfig.FLAVOR == "dev"
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_devices, menu)
+        menu.findItem(R.id.action_start_dashboard)?.isVisible = BuildConfig.FLAVOR == "dev"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -120,9 +120,9 @@ class SavedDevicesFragment : DaggerFragment(),
                         ActionListActivity.start(context)
                     } else {
                         Snackbar.make(
-                            container_fragment,
-                            R.string.message_no_saved_devices_cannot_open_actions,
-                            Snackbar.LENGTH_LONG
+                                container_fragment,
+                                R.string.message_no_saved_devices_cannot_open_actions,
+                                Snackbar.LENGTH_LONG
                         ).show()
                     }
                     return true
@@ -131,12 +131,9 @@ class SavedDevicesFragment : DaggerFragment(),
                     (activity as MainActivity).onDashboardClicked()
                     return true
                 }
-                else -> {
-                    //Do nothing
-                }
+                else -> return super.onOptionsItemSelected(item)
             }
-        }
-        return super.onOptionsItemSelected(item)
+        } ?: return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateView(

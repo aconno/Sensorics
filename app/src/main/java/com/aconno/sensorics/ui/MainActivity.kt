@@ -77,8 +77,6 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
         toolbar.title = getString(R.string.app_name)
         setSupportActionBar(toolbar)
 
-        invalidateOptionsMenu()
-
         if (savedInstanceState == null) {
             showSavedDevicesFragment()
         }
@@ -251,11 +249,16 @@ class MainActivity : DaggerAppCompatActivity(), PermissionViewModel.PermissionCa
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_toggle_scan -> toggleScanFromMenuItem(item)
-            R.id.action_start_settings_activity -> startSettingsActivity()
+            R.id.action_toggle_scan -> {
+                toggleScanFromMenuItem(item)
+                return true
+            }
+            R.id.action_start_settings_activity -> {
+                startSettingsActivity()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
         }
-
-        return super.onOptionsItemSelected(item)
     }
 
     private fun startSettingsActivity() {
