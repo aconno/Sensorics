@@ -1,7 +1,9 @@
 package com.aconno.sensorics.ui
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
@@ -12,10 +14,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.work.*
-import com.aconno.sensorics.BluetoothScanningService
-import com.aconno.sensorics.BuildConfig
+import com.aconno.sensorics.*
 import com.aconno.sensorics.R
-import com.aconno.sensorics.SyncConfigurationWorker
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
@@ -40,7 +40,10 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallbacks,
-    ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener {
+        ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener {
+
+    @Inject
+    lateinit var bluetoothStateReceiver: BluetoothStateReceiver
 
     @Inject
     lateinit var bluetoothViewModel: BluetoothViewModel
@@ -110,6 +113,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
             //Disable Keep Screen On
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
+        registerReceiver(bluetoothStateReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
         bluetoothViewModel.observeBluetoothState()
         bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
     }
@@ -117,6 +121,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     override fun onPause() {
         super.onPause()
         bluetoothViewModel.stopObservingBluetoothState()
+        unregisterReceiver(bluetoothStateReceiver)
     }
 
     private fun onBluetoothStateChange(bluetoothState: BluetoothState?) {
