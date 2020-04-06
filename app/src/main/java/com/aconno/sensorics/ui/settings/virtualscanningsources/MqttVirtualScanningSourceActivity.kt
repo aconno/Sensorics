@@ -23,7 +23,6 @@ import kotlinx.android.synthetic.main.mqtt_virtual_scanning_source_form.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 private const val MAX_PORT_NUMBER = 0xFFFF
@@ -243,19 +242,16 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
         val id = if (mqttVirtualScanningSourceModel == null) 0 else mqttVirtualScanningSourceModel!!.id
         val enabled = mqttVirtualScanningSourceModel?.enabled != false
 
-        val portAsInteger = try {
-            port.toInt().also {
-                if(it < 0 || it > MAX_PORT_NUMBER) throw NumberFormatException("Port invalid")
-            }
-        } catch (nfe: NumberFormatException) {
+        val portAsInteger = port.toInt()
+        if (portAsInteger < 0 || portAsInteger > MAX_PORT_NUMBER) {
             Toast.makeText(
                     this,
                     getString(R.string.please_valid_port),
                     Toast.LENGTH_SHORT
             ).show()
-            Timber.i(nfe)
             return null
         }
+
         return MqttVirtualScanningSourceModel(
                 id,
                 name,
