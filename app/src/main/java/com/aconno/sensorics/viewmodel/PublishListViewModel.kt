@@ -13,7 +13,6 @@ import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishBy
 import com.aconno.sensorics.model.*
 import com.aconno.sensorics.model.mapper.*
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -86,13 +85,10 @@ class PublishListViewModel(
 
 
     //TODO make this a single
-    fun getAllPublish(): Flowable<List<BasePublishModel>> {
+    fun getAllPublish(): Single<List<BasePublishModel>> {
         return getAllPublishersUseCase.execute()
-            .toFlowable()
-            .flatMapIterable { it }
             .map { dataToModel(it) }
             .toList()
-            .toFlowable()
     }
 
     private fun modelToData(publishModel: BasePublishModel): BasePublish {

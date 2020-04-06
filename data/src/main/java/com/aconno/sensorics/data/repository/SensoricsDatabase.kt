@@ -18,7 +18,6 @@ import com.aconno.sensorics.data.repository.mqttvirtualscanningsource.MqttVirtua
 import com.aconno.sensorics.data.repository.mqttvirtualscanningsource.MqttVirtualScanningSourceEntity
 import com.aconno.sensorics.data.repository.publishdevicejoin.GenericPublishDeviceJoinEntity
 import com.aconno.sensorics.data.repository.publishdevicejoin.PublishDeviceJoinDao
-import com.aconno.sensorics.data.repository.publishdevicejoin.*
 import com.aconno.sensorics.data.repository.restpublish.RESTPublishDao
 import com.aconno.sensorics.data.repository.restpublish.RestHeaderEntity
 import com.aconno.sensorics.data.repository.restpublish.RestHttpGetParamEntity
@@ -89,6 +88,9 @@ abstract class SensoricsDatabase : RoomDatabase() {
         }
         val MIGRATION_15_16 = object : Migration(15, 16) {
             override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `publish_device_join` (`publishId` INTEGER NOT NULL, `deviceId` TEXT NOT NULL, `publishType` TEXT NOT NULL, PRIMARY KEY(`publishId`, `deviceId`, `publishType`), FOREIGN KEY(`deviceId`) REFERENCES `devices`(`macAddress`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+                )
                 database.execSQL(
                     "INSERT INTO publish_device_join (publishId, deviceId, publishType) SELECT aId, dId, '${PublishTypeStrings.AZURE}' FROM azure_mqtt_publish_device_join"
                 )
