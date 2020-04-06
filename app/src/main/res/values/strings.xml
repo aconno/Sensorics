@@ -399,4 +399,5 @@
     <string name="device_not_connected">Device not connected</string>
     <string name="writing_with_dots">Writing...</string>
     <string name="settings_has_been_written_successfully">Settings has been written successfully</string>
+    <string name="scanning_permission_rationale">Need location and storage permission to start scanning</string>
 </resources>
