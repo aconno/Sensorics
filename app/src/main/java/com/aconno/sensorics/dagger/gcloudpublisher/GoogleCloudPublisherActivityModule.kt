@@ -1,9 +1,11 @@
 package com.aconno.sensorics.dagger.gcloudpublisher
 
-import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase
+import androidx.lifecycle.ViewModelProvider
+import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
+import com.aconno.sensorics.model.mapper.GooglePublishDataMapper
 import com.aconno.sensorics.model.mapper.GooglePublishModelDataMapper
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.viewmodel.GoogleCloudPublisherViewModel
@@ -19,21 +21,27 @@ class GoogleCloudPublisherActivityModule {
     fun provideGoogleCloudPublisherViewModel(
         googleCloudPublisherActivity: GoogleCloudPublisherActivity,
         googleCloudPublisherViewModelFactory: GoogleCloudPublisherViewModelFactory
-    ) = ViewModelProviders.of(googleCloudPublisherActivity, googleCloudPublisherViewModelFactory)
-        .get(GoogleCloudPublisherViewModel::class.java)
+    ): GoogleCloudPublisherViewModel = ViewModelProvider(
+        googleCloudPublisherActivity,
+        googleCloudPublisherViewModelFactory
+    ).get(GoogleCloudPublisherViewModel::class.java)
 
     @Provides
     @GoogleCloudPublisherActivityScope
     fun provideGoogleCloudPublisherViewModelFactory(
-        addGooglePublishUseCase: AddGooglePublishUseCase,
-        googlePublishModelDataMapper: GooglePublishModelDataMapper,
+        addAnyPublishUseCase: AddAnyPublishUseCase,
+        getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
-        deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase
+        deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
+        googlePublishModelDataMapper: GooglePublishModelDataMapper,
+        googlePublishDataMapper: GooglePublishDataMapper
     ) = GoogleCloudPublisherViewModelFactory(
-        addGooglePublishUseCase,
-        googlePublishModelDataMapper,
+        addAnyPublishUseCase,
+        getGooglePublishByIdUseCase,
         savePublishDeviceJoinUseCase,
-        deletePublishDeviceJoinUseCase
+        deletePublishDeviceJoinUseCase,
+        googlePublishModelDataMapper,
+        googlePublishDataMapper
     )
 
 

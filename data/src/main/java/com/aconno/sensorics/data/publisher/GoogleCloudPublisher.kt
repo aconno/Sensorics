@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.domain.Publisher
-import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.GooglePublish
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
@@ -22,25 +21,19 @@ import java.util.*
 
 class GoogleCloudPublisher(
     context: Context,
-    private val googlePublish: GooglePublish,
-    private val listDevices: List<Device>,
-    private val syncRepository: SyncRepository
-) : Publisher {
-
-    private val lastSyncs: MutableMap<Pair<String, String>, Long> =
-        syncRepository.getSync("google" + googlePublish.id)
-            .map { Pair(it.macAddress, it.advertisementId) to it.lastSyncTimestamp }
-            .toMap()
-            .toMutableMap()
+    publish: GooglePublish,
+    listDevices: List<Device>,
+    syncRepository: SyncRepository
+) : Publisher<GooglePublish>(
+    publish, listDevices, syncRepository
+) {
 
     //TODO: Refactor
     private val mqttAndroidClient: MqttAndroidClient
 
     private val jwtByteArray: ByteArray
 
-    private val messagesQueue: Queue<String> = LinkedList<String>()
-
-    private var testConnectionCallback: Publisher.TestConnectionCallback? = null
+    private var testConnectionCallback: TestConnectionCallback? = null
 
     private val dataStringConverter: DataStringConverter
 
@@ -70,24 +63,24 @@ class GoogleCloudPublisher(
                 }
             })
 
-        dataStringConverter = DataStringConverter(googlePublish.dataString)
+        dataStringConverter = DataStringConverter(publish.dataString)
     }
 
-    override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
+    override fun test(testConnectionCallback: TestConnectionCallback) {
         this.testConnectionCallback = testConnectionCallback
         connect()
     }
 
     private fun getSubscriptionTopic(): String {
-        return "/devices/${googlePublish.device}/events"
+        return "/devices/${publish.device}/events"
     }
 
     private fun getClientID(): String {
-        return "projects/${googlePublish.projectId}/locations/${googlePublish.region}/registries/${googlePublish.deviceRegistry}/devices/${googlePublish.device}"
+        return "projects/${publish.projectId}/locations/${publish.region}/registries/${publish.deviceRegistry}/devices/${publish.device}"
     }
 
     private fun getPrivateKeyData(context: Context): ByteArray {
-        val uri = Uri.parse(googlePublish.privateKey)
+        val uri = Uri.parse(publish.privateKey)
         return context.contentResolver.openInputStream(uri)?.use { stream ->
             ByteArray(stream.available()).apply {
                 stream.read(this)
@@ -95,25 +88,12 @@ class GoogleCloudPublisher(
         } ?: byteArrayOf()
     }
 
-    override fun getPublishData(): BasePublish {
-        return googlePublish
-    }
-
-    private fun isPublishable(readings: List<Reading>): Boolean {
-        val reading = readings.firstOrNull()
-        val latestTimestamp =
-            lastSyncs[Pair(reading?.device?.macAddress, reading?.advertisementId)] ?: 0
-
-        return System.currentTimeMillis() - latestTimestamp > this.googlePublish.timeMillis
-            && reading != null && listDevices.contains(reading.device)
-    }
-
     override fun publish(readings: List<Reading>) {
         if (readings.isNotEmpty() && isPublishable(readings)) {
             val messages = dataStringConverter.convert(readings)
             for (message in messages) {
                 Timber.tag("Publisher Google Cloud ")
-                    .d("${googlePublish.name} publishes from ${readings[0].device}")
+                    .d("${publish.name} publishes from ${readings[0].device}")
                 publish(message)
             }
 
@@ -121,7 +101,7 @@ class GoogleCloudPublisher(
             val time = System.currentTimeMillis()
             syncRepository.save(
                 Sync(
-                    "google" + googlePublish.id,
+                    "google" + publish.id,
                     reading.device.macAddress,
                     reading.advertisementId,
                     time
@@ -136,7 +116,7 @@ class GoogleCloudPublisher(
             publishMessage(message)
         } else {
             connect()
-            messagesQueue.add(message)
+            messageQueue.add(message)
         }
     }
 
@@ -186,7 +166,7 @@ class GoogleCloudPublisher(
         options.sslProperties = sslProperties
 
         options.userName = "unused"
-        options.password = createJwtRsa(googlePublish.projectId).toCharArray()
+        options.password = createJwtRsa(publish.projectId).toCharArray()
 
         return options
     }
@@ -209,8 +189,8 @@ class GoogleCloudPublisher(
     }
 
     private fun publishMessagesFromQueue() {
-        while (messagesQueue.isNotEmpty()) {
-            messagesQueue.poll()?.let {
+        while (messageQueue.isNotEmpty()) {
+            messageQueue.poll()?.let {
                 publish(it)
             }
         }

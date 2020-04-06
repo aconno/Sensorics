@@ -1,7 +1,8 @@
 package com.aconno.sensorics.dagger.azuremqttpublisher
 
-import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.AddAzureMqttPublishUseCase
+import androidx.lifecycle.ViewModelProvider
+import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.GetAzureMqttPublishByIdUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import com.aconno.sensorics.model.mapper.AzureMqttPublishModelDataMapper
@@ -19,20 +20,24 @@ class AzureMqttPublisherActivityModule {
     fun provideAzureMqttPublisherViewModel(
         azureMqttPublisherActivity: AzureMqttPublisherActivity,
         azureMqttPublisherViewModelFactory: AzureMqttPublisherViewModelFactory
-    ) = ViewModelProviders.of(azureMqttPublisherActivity, azureMqttPublisherViewModelFactory)
-        .get(AzureMqttPublisherViewModel::class.java)
+    ): AzureMqttPublisherViewModel = ViewModelProvider(
+        azureMqttPublisherActivity,
+        azureMqttPublisherViewModelFactory
+    ).get(AzureMqttPublisherViewModel::class.java)
 
     @Provides
     @AzureMqttPublisherActivityScope
     fun provideAzureMqttPublisherViewModelFactory(
+        addAnyPublishUseCase: AddAnyPublishUseCase,
+        getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-        addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
         azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
     ) = AzureMqttPublisherViewModelFactory(
+        addAnyPublishUseCase,
+        getAzureMqttPublishByIdUseCase,
         savePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase,
-        addAzureMqttPublishUseCase,
         azureMqttPublishModelDataMapper
     )
 

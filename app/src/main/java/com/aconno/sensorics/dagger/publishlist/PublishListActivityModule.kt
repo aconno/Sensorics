@@ -1,22 +1,13 @@
 package com.aconno.sensorics.dagger.publishlist
 
 import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.interactor.ifttt.UpdatePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.AddAzureMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.DeleteAzureMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.GetAllAzureMqttPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.UpdateAnyPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.GetAzureMqttPublishByIdUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.AddGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.DeleteGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllGooglePublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.DeleteMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllMqttPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetMqttPublishByIdUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.DeleteRestPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.DeleteAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllPublishersUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
 import com.aconno.sensorics.model.mapper.*
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
@@ -43,67 +34,40 @@ class PublishListActivityModule {
     @Provides
     @PublishListActivityScope
     fun providePublishListViewModelFactory(
-        getAllGooglePublishUseCase: GetAllGooglePublishUseCase,
-        getAllRestPublishUseCase: GetAllRestPublishUseCase,
-        getAllAzureMqttPublishUseCase: GetAllAzureMqttPublishUseCase,
-        getAllMqttPublishUseCase: GetAllMqttPublishUseCase,
-
-        getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
         getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
+        getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase,
         getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase,
         getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
 
-        addGooglePublishUseCase: AddGooglePublishUseCase,
-        addRestPublishUsecase: AddRestPublishUseCase,
-        addMqttPublishUseCase: AddMqttPublishUseCase,
-        addAzureMqttPublishUseCase: AddAzureMqttPublishUseCase,
+        getAllPublishersUseCase: GetAllPublishersUseCase,
+        deleteAnyPublishUseCase: DeleteAnyPublishUseCase,
+        addAnyPublishUseCase: AddAnyPublishUseCase,
+        updateAnyPublishUseCase: UpdateAnyPublishUseCase,
 
-        deleteGooglePublishUseCase: DeleteGooglePublishUseCase,
-        deleteRestPublishUseCase: DeleteRestPublishUseCase,
-        deleteMqttPublishUseCase: DeleteMqttPublishUseCase,
-        deleteAzureMqttPublishUseCase: DeleteAzureMqttPublishUseCase,
-
-        updatePublishUseCase: UpdatePublishUseCase,
-
-        googlePublishDataMapper: GooglePublishDataMapper,
-        restPublishDataMapper: RESTPublishDataMapper,
-
+        googlePublishDataMapper: GooglePublishDataMapper, // TODO: Standardize
         googlePublishModelDataMapper: GooglePublishModelDataMapper,
+        restPublishDataMapper: RESTPublishDataMapper,
         restPublishModelDataMapper: RESTPublishModelDataMapper,
         mqttPublishModelDataMapper: MqttPublishModelDataMapper,
         azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
-    ) =
-        PublishListViewModelFactory(
-            getAllGooglePublishUseCase,
-            getAllRestPublishUseCase,
-            getAllAzureMqttPublishUseCase,
-            getAllMqttPublishUseCase,
+    ) = PublishListViewModelFactory(
+        getRestPublishByIdUseCase,
+        getGooglePublishByIdUseCase,
+        getMqttPublishByIdUseCase,
+        getAzureMqttPublishByIdUseCase,
 
-            getGooglePublishByIdUseCase,
-            getRestPublishByIdUseCase,
-            getMqttPublishByIdUseCase,
-            getAzureMqttPublishByIdUseCase,
+        getAllPublishersUseCase,
+        deleteAnyPublishUseCase,
+        addAnyPublishUseCase,
+        updateAnyPublishUseCase,
 
-            addGooglePublishUseCase,
-            addRestPublishUsecase,
-            addMqttPublishUseCase,
-            addAzureMqttPublishUseCase,
-
-            deleteGooglePublishUseCase,
-            deleteRestPublishUseCase,
-            deleteMqttPublishUseCase,
-            deleteAzureMqttPublishUseCase,
-
-            updatePublishUseCase,
-
-            googlePublishDataMapper,
-            restPublishDataMapper,
-
-            googlePublishModelDataMapper,
-            restPublishModelDataMapper,
-            mqttPublishModelDataMapper,
-            azureMqttPublishModelDataMapper
-        )
+        googlePublishDataMapper,
+        googlePublishModelDataMapper,
+        restPublishDataMapper,
+        restPublishModelDataMapper,
+        mqttPublishModelDataMapper,
+        azureMqttPublishModelDataMapper
+    )
 
 
 }
