@@ -240,13 +240,18 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
         val id = if (mqttVirtualScanningSourceModel == null) 0 else mqttVirtualScanningSourceModel!!.id
         val enabled = mqttVirtualScanningSourceModel?.enabled != false
 
+        val portAsInteger = try {
+            port.toInt()
+        } catch (e: NumberFormatException) {
+            return null
+        }
         return MqttVirtualScanningSourceModel(
                 id,
                 name,
                 enabled,
                 protocol,
                 address,
-                port.toInt(),
+                portAsInteger,
                 path,
                 clientId,
                 username,
