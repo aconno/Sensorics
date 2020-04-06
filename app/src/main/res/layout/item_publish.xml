@@ -32,11 +32,14 @@
     <TextView
         android:id="@+id/publish_name"
         style="@style/ListItemText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/publish_switch"
         app:layout_constraintStart_toEndOf="@+id/publish_image"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Name of the Publish" />
