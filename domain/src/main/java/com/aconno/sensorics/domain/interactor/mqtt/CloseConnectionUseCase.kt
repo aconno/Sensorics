@@ -5,7 +5,7 @@ import com.aconno.sensorics.domain.interactor.type.CompletableUseCase
 import io.reactivex.Completable
 
 class CloseConnectionUseCase(
-    private val publisher: List<Publisher>
+    private val publisher: List<Publisher<*>>
 ) : CompletableUseCase {
 
     override fun execute(): Completable {

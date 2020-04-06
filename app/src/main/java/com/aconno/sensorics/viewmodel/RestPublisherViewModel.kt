@@ -1,63 +1,63 @@
 package com.aconno.sensorics.viewmodel
 
-import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.ifttt.GeneralRestPublishDeviceJoin
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.AddRestPublishUseCase
+import com.aconno.sensorics.domain.ifttt.PublishDeviceJoin
+import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.RestHeaderModel
 import com.aconno.sensorics.model.RestHttpGetParamModel
 import com.aconno.sensorics.model.RestPublishModel
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
 import com.aconno.sensorics.model.mapper.RESTHttpGetParamModelMapper
+import com.aconno.sensorics.model.mapper.RESTPublishDataMapper
 import com.aconno.sensorics.model.mapper.RESTPublishModelDataMapper
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 
+
 class RestPublisherViewModel(
-    private val addRestPublishUseCase: AddRestPublishUseCase,
+    private val getRestPublishByIdUseCase: GetRestPublishByIdUseCase,
+    private val addAnyPublishUseCase: AddAnyPublishUseCase,
+
     private val restPublishModelDataMapper: RESTPublishModelDataMapper,
-    private val savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
-    private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-    private val saveRestHeaderUseCase: SaveRestHeaderUseCase,
+    private val restPublishDataMapper: RESTPublishDataMapper,
+
     private val getRestHeadersByIdUseCase: GetRestHeadersByIdUseCase,
+    private val saveRestHeaderUseCase: SaveRestHeaderUseCase,
     private val restHeaderModelMapper: RESTHeaderModelMapper,
-    private val saveRestHttpGetParamUseCase: SaveRestHttpGetParamUseCase,
+
     private val getRestHttpGetParamsByIdUseCase: GetRestHttpGetParamsByIdUseCase,
-    private val restHttpGetParamModelMapper: RESTHttpGetParamModelMapper
-) : ViewModel() {
+    private val saveRestHttpGetParamUseCase: SaveRestHttpGetParamUseCase,
+    private val restHttpGetParamModelMapper: RESTHttpGetParamModelMapper,
 
-    fun save(
-        restPublishModel: RestPublishModel
+    savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
+    deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase
+) : PublisherViewModel<RestPublishModel>(
+    savePublishDeviceJoinUseCase, deletePublishDeviceJoinUseCase
+) {
+
+    override fun getById(id: Long): Maybe<RestPublishModel> {
+        return getRestPublishByIdUseCase.execute(id).map {
+            restPublishDataMapper.transform(it)
+        }
+    }
+
+    override fun save(
+        model: RestPublishModel
     ): Single<Long> {
-
-        val transform = restPublishModelDataMapper.transform(restPublishModel)
-        return addRestPublishUseCase.execute(transform)
+        val transform = restPublishModelDataMapper.transform(model)
+        return addAnyPublishUseCase.execute(transform)
     }
 
-    fun addOrUpdateRestRelation(
-        deviceId: String,
-        restId: Long
-    ): Completable {
-        return savePublishDeviceJoinUseCase.execute(
-            GeneralRestPublishDeviceJoin(
-                restId,
-                deviceId
-            )
+    override fun createPublishDeviceJoin(deviceId: String, publishId: Long): PublishDeviceJoin {
+        return GeneralRestPublishDeviceJoin(
+            publishId,
+            deviceId
         )
     }
 
-    fun deleteRelationRest(
-        deviceId: String,
-        restId: Long
-    ): Completable {
-        return deletePublishDeviceJoinUseCase.execute(
-            GeneralRestPublishDeviceJoin(
-                restId,
-                deviceId
-            )
-        )
-    }
 
     fun addRESTHeader(
         list: List<RestHeaderModel>,
@@ -85,18 +85,5 @@ class RestPublisherViewModel(
     fun getRESTHttpGetParamsById(rId: Long): Maybe<List<RestHttpGetParamModel>> {
         return getRestHttpGetParamsByIdUseCase.execute(rId)
             .map(restHttpGetParamModelMapper::toRESTHttpGetParamModelList)
-    }
-
-    fun checkFieldsAreEmpty(
-        vararg strings: String
-    ): Boolean {
-
-        strings.forEach {
-            if (it.isBlank()) {
-                return true
-            }
-        }
-
-        return false
     }
 }

@@ -143,6 +143,8 @@ dependencies {
 
     androidTestImplementation "org.mockito:mockito-inline:$mockito_inline_version"
     testImplementation "org.mockito:mockito-inline:$mockito_inline_version"
+
+    implementation 'pub.devrel:easypermissions:3.0.0'
 }
 
 repositories {

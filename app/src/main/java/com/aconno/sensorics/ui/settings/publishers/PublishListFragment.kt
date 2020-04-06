@@ -27,6 +27,7 @@ import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_publish_list.*
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -266,7 +267,6 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
         }.toList()
     }
 
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnListFragmentClickListener) {
@@ -285,8 +285,11 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
             .filter { it.isNotEmpty() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { actions -> initPublishList(actions) }
-            .also {
+            .subscribe({ actions ->
+                initPublishList(actions)
+            }, {
+                Timber.e(it)
+            }).also {
                 addDisposable(it)
             }
     }
@@ -372,11 +375,11 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
                     }
 
                     Snackbar.make(container_fragment,
-                            when(list.size) {
-                                1 -> getString(R.string.import_one_backend_success)
-                                else -> getString(R.string.import_multiple_backends_success, list.size)
-                            },
-                            Snackbar.LENGTH_SHORT).show()
+                        when (list.size) {
+                            1 -> getString(R.string.import_one_backend_success)
+                            else -> getString(R.string.import_multiple_backends_success, list.size)
+                        },
+                        Snackbar.LENGTH_SHORT).show()
 
                 }, {
                     Snackbar.make(
