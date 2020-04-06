@@ -25,9 +25,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val MAX_PORT_NUMBER = 0xFFFF
 
 class MqttVirtualScanningSourceActivity : BaseActivity() {
+    private val maxPortNumber = 0xFFFF
     private var isTestingAlreadyRunning = false
 
     @Inject
@@ -243,7 +243,7 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
         val enabled = mqttVirtualScanningSourceModel?.enabled != false
 
         val portAsInteger = port.toInt()
-        if (portAsInteger < 0 || portAsInteger > MAX_PORT_NUMBER) {
+        if (portAsInteger < 0 || portAsInteger > maxPortNumber) {
             Toast.makeText(
                     this,
                     getString(R.string.please_valid_port),
