@@ -183,9 +183,9 @@ class UIntParamProtobufImpl(
     override fun toProtobufModel() : ParametersProtobufModel.UIntParameter {
         return ParametersProtobufModel.UIntParameter.newBuilder().
             setCommonAttributes(buildCommonAtrributesProtobufModel())
-            .apply {
-                valueInternal?.let {
-                    setValue(it)
+            .also {
+                valueInternal?.let { value ->
+                    it.setValue(value.toInt())
                 }
             }
             .build()
@@ -197,14 +197,13 @@ class UIntParamProtobufImpl(
 
     companion object {
 
-        //TODO: test this
         private fun convertToUnsignedValue(value : Int) : Long {
             if(value >= 0) {
                 return value.toLong()
             }
             val valueWithoutSignBit = (value shl 1) shr 1 //sets the sign bit to 0
             val longValue = valueWithoutSignBit.toLong()
-            return longValue and 0x80000000 //sets the top bit (top bit of int value) using this mask
+            return longValue or 0x80000000 //sets the top bit (top bit of int value) using this mask
         }
     }
 
@@ -224,9 +223,9 @@ class IntParamProtobufImpl(
     override fun toProtobufModel(): ParametersProtobufModel.IntParameter {
         return ParametersProtobufModel.IntParameter.newBuilder()
             .setCommonAttributes(buildCommonAtrributesProtobufModel())
-            .apply {
-                valueInternal?.let {
-                    setValue(it)
+            .also {
+                valueInternal?.let { value ->
+                    it.setValue(value)
                 }
             }
             .build()
@@ -251,9 +250,9 @@ class FloatParamProtobufImpl(
     override fun toProtobufModel() : ParametersProtobufModel.FloatParameter {
         return ParametersProtobufModel.FloatParameter.newBuilder()
             .setCommonAttributes(buildCommonAtrributesProtobufModel())
-            .apply {
-                valueInternal?.let {
-                    setValue(it)
+            .also {
+                valueInternal?.let { value ->
+                    it.setValue(value)
                 }
             }
             .build()
@@ -282,9 +281,9 @@ class EnumParamProtobufImpl (
     override fun toProtobufModel() : ParametersProtobufModel.EnumParameter {
         return ParametersProtobufModel.EnumParameter.newBuilder()
             .setCommonAttributes(buildCommonAtrributesProtobufModel())
-            .apply {
-                valueInternal?.let {
-                    setValue(it)
+            .also {
+                valueInternal?.let { value ->
+                    it.setValue(value.toInt())
                 }
             }
             .build()
@@ -322,12 +321,16 @@ class StringParamProtobufImpl(
     protobufModel: ParametersProtobufModel.StringParameter
 ) : BaseParameterProtobufImpl<String>(id,ParameterType.STRING,config,protobufModel.commonAttributes){
 
+    init {
+        valueInternal = protobufModel.value
+    }
+
     override fun toProtobufModel() : ParametersProtobufModel.StringParameter {
         return ParametersProtobufModel.StringParameter.newBuilder()
             .setCommonAttributes(buildCommonAtrributesProtobufModel())
-            .apply {
-                valueInternal?.let {
-                    setValue(it)
+            .also {
+                valueInternal?.let { value ->
+                    it.setValue(value)
                 }
             }
             .build()
