@@ -33,8 +33,10 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
     @Inject
     lateinit var mqttSourceViewModel: MqttVirtualScanningSourceViewModel
     private var mqttVirtualScanningSourceModel: MqttVirtualScanningSourceModel? = null
+
     @Inject
-    lateinit var mqttMapper : MqttVirtualScanningSourceModelDataMapper
+    lateinit var mqttMapper: MqttVirtualScanningSourceModelDataMapper
+
     @Inject
     lateinit var mqttVirtualScanner: MqttVirtualScanner
 
@@ -92,8 +94,7 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
     }
 
 
-
-    private fun setProgressComponentsVisibility(visibility : Int) {
+    private fun setProgressComponentsVisibility(visibility: Int) {
         progress_bar.visibility = visibility
         progress_bar_message.visibility = visibility
     }
@@ -140,7 +141,7 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
 
             testConnectionCallback.onConnectionStart()
 
-            mqttVirtualScanner.testConnection(testConnectionCallback,scanningSource)
+            mqttVirtualScanner.testConnection(testConnectionCallback, scanningSource)
 
         }
     }
@@ -148,7 +149,7 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
 
     private fun addOrUpdate() {
         val model = toMqttVirtualScanningSourceModel()
-        if(model != null) {
+        if (model != null) {
             mqttSourceViewModel.save(model)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -180,7 +181,7 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
         mqttVirtualScanningSourceModel?.let { model ->
             mqtt_virtual_scanning_source_name.setText(model.name)
 
-            when(model.protocol) {
+            when (model.protocol) {
                 MqttVirtualScanningSourceProtocol.TCP -> radio_group_protocol.check(protocol_tcp.id)
                 MqttVirtualScanningSourceProtocol.WEBSOCKET -> radio_group_protocol.check(protocol_websocket.id)
             }
@@ -204,7 +205,7 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
     private fun toMqttVirtualScanningSourceModel(): MqttVirtualScanningSourceModel? {
         val name = mqtt_virtual_scanning_source_name.text.toString().trim()
 
-        val protocol = when(radio_group_protocol.checkedRadioButtonId) {
+        val protocol = when (radio_group_protocol.checkedRadioButtonId) {
             protocol_tcp.id -> MqttVirtualScanningSourceProtocol.TCP
             protocol_websocket.id -> MqttVirtualScanningSourceProtocol.WEBSOCKET
             else -> return null
@@ -217,7 +218,7 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
         val clientId = edit_clientid_mqtt.text.toString().trim()
         val username = edit_username_mqtt.text.toString().trim()
         val password = edit_password_mqtt.text.toString().trim()
-        val qos = when(radio_group_mqtt_qos.checkedRadioButtonId) {
+        val qos = when (radio_group_mqtt_qos.checkedRadioButtonId) {
             qos_0.id -> 0
             qos_1.id -> 1
             qos_2.id -> 2
@@ -244,11 +245,10 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
 
         val portAsInteger = port.toInt()
         if (portAsInteger < 0 || portAsInteger > maxPortNumber) {
-            Toast.makeText(
-                    this,
-                    getString(R.string.please_valid_port),
-                    Toast.LENGTH_SHORT
-            ).show()
+            mqtt_source_port_input.apply {
+                error = getString(R.string.please_valid_port)
+                requestFocus()
+            }
             return null
         }
 
@@ -266,7 +266,6 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
                 qos
         )
     }
-
 
 
     companion object {
