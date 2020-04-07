@@ -105,6 +105,7 @@
     <string name="snackbar_stop_scanning">Please stop scanning first</string>
     <string name="test">Test</string>
     <string name="please_fill_blanks">Please fill the blanks</string>
+    <string name="please_valid_port">Please choose a valid port</string>
     <string name="http_get_params_not_valid">HTTP Get Params is not valid.</string>
     <string name="data_string_not_valid">DataString is not valid.</string>
     <string name="testings_started">Testing Started</string>
