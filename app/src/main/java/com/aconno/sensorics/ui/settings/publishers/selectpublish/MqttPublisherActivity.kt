@@ -3,7 +3,6 @@ package com.aconno.sensorics.ui.settings.publishers.selectpublish
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ProgressBar
 import android.widget.RadioButton
 import android.widget.Toast
 import com.aconno.sensorics.PublisherIntervalConverter
@@ -11,38 +10,31 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
-import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.MqttPublishModel
 import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
 import com.aconno.sensorics.viewmodel.MqttPublisherViewModel
-import io.reactivex.Completable
-import io.reactivex.Single
+import com.aconno.sensorics.viewmodel.PublisherViewModel
 import kotlinx.android.synthetic.main.activity_mqtt_publisher.*
 import kotlinx.android.synthetic.main.layout_datastring.*
 import kotlinx.android.synthetic.main.layout_mqtt.*
 import kotlinx.android.synthetic.main.layout_publisher_header.*
 import javax.inject.Inject
 
-class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
+class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
 
     @Inject
     lateinit var mqttPublisherViewModel: MqttPublisherViewModel
 
-    override var publishModel: MqttPublishModel? = null
-    override var updating: Boolean = false
-    override var publisherKey: String = MQTT_PUBLISHER_ACTIVITY_KEY
-
-    override var progressBar: ProgressBar
-        get() = progressbar
-        set(_) {}
-    override var layoutId: Int = R.layout.activity_mqtt_publisher
-    override var deviceSelectFrameId: Int = R.id.frame
+    override val viewModel: PublisherViewModel<MqttPublishModel>
+        get() = mqttPublisherViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setContentView(R.layout.activity_mqtt_publisher)
+
+        setSupportActionBar(custom_toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(true)
+
         super.onCreate(savedInstanceState)
-        if (publishModel != null) {
-            updating = true
-        }
     }
 
     override fun onTestConnectionSuccess() {
@@ -59,41 +51,22 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
         }
     }
 
-    override fun setPublisherSpecificFields() {
-        publishModel?.let { model ->
-            edit_url_mqtt.setText(model.url)
-            edit_clientid_mqtt.setText(model.clientId)
-            edit_username_mqtt.setText(model.username)
-            edit_password_mqtt.setText(model.password)
-            edit_topic_mqtt.setText(model.topic)
 
-            when (model.qos) {
-                0 -> qos_0.isChecked = true
-                1 -> qos_1.isChecked = true
-                2 -> qos_2.isChecked = true
-            }
+    override fun setFields(model: MqttPublishModel) {
+        super.setFields(model)
 
-            edit_datastring.setText(model.dataString)
+        edit_url_mqtt.setText(model.url)
+        edit_clientid_mqtt.setText(model.clientId)
+        edit_username_mqtt.setText(model.username)
+        edit_password_mqtt.setText(model.password)
+        edit_topic_mqtt.setText(model.topic)
 
+        when (model.qos) {
+            0 -> qos_0.isChecked = true
+            1 -> qos_1.isChecked = true
+            2 -> qos_2.isChecked = true
         }
-
     }
-
-    override fun savePublisher(publishModel: BasePublishModel): Single<Long> {
-        return mqttPublisherViewModel.save(publishModel as MqttPublishModel)
-    }
-
-    override fun addOrUpdateRelation(deviceId: String, publisherId: Long): Completable {
-        return mqttPublisherViewModel.addOrUpdateMqttRelation(
-            deviceId = deviceId,
-            mqttId = publisherId
-        )
-    }
-
-    override fun deleteRelation(deviceId: String, publisherId: Long): Completable {
-        return mqttPublisherViewModel.deleteRelationMqtt(deviceId, publisherId)
-    }
-
 
     override fun toPublishModel(): MqttPublishModel? {
         val name = edit_name.text.toString().trim()
@@ -102,13 +75,14 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
         val username = edit_username_mqtt.text.toString().trim()
         val password = edit_password_mqtt.text.toString().trim()
         val topic = edit_topic_mqtt.text.toString().trim()
-        val qos =
-            findViewById<RadioButton>(radio_group_mqtt.checkedRadioButtonId).text.toString().toInt()
+        val qos = findViewById<RadioButton>(
+            radio_group_mqtt.checkedRadioButtonId
+        ).text.toString().toInt()
         val timeType = spinner_interval_time.selectedItem.toString()
         val timeCount = edit_interval_count.text.toString()
         val datastring = edit_datastring.text.toString()
 
-        if (mqttPublisherViewModel.checkFieldsAreEmpty(
+        if (viewModel.checkFieldsAreEmpty(
                 name,
                 url,
                 clientId,
@@ -129,19 +103,19 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
         } else {
             if (!isDataStringValid()) {
                 Toast.makeText(
-                    this,
-                    getString(R.string.data_string_not_valid),
-                    Toast.LENGTH_SHORT
-                )
+                        this,
+                        getString(R.string.data_string_not_valid),
+                        Toast.LENGTH_SHORT
+                    )
                     .show()
 
                 return null
             }
         }
 
-        val id = if (publishModel == null) 0 else publishModel!!.id
+        val id = model?.id ?: 0
         val timeMillis = PublisherIntervalConverter.calculateMillis(this, timeCount, timeType)
-        val lastTimeMillis = if (publishModel == null) 0 else publishModel!!.lastTimeMillis
+        val lastTimeMillis = model?.lastTimeMillis ?: 0
         return MqttPublishModel(
             id,
             name,
@@ -151,7 +125,7 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
             password,
             topic,
             qos,
-            publishModel?.enabled ?: true,
+            model?.enabled ?: true,
             timeType,
             timeMillis,
             lastTimeMillis,
@@ -159,11 +133,10 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
         )
     }
 
-
-    override fun getPublisherFor(publishModel: MqttPublishModel): Publisher {
+    override fun getPublisherForModel(model: MqttPublishModel): Publisher<*> {
         return MqttPublisher(
             applicationContext,
-            MqttPublishModelDataMapper().toMqttPublish(publishModel),
+            MqttPublishModelDataMapper().toMqttPublish(model),
             listOf(Device("TestDevice", "Name", "Mac")),
             syncRepository
         )
@@ -171,16 +144,13 @@ class MqttPublisherActivity : BaseMqttPublisherActivity<MqttPublishModel>() {
 
 
     companion object {
-        //This is used for the file selector intent
-        private const val MQTT_PUBLISHER_ACTIVITY_KEY = "MQTT_PUBLISHER_ACTIVITY_KEY"
-
-        fun start(context: Context, mqttPublishModel: MqttPublishModel? = null) {
+        fun start(context: Context, id: Long? = null) {
             val intent = Intent(context, MqttPublisherActivity::class.java)
 
-            mqttPublishModel?.let {
+            id?.let {
                 intent.putExtra(
-                    MQTT_PUBLISHER_ACTIVITY_KEY,
-                    mqttPublishModel
+                    PUBLISHER_ID_KEY,
+                    id
                 )
             }
 

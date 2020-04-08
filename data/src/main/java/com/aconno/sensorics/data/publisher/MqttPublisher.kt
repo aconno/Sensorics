@@ -3,7 +3,6 @@ package com.aconno.sensorics.data.publisher
 import android.content.Context
 import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.domain.Publisher
-import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.MqttPublish
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
@@ -17,25 +16,18 @@ import java.util.*
 
 class MqttPublisher(
     context: Context,
-    private val mqttPublish: MqttPublish,
-    private val listDevices: List<Device>,
-    private val syncRepository: SyncRepository
-) : Publisher {
-
-    private val lastSyncs: MutableMap<Pair<String, String>, Long> =
-        syncRepository.getSync("mqtt" + mqttPublish.id)
-            .map { Pair(it.macAddress, it.advertisementId) to it.lastSyncTimestamp }
-            .toMap()
-            .toMutableMap()
-
+    publish: MqttPublish,
+    listDevices: List<Device>,
+    syncRepository: SyncRepository
+) : Publisher<MqttPublish>(
+    publish, listDevices, syncRepository
+) {
     private val mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(
         context,
-        mqttPublish.url, mqttPublish.clientId
+        publish.url, publish.clientId
     )
 
-    private val messagesQueue: Queue<String> = LinkedList<String>()
-
-    private var testConnectionCallback: Publisher.TestConnectionCallback? = null
+    private var testConnectionCallback: TestConnectionCallback? = null
     private val dataStringConverter: DataStringConverter
 
 
@@ -60,16 +52,12 @@ class MqttPublisher(
                 }
             })
 
-        dataStringConverter = DataStringConverter(mqttPublish.dataString)
+        dataStringConverter = DataStringConverter(publish.dataString)
     }
 
-    override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
+    override fun test(testConnectionCallback: TestConnectionCallback) {
         this.testConnectionCallback = testConnectionCallback
         connect()
-    }
-
-    override fun getPublishData(): BasePublish {
-        return mqttPublish
     }
 
     override fun publish(readings: List<Reading>) {
@@ -79,7 +67,7 @@ class MqttPublisher(
             val messages = dataStringConverter.convert(readings)
             for (message in messages) {
                 Timber.tag("Publisher Mqtt ")
-                    .d("${mqttPublish.name} publishes from ${readings[0].device}")
+                    .d("${publish.name} publishes from ${readings[0].device}")
                 publish(message)
             }
 
@@ -93,7 +81,7 @@ class MqttPublisher(
             )
             syncRepository.save(
                 Sync(
-                    "mqtt" + mqttPublish.id,
+                    "mqtt" + publish.id,
                     reading.device.macAddress,
                     reading.advertisementId,
                     time
@@ -103,29 +91,20 @@ class MqttPublisher(
         }
     }
 
-    private fun isPublishable(readings: List<Reading>): Boolean {
-        val reading = readings.firstOrNull()
-        val latestTimestamp =
-            lastSyncs[Pair(reading?.device?.macAddress, reading?.advertisementId)] ?: 0
-
-        return System.currentTimeMillis() - latestTimestamp > this.mqttPublish.timeMillis
-                && reading != null && listDevices.contains(reading.device)
-    }
-
     private fun publish(message: String) {
         if (mqttAndroidClient.isConnected) {
             publishMessage(message)
         } else {
             connect()
-            messagesQueue.add(message)
+            messageQueue.add(message)
         }
     }
 
     private fun publishMessage(message: String) {
         mqttAndroidClient.publish(
-            mqttPublish.topic,
+            publish.topic,
             message.toByteArray(Charset.defaultCharset()),
-            mqttPublish.qos,
+            publish.qos,
             RETENTION_POLICY
         )
     }
@@ -166,15 +145,17 @@ class MqttPublisher(
         sslProperties.setProperty("com.ibm.ssl.protocol", "TLSv1.2")
         options.sslProperties = sslProperties
 
-        options.userName = mqttPublish.username
-        options.password = mqttPublish.password.toCharArray()
+        options.userName = publish.username
+        options.password = publish.password.toCharArray()
 
         return options
     }
 
     private fun publishMessagesFromQueue() {
-        while (messagesQueue.isNotEmpty()) {
-            publish(messagesQueue.poll())
+        while (messageQueue.isNotEmpty()) {
+            messageQueue.poll()?.let {
+                publish(it)
+            }
         }
     }
 

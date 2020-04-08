@@ -13,15 +13,15 @@ import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.data.publisher.RestPublisher
 import com.aconno.sensorics.domain.Publisher
-import com.aconno.sensorics.domain.ifttt.*
+import com.aconno.sensorics.domain.ifttt.AzureMqttPublish
+import com.aconno.sensorics.domain.ifttt.GooglePublish
+import com.aconno.sensorics.domain.ifttt.MqttPublish
+import com.aconno.sensorics.domain.ifttt.RestPublish
 import com.aconno.sensorics.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.GetAllEnabledAzureMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetAllEnabledGooglePublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetAllEnabledMqttPublishUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetAllEnabledRestPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllEnabledPublishersUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
@@ -35,10 +35,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Consumer
-import io.reactivex.functions.Function4
-import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -65,28 +62,10 @@ class BluetoothScanningService : DaggerService() {
     lateinit var inputToOutcomesUseCase: InputToOutcomesUseCase
 
     @Inject
-    lateinit var getAllEnabledGooglePublishUseCase: GetAllEnabledGooglePublishUseCase
+    lateinit var getAllEnabledPublishersUseCase: GetAllEnabledPublishersUseCase
 
     @Inject
-    lateinit var getAllEnabledRestPublishUseCase: GetAllEnabledRestPublishUseCase
-
-    @Inject
-    lateinit var getAllEnabledMqttPublishUseCase: GetAllEnabledMqttPublishUseCase
-
-    @Inject
-    lateinit var getAllEnabledAzureMqttPublishUseCase: GetAllEnabledAzureMqttPublishUseCase
-
-    @Inject
-    lateinit var getDevicesThatConnectedWithGooglePublishUseCase: GetDevicesThatConnectedWithGooglePublishUseCase
-
-    @Inject
-    lateinit var getDevicesThatConnectedWithRestPublishUseCase: GetDevicesThatConnectedWithRestPublishUseCase
-
-    @Inject
-    lateinit var getDevicesThatConnectedWithMqttPublishUseCase: GetDevicesThatConnectedWithMqttPublishUseCase
-
-    @Inject
-    lateinit var getDevicesThatConnectedWithAzureMqttPublishUseCase: GetDevicesThatConnectedWithAzureMqttPublishUseCase
+    lateinit var getDevicesConnectedWithPublishUseCase: GetDevicesConnectedWithPublishUseCase
 
     @Inject
     lateinit var getRestHeadersByIdUseCase: GetRestHeadersByIdUseCase
@@ -120,7 +99,7 @@ class BluetoothScanningService : DaggerService() {
 
     private var closeConnectionUseCase: CloseConnectionUseCase? = null
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
-    private var publishers: MutableList<Publisher>? = null
+    private var publishers: MutableList<Publisher<*>>? = null
 
     private lateinit var scanTimerDisposable: Job
 
@@ -269,12 +248,7 @@ class BluetoothScanningService : DaggerService() {
     private fun initPublishers() {
         GlobalScope.launch(Dispatchers.Default) {
             disposables.add(
-                Observable.merge(
-                    getGooglePublisherObservable(),
-                    getRestPublisherObservable(),
-                    getMqttPublishers(),
-                    getAzureMqttPublishers()
-                )
+                getAllEnabledPublishersObservable()
                     .toList()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
@@ -296,83 +270,59 @@ class BluetoothScanningService : DaggerService() {
         }
     }
 
-    private fun getGooglePublisherObservable(): Observable<Publisher> {
-        return getAllEnabledGooglePublishUseCase.execute()
+    private fun getAllEnabledPublishersObservable(): Observable<Publisher<*>> {
+        return getAllEnabledPublishersUseCase.execute()
             .subscribeOn(Schedulers.io())
             .toObservable()
             .flatMapIterable { it }
-            .map { it as GooglePublish }
-            .flatMap {
-                Observable.just(it).zipWith(
-                    getDevicesThatConnectedWithGooglePublishUseCase.execute(it.id)
-                        .toObservable()
-                )
-            }.map {
-                GoogleCloudPublisher(
-                    this,
-                    it.first,
-                    it.second,
-                    syncRepository
-                ) as Publisher
-            }
-    }
-
-    private fun getRestPublisherObservable(): Observable<Publisher> {
-        return getAllEnabledRestPublishUseCase.execute()
-            .subscribeOn(Schedulers.io())
-            .toObservable()
-            .flatMapIterable { it }
-            .map { it as RestPublish }
-            .flatMap {
-                Observable.zip(
-                    Observable.just(it),
-                    getDevicesThatConnectedWithRestPublishUseCase.execute(it.id).toObservable(),
-                    getRestHeadersByIdUseCase.execute(it.id).toObservable(),
-                    getRestHttpGetParamsByIdUseCase.execute(it.id).toObservable(),
-                    Function4<RestPublish, List<Device>, List<RestHeader>, List<RestHttpGetParam>, Publisher> { t1, t2, t3, t4 ->
-                        RestPublisher(
-                            t1,
-                            t2,
-                            t3,
-                            t4,
+            .map {
+                when (it) {
+                    is GooglePublish -> {
+                        GoogleCloudPublisher(
+                            this,
+                            it,
+                            getDevicesConnectedWithPublishUseCase.execute(
+                                it.id, it.type
+                            ).blockingGet(),
                             syncRepository
                         )
                     }
-                )
-            }
-    }
-
-    private fun getMqttPublishers(): Observable<Publisher> {
-        return getAllEnabledMqttPublishUseCase.execute()
-            .subscribeOn(Schedulers.io())
-            .toObservable()
-            .flatMapIterable { it }
-            .map { it as MqttPublish }
-            .flatMap {
-                Observable.zip(
-                    Observable.just(it),
-                    getDevicesThatConnectedWithMqttPublishUseCase.execute(it.id).toObservable(),
-                    BiFunction<MqttPublish, List<Device>, Publisher> { t1, t2 ->
-                        MqttPublisher(this, t1, t2, syncRepository)
+                    is RestPublish -> {
+                        RestPublisher(
+                            it,
+                            getDevicesConnectedWithPublishUseCase.execute(
+                                it.id, it.type
+                            ).blockingGet(),
+                            getRestHeadersByIdUseCase.execute(
+                                it.id
+                            ).blockingGet(),
+                            getRestHttpGetParamsByIdUseCase.execute(
+                                it.id
+                            ).blockingGet(),
+                            syncRepository
+                        )
                     }
-                )
-            }
-    }
-
-    private fun getAzureMqttPublishers(): Observable<Publisher> {
-        return getAllEnabledAzureMqttPublishUseCase.execute()
-            .subscribeOn(Schedulers.io())
-            .toObservable()
-            .flatMapIterable { it }
-            .map { it as AzureMqttPublish }
-            .flatMap {
-                Observable.zip(
-                    Observable.just(it),
-                    getDevicesThatConnectedWithAzureMqttPublishUseCase.execute(it.id).toObservable(),
-                    BiFunction<AzureMqttPublish, List<Device>, Publisher> { t1, t2 ->
-                        AzureMqttPublisher( t1, t2, syncRepository)
+                    is MqttPublish -> {
+                        MqttPublisher(
+                            this,
+                            it,
+                            getDevicesConnectedWithPublishUseCase.execute(
+                                it.id, it.type
+                            ).blockingGet(),
+                            syncRepository
+                        )
                     }
-                )
+                    is AzureMqttPublish -> {
+                        AzureMqttPublisher(
+                            it,
+                            getDevicesConnectedWithPublishUseCase.execute(
+                                it.id, it.type
+                            ).blockingGet(),
+                            syncRepository
+                        )
+                    }
+                    else -> throw IllegalStateException("A publisher was not implemented")
+                }
             }
     }
 

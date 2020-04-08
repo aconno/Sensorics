@@ -45,7 +45,7 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
-@Module (includes = [TimeModule::class])
+@Module(includes = [TimeModule::class])
 class AppModule {
 
     @Provides
@@ -97,14 +97,15 @@ class AppModule {
     @Singleton
     fun provideSensoricsDatabase(sensoricsApplication: SensoricsApplication): SensoricsDatabase {
         return Room.databaseBuilder(
-            sensoricsApplication,
-            SensoricsDatabase::class.java,
-            "Sensorics"
-        )
+                sensoricsApplication,
+                SensoricsDatabase::class.java,
+                "Sensorics"
+            )
             .addMigrations(SensoricsDatabase.MIGRATION_11_12)
             .addMigrations(SensoricsDatabase.MIGRATION_12_13)
             .addMigrations(SensoricsDatabase.MIGRATION_13_14)
             .addMigrations(SensoricsDatabase.MIGRATION_14_15)
+            .addMigrations(SensoricsDatabase.MIGRATION_15_16)
             .apply {
                 if(!BuildConfig.DEBUG) {
                     fallbackToDestructiveMigration()
