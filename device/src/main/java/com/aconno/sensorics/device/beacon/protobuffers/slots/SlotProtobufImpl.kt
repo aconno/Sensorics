@@ -55,7 +55,6 @@ class SlotProtobufImpl(
     fun toProtobufModel() : SlotsProtobufModel.Slot {
         return SlotsProtobufModel.Slot.newBuilder()
             .setSlotName(name)
-            .setReadOnly(readOnly)
             .setActive(active)
             .setPacketCount(packetCount)
             .setTxPower(txPower.toInt())
@@ -156,10 +155,18 @@ class SlotProtobufImpl(
 
         override var interval: Long = intervalModeParameters.interval
 
-        override var parameterId: Int = throw UnsupportedOperationException()
-        override var sign: AdvertisingModeParameters.Sign = throw UnsupportedOperationException()
-        override var thresholdInt: Long = throw UnsupportedOperationException()
-        override var thresholdFloat: Float = throw UnsupportedOperationException()
+        override var parameterId: Int
+            get() = throw UnsupportedOperationException()
+            set(_) = throw UnsupportedOperationException()
+        override var sign: AdvertisingModeParameters.Sign
+            get() = throw UnsupportedOperationException()
+            set(_) = throw UnsupportedOperationException()
+        override var thresholdInt: Long
+            get() = throw UnsupportedOperationException()
+            set(_) = throw UnsupportedOperationException()
+        override var thresholdFloat: Float
+            get() = throw UnsupportedOperationException()
+            set(_) = throw UnsupportedOperationException()
 
         fun toProtobufModel() : SlotsProtobufModel.IntervalAdvertisingModeParameters {
             return SlotsProtobufModel.IntervalAdvertisingModeParameters.newBuilder()
@@ -183,7 +190,9 @@ class SlotProtobufImpl(
 
         override var thresholdFloat: Float = eventModeParameters.thresholdFloat
 
-        override var interval: Long = throw UnsupportedOperationException()
+        override var interval: Long
+            get() = throw UnsupportedOperationException()
+            set(_) = throw UnsupportedOperationException()
 
         private fun getSignForProtobufSign(sign : SlotsProtobufModel.EventAdvertisingModeParameters.Sign) : AdvertisingModeParameters.Sign {
             return when(sign) {
