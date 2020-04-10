@@ -15,8 +15,7 @@
     android:paddingBottom="8dp">
 
     <CheckBox
-        android:id="@+id/item_selected"
-
+        android:id="@+id/cb_item_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -31,7 +30,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintStart_toEndOf="@id/item_selected"
+        app:layout_constraintStart_toEndOf="@id/cb_item_selected"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Name of the Action" />
 
