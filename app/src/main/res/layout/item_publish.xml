@@ -10,7 +10,7 @@
     android:foreground="?android:attr/selectableItemBackgroundBorderless">
 
     <CheckBox
-        android:id="@+id/item_selected"
+        android:id="@+id/cb_item_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -25,7 +25,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/item_selected"
+        app:layout_constraintStart_toEndOf="@id/cb_item_selected"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/google_logo"
         android:contentDescription="@string/contentDescriptionUseless" />
