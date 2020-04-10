@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
-import android.widget.EditText
 import android.widget.Toast
 import androidx.recyclerview.widget.*
 import com.aconno.sensorics.BuildConfig
@@ -31,6 +30,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
+import kotlinx.android.synthetic.main.layout_rename.view.*
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -54,7 +54,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private var snackbar: Snackbar? = null
 
-    private var dontObserveQueue: Queue<Boolean> = ArrayDeque<Boolean>()
+    private var notObservedQueue: Queue<Boolean> = ArrayDeque<Boolean>()
 
     private var deletedItems = ArrayDeque<DeviceActive>()
 
@@ -62,16 +62,16 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private val snackbarCallback = object : Snackbar.Callback() {
         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-            if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
-                || event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
-                || event == Snackbar.Callback.DISMISS_EVENT_SWIPE
-                || event == Snackbar.Callback.DISMISS_EVENT_MANUAL
+            if (event == DISMISS_EVENT_TIMEOUT
+                || event == DISMISS_EVENT_CONSECUTIVE
+                || event == DISMISS_EVENT_SWIPE
+                || event == DISMISS_EVENT_MANUAL
             ) {
-                val deletedItem = deletedItems.poll()
-
-                dontObserveQueue.add(true)
-                //delete device from db if undo snackbar timeout.
-                deviceViewModel.deleteDevice(deletedItem.device)
+                deletedItems.poll()?.let { item ->
+                    notObservedQueue.add(true)
+                    // Delete device from db if undo snackbar timeout.
+                    deviceViewModel.deleteDevice(item.device)
+                }
             }
         }
     }
@@ -90,14 +90,8 @@ class SavedDevicesFragment : DaggerFragment(),
         deviceAdapter = DeviceActiveAdapter()
 
         addDisposable(
-            deviceAdapter.getOnItemClickEvents()
-                .subscribe {
-                    onItemClick(it)
-                },
-            deviceAdapter.getOnItemLongClickEvents()
-                .subscribe {
-                    onLongClick(it)
-                }
+            deviceAdapter.getOnItemClickEvents().subscribe { onItemClick(it) },
+            deviceAdapter.getOnItemLongClickEvents().subscribe { onLongClick(it) }
         )
     }
 
@@ -109,7 +103,8 @@ class SavedDevicesFragment : DaggerFragment(),
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_devices, menu)
-        menu.findItem(R.id.action_start_dashboard)?.isVisible = BuildConfig.FLAVOR == "dev"
+        menu.findItem(R.id.action_start_dashboard)?.isVisible =
+            BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -120,9 +115,9 @@ class SavedDevicesFragment : DaggerFragment(),
                         ActionListActivity.start(context)
                     } else {
                         Snackbar.make(
-                                container_fragment,
-                                R.string.message_no_saved_devices_cannot_open_actions,
-                                Snackbar.LENGTH_LONG
+                            container_fragment,
+                            R.string.message_no_saved_devices_cannot_open_actions,
+                            Snackbar.LENGTH_LONG
                         ).show()
                     }
                     return true
@@ -159,17 +154,19 @@ class SavedDevicesFragment : DaggerFragment(),
             )
         )
 
-        val itemTouchHelperCallback =
-            DeviceSwipeToDismissHelper(0, ItemTouchHelper.LEFT, this)
-        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(list_devices)
+        ItemTouchHelper(
+            DeviceSwipeToDismissHelper(
+                0, ItemTouchHelper.LEFT, this
+            )
+        ).attachToRecyclerView(list_devices)
 
         addDisposable(
             deviceViewModel.getSavedDevicesFlowable()
                 .subscribe {
-                    if (dontObserveQueue.isEmpty()) {
+                    if (notObservedQueue.isEmpty()) {
                         displayPreferredDevices(it)
                     } else {
-                        dontObserveQueue.poll()
+                        notObservedQueue.poll()
                     }
                 }
         )
@@ -178,7 +175,7 @@ class SavedDevicesFragment : DaggerFragment(),
             deviceViewModel.deviceActiveObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    updateActiveorDeactiveDevices(it)
+                    updateActiveOrInactiveDevices(it)
                 }
         )
 
@@ -193,8 +190,8 @@ class SavedDevicesFragment : DaggerFragment(),
         }
     }
 
-    private fun updateActiveorDeactiveDevices(changedDevices: List<DeviceActive>) {
-        if (dontObserveQueue.isEmpty()) {
+    private fun updateActiveOrInactiveDevices(changedDevices: List<DeviceActive>) {
+        if (notObservedQueue.isEmpty()) {
             deviceAdapter.updateActiveDevices(changedDevices)
         }
     }
@@ -234,15 +231,17 @@ class SavedDevicesFragment : DaggerFragment(),
             activateAllActionsString
         )
 
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(R.string.actions)
+        AlertDialog.Builder(context).setTitle(R.string.actions)
             .setItems(options) { _, which ->
                 when (options[which]) {
                     renameString -> {
                         createRenameDeviceDialog(param.device).show()
                     }
                     deactivateAllActionsString -> {
-                        setActionActiveByDeviceMacAddressUseCase.execute(param.device.macAddress, false)
+                        setActionActiveByDeviceMacAddressUseCase.execute(
+                            param.device.macAddress,
+                            false
+                        )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
@@ -260,7 +259,10 @@ class SavedDevicesFragment : DaggerFragment(),
                             })
                     }
                     activateAllActionsString -> {
-                        setActionActiveByDeviceMacAddressUseCase.execute(param.device.macAddress, true)
+                        setActionActiveByDeviceMacAddressUseCase.execute(
+                            param.device.macAddress,
+                            true
+                        )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
@@ -278,26 +280,20 @@ class SavedDevicesFragment : DaggerFragment(),
                             })
                     }
                 }
-            }
-            .show()
+            }.show()
     }
 
     @SuppressLint("InflateParams")
-    fun createRenameDeviceDialog(device: Device): AlertDialog {
-        val builder = AlertDialog.Builder(context)
+    private fun createRenameDeviceDialog(device: Device): AlertDialog {
+        val view = layoutInflater.inflate(R.layout.layout_rename, null)
+        view.edit_name.setText(device.getRealName())
 
-        val inflate = layoutInflater.inflate(R.layout.layout_rename, null)
-        val input = inflate.findViewById<EditText>(R.id.edit_name)
-        input.setText(device.getRealName())
-
-        return builder
-            .setView(inflate)
+        return AlertDialog.Builder(context)
+            .setView(view)
             .setTitle("Rename Beacon")
             .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
-                input.text.toString().let { text ->
-                    if (!text.isBlank()) {
-                        deviceViewModel.updateDevice(device, text)
-                    }
+                view.edit_name.text.toString().takeIf { it.isNotBlank() }?.let { text ->
+                    deviceViewModel.updateDevice(device, text)
                 }
                 dialog.dismiss()
             }
@@ -321,10 +317,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private fun onItemClick(item: DeviceActive) {
         saveClickedDeviceMacAddress(item.device.macAddress)
-        activity?.let {
-            val mainActivity = it as MainActivity
-            mainActivity.showSensorValues(item.device)
-        }
+        (activity as? MainActivity)?.showSensorValues(item.device)
     }
 
     private fun saveClickedDeviceMacAddress(macAddress: String) {
@@ -350,34 +343,38 @@ class SavedDevicesFragment : DaggerFragment(),
             // get the removed item name to display it in snack bar and backup for undo
 
             deletedItems.add(deviceAdapter.getDevice(position))
-            val name = deletedItems.peek().device.getRealName()
+            deletedItems.peek()?.let { deletedItem ->
+                val name = deletedItem.device.getRealName()
 
-            // remove the item from recycler view
-            deviceAdapter.removeItem(position)
-            if (deviceAdapter.itemCount == 0) {
-                displayPreferredDevices(listOf())
-            }
+                // remove the item from recycler view
+                deviceAdapter.removeItem(position)
+                if (deviceAdapter.itemCount == 0) {
+                    displayPreferredDevices(listOf())
+                }
 
-            // showing snack bar with Undo option
-            snackbar = Snackbar
-                .make(container_fragment, "$name removed!", Snackbar.LENGTH_LONG)
-            snackbar?.setAction("UNDO") {
-                //Prevent it to be removed from snackbarCallback
-                snackbar?.removeCallback(snackbarCallback)
+                // showing snack bar with Undo option
+                snackbar = Snackbar.make(
+                    container_fragment, "$name removed!", Snackbar.LENGTH_LONG
+                ).also {
+                    it.setAction("UNDO") { _ ->
+                        //Prevent it to be removed from snackbarCallback
+                        it.removeCallback(snackbarCallback)
 
-                // undo is selected, restore the deleted item
-                val lastDevice = deletedItems.last
-                deviceAdapter.restoreItem(lastDevice, position)
-                deletedItems.remove(lastDevice)
+                        // undo is selected, restore the deleted item
+                        val lastDevice = deletedItems.last
+                        deviceAdapter.restoreItem(lastDevice, position)
+                        deletedItems.remove(lastDevice)
 
-                if (position == 0) {
-                    empty_view.visibility = View.INVISIBLE
+                        if (position == 0) {
+                            empty_view.visibility = View.INVISIBLE
+                        }
+                    }
+
+                    it.addCallback(snackbarCallback)
+                    it.setActionTextColor(Color.YELLOW)
+                    it.show()
                 }
             }
-
-            snackbar?.addCallback(snackbarCallback)
-            snackbar?.setActionTextColor(Color.YELLOW)
-            snackbar?.show()
         }
     }
 
@@ -390,20 +387,24 @@ class SavedDevicesFragment : DaggerFragment(),
 
 
     override fun getIconInfoForActiveDevices(deviceNames: List<DeviceActive>): HashMap<String, String> {
+        val map: HashMap<String, String> = hashMapOf()
 
-        val hashMap: HashMap<String, String> = hashMapOf()
-
-        deviceNames.forEach { device ->
-            if (!hashMap.containsKey(device.device.name))
-                deviceViewModel.getIconPath(device.device.name)?.let {
-                    hashMap[device.device.name] = it
+        deviceNames.forEach { deviceActive ->
+            if (!map.containsKey(deviceActive.device.name)) {
+                deviceViewModel.getIconPath(deviceActive.device.name)?.let {
+                    map[deviceActive.device.name] = it
                 }
+            }
         }
-        return hashMap
+        return map
     }
 
     override fun getIconInfoForDevices(deviceNames: List<Device>): HashMap<String, String> {
         //This method is not used.
         return hashMapOf()
+    }
+
+    companion object {
+        private const val DEV_BUILD_FLAVOR = "dev"
     }
 }
