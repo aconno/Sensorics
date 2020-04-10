@@ -6,14 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
-import com.aconno.sensorics.ui.graph.BleGraph
 import com.aconno.sensorics.viewmodel.LiveGraphViewModel
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.activity_graph.*
 import javax.inject.Inject
 
 class LiveGraphFragment : DaggerFragment() {
-
     @Inject
     lateinit var liveGraphViewModel: LiveGraphViewModel
 
@@ -23,14 +21,12 @@ class LiveGraphFragment : DaggerFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (arguments == null) {
-            throw IllegalArgumentException("Arguments cannot be null")
-        }
-
         arguments?.let {
-            macAddress = it.getString(MAC_ADDRESS_EXTRA, "")
-            graphName = it.getString(GRAPH_NAME_EXTRA, "")
-        }
+            macAddress = it.getString(MAC_ADDRESS_EXTRA)
+                ?: throw IllegalStateException("$this is missing MAC_ADDRESS_EXTRA")
+            graphName = it.getString(GRAPH_NAME_EXTRA)
+                ?: throw IllegalStateException("$this is missing GRAPH_NAME_EXTRA")
+        } ?: throw IllegalArgumentException("Arguments cannot be null for $this")
     }
 
     override fun onCreateView(
@@ -42,9 +38,11 @@ class LiveGraphFragment : DaggerFragment() {
     }
 
     private fun loadGraph(type: String) {
-        val graph: BleGraph = liveGraphViewModel.getGraph(type)
-        line_chart.description = graph.getDescription()
-        line_chart.data = graph.lineData
+        liveGraphViewModel.getGraph(type).let { graph ->
+            line_chart.description = graph.getDescription()
+            line_chart.data = graph.lineData
+        }
+
         line_chart.invalidate()
     }
 
@@ -59,27 +57,21 @@ class LiveGraphFragment : DaggerFragment() {
         liveGraphViewModel.setMacAddressAndGraphName(macAddress, graphName)
         liveGraphViewModel.getUpdates().observe(this, Observer { updateGraph() })
         loadGraph(graphName)
+
+        // TODO: Check why onPause is not overridden
     }
 
     companion object {
-
         private const val MAC_ADDRESS_EXTRA = "mac_address"
         private const val GRAPH_NAME_EXTRA = "graph_type"
 
-        fun newInstance(
-            macAddress: String,
-            graphName: String
-        ): LiveGraphFragment {
-
-            val fragment = LiveGraphFragment()
-            val bundle = Bundle()
-
-            bundle.putString(MAC_ADDRESS_EXTRA, macAddress)
-            bundle.putString(GRAPH_NAME_EXTRA, graphName)
-
-            fragment.arguments = bundle
-
-            return fragment
+        fun newInstance(macAddress: String, graphName: String): LiveGraphFragment {
+            return LiveGraphFragment().apply {
+                arguments = Bundle().apply {
+                    putString(MAC_ADDRESS_EXTRA, macAddress)
+                    putString(GRAPH_NAME_EXTRA, graphName)
+                }
+            }
         }
     }
 }
