@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.graph
+package com.aconno.sensorics.ui.livegraph.graph
 
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.LineData

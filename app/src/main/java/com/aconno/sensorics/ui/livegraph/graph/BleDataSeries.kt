@@ -1,4 +1,4 @@
-package com.aconno.sensorics.ui.graph
+package com.aconno.sensorics.ui.livegraph.graph
 
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.model.DataSeriesSettings

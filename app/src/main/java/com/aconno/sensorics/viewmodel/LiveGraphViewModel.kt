@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import com.aconno.sensorics.R
 import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
 import com.aconno.sensorics.model.DataSeriesSettings
-import com.aconno.sensorics.ui.graph.BleDataSeries
-import com.aconno.sensorics.ui.graph.BleGraph
+import com.aconno.sensorics.ui.livegraph.graph.BleDataSeries
+import com.aconno.sensorics.ui.livegraph.graph.BleGraph
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
