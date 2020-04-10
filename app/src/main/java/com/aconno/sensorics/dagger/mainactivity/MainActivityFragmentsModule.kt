@@ -7,7 +7,6 @@ import com.aconno.sensorics.ui.device_main.DeviceMainFragment
 import com.aconno.sensorics.ui.devices.SavedDevicesFragment
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.livegraph.LiveGraphFragment
-import com.aconno.sensorics.ui.readings.GenericReadingListFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -33,10 +32,6 @@ abstract class MainActivityFragmentsModule {
     @FragmentScope
     @ContributesAndroidInjector
     abstract fun liveGraphFragment(): LiveGraphFragment
-
-    @FragmentScope
-    @ContributesAndroidInjector
-    abstract fun bindGenericReadingListFragment(): GenericReadingListFragment
 
     @FragmentScope
     @ContributesAndroidInjector
