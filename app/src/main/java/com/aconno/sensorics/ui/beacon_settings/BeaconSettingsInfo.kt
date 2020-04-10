@@ -4,7 +4,6 @@ import com.aconno.sensorics.device.beacon.Beacon
 import java.io.Serializable
 
 class BeaconSettingsInfo : Serializable {
-
     var name: String? = ""
     var address: String = "00:00:00:00:00:00"
     var connectible: Boolean = true
@@ -18,7 +17,6 @@ class BeaconSettingsInfo : Serializable {
     var supportedTxPower: String? = ""
     var supportedSlots: String? = ""
     var slotAmount: Int = 0
-
 
     class Builder {
         fun build(beacon: Beacon?): BeaconSettingsInfo {
@@ -36,7 +34,6 @@ class BeaconSettingsInfo : Serializable {
                 beaconInfo.slotAmount = currentBeacon.slotCount.toInt()
             }
             return beaconInfo
-
         }
     }
 }

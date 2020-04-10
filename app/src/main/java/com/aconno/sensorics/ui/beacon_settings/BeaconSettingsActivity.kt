@@ -12,8 +12,11 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.aconno.sensorics.*
+import com.aconno.sensorics.R
+import com.aconno.sensorics.action
 import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsFragmentListener
+import com.aconno.sensorics.showToast
+import com.aconno.sensorics.snack
 import com.aconno.sensorics.ui.beacon_settings.fragments.BeaconSettingsFragment
 import com.aconno.sensorics.ui.dialogs.CancelBtnSchedulerProgressDialog
 import com.aconno.sensorics.ui.dialogs.PasswordDialog
@@ -32,10 +35,11 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
     private var progressDialog: CancelBtnSchedulerProgressDialog? = null
     private var passwordDialog: Dialog? = null
     private var indefiniteSnackBar: Snackbar? = null
-    private var deviceMac: String = ""
+    private lateinit var deviceMac: String
 
     @Inject
     lateinit var settingsTransporter: BeaconSettingsTransporterSharedViewModel
+
     @Inject
     lateinit var viewModel: BeaconSettingsViewModel
 
@@ -44,17 +48,16 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings_framework)
 
-        if(savedInstanceState == null) {
-            val fm = supportFragmentManager
-            if (fm != null) {
-                var fragment: Fragment? = fm.findFragmentById(R.id.content_container)
-                if (fragment == null) {
-                    fragment = BeaconSettingsFragment.newInstance()
-                    fm.beginTransaction().add(R.id.content_container, fragment).commit()
-                }
+        if (savedInstanceState == null) {
+            val fragment: Fragment? = supportFragmentManager.findFragmentById(
+                R.id.content_container
+            )
+            if (fragment == null) {
+                supportFragmentManager.beginTransaction().add(
+                    R.id.content_container, BeaconSettingsFragment.newInstance()
+                ).commit()
             }
         }
-
 
         setupUI()
         subscribeOnData()
@@ -113,7 +116,6 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
 
         /*Set titlebar */
         supportActionBar?.subtitle = deviceMac
-
     }
 
     private fun subscribeOnData() {
@@ -135,34 +137,33 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
         })
     }
 
-    @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun newEventReceived(event: BeaconSettingsState) {
         Timber.i("handle event $event")
         when (event) {
-            is BeaconSettingsState.Connecting -> getProgressDialog {
+            is BeaconSettingsState.Connecting -> getProgressDialog().apply {
                 progressMessage = getString(R.string.connecting_with_dots)
             }
 
-            is BeaconSettingsState.Connected -> getProgressDialog {
+            is BeaconSettingsState.Connected -> getProgressDialog().apply {
                 progressMessage = getString(R.string.connected_with_dots)
             }
 
-            is BeaconSettingsState.Unlocking -> getProgressDialog {
+            is BeaconSettingsState.Unlocking -> getProgressDialog().apply {
                 progressMessage = getString(R.string.connected_unlocking)
             }
 
             is BeaconSettingsState.Unlocked -> {
                 showToast(R.string.device_unlocked)
-                getProgressDialog {
+                getProgressDialog().apply {
                     progressMessage = getString(R.string.device_unlocked)
                 }
             }
-            is BeaconSettingsState.Reading -> getProgressDialog {
+            is BeaconSettingsState.Reading -> getProgressDialog().apply {
                 progressMessage = getString(R.string.reading_with_dots)
             }
 
             is BeaconSettingsState.RequireUnlock -> {
-                getProgressDialog {
+                getProgressDialog().apply {
                     progressMessage = getString(R.string.password_required)
                 }
                 handler.postDelayed({
@@ -170,7 +171,7 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
                     showPasswordDialog()
                 }, 400)
             }
-            is BeaconSettingsState.Writing -> getProgressDialog {
+            is BeaconSettingsState.Writing -> getProgressDialog().apply {
                 progressMessage = getString(R.string.writing_with_dots)
             }
 
@@ -190,16 +191,16 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
                 closePasswordDialog()
                 showTryAgainToConnectSnackBar()
             }
-        }.exhaustive
+        }
     }
 
     private fun cancelScheduleEvents() = handler.removeCallbacksAndMessages(null)
 
-    private fun scheduleCleaningServiceAndScreen(timeMs: Long) {
+    private fun scheduleCleaningServiceAndScreen(millis: Long) {
         handler.postDelayed({
             disconnectFromDeviceIfNeeded()
             closeAllDialogs()
-        }, timeMs)
+        }, millis)
     }
 
     private fun disconnectFromDeviceIfNeeded() {
@@ -208,7 +209,6 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
         }
     }
 
-
     private fun closeAllDialogs() {
         closeProgressDialog()
         closePasswordDialog()
@@ -216,18 +216,13 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
         indefiniteSnackBar = null
     }
 
-    private fun getProgressDialog(doAfter: CancelBtnSchedulerProgressDialog.() -> Unit) {
-        if (progressDialog == null) {
-            progressDialog = CancelBtnSchedulerProgressDialog(
-                this@BeaconSettingsActivity,
-                handler
-            ) {
-                viewModel.disconnect()
-            }.apply {
-                show()
-            }
+    private fun getProgressDialog(): CancelBtnSchedulerProgressDialog {
+        return progressDialog ?: CancelBtnSchedulerProgressDialog(this, handler) {
+            viewModel.disconnect()
+        }.also {
+            progressDialog = it
+            it.show()
         }
-        doAfter(progressDialog!!)
     }
 
     private fun closeProgressDialog() {
