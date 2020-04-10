@@ -1,7 +1,8 @@
 package com.aconno.sensorics.dagger.mqttpublisher
 
-import androidx.lifecycle.ViewModelProviders
-import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.AddMqttPublishUseCase
+import androidx.lifecycle.ViewModelProvider
+import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetMqttPublishByIdUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
@@ -19,20 +20,24 @@ class MqttPublisherActivityModule {
     fun provideMqttPublisherViewModel(
         mqttPublisherActivity: MqttPublisherActivity,
         mqttPublisherViewModelFactory: MqttPublisherViewModelFactory
-    ) = ViewModelProviders.of(mqttPublisherActivity, mqttPublisherViewModelFactory)
-        .get(MqttPublisherViewModel::class.java)
+    ): MqttPublisherViewModel = ViewModelProvider(
+        mqttPublisherActivity,
+        mqttPublisherViewModelFactory
+    ).get(MqttPublisherViewModel::class.java)
 
     @Provides
     @MqttPublisherActivityScope
     fun provideMqttPublisherViewModelFactory(
+        addAnyPublishUseCase: AddAnyPublishUseCase,
+        getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase,
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-        addMqttPublishUseCase: AddMqttPublishUseCase,
         mqttPublishModelDataMapper: MqttPublishModelDataMapper
     ) = MqttPublisherViewModelFactory(
+        addAnyPublishUseCase,
+        getMqttPublishByIdUseCase,
         savePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase,
-        addMqttPublishUseCase,
         mqttPublishModelDataMapper
     )
 

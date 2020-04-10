@@ -4,31 +4,26 @@ import android.os.AsyncTask
 import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.ifttt.AzureMqttPublish
-import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.Sync
 import com.aconno.sensorics.domain.repository.SyncRepository
-import com.microsoft.azure.sdk.iot.device.*
+import com.microsoft.azure.sdk.iot.device.DeviceClient
+import com.microsoft.azure.sdk.iot.device.IotHubClientProtocol
+import com.microsoft.azure.sdk.iot.device.Message
 import com.microsoft.azure.sdk.iot.device.transport.IotHubConnectionStatus
 import timber.log.Timber
 import java.util.*
-import java.util.concurrent.ConcurrentLinkedQueue
 
 class AzureMqttPublisher(
-    private val azureMqttPublish: AzureMqttPublish,
-    private val listDevices: List<Device>,
-    private val syncRepository: SyncRepository
-) : Publisher {
-
-    private val lastSyncs: MutableMap<Pair<String, String>, Long> =
-        syncRepository.getSync(PUBLISHER_UNIQUE_ID_PREFIX + azureMqttPublish.id)
-            .map { Pair(it.macAddress, it.advertisementId) to it.lastSyncTimestamp }
-            .toMap()
-            .toMutableMap()
-
+    publish: AzureMqttPublish,
+    listDevices: List<Device>,
+    syncRepository: SyncRepository
+) : Publisher<AzureMqttPublish>(
+    publish, listDevices, syncRepository
+) {
     private val dataStringConverter: DataStringConverter =
-        DataStringConverter(azureMqttPublish.dataString)
+        DataStringConverter(publish.dataString)
 
     private var deviceClient: DeviceClient? = null
 
@@ -37,8 +32,6 @@ class AzureMqttPublisher(
 
     @Volatile
     private var tryingToConnect = false
-
-    private val messagesQueue: Queue<String> = ConcurrentLinkedQueue<String>()
 
     init {
         initClient()
@@ -88,7 +81,7 @@ class AzureMqttPublisher(
             val messages = dataStringConverter.convert(readings)
             for (message in messages) {
                 Timber.tag("Publisher Azure Mqtt ")
-                    .d("${azureMqttPublish.name} publishes from ${readings[0].device}")
+                    .d("${publish.name} publishes from ${readings[0].device}")
                 publish(message)
             }
 
@@ -102,7 +95,7 @@ class AzureMqttPublisher(
             )
             syncRepository.save(
                 Sync(
-                    PUBLISHER_UNIQUE_ID_PREFIX + azureMqttPublish.id,
+                    publish.type.type + publish.id,
                     reading.device.macAddress,
                     reading.advertisementId,
                     time
@@ -118,7 +111,7 @@ class AzureMqttPublisher(
             publishMessage(messageText)
         } else {
             connectAsync()
-            messagesQueue.add(messageText)
+            messageQueue.add(messageText)
         }
     }
 
@@ -165,8 +158,10 @@ class AzureMqttPublisher(
     }
 
     private fun publishMessagesFromQueue() {
-        while (messagesQueue.isNotEmpty()) {
-            publish(messagesQueue.poll())
+        while (messageQueue.isNotEmpty()) {
+            messageQueue.poll()?.let {
+                publish(it)
+            }
         }
     }
 
@@ -185,15 +180,6 @@ class AzureMqttPublisher(
         }
     }
 
-    private fun isPublishable(readings: List<Reading>): Boolean {
-        val reading = readings.firstOrNull()
-        val latestTimestamp =
-            lastSyncs[Pair(reading?.device?.macAddress, reading?.advertisementId)] ?: 0
-
-        return System.currentTimeMillis() - latestTimestamp > this.azureMqttPublish.timeMillis
-                && reading != null && listDevices.contains(reading.device)
-    }
-
     override fun closeConnection() {
         try {
             deviceClient?.closeNow()
@@ -203,16 +189,12 @@ class AzureMqttPublisher(
         connectionOpened = false
     }
 
-    override fun getPublishData(): BasePublish {
-        return azureMqttPublish
-    }
-
     private fun buildConnectionString(): String {
         return String.format(
             CONNECTION_STRING_FORMAT,
-            azureMqttPublish.iotHubName,
-            azureMqttPublish.deviceId,
-            azureMqttPublish.sharedAccessKey
+            publish.iotHubName,
+            publish.deviceId,
+            publish.sharedAccessKey
         )
     }
 
@@ -238,7 +220,6 @@ class AzureMqttPublisher(
     companion object {
         private const val CONNECTION_STRING_FORMAT =
             "HostName=%s.azure-devices.net;DeviceId=%s;SharedAccessKey=%s"
-        private const val PUBLISHER_UNIQUE_ID_PREFIX = "azure"
     }
 
 

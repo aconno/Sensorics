@@ -84,7 +84,7 @@ class PublishListActivity : DaggerAppCompatActivity(),
         if (!handled) super.onBackPressed()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         (supportFragmentManager
             .findFragmentById(R.id.publish_list_container) as PublishListFragment)
             .resolveActionBarEvent(item)
@@ -94,10 +94,10 @@ class PublishListActivity : DaggerAppCompatActivity(),
 
     override fun onListFragmentClick(item: BasePublishModel?) {
         when (item) {
-            is GooglePublishModel -> GoogleCloudPublisherActivity.start(this, item)
-            is RestPublishModel -> RestPublisherActivity.start(this, item)
-            is MqttPublishModel -> MqttPublisherActivity.start(this, item)
-            is AzureMqttPublishModel -> AzureMqttPublisherActivity.start(this, item)
+            is AzureMqttPublishModel -> AzureMqttPublisherActivity.start(this, item.id)
+            is GooglePublishModel -> GoogleCloudPublisherActivity.start(this, item.id)
+            is RestPublishModel -> RestPublisherActivity.start(this, item.id)
+            is MqttPublishModel -> MqttPublisherActivity.start(this, item.id)
         }
     }
 

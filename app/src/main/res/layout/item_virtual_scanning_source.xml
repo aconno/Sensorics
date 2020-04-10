@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/list_item_height"
+    android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackgroundBorderless">
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+    android:minHeight="@dimen/list_item_height">
 
     <ImageView
         android:id="@+id/virtual_scanning_source_image"
@@ -23,11 +24,12 @@
     <TextView
         android:id="@+id/virtual_scanning_source_name"
         style="@style/ListItemText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/screen_edge_left_right_margin"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/virtual_scanning_source_switch"
         app:layout_constraintStart_toEndOf="@+id/virtual_scanning_source_image"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Virtual scanning source name" />
@@ -35,7 +37,7 @@
     <Switch
         android:id="@+id/virtual_scanning_source_switch"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="@dimen/screen_edge_left_right_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

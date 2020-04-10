@@ -1,6 +1,8 @@
 package com.aconno.sensorics.domain.ifttt
 
+import com.aconno.sensorics.domain.ifttt.outcome.PublishType
+
 interface GooglePublishDeviceJoin : PublishDeviceJoin {
-    val gId: Long
-    override val dId: String
+    override val publishType: PublishType
+        get() = PublishType.GOOGLE
 }
