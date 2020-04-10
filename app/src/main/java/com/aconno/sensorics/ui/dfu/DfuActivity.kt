@@ -8,14 +8,13 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.provider.OpenableColumns
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.aconno.sensorics.DfuService
 import com.aconno.sensorics.R
 import com.aconno.sensorics.action
+import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.snack
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_dfu.*
@@ -26,9 +25,12 @@ import no.nordicsemi.android.dfu.DfuServiceInitiator
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper
 import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
 
 
 class DfuActivity : DaggerAppCompatActivity() {
+    @Inject
+    lateinit var vibrator: Vibrator
 
     private lateinit var deviceAddress: String
     private var dfuFileUri: Uri? = null
@@ -76,7 +78,7 @@ class DfuActivity : DaggerAppCompatActivity() {
     }
 
     private fun loadParams(savedInstanceState: Bundle?) {
-        deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS)
+        deviceAddress = intent?.getStringExtra(EXTRA_DEVICE_ADDRESS) ?: ""
         dfuFileUri = savedInstanceState?.getParcelable(EXTRA_FILE_PATH)
         isUpdating = savedInstanceState?.getBoolean(EXTRA_UPDATE_STATUS) ?: false
 
@@ -136,7 +138,7 @@ class DfuActivity : DaggerAppCompatActivity() {
             return
         }
 
-        if (dfuFileUri != null) {
+        dfuFileUri?.let { fileUri ->
             isUpdating = true
 
             Timber.d(deviceAddress)
@@ -146,16 +148,14 @@ class DfuActivity : DaggerAppCompatActivity() {
             // If you want to have experimental buttonless DFU feature supported call additionally:
             starterDFU.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true)
 
-            starterDFU.setZip(dfuFileUri!!)
+            starterDFU.setZip(fileUri)
             starterDFU.start(applicationContext, DfuService::class.java)
-        } else {
-            ll_dfu_root?.snack(getString(R.string.dfu_snack_msg_file_selection)) {
-                action(
-                    getString(R.string.dfu_snack_action_select),
-                    ContextCompat.getColor(applicationContext, R.color.primaryDarkColor)
-                ) {
-                    openFileChooser()
-                }
+        } ?: ll_dfu_root?.snack(getString(R.string.dfu_snack_msg_file_selection)) {
+            action(
+                getString(R.string.dfu_snack_action_select),
+                ContextCompat.getColor(applicationContext, R.color.primaryDarkColor)
+            ) {
+                openFileChooser()
             }
         }
     }
@@ -175,18 +175,22 @@ class DfuActivity : DaggerAppCompatActivity() {
                 Timber.tag("DfuActivity").i("Uri: $uri")
                 selectFile(uri)
             }
+        } else {
+            super.onActivityResult(requestCode, resultCode, resultData)
         }
     }
 
     private fun selectFile(uri: Uri) {
-        dfuFileUri = uri
-
-        dfuFileUri?.scheme?.let {
-            if (it == URI_SCHEMA_FILE) {
-                txt_dfu_selectedFile.text = File(uri.path).name
-            } else if (it == URI_SCHEMA_CONTENT) {
-                getFileName(uri)?.let {
-                    txt_dfu_selectedFile.text = it
+        dfuFileUri = uri.also { fileUri ->
+            fileUri.scheme?.let { scheme ->
+                fileUri.path?.let { path ->
+                    if (scheme == URI_SCHEMA_FILE) {
+                        txt_dfu_selectedFile.text = File(path).name
+                    } else if (scheme == URI_SCHEMA_CONTENT) {
+                        getFileName(uri)?.let {
+                            txt_dfu_selectedFile.text = it
+                        }
+                    }
                 }
             }
         }
@@ -281,13 +285,7 @@ class DfuActivity : DaggerAppCompatActivity() {
 
     private fun onComplete() {
         canGoBack = true
-        val vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(500)
-        }
+        vibrator.vibrate(500)
     }
 
     private fun setStatusText(
@@ -308,7 +306,7 @@ class DfuActivity : DaggerAppCompatActivity() {
 
         fun start(context: Context, deviceMacAddress: String) {
             with(Intent(context, DfuActivity::class.java)) {
-                putExtra(DfuBaseService.EXTRA_DEVICE_ADDRESS, deviceMacAddress)
+                putExtra(EXTRA_DEVICE_ADDRESS, deviceMacAddress)
                 context.startActivity(this)
             }
         }
