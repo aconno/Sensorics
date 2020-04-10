@@ -30,6 +30,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.dialog_create_group.view.*
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import java.util.*
@@ -131,9 +132,70 @@ class SavedDevicesFragment : DaggerFragment(),
                     (activity as MainActivity).onDashboardClicked()
                     return true
                 }
+                R.id.device_groups_options -> {
+                    showDeviceGroupsOptions()
+                    return true
+                }
                 else -> return super.onOptionsItemSelected(item)
             }
         } ?: return super.onOptionsItemSelected(item)
+    }
+
+    private fun showDeviceGroupsOptions() {
+        val options =
+            arrayOf(getString(R.string.create_new_group),
+                getString(R.string.remove_group),
+                getString(R.string.edit_group_name))
+
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.device_group_options))
+        builder.setItems(options) { _, which ->
+            when(options[which]) {
+                getString(R.string.create_new_group) -> showCreateNewGroupDialog()
+                getString(R.string.remove_group) -> showRemoveGroupDialog()
+            }
+        }
+        builder.show()
+    }
+
+
+
+    private fun showRemoveGroupDialog() {
+        AlertDialog.Builder(context)
+            .setTitle(getString(R.string.remove_group_title))
+            .setPositiveButton(getString(R.string.remove)) { _, _ ->
+                removeCurrentGroup()
+            }
+            .setCancelable(true)
+            .setMessage(getString(R.string.remove_group_confirmation,getCurrentGroupName()))
+            .show()
+    }
+
+    private fun getCurrentGroupName() : String {
+        TODO()
+    }
+
+    private fun removeCurrentGroup() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showCreateNewGroupDialog() {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_group,null)
+
+        AlertDialog.Builder(context)
+            .setTitle(getString(R.string.create_new_group_title))
+            .setPositiveButton(getString(R.string.create)) { _, _ ->
+                createNewGroup(dialogView.group_name.text.toString())
+            }
+            .setCancelable(true)
+            .setView(dialogView)
+            .show()
+    }
+
+
+    private fun createNewGroup(groupName : String) {
+        Timber.d("Creating group with name $groupName")
     }
 
     override fun onCreateView(
@@ -191,6 +253,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 ScannedDevicesDialog().show(it, "devices_dialog")
             }
         }
+
     }
 
     private fun updateActiveorDeactiveDevices(changedDevices: List<DeviceActive>) {
