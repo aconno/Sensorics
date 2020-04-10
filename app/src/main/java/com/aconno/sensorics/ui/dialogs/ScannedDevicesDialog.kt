@@ -133,9 +133,4 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
         super.onDetach()
         listener = null
     }
-
-    fun getIconsForDevices() {
-
-    }
-
 }
