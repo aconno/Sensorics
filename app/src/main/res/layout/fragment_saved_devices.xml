@@ -6,11 +6,30 @@
     android:id="@+id/container_fragment"
     android:layout_height="match_parent">
 
-    <com.aconno.sensorics.ui.devices.NotLeakingRecyclerView
-        android:id="@+id/list_devices"
+
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/item_device" />
+        android:layout_height="match_parent">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_height="wrap_content"
+            app:tabMode="scrollable"
+            android:layout_width="match_parent">
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <com.aconno.sensorics.ui.devices.NotLeakingRecyclerView
+            android:id="@+id/list_devices"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_device" />
+
+    </LinearLayout>
+
+
 
     <TextView
         android:id="@+id/empty_view"
