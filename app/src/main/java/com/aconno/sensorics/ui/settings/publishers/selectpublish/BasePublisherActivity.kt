@@ -2,7 +2,6 @@ package com.aconno.sensorics.ui.settings.publishers.selectpublish
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
@@ -81,8 +80,8 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         initViews()
 
