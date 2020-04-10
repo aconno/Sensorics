@@ -15,8 +15,6 @@ import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanDevice
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.ui.MainActivity
-import com.aconno.sensorics.ui.readings.ReadingListViewModel
-import com.aconno.sensorics.ui.readings.ReadingListViewModelFactory
 import com.aconno.sensorics.viewmodel.*
 import com.aconno.sensorics.viewmodel.factory.*
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
@@ -48,24 +46,6 @@ class MainActivityModule {
         @Named("composite") readingsStream: Flowable<List<Reading>>,
         filterByMacUseCase: FilterByMacUseCase
     ) = SensorListViewModelFactory(
-        readingsStream,
-        filterByMacUseCase
-    )
-
-    @Provides
-    @MainActivityScope
-    fun provideReadingListViewModel(
-        mainActivity: MainActivity,
-        readingListViewModelFactory: ReadingListViewModelFactory
-    ) = ViewModelProviders.of(mainActivity, readingListViewModelFactory)
-        .get(ReadingListViewModel::class.java)
-
-    @Provides
-    @MainActivityScope
-    fun provideReadingListViewModelFactory(
-        @Named("composite") readingsStream: Flowable<List<Reading>>,
-        filterByMacUseCase: FilterByMacUseCase
-    ) = ReadingListViewModelFactory(
         readingsStream,
         filterByMacUseCase
     )
