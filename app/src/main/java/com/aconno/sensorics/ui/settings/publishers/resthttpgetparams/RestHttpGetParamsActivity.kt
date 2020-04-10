@@ -21,13 +21,10 @@ import com.aconno.sensorics.ui.SwipeToDeleteCallback
 import com.aconno.sensorics.ui.settings.publishers.restheader.ItemClickListenerWithPos
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_rest_httpgetparams.*
-import kotlinx.android.synthetic.main.activity_rest_httpgetparams.empty_view
-import kotlinx.android.synthetic.main.activity_rest_httpgetparams.recyclerView
-import kotlinx.android.synthetic.main.activity_rest_httpgetparams.toolbar
 
 
 class RestHttpGetParamsActivity : AppCompatActivity(),
-    AddRestHttpGetParamDialog.OnFragmentInteractionListener,
+    AddRestHttpGetParamDialog.RestHttpGetParamDialogInteractionListener,
     LongItemClickListener<RestHttpGetParamModel> {
 
     private lateinit var initialHttpGetParams: ArrayList<RestHttpGetParamModel>
@@ -227,7 +224,7 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
         finish()
     }
 
-    override fun onFragmentInteraction(position: Int, key: String, value: String) {
+    override fun onDialogInteraction(position: Int, key: String, value: String) {
         empty_view.visibility = View.GONE
 
         if (position == -1) {

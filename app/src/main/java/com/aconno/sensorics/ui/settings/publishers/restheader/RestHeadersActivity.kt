@@ -19,13 +19,11 @@ import com.aconno.sensorics.adapter.LongItemClickListener
 import com.aconno.sensorics.model.RestHeaderModel
 import com.aconno.sensorics.ui.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_rest_headers.*
-import kotlinx.android.synthetic.main.fragment_action_list.*
 
 
 class RestHeadersActivity : AppCompatActivity(),
-    AddRestHeaderDialog.OnFragmentInteractionListener,
+    AddRestHeaderDialog.RestHeaderDialogInteractionListener,
     LongItemClickListener<RestHeaderModel> {
 
     private lateinit var initialHeaders: ArrayList<RestHeaderModel>
@@ -227,7 +225,7 @@ class RestHeadersActivity : AppCompatActivity(),
         finish()
     }
 
-    override fun onFragmentInteraction(position: Int, key: String, value: String) {
+    override fun onDialogInteraction(position: Int, key: String, value: String) {
         empty_view.visibility = View.GONE
 
         if (position == -1) {

@@ -3,17 +3,16 @@ package com.aconno.sensorics.ui.settings.publishers.restheader
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.aconno.sensorics.R
 import com.aconno.sensorics.model.RestHeaderModel
+import kotlinx.android.synthetic.main.fragment_add_restheader.view.*
 
 
 class AddRestHeaderDialog : DialogFragment() {
-    private var listener: OnFragmentInteractionListener? = null
-
-    private var keyText: AutoCompleteTextView? = null
-    private var valueText: EditText? = null
+    private lateinit var listener: RestHeaderDialogInteractionListener
 
     private var restHeaderModel: RestHeaderModel? = null
     private var position: Int = -1
@@ -21,100 +20,67 @@ class AddRestHeaderDialog : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (arguments != null
-            && arguments!!.containsKey(ADD_REST_HEADER_DIALOG_KEY)
-            && arguments!!.containsKey(ADD_REST_HEADER_DIALOG_POS_KEY)
-        ) {
-            restHeaderModel = arguments!!.getParcelable(ADD_REST_HEADER_DIALOG_KEY)
-            position = arguments!!.getInt(ADD_REST_HEADER_DIALOG_POS_KEY)
+        arguments?.let { args ->
+            if (args.containsKey(ADD_REST_HEADER_DIALOG_KEY)
+                    && args.containsKey(ADD_REST_HEADER_DIALOG_POS_KEY)) {
+                restHeaderModel = args.getParcelable(ADD_REST_HEADER_DIALOG_KEY)
+                position = args.getInt(ADD_REST_HEADER_DIALOG_POS_KEY)
+            }
         }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
-        removeTitleSpacing()
+        return inflater.inflate(R.layout.fragment_add_restheader, container, false)
+    }
 
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_add_restheader, container, false)
-
-        keyText = view.findViewById(R.id.edit_key)
-        valueText = view.findViewById(R.id.edit_value)
-
-        val adapter = ArrayAdapter<String>(
-            requireContext(),
-            android.R.layout.simple_dropdown_item_1line,
-            resources.getStringArray(R.array.header_keys)
-        )
-
-        keyText?.setAdapter(adapter)
-        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-
-        if (restHeaderModel != null) {
-            this.keyText?.setText(restHeaderModel!!.key)
-            this.valueText?.setText(restHeaderModel!!.value)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        dialog?.window?.let {
+            it.requestFeature(Window.FEATURE_NO_TITLE)
+            it.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         }
 
-        val addButton = view.findViewById<Button>(R.id.add_button)
-        addButton.setOnClickListener {
+        view.edit_key.setAdapter(ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                resources.getStringArray(R.array.header_keys)
+        ))
 
-            val key = keyText!!.text.toString()
-            val value = valueText!!.text.toString()
+        restHeaderModel?.let { model ->
+            view.edit_key.setText(model.key)
+            view.edit_value.setText(model.value)
+        }
 
-            if (isNotEmpty(key, value)) {
-                listener?.onFragmentInteraction(
-                    position,
-                    key,
-                    value
-                )
+        view.add_button.setOnClickListener {
+            val key = view.edit_key.text.toString()
+            val value = view.edit_value.text.toString()
 
+            if (listOf(key, value).all { it.isNotBlank() }) {
+                listener.onDialogInteraction(position, key, value)
                 this.dismiss()
             } else {
-                Toast.makeText(context, getString(R.string.values_cannot_empty), Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(context, R.string.values_cannot_empty, Toast.LENGTH_SHORT).show()
             }
         }
 
-        val closeButton = view.findViewById<Button>(R.id.close_button)
-        closeButton.setOnClickListener {
+        view.close_button.setOnClickListener {
             this.dismiss()
         }
-        return view
-    }
-
-    private fun removeTitleSpacing() {
-        // Required for Lollipop (maybe others too) devices
-        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
-    }
-
-    private fun isNotEmpty(vararg array: String): Boolean {
-        array.forEach { item ->
-            item.trim().let {
-                if (it.isBlank()) {
-                    return false
-                }
-            }
-        }
-        return true
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
+        if (context is RestHeaderDialogInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
-    interface OnFragmentInteractionListener {
-        fun onFragmentInteraction(position: Int, key: String, value: String)
+    interface RestHeaderDialogInteractionListener {
+        fun onDialogInteraction(position: Int, key: String, value: String)
     }
 
     companion object {
@@ -123,17 +89,14 @@ class AddRestHeaderDialog : DialogFragment() {
 
         @JvmStatic
         fun newInstance(restHeaderModel: RestHeaderModel?, position: Int): AddRestHeaderDialog {
-            val fragment = AddRestHeaderDialog()
-
-            restHeaderModel?.let {
-                fragment.arguments = Bundle().apply {
-                    putParcelable(ADD_REST_HEADER_DIALOG_KEY, it)
-                    putInt(ADD_REST_HEADER_DIALOG_POS_KEY, position)
+            return AddRestHeaderDialog().apply {
+                restHeaderModel?.let { model ->
+                    arguments = Bundle().apply {
+                        putParcelable(ADD_REST_HEADER_DIALOG_KEY, model)
+                        putInt(ADD_REST_HEADER_DIALOG_POS_KEY, position)
+                    }
                 }
             }
-
-            return fragment
         }
     }
-
 }
