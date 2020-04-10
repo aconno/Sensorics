@@ -16,25 +16,36 @@ import kotlinx.android.synthetic.main.item_reading.view.*
 import javax.inject.Inject
 
 class GenericReadingListFragment : DaggerFragment() {
-
     @Inject
     lateinit var readingListViewModel: ReadingListViewModel
 
-    private var macAddress = ""
+    private lateinit var macAddress: String
+    private lateinit var deviceAlias: String
+    private lateinit var deviceName: String
 
-    private val views = hashMapOf<String, View>()
+    private val views: MutableMap<String, View> = mutableMapOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainActivity = activity as MainActivity
 
         setHasOptionsMenu(true)
 
-        macAddress = getMacAddress(this)
+        macAddress = arguments?.getString(MAC_ADDRESS_EXTRA)
+            ?: throw IllegalStateException("$this instantiated without MAC_ADDRESS_EXTRA")
+        deviceAlias = arguments?.getString(DEVICE_ALIAS_EXTRA)
+            ?: throw IllegalStateException("$this instantiated without DEVICE_ALIAS_EXTRA")
+        deviceName = arguments?.getString(DEVICE_NAME_EXTRA)
+            ?: throw IllegalStateException("$this instantiated without DEVICE_NAME_EXTRA")
+
+
         readingListViewModel.init(macAddress)
-        mainActivity.supportActionBar?.title = getDeviceAlias()
-        mainActivity.supportActionBar?.subtitle = macAddress
+
+        (activity as? MainActivity)?.supportActionBar?.apply {
+            title = deviceAlias
+            subtitle = macAddress
+        }
     }
+
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
@@ -50,7 +61,7 @@ class GenericReadingListFragment : DaggerFragment() {
                     return true
                 }
                 R.id.action_start_usecases_activity -> {
-                    (activity as MainActivity).onUseCaseClicked(macAddress, getDeviceName())
+                    (activity as? MainActivity)?.onUseCaseClicked(macAddress, deviceName)
                     return true
                 }
                 else -> {
@@ -73,65 +84,41 @@ class GenericReadingListFragment : DaggerFragment() {
         super.onResume()
         readingListViewModel.getReadingsLiveData()
             .observe(this, Observer {
-                if (it != null) {
-                    addReadings(it)
-                }
+                it?.let { addReadings(it) }
             })
+        // TODO: Why is onPause not overridden
     }
 
     private fun addReadings(readings: List<Reading>) {
         readings.sortedBy { it.name }.forEach { reading ->
-            val view = views[reading.name]
-            if (view == null) {
-                val newView =
-                    LayoutInflater.from(context)
-                        .inflate(R.layout.item_reading, list_readings, false)
-
-                newView.setOnClickListener {
-                    if (activity is LiveGraphOpener) {
-                        (activity as LiveGraphOpener).openLiveGraph(macAddress, reading.name)
+            views.getOrPut(reading.name, {
+                LayoutInflater.from(context).inflate(
+                    R.layout.item_reading, list_readings, false
+                ).apply {
+                    setOnClickListener {
+                        (activity as? LiveGraphOpener)?.openLiveGraph(macAddress, reading.name)
                     }
+                    text_reading_name.text = reading.name
                 }
-
-                newView.text_reading_name.text = reading.name
-                newView.text_reading_value.text = String.format("%.2f", reading.value.toFloat())
-                list_readings.addView(newView)
-                views[reading.name] = newView
-            } else {
-                view.text_reading_value.text = String.format("%.2f", reading.value.toFloat())
+            }).let {
+                it.text_reading_value.text = String.format("%.2f", reading.value.toFloat())
             }
         }
     }
 
-    private fun getDeviceAlias(): String {
-        return arguments?.getString(DEVICE_ALIAS_EXTRA) ?: ""
-    }
-
-    private fun getDeviceName(): String {
-        return arguments?.getString(DEVICE_NAME_EXTRA) ?: ""
-    }
-
     companion object {
-
         private const val MAC_ADDRESS_EXTRA = "mac_address"
         private const val DEVICE_ALIAS_EXTRA = "device_alias"
         private const val DEVICE_NAME_EXTRA = "device_name"
 
         fun newInstance(macAddress: String, deviceAlias: String, deviceName: String): Fragment {
-            val bundle = Bundle()
-            bundle.putString(MAC_ADDRESS_EXTRA, macAddress)
-            bundle.putString(DEVICE_ALIAS_EXTRA, deviceAlias)
-            bundle.putString(DEVICE_NAME_EXTRA, deviceName)
-            val fragment = GenericReadingListFragment()
-            fragment.arguments = bundle
-            return fragment
-        }
-
-        private fun getMacAddress(fragment: GenericReadingListFragment): String {
-            fragment.arguments?.let {
-                return it.getString(MAC_ADDRESS_EXTRA) ?: ""
+            return GenericReadingListFragment().apply {
+                arguments = Bundle().apply {
+                    putString(MAC_ADDRESS_EXTRA, macAddress)
+                    putString(DEVICE_ALIAS_EXTRA, deviceAlias)
+                    putString(DEVICE_NAME_EXTRA, deviceName)
+                }
             }
-            return ""
         }
     }
 }
