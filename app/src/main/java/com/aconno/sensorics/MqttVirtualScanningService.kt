@@ -299,7 +299,6 @@ class MqttVirtualScanningService : DaggerService() {
         return getAllEnabledPublishersUseCase.execute()
             .subscribeOn(Schedulers.io())
             .toObservable()
-            .flatMapIterable { it }
             .map {
                 when (it) {
                     is GooglePublish -> {
