@@ -412,4 +412,6 @@
     <string name="remove_group_title">Remove group</string>
     <string name="remove">Remove</string>
     <string name="remove_group_confirmation">Are you sure you want to remove group %s?</string>
+    <string name="all_devices">All devices</string>
+    <string name="unsorted_devices">Unsorted</string>
 </resources>

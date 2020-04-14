@@ -17,6 +17,7 @@
             android:id="@+id/tab_layout"
             android:layout_height="wrap_content"
             app:tabMode="scrollable"
+            app:tabTextAppearance="@style/TabLayoutTextStyle"
             android:layout_width="match_parent">
 
         </com.google.android.material.tabs.TabLayout>

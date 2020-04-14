@@ -27,6 +27,8 @@ import com.aconno.sensorics.dagger.bluetoothscanning.BluetoothScanningServiceSco
 import com.aconno.sensorics.dagger.compositescan.CompositeScanResultsScope
 import com.aconno.sensorics.dagger.device.DeviceModule
 import com.aconno.sensorics.dagger.device.DeviceScope
+import com.aconno.sensorics.dagger.devicegroup.DeviceGroupModule
+import com.aconno.sensorics.dagger.devicegroup.DeviceGroupScope
 import com.aconno.sensorics.dagger.deviceselect.DeviceSelectionFragmentsModule
 import com.aconno.sensorics.dagger.dfu.DfuActivityScope
 import com.aconno.sensorics.dagger.gcloudpublisher.GoogleCloudPublisherActivityModule
@@ -79,6 +81,7 @@ abstract class ActivityBuilder {
 
     @MainActivityScope
     @DeviceScope
+    @DeviceGroupScope
     @SensorReadingsScope
     @BluetoothScanResultsScope
     @MqttScanResultsScope
@@ -87,7 +90,7 @@ abstract class ActivityBuilder {
     @ContributesAndroidInjector(
         modules = [
             MainActivityModule::class, MainActivityFragmentsModule::class,
-            DeviceModule::class, SensorReadingsModule::class, ActionModule::class
+            DeviceModule::class, DeviceGroupModule::class, SensorReadingsModule::class, ActionModule::class
         ]
     )
     abstract fun bindMainActivity(): MainActivity

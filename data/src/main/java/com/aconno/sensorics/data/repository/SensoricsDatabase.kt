@@ -8,6 +8,8 @@ import com.aconno.sensorics.data.repository.action.ActionDao
 import com.aconno.sensorics.data.repository.action.ActionEntity
 import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishDao
 import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishEntity
+import com.aconno.sensorics.data.repository.devicegroups.DeviceGroupDao
+import com.aconno.sensorics.data.repository.devicegroups.DeviceGroupEntity
 import com.aconno.sensorics.data.repository.devices.DeviceDao
 import com.aconno.sensorics.data.repository.devices.DeviceEntity
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishDao
@@ -38,15 +40,18 @@ import com.aconno.sensorics.domain.ifttt.PublishTypeStrings
         RestHttpGetParamEntity::class,
         RestPublishEntity::class,
         SyncEntity::class,
-        MqttVirtualScanningSourceEntity::class
+        MqttVirtualScanningSourceEntity::class,
+        DeviceGroupEntity::class
     ],
-    version = 16
+    version = 17
 )
 abstract class SensoricsDatabase : RoomDatabase() {
 
     abstract fun actionDao(): ActionDao
 
     abstract fun deviceDao(): DeviceDao
+
+    abstract fun deviceGroupDao(): DeviceGroupDao
 
     abstract fun googlePublishDao(): GooglePublishDao
 
@@ -108,6 +113,12 @@ abstract class SensoricsDatabase : RoomDatabase() {
                 database.execSQL("DROP TABLE google_publish_device_join")
                 database.execSQL("DROP TABLE mqtt_publish_device_join")
                 database.execSQL("DROP TABLE rest_publish_device_join")
+            }
+        }
+
+        val MIGRATION_16_17 = object : Migration(16, 17) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `device_groups` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)");
             }
         }
     }
