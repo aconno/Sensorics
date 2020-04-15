@@ -15,7 +15,6 @@ import com.aconno.sensorics.adapter.DeviceActiveAdapter
 import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
 import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
 import com.aconno.sensorics.domain.model.Device
-import com.aconno.sensorics.domain.model.DeviceGroup
 import com.aconno.sensorics.domain.repository.Settings
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
@@ -27,7 +26,6 @@ import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceGroupViewModel
 import com.aconno.sensorics.viewmodel.DeviceViewModel
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
 import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -36,7 +34,6 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.dialog_create_group.view.*
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
-import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import java.util.*
 import javax.inject.Inject
@@ -52,6 +49,8 @@ class SavedDevicesFragment : DaggerFragment(),
     lateinit var deviceGroupViewModel: DeviceGroupViewModel
 
     lateinit var deviceGroupsTabs : DeviceGroupTabs
+
+    private var deviceGroupOptions = DeviceGroupOptions()
 
     @Inject
     lateinit var settings: Settings
@@ -143,7 +142,7 @@ class SavedDevicesFragment : DaggerFragment(),
                     return true
                 }
                 R.id.device_groups_options -> {
-                    showDeviceGroupsOptions()
+                    deviceGroupOptions.showDeviceGroupsOptions()
                     return true
                 }
                 else -> return super.onOptionsItemSelected(item)
@@ -151,101 +150,9 @@ class SavedDevicesFragment : DaggerFragment(),
         } ?: return super.onOptionsItemSelected(item)
     }
 
-    private fun showDeviceGroupsOptions() {
-        val options =
-            if(deviceGroupsTabs.isDeviceGroupTabActive())
-                arrayOf(getString(R.string.create_new_group),
-                    getString(R.string.remove_group),
-                    getString(R.string.edit_group_name))
-            else
-                arrayOf(getString(R.string.create_new_group))
 
 
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(getString(R.string.device_group_options))
-        builder.setItems(options) { _, which ->
-            when(options[which]) {
-                getString(R.string.create_new_group) -> showCreateNewGroupDialog()
-                getString(R.string.remove_group) -> showRemoveGroupDialog()
-                getString(R.string.edit_group_name) -> showEditGroupDialog()
-            }
-        }
-        builder.show()
-    }
 
-    @SuppressLint("InflateParams")
-    private fun showEditGroupDialog() {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_group,null)
-
-        AlertDialog.Builder(context)
-            .setTitle(getString(R.string.rename_group_title))
-            .setPositiveButton(getString(R.string.rename)) { _, _ ->
-                updateSelectedGroupName(dialogView.group_name.text.toString())
-            }
-            .setCancelable(true)
-            .setView(dialogView)
-            .show()
-    }
-
-    private fun updateSelectedGroupName(newName: String) {
-        val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
-        deviceGroup.groupName = newName
-
-        addDisposable(
-            deviceGroupViewModel.saveDeviceGroup(deviceGroup)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { _ ->
-                    deviceGroupsTabs.updateDeviceGroup(deviceGroup)
-                }
-        )
-    }
-
-
-    private fun showRemoveGroupDialog() {
-        AlertDialog.Builder(context)
-            .setTitle(getString(R.string.remove_group_title))
-            .setPositiveButton(getString(R.string.remove)) { _, _ ->
-                removeCurrentGroup()
-            }
-            .setNegativeButton("Cancel", null)
-            .setCancelable(true)
-            .setMessage(getString(R.string.remove_group_confirmation,
-                deviceGroupsTabs.getSelectedDeviceGroup()?.groupName ?: ""))
-            .show()
-    }
-
-    private fun removeCurrentGroup() {
-        val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
-        deviceGroupViewModel.deleteDeviceGroup(deviceGroup)
-        deviceGroupsTabs.removeTabForDeviceGroup(deviceGroup)
-
-    }
-
-    @SuppressLint("InflateParams")
-    private fun showCreateNewGroupDialog() {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_group,null)
-
-        AlertDialog.Builder(context)
-            .setTitle(getString(R.string.create_new_group_title))
-            .setPositiveButton(getString(R.string.create)) { _, _ ->
-                createNewGroup(dialogView.group_name.text.toString())
-            }
-            .setCancelable(true)
-            .setView(dialogView)
-            .show()
-    }
-
-
-    private fun createNewGroup(groupName : String) {
-        addDisposable(
-            deviceGroupViewModel.saveDeviceGroup(groupName)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { deviceGroup ->
-                    deviceGroupsTabs.addTabForDeviceGroup(deviceGroup)
-                    deviceGroupsTabs.selectTabForDeviceGroup(deviceGroup)
-                }
-        )
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -537,87 +444,109 @@ class SavedDevicesFragment : DaggerFragment(),
         //This method is not used.
         return hashMapOf()
     }
-}
 
 
+    private inner class DeviceGroupOptions {
 
-class DeviceGroupTabs(val context: Context, val tabLayout: TabLayout) {
-    var allDevicesTabIndex : Int? = null
-    var othersTabIndex : Int? = null
-    var tabToDeviceGroupMap : MutableMap<Int,DeviceGroup> = mutableMapOf()
+        fun showDeviceGroupsOptions() {
+            val options =
+                if(deviceGroupsTabs.isDeviceGroupTabActive())
+                    arrayOf(getString(R.string.create_new_group),
+                        getString(R.string.remove_group),
+                        getString(R.string.edit_group_name))
+                else
+                    arrayOf(getString(R.string.create_new_group))
 
-    fun addAllDevicesTab() {
-        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.all_devices)))
-        allDevicesTabIndex = tabLayout.tabCount - 1
-    }
 
-    fun addOthersTab() {
-        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.unsorted_devices)))
-        othersTabIndex = tabLayout.tabCount - 1
-    }
-
-    fun addTabForDeviceGroup(group : DeviceGroup) {
-        tabLayout.addTab(tabLayout.newTab().setText(group.groupName))
-        tabToDeviceGroupMap[tabLayout.tabCount - 1] = group
-    }
-
-    fun isAllDevicesTabActive() : Boolean {
-        return tabLayout.selectedTabPosition == allDevicesTabIndex
-    }
-
-    fun isOthersTabActive() : Boolean {
-        return tabLayout.selectedTabPosition == othersTabIndex
-    }
-
-    fun isDeviceGroupTabActive() : Boolean {
-        return !isAllDevicesTabActive() && !isOthersTabActive()
-    }
-
-    fun getSelectedDeviceGroup() : DeviceGroup? {
-        return tabToDeviceGroupMap[tabLayout.selectedTabPosition]
-    }
-
-    fun selectTabForDeviceGroup(deviceGroup: DeviceGroup) {
-        val tab = tabLayout.getTabAt(getIndexOfTabForDeviceGroup(deviceGroup) ?: throw IllegalArgumentException("There is no tab for specified device group"))
-        tabLayout.post {
-            tab?.select()
-        }
-    }
-
-    private fun getIndexOfTabForDeviceGroup(deviceGroup: DeviceGroup) : Int? {
-        return tabToDeviceGroupMap.filter { it.value == deviceGroup }.entries.firstOrNull()?.key
-    }
-
-    fun removeTabForDeviceGroup(deviceGroup: DeviceGroup) {
-        val tabIndex = getIndexOfTabForDeviceGroup(deviceGroup)
-        tabIndex?.let {index ->
-            tabLayout.removeTabAt(index)
-            tabLayout.selectTab(tabLayout.getTabAt(allDevicesTabIndex ?: 0))
-
-            allDevicesTabIndex?.let {
-                allDevicesTabIndex = if(it > index) it-1 else it
-            }
-            othersTabIndex?.let {
-                othersTabIndex = if(it > index) it-1 else it
-            }
-            tabToDeviceGroupMap = mutableMapOf<Int,DeviceGroup>()
-                .apply {
-                    tabToDeviceGroupMap.forEach {
-                        if(it.key > index) {
-                            this[it.key-1] = it.value
-                        } else if(it.key < index) {
-                            this[it.key] = it.value
-                        }
-                    }
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle(getString(R.string.device_group_options))
+            builder.setItems(options) { _, which ->
+                when(options[which]) {
+                    getString(R.string.create_new_group) -> showCreateNewGroupDialog()
+                    getString(R.string.remove_group) -> showRemoveGroupDialog()
+                    getString(R.string.edit_group_name) -> showEditGroupDialog()
                 }
+            }
+            builder.show()
         }
+
+        @SuppressLint("InflateParams")
+        private fun showEditGroupDialog() {
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_group,null)
+
+            AlertDialog.Builder(context)
+                .setTitle(getString(R.string.rename_group_title))
+                .setPositiveButton(getString(R.string.rename)) { _, _ ->
+                    updateSelectedGroupName(dialogView.group_name.text.toString())
+                }
+                .setCancelable(true)
+                .setView(dialogView)
+                .show()
+        }
+
+        private fun updateSelectedGroupName(newName: String) {
+            val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
+            deviceGroup.groupName = newName
+
+            addDisposable(
+                deviceGroupViewModel.saveDeviceGroup(deviceGroup)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { _ ->
+                        deviceGroupsTabs.updateDeviceGroup(deviceGroup)
+                    }
+            )
+        }
+
+
+        private fun showRemoveGroupDialog() {
+            AlertDialog.Builder(context)
+                .setTitle(getString(R.string.remove_group_title))
+                .setPositiveButton(getString(R.string.remove)) { _, _ ->
+                    removeCurrentGroup()
+                }
+                .setNegativeButton("Cancel", null)
+                .setCancelable(true)
+                .setMessage(getString(R.string.remove_group_confirmation,
+                    deviceGroupsTabs.getSelectedDeviceGroup()?.groupName ?: ""))
+                .show()
+        }
+
+        private fun removeCurrentGroup() {
+            val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
+            deviceGroupViewModel.deleteDeviceGroup(deviceGroup)
+            deviceGroupsTabs.removeTabForDeviceGroup(deviceGroup)
+
+        }
+
+        @SuppressLint("InflateParams")
+        private fun showCreateNewGroupDialog() {
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_group,null)
+
+            AlertDialog.Builder(context)
+                .setTitle(getString(R.string.create_new_group_title))
+                .setPositiveButton(getString(R.string.create)) { _, _ ->
+                    createNewGroup(dialogView.group_name.text.toString())
+                }
+                .setCancelable(true)
+                .setView(dialogView)
+                .show()
+        }
+
+
+        private fun createNewGroup(groupName : String) {
+            addDisposable(
+                deviceGroupViewModel.saveDeviceGroup(groupName)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { deviceGroup ->
+                        deviceGroupsTabs.addTabForDeviceGroup(deviceGroup)
+                        deviceGroupsTabs.selectTabForDeviceGroup(deviceGroup)
+                    }
+            )
+        }
+
+
     }
-
-    fun updateDeviceGroup(deviceGroup: DeviceGroup) {
-        val deviceGroupEntry = tabToDeviceGroupMap.filter { it.value.id == deviceGroup.id }.entries.firstOrNull() ?: return
-        tabToDeviceGroupMap[deviceGroupEntry.key] = deviceGroup
-        tabLayout.getTabAt(deviceGroupEntry.key)?.setText(deviceGroup.groupName)
-    }
-
-
 }
+
+
+
