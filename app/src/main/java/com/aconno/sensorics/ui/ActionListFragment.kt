@@ -220,6 +220,7 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
     }
 
     private fun addActions(actions: List<Action>) {
+        // TODO: I think this could look & be done better
         var imported = 0
         var failed = 0
         val actionsToAddToAdapter: MutableList<Action> = mutableListOf()
@@ -262,14 +263,13 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
                 }
             }
 
-        actions.forEach { action ->
+        addDisposable(*actions.map { action ->
             addActionUseCase.execute(action)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .map {
                     action.id = it
                     action
                 }
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     actionsToAddToAdapter.add(it)
@@ -279,10 +279,8 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
                     failed++
                     updateAdapterLazily()
                 })
-        }
-
+        }.toTypedArray())
     }
-
 
     private fun addActionsToActionAdapter(actions: List<Action>) {
         if (actionAdapter.getItems().isEmpty()) {
@@ -309,7 +307,6 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
                     )
                 }
         )
-
     }
 
     override fun onPause() {
@@ -322,15 +319,13 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         actionAdapter.setItems(actions)
         if (selectedItems != null && actionAdapter.isItemSelectionEnabled) {
             actionAdapter.setItemsAsSelected(
-                actionAdapter.getItems().filter { it.id in selectedItems })
+                actionAdapter.getItems().filter {
+                    it.id in selectedItems
+                }
+            )
         }
 
-        if (actions.isEmpty()) {
-            action_list_empty_view.visibility = View.VISIBLE
-        } else {
-            action_list_empty_view.visibility = View.INVISIBLE
-        }
-
+        action_list_empty_view.visibility = if (actions.isEmpty()) View.VISIBLE else View.INVISIBLE
         actionAdapter.checkedChangeListener = checkedChangeListener
     }
 
@@ -338,7 +333,6 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         snackbar?.dismiss()
         context?.let { ActionDetailsActivity.start(it, item.id) }
     }
-
 
     fun onBackButtonPressed(): Boolean { //returns true if it has handled the back button press
         if (actionAdapter.isItemSelectionEnabled) {
