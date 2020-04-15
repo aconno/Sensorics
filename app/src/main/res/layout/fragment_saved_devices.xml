@@ -18,6 +18,8 @@
             android:layout_height="wrap_content"
             app:tabMode="scrollable"
             app:tabTextAppearance="@style/TabLayoutTextStyle"
+            app:tabTextColor="@color/gray"
+            app:tabSelectedTextColor="@color/black"
             android:layout_width="match_parent">
 
         </com.google.android.material.tabs.TabLayout>

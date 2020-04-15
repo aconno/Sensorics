@@ -552,7 +552,9 @@ class DeviceGroupTabs(val context: Context, val tabLayout: TabLayout) {
 
     fun selectTabForDeviceGroup(deviceGroup: DeviceGroup) {
         val tab = tabLayout.getTabAt(getIndexOfTabForDeviceGroup(deviceGroup) ?: throw IllegalArgumentException("There is no tab for specified device group"))
-        tab?.select()
+        tabLayout.post {
+            tab?.select()
+        }
     }
 
     private fun getIndexOfTabForDeviceGroup(deviceGroup: DeviceGroup) : Int? {
@@ -561,9 +563,26 @@ class DeviceGroupTabs(val context: Context, val tabLayout: TabLayout) {
 
     fun removeTabForDeviceGroup(deviceGroup: DeviceGroup) {
         val tabIndex = getIndexOfTabForDeviceGroup(deviceGroup)
-        tabIndex?.let {
-            tabLayout.removeTabAt(it)
+        tabIndex?.let {index ->
+            tabLayout.removeTabAt(index)
             tabLayout.selectTab(tabLayout.getTabAt(allDevicesTabIndex ?: 0))
+
+            allDevicesTabIndex?.let {
+                allDevicesTabIndex = if(it > index) it-1 else it
+            }
+            othersTabIndex?.let {
+                othersTabIndex = if(it > index) it-1 else it
+            }
+            tabToDeviceGroupMap = mutableMapOf<Int,DeviceGroup>()
+                .apply {
+                    tabToDeviceGroupMap.forEach {
+                        if(it.key > index) {
+                            this[it.key-1] = it.value
+                        } else if(it.key < index) {
+                            this[it.key] = it.value
+                        }
+                    }
+                }
         }
     }
 
