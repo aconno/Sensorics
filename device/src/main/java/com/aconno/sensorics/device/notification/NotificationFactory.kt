@@ -81,7 +81,7 @@ class NotificationFactory {
     ): Notification {
         createNotificationsChannel(context, NotificationChannelFactory.ALERTS_CHANNEL)
         return NotificationCompat.Builder(context, NotificationChannelFactory.ALERTS_CHANNEL_ID)
-            .setContentTitle("Sensorics")
+            .setContentTitle(context.getString(R.string.app_name))
             .setContentText(message)
             .setSmallIcon(R.drawable.ic_notification)
             .setAutoCancel(true)
