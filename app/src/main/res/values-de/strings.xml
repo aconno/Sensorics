@@ -6,6 +6,7 @@
     <string name="actions">Aktionen</string>
 
     <string name="temperature">Temperatur</string>
+
     <string name="light">Licht</string>
     <string name="humidity">Luftfeuchte</string>
     <string name="pressure">Druck</string>
@@ -110,6 +111,7 @@
 
     <string name="message_no_devices">Es sind keine Geräte vorhanden</string>
     <string name="message_save_unsuccessful">Speichern fehlgeschlagen</string>
+    <string name="message_item_removed">%1$s entfernt!</string>
     <string name="message_action_name_blank">Name der Aktion muss eingetragen sein</string>
     <string name="message_action_device_not_selected">Gerät ist nicht ausgewählt</string>
     <string name="message_action_condition_not_selected">Bedingung ist nicht ausgewählt</string>

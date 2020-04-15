@@ -181,6 +181,7 @@
     <string name="message_action_active_state_not_selected">Active state not selected</string>
     <string name="message_no_devices">There are no devices</string>
     <string name="message_save_unsuccessful">Save unsuccessful</string>
+    <string name="message_item_removed">%1$s removed!</string>
     <string name="message_action_name_blank">Action name cannot be blank</string>
     <string name="message_action_device_not_selected">Device is not selected</string>
     <string name="message_action_condition_not_selected">Condition is not selected</string>
@@ -327,7 +328,7 @@
     <string name="import_one_action_success">Successfully imported 1 action</string>
     <string name="import_multiple_actions_success">Successfully imported %d actions</string>
     <string name="action_import_partial_success">Successfully imported %d/%d actions</string>
-    <string name="empty_import_file">File si empty</string>
+    <string name="empty_import_file">File is empty</string>
 
     <string name="selected_items_count">Items: %d</string>
     <string name="export_selected">Export</string>

@@ -17,16 +17,12 @@ import com.aconno.sensorics.adapter.ActionAdapter
 import com.aconno.sensorics.adapter.ItemClickListener
 import com.aconno.sensorics.adapter.SelectableRecyclerViewAdapter
 import com.aconno.sensorics.domain.actions.Action
-import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.action.GetAllActionsUseCase
-import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToActionsUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToObjectsUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
+import com.aconno.sensorics.viewmodel.ActionListViewModel
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_action_list.*
 import javax.inject.Inject
@@ -41,42 +37,26 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
     SelectableRecyclerViewAdapter.ItemLongClickListener<Action>,
     SelectableRecyclerViewAdapter.ItemClickListener<Action> {
 
+    @Inject
+    lateinit var actionListViewModel: ActionListViewModel
+
     private lateinit var actionAdapter: ActionAdapter
     private var snackbar: Snackbar? = null
     override val sharedFileNamePrefix = "actions"
     override val exportedFileName: String = "actions.json"
 
     private var selectionStateListener: ItemSelectionStateListener? = null
-
-    @Inject
-    lateinit var getAllActionsUseCase: GetAllActionsUseCase
-
-    @Inject
-    lateinit var deleteActionUseCase: DeleteActionUseCase
-
-    @Inject
-    lateinit var saveActionUseCase: AddActionUseCase
-
-    private val disposables = CompositeDisposable()
-
-    @Inject
-    lateinit var addActionUseCase: AddActionUseCase
-
-    @Inject
-    lateinit var convertActionsToJsonUseCase: ConvertObjectsToJsonUseCase<Action>
-
-    @Inject
-    lateinit var convertJsonToActionsUseCase: ConvertJsonToActionsUseCase
-
     private var savedInstanceStateSelectedItems: LongArray? = null
 
     private val checkedChangeListener: ActionAdapter.OnCheckedChangeListener = object :
         ActionAdapter.OnCheckedChangeListener {
         override fun onCheckedChange(action: Action, checked: Boolean) {
             action.active = checked
-            saveActionUseCase.execute(action).subscribeOn(Schedulers.io()).subscribe().also {
-                disposables.add(it)
-            }
+            addDisposable(
+                actionListViewModel.save(action)
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+            )
         }
     }
 
@@ -107,7 +87,6 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
 
         }
 
-
         action_list.adapter = actionAdapter
 
         action_list.itemAnimator = DefaultItemAnimator()
@@ -118,39 +97,34 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
             )
         )
 
-        context?.let { context ->
-            val swipeToDeleteCallback = object : SwipeToDeleteCallback(context) {
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback(requireContext()) {
 
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val position = viewHolder.adapterPosition
-                    val action = actionAdapter.getItem(position)
-                    actionAdapter.removeItemAtPosition(position)
-
-                    snackbar = Snackbar
-                        .make(container_fragment, "${action.name} removed!", Snackbar.LENGTH_LONG)
-                    snackbar?.setAction("UNDO") {
-                        actionAdapter.addItemAtPosition(action, position)
-                    }
-
-                    snackbar?.addCallback(object : Snackbar.Callback() {
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            if (event == DISMISS_EVENT_TIMEOUT
-                                || event == DISMISS_EVENT_CONSECUTIVE
-                                || event == DISMISS_EVENT_SWIPE
-                                || event == DISMISS_EVENT_MANUAL
-                            ) {
-                                deleteActionUseCase.execute(action)
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe()
-                            }
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val action = actionAdapter.getItem(position)
+                actionAdapter.removeItemAtPosition(position)
+                snackbar = Snackbar.make(
+                    container_fragment,
+                    getString(R.string.message_item_removed, action.name),
+                    Snackbar.LENGTH_LONG
+                ).setAction(R.string.undo) {
+                    actionAdapter.addItemAtPosition(action, position)
+                }.addCallback(object : Snackbar.Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        if (event == DISMISS_EVENT_TIMEOUT
+                            || event == DISMISS_EVENT_CONSECUTIVE
+                            || event == DISMISS_EVENT_SWIPE
+                            || event == DISMISS_EVENT_MANUAL
+                        ) {
+                            addDisposable(actionListViewModel.delete(action))
                         }
-                    })
-                    snackbar?.setActionTextColor(Color.YELLOW)
-                    snackbar?.show()
+                    }
+                }).setActionTextColor(Color.YELLOW).also {
+                    it.show()
                 }
             }
-            ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(action_list)
         }
+        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(action_list)
 
         add_action_button.setOnClickListener {
             snackbar?.dismiss()
@@ -197,11 +171,11 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
     }
 
     override fun getConvertFromJsonUseCase(): ConvertJsonToObjectsUseCase<Action> {
-        return convertJsonToActionsUseCase
+        return actionListViewModel.convertJsonToActionsUseCase
     }
 
     override fun getConvertToJsonUseCase(): ConvertObjectsToJsonUseCase<Action> {
-        return convertActionsToJsonUseCase
+        return actionListViewModel.convertActionsToJsonUseCase
     }
 
     override fun getItems(): List<Action> {
@@ -264,7 +238,7 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
             }
 
         addDisposable(*actions.map { action ->
-            addActionUseCase.execute(action)
+            actionListViewModel.add(action)
                 .map {
                     action.id = it
                     action
@@ -298,7 +272,7 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         super.onResume()
 
         addDisposable(
-            getAllActionsUseCase.execute()
+            actionListViewModel.getAllActions()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { actions ->
@@ -311,7 +285,6 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
 
     override fun onPause() {
         super.onPause()
-        disposables.clear()
         actionAdapter.checkedChangeListener = null
     }
 

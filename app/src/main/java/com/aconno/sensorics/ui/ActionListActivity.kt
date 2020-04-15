@@ -15,7 +15,6 @@ import kotlinx.android.synthetic.main.activity_action_list.*
 class ActionListActivity : DaggerAppCompatActivity(),
     ActionListFragment.ItemSelectionStateListener {
 
-    private var mainMenu: Menu? = null
     private var menuResource: Int = R.menu.share_all_menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,9 +64,8 @@ class ActionListActivity : DaggerAppCompatActivity(),
         actions_toolbar.title = getString(R.string.selected_items_count, selectedItems)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        mainMenu = menu
-        mainMenu?.clear()
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.clear()
         menuInflater.inflate(menuResource, menu)
         return true
     }
