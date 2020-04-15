@@ -319,5 +319,6 @@
     <string name="unsaved_changes_dialog_message">Es gibt ungespeicherte Änderungen. Wollen Sie diese verwerfen oder speichern?</string>
     <string name="save_changes">Speichern</string>
     <string name="discard_changes">Verwerfen</string>
+    <string name="no_use_case_files_defined">Keine UseCase Dateien definiert.</string>
 
 </resources>

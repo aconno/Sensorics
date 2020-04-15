@@ -402,4 +402,6 @@
     <string name="writing_with_dots">Writing...</string>
     <string name="settings_has_been_written_successfully">Settings has been written successfully</string>
     <string name="scanning_permission_rationale">Need location and storage permission to start scanning</string>
+    <string name="ok" translatable="false">Ok</string>
+    <string name="no_use_case_files_defined">There are no UseCase files defined.</string>
 </resources>
