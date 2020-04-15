@@ -8,6 +8,8 @@ import com.aconno.sensorics.data.repository.action.ActionDao
 import com.aconno.sensorics.data.repository.action.ActionEntity
 import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishDao
 import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishEntity
+import com.aconno.sensorics.data.repository.devicegroupdevicejoin.DeviceGroupDeviceJoinDao
+import com.aconno.sensorics.data.repository.devicegroupdevicejoin.DeviceGroupDeviceJoinEntity
 import com.aconno.sensorics.data.repository.devicegroups.DeviceGroupDao
 import com.aconno.sensorics.data.repository.devicegroups.DeviceGroupEntity
 import com.aconno.sensorics.data.repository.devices.DeviceDao
@@ -41,7 +43,8 @@ import com.aconno.sensorics.domain.ifttt.PublishTypeStrings
         RestPublishEntity::class,
         SyncEntity::class,
         MqttVirtualScanningSourceEntity::class,
-        DeviceGroupEntity::class
+        DeviceGroupEntity::class,
+        DeviceGroupDeviceJoinEntity::class
     ],
     version = 17
 )
@@ -52,6 +55,8 @@ abstract class SensoricsDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao
 
     abstract fun deviceGroupDao(): DeviceGroupDao
+
+    abstract fun deviceGroupDeviceJoinDao(): DeviceGroupDeviceJoinDao
 
     abstract fun googlePublishDao(): GooglePublishDao
 

@@ -150,10 +150,6 @@ class SavedDevicesFragment : DaggerFragment(),
         } ?: return super.onOptionsItemSelected(item)
     }
 
-
-
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
