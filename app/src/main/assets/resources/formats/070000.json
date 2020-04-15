@@ -1,0 +1,115 @@
+{
+  "id": "070000",
+  "name": "ACD52840",
+  "icon": "ic_sensa",
+  "format": [
+    {
+      "name": "Gyroscope X",
+      "start_index_inclusive": 6,
+      "end_index_exclusive": 8,
+      "reversed": true,
+      "data_type": "SINT16",
+      "formula": "(x * 245) / 32768"
+    },
+    {
+      "name": "Gyroscope Y",
+      "start_index_inclusive": 8,
+      "end_index_exclusive": 10,
+      "reversed": true,
+      "data_type": "SINT16",
+      "formula": "(x * 245) / 32768"
+    },
+    {
+      "name": "Gyroscope Z",
+      "start_index_inclusive": 10,
+      "end_index_exclusive": 12,
+      "reversed": true,
+      "data_type": "SINT16",
+      "formula": "(x * 245) / 32768"
+    },
+    {
+      "name": "Accelerometer X",
+      "start_index_inclusive": 12,
+      "end_index_exclusive": 14,
+      "reversed": true,
+      "data_type": "SINT16",
+      "formula": "(x * 3998) / 65536"
+    },
+    {
+      "name": "Accelerometer Y",
+      "start_index_inclusive": 14,
+      "end_index_exclusive": 16,
+      "reversed": true,
+      "data_type": "SINT16",
+      "formula": "(x * 3998) / 65536"
+    },
+    {
+      "name": "Accelerometer Z",
+      "start_index_inclusive": 16,
+      "end_index_exclusive": 18,
+      "reversed": true,
+      "data_type": "SINT16",
+      "formula": "(x * 3998) / 65536"
+    },
+    {
+      "name": "Magnetometer X",
+      "start_index_inclusive": 18,
+      "end_index_exclusive": 20,
+      "reversed": true,
+      "data_type": "SINT16",
+      "formula": "x * 0.00014"
+    },
+    {
+      "name": "Magnetometer Y",
+      "start_index_inclusive": 20,
+      "end_index_exclusive": 22,
+      "reversed": true,
+      "data_type": "SINT16",
+      "formula": "x * 0.00014"
+    },
+    {
+      "name": "Magnetometer Z",
+      "start_index_inclusive": 22,
+      "end_index_exclusive": 24,
+      "reversed": true,
+      "data_type": "SINT16",
+      "formula": "x * 0.00014"
+    }
+  ],
+  "format_required": [
+    {
+      "name": "Nordic ID 1",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Nordic ID 2",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "Aconno ID",
+      "index": 2,
+      "value": "0x69"
+    },
+    {
+      "name": "Product ID",
+      "index": 3,
+      "value": "0x07"
+    },
+    {
+      "name": "Version Number",
+      "index": 4,
+      "value": "0x00"
+    },
+    {
+      "name": "Advertisement ID",
+      "index": 5,
+      "value": "0x00"
+    }
+  ],
+  "settings_support": {
+    "mask": "0x80",
+    "index": 4
+  }
+}

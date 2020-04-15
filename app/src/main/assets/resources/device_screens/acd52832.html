@@ -1,0 +1,301 @@
+<html>
+<head>
+    <link href="style.css" rel="stylesheet" type="text/css"/>
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link href="../html_resources/materialize_min_new.css" rel="stylesheet">
+
+
+    <style type="text/css">
+    body {
+      font-family: 'Rubik', sans-serif;
+    }
+
+
+
+    </style>
+    <script src="../html_resources/materialize_min.js"></script>
+    <script>
+    function testBit(data, bit) { return ((data & ((0x1 << 7) >> bit)) != 0); }
+
+    function onSensorReadings(json_values){
+        JSON.parse(json_values, function (key, value) {
+            if( key == "Temperature"){
+                 var temperature_value = document.getElementById("temperature_value");
+                 temperature_value.innerHTML = parseFloat(value).toFixed(2)+"°C"
+            }
+            if( key == "Light") {
+                var light_value = document.getElementById("light_value")
+
+                light_value.innerHTML = parseFloat(value).toFixed(2)+"lx"
+            }
+            if( key == "Joy") {
+                var data = parseInt(value) & 0xFF;
+
+                var joy_value = document.getElementById("joy_value")
+                var right_btn_value = document.getElementById("right_btn_value")
+                var left_btn_value = document.getElementById("left_btn_value")
+
+                if(testBit(data, 0)) {
+                    joy_value.innerHTML = "Up"
+                } else if(testBit(data, 1)) {
+                    joy_value.innerHTML = "Down"
+                } else if(testBit(data, 2)) {
+                    joy_value.innerHTML = "Left"
+                } else if(testBit(data, 3)) {
+                    joy_value.innerHTML = "Right"
+                } else {
+                    joy_value.innerHTML = "Centre"
+                }
+
+
+                if(testBit(data, 6)) {
+                    right_btn_value.innerHTML = "Pressed"
+                } else {
+                    right_btn_value.innerHTML = "Not pressed"
+                }
+
+                if(testBit(data, 7)) {
+                    left_btn_value.innerHTML = "Pressed"
+                } else {
+                    left_btn_value.innerHTML = "Not pressed"
+                }
+            }
+            if( key == "Pot") {
+                var pot_value = document.getElementById("pot_value")
+
+                pot_value.innerHTML = parseInt(value)+""
+            }
+            if ( key == "Accelerometer X") {
+                var accelerometer_x_value = document.getElementById("accelerometer_x_value")
+                accelerometer_x_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
+            }
+            if ( key == "Accelerometer Y") {
+                var accelerometer_y_value = document.getElementById("accelerometer_y_value")
+                accelerometer_y_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
+            }
+            if ( key == "Accelerometer Z") {
+                var accelerometer_z_value = document.getElementById("accelerometer_z_value")
+                accelerometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"mg"
+            }
+            if (key == "Magnetometer X") {
+                var magnetometer_x_value = document.getElementById("magnetometer_x_value")
+                magnetometer_x_value.innerHTML = parseFloat(value).toFixed(2)+"µT"
+            }
+            if (key == "Magnetometer Y") {
+                var magnetometer_y_value = document.getElementById("magnetometer_y_value")
+                magnetometer_y_value.innerHTML = parseFloat(value).toFixed(2)+"µT"
+            }
+            if (key == "Magnetometer Z") {
+                var magnetometer_z_value = document.getElementById("magnetometer_z_value")
+                magnetometer_z_value.innerHTML = parseFloat(value).toFixed(2)+"µT"
+            }
+
+            if (key == "Gyroscope X") {
+                var gyroscope_x_value = document.getElementById("gyroscope_x_value")
+                gyroscope_x_value.innerHTML = parseFloat(value).toFixed(2)+ "dps"
+            }
+            if (key == "Gyroscope Y") {
+                var gyroscope_y_value = document.getElementById("gyroscope_y_value")
+                gyroscope_y_value.innerHTML = parseFloat(value).toFixed(2)+"dps"
+            }
+            if (key == "Gyroscope Z") {
+                var gyroscope_z_value = document.getElementById("gyroscope_z_value")
+                gyroscope_z_value.innerHTML = parseFloat(value).toFixed(2)+"dps"
+            }
+        });
+
+    }
+
+
+    </script>
+    <link href="../html_resources/newStyles.css" rel="stylesheet">
+</head>
+
+<body style="background-color:#fafafa">
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card" onclick="app.openLiveGraph('Light');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_light.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Light</p>
+                    <p class="value" id="light_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card" onclick="app.openLiveGraph('Temperature');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_temperature.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Temperature</p>
+                    <p class="value" id="temperature_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card" onclick="app.openLiveGraph('Accelerometer');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_acc.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Accelerometer Y</p>
+                    <p class="value" id="accelerometer_y_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card" onclick="app.openLiveGraph('Accelerometer');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_acc.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Accelerometer X</p>
+                    <p class="value" id="accelerometer_x_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card" onclick="app.openLiveGraph('Magnetometer');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_compass.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Magnetometer X</p>
+                    <p class="value" id="magnetometer_x_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card" onclick="app.openLiveGraph('Accelerometer');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_acc.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Accelerometer Z</p>
+                    <p class="value" id="accelerometer_z_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card" onclick="app.openLiveGraph('Magnetometer');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_compass.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Magnetometer Z</p>
+                    <p class="value" id="magnetometer_z_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card" onclick="app.openLiveGraph('Magnetometer');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_compass.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Magnetometer Y</p>
+                    <p class="value" id="magnetometer_y_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card" onclick="app.openLiveGraph('Gyroscope');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_gyro.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Gyroscope Y</p>
+                    <p class="value" id="gyroscope_y_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card" onclick="app.openLiveGraph('Gyroscope');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_gyro.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Gyroscope X</p>
+                    <p class="value" id="gyroscope_x_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card" onclick="app.openLiveGraph('Potentiometer');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_pressure.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Potentiometer</p>
+                    <p class="value" id="pot_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card" onclick="app.openLiveGraph('Gyroscope');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_gyro.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Gyroscope Z</p>
+                    <p class="value" id="gyroscope_z_value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s12">
+        <div class="card" style="padding: 0.5rem">
+            <div class="container">
+                <div class="card-content aligntext">
+                    <p class="label">Joystick</p>
+                    <p class="value" id="joy_value">Center</p>
+                    <p class="label">Left Button</p>
+                    <p class="value" id="left_btn_value">Not pressed</p>
+                    <p class="label">Right Button</p>
+                    <p class="value" id="right_btn_value">Not pressed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
