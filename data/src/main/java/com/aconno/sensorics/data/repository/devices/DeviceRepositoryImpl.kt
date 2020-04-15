@@ -4,7 +4,6 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.DeviceRepository
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Maybe
 
 class DeviceRepositoryImpl(
     private val deviceDao: DeviceDao,
@@ -17,10 +16,6 @@ class DeviceRepositoryImpl(
                 deviceMapper.toDevice(entity)
             }
         }
-    }
-
-    override fun getAllDevicesMaybe(): Maybe<List<Device>> {
-        return deviceDao.getAllMaybe().map(deviceMapper::toDeviceList)
     }
 
     override fun insertDevice(device: Device): Completable {

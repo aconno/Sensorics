@@ -1,13 +1,8 @@
 package com.aconno.sensorics.service
 
-import android.app.Notification
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
-import android.os.IBinder
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.aconno.sensorics.data.publisher.AzureMqttPublisher
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.data.publisher.MqttPublisher
@@ -17,24 +12,15 @@ import com.aconno.sensorics.domain.ifttt.AzureMqttPublish
 import com.aconno.sensorics.domain.ifttt.GooglePublish
 import com.aconno.sensorics.domain.ifttt.MqttPublish
 import com.aconno.sensorics.domain.ifttt.RestPublish
-import com.aconno.sensorics.domain.ifttt.outcome.RunOutcomeUseCase
-import com.aconno.sensorics.domain.interactor.LogReadingUseCase
-import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllEnabledPublishersUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
-import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
-import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.domain.scanning.Bluetooth
-import dagger.android.DaggerService
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
@@ -43,76 +29,30 @@ import javax.inject.Inject
 import javax.inject.Named
 
 
-class BluetoothScanningService : DaggerService() {
+class BluetoothScanningService : ScanningService() {
 
     @Inject
     lateinit var bluetooth: Bluetooth
 
     @Inject
-    @Named("bluetoothReadings")
-    lateinit var readings: Flowable<List<Reading>>
+    lateinit var publishReadingsUseCase: PublishReadingsUseCase
 
     @Inject
-    lateinit var saveSensorReadingsUseCase: SaveSensorReadingsUseCase
-
-    @Inject
-    lateinit var logReadingsUseCase: LogReadingUseCase
-
-    @Inject
-    lateinit var inputToOutcomesUseCase: InputToOutcomesUseCase
+    lateinit var closeConnectionUseCase: CloseConnectionUseCase
 
     @Inject
     lateinit var getAllEnabledPublishersUseCase: GetAllEnabledPublishersUseCase
 
     @Inject
-    lateinit var getDevicesConnectedWithPublishUseCase: GetDevicesConnectedWithPublishUseCase
+    @Named("bluetoothReadings")
+    override lateinit var readings: Flowable<List<Reading>>
 
-    @Inject
-    lateinit var getRestHeadersByIdUseCase: GetRestHeadersByIdUseCase
-
-    @Inject
-    lateinit var getRestHttpGetParamsByIdUseCase: GetRestHttpGetParamsByIdUseCase
-
-    @Inject
-    lateinit var runOutcomeUseCase: RunOutcomeUseCase
-
-    @Inject
-    lateinit var receiver: BroadcastReceiver
-
-    @Inject
-    lateinit var filter: IntentFilter
-
-    @Inject
-    lateinit var notification: Notification
-
-    @Inject
-    lateinit var localBroadcastManager: LocalBroadcastManager
-
-    @Inject
-    lateinit var readingToInputUseCase: ReadingToInputUseCase
-
-    @Inject
-    lateinit var getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase
-
-    @Inject
-    lateinit var syncRepository: SyncRepository
-
-    private var closeConnectionUseCase: CloseConnectionUseCase? = null
-    private var publishReadingsUseCase: PublishReadingsUseCase? = null
-    private var publishers: MutableList<Publisher<*>>? = null
+    private var publishers: MutableList<Publisher<*>> = mutableListOf()
 
     private lateinit var scanTimerDisposable: Job
 
-    private val disposables = CompositeDisposable()
-
-    override fun onBind(intent: Intent): IBinder? {
-        return null
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        localBroadcastManager.registerReceiver(receiver, filter)
-
-        startForeground(1, notification)
+        super.onStartCommand(intent, flags, startId)
 
         val filterByDevice =
             intent?.getBooleanExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, false) ?: false
@@ -123,7 +63,7 @@ class BluetoothScanningService : DaggerService() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 disposables.add(
-                    getSavedDevicesMaybeUseCase.execute()
+                    getSavedDevicesUseCase.execute()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe {
@@ -181,68 +121,19 @@ class BluetoothScanningService : DaggerService() {
                 readings.subscribe { readings ->
                     //Send data and update last sent date-time
 
-                    publishReadingsUseCase?.execute(readings)
+                    publishReadingsUseCase.execute(publishers, readings)
                 }
             )
         }
     }
 
-    private fun handleInputsForActions() {
-        Timber.i("handle Action..... $readings")
-
-        disposables.add(
-            readings
-                .concatMap {
-                    readingToInputUseCase.execute(it).toFlowable()
-                }
-                .flatMapIterable { it }
-                .concatMap {
-                    inputToOutcomesUseCase.execute(it)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .toFlowable()
-                }
-                .flatMapIterable { it }
-                .subscribe {
-                    runOutcomeUseCase.execute(it)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe()
-                }
-
-        )
-    }
-
     fun stopScanning() {
         scanTimerDisposable.cancel()
         stopRecording()
-        closeConnectionUseCase?.execute()
+        closeConnectionUseCase.execute(publishers)
         bluetooth.stopScanning()
         running = false
         stopSelf()
-        publishReadingsUseCase = null
-        closeConnectionUseCase = null
-        publishers = null
-    }
-
-    private var recordReadingsDisposable: Disposable? = null
-
-    private fun startRecording() {
-        recordReadingsDisposable = readings.subscribe {
-            saveSensorReadingsUseCase.execute(it)
-        }
-    }
-
-    private fun stopRecording() {
-        recordReadingsDisposable?.dispose()
-    }
-
-    private fun startLogging() {
-        disposables.add(
-            readings.subscribe {
-                logReadingsUseCase.execute(it)
-            }
-        )
     }
 
     private fun initPublishers() {
@@ -253,20 +144,10 @@ class BluetoothScanningService : DaggerService() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         Consumer {
-                            publishers = if (it.size < 1) {
-                                null
-                            } else {
-                                it
-                            }
-
-                            if (publishers != null) {
-                                publishReadingsUseCase = PublishReadingsUseCase(publishers!!)
-                                closeConnectionUseCase = CloseConnectionUseCase(publishers!!)
-                            }
+                            publishers = it
                         }
                     )
             )
-
         }
     }
 
@@ -324,11 +205,6 @@ class BluetoothScanningService : DaggerService() {
                     else -> throw IllegalStateException("A publisher was not implemented")
                 }
             }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.clear()
     }
 
     companion object {

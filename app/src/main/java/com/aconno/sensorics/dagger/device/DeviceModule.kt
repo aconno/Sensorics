@@ -59,14 +59,6 @@ class DeviceModule {
 
     @Provides
     @DeviceScope
-    fun provideGetSavedDevicesMaybeUseCase(
-        deviceRepository: DeviceRepository
-    ): GetSavedDevicesMaybeUseCase {
-        return GetSavedDevicesMaybeUseCase(deviceRepository)
-    }
-
-    @Provides
-    @DeviceScope
     fun providePublishDeviceJoinRepository(
         sensoricsDatabase: SensoricsDatabase,
         deviceMapper: DeviceMapper,

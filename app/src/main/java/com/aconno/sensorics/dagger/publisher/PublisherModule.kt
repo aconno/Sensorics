@@ -14,6 +14,8 @@ import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePubli
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetMqttPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.publish.*
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
+import com.aconno.sensorics.domain.interactor.mqtt.CloseConnectionUseCase
+import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToPublishersUseCase
 import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
@@ -22,7 +24,17 @@ import dagger.Provides
 
 @Module
 class PublisherModule {
+    @Provides
+    @PublisherScope
+    fun providePublishReadingsUseCase(): PublishReadingsUseCase {
+        return PublishReadingsUseCase()
+    }
 
+    @Provides
+    @PublisherScope
+    fun provideCloseConnectionUseCase(): CloseConnectionUseCase {
+        return CloseConnectionUseCase()
+    }
 
     @Provides
     @PublisherScope

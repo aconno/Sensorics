@@ -1,15 +1,13 @@
 package com.aconno.sensorics.domain.interactor.mqtt
 
 import com.aconno.sensorics.domain.Publisher
-import com.aconno.sensorics.domain.interactor.type.CompletableUseCase
+import com.aconno.sensorics.domain.interactor.type.CompletableUseCaseWithParameter
 import io.reactivex.Completable
 
-class CloseConnectionUseCase(
-    private val publisher: List<Publisher<*>>
-) : CompletableUseCase {
+class CloseConnectionUseCase : CompletableUseCaseWithParameter<List<Publisher<*>>> {
 
-    override fun execute(): Completable {
-        publisher.forEach { it.closeConnection() }
+    override fun execute(parameter: List<Publisher<*>>): Completable {
+        parameter.forEach { it.closeConnection() }
         return Completable.complete()
     }
 }

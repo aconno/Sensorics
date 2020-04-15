@@ -2,7 +2,7 @@ package com.aconno.sensorics.dagger.deviceselect
 
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesConnectedWithPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
+import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
 import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.sensorics.viewmodel.DeviceSelectViewModel
@@ -24,11 +24,11 @@ class DeviceSelectActivityModule {
     @Provides
     @DeviceSelectActivityScope
     fun provideDeviceSelectViewModelFactory(
-        getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase,
+        getSavedDevicesUseCase: GetSavedDevicesUseCase,
         getDevicesConnectedWithPublishUseCase: GetDevicesConnectedWithPublishUseCase,
         deviceRelationModelMapper: DeviceRelationModelMapper
     ) = DeviceSelectViewModelFactory(
-        getSavedDevicesMaybeUseCase,
+        getSavedDevicesUseCase,
         getDevicesConnectedWithPublishUseCase,
         deviceRelationModelMapper
     )
