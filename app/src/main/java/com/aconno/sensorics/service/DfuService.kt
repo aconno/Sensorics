@@ -1,6 +1,7 @@
-package com.aconno.sensorics
+package com.aconno.sensorics.service
 
 import android.app.Activity
+import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import no.nordicsemi.android.dfu.DfuBaseService
 

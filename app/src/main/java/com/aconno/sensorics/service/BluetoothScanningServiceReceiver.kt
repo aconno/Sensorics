@@ -1,9 +1,10 @@
-package com.aconno.sensorics
+package com.aconno.sensorics.service
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.aconno.sensorics.service.BluetoothScanningService
 
 /**
  * @author aconno

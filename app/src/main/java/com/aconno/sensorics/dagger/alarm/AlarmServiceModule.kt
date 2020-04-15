@@ -1,7 +1,7 @@
 package com.aconno.sensorics.dagger.alarm
 
 import android.app.Notification
-import com.aconno.sensorics.AlarmService
+import com.aconno.sensorics.service.AlarmService
 import com.aconno.sensorics.R
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.AudioAlarmImpl

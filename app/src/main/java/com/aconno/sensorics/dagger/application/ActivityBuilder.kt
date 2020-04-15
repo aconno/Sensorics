@@ -1,9 +1,9 @@
 package com.aconno.sensorics.dagger.application
 
-import com.aconno.sensorics.AlarmService
-import com.aconno.sensorics.BluetoothConnectService
-import com.aconno.sensorics.BluetoothScanningService
-import com.aconno.sensorics.MqttVirtualScanningService
+import com.aconno.sensorics.service.AlarmService
+import com.aconno.sensorics.service.BluetoothConnectService
+import com.aconno.sensorics.service.BluetoothScanningService
+import com.aconno.sensorics.service.MqttVirtualScanningService
 import com.aconno.sensorics.dagger.action.ActionModule
 import com.aconno.sensorics.dagger.action.ActionScope
 import com.aconno.sensorics.dagger.actiondetails.ActionDetailsActivityModule

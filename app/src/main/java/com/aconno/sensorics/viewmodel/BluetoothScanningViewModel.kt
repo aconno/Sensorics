@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.aconno.sensorics.BluetoothScanningService
+import com.aconno.sensorics.service.BluetoothScanningService
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.ScanEvent

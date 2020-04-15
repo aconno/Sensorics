@@ -10,13 +10,12 @@ import android.os.Bundle
 import android.os.IBinder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import com.aconno.sensorics.BluetoothConnectService
+import com.aconno.sensorics.service.BluetoothConnectService
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.print
 import io.reactivex.disposables.Disposable
 import timber.log.Timber
-import java.nio.charset.Charset
 import java.util.*
 
 class CacheActivity : AppCompatActivity() {

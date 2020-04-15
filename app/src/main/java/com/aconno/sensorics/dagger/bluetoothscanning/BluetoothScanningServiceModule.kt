@@ -3,8 +3,8 @@ package com.aconno.sensorics.dagger.bluetoothscanning
 import android.app.Notification
 import android.content.BroadcastReceiver
 import android.content.IntentFilter
-import com.aconno.sensorics.BluetoothScanningService
-import com.aconno.sensorics.BluetoothScanningServiceReceiver
+import com.aconno.sensorics.service.BluetoothScanningService
+import com.aconno.sensorics.service.BluetoothScanningServiceReceiver
 import com.aconno.sensorics.R
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationFactory
@@ -36,7 +36,9 @@ class BluetoothScanningServiceModule {
     fun provideBluetoothScanningServiceReceiver(
         bluetoothScanningService: BluetoothScanningService
     ): BroadcastReceiver =
-        BluetoothScanningServiceReceiver(bluetoothScanningService)
+        BluetoothScanningServiceReceiver(
+            bluetoothScanningService
+        )
 
     @Provides
     @BluetoothScanningServiceScope

@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.room.Room
-import com.aconno.sensorics.AlarmServiceControllerImpl
+import com.aconno.sensorics.service.AlarmServiceControllerImpl
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.IntentProviderImpl
 import com.aconno.sensorics.SensoricsApplication
@@ -88,10 +88,11 @@ class AppModule {
     fun provideAlarmServiceController(
         sensoricsApplication: SensoricsApplication,
         broadcastManager: LocalBroadcastManager
-    ): AlarmServiceController = AlarmServiceControllerImpl(
-        sensoricsApplication.applicationContext,
-        broadcastManager
-    )
+    ): AlarmServiceController =
+        AlarmServiceControllerImpl(
+            sensoricsApplication.applicationContext,
+            broadcastManager
+        )
 
     @Provides
     @Singleton

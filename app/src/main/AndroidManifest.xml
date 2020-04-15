@@ -45,16 +45,16 @@
         <activity android:name=".ui.ActionListActivity" />
 
         <service
-            android:name=".BluetoothScanningService"
+            android:name=".service.BluetoothScanningService"
             android:exported="false" />
         <service
-            android:name=".MqttVirtualScanningService"
+            android:name=".service.MqttVirtualScanningService"
             android:exported="false" />
         <service
-            android:name=".BluetoothConnectService"
+            android:name=".service.BluetoothConnectService"
             android:exported="false" />
         <service
-            android:name=".AlarmService"
+            android:name=".service.AlarmService"
             android:exported="false" />
 
         <activity
@@ -98,7 +98,7 @@
 
         <activity android:name=".ui.dfu.NotificationActivity" />
 
-        <service android:name=".DfuService" />
+        <service android:name=".service.DfuService" />
 
         <activity
             android:name=".ui.SplashActivity"

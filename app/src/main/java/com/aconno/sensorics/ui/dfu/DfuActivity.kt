@@ -11,7 +11,7 @@ import android.os.Bundle
 import android.provider.OpenableColumns
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import com.aconno.sensorics.DfuService
+import com.aconno.sensorics.service.DfuService
 import com.aconno.sensorics.R
 import com.aconno.sensorics.action
 import com.aconno.sensorics.domain.Vibrator

@@ -1,4 +1,4 @@
-package com.aconno.sensorics
+package com.aconno.sensorics.service
 
 import android.app.Notification
 import android.content.BroadcastReceiver
@@ -7,7 +7,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.aconno.sensorics.R
 import com.aconno.sensorics.data.publisher.AzureMqttPublisher
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.data.publisher.MqttPublisher
@@ -19,38 +21,41 @@ import com.aconno.sensorics.domain.ifttt.MqttPublish
 import com.aconno.sensorics.domain.ifttt.RestPublish
 import com.aconno.sensorics.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
+import com.aconno.sensorics.domain.interactor.consolidation.GenerateReadingsUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.InputToOutcomesUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllEnabledPublishersUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.CloseConnectionUseCase
 import com.aconno.sensorics.domain.interactor.mqtt.PublishReadingsUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
+import com.aconno.sensorics.domain.interactor.virtualscanningsource.mqtt.GetAllEnabledMqttVirtualScanningSourceUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.mqtt.MqttVirtualScanner
 import com.aconno.sensorics.domain.repository.SyncRepository
-import com.aconno.sensorics.domain.scanning.Bluetooth
+import com.aconno.sensorics.domain.virtualscanningsources.mqtt.MqttVirtualScanningSource
 import dagger.android.DaggerService
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
 
-class BluetoothScanningService : DaggerService() {
+class MqttVirtualScanningService : DaggerService() {
 
     @Inject
-    lateinit var bluetooth: Bluetooth
-
-    @Inject
-    @Named("bluetoothReadings")
-    lateinit var readings: Flowable<List<Reading>>
+    lateinit var generateReadingsUseCase: GenerateReadingsUseCase
 
     @Inject
     lateinit var saveSensorReadingsUseCase: SaveSensorReadingsUseCase
@@ -92,10 +97,20 @@ class BluetoothScanningService : DaggerService() {
     lateinit var readingToInputUseCase: ReadingToInputUseCase
 
     @Inject
-    lateinit var getSavedDevicesMaybeUseCase: GetSavedDevicesMaybeUseCase
+    lateinit var getSavedDevicesUseCase: GetSavedDevicesUseCase
+
+    @Inject
+    lateinit var getAllEnabledMqttVirtualScanningSourceUseCase: GetAllEnabledMqttVirtualScanningSourceUseCase
 
     @Inject
     lateinit var syncRepository: SyncRepository
+
+    @Inject
+    @Named("mqttReadings")
+    lateinit var readings: Flowable<List<Reading>>
+
+    @Inject
+    lateinit var mqttVirtualScanner: MqttVirtualScanner
 
     private var closeConnectionUseCase: CloseConnectionUseCase? = null
     private var publishReadingsUseCase: PublishReadingsUseCase? = null
@@ -109,35 +124,49 @@ class BluetoothScanningService : DaggerService() {
         return null
     }
 
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         localBroadcastManager.registerReceiver(receiver, filter)
 
         startForeground(1, notification)
 
-        val filterByDevice =
-            intent?.getBooleanExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, false) ?: false
-
-        if (filterByDevice) {
-            //send values only while scanning with device filter
-            initPublishers()
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                disposables.add(
-                    getSavedDevicesMaybeUseCase.execute()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe {
-                            startScan(it)
-                        }
-                )
-            } else {
-                //If Lower Than M Ignore Filtering By Mac Address
-                startScan()
+        mqttVirtualScanner.scanningConnectionCallback = object : MqttVirtualScanner.ConnectionCallback {
+            override fun onConnectionFail(source: MqttVirtualScanningSource, exception: Throwable?) {
+                Toast.makeText(this@MqttVirtualScanningService,
+                        this@MqttVirtualScanningService.getString(R.string.virtual_scanning_source_connection_fail, source.name),
+                        Toast.LENGTH_SHORT)
+                    .show()
             }
 
-        } else {
-            startScan()
+            override fun onConnectionSuccess(source: MqttVirtualScanningSource) {}
         }
+
+        Single.fromCallable {
+                getAllEnabledMqttVirtualScanningSourceUseCase.execute()
+            }
+            .subscribeOn(Schedulers.io())
+            .subscribe { sources ->
+                if (sources.isNotEmpty()) {
+                    sources.forEach { source ->
+                        val mqttSource = source as MqttVirtualScanningSource
+                        mqttVirtualScanner.addSource(
+                            mqttSource
+                        )
+                    }
+
+                    getSavedDevicesUseCase.execute()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe { devices ->
+                            mqttVirtualScanner.addDevicesToScanFor(devices)
+                        }.also {
+                            disposables.add(it)
+                        }
+
+                    startScan()
+
+                }
+            }.also { disposables.add(it) }
 
         return START_STICKY
     }
@@ -147,27 +176,22 @@ class BluetoothScanningService : DaggerService() {
      * Restart scanning before Android BLE Scanning Timeout
      * https://github.com/aconno/Sensorics/issues/12
      */
-    private fun startTimer(deviceList: List<Device>? = null) {
-        //Launches non-blocking coroutine
-        scanTimerDisposable = GlobalScope.launch(context = Dispatchers.Main) {
-            delay(ANDROID_N_MAX_SCAN_DURATION - 60 * 1000)
-            Timber.tag("Sensorics - BLE").d("Stopping")
-            stopScanning()
-            Timber.tag("Sensorics - BLE").d("Restarting")
-            startScan(deviceList)
-        }
-    }
+//    private fun startTimer(deviceList: List<Device>? = null) {
+//        //Launches non-blocking coroutine
+//        scanTimerDisposable = GlobalScope.launch(context = Dispatchers.Main) {
+//            delay(ANDROID_N_MAX_SCAN_DURATION - 60 * 1000)
+//            Timber.tag("Sensorics - Mqtt").d("Stopping")
+//            stopScanning()
+//            Timber.tag("Sensorics - Mqtt").d("Restarting")
+//            startScan(deviceList)
+//        }
+//    }
 
     private fun startScan(deviceList: List<Device>? = null) {
-        startTimer(deviceList)
-        Timber.tag("Sensorics - BLE").d("Started")
+        TAG.d("Started")
 
-        if (deviceList == null) {
-            bluetooth.startScanning()
+        mqttVirtualScanner.startScanning()
 
-        } else {
-            bluetooth.startScanning(deviceList)
-        }
         running = true
         startRecording()
         startLogging()
@@ -188,7 +212,7 @@ class BluetoothScanningService : DaggerService() {
     }
 
     private fun handleInputsForActions() {
-        Timber.i("handle Action..... $readings")
+        TAG.i("handle Action..... $readings")
 
         disposables.add(
             readings
@@ -211,13 +235,15 @@ class BluetoothScanningService : DaggerService() {
                 }
 
         )
+
+        TAG.i("handled action")
     }
 
     fun stopScanning() {
-        scanTimerDisposable.cancel()
         stopRecording()
         closeConnectionUseCase?.execute()
-        bluetooth.stopScanning()
+        mqttVirtualScanner.stopScanning()
+        mqttVirtualScanner.clearSources()
         running = false
         stopSelf()
         publishReadingsUseCase = null
@@ -332,11 +358,10 @@ class BluetoothScanningService : DaggerService() {
     }
 
     companion object {
-        private const val ANDROID_N_MAX_SCAN_DURATION = 30 * 60 * 1000L // 30 minutes
+        const val STOP: String = "com.aconno.sensorics.mqttvss.STOP"
 
-        fun start(context: Context, filterByDevice: Boolean = true) {
-            val intent = Intent(context, BluetoothScanningService::class.java)
-            intent.putExtra(BLUETOOTH_SCANNING_SERVICE_EXTRA, filterByDevice)
+        fun start(context: Context) {
+            val intent = Intent(context, MqttVirtualScanningService::class.java)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
@@ -345,11 +370,11 @@ class BluetoothScanningService : DaggerService() {
             }
         }
 
-        private const val BLUETOOTH_SCANNING_SERVICE_EXTRA = "BLUETOOTH_SCANNING_SERVICE_EXTRA"
+        private val TAG: Timber.Tree = Timber.tag("MQTT VSS")
 
         private var running = false
 
-        fun isRunning(): Boolean {
+        fun isRunning(): Boolean { // TODO: Add next to other scanning services
             return running
         }
     }

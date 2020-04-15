@@ -1,4 +1,4 @@
-package com.aconno.sensorics
+package com.aconno.sensorics.service
 
 import android.content.Intent
 import android.os.Binder

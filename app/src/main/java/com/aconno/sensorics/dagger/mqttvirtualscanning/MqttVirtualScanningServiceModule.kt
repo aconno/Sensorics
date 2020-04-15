@@ -3,8 +3,8 @@ package com.aconno.sensorics.dagger.mqttvirtualscanning
 import android.app.Notification
 import android.content.BroadcastReceiver
 import android.content.IntentFilter
-import com.aconno.sensorics.MqttVirtualScanningService
-import com.aconno.sensorics.MqttVirtualScanningServiceReceiver
+import com.aconno.sensorics.service.MqttVirtualScanningService
+import com.aconno.sensorics.service.MqttVirtualScanningServiceReceiver
 import com.aconno.sensorics.R
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationFactory
@@ -39,7 +39,9 @@ class MqttVirtualScanningServiceModule {
     fun provideMqttVirtualScanningServiceReceiver(
         mqttVirtualScanningService: MqttVirtualScanningService
     ): BroadcastReceiver =
-        MqttVirtualScanningServiceReceiver(mqttVirtualScanningService)
+        MqttVirtualScanningServiceReceiver(
+            mqttVirtualScanningService
+        )
 
     @Provides
     @MqttVirtualScanningServiceScope
