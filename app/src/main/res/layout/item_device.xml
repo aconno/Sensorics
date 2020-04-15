@@ -42,6 +42,16 @@
         android:paddingEnd="@dimen/screen_edge_left_right_margin"
         android:paddingStart="@dimen/screen_edge_left_right_margin">
 
+        <CheckBox
+            android:id="@+id/cb_item_selected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/image_icon"
             android:layout_width="40dp"
@@ -50,7 +60,7 @@
             android:contentDescription="@string/contentDescriptionUseless"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cb_item_selected"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView

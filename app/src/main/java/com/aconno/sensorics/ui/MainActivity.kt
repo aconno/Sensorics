@@ -40,7 +40,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallbacks,
-        ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener {
+        ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener,
+    SavedDevicesFragment.ItemSelectionStateListener{
 
     @Inject
     lateinit var bluetoothStateReceiver: BluetoothStateReceiver
@@ -397,5 +398,25 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
         const val WORK_NAME = "Resource Synchronization"
 
         private const val SCANNING_PERMISSION_REQUEST_CODE = 65
+    }
+
+    override fun onBackPressed() {
+        val devicesFragment = supportFragmentManager
+            .findFragmentById(R.id.content_container) as SavedDevicesFragment?
+
+        val handled = devicesFragment?.onBackButtonPressed() ?: false
+        if (!handled) super.onBackPressed()
+    }
+
+    override fun onItemSelectionStateEntered() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onItemSelectionStateExited() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onSelectedItemsCountChanged(selectedItems: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

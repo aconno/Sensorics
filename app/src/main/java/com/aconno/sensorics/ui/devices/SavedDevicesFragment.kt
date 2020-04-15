@@ -7,12 +7,12 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
-import android.widget.Toast
 import androidx.recyclerview.widget.*
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceActiveAdapter
 import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
+import com.aconno.sensorics.adapter.SelectableRecyclerViewAdapter
 import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.Settings
@@ -30,7 +30,6 @@ import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.dialog_create_group.view.*
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
@@ -41,7 +40,11 @@ import javax.inject.Inject
 
 class SavedDevicesFragment : DaggerFragment(),
     ScannedDevicesDialogListener,
-    DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener, IconInfo {
+    DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener, IconInfo,
+    SelectableRecyclerViewAdapter.ItemClickListener<DeviceActive>,
+    SelectableRecyclerViewAdapter.ItemLongClickListener<DeviceActive>,
+    SelectableRecyclerViewAdapter.ItemSelectedListener<DeviceActive>
+{
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
 
@@ -70,6 +73,8 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private lateinit var compositeDisposable: CompositeDisposable
 
+    private var selectionStateListener: ItemSelectionStateListener? = null
+
     private val snackbarCallback = object : Snackbar.Callback() {
         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
             if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
@@ -94,21 +99,14 @@ class SavedDevicesFragment : DaggerFragment(),
         } else {
             throw RuntimeException("$context must implement ${SavedDevicesFragmentListener::class}")
         }
+        if (context is ItemSelectionStateListener) {
+            selectionStateListener = context
+        }
 
         compositeDisposable = CompositeDisposable()
 
-        deviceAdapter = DeviceActiveAdapter()
+        deviceAdapter = DeviceActiveAdapter(this,this,this)
 
-        addDisposable(
-            deviceAdapter.getOnItemClickEvents()
-                .subscribe {
-                    onItemClick(it)
-                },
-            deviceAdapter.getOnItemLongClickEvents()
-                .subscribe {
-                    onLongClick(it)
-                }
-        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,6 +123,14 @@ class SavedDevicesFragment : DaggerFragment(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         context?.let { context ->
             when (item.itemId) {
+                android.R.id.home -> {
+                    exitItemSelectionState()
+                    return true
+                }
+                R.id.action_select_all -> {
+                    selectAllItems()
+                    return true
+                }
                 R.id.action_start_actions_activity -> {
                     if (deviceAdapter.itemCount > 0) {
                         ActionListActivity.start(context)
@@ -148,6 +154,10 @@ class SavedDevicesFragment : DaggerFragment(),
                 else -> return super.onOptionsItemSelected(item)
             }
         } ?: return super.onOptionsItemSelected(item)
+    }
+
+    private fun selectAllItems() {
+        deviceAdapter.setItemsAsSelected(deviceAdapter.getItems())
     }
 
     override fun onCreateView(
@@ -257,63 +267,89 @@ class SavedDevicesFragment : DaggerFragment(),
         mainActivity?.supportActionBar?.subtitle = ""
     }
 
-    private fun onLongClick(param: DeviceActive) {
-        val renameString = getString(R.string.rename)
-        val deactivateAllActionsString = getString(R.string.deactivate_all_actions)
-        val activateAllActionsString = getString(R.string.activate_all_actions)
+    private fun enableItemSelection(initiallySelectedItem: DeviceActive? = null) {
+        deviceAdapter.enableItemSelection(initiallySelectedItem)
+        selectionStateListener?.onSelectedItemsCountChanged(deviceAdapter.getNumberOfSelectedItems())
+        selectionStateListener?.onItemSelectionStateEntered()
+    }
 
-        val options = arrayOf(
-            renameString,
-            deactivateAllActionsString,
-            activateAllActionsString
-        )
 
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(R.string.actions)
-            .setItems(options) { _, which ->
-                when (options[which]) {
-                    renameString -> {
-                        createRenameDeviceDialog(param.device).show()
-                    }
-                    deactivateAllActionsString -> {
-                        setActionActiveByDeviceMacAddressUseCase.execute(param.device.macAddress, false)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({
-                                Toast.makeText(
-                                    context,
-                                    "Deactivated all actions for device",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }, {
-                                Toast.makeText(
-                                    context,
-                                    "Error deactivating all actions for device",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            })
-                    }
-                    activateAllActionsString -> {
-                        setActionActiveByDeviceMacAddressUseCase.execute(param.device.macAddress, true)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({
-                                Toast.makeText(
-                                    context,
-                                    "Activated all actions for device",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }, {
-                                Toast.makeText(
-                                    context,
-                                    "Error activating all actions for device",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            })
-                    }
-                }
-            }
-            .show()
+    fun onBackButtonPressed(): Boolean { //returns true if it has handled the back button press
+        if (deviceAdapter.isItemSelectionEnabled) {
+            exitItemSelectionState()
+            return true
+        }
+        return false
+    }
+
+    private fun exitItemSelectionState() {
+        if (deviceAdapter.isItemSelectionEnabled) {
+            deviceAdapter.disableItemSelection()
+            selectionStateListener?.onItemSelectionStateExited()
+        }
+    }
+
+    override fun onItemLongClick(item: DeviceActive) {
+        if (!deviceAdapter.isItemSelectionEnabled) {
+            enableItemSelection(item)
+        }
+
+//        val renameString = getString(R.string.rename)
+//        val deactivateAllActionsString = getString(R.string.deactivate_all_actions)
+//        val activateAllActionsString = getString(R.string.activate_all_actions)
+//
+//        val options = arrayOf(
+//            renameString,
+//            deactivateAllActionsString,
+//            activateAllActionsString
+//        )
+//
+//        val builder = AlertDialog.Builder(context)
+//        builder.setTitle(R.string.actions)
+//            .setItems(options) { _, which ->
+//                when (options[which]) {
+//                    renameString -> {
+//                        createRenameDeviceDialog(item.device).show()
+//                    }
+//                    deactivateAllActionsString -> {
+//                        setActionActiveByDeviceMacAddressUseCase.execute(item.device.macAddress, false)
+//                            .subscribeOn(Schedulers.io())
+//                            .observeOn(AndroidSchedulers.mainThread())
+//                            .subscribe({
+//                                Toast.makeText(
+//                                    context,
+//                                    "Deactivated all actions for device",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                            }, {
+//                                Toast.makeText(
+//                                    context,
+//                                    "Error deactivating all actions for device",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                            })
+//                    }
+//                    activateAllActionsString -> {
+//                        setActionActiveByDeviceMacAddressUseCase.execute(item.device.macAddress, true)
+//                            .subscribeOn(Schedulers.io())
+//                            .observeOn(AndroidSchedulers.mainThread())
+//                            .subscribe({
+//                                Toast.makeText(
+//                                    context,
+//                                    "Activated all actions for device",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                            }, {
+//                                Toast.makeText(
+//                                    context,
+//                                    "Error activating all actions for device",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                            })
+//                    }
+//                }
+//            }
+//            .show()
     }
 
     @SuppressLint("InflateParams")
@@ -353,7 +389,7 @@ class SavedDevicesFragment : DaggerFragment(),
         deviceViewModel.saveDevice(item)
     }
 
-    private fun onItemClick(item: DeviceActive) {
+    override fun onItemClick(item: DeviceActive) {
         saveClickedDeviceMacAddress(item.device.macAddress)
         activity?.let {
             val mainActivity = it as MainActivity
@@ -387,7 +423,7 @@ class SavedDevicesFragment : DaggerFragment(),
             val name = deletedItems.peek().device.getRealName()
 
             // remove the item from recycler view
-            deviceAdapter.removeItem(position)
+            deviceAdapter.removeItemAtPosition(position)
             if (deviceAdapter.itemCount == 0) {
                 displayPreferredDevices(listOf())
             }
@@ -441,6 +477,9 @@ class SavedDevicesFragment : DaggerFragment(),
         return hashMapOf()
     }
 
+    override fun onListItemSelectionStateChanged(item: DeviceActive, state: Boolean) {
+        selectionStateListener?.onSelectedItemsCountChanged(deviceAdapter.getNumberOfSelectedItems())
+    }
 
     private inner class DeviceGroupOptions {
 
@@ -542,6 +581,13 @@ class SavedDevicesFragment : DaggerFragment(),
 
 
     }
+
+    interface ItemSelectionStateListener {
+        fun onItemSelectionStateEntered()
+        fun onItemSelectionStateExited()
+        fun onSelectedItemsCountChanged(selectedItems: Int)
+    }
+
 }
 
 
