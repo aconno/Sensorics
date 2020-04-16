@@ -33,6 +33,7 @@ import com.aconno.sensorics.viewmodel.MqttVirtualScanningViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_toolbar.*
+import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
@@ -334,7 +335,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         Timber.d("Permissions denied, request code: $requestCode, permissions: $perms")
-        Snackbar.make(content_container, R.string.snackbar_permission_message, Snackbar.LENGTH_LONG)
+        Snackbar.make(container_fragment, R.string.snackbar_permission_message, Snackbar.LENGTH_LONG)
             .setAction(R.string.snackbar_settings) {
                 startActivity(
                     Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
