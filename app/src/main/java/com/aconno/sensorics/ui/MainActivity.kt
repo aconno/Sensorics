@@ -401,10 +401,13 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     }
 
     override fun onBackPressed() {
-        val devicesFragment = supportFragmentManager
-            .findFragmentById(R.id.content_container) as SavedDevicesFragment?
+        val contentFragment = supportFragmentManager
+            .findFragmentById(R.id.content_container)
+        var handled = false
+        if(contentFragment is SavedDevicesFragment) {
+            handled = contentFragment.onBackButtonPressed()
+        }
 
-        val handled = devicesFragment?.onBackButtonPressed() ?: false
         if (!handled) super.onBackPressed()
     }
 
