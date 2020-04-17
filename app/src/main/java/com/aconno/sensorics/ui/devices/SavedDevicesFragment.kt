@@ -195,13 +195,9 @@ class SavedDevicesFragment : DaggerFragment(),
                     Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
 
                     exitItemSelectionState()
-                    reloadDeviceAdapter()
+                    filterAndDisplayDevices(deviceViewModel.getDeviceActiveList())
                 }
         )
-    }
-
-    private fun reloadDeviceAdapter() {
-        TODO()
     }
 
 
