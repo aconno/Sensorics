@@ -5,9 +5,9 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
-import android.graphics.Color
-import android.graphics.PorterDuff
+import android.graphics.*
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -425,7 +425,12 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
             actionBar.setDisplayHomeAsUpEnabled(true)
 
             getDrawable(R.drawable.ic_action_notify_cancel)?.let { drawable ->
-                drawable.setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY) // TODO: Fix
+                val color = Color.BLACK
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    drawable.colorFilter = BlendModeColorFilter(color, BlendMode.MULTIPLY)
+                } else {
+                    drawable.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY)
+                }
                 actionBar.setHomeAsUpIndicator(drawable)
             }
         }
