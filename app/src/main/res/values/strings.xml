@@ -420,4 +420,5 @@
     <string name="move_to_group_dialog">Move to group</string>
     <string name="devices_moved_message">%d devices moved to %s</string>
     <string name="one_device_moved_message">Device %s moved to %s</string>
+    <string name="no_devices_in_group">There are no devices in this group. Press plus (+) to add a new device or move some devices to this group.</string>
 </resources>

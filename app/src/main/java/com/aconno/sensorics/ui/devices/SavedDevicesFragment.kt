@@ -330,6 +330,12 @@ class SavedDevicesFragment : DaggerFragment(),
         preferredDevices?.let {
             if (preferredDevices.isEmpty()) {
                 empty_view?.visibility = View.VISIBLE
+
+                if(deviceGroupsTabs.isAllDevicesTabActive()) {
+                    empty_view.text = getString(R.string.no_devices_plus_button_label)
+                } else {
+                    empty_view.text = getString(R.string.no_devices_in_group)
+                }
                 deviceAdapter.setDevices(listOf())
             } else {
                 empty_view?.visibility = View.INVISIBLE
