@@ -6,11 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.AsyncListDiffer
 import com.aconno.sensorics.R
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
-import com.aconno.sensorics.ui.devices.DeviceActiveDiffUtil
 import kotlinx.android.synthetic.main.item_device.view.*
 import kotlinx.android.synthetic.main.item_device.view.cb_item_selected
 import timber.log.Timber
@@ -25,12 +23,6 @@ class DeviceActiveAdapter(
     mutableListOf(),itemSelectedListener,clickListener,longClickListener
 ) {
 
-    private val asyncListDiffer = AsyncListDiffer<DeviceActive>(this, DeviceActiveDiffUtil())
-
-    init {
-        asyncListDiffer.submitList(listOf())
-    }
-
     override fun getKeyForItem(item: DeviceActive): String {
         return item.device.macAddress
     }
@@ -39,17 +31,19 @@ class DeviceActiveAdapter(
 
     fun setDevices(newList: List<DeviceActive>) {
         setItems(newList)
-        asyncListDiffer.submitList(newList)
     }
 
     fun updateActiveDevices(activeList: List<DeviceActive>) {
-        asyncListDiffer.currentList.forEachIndexed { index, deviceActive ->
+        internalItems.forEachIndexed { index, deviceActive ->
+            val oldState = deviceActive.active
             deviceActive.active = activeList.find { deviceActive == it }?.active ?: false
-            notifyItemChanged(index)
+            if(oldState != deviceActive.active) {
+                notifyItemChanged(index)
+            }
         }
     }
 
-    fun getDevice(position: Int) = asyncListDiffer.currentList[position]
+    fun getDevice(position: Int) = getItem(position)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -57,12 +51,8 @@ class DeviceActiveAdapter(
         return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
-        return asyncListDiffer.currentList.size
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(asyncListDiffer.currentList[position])
+        holder.bind(getItem(position))
     }
 
     fun restoreItem(item: DeviceActive, position: Int) {

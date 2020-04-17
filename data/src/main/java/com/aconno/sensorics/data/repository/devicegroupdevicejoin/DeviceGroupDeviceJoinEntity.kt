@@ -11,10 +11,13 @@ import com.aconno.sensorics.data.repository.devices.DeviceEntity
     foreignKeys = [
         ForeignKey(entity = DeviceGroupEntity::class,
             parentColumns = ["id"],
-            childColumns = ["deviceGroupId"]),
+            childColumns = ["deviceGroupId"],
+            onDelete = ForeignKey.CASCADE),
         ForeignKey(entity = DeviceEntity::class,
             parentColumns = ["macAddress"],
-            childColumns = ["deviceId"])
+            childColumns = ["deviceId"],
+            onDelete = ForeignKey.CASCADE
+        )
     ]
 )
 class DeviceGroupDeviceJoinEntity(

@@ -124,7 +124,7 @@ abstract class SensoricsDatabase : RoomDatabase() {
         val MIGRATION_16_17 = object : Migration(16, 17) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("CREATE TABLE IF NOT EXISTS `device_groups` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)")
-                database.execSQL("CREATE TABLE IF NOT EXISTS `device_group_device_join` (`deviceGroupId` INTEGER NOT NULL, `deviceId` TEXT NOT NULL, PRIMARY KEY(`deviceId`), FOREIGN KEY(`deviceGroupId`) REFERENCES `device_groups`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`deviceId`) REFERENCES `devices`(`macAddress`) ON UPDATE NO ACTION ON DELETE NO ACTION )")
+                database.execSQL("CREATE TABLE IF NOT EXISTS `device_group_device_join` (`deviceGroupId` INTEGER NOT NULL, `deviceId` TEXT NOT NULL, PRIMARY KEY(`deviceId`), FOREIGN KEY(`deviceGroupId`) REFERENCES `device_groups`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`deviceId`) REFERENCES `devices`(`macAddress`) ON UPDATE NO ACTION ON DELETE CASCADE )");
 
             }
         }

@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
 abstract class SelectableRecyclerViewAdapter<T, K, VH>(
-    private val internalItems: MutableList<T>,
+    protected val internalItems: MutableList<T>,
     private val itemSelectedListener: ItemSelectedListener<T>? = null,
     private val clickListener: ItemClickListener<T>? = null,
     private val longClickListener: ItemLongClickListener<T>? = null
@@ -40,8 +40,8 @@ abstract class SelectableRecyclerViewAdapter<T, K, VH>(
         return this.internalItems[position]
     }
 
-    fun addItemAtPosition(action: T, position: Int) {
-        this.internalItems.add(position, action)
+    fun addItemAtPosition(item: T, position: Int) {
+        this.internalItems.add(position, item)
         notifyItemInserted(position)
     }
 
