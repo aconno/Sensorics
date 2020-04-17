@@ -15,6 +15,7 @@ import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
 import com.aconno.sensorics.adapter.SelectableRecyclerViewAdapter
 import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.model.DeviceGroup
 import com.aconno.sensorics.domain.repository.Settings
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
@@ -26,6 +27,7 @@ import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
 import com.aconno.sensorics.viewmodel.DeviceGroupViewModel
 import com.aconno.sensorics.viewmodel.DeviceViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -116,7 +118,13 @@ class SavedDevicesFragment : DaggerFragment(),
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_devices, menu)
+
+        if(deviceAdapter.isItemSelectionEnabled) {
+            inflater.inflate(R.menu.menu_selected_devices, menu)
+        } else {
+            inflater.inflate(R.menu.menu_devices, menu)
+        }
+
         menu.findItem(R.id.action_start_dashboard)?.isVisible = BuildConfig.FLAVOR == "dev"
     }
 
@@ -131,8 +139,12 @@ class SavedDevicesFragment : DaggerFragment(),
                     selectAllItems()
                     return true
                 }
+                R.id.action_move_devices_to_group -> {
+                    showMoveDevicesDialog()
+                    return true
+                }
                 R.id.action_start_actions_activity -> {
-                    if (deviceAdapter.itemCount > 0) {
+                    if (deviceViewModel.getDeviceActiveList().isNotEmpty()) {
                         ActionListActivity.start(context)
                     } else {
                         Snackbar.make(
@@ -156,6 +168,43 @@ class SavedDevicesFragment : DaggerFragment(),
         } ?: return super.onOptionsItemSelected(item)
     }
 
+    private fun showMoveDevicesDialog() {
+        val deviceGroups = deviceGroupsTabs.getDeviceGroups().filter { it != deviceGroupsTabs.getSelectedDeviceGroup() }
+        val groupsNames = deviceGroups.map { it.groupName }.toTypedArray()
+
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.move_to_group_dialog))
+        builder.setItems(groupsNames) { _, which ->
+            moveSelectedDevicesToDeviceGroup(deviceGroups[which])
+        }
+        builder.show()
+    }
+
+    private fun moveSelectedDevicesToDeviceGroup(deviceGroup : DeviceGroup) {
+        val selectedDevices = deviceAdapter.getSelectedItems().map { it.device }
+        addDisposable(
+            deviceGroupViewModel.moveDevicesToDeviceGroup(selectedDevices,deviceGroup)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    val snackbarMessage =
+                        if(selectedDevices.size == 1) {
+                            getString(R.string.one_device_moved_message,selectedDevices[0].name,deviceGroup.groupName)
+                        } else {
+                            getString(R.string.devices_moved_message,selectedDevices.size,deviceGroup.groupName)
+                        }
+                    Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
+
+                    exitItemSelectionState()
+                    reloadDeviceAdapter()
+                }
+        )
+    }
+
+    private fun reloadDeviceAdapter() {
+        TODO()
+    }
+
+
     private fun selectAllItems() {
         deviceAdapter.setItemsAsSelected(deviceAdapter.getItems())
     }
@@ -168,9 +217,28 @@ class SavedDevicesFragment : DaggerFragment(),
         return inflater.inflate(R.layout.fragment_saved_devices, container, false)
     }
 
+    private fun filterAndDisplayDevices(devices : List<DeviceActive>) {
+        when {
+            deviceGroupsTabs.isAllDevicesTabActive() -> {
+                displayPreferredDevices(devices)
+            }
+            deviceGroupsTabs.isOthersTabActive() -> {
+                TODO() // create use case for getting all devices without a group
+            }
+            else -> {
+                val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
+                deviceGroupViewModel.getDevicesFromDeviceGroup(deviceGroup.id)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {devicesInGroup ->
+                        displayPreferredDevices(devices.filter { devicesInGroup.contains(it.device) })
+                    }
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.i("View created")
+        Timber.i("Saved devices fragment View created")
 
         list_devices.layoutManager = LinearLayoutManager(context)
         list_devices.adapter = deviceAdapter
@@ -191,7 +259,7 @@ class SavedDevicesFragment : DaggerFragment(),
             deviceViewModel.getSavedDevicesFlowable()
                 .subscribe {
                     if (dontObserveQueue.isEmpty()) {
-                        displayPreferredDevices(it)
+                        filterAndDisplayDevices(it)
                     } else {
                         dontObserveQueue.poll()
                     }
@@ -234,6 +302,21 @@ class SavedDevicesFragment : DaggerFragment(),
                     deviceGroupsTabs.addTabForDeviceGroup(it)
                 }
                 }
+        )
+
+        tab_layout.addOnTabSelectedListener(
+            object : TabLayout.OnTabSelectedListener {
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                }
+
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    filterAndDisplayDevices(deviceViewModel.getDeviceActiveList())
+                }
+
+            }
         )
     }
 

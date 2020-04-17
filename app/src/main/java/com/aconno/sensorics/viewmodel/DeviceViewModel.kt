@@ -83,6 +83,10 @@ class DeviceViewModel(
             }
     }
 
+    fun getDeviceActiveList() : List<DeviceActive> {
+        return deviceList ?: emptyList()
+    }
+
     fun saveDevice(device: Device) {
         saveDeviceUseCase.execute(device)
             .subscribeOn(Schedulers.io())

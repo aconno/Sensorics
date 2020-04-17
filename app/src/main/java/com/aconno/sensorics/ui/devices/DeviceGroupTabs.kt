@@ -49,6 +49,10 @@ class DeviceGroupTabs(val context: Context, private val tabLayout: TabLayout) {
         }
     }
 
+    fun getDeviceGroups() : List<DeviceGroup> {
+        return tabToDeviceGroupMap.entries.sortedBy { it.key }.map { it.value }
+    }
+
     private fun getIndexOfTabForDeviceGroup(deviceGroup: DeviceGroup) : Int? {
         return tabToDeviceGroupMap.filter { it.value == deviceGroup }.entries.firstOrNull()?.key
     }

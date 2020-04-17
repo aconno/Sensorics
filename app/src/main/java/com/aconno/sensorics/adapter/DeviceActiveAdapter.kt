@@ -43,12 +43,9 @@ class DeviceActiveAdapter(
     }
 
     fun updateActiveDevices(activeList: List<DeviceActive>) {
-        activeList.forEachIndexed { index, deviceActive ->
-            asyncListDiffer.currentList.find { deviceActive == it }
-                ?.let {
-                    it.active = deviceActive.active
-                    notifyItemChanged(index)
-                }
+        asyncListDiffer.currentList.forEachIndexed { index, deviceActive ->
+            deviceActive.active = activeList.find { deviceActive == it }?.active ?: false
+            notifyItemChanged(index)
         }
     }
 
@@ -131,4 +128,5 @@ class DeviceActiveAdapter(
             viewForeground = view.view_foreground
         }
     }
+
 }

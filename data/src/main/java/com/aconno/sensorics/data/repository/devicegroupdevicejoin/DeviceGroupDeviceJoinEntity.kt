@@ -7,7 +7,7 @@ import com.aconno.sensorics.data.repository.devices.DeviceEntity
 
 @Entity(
     tableName = "device_group_device_join",
-    primaryKeys = ["deviceGroupId", "deviceId"],
+    primaryKeys = ["deviceId"],
     foreignKeys = [
         ForeignKey(entity = DeviceGroupEntity::class,
             parentColumns = ["id"],

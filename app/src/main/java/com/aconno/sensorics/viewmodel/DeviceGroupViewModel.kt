@@ -42,7 +42,7 @@ class DeviceGroupViewModel(
             .subscribe()
     }
 
-    fun addOrUpdateDeviceGroupDeviceRelation(
+    fun addDeviceGroupDeviceRelation(
         deviceId: String,
         deviceGroupId: Long
     ): Completable {
@@ -70,5 +70,20 @@ class DeviceGroupViewModel(
         deviceGroupId: Long
     ) : Maybe<List<Device>> {
         return getDevicesInDeviceGroupUseCase.execute(deviceGroupId)
+            .subscribeOn(Schedulers.io())
+    }
+
+
+    //TODO refactor this to enable batch addition of deviceGroup-device relations (create use case for that)
+    fun moveDevicesToDeviceGroup(devices : List<Device>, deviceGroup: DeviceGroup) : Completable {
+        val actions = mutableListOf<Completable>()
+
+        actions.apply {
+            devices.forEach {
+                add(addDeviceGroupDeviceRelation(it.macAddress,deviceGroup.id))
+            }
+        }
+
+        return Completable.merge(actions).subscribeOn(Schedulers.io())
     }
 }
