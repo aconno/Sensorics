@@ -74,8 +74,6 @@ class DeviceGroupViewModel(
             .subscribeOn(Schedulers.io())
     }
 
-
-    //TODO refactor this to enable batch addition of deviceGroup-device relations (create use case for that)
     fun moveDevicesToDeviceGroup(devices : List<Device>, deviceGroup: DeviceGroup) : Completable {
         val actions = mutableListOf<Completable>()
 
@@ -91,5 +89,17 @@ class DeviceGroupViewModel(
     fun getDevicesBelongingSomeDeviceGroup() : Maybe<List<Device>> {
         return getDevicesBelongingSomeDeviceGroupUseCase.execute()
             .subscribeOn(Schedulers.io())
+    }
+
+    fun removeDevicesFromDeviceGroup(devices: List<Device>, deviceGroup: DeviceGroup): Completable {
+        val actions = mutableListOf<Completable>()
+
+        actions.apply {
+            devices.forEach {
+                add(deleteDeviceGroupDeviceRelation(it.macAddress,deviceGroup.id))
+            }
+        }
+
+        return Completable.merge(actions).subscribeOn(Schedulers.io())
     }
 }

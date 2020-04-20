@@ -146,6 +146,10 @@ class SavedDevicesFragment : DaggerFragment(),
                     showMoveDevicesDialog()
                     return true
                 }
+                R.id.action_remove_devices_from_group -> {
+                    showRemoveDevicesFromGroupDialog()
+                    return true
+                }
                 R.id.action_start_actions_activity -> {
                     if (deviceViewModel.getDeviceActiveList().isNotEmpty()) {
                         ActionListActivity.start(context)
@@ -182,6 +186,41 @@ class SavedDevicesFragment : DaggerFragment(),
         }
         builder.show()
     }
+
+    private fun showRemoveDevicesFromGroupDialog() {
+        AlertDialog.Builder(context)
+            .setTitle(getString(R.string.remove_devices_from_group_title))
+            .setPositiveButton(getString(R.string.remove)) { _, _ ->
+                removeSelectedDevicesFromDeviceGroup()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setCancelable(true)
+            .setMessage(getString(R.string.remove_devices_from_group_confirmation,
+                deviceGroupsTabs.getSelectedDeviceGroup()?.groupName ?: ""))
+            .show()
+    }
+
+    private fun removeSelectedDevicesFromDeviceGroup() {
+        val selectedDevices = deviceAdapter.getSelectedItems().map { it.device }
+        val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: throw IllegalStateException()
+        addDisposable(
+            deviceGroupViewModel.removeDevicesFromDeviceGroup(selectedDevices,deviceGroup)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    val snackbarMessage =
+                        if(selectedDevices.size == 1) {
+                            getString(R.string.one_device_removed_from_group_message,selectedDevices[0].name,deviceGroup.groupName)
+                        } else {
+                            getString(R.string.devices_removed_from_group_message,selectedDevices.size,deviceGroup.groupName)
+                        }
+                    Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
+
+                    exitItemSelectionState()
+                    filterAndDisplayDevices(deviceViewModel.getDeviceActiveList())
+                }
+        )
+    }
+
 
     private fun moveSelectedDevicesToDeviceGroup(deviceGroup : DeviceGroup) {
         val selectedDevices = deviceAdapter.getSelectedItems().map { it.device }
@@ -677,7 +716,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 .setPositiveButton(getString(R.string.remove)) { _, _ ->
                     removeCurrentGroup()
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .setCancelable(true)
                 .setMessage(getString(R.string.remove_group_confirmation,
                     deviceGroupsTabs.getSelectedDeviceGroup()?.groupName ?: ""))
