@@ -121,6 +121,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
         if(deviceAdapter.isItemSelectionEnabled) {
             inflater.inflate(R.menu.menu_selected_devices, menu)
+            menu.findItem(R.id.action_remove_devices_from_group)?.isVisible = deviceGroupsTabs.isDeviceGroupTabActive()
         } else {
             inflater.inflate(R.menu.menu_devices, menu)
         }
