@@ -16,7 +16,8 @@ class DeviceGroupViewModel(
     private val deleteDeviceGroupUseCase: DeleteDeviceGroupUseCase,
     private val saveDeviceGroupDeviceJoinUseCase: SaveDeviceGroupDeviceJoinUseCase,
     private val deleteDeviceGroupDeviceJoinUseCase: DeleteDeviceGroupDeviceJoinUseCase,
-    private val getDevicesInDeviceGroupUseCase: GetDevicesInDeviceGroupUseCase
+    private val getDevicesInDeviceGroupUseCase: GetDevicesInDeviceGroupUseCase,
+    private val getDevicesBelongingSomeDeviceGroupUseCase : GetDevicesBelongingSomeDeviceGroupUseCase
 ) : ViewModel() {
 
 
@@ -85,5 +86,10 @@ class DeviceGroupViewModel(
         }
 
         return Completable.merge(actions).subscribeOn(Schedulers.io())
+    }
+
+    fun getDevicesBelongingSomeDeviceGroup() : Maybe<List<Device>> {
+        return getDevicesBelongingSomeDeviceGroupUseCase.execute()
+            .subscribeOn(Schedulers.io())
     }
 }

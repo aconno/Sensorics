@@ -12,6 +12,11 @@ abstract class DeviceGroupDeviceJoinDao {
     )
     abstract fun getDevicesInDeviceGroup(deviceGroupId: Long): Maybe<List<DeviceEntity>>
 
+    @Query(
+        "SELECT * FROM devices JOIN device_group_device_join ON devices.macAddress = device_group_device_join.deviceId"
+    )
+    abstract fun getDevices(): Maybe<List<DeviceEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insert(deviceGroupDeviceJoinEntity: DeviceGroupDeviceJoinEntity): Long
 

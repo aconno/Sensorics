@@ -77,6 +77,8 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private var selectionStateListener: ItemSelectionStateListener? = null
 
+    private var savedInstanceStateSelectedItems: Array<String>? = null
+
     private val snackbarCallback = object : Snackbar.Callback() {
         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
             if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
@@ -220,7 +222,11 @@ class SavedDevicesFragment : DaggerFragment(),
                 displayPreferredDevices(devices)
             }
             deviceGroupsTabs.isOthersTabActive() -> {
-                TODO() // create use case for getting all devices without a group
+                deviceGroupViewModel.getDevicesBelongingSomeDeviceGroup()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { devicesBelongingSomeDeviceGroup ->
+                        displayPreferredDevices(devices.filter { !devicesBelongingSomeDeviceGroup.contains(it.device) })
+                    }
             }
             else -> {
                 val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
@@ -239,6 +245,17 @@ class SavedDevicesFragment : DaggerFragment(),
 
         list_devices.layoutManager = LinearLayoutManager(context)
         list_devices.adapter = deviceAdapter
+        var savedInstanceStateSelectedTab = 0
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean(ITEM_SELECTION_ENABLED_KEY)) {
+                enableItemSelection()
+                savedInstanceStateSelectedItems =
+                    savedInstanceState.getStringArray(SELECTED_ITEMS_KEY)
+            }
+
+            savedInstanceStateSelectedTab = savedInstanceState.getInt(SELECTED_TAB_KEY)
+
+        }
 
         list_devices.itemAnimator = DefaultItemAnimator()
         list_devices.addItemDecoration(
@@ -273,6 +290,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
         button_add_device.setOnClickListener {
             snackbar?.dismiss()
+            exitItemSelectionState()
             listener?.onFABClicked()
             Timber.d("Button add device clicked")
 
@@ -281,12 +299,13 @@ class SavedDevicesFragment : DaggerFragment(),
             }
         }
 
-        populateTabLayout()
+
+        populateTabLayout(savedInstanceStateSelectedTab)
 
     }
 
 
-    private fun populateTabLayout() {
+    private fun populateTabLayout(initiallySelectedTab : Int) {
         tab_layout.removeAllTabs()
         deviceGroupsTabs = DeviceGroupTabs(context ?: throw IllegalStateException("Tab layout can not be populated before the fragment has been attached."),
             tab_layout)
@@ -296,8 +315,13 @@ class SavedDevicesFragment : DaggerFragment(),
             deviceGroupViewModel.getDeviceGroups()
                 .subscribe { it ->
                     it.forEach {
-                    deviceGroupsTabs.addTabForDeviceGroup(it)
-                }
+                        deviceGroupsTabs.addTabForDeviceGroup(it)
+                    }
+
+                    if(it.isNotEmpty()) {
+                        deviceGroupsTabs.addOthersTab()
+                    }
+                    deviceGroupsTabs.selectTab(initiallySelectedTab)
                 }
         )
 
@@ -307,6 +331,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    exitItemSelectionState()
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -332,16 +357,29 @@ class SavedDevicesFragment : DaggerFragment(),
             if (preferredDevices.isEmpty()) {
                 empty_view?.visibility = View.VISIBLE
 
-                if(deviceGroupsTabs.isAllDevicesTabActive()) {
-                    empty_view.text = getString(R.string.no_devices_plus_button_label)
-                } else {
-                    empty_view.text = getString(R.string.no_devices_in_group)
+                when {
+                    deviceGroupsTabs.isAllDevicesTabActive() -> {
+                        empty_view.text = getString(R.string.no_devices_plus_button_label)
+                    }
+                    deviceGroupsTabs.isOthersTabActive() -> {
+                        empty_view.text = getString(R.string.no_unsorted_devices)
+                    }
+                    else -> {
+                        empty_view.text = getString(R.string.no_devices_in_group)
+                    }
                 }
                 deviceAdapter.setDevices(listOf())
             } else {
                 empty_view?.visibility = View.INVISIBLE
                 deviceAdapter.setDevices(preferredDevices)
                 deviceAdapter.setIcons(getIconInfoForActiveDevices(preferredDevices))
+
+                savedInstanceStateSelectedItems?.let { selectedItems ->
+                    if(deviceAdapter.isItemSelectionEnabled) {
+                        deviceAdapter.setItemsAsSelected(preferredDevices.filter { selectedItems.contains(it.device.macAddress) })
+                    }
+                    savedInstanceStateSelectedItems = null
+                }
             }
         }
     }
@@ -567,6 +605,20 @@ class SavedDevicesFragment : DaggerFragment(),
         selectionStateListener?.onSelectedItemsCountChanged(deviceAdapter.getNumberOfSelectedItems())
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean(ITEM_SELECTION_ENABLED_KEY, deviceAdapter.isItemSelectionEnabled)
+        if (deviceAdapter.isItemSelectionEnabled) {
+            outState.putStringArray(
+                SELECTED_ITEMS_KEY,
+                deviceAdapter.getSelectedItems().map { it.device.macAddress }.toTypedArray()
+            )
+        }
+
+        outState.putInt(SELECTED_TAB_KEY,deviceGroupsTabs.getSelectedTabIndex())
+    }
+
     private inner class DeviceGroupOptions {
 
         fun showDeviceGroupsOptions() {
@@ -637,6 +689,9 @@ class SavedDevicesFragment : DaggerFragment(),
             deviceGroupViewModel.deleteDeviceGroup(deviceGroup)
             deviceGroupsTabs.removeTabForDeviceGroup(deviceGroup)
 
+            if(deviceGroupsTabs.getDeviceGroups().isEmpty()) { //if no more device groups, no need to show others tab
+                deviceGroupsTabs.removeOthersTab()
+            }
         }
 
         @SuppressLint("InflateParams")
@@ -661,6 +716,10 @@ class SavedDevicesFragment : DaggerFragment(),
                     .subscribe { deviceGroup ->
                         deviceGroupsTabs.addTabForDeviceGroup(deviceGroup)
                         deviceGroupsTabs.selectTabForDeviceGroup(deviceGroup)
+
+                        if(deviceGroupsTabs.getDeviceGroups().size == 1) { //if this is the first device group, then it is time to show tab containing devices not belonging to any group
+                            deviceGroupsTabs.addOthersTab()
+                        }
                     }
             )
         }
@@ -672,6 +731,12 @@ class SavedDevicesFragment : DaggerFragment(),
         fun onItemSelectionStateEntered()
         fun onItemSelectionStateExited()
         fun onSelectedItemsCountChanged(selectedItems: Int)
+    }
+
+    companion object {
+        private const val ITEM_SELECTION_ENABLED_KEY = "ITEM_SELECTION_ENABLED_KEY"
+        private const val SELECTED_ITEMS_KEY = "SELECTED_ITEMS_KEY"
+        private const val SELECTED_TAB_KEY = "SELECTED_TAB_KEY"
     }
 
 }

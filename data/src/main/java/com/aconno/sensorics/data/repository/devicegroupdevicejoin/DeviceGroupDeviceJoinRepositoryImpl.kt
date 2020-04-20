@@ -33,4 +33,9 @@ class DeviceGroupDeviceJoinRepositoryImpl(
         )
     }
 
+    override fun getDevices(): Maybe<List<Device>> {
+        return deviceGroupDeviceJoinDao.getDevices()
+            .map(deviceMapper::toDeviceList)
+    }
+
 }

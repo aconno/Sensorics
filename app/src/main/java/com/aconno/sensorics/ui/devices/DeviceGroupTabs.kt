@@ -22,8 +22,18 @@ class DeviceGroupTabs(val context: Context, private val tabLayout: TabLayout) {
     }
 
     fun addTabForDeviceGroup(group : DeviceGroup) {
-        tabLayout.addTab(tabLayout.newTab().setText(group.groupName))
-        tabToDeviceGroupMap[tabLayout.tabCount - 1] = group
+        val tabPosition = if(othersTabIndex == null) { //if there is others tabs, then add tab for device group before it
+            tabLayout.tabCount
+        } else {
+            tabLayout.tabCount - 1
+        }
+
+        tabLayout.addTab(tabLayout.newTab().setText(group.groupName),tabPosition)
+        tabToDeviceGroupMap[tabPosition] = group
+
+        othersTabIndex?.let {
+            othersTabIndex = it + 1
+        }
     }
 
     fun isAllDevicesTabActive() : Boolean {
@@ -43,10 +53,7 @@ class DeviceGroupTabs(val context: Context, private val tabLayout: TabLayout) {
     }
 
     fun selectTabForDeviceGroup(deviceGroup: DeviceGroup) {
-        val tab = tabLayout.getTabAt(getIndexOfTabForDeviceGroup(deviceGroup) ?: throw IllegalArgumentException("There is no tab for specified device group"))
-        tabLayout.post {
-            tab?.select()
-        }
+        selectTab(getIndexOfTabForDeviceGroup(deviceGroup) ?: throw IllegalArgumentException("There is no tab for specified device group"))
     }
 
     fun getDeviceGroups() : List<DeviceGroup> {
@@ -57,28 +64,37 @@ class DeviceGroupTabs(val context: Context, private val tabLayout: TabLayout) {
         return tabToDeviceGroupMap.filter { it.value == deviceGroup }.entries.firstOrNull()?.key
     }
 
+    fun removeOthersTab() {
+        removeTabAtIndex(othersTabIndex ?: return)
+        othersTabIndex = null
+    }
+
+    private fun removeTabAtIndex(index : Int) {
+        tabLayout.removeTabAt(index)
+        tabLayout.selectTab(tabLayout.getTabAt(allDevicesTabIndex ?: 0))
+
+        allDevicesTabIndex?.let {
+            allDevicesTabIndex = if(it > index) it-1 else it
+        }
+        othersTabIndex?.let {
+            othersTabIndex = if(it > index) it-1 else it
+        }
+        tabToDeviceGroupMap = mutableMapOf<Int, DeviceGroup>()
+            .apply {
+                tabToDeviceGroupMap.forEach {
+                    if(it.key > index) {
+                        this[it.key-1] = it.value
+                    } else if(it.key < index) {
+                        this[it.key] = it.value
+                    }
+                }
+            }
+    }
+
     fun removeTabForDeviceGroup(deviceGroup: DeviceGroup) {
         val tabIndex = getIndexOfTabForDeviceGroup(deviceGroup)
         tabIndex?.let {index ->
-            tabLayout.removeTabAt(index)
-            tabLayout.selectTab(tabLayout.getTabAt(allDevicesTabIndex ?: 0))
-
-            allDevicesTabIndex?.let {
-                allDevicesTabIndex = if(it > index) it-1 else it
-            }
-            othersTabIndex?.let {
-                othersTabIndex = if(it > index) it-1 else it
-            }
-            tabToDeviceGroupMap = mutableMapOf<Int, DeviceGroup>()
-                .apply {
-                    tabToDeviceGroupMap.forEach {
-                        if(it.key > index) {
-                            this[it.key-1] = it.value
-                        } else if(it.key < index) {
-                            this[it.key] = it.value
-                        }
-                    }
-                }
+            removeTabAtIndex(index)
         }
     }
 
@@ -88,5 +104,15 @@ class DeviceGroupTabs(val context: Context, private val tabLayout: TabLayout) {
         tabLayout.getTabAt(deviceGroupEntry.key)?.setText(deviceGroup.groupName)
     }
 
+    fun getSelectedTabIndex() : Int {
+        return tabLayout.selectedTabPosition
+    }
+
+    fun selectTab(index : Int) {
+        val tab = tabLayout.getTabAt(index)
+        tabLayout.post {
+            tab?.select()
+        }
+    }
 
 }

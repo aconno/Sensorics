@@ -78,6 +78,7 @@
     <string name="mqtt_backend" translatable="false">MQTT Backend</string>
 
     <string name="no_devices_plus_button_label">There are no devices. Press plus (+) to add a new device.</string>
+    <string name="no_unsorted_devices">There are no any unsorted devices.</string>
 
     <string name="message_no_scanned_devices">There are no new nearby devices</string>
 
