@@ -370,6 +370,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    snackbar?.dismiss()
                     exitItemSelectionState()
                 }
 
@@ -549,7 +550,15 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun onDevicesDialogItemClick(item: Device) {
-        deviceViewModel.saveDevice(item)
+        addDisposable(
+            deviceViewModel.saveDevice(item)
+                .subscribe {
+                    deviceGroupsTabs.getSelectedDeviceGroup()?.let {
+                        deviceGroupViewModel.addDeviceGroupDeviceRelation(item.macAddress,it.id)
+                            .subscribe()
+                    }
+                }
+        )
     }
 
     override fun onItemClick(item: DeviceActive) {

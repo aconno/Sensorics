@@ -7,6 +7,7 @@ import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceActive
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -87,10 +88,9 @@ class DeviceViewModel(
         return deviceList ?: emptyList()
     }
 
-    fun saveDevice(device: Device) {
-        saveDeviceUseCase.execute(device)
+    fun saveDevice(device: Device) : Completable {
+        return saveDeviceUseCase.execute(device)
             .subscribeOn(Schedulers.io())
-            .subscribe()
     }
 
     fun updateDevice(device: Device, alias: String) {
