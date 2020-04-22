@@ -12,6 +12,9 @@ abstract class DeviceGroupDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insert(deviceGroup: DeviceGroupEntity) : Long
 
+    @Update
+    abstract fun update(deviceGroup: DeviceGroupEntity)
+
     @Delete
     abstract fun delete(deviceGroup: DeviceGroupEntity)
 }

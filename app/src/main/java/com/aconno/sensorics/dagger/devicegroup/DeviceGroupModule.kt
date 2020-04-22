@@ -41,6 +41,14 @@ class DeviceGroupModule {
 
     @Provides
     @DeviceGroupScope
+    fun provideUpdateDeviceGroupUseCase(
+        deviceGroupRepository: DeviceGroupRepository
+    ): UpdateDeviceGroupUseCase {
+        return UpdateDeviceGroupUseCase(deviceGroupRepository)
+    }
+
+    @Provides
+    @DeviceGroupScope
     fun provideSaveDeviceGroupDeviceJoinUseCase(
         deviceGroupDeviceJoinRepository: DeviceGroupDeviceJoinRepository
     ): SaveDeviceGroupDeviceJoinUseCase {
@@ -70,6 +78,8 @@ class DeviceGroupModule {
     ): DeleteDeviceGroupDeviceJoinUseCase {
         return DeleteDeviceGroupDeviceJoinUseCase(deviceGroupDeviceJoinRepository)
     }
+
+
 
     @Provides
     @DeviceGroupScope

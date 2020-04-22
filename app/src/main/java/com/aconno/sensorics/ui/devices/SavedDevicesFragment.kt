@@ -709,10 +709,11 @@ class SavedDevicesFragment : DaggerFragment(),
             val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
             deviceGroup.groupName = newName
 
+
             addDisposable(
-                deviceGroupViewModel.saveDeviceGroup(deviceGroup)
+                deviceGroupViewModel.updateDeviceGroup(deviceGroup)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { _ ->
+                    .subscribe {
                         deviceGroupsTabs.updateDeviceGroup(deviceGroup)
                     }
             )

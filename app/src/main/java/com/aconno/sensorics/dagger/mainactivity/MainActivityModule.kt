@@ -152,6 +152,7 @@ class MainActivityModule {
         saveDeviceGroupUseCase: SaveDeviceGroupUseCase,
         getSavedDeviceGroupsUseCase: GetSavedDeviceGroupsUseCase,
         deleteDeviceGroupsUseCase: DeleteDeviceGroupUseCase,
+        updateDeviceGroupsUseCase: UpdateDeviceGroupUseCase,
         saveDeviceGroupDeviceJoinUseCase: SaveDeviceGroupDeviceJoinUseCase,
         deleteDeviceGroupDeviceJoinUseCase: DeleteDeviceGroupDeviceJoinUseCase,
         getDevicesInDeviceGroupUseCase: GetDevicesInDeviceGroupUseCase,
@@ -159,8 +160,9 @@ class MainActivityModule {
     ): DeviceGroupViewModelFactory {
         return DeviceGroupViewModelFactory(saveDeviceGroupUseCase,
             getSavedDeviceGroupsUseCase,deleteDeviceGroupsUseCase,
-            saveDeviceGroupDeviceJoinUseCase,deleteDeviceGroupDeviceJoinUseCase,
-            getDevicesInDeviceGroupUseCase,getDevicesBelongingSomeDeviceGroupUseCase)
+            updateDeviceGroupsUseCase, saveDeviceGroupDeviceJoinUseCase,
+            deleteDeviceGroupDeviceJoinUseCase, getDevicesInDeviceGroupUseCase,
+            getDevicesBelongingSomeDeviceGroupUseCase)
     }
 
     @Provides

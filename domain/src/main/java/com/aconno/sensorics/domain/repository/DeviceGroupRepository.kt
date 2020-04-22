@@ -10,5 +10,7 @@ interface DeviceGroupRepository {
 
     fun insertDeviceGroup(deviceGroup: DeviceGroup): Single<Long>
 
+    fun updateDeviceGroup(deviceGroup: DeviceGroup): Completable
+
     fun deleteDeviceGroup(deviceGroup: DeviceGroup): Completable
 }

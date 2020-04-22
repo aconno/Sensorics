@@ -14,6 +14,7 @@ class DeviceGroupViewModel(
     private val saveDeviceGroupUseCase : SaveDeviceGroupUseCase,
     private val getSavedDeviceGroupsUseCase: GetSavedDeviceGroupsUseCase,
     private val deleteDeviceGroupUseCase: DeleteDeviceGroupUseCase,
+    private val updateDeviceGroupUseCase: UpdateDeviceGroupUseCase,
     private val saveDeviceGroupDeviceJoinUseCase: SaveDeviceGroupDeviceJoinUseCase,
     private val deleteDeviceGroupDeviceJoinUseCase: DeleteDeviceGroupDeviceJoinUseCase,
     private val getDevicesInDeviceGroupUseCase: GetDevicesInDeviceGroupUseCase,
@@ -41,6 +42,11 @@ class DeviceGroupViewModel(
         deleteDeviceGroupUseCase.execute(deviceGroup)
             .subscribeOn(Schedulers.io())
             .subscribe()
+    }
+
+    fun updateDeviceGroup(deviceGroup: DeviceGroup) : Completable {
+        return updateDeviceGroupUseCase.execute(deviceGroup)
+            .subscribeOn(Schedulers.io())
     }
 
     fun addDeviceGroupDeviceRelation(

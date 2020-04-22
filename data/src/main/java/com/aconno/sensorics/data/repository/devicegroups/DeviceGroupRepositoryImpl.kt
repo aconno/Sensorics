@@ -25,6 +25,13 @@ class DeviceGroupRepositoryImpl(
         }
     }
 
+    override fun updateDeviceGroup(deviceGroup: DeviceGroup): Completable {
+        return Completable.fromAction {
+            val entity = deviceGroupMapper.toDeviceGroupEntity(deviceGroup)
+            deviceGroupDao.update(entity)
+        }
+    }
+
     override fun deleteDeviceGroup(deviceGroup: DeviceGroup): Completable {
         return Completable.fromAction {
             val entity = deviceGroupMapper.toDeviceGroupEntity(deviceGroup)
