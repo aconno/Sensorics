@@ -264,7 +264,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 deviceGroupViewModel.getDevicesBelongingSomeDeviceGroup()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { devicesBelongingSomeDeviceGroup ->
-                        displayPreferredDevices(devices.filter { !devicesBelongingSomeDeviceGroup.contains(it.device) })
+                        displayPreferredDevices(devices.filter { !devicesBelongingSomeDeviceGroup.contains(it.device) && !deletedItems.contains(it) })
                     }
             }
             else -> {
@@ -272,7 +272,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 deviceGroupViewModel.getDevicesFromDeviceGroup(deviceGroup.id)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {devicesInGroup ->
-                        displayPreferredDevices(devices.filter { devicesInGroup.contains(it.device) })
+                        displayPreferredDevices(devices.filter { devicesInGroup.contains(it.device) && !deletedItems.contains(it) })
                     }
             }
         }
