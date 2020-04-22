@@ -48,6 +48,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:visibility="gone"
+            android:paddingStart="0dp"
+            android:paddingEnd="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
