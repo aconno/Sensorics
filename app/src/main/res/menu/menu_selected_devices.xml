@@ -4,13 +4,12 @@
 
     <item
         android:id="@+id/action_select_all"
-        android:checkable="true"
         android:enabled="true"
         android:icon="?attr/actionModeSelectAllDrawable"
         android:orderInCategory="1"
         android:title="@string/select_all"
         android:visible="true"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_move_devices_to_group"
@@ -20,5 +19,20 @@
     <item
         android:id="@+id/action_remove_devices_from_group"
         android:title="@string/remove_devices_from_group"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_rename_device"
+        android:title="@string/rename_device"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_activate_all_actions"
+        android:title="@string/activate_all_actions"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_deactivate_all_actions"
+        android:title="@string/deactivate_all_actions"
         app:showAsAction="never" />
 </menu>
