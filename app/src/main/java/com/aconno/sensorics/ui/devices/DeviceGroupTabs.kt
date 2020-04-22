@@ -71,7 +71,6 @@ class DeviceGroupTabs(val context: Context, private val tabLayout: TabLayout) {
 
     private fun removeTabAtIndex(index : Int) {
         tabLayout.removeTabAt(index)
-        tabLayout.selectTab(tabLayout.getTabAt(allDevicesTabIndex ?: 0))
 
         allDevicesTabIndex?.let {
             allDevicesTabIndex = if(it > index) it-1 else it
