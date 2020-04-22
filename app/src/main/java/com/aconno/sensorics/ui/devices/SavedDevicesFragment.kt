@@ -79,6 +79,8 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private var savedInstanceStateSelectedItems: Array<String>? = null
 
+    private var isBluetoothOn : Boolean = false //needed in order to know when to show or hide FAB (it has to be hidden during item selection state so this is neede to know if it should be shown when exiting item selection state)
+
     private val snackbarCallback = object : Snackbar.Callback() {
         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
             if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
@@ -442,6 +444,7 @@ class SavedDevicesFragment : DaggerFragment(),
         deviceAdapter.enableItemSelection(initiallySelectedItem)
         selectionStateListener?.onSelectedItemsCountChanged(deviceAdapter.getNumberOfSelectedItems())
         selectionStateListener?.onItemSelectionStateEntered()
+        button_add_device.hide()
     }
 
 
@@ -457,6 +460,10 @@ class SavedDevicesFragment : DaggerFragment(),
         if (deviceAdapter.isItemSelectionEnabled) {
             deviceAdapter.disableItemSelection()
             selectionStateListener?.onItemSelectionStateExited()
+
+            if(isBluetoothOn) {
+                button_add_device.show()
+            }
         }
     }
 
@@ -549,11 +556,15 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     fun onBluetoothOn() {
-        button_add_device.show()
+        if(!deviceAdapter.isItemSelectionEnabled) {
+            button_add_device.show()
+        }
+        isBluetoothOn = true
     }
 
     fun onBluetoothOff() {
         button_add_device.hide()
+        isBluetoothOn = false
     }
 
     override fun onDevicesDialogItemClick(item: Device) {
