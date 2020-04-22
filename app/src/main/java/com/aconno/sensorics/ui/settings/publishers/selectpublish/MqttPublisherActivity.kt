@@ -3,6 +3,8 @@ package com.aconno.sensorics.ui.settings.publishers.selectpublish
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.RadioButton
 import android.widget.Toast
 import com.aconno.sensorics.PublisherIntervalConverter
@@ -18,6 +20,7 @@ import kotlinx.android.synthetic.main.activity_mqtt_publisher.*
 import kotlinx.android.synthetic.main.layout_datastring.*
 import kotlinx.android.synthetic.main.layout_mqtt.*
 import kotlinx.android.synthetic.main.layout_publisher_header.*
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
@@ -51,9 +54,26 @@ class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
         }
     }
 
+    fun validateMqttUrl(): Boolean {
+        return VALID_MQTT_URL_PATTERN.matcher(edit_url_mqtt?.text?.toString()?.trim()).matches()
+    }
 
     override fun setFields(model: MqttPublishModel) {
         super.setFields(model)
+
+        edit_url_mqtt.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (!validateMqttUrl()) {
+                    edit_url_mqtt?.error = getString(R.string.mqtt_format)
+                } else {
+                    edit_url_mqtt?.error = null
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
 
         edit_url_mqtt.setText(model.url)
         edit_clientid_mqtt.setText(model.clientId)
@@ -103,10 +123,10 @@ class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
         } else {
             if (!isDataStringValid()) {
                 Toast.makeText(
-                        this,
-                        getString(R.string.data_string_not_valid),
-                        Toast.LENGTH_SHORT
-                    )
+                    this,
+                    getString(R.string.data_string_not_valid),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
 
                 return null
@@ -144,6 +164,10 @@ class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
 
 
     companion object {
+        private const val VALID_MQTT_URL_REGEX: String =
+            "(?:(?:tcp)|(?:ws)|(?:wss)):\\/\\/(?:(?:(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])):\\d+(?:\\/[A-Za-z0-9/]*)?"
+        val VALID_MQTT_URL_PATTERN: Pattern = Pattern.compile(VALID_MQTT_URL_REGEX)
+
         fun start(context: Context, id: Long? = null) {
             val intent = Intent(context, MqttPublisherActivity::class.java)
 
