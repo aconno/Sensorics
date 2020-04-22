@@ -338,14 +338,17 @@ class SavedDevicesFragment : DaggerFragment(),
             }
         }
 
-
-        populateTabLayout(savedInstanceStateSelectedTab)
-
+        if(!this::deviceGroupsTabs.isInitialized) {
+            populateTabLayout(savedInstanceStateSelectedTab)
+        } else {
+            deviceGroupsTabs.setTabLayout(tab_layout)
+        }
+        setTabSelectedListener()
     }
-
 
     private fun populateTabLayout(initiallySelectedTab : Int) {
         tab_layout.removeAllTabs()
+
         deviceGroupsTabs = DeviceGroupTabs(context ?: throw IllegalStateException("Tab layout can not be populated before the fragment has been attached."),
             tab_layout)
         deviceGroupsTabs.addAllDevicesTab()
@@ -364,6 +367,10 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
         )
 
+
+    }
+
+    private fun setTabSelectedListener() {
         tab_layout.addOnTabSelectedListener(
             object : TabLayout.OnTabSelectedListener {
                 override fun onTabReselected(tab: TabLayout.Tab?) {

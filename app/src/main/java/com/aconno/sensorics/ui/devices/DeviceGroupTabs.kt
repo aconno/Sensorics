@@ -6,7 +6,7 @@ import com.aconno.sensorics.domain.model.DeviceGroup
 import com.google.android.material.tabs.TabLayout
 import java.lang.IllegalArgumentException
 
-class DeviceGroupTabs(val context: Context, private val tabLayout: TabLayout) {
+class DeviceGroupTabs(val context: Context, private var tabLayout: TabLayout) {
     var allDevicesTabIndex : Int? = null
     var othersTabIndex : Int? = null
     var tabToDeviceGroupMap : MutableMap<Int, DeviceGroup> = mutableMapOf()
@@ -19,6 +19,31 @@ class DeviceGroupTabs(val context: Context, private val tabLayout: TabLayout) {
     fun addOthersTab() {
         tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.unsorted_devices)))
         othersTabIndex = tabLayout.tabCount - 1
+    }
+
+    fun setTabLayout(tabLayout: TabLayout) {
+        var tabsCount = getDeviceGroups().size
+        allDevicesTabIndex?.let { tabsCount++ }
+        othersTabIndex?.let { tabsCount++ }
+
+        for(i in 0 until tabsCount) {
+            when (i) {
+                allDevicesTabIndex -> {
+                    tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.all_devices)))
+                }
+                othersTabIndex -> {
+                    tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.unsorted_devices)))
+                }
+                else -> {
+                    tabLayout.addTab(tabLayout.newTab().setText(tabToDeviceGroupMap[i]?.groupName))
+                }
+            }
+        }
+
+        val selectedTabIndex = this.tabLayout.selectedTabPosition
+        this.tabLayout = tabLayout
+
+        tabLayout.getTabAt(selectedTabIndex)?.select()
     }
 
     fun addTabForDeviceGroup(group : DeviceGroup) {
