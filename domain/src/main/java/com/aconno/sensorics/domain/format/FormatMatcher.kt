@@ -58,14 +58,20 @@ class FormatMatcher(
             val requiredBytes = entry.value
             advertisementMap[type]?.let { advertisementTypeData ->
                 // Clear up settings support byte if we are looking at manufacturers data
-                format.getSettingsSupport()?.takeIf { type == 0xFF.toByte() }?.let { support ->
-                    advertisementTypeData[support.index] = advertisementTypeData[support.index] and support.mask.inv()
+                format.getSettingsSupport()?.takeIf {
+                    type == 0xFF.toByte()
+                }?.let { support ->
+                    // Check if advertisement is even long enough to have a settings byte
+                    advertisementTypeData.getOrNull(support.index)?.let { byte ->
+                        advertisementTypeData[support.index] = byte and support.mask.inv()
+                    }
                 }
 
                 requiredBytes.all { byteFormatRequired ->
-                    advertisementTypeData.getOrNull(byteFormatRequired.position)?.let { actualByte ->
-                        actualByte == byteFormatRequired.value
-                    } ?: false // else return false because such byte does not exist
+                    advertisementTypeData.getOrNull(byteFormatRequired.position)
+                        ?.let { actualByte ->
+                            actualByte == byteFormatRequired.value
+                        } ?: false // else return false because such byte does not exist
                 }
             } ?: false // else return false because the required type of data is not provided
         }
