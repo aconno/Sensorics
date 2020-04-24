@@ -6,18 +6,28 @@ import com.aconno.sensorics.domain.model.DeviceGroup
 import com.google.android.material.tabs.TabLayout
 import java.lang.IllegalArgumentException
 
-class DeviceGroupTabs(val context: Context, private var tabLayout: TabLayout) {
+class DeviceGroupTabs(val context: Context, private var tabLayout: TabLayout, private val tabLongClickListener : DeviceGroupTabLongClickListener) {
     var allDevicesTabIndex : Int? = null
     var othersTabIndex : Int? = null
     var tabToDeviceGroupMap : MutableMap<Int, DeviceGroup> = mutableMapOf()
 
     fun addAllDevicesTab() {
-        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.all_devices)))
+        val tab = tabLayout.newTab().setText(context.getString(R.string.all_devices))
+        tab.view.setOnLongClickListener {
+            tabLongClickListener.onAllDevicesTabLongClick()
+        }
+
+        tabLayout.addTab(tab)
         allDevicesTabIndex = tabLayout.tabCount - 1
     }
 
     fun addOthersTab() {
-        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.unsorted_devices)))
+        val tab = tabLayout.newTab().setText(context.getString(R.string.unsorted_devices))
+        tab.view.setOnLongClickListener {
+            tabLongClickListener.onOthersTabLongClick()
+        }
+
+        tabLayout.addTab(tab)
         othersTabIndex = tabLayout.tabCount - 1
     }
 
@@ -53,7 +63,12 @@ class DeviceGroupTabs(val context: Context, private var tabLayout: TabLayout) {
             tabLayout.tabCount - 1
         }
 
-        tabLayout.addTab(tabLayout.newTab().setText(group.groupName),tabPosition)
+        val tab = tabLayout.newTab().setText(group.groupName)
+        tab.view.setOnLongClickListener {
+            tabLongClickListener.onDeviceGroupTabLongClick(group)
+        }
+
+        tabLayout.addTab(tab,tabPosition)
         tabToDeviceGroupMap[tabPosition] = group
 
         othersTabIndex?.let {
@@ -139,4 +154,9 @@ class DeviceGroupTabs(val context: Context, private var tabLayout: TabLayout) {
         }
     }
 
+    interface DeviceGroupTabLongClickListener {
+        fun onDeviceGroupTabLongClick(deviceGroup: DeviceGroup) : Boolean
+        fun onAllDevicesTabLongClick() : Boolean
+        fun onOthersTabLongClick() : Boolean
+    }
 }

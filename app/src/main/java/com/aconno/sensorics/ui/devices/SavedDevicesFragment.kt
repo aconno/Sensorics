@@ -50,7 +50,8 @@ class SavedDevicesFragment : DaggerFragment(),
     DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener, IconInfo,
     SelectableRecyclerViewAdapter.ItemClickListener<DeviceActive>,
     SelectableRecyclerViewAdapter.ItemLongClickListener<DeviceActive>,
-    SelectableRecyclerViewAdapter.ItemSelectedListener<DeviceActive>
+    SelectableRecyclerViewAdapter.ItemSelectedListener<DeviceActive>,
+        DeviceGroupTabs.DeviceGroupTabLongClickListener
 {
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
@@ -375,7 +376,7 @@ class SavedDevicesFragment : DaggerFragment(),
         tab_layout.removeAllTabs()
 
         deviceGroupsTabs = DeviceGroupTabs(context ?: throw IllegalStateException("Tab layout can not be populated before the fragment has been attached."),
-            tab_layout)
+            tab_layout,this)
         deviceGroupsTabs.addAllDevicesTab()
 
         addDisposable(
@@ -412,6 +413,30 @@ class SavedDevicesFragment : DaggerFragment(),
 
             }
         )
+    }
+
+    override fun onDeviceGroupTabLongClick(deviceGroup: DeviceGroup): Boolean {
+        if(deviceGroup != deviceGroupsTabs.getSelectedDeviceGroup() || deviceAdapter.isItemSelectionEnabled) {
+            return false
+        }
+        deviceGroupOptions.showDeviceGroupsOptions()
+        return true
+    }
+
+    override fun onAllDevicesTabLongClick(): Boolean {
+        if(!deviceGroupsTabs.isAllDevicesTabActive() || deviceAdapter.isItemSelectionEnabled) {
+            return false
+        }
+        deviceGroupOptions.showDeviceGroupsOptions()
+        return true
+    }
+
+    override fun onOthersTabLongClick(): Boolean {
+        if(!deviceGroupsTabs.isOthersTabActive() || deviceAdapter.isItemSelectionEnabled) {
+            return false
+        }
+        deviceGroupOptions.showDeviceGroupsOptions()
+        return true
     }
 
     private fun updateActiveorDeactiveDevices(changedDevices: List<DeviceActive>) {
