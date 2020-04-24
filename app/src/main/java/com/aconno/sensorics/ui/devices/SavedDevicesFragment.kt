@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
+import android.widget.Toast
 import androidx.recyclerview.widget.*
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
@@ -29,9 +30,11 @@ import com.aconno.sensorics.viewmodel.DeviceViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import dagger.android.support.DaggerFragment
+import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.dialog_create_group.view.*
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
@@ -80,6 +83,8 @@ class SavedDevicesFragment : DaggerFragment(),
     private var savedInstanceStateSelectedItems: Array<String>? = null
 
     private var isBluetoothOn : Boolean = false //needed in order to know when to show or hide FAB (it has to be hidden during item selection state so this is neede to know if it should be shown when exiting item selection state)
+
+    private var mainMenu: Menu? = null
 
     private val snackbarCallback = object : Snackbar.Callback() {
         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
@@ -131,6 +136,8 @@ class SavedDevicesFragment : DaggerFragment(),
         }
 
         menu.findItem(R.id.action_start_dashboard)?.isVisible = BuildConfig.FLAVOR == "dev"
+
+        mainMenu = menu
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -150,6 +157,20 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
                 R.id.action_remove_devices_from_group -> {
                     showRemoveDevicesFromGroupDialog()
+                    return true
+                }
+                R.id.action_rename_device -> {
+                    createRenameDeviceDialog(deviceAdapter.getSelectedItems()[0].device).show()
+                    return true
+                }
+                R.id.action_deactivate_all_actions -> {
+                    deactivateAllActionsForDevices(deviceAdapter.getSelectedItems().map { it.device })
+                    exitItemSelectionState()
+                    return true
+                }
+                R.id.action_activate_all_actions -> {
+                    activateAllActionsForDevices(deviceAdapter.getSelectedItems().map { it.device })
+                    exitItemSelectionState()
                     return true
                 }
                 R.id.action_start_actions_activity -> {
@@ -467,6 +488,55 @@ class SavedDevicesFragment : DaggerFragment(),
         }
     }
 
+    private fun setActionsStateForDevices(devices : List<Device>, state : Boolean, successMessage : String, failMessage : String) {
+        val completables = mutableListOf<Completable>()
+            .apply {
+                devices.forEach {
+                    add(setActionActiveByDeviceMacAddressUseCase.execute(it.macAddress,state))
+                }
+
+            }
+
+        addDisposable(
+            Completable.merge(completables)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Toast.makeText(
+                        context,
+                        successMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }, {
+                    Toast.makeText(
+                        context,
+                        failMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                })
+        )
+    }
+
+    private fun activateAllActionsForDevices(devices : List<Device>) {
+        val successMessage = if(devices.size==1) {
+            getString(R.string.activated_all_actions_for_one_device,devices[0].name)
+        } else {
+            getString(R.string.activated_all_actions,devices.size)
+        }
+
+        setActionsStateForDevices(devices,true,successMessage,getString(R.string.error_activating_all_actions))
+    }
+
+    private fun deactivateAllActionsForDevices(devices : List<Device>) {
+        val successMessage = if(devices.size==1) {
+            getString(R.string.deactivated_all_actions_for_one_device,devices[0].name)
+        } else {
+            getString(R.string.deactivated_all_actions,devices.size)
+        }
+
+        setActionsStateForDevices(devices,false,successMessage,getString(R.string.error_deactivating_all_actions))
+    }
+
     override fun onItemLongClick(item: DeviceActive) {
         if (!deviceAdapter.isItemSelectionEnabled) {
             enableItemSelection(item)
@@ -541,15 +611,16 @@ class SavedDevicesFragment : DaggerFragment(),
         return builder
             .setView(inflate)
             .setTitle("Rename Beacon")
-            .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
+            .setPositiveButton(getString(R.string.rename)) { dialog, _ ->
                 input.text.toString().let { text ->
                     if (!text.isBlank()) {
                         deviceViewModel.updateDevice(device, text)
+                        exitItemSelectionState()
                     }
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
@@ -668,7 +739,10 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun onListItemSelectionStateChanged(item: DeviceActive, state: Boolean) {
-        selectionStateListener?.onSelectedItemsCountChanged(deviceAdapter.getNumberOfSelectedItems())
+        val selectedItemsCount = deviceAdapter.getNumberOfSelectedItems()
+        selectionStateListener?.onSelectedItemsCountChanged(selectedItemsCount)
+
+        mainMenu?.findItem(R.id.action_rename_device)?.isVisible = selectedItemsCount==1
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

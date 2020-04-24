@@ -177,8 +177,8 @@
 
     <string name="active">Active</string>
     <string name="rename">Rename</string>
-    <string name="deactivate_all_actions">Deactivate all actions for devices</string>
-    <string name="activate_all_actions">Activate all actions for devices</string>
+    <string name="deactivate_all_actions">Deactivate all actions</string>
+    <string name="activate_all_actions">Activate all actions</string>
     <string name="message_action_active_state_not_selected">Active state not selected</string>
     <string name="message_no_devices">There are no devices</string>
     <string name="message_save_unsuccessful">Save unsuccessful</string>
@@ -427,4 +427,10 @@
     <string name="one_device_removed_from_group_message">Device %s removed from %s</string>
     <string name="devices_removed_from_group_message">%d devices removed from %s</string>
     <string name="rename_device">Rename device</string>
+    <string name="error_deactivating_all_actions">Error deactivating all actions for devices</string>
+    <string name="deactivated_all_actions_for_one_device">Deactivated all actions for device %s</string>
+    <string name="deactivated_all_actions">Deactivated all actions for %d devices</string>
+    <string name="error_activating_all_actions">Error activating all actions for devices</string>
+    <string name="activated_all_actions_for_one_device">Activated all actions for device %s</string>
+    <string name="activated_all_actions">Activated all actions for %d devices</string>
 </resources>
