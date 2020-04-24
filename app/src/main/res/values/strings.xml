@@ -433,4 +433,5 @@
     <string name="error_activating_all_actions">Error activating all actions for devices</string>
     <string name="activated_all_actions_for_one_device">Activated all actions for device %s</string>
     <string name="activated_all_actions">Activated all actions for %d devices</string>
+    <string name="device_group_name_taken">Device group name already taken.</string>
 </resources>

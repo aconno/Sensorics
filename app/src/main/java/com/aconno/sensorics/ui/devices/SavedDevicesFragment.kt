@@ -2,6 +2,7 @@ package com.aconno.sensorics.ui.devices
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -35,6 +36,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.dialog_create_group.*
 import kotlinx.android.synthetic.main.dialog_create_group.view.*
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
@@ -730,20 +732,33 @@ class SavedDevicesFragment : DaggerFragment(),
         private fun showEditGroupDialog() {
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_group,null)
 
-            AlertDialog.Builder(context)
+            val dialog = AlertDialog.Builder(context)
                 .setTitle(getString(R.string.rename_group_title))
-                .setPositiveButton(getString(R.string.rename)) { _, _ ->
-                    updateSelectedGroupName(dialogView.group_name.text.toString())
-                }
+                .setPositiveButton(getString(R.string.rename),null)
                 .setCancelable(true)
                 .setView(dialogView)
                 .show()
+
+            dialog.group_name.setText(deviceGroupsTabs.getSelectedDeviceGroup()?.groupName ?: "")
+            dialog.getButton(Dialog.BUTTON_POSITIVE)
+                .setOnClickListener {
+                    val newName = dialogView.group_name.text.toString()
+                    val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return@setOnClickListener
+
+                    if(deviceGroupsTabs.getDeviceGroups().find { it.groupName == newName && it!=deviceGroup } != null) {
+                        dialogView.group_name_layout.error = getString(R.string.device_group_name_taken)
+                        dialogView.group_name_layout.isErrorEnabled = true
+                        return@setOnClickListener
+                    }
+                    dialog.dismiss()
+
+                    updateSelectedGroupName(newName)
+                }
         }
 
-        private fun updateSelectedGroupName(newName: String) {
+        private fun updateSelectedGroupName(newName : String) {
             val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
             deviceGroup.groupName = newName
-
 
             addDisposable(
                 deviceGroupViewModel.updateDeviceGroup(deviceGroup)
@@ -782,14 +797,26 @@ class SavedDevicesFragment : DaggerFragment(),
         private fun showCreateNewGroupDialog() {
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_group,null)
 
-            AlertDialog.Builder(context)
+            val dialog = AlertDialog.Builder(context)
                 .setTitle(getString(R.string.create_new_group_title))
-                .setPositiveButton(getString(R.string.create)) { _, _ ->
-                    createNewGroup(dialogView.group_name.text.toString())
-                }
+                .setPositiveButton(getString(R.string.create),null)
                 .setCancelable(true)
                 .setView(dialogView)
                 .show()
+
+            dialog.getButton(Dialog.BUTTON_POSITIVE)
+                .setOnClickListener {
+                    val name = dialogView.group_name.text.toString()
+
+                    if(deviceGroupsTabs.getDeviceGroups().find { it.groupName == name } != null) {
+                        dialogView.group_name_layout.error = getString(R.string.device_group_name_taken)
+                        dialogView.group_name_layout.isErrorEnabled = true
+                        return@setOnClickListener
+                    }
+                    dialog.dismiss()
+
+                    createNewGroup(name)
+                }
         }
 
 
