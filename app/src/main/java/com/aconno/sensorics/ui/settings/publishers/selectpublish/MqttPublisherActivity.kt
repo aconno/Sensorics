@@ -55,7 +55,13 @@ class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
     }
 
     fun validateMqttUrl(): Boolean {
-        return VALID_MQTT_URL_PATTERN.matcher(edit_url_mqtt?.text?.toString()?.trim()).matches()
+        return edit_url_mqtt?.text?.toString()?.trim()?.let { text ->
+            VALID_MQTT_URL_PATTERN.matcher(text).takeIf {
+                it.matches()
+            }?.toMatchResult()?.let { result ->
+                result.group(0) == text
+            }
+        } ?: false
     }
 
     override fun setFields(model: MqttPublishModel) {
@@ -165,7 +171,7 @@ class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
 
     companion object {
         private const val VALID_MQTT_URL_REGEX: String =
-            "(?:(?:tcp)|(?:ws)|(?:wss)):\\/\\/(?:(?:(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])):\\d+(?:\\/[A-Za-z0-9/]*)?"
+            "(?:(?:tcp)|(?:ws)|(?:wss)):\\/\\/(?:(?:(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]))+(:[0-9]+)?(?:\\/[A-Za-z0-9/]*)?"
         val VALID_MQTT_URL_PATTERN: Pattern = Pattern.compile(VALID_MQTT_URL_REGEX)
 
         fun start(context: Context, id: Long? = null) {
