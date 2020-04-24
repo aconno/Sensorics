@@ -284,7 +284,7 @@ class SavedDevicesFragment : DaggerFragment(),
     private fun filterAndDisplayDevices(devices : List<DeviceActive>) {
         when {
             deviceGroupsTabs.isAllDevicesTabActive() -> {
-                displayPreferredDevices(devices)
+                displayPreferredDevices(devices.filter { !deletedItems.contains(it) })
             }
             deviceGroupsTabs.isOthersTabActive() -> {
                 deviceGroupViewModel.getDevicesBelongingSomeDeviceGroup()
@@ -649,7 +649,6 @@ class SavedDevicesFragment : DaggerFragment(),
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int) {
         if (viewHolder is DeviceActiveAdapter.ViewHolder) {
             // get the removed item name to display it in snack bar and backup for undo
-
             deletedItems.add(deviceAdapter.getDevice(position))
             val name = deletedItems.peek().device.getRealName()
 
