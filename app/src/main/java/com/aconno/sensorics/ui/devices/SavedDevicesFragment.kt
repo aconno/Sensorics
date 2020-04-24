@@ -541,63 +541,6 @@ class SavedDevicesFragment : DaggerFragment(),
         if (!deviceAdapter.isItemSelectionEnabled) {
             enableItemSelection(item)
         }
-
-//        val renameString = getString(R.string.rename)
-//        val deactivateAllActionsString = getString(R.string.deactivate_all_actions)
-//        val activateAllActionsString = getString(R.string.activate_all_actions)
-//
-//        val options = arrayOf(
-//            renameString,
-//            deactivateAllActionsString,
-//            activateAllActionsString
-//        )
-//
-//        val builder = AlertDialog.Builder(context)
-//        builder.setTitle(R.string.actions)
-//            .setItems(options) { _, which ->
-//                when (options[which]) {
-//                    renameString -> {
-//                        createRenameDeviceDialog(item.device).show()
-//                    }
-//                    deactivateAllActionsString -> {
-//                        setActionActiveByDeviceMacAddressUseCase.execute(item.device.macAddress, false)
-//                            .subscribeOn(Schedulers.io())
-//                            .observeOn(AndroidSchedulers.mainThread())
-//                            .subscribe({
-//                                Toast.makeText(
-//                                    context,
-//                                    "Deactivated all actions for device",
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                            }, {
-//                                Toast.makeText(
-//                                    context,
-//                                    "Error deactivating all actions for device",
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                            })
-//                    }
-//                    activateAllActionsString -> {
-//                        setActionActiveByDeviceMacAddressUseCase.execute(item.device.macAddress, true)
-//                            .subscribeOn(Schedulers.io())
-//                            .observeOn(AndroidSchedulers.mainThread())
-//                            .subscribe({
-//                                Toast.makeText(
-//                                    context,
-//                                    "Activated all actions for device",
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                            }, {
-//                                Toast.makeText(
-//                                    context,
-//                                    "Error activating all actions for device",
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                            })
-//                    }
-//                }
-//            }
-//            .show()
     }
 
     @SuppressLint("InflateParams")
