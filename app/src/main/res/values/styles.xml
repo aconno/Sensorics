@@ -92,7 +92,7 @@
     <style name="TabLayoutTextStyle">
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textAllCaps">true</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 
     <dimen name="list_item_large_text_size">20sp</dimen>
