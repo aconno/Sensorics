@@ -42,6 +42,7 @@ import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import java.lang.IllegalStateException
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -525,6 +526,7 @@ class SavedDevicesFragment : DaggerFragment(),
         }
     }
 
+
     private fun setActionsStateForDevices(devices : List<Device>, state : Boolean, successMessage : String, failMessage : String) {
         val completables = mutableListOf<Completable>()
             .apply {
@@ -595,7 +597,11 @@ class SavedDevicesFragment : DaggerFragment(),
                 input.text.toString().let { text ->
                     if (!text.isBlank()) {
                         deviceViewModel.updateDevice(device, text)
-                        exitItemSelectionState()
+
+                        Completable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                            .subscribe {
+                                exitItemSelectionState()
+                            }
                     }
                 }
                 dialog.dismiss()
