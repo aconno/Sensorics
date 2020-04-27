@@ -85,6 +85,8 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private var savedInstanceStateSelectedItems: Array<String>? = null
 
+    private var savedInstanceStateSelectedTab = 0
+
     private var isBluetoothOn : Boolean = false //needed in order to know when to show or hide FAB (it has to be hidden during item selection state so this is neede to know if it should be shown when exiting item selection state)
 
     private var mainMenu: Menu? = null
@@ -134,6 +136,7 @@ class SavedDevicesFragment : DaggerFragment(),
         if(deviceAdapter.isItemSelectionEnabled) {
             inflater.inflate(R.menu.menu_selected_devices, menu)
             menu.findItem(R.id.action_remove_devices_from_group)?.isVisible = deviceGroupsTabs.isDeviceGroupTabActive()
+            menu.findItem(R.id.action_rename_device)?.isVisible = deviceAdapter.getNumberOfSelectedItems()==1
         } else {
             inflater.inflate(R.menu.menu_devices, menu)
         }
@@ -310,7 +313,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
         list_devices.layoutManager = LinearLayoutManager(context)
         list_devices.adapter = deviceAdapter
-        var savedInstanceStateSelectedTab = 0
+        savedInstanceStateSelectedTab = 0
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(ITEM_SELECTION_ENABLED_KEY)) {
                 enableItemSelection()
@@ -408,6 +411,9 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab?) {
+                    if(savedInstanceStateSelectedItems != null) {
+                        enableItemSelection()
+                    }
                     filterAndDisplayDevices(deviceViewModel.getDeviceActiveList())
                 }
 
@@ -471,12 +477,16 @@ class SavedDevicesFragment : DaggerFragment(),
                 deviceAdapter.setDevices(preferredDevices)
                 deviceAdapter.setIcons(getIconInfoForActiveDevices(preferredDevices))
 
-                savedInstanceStateSelectedItems?.let { selectedItems ->
-                    if(deviceAdapter.isItemSelectionEnabled) {
-                        deviceAdapter.setItemsAsSelected(preferredDevices.filter { selectedItems.contains(it.device.macAddress) })
+                if(savedInstanceStateSelectedTab == deviceGroupsTabs.getSelectedTabIndex()) {
+                    savedInstanceStateSelectedItems?.let { selectedItems ->
+
+                        if(deviceAdapter.isItemSelectionEnabled) {
+                            deviceAdapter.setItemsAsSelected(preferredDevices.filter { selectedItems.contains(it.device.macAddress) })
+                        }
+                        savedInstanceStateSelectedItems = null
                     }
-                    savedInstanceStateSelectedItems = null
                 }
+
             }
         }
     }
