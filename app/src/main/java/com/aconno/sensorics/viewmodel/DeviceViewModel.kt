@@ -80,12 +80,12 @@ class DeviceViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .map {
                 deviceList = it.map { DeviceActive(it, false) }
-                deviceList
+                getDeviceActiveList()
             }
     }
 
     fun getDeviceActiveList() : List<DeviceActive> {
-        return deviceList ?: emptyList()
+        return deviceList?.map { DeviceActive(it.device,it.active)  } ?: emptyList()
     }
 
     fun saveDevice(device: Device) : Completable {
