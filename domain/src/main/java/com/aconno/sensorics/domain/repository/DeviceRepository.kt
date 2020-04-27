@@ -14,4 +14,6 @@ interface DeviceRepository {
     fun insertDevice(device: Device): Completable
 
     fun deleteDevice(device: Device): Completable
+
+    fun updateDevice(device: Device): Completable
 }

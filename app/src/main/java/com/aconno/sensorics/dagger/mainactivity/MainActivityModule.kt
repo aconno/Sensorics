@@ -171,6 +171,7 @@ class MainActivityModule {
         @Named("composite") scanDeviceStream: Flowable<ScanDevice>,
         getSavedDevicesUseCase: GetSavedDevicesUseCase,
         saveDeviceUseCase: SaveDeviceUseCase,
+        updateDeviceUseCase: UpdateDeviceUseCase,
         deleteDeviceUseCase: DeleteDeviceUseCase,
         getIconUseCase: GetIconUseCase
     ): DeviceListViewModelFactory {
@@ -179,6 +180,7 @@ class MainActivityModule {
             deviceStream,
             getSavedDevicesUseCase,
             saveDeviceUseCase,
+            updateDeviceUseCase,
             deleteDeviceUseCase,
             getIconUseCase
         )

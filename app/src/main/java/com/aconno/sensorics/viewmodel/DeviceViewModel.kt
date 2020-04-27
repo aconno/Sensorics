@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
+import com.aconno.sensorics.domain.interactor.repository.UpdateDeviceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceActive
@@ -21,6 +22,7 @@ class DeviceViewModel(
     deviceStream: Flowable<Device>,
     private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
     private val saveDeviceUseCase: SaveDeviceUseCase,
+    private val updateDeviceUseCase: UpdateDeviceUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
     private val getIconUseCase: GetIconUseCase
 ) : ViewModel() {
@@ -101,7 +103,7 @@ class DeviceViewModel(
             device.icon
         )
 
-        saveDeviceUseCase.execute(newDevice)
+        updateDeviceUseCase.execute(newDevice)
             .subscribeOn(Schedulers.io())
             .subscribe()
     }

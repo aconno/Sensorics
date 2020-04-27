@@ -34,6 +34,14 @@ class DeviceModule {
 
     @Provides
     @DeviceScope
+    fun provideUpdateDeviceUseCase(
+        deviceRepository: DeviceRepository
+    ): UpdateDeviceUseCase {
+        return UpdateDeviceUseCase(deviceRepository)
+    }
+
+    @Provides
+    @DeviceScope
     fun provideDeleteDeviceUseCase(
         deviceRepository: DeviceRepository
     ): DeleteDeviceUseCase {

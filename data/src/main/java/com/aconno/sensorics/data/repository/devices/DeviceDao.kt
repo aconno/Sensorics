@@ -16,6 +16,9 @@ abstract class DeviceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insert(device: DeviceEntity)
 
+    @Update
+    abstract fun update(device: DeviceEntity)
+
     @Delete
     abstract fun delete(device: DeviceEntity)
 }
