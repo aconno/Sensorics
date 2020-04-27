@@ -34,19 +34,21 @@ class DeviceSelectFragment : BaseFragment() {
 
     private val itemCheckChangeListener = object : DeviceSelectAdapter.ItemCheckChangeListener {
         override fun onItemCheckedChange(position: Int, isChecked: Boolean) {
-            deviceList[position]
-                .related = isChecked
+            deviceList[position].related = isChecked
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let { args ->
-            args.getString(DEVICE_SELECT_PUBLISHER_TYPE_KEY)?.let { type ->
-                publisherId = args.getLong(DEVICE_SELECT_PUBLISHER_ID_KEY)
-                publisherType = args.getSerializable(DEVICE_SELECT_PUBLISHER_TYPE_KEY) as? PublishType
-            }
-        }
+        publisherId = arguments?.getLong(DEVICE_SELECT_PUBLISHER_ID_KEY)
+        publisherType = arguments?.getSerializable(DEVICE_SELECT_PUBLISHER_TYPE_KEY) as? PublishType
+//        arguments?.let { args ->
+//            args.getString(DEVICE_SELECT_PUBLISHER_TYPE_KEY)?.let { type ->
+//                publisherId = args.getLong(DEVICE_SELECT_PUBLISHER_ID_KEY)
+//                publisherType = args.getSerializable(DEVICE_SELECT_PUBLISHER_TYPE_KEY) as? PublishType
+//            }
+//        }
+//         TODO: Find out why this doesn't work
     }
 
     override fun onCreateView(
@@ -56,7 +58,6 @@ class DeviceSelectFragment : BaseFragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_devices, container, false)
         val listView = view.findViewById<RecyclerView>(R.id.list_devices)
-
 
         adapter = DeviceSelectAdapter(
             deviceList,
