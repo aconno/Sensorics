@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
@@ -38,6 +39,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.dialog_create_group.*
 import kotlinx.android.synthetic.main.dialog_create_group.view.*
+import kotlinx.android.synthetic.main.dialog_sort_devices.view.*
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import java.lang.IllegalStateException
@@ -91,6 +93,11 @@ class SavedDevicesFragment : DaggerFragment(),
     private var isBluetoothOn : Boolean = false //needed in order to know when to show or hide FAB (it has to be hidden during item selection state so this is neede to know if it should be shown when exiting item selection state)
 
     private var mainMenu: Menu? = null
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
+    private var deviceSort : DeviceSort = DeviceSort()
 
     private val snackbarCallback = object : Snackbar.Callback() {
         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
@@ -196,6 +203,10 @@ class SavedDevicesFragment : DaggerFragment(),
                     (activity as MainActivity).onDashboardClicked()
                     return true
                 }
+                R.id.action_sort_devices -> {
+                    showSortDevicesDialog()
+                    return true
+                }
                 R.id.device_groups_options -> {
                     deviceGroupOptions.showDeviceGroupsOptions()
                     return true
@@ -203,6 +214,48 @@ class SavedDevicesFragment : DaggerFragment(),
                 else -> return super.onOptionsItemSelected(item)
             }
         } ?: return super.onOptionsItemSelected(item)
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showSortDevicesDialog() {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_sort_devices,null)
+
+        when(deviceSort.sortByAttribute) {
+            DeviceSort.SortAttributes.NAME -> dialogView.sort_by_radio_group.check(R.id.name_option)
+            DeviceSort.SortAttributes.MAC_ADDRESS -> dialogView.sort_by_radio_group.check(R.id.mac_address_option)
+        }
+        when(deviceSort.sortOrder) {
+            DeviceSort.SortOrder.ASCENDING -> dialogView.order_radio_group.check(R.id.ascending_option)
+            DeviceSort.SortOrder.DESCENDING -> dialogView.order_radio_group.check(R.id.descending_option)
+        }
+
+        AlertDialog.Builder(context)
+            .setTitle(getString(R.string.sort_devices_title))
+            .setPositiveButton(getString(R.string.sort)) { _, _ ->
+                deviceSort = DeviceSort().apply {
+                    sortByAttribute = when(dialogView.sort_by_radio_group.checkedRadioButtonId) {
+                        R.id.name_option -> DeviceSort.SortAttributes.NAME
+                        R.id.mac_address_option -> DeviceSort.SortAttributes.MAC_ADDRESS
+                        else -> throw IllegalStateException()
+                    }
+
+                    sortOrder = when(dialogView.order_radio_group.checkedRadioButtonId) {
+                        R.id.ascending_option -> DeviceSort.SortOrder.ASCENDING
+                        R.id.descending_option -> DeviceSort.SortOrder.DESCENDING
+                        else -> throw IllegalStateException()
+                    }
+
+                    saveToPreferences(sharedPreferences)
+                }
+
+
+                filterAndDisplayDevices(deviceViewModel.getDeviceActiveList())
+            }
+            .setCancelable(true)
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setView(dialogView)
+            .show()
+
     }
 
     private fun showMoveDevicesDialog() {
@@ -286,15 +339,17 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     private fun filterAndDisplayDevices(devices : List<DeviceActive>) {
+        val sortedDevices = deviceSort.sortDevices(devices)
+
         when {
             deviceGroupsTabs.isAllDevicesTabActive() -> {
-                displayPreferredDevices(devices.filter { !deletedItems.contains(it) })
+                displayPreferredDevices(sortedDevices.filter { !deletedItems.contains(it) })
             }
             deviceGroupsTabs.isOthersTabActive() -> {
                 deviceGroupViewModel.getDevicesBelongingSomeDeviceGroup()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { devicesBelongingSomeDeviceGroup ->
-                        displayPreferredDevices(devices.filter { !devicesBelongingSomeDeviceGroup.contains(it.device) && !deletedItems.contains(it) })
+                        displayPreferredDevices(sortedDevices.filter { !devicesBelongingSomeDeviceGroup.contains(it.device) && !deletedItems.contains(it) })
                     }
             }
             else -> {
@@ -302,7 +357,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 deviceGroupViewModel.getDevicesFromDeviceGroup(deviceGroup.id)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {devicesInGroup ->
-                        displayPreferredDevices(devices.filter { devicesInGroup.contains(it.device) && !deletedItems.contains(it) })
+                        displayPreferredDevices(sortedDevices.filter { devicesInGroup.contains(it.device) && !deletedItems.contains(it) })
                     }
             }
         }
@@ -337,6 +392,8 @@ class SavedDevicesFragment : DaggerFragment(),
         val itemTouchHelperCallback =
             DeviceSwipeToDismissHelper(0, ItemTouchHelper.LEFT, this)
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(list_devices)
+
+        deviceSort.loadFromPreferences(sharedPreferences)
 
         addDisposable(
             deviceViewModel.getSavedDevicesFlowable()
