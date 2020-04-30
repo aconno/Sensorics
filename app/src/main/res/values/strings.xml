@@ -441,6 +441,6 @@
     <string name="device_name_descending">Name (Z-A)</string>
     <string name="device_oldest_first">Time added (oldest first)</string>
     <string name="device_newest_first">Time added (newest first)</string>
-    <string name="mac_address_ascending">Mac address (A-Z)</string>
-    <string name="mac_address_descending">Mac address (Z-A)</string>
+    <string name="mac_address_ascending">Mac address (0-F)</string>
+    <string name="mac_address_descending">Mac address (F-0)</string>
 </resources>
