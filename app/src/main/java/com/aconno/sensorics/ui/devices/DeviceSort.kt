@@ -32,7 +32,7 @@ class DeviceSort {
     fun loadFromPreferences(sharedPreferences: SharedPreferences) {
         sortByAttribute = sharedPreferences.getString(SORT_ATTRIBUTE_KEY,null)?.let {
             SortAttributes.valueOf(it)
-        }
+        } ?: SortAttributes.TIME
         sortOrder = sharedPreferences.getString(SORT_ORDER_KEY,null)?.let {
             SortOrder.valueOf(it)
         } ?: SortOrder.ASCENDING
