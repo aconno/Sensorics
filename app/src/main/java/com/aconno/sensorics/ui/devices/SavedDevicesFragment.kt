@@ -220,13 +220,23 @@ class SavedDevicesFragment : DaggerFragment(),
     private fun showSortDevicesDialog() {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_sort_devices,null)
 
-        when(deviceSort.sortByAttribute) {
-            DeviceSort.SortAttributes.NAME -> dialogView.sort_by_radio_group.check(R.id.name_option)
-            DeviceSort.SortAttributes.MAC_ADDRESS -> dialogView.sort_by_radio_group.check(R.id.mac_address_option)
-        }
-        when(deviceSort.sortOrder) {
-            DeviceSort.SortOrder.ASCENDING -> dialogView.order_radio_group.check(R.id.ascending_option)
-            DeviceSort.SortOrder.DESCENDING -> dialogView.order_radio_group.check(R.id.descending_option)
+        val attr = deviceSort.sortByAttribute
+        val order = deviceSort.sortOrder
+        when {
+            attr == DeviceSort.SortAttributes.NAME && order == DeviceSort.SortOrder.ASCENDING ->
+                dialogView.sort_by_radio_group.check(R.id.name_ascending_option)
+            attr == DeviceSort.SortAttributes.NAME && order == DeviceSort.SortOrder.DESCENDING ->
+                dialogView.sort_by_radio_group.check(R.id.name_descending_option)
+
+            attr == DeviceSort.SortAttributes.MAC_ADDRESS && order == DeviceSort.SortOrder.ASCENDING ->
+                dialogView.sort_by_radio_group.check(R.id.mac_address_ascending_option)
+            attr == DeviceSort.SortAttributes.MAC_ADDRESS && order == DeviceSort.SortOrder.DESCENDING ->
+                dialogView.sort_by_radio_group.check(R.id.mac_address_descending_option)
+
+            attr == DeviceSort.SortAttributes.TIME && order == DeviceSort.SortOrder.ASCENDING ->
+                dialogView.sort_by_radio_group.check(R.id.oldest_first_option)
+            attr == DeviceSort.SortAttributes.TIME && order == DeviceSort.SortOrder.DESCENDING ->
+                dialogView.sort_by_radio_group.check(R.id.newest_first_option)
         }
 
         AlertDialog.Builder(context)
@@ -234,14 +244,15 @@ class SavedDevicesFragment : DaggerFragment(),
             .setPositiveButton(getString(R.string.sort)) { _, _ ->
                 deviceSort = DeviceSort().apply {
                     sortByAttribute = when(dialogView.sort_by_radio_group.checkedRadioButtonId) {
-                        R.id.name_option -> DeviceSort.SortAttributes.NAME
-                        R.id.mac_address_option -> DeviceSort.SortAttributes.MAC_ADDRESS
+                        R.id.name_ascending_option,R.id.name_descending_option -> DeviceSort.SortAttributes.NAME
+                        R.id.mac_address_ascending_option,R.id.mac_address_descending_option -> DeviceSort.SortAttributes.MAC_ADDRESS
+                        R.id.oldest_first_option,R.id.newest_first_option -> DeviceSort.SortAttributes.TIME
                         else -> throw IllegalStateException()
                     }
 
-                    sortOrder = when(dialogView.order_radio_group.checkedRadioButtonId) {
-                        R.id.ascending_option -> DeviceSort.SortOrder.ASCENDING
-                        R.id.descending_option -> DeviceSort.SortOrder.DESCENDING
+                    sortOrder = when(dialogView.sort_by_radio_group.checkedRadioButtonId) {
+                        R.id.name_ascending_option,R.id.mac_address_ascending_option,R.id.oldest_first_option -> DeviceSort.SortOrder.ASCENDING
+                        R.id.name_descending_option,R.id.mac_address_descending_option,R.id.newest_first_option -> DeviceSort.SortOrder.DESCENDING
                         else -> throw IllegalStateException()
                     }
 
@@ -442,6 +453,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
         addDisposable(
             deviceGroupViewModel.getDeviceGroups()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { it ->
                     it.forEach {
                         deviceGroupsTabs.addTabForDeviceGroup(it)
@@ -682,6 +694,7 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun onDevicesDialogItemClick(item: Device) {
+        item.timeAdded = Date()
         addDisposable(
             deviceViewModel.saveDevice(item)
                 .subscribe {

@@ -435,11 +435,12 @@
     <string name="activated_all_actions">Activated all actions for %d devices</string>
     <string name="device_group_name_taken">Device group name already taken.</string>
     <string name="sort_devices">Sort devices</string>
-    <string name="sort_devices_title">Sort devices</string>
+    <string name="sort_devices_title">Sort by</string>
     <string name="sort">Sort</string>
-    <string name="sort_by">Sort by</string>
-    <string name="device_name">Name</string>
-    <string name="ascending">Ascending</string>
-    <string name="descending">Descending</string>
-    <string name="order">Order</string>
+    <string name="device_name_ascending">Name (A-Z)</string>
+    <string name="device_name_descending">Name (Z-A)</string>
+    <string name="device_oldest_first">Time added (oldest first)</string>
+    <string name="device_newest_first">Time added (newest first)</string>
+    <string name="mac_address_ascending">Mac address (A-Z)</string>
+    <string name="mac_address_descending">Mac address (Z-A)</string>
 </resources>

@@ -2,6 +2,7 @@ package com.aconno.sensorics.domain.model
 
 import com.aconno.sensorics.domain.format.ConnectionRead
 import com.aconno.sensorics.domain.format.ConnectionWrite
+import java.util.*
 
 data class Device(
     val name: String,
@@ -11,7 +12,8 @@ data class Device(
     val connectable: Boolean = false,
     val connectionWriteList: List<ConnectionWrite>? = null,
     val connectionReadList: List<ConnectionRead>? = null,
-    val hasSettings: Boolean = false
+    val hasSettings: Boolean = false,
+    var timeAdded : Date? = null
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

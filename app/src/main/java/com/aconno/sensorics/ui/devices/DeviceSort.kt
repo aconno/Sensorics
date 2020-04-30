@@ -2,6 +2,8 @@ package com.aconno.sensorics.ui.devices
 
 import android.content.SharedPreferences
 import com.aconno.sensorics.model.DeviceActive
+import java.util.*
+import kotlin.Comparator
 
 class DeviceSort {
     var sortByAttribute : SortAttributes? = null
@@ -13,7 +15,7 @@ class DeviceSort {
     }
 
     enum class SortAttributes {
-        NAME, MAC_ADDRESS
+        NAME, MAC_ADDRESS, TIME
     }
 
     enum class SortOrder {
@@ -56,10 +58,13 @@ class DeviceSort {
 
         val macAddressComparator = Comparator<DeviceActive> { d1, d2 -> d1!!.device.macAddress.compareTo(d2!!.device.macAddress) }
 
+        val timeComparator = Comparator<DeviceActive> { d1, d2 -> (d1!!.device.timeAdded ?: Date(0)).compareTo(d2!!.device.timeAdded ?: Date(0)) }
+
         val attributeComparator =
             when(sortByAttribute) {
                 SortAttributes.NAME -> nameComparator
                 SortAttributes.MAC_ADDRESS -> macAddressComparator
+                SortAttributes.TIME -> timeComparator
                 null -> return devices
             }
 

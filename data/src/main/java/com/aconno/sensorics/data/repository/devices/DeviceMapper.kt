@@ -13,7 +13,8 @@ class DeviceMapper @Inject constructor() {
             deviceEntity.alias,
             deviceEntity.macAddress,
             deviceEntity.icon,
-            deviceEntity.connectable
+            deviceEntity.connectable,
+            timeAdded = deviceEntity.timeAdded
         )
     }
 
@@ -31,8 +32,8 @@ class DeviceMapper @Inject constructor() {
             device.alias,
             device.macAddress,
             device.icon,
-            device.connectable
-
+            device.connectable,
+            timeAdded = device.timeAdded
         )
     }
 }
