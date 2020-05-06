@@ -81,7 +81,8 @@ class RestHeadersActivity : AppCompatActivity(),
         setContentView(R.layout.activity_rest_headers)
         setupActionBar()
 
-        headers = intent.getParcelableArrayListExtra(REST_HEADERS_ACTIVITY_LIST_KEY)
+        val headersExtra = intent.getParcelableArrayExtra(REST_HEADERS_ACTIVITY_LIST_KEY)
+        headers = ArrayList(headersExtra?.toList()?.map { it as RestHeaderModel } ?: emptyList())
         initialHeaders = ArrayList(headers)
 
         initView()
