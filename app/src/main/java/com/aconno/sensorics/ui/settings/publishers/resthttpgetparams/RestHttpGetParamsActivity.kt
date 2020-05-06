@@ -83,7 +83,8 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
         setContentView(R.layout.activity_rest_httpgetparams)
         setupActionBar()
 
-        httpgetParams = intent.getParcelableArrayListExtra(REST_HTTPGET_PARAMS_ACTIVITY_LIST_KEY)
+        val httpgetParamsExtra = intent.getParcelableArrayExtra(REST_HTTPGET_PARAMS_ACTIVITY_LIST_KEY)
+        httpgetParams = ArrayList(httpgetParamsExtra?.toList()?.map { it as RestHttpGetParamModel } ?: emptyList())
         initialHttpGetParams = ArrayList(httpgetParams)
 
         initView()
