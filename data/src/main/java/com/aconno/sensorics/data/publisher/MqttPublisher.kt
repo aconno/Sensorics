@@ -145,8 +145,12 @@ class MqttPublisher(
         sslProperties.setProperty("com.ibm.ssl.protocol", "TLSv1.2")
         options.sslProperties = sslProperties
 
-        options.userName = publish.username
-        options.password = publish.password.toCharArray()
+        if(publish.username.trim().isNotEmpty()) {
+            options.userName = publish.username
+        }
+        if(publish.password.trim().isNotEmpty()) {
+            options.password = publish.password.toCharArray()
+        }
 
         return options
     }
