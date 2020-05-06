@@ -50,7 +50,7 @@
             </androidx.cardview.widget.CardView>
 
             <RelativeLayout
-                android:id="@+id/devices_frame"
+                android:id="@+id/frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
