@@ -782,6 +782,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 .setTitle(getString(R.string.rename_group_title))
                 .setPositiveButton(getString(R.string.rename),null)
                 .setCancelable(true)
+                .setNegativeButton(getString(R.string.cancel),null)
                 .setView(dialogView)
                 .show()
 
@@ -846,6 +847,7 @@ class SavedDevicesFragment : DaggerFragment(),
             val dialog = AlertDialog.Builder(context)
                 .setTitle(getString(R.string.create_new_group_title))
                 .setPositiveButton(getString(R.string.create),null)
+                .setNegativeButton(getString(R.string.cancel),null)
                 .setCancelable(true)
                 .setView(dialogView)
                 .show()
