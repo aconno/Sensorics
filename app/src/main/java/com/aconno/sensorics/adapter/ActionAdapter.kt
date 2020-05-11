@@ -44,8 +44,8 @@ class ActionAdapter(
             view.text_outcome.text = item.outcome.toString()
             view.action_switch.isChecked = item.active
 
-            view.action_switch.setOnCheckedChangeListener { _, isChecked ->
-                checkedChangeListener?.onCheckedChange(item, isChecked)
+            view.action_switch.setOnClickListener {
+                checkedChangeListener?.onCheckedChange(item, view.action_switch.isChecked)
             }
 
             view.setOnClickListener {
