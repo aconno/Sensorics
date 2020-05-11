@@ -77,7 +77,7 @@ class PublishListViewModel(
             else -> throw IllegalArgumentException("Invalid publish model.")
         }
 
-        return Completable.fromAction { updateAnyPublishUseCase.execute(mappedPublish) }
+        return Completable.fromAction { updateAnyPublishUseCase.execute(mappedPublish).subscribe() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe()

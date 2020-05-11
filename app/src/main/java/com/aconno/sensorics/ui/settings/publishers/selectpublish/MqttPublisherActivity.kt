@@ -112,8 +112,6 @@ class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
                 name,
                 url,
                 clientId,
-                username,
-                password,
                 topic,
                 timeType,
                 timeCount,
