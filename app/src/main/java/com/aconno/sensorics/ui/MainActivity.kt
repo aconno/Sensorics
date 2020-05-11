@@ -5,6 +5,9 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
@@ -41,7 +44,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallbacks,
-        ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener {
+        ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener,
+    SavedDevicesFragment.ItemSelectionStateListener{
 
     @Inject
     lateinit var bluetoothStateReceiver: BluetoothStateReceiver
@@ -63,6 +67,8 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     private lateinit var bluetoothStatusSnackbar: Snackbar
 
     private var filterByDevice: Boolean = true
+
+    private var showMenu: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -241,6 +247,11 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         mainMenu = menu
+
+        if(!showMenu) {
+            return false
+        }
+
         menuInflater.inflate(R.menu.main_menu, menu)
 
         mainMenu?.findItem(R.id.action_toggle_scan)?.let {
@@ -398,5 +409,42 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
         const val WORK_NAME = "Resource Synchronization"
 
         private const val SCANNING_PERMISSION_REQUEST_CODE = 65
+    }
+
+    override fun onBackPressed() {
+        val contentFragment = supportFragmentManager
+            .findFragmentById(R.id.content_container)
+        var handled = false
+        if(contentFragment is SavedDevicesFragment) {
+            handled = contentFragment.onBackButtonPressed()
+        }
+
+        if (!handled) super.onBackPressed()
+    }
+
+    override fun onItemSelectionStateEntered() {
+        supportActionBar?.let { actionBar ->
+            actionBar.setDisplayHomeAsUpEnabled(true)
+
+            getDrawable(R.drawable.ic_action_notify_cancel)?.let { drawable ->
+                drawable.colorFilter = PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY)
+                actionBar.setHomeAsUpIndicator(drawable)
+            }
+        }
+
+        showMenu = false
+        invalidateOptionsMenu()
+    }
+
+    override fun onItemSelectionStateExited() {
+        toolbar.title = getString(R.string.app_name)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
+        showMenu = true
+        invalidateOptionsMenu()
+    }
+
+    override fun onSelectedItemsCountChanged(selectedItems: Int) {
+        toolbar.title = getString(R.string.selected_items_count, selectedItems)
     }
 }

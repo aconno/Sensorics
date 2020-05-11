@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
+import com.aconno.sensorics.domain.interactor.repository.UpdateDeviceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceActive
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,6 +22,7 @@ class DeviceViewModel(
     deviceStream: Flowable<Device>,
     private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
     private val saveDeviceUseCase: SaveDeviceUseCase,
+    private val updateDeviceUseCase: UpdateDeviceUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
     private val getIconUseCase: GetIconUseCase
 ) : ViewModel() {
@@ -79,14 +82,17 @@ class DeviceViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .map {
                 deviceList = it.map { DeviceActive(it, false) }
-                deviceList
+                getDeviceActiveList()
             }
     }
 
-    fun saveDevice(device: Device) {
-        saveDeviceUseCase.execute(device)
+    fun getDeviceActiveList() : List<DeviceActive> {
+        return deviceList?.map { DeviceActive(it.device,it.active)  } ?: emptyList()
+    }
+
+    fun saveDevice(device: Device) : Completable {
+        return saveDeviceUseCase.execute(device)
             .subscribeOn(Schedulers.io())
-            .subscribe()
     }
 
     fun updateDevice(device: Device, alias: String) {
@@ -97,7 +103,7 @@ class DeviceViewModel(
             device.icon
         )
 
-        saveDeviceUseCase.execute(newDevice)
+        updateDeviceUseCase.execute(newDevice)
             .subscribeOn(Schedulers.io())
             .subscribe()
     }

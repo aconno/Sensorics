@@ -106,6 +106,7 @@ class AppModule {
             .addMigrations(SensoricsDatabase.MIGRATION_13_14)
             .addMigrations(SensoricsDatabase.MIGRATION_14_15)
             .addMigrations(SensoricsDatabase.MIGRATION_15_16)
+            .addMigrations(SensoricsDatabase.MIGRATION_16_17)
             .apply {
                 if(!BuildConfig.DEBUG) {
                     fallbackToDestructiveMigration()

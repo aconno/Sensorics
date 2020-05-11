@@ -1,13 +1,11 @@
 package com.aconno.sensorics.dagger.mainactivity
 
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.dagger.compositescan.CompositeScanResultsModule
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
-import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetReadingsUseCase
-import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
-import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
+import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetMainResourceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetUseCaseResourceUseCase
@@ -140,10 +138,40 @@ class MainActivityModule {
 
     @Provides
     @MainActivityScope
+    fun provideDeviceGroupViewModel(
+        mainActivity: MainActivity,
+        deviceGroupViewModelFactory: DeviceGroupViewModelFactory
+    ): DeviceGroupViewModel {
+        return ViewModelProvider(mainActivity, deviceGroupViewModelFactory)
+            .get(DeviceGroupViewModel::class.java)
+    }
+
+    @Provides
+    @MainActivityScope
+    fun provideDeviceGroupViewModelFactory(
+        saveDeviceGroupUseCase: SaveDeviceGroupUseCase,
+        getSavedDeviceGroupsUseCase: GetSavedDeviceGroupsUseCase,
+        deleteDeviceGroupsUseCase: DeleteDeviceGroupUseCase,
+        updateDeviceGroupsUseCase: UpdateDeviceGroupUseCase,
+        saveDeviceGroupDeviceJoinUseCase: SaveDeviceGroupDeviceJoinUseCase,
+        deleteDeviceGroupDeviceJoinUseCase: DeleteDeviceGroupDeviceJoinUseCase,
+        getDevicesInDeviceGroupUseCase: GetDevicesInDeviceGroupUseCase,
+        getDevicesBelongingSomeDeviceGroupUseCase: GetDevicesBelongingSomeDeviceGroupUseCase
+    ): DeviceGroupViewModelFactory {
+        return DeviceGroupViewModelFactory(saveDeviceGroupUseCase,
+            getSavedDeviceGroupsUseCase,deleteDeviceGroupsUseCase,
+            updateDeviceGroupsUseCase, saveDeviceGroupDeviceJoinUseCase,
+            deleteDeviceGroupDeviceJoinUseCase, getDevicesInDeviceGroupUseCase,
+            getDevicesBelongingSomeDeviceGroupUseCase)
+    }
+
+    @Provides
+    @MainActivityScope
     fun provideDeviceListViewModelFactory(
         @Named("composite") scanDeviceStream: Flowable<ScanDevice>,
         getSavedDevicesUseCase: GetSavedDevicesUseCase,
         saveDeviceUseCase: SaveDeviceUseCase,
+        updateDeviceUseCase: UpdateDeviceUseCase,
         deleteDeviceUseCase: DeleteDeviceUseCase,
         getIconUseCase: GetIconUseCase
     ): DeviceListViewModelFactory {
@@ -152,6 +180,7 @@ class MainActivityModule {
             deviceStream,
             getSavedDevicesUseCase,
             saveDeviceUseCase,
+            updateDeviceUseCase,
             deleteDeviceUseCase,
             getIconUseCase
         )

@@ -148,7 +148,7 @@ class PublishRecyclerViewAdapter(
         val mNameView: TextView = mView.publish_name
         val mEnableView: Switch = mView.publish_switch
         val mImageView: ImageView = mView.publish_image
-        val selectionButton: CheckBox = mView.item_selected
+        val selectionButton: CheckBox = mView.cb_item_selected
 
         override fun toString(): String {
             return super.toString() + " '" + mEnableView.text + "'"

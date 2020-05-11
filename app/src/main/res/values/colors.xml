@@ -20,6 +20,7 @@
     <color name="bg_row_background">#fa315b</color>
 
     <color name="black">#000</color>
+    <color name="gray">#848484</color>
     <color name="red">#c00</color>
     
     <color name="inactive_action_background_color">#BCCCCBCB</color>

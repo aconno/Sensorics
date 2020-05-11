@@ -6,11 +6,33 @@
     android:id="@+id/container_fragment"
     android:layout_height="match_parent">
 
-    <com.aconno.sensorics.ui.devices.NotLeakingRecyclerView
-        android:id="@+id/list_devices"
+
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/item_device" />
+        android:layout_height="match_parent">
+
+        <com.aconno.sensorics.ui.devices.DeviceGroupTabLayout
+            android:id="@+id/tab_layout"
+            android:layout_height="wrap_content"
+            app:tabMode="scrollable"
+            app:tabTextAppearance="@style/TabLayoutTextStyle"
+            app:tabTextColor="@color/gray"
+            app:tabSelectedTextColor="@color/black"
+            android:layout_width="match_parent">
+
+        </com.aconno.sensorics.ui.devices.DeviceGroupTabLayout>
+
+        <com.aconno.sensorics.ui.devices.NotLeakingRecyclerView
+            android:id="@+id/list_devices"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_device" />
+
+    </LinearLayout>
+
+
 
     <TextView
         android:id="@+id/empty_view"
@@ -19,6 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
+        android:visibility="invisible"
         android:ems="15"
         android:text="@string/no_devices_plus_button_label" />
 

@@ -30,6 +30,13 @@ class DeviceRepositoryImpl(
         }
     }
 
+    override fun updateDevice(device: Device): Completable {
+        return Completable.fromAction {
+            val entity = deviceMapper.toDeviceEntity(device)
+            deviceDao.update(entity)
+        }
+    }
+
     override fun deleteDevice(device: Device): Completable {
         return Completable.fromAction {
             val entity = deviceMapper.toDeviceEntity(device)

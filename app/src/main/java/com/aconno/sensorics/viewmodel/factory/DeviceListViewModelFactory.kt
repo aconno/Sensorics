@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.repository.DeleteDeviceUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesUseCase
 import com.aconno.sensorics.domain.interactor.repository.SaveDeviceUseCase
+import com.aconno.sensorics.domain.interactor.repository.UpdateDeviceUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.viewmodel.DeviceViewModel
@@ -13,6 +14,7 @@ class DeviceListViewModelFactory(
     private val deviceStream: Flowable<Device>,
     private val getSavedDevicesUseCase: GetSavedDevicesUseCase,
     private val saveDevicesUseCase: SaveDeviceUseCase,
+    private val updateDevicesUseCase: UpdateDeviceUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
     private val getIconUseCase: GetIconUseCase
 
@@ -23,6 +25,7 @@ class DeviceListViewModelFactory(
             deviceStream,
             getSavedDevicesUseCase,
             saveDevicesUseCase,
+            updateDevicesUseCase,
             deleteDeviceUseCase,
             getIconUseCase
         )
