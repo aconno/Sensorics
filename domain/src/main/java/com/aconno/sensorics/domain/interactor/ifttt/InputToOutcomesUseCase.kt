@@ -81,7 +81,9 @@ class InputToOutcomesUseCase(
                 (cachedPreviousResult == false) && currentResult
             }
         }.map { action ->
-            action.outcome
+            action.outcome.also {
+                it.sourceAction = action
+            }
         }.toList().let { outcomes ->
             result.addAll(outcomes)
         }
