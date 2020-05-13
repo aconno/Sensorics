@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.*
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceActiveAdapter
+import com.aconno.sensorics.adapter.DeviceGroupAdapter
 import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
 import com.aconno.sensorics.adapter.SelectableRecyclerViewAdapter
 import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
@@ -54,7 +55,7 @@ class SavedDevicesFragment : DaggerFragment(),
     SelectableRecyclerViewAdapter.ItemClickListener<DeviceActive>,
     SelectableRecyclerViewAdapter.ItemLongClickListener<DeviceActive>,
     SelectableRecyclerViewAdapter.ItemSelectedListener<DeviceActive>,
-        DeviceGroupTabs.DeviceGroupTabLongClickListener
+        DeviceGroupAdapter.DeviceGroupTabLongClickListener
 {
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
@@ -62,7 +63,7 @@ class SavedDevicesFragment : DaggerFragment(),
     @Inject
     lateinit var deviceGroupViewModel: DeviceGroupViewModel
 
-    lateinit var deviceGroupsTabs : DeviceGroupTabs
+    val deviceGroupAdapter : DeviceGroupAdapter = DeviceGroupAdapter()
 
     private var deviceGroupOptions = DeviceGroupOptions()
 
@@ -131,6 +132,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
         deviceAdapter = DeviceActiveAdapter(this,this,this)
 
+        deviceGroupAdapter.tabLongClickListener = this
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -143,7 +145,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
         if(deviceAdapter.isItemSelectionEnabled) {
             inflater.inflate(R.menu.menu_selected_devices, menu)
-            menu.findItem(R.id.action_remove_devices_from_group)?.isVisible = deviceGroupsTabs.isDeviceGroupTabActive()
+            menu.findItem(R.id.action_remove_devices_from_group)?.isVisible = deviceGroupAdapter.isDeviceGroupTabActive()
             menu.findItem(R.id.action_rename_device)?.isVisible = deviceAdapter.getNumberOfSelectedItems()==1
         } else {
             inflater.inflate(R.menu.menu_devices, menu)
@@ -270,7 +272,7 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     private fun showMoveDevicesDialog() {
-        val deviceGroups = deviceGroupsTabs.getDeviceGroups().filter { it != deviceGroupsTabs.getSelectedDeviceGroup() }
+        val deviceGroups = deviceGroupAdapter.getDeviceGroups().filter { it != deviceGroupAdapter.getSelectedDeviceGroup() }
         val groupsNames = deviceGroups.map { it.groupName }.toTypedArray()
 
         val builder = AlertDialog.Builder(context)
@@ -290,13 +292,13 @@ class SavedDevicesFragment : DaggerFragment(),
             .setNegativeButton(getString(R.string.cancel), null)
             .setCancelable(true)
             .setMessage(getString(R.string.remove_devices_from_group_confirmation,
-                deviceGroupsTabs.getSelectedDeviceGroup()?.groupName ?: ""))
+                deviceGroupAdapter.getSelectedDeviceGroup()?.groupName ?: ""))
             .show()
     }
 
     private fun removeSelectedDevicesFromDeviceGroup() {
         val selectedDevices = deviceAdapter.getSelectedItems().map { it.device }
-        val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: throw IllegalStateException()
+        val deviceGroup = deviceGroupAdapter.getSelectedDeviceGroup() ?: throw IllegalStateException()
         addDisposable(
             deviceGroupViewModel.removeDevicesFromDeviceGroup(selectedDevices,deviceGroup)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -353,10 +355,10 @@ class SavedDevicesFragment : DaggerFragment(),
         val sortedDevices = deviceSort.sortDevices(devices)
 
         when {
-            deviceGroupsTabs.isAllDevicesTabActive() -> {
+            deviceGroupAdapter.isAllDevicesTabActive() -> {
                 displayPreferredDevices(sortedDevices.filter { !deletedItems.contains(it) })
             }
-            deviceGroupsTabs.isOthersTabActive() -> {
+            deviceGroupAdapter.isOthersTabActive() -> {
                 deviceGroupViewModel.getDevicesBelongingSomeDeviceGroup()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { devicesBelongingSomeDeviceGroup ->
@@ -364,7 +366,7 @@ class SavedDevicesFragment : DaggerFragment(),
                     }
             }
             else -> {
-                val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
+                val deviceGroup = deviceGroupAdapter.getSelectedDeviceGroup() ?: return
                 deviceGroupViewModel.getDevicesFromDeviceGroup(deviceGroup.id)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {devicesInGroup ->
@@ -436,33 +438,30 @@ class SavedDevicesFragment : DaggerFragment(),
             }
         }
 
-        if(!this::deviceGroupsTabs.isInitialized) {
-            populateTabLayout(savedInstanceStateSelectedTab)
-        } else {
-            deviceGroupsTabs.setTabLayout(tab_layout)
+        if(deviceGroupAdapter.getTabsCount() == 0) {
+            populateDeviceGroupAdapter(savedInstanceStateSelectedTab)
         }
+        tab_layout.setAdapter(deviceGroupAdapter)
         setTabSelectedListener()
     }
 
-    private fun populateTabLayout(initiallySelectedTab : Int) {
-        tab_layout.removeAllTabs()
-
-        deviceGroupsTabs = DeviceGroupTabs(context ?: throw IllegalStateException("Tab layout can not be populated before the fragment has been attached."),
-            tab_layout,this)
-        deviceGroupsTabs.addAllDevicesTab()
+    private fun populateDeviceGroupAdapter(initiallySelectedTab : Int) {
+        deviceGroupAdapter.allDevicesTabName = context?.getString(R.string.all_devices) ?: throw IllegalStateException()
+        deviceGroupAdapter.othersTabName = context?.getString(R.string.unsorted_devices) ?: throw IllegalStateException()
+        deviceGroupAdapter.addAllDevicesTab()
 
         addDisposable(
             deviceGroupViewModel.getDeviceGroups()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { it ->
                     it.forEach {
-                        deviceGroupsTabs.addTabForDeviceGroup(it)
+                        deviceGroupAdapter.addTabForDeviceGroup(it)
                     }
 
                     if(it.isNotEmpty()) {
-                        deviceGroupsTabs.addOthersTab()
+                        deviceGroupAdapter.addOthersTab()
                     }
-                    deviceGroupsTabs.selectTab(initiallySelectedTab)
+                    tab_layout.selectTab(initiallySelectedTab)
                 }
         )
 
@@ -481,6 +480,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab?) {
+                    deviceGroupAdapter.selectedTabIndex = tab_layout.selectedTabPosition
                     if(savedInstanceStateSelectedItems != null) {
                         enableItemSelection()
                     }
@@ -492,7 +492,7 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun onDeviceGroupTabLongClick(deviceGroup: DeviceGroup): Boolean {
-        if(deviceGroup != deviceGroupsTabs.getSelectedDeviceGroup() || deviceAdapter.isItemSelectionEnabled) {
+        if(deviceGroup != deviceGroupAdapter.getSelectedDeviceGroup() || deviceAdapter.isItemSelectionEnabled) {
             return false
         }
         deviceGroupOptions.showDeviceGroupsOptions()
@@ -500,7 +500,7 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun onAllDevicesTabLongClick(): Boolean {
-        if(!deviceGroupsTabs.isAllDevicesTabActive() || deviceAdapter.isItemSelectionEnabled) {
+        if(!deviceGroupAdapter.isAllDevicesTabActive() || deviceAdapter.isItemSelectionEnabled) {
             return false
         }
         deviceGroupOptions.showDeviceGroupsOptions()
@@ -508,7 +508,7 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun onOthersTabLongClick(): Boolean {
-        if(!deviceGroupsTabs.isOthersTabActive() || deviceAdapter.isItemSelectionEnabled) {
+        if(!deviceGroupAdapter.isOthersTabActive() || deviceAdapter.isItemSelectionEnabled) {
             return false
         }
         deviceGroupOptions.showDeviceGroupsOptions()
@@ -531,10 +531,10 @@ class SavedDevicesFragment : DaggerFragment(),
                 empty_view?.visibility = View.VISIBLE
 
                 when {
-                    deviceGroupsTabs.isAllDevicesTabActive() -> {
+                    deviceGroupAdapter.isAllDevicesTabActive() -> {
                         empty_view.text = getString(R.string.no_devices_plus_button_label)
                     }
-                    deviceGroupsTabs.isOthersTabActive() -> {
+                    deviceGroupAdapter.isOthersTabActive() -> {
                         empty_view.text = getString(R.string.no_unsorted_devices)
                     }
                     else -> {
@@ -547,7 +547,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 deviceAdapter.setDevices(preferredDevices)
                 deviceAdapter.setIcons(getIconInfoForActiveDevices(preferredDevices))
 
-                if(savedInstanceStateSelectedTab == deviceGroupsTabs.getSelectedTabIndex()) {
+                if(savedInstanceStateSelectedTab == deviceGroupAdapter.selectedTabIndex) {
                     savedInstanceStateSelectedItems?.let { selectedItems ->
 
                         if(deviceAdapter.isItemSelectionEnabled) {
@@ -698,7 +698,7 @@ class SavedDevicesFragment : DaggerFragment(),
         addDisposable(
             deviceViewModel.saveDevice(item)
                 .subscribe {
-                    deviceGroupsTabs.getSelectedDeviceGroup()?.let {
+                    deviceGroupAdapter.getSelectedDeviceGroup()?.let {
                         deviceGroupViewModel.addDeviceGroupDeviceRelation(item.macAddress,it.id)
                             .subscribe()
                     }
@@ -771,7 +771,13 @@ class SavedDevicesFragment : DaggerFragment(),
         listener = null
         compositeDisposable.dispose()
         snackbar?.removeCallback(snackbarCallback)
+        deviceGroupAdapter.tabLongClickListener = null
         super.onDetach()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        deviceGroupAdapter.listener = null
     }
 
 
@@ -811,14 +817,14 @@ class SavedDevicesFragment : DaggerFragment(),
             )
         }
 
-        outState.putInt(SELECTED_TAB_KEY,deviceGroupsTabs.getSelectedTabIndex())
+        outState.putInt(SELECTED_TAB_KEY,deviceGroupAdapter.selectedTabIndex)
     }
 
     private inner class DeviceGroupOptions {
 
         fun showDeviceGroupsOptions() {
             val options =
-                if(deviceGroupsTabs.isDeviceGroupTabActive())
+                if(deviceGroupAdapter.isDeviceGroupTabActive())
                     arrayOf(getString(R.string.create_new_group),
                         getString(R.string.remove_group),
                         getString(R.string.edit_group_name))
@@ -846,16 +852,17 @@ class SavedDevicesFragment : DaggerFragment(),
                 .setTitle(getString(R.string.rename_group_title))
                 .setPositiveButton(getString(R.string.rename),null)
                 .setCancelable(true)
+                .setNegativeButton(getString(R.string.cancel),null)
                 .setView(dialogView)
                 .show()
 
-            dialog.group_name.setText(deviceGroupsTabs.getSelectedDeviceGroup()?.groupName ?: "")
+            dialog.group_name.setText(deviceGroupAdapter.getSelectedDeviceGroup()?.groupName ?: "")
             dialog.getButton(Dialog.BUTTON_POSITIVE)
                 .setOnClickListener {
                     val newName = dialogView.group_name.text.toString()
-                    val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return@setOnClickListener
+                    val deviceGroup = deviceGroupAdapter.getSelectedDeviceGroup() ?: return@setOnClickListener
 
-                    if(deviceGroupsTabs.getDeviceGroups().find { it.groupName == newName && it!=deviceGroup } != null) {
+                    if(deviceGroupAdapter.getDeviceGroups().find { it.groupName == newName && it!=deviceGroup } != null) {
                         dialogView.group_name_layout.error = getString(R.string.device_group_name_taken)
                         dialogView.group_name_layout.isErrorEnabled = true
                         return@setOnClickListener
@@ -867,14 +874,14 @@ class SavedDevicesFragment : DaggerFragment(),
         }
 
         private fun updateSelectedGroupName(newName : String) {
-            val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
+            val deviceGroup = deviceGroupAdapter.getSelectedDeviceGroup() ?: return
             deviceGroup.groupName = newName
 
             addDisposable(
                 deviceGroupViewModel.updateDeviceGroup(deviceGroup)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
-                        deviceGroupsTabs.updateDeviceGroup(deviceGroup)
+                        deviceGroupAdapter.updateDeviceGroup(deviceGroup)
                     }
             )
         }
@@ -889,17 +896,17 @@ class SavedDevicesFragment : DaggerFragment(),
                 .setNegativeButton(getString(R.string.cancel), null)
                 .setCancelable(true)
                 .setMessage(getString(R.string.remove_group_confirmation,
-                    deviceGroupsTabs.getSelectedDeviceGroup()?.groupName ?: ""))
+                    deviceGroupAdapter.getSelectedDeviceGroup()?.groupName ?: ""))
                 .show()
         }
 
         private fun removeCurrentGroup() {
-            val deviceGroup = deviceGroupsTabs.getSelectedDeviceGroup() ?: return
+            val deviceGroup = deviceGroupAdapter.getSelectedDeviceGroup() ?: return
             deviceGroupViewModel.deleteDeviceGroup(deviceGroup)
-            deviceGroupsTabs.removeTabForDeviceGroup(deviceGroup)
+            deviceGroupAdapter.removeTabForDeviceGroup(deviceGroup)
 
-            if(deviceGroupsTabs.getDeviceGroups().isEmpty()) { //if no more device groups, no need to show others tab
-                deviceGroupsTabs.removeOthersTab()
+            if(deviceGroupAdapter.getDeviceGroups().isEmpty()) { //if no more device groups, no need to show others tab
+                deviceGroupAdapter.removeOthersTab()
             }
         }
 
@@ -910,6 +917,7 @@ class SavedDevicesFragment : DaggerFragment(),
             val dialog = AlertDialog.Builder(context)
                 .setTitle(getString(R.string.create_new_group_title))
                 .setPositiveButton(getString(R.string.create),null)
+                .setNegativeButton(getString(R.string.cancel),null)
                 .setCancelable(true)
                 .setView(dialogView)
                 .show()
@@ -918,7 +926,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 .setOnClickListener {
                     val name = dialogView.group_name.text.toString()
 
-                    if(deviceGroupsTabs.getDeviceGroups().find { it.groupName == name } != null) {
+                    if(deviceGroupAdapter.getDeviceGroups().find { it.groupName == name } != null) {
                         dialogView.group_name_layout.error = getString(R.string.device_group_name_taken)
                         dialogView.group_name_layout.isErrorEnabled = true
                         return@setOnClickListener
@@ -935,11 +943,11 @@ class SavedDevicesFragment : DaggerFragment(),
                 deviceGroupViewModel.saveDeviceGroup(groupName)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { deviceGroup ->
-                        deviceGroupsTabs.addTabForDeviceGroup(deviceGroup)
-                        deviceGroupsTabs.selectTabForDeviceGroup(deviceGroup)
+                        deviceGroupAdapter.addTabForDeviceGroup(deviceGroup)
+                        tab_layout.selectTab(deviceGroupAdapter.indexOfDeviceGroupTab(deviceGroup) ?: 0)
 
-                        if(deviceGroupsTabs.getDeviceGroups().size == 1) { //if this is the first device group, then it is time to show tab containing devices not belonging to any group
-                            deviceGroupsTabs.addOthersTab()
+                        if(deviceGroupAdapter.getDeviceGroups().size == 1) { //if this is the first device group, then it is time to show tab containing devices not belonging to any group
+                            deviceGroupAdapter.addOthersTab()
                         }
                     }
             )

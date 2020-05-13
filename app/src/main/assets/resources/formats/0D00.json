@@ -1,16 +1,8 @@
 {
-  "id": "080000",
-  "name": "acnSENSA",
+  "id": "0D00",
+  "name": "acnMEMS",
   "icon": "ic_sensa",
-  "format": [
-    {
-      "name": "Not-Useful-Data",
-      "start_index_inclusive": 3,
-      "end_index_exclusive": 4,
-      "reversed": false,
-      "data_type": "BYTE"
-    }
-  ],
+  "format": [],
   "format_required": [
     {
       "name": "Nordic ID 1",
@@ -23,19 +15,19 @@
       "value": "0x00"
     },
     {
-      "name": "Aconno ID 1",
+      "name": "Aconno ID",
       "index": 2,
       "value": "0x69"
     },
     {
-      "name": "Product ID 2",
+      "name": "Product ID",
       "index": 3,
-      "value": "0x08"
+      "value": "0x0D"
     },
     {
       "name": "Version Number",
       "index": 4,
-      "value": "0x01"
+      "value": "0x00"
     }
   ],
   "settings_support": {

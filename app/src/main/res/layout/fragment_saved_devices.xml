@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.tabs.TabLayout
+        <com.aconno.sensorics.ui.devices.DeviceGroupTabLayout
             android:id="@+id/tab_layout"
             android:layout_height="wrap_content"
             app:tabMode="scrollable"
@@ -22,7 +22,7 @@
             app:tabSelectedTextColor="@color/black"
             android:layout_width="match_parent">
 
-        </com.google.android.material.tabs.TabLayout>
+        </com.aconno.sensorics.ui.devices.DeviceGroupTabLayout>
 
         <com.aconno.sensorics.ui.devices.NotLeakingRecyclerView
             android:id="@+id/list_devices"

@@ -10,12 +10,13 @@ import com.aconno.sensorics.domain.model.Sync
 import com.aconno.sensorics.domain.repository.SyncRepository
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import timber.log.Timber
 import java.nio.charset.Charset
 import java.util.*
 
 class MqttPublisher(
-    context: Context,
+    val context: Context,
     publish: MqttPublish,
     listDevices: List<Device>,
     syncRepository: SyncRepository
@@ -55,10 +56,40 @@ class MqttPublisher(
         dataStringConverter = DataStringConverter(publish.dataString)
     }
 
+
     override fun test(testConnectionCallback: TestConnectionCallback) {
-        this.testConnectionCallback = testConnectionCallback
-        connect()
+
+        val client = MqttAndroidClient(
+            context,
+            publish.url,
+            publish.clientId,
+            MemoryPersistence()
+        )
+
+        val mqttOptions = getConnectOptions()
+
+        val connectionCallback: IMqttActionListener = object : IMqttActionListener {
+            override fun onSuccess(asyncActionToken: IMqttToken) {
+                testConnectionCallback.onConnectionSuccess()
+                closeConnection(client)
+            }
+
+            override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable?) {
+                exception?.printStackTrace()
+                testConnectionCallback.onConnectionFail(exception)
+                closeConnection(client)
+            }
+        }
+
+        try {
+            client.connect(mqttOptions, null, connectionCallback)
+        } catch (ex : Exception) {
+            testConnectionCallback.onConnectionFail(ex)
+            closeConnection(client)
+        }
     }
+
+
 
     override fun publish(readings: List<Reading>) {
         if (readings.isNotEmpty() && isPublishable(readings)) {
@@ -132,6 +163,7 @@ class MqttPublisher(
             })
         } catch (e: MqttException) {
             e.printStackTrace()
+            mqttAndroidClient.close()
         }
     }
 
@@ -145,8 +177,12 @@ class MqttPublisher(
         sslProperties.setProperty("com.ibm.ssl.protocol", "TLSv1.2")
         options.sslProperties = sslProperties
 
-        options.userName = publish.username
-        options.password = publish.password.toCharArray()
+        if(publish.username.trim().isNotEmpty()) {
+            options.userName = publish.username
+        }
+        if(publish.password.trim().isNotEmpty()) {
+            options.password = publish.password.toCharArray()
+        }
 
         return options
     }
@@ -159,14 +195,18 @@ class MqttPublisher(
         }
     }
 
-    override fun closeConnection() {
+    private fun closeConnection(client : MqttAndroidClient) {
         try {
-            mqttAndroidClient.unregisterResources()
-            mqttAndroidClient.close()
-            mqttAndroidClient.disconnect()
+            client.unregisterResources()
+            client.close()
+            client.disconnect()
         } catch (ex: Exception) {
             //Do-Nothing
         }
+    }
+
+    override fun closeConnection() {
+        closeConnection(mqttAndroidClient)
     }
 
     companion object {
