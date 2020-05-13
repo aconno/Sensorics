@@ -58,7 +58,15 @@ class DeviceSort {
 
         val macAddressComparator = Comparator<DeviceActive> { d1, d2 -> d1!!.device.macAddress.compareTo(d2!!.device.macAddress) }
 
-        val timeComparator = Comparator<DeviceActive> { d1, d2 -> (d1!!.device.timeAdded ?: Date(0)).compareTo(d2!!.device.timeAdded ?: Date(0)) }
+        val deviceIndicesMap = mutableMapOf<String,Int>().apply {
+            devices.forEachIndexed { index, deviceActive -> this[deviceActive.device.macAddress] = index }
+        }
+        val timeComparator = Comparator<DeviceActive> { d1, d2 ->
+            if(d1?.device?.timeAdded == null && d2?.device?.timeAdded == null) {
+                return@Comparator deviceIndicesMap[d1?.device?.macAddress!!]!!.compareTo(deviceIndicesMap[d2?.device?.macAddress!!]!!)
+            }
+            (d1?.device?.timeAdded ?: Date(0)).compareTo(d2?.device?.timeAdded ?: Date(0))
+        }
 
         val attributeComparator =
             when(sortByAttribute) {
