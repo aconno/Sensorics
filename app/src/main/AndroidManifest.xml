@@ -75,13 +75,13 @@
             android:theme="@style/SelectPublisherTheme" />
         <activity
             android:name=".ui.settings.publishers.selectpublish.RestPublisherActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.settings.publishers.selectpublish.MqttPublisherActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_app_settings"
