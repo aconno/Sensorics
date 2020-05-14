@@ -36,13 +36,13 @@ class IntentProviderImpl : IntentProvider {
         )
     }
 
-    override fun getAlertNotificationDeleteIntent(context: Context): PendingIntent {
+    override fun getAlertNotificationDeleteIntent(context: Context,notificationId : Int): PendingIntent {
         val outcome = Intent(context, AlertNotificationReceiver::class.java)
 
         outcome.action = AlertNotificationReceiver.DISMISS
         outcome.putExtra(
             NotificationFactory.ALERT_NOTIFICATION_NAME,
-            NotificationFactory.ALERT_NOTIFICATION_ID
+            notificationId
         )
 
         val requestCode = 0
