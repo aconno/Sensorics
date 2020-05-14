@@ -2,6 +2,7 @@ package com.aconno.sensorics.data.repository
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.aconno.sensorics.data.repository.action.ActionDao
@@ -46,8 +47,9 @@ import com.aconno.sensorics.domain.ifttt.PublishTypeStrings
         DeviceGroupEntity::class,
         DeviceGroupDeviceJoinEntity::class
     ],
-    version = 17
+    version = 18
 )
+@TypeConverters(DatabaseDateConverter::class)
 abstract class SensoricsDatabase : RoomDatabase() {
 
     abstract fun actionDao(): ActionDao
@@ -126,6 +128,12 @@ abstract class SensoricsDatabase : RoomDatabase() {
                 database.execSQL("CREATE TABLE IF NOT EXISTS `device_groups` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)")
                 database.execSQL("CREATE TABLE IF NOT EXISTS `device_group_device_join` (`deviceGroupId` INTEGER NOT NULL, `deviceId` TEXT NOT NULL, PRIMARY KEY(`deviceId`), FOREIGN KEY(`deviceGroupId`) REFERENCES `device_groups`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`deviceId`) REFERENCES `devices`(`macAddress`) ON UPDATE NO ACTION ON DELETE CASCADE )");
 
+            }
+        }
+
+        val MIGRATION_17_18 = object : Migration(17, 18) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE `devices` ADD timeAdded INTEGER")
             }
         }
     }
