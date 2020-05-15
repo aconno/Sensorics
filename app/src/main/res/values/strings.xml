@@ -434,4 +434,6 @@
     <string name="activated_all_actions_for_one_device">Activated all actions for device %s</string>
     <string name="activated_all_actions">Activated all actions for %d devices</string>
     <string name="device_group_name_taken">Device group name already taken.</string>
+    <string name="bluetooth_enable_title">Enable bluetooth</string>
+    <string name="enable_bluetooth_message">Bluetooth is disabled. It must be enabled to start scanning. Do you want to enable it now?</string>
 </resources>

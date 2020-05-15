@@ -520,9 +520,8 @@ class SavedDevicesFragment : DaggerFragment(),
             deviceAdapter.disableItemSelection()
             selectionStateListener?.onItemSelectionStateExited()
 
-            if(isBluetoothOn) {
-                button_add_device.show()
-            }
+            button_add_device.show()
+
         }
     }
 
@@ -613,14 +612,10 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     fun onBluetoothOn() {
-        if(!deviceAdapter.isItemSelectionEnabled) {
-            button_add_device.show()
-        }
         isBluetoothOn = true
     }
 
     fun onBluetoothOff() {
-        button_add_device.hide()
         isBluetoothOn = false
     }
 
