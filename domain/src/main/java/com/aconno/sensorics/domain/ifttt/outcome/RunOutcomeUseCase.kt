@@ -47,7 +47,7 @@ class NotificationOutcomeExecutor(private val notificationDisplay: NotificationD
     OutcomeExecutor {
     override fun execute(outcome: Outcome) {
         val message = outcome.parameters[Outcome.TEXT_MESSAGE]
-        message?.let { notificationDisplay.displayAlertNotification(it) }
+        message?.let { notificationDisplay.displayAlertNotification(it,outcome.sourceAction?.id?.toInt()) }
     }
 }
 

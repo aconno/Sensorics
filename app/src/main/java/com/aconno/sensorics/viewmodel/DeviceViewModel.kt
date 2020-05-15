@@ -43,6 +43,7 @@ class DeviceViewModel(
                 savedDevices?.forEach {
                     if (scannedDevice == it.device && !it.active) {
                         it.active = true
+                        scannedDevice.timeAdded = it.device.timeAdded
                         it.updateDevice(scannedDevice)
                         deviceActiveObservable.onNext(savedDevices)
                         return@forEach
@@ -87,7 +88,9 @@ class DeviceViewModel(
     }
 
     fun getDeviceActiveList() : List<DeviceActive> {
-        return deviceList?.map { DeviceActive(it.device,it.active)  } ?: emptyList()
+        return deviceList?.map {
+            DeviceActive(it.device,it.active)
+        } ?: emptyList()
     }
 
     fun saveDevice(device: Device) : Completable {
@@ -100,7 +103,8 @@ class DeviceViewModel(
             device.name,
             alias,
             device.macAddress,
-            device.icon
+            device.icon,
+            timeAdded = device.timeAdded
         )
 
         updateDeviceUseCase.execute(newDevice)

@@ -16,6 +16,7 @@ import com.aconno.sensorics.domain.ifttt.NotificationDisplay
  * @aconno
  */
 class NotificationFactory {
+
     fun makeForegroundServiceNotification(
         context: Context,
         contentIntent: PendingIntent,
@@ -90,9 +91,10 @@ class NotificationFactory {
             .build()
     }
 
+
     companion object {
         const val ALERT_NOTIFICATION_NAME = "com.aconno.sensorics.ALERT_NOTIFICATION"
-        const val ALERT_NOTIFICATION_ID = 100
+        const val DEFAULT_ALERT_NOTIFICATION_ID = 100
     }
 
 }
@@ -102,16 +104,17 @@ class NotificationDisplayImpl(
     private val intentProvider: IntentProvider,
     private val context: Context
 ) : NotificationDisplay {
-    override fun displayAlertNotification(message: String) {
+    override fun displayAlertNotification(message: String, notificationId: Int?) {
+        val notifId = notificationId ?: NotificationFactory.DEFAULT_ALERT_NOTIFICATION_ID
         display(
             context,
             notificationFactory.makeAlertNotification(
                 context,
                 message,
-                intentProvider.getAlertNotificationDeleteIntent(context),
+                intentProvider.getAlertNotificationDeleteIntent(context,notifId),
                 intentProvider.getAlertNotificationContentIntent(context)
             ),
-            NotificationFactory.ALERT_NOTIFICATION_ID
+            notifId
         )
     }
 
@@ -162,7 +165,7 @@ interface IntentProvider {
 
     fun getAlertNotificationContentIntent(context: Context): PendingIntent
 
-    fun getAlertNotificationDeleteIntent(context: Context): PendingIntent
+    fun getAlertNotificationDeleteIntent(context: Context, notificationId: Int): PendingIntent
 
     fun getAlarmSnoozeIntent(context: Context): PendingIntent
 }

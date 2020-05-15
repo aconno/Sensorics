@@ -78,7 +78,7 @@ class InputToOutcomesUseCase(
             action.condition.isSatisfied(input).let { currentResult ->
                 val cachedPreviousResult = previousDeviceConditions[action.id]
                 previousDeviceConditions[action.id] = currentResult
-                (cachedPreviousResult == false) && currentResult
+                (cachedPreviousResult == false || cachedPreviousResult == null) && currentResult
             }
         }.map { action ->
             action.outcome

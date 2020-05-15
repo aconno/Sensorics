@@ -65,7 +65,9 @@ class ActionMapper @Inject constructor() {
                 actionEntity.active == 1,
                 actionEntity.timeFrom,
                 actionEntity.timeTo
-        )
+        ).apply {
+            outcome.sourceAction = this
+        }
     }
 
 }

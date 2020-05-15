@@ -13,6 +13,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_sort_devices"
+        android:title="@string/sort_devices"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_start_dashboard"
         android:title="@string/dashboard"
         android:visible="false"

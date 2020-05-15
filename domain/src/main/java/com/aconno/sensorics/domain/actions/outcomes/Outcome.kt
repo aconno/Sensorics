@@ -1,6 +1,9 @@
 package com.aconno.sensorics.domain.actions.outcomes
 
+import com.aconno.sensorics.domain.actions.Action
+
 class Outcome(val parameters: Map<String, String>, val type: Int) {
+    var sourceAction : Action? = null
 
     override fun toString(): String {
         return when (type) {
