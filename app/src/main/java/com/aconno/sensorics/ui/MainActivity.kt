@@ -140,6 +140,8 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     }
 
     private fun onBluetoothOff() {
+        stopScanning()
+
         (supportFragmentManager.findFragmentById(content_container.id)
                 as? SavedDevicesFragment)?.onBluetoothOff()
     }
