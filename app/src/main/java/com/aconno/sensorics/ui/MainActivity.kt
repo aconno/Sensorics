@@ -342,6 +342,11 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
             else -> { //all requirements needed to start scanning are fulfilled
                 bluetoothScanningViewModel.startScanning(filterByDevice)
+                if(!filterByDevice) {
+                    (supportFragmentManager.findFragmentById(content_container.id)
+                            as? SavedDevicesFragment)?.onDeviceDiscoveryScanStarted()
+                }
+
                 mqttVirtualScanningViewModel.startScanning()
                 filterByDevice = true
             }

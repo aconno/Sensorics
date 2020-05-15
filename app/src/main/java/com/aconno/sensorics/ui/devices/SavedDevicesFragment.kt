@@ -365,9 +365,6 @@ class SavedDevicesFragment : DaggerFragment(),
             listener?.onFABClicked()
             Timber.d("Button add device clicked")
 
-            activity?.supportFragmentManager?.let {
-                ScannedDevicesDialog().show(it, "devices_dialog")
-            }
         }
 
         if(deviceGroupAdapter.getTabsCount() == 0) {
@@ -375,6 +372,12 @@ class SavedDevicesFragment : DaggerFragment(),
         }
         tab_layout.setAdapter(deviceGroupAdapter)
         setTabSelectedListener()
+    }
+
+    fun onDeviceDiscoveryScanStarted() {
+        activity?.supportFragmentManager?.let {
+            ScannedDevicesDialog().show(it, "devices_dialog")
+        }
     }
 
     private fun populateDeviceGroupAdapter(initiallySelectedTab : Int) {
