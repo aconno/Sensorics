@@ -8,6 +8,8 @@ import com.aconno.sensorics.domain.interactor.type.SingleUseCaseWithParameter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanResult
+import com.aconno.sensorics.domain.repository.DeviceGroupDeviceJoinRepository
+import com.aconno.sensorics.domain.repository.DeviceGroupRepository
 import com.aconno.sensorics.domain.serialization.Deserializer
 import io.reactivex.Single
 import java.math.BigDecimal
@@ -15,18 +17,25 @@ import kotlin.experimental.and
 
 class GenerateReadingsUseCase(
     private val formatMatcher: FormatMatcher,
-    private val deserializer: Deserializer
+    private val deserializer: Deserializer,
+    private val deviceGroupDeviceJoinRepository : DeviceGroupDeviceJoinRepository,
+    private val deviceGroupRepository : DeviceGroupRepository
 ) : SingleUseCaseWithParameter<List<Reading>, ScanResult> {
 
     override fun execute(parameter: ScanResult): Single<List<Reading>> {
         val sensorReadings = mutableListOf<Reading>()
         val msd = ByteOperations.isolateMsd(parameter.rawData)
+
+        val deviceGroupDeviceRelations = deviceGroupDeviceJoinRepository.getAllDeviceGroupDeviceRelations().blockingGet()
+        val deviceGroups = deviceGroupRepository.getAllDeviceGroups().blockingGet()
+
         val format = formatMatcher.findFormat(parameter.rawData)
             ?: throw IllegalArgumentException("No format for scan result: $parameter")
         format.getFormat().forEach {
             val name = it.key
             val byteFormat = it.value
             val device = generateDevice(format, parameter)
+            val deviceGroup = deviceGroups.find { g -> deviceGroupDeviceRelations.find { r -> r.deviceId == device.macAddress  }?.deviceGroupId == g.id }
 
             evaluateFormula(byteFormat, msd)?.let { number ->
                 val reading = Reading(
@@ -35,8 +44,10 @@ class GenerateReadingsUseCase(
                     number,
                     name,
                     parameter.rssi,
-                    format.id
+                    format.id,
+                    deviceGroup
                 )
+
 
                 sensorReadings.add(reading)
             }

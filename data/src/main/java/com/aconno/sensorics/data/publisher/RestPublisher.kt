@@ -127,7 +127,8 @@ class RestPublisher(
             1,
             "Temperature",
             0,
-            "AdvertisementId"
+            "AdvertisementId",
+            null
         )
 
         getRequestObservable(listOf(reading))

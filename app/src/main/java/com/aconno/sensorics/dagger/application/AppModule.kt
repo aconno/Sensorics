@@ -11,6 +11,11 @@ import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.dagger.time.TimeModule
 import com.aconno.sensorics.data.repository.InMemoryRepositoryImpl
 import com.aconno.sensorics.data.repository.SensoricsDatabase
+import com.aconno.sensorics.data.repository.devicegroupdevicejoin.DeviceGroupDeviceJoinMapper
+import com.aconno.sensorics.data.repository.devicegroupdevicejoin.DeviceGroupDeviceJoinRepositoryImpl
+import com.aconno.sensorics.data.repository.devicegroups.DeviceGroupMapper
+import com.aconno.sensorics.data.repository.devicegroups.DeviceGroupRepositoryImpl
+import com.aconno.sensorics.data.repository.devices.DeviceMapper
 import com.aconno.sensorics.data.repository.sync.SyncDao
 import com.aconno.sensorics.data.repository.sync.SyncRepositoryImpl
 import com.aconno.sensorics.device.DeviceAudioManagerImpl
@@ -34,6 +39,8 @@ import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByFormatUseCase
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
+import com.aconno.sensorics.domain.repository.DeviceGroupDeviceJoinRepository
+import com.aconno.sensorics.domain.repository.DeviceGroupRepository
 import com.aconno.sensorics.domain.repository.InMemoryRepository
 import com.aconno.sensorics.domain.repository.SyncRepository
 import com.aconno.sensorics.domain.serialization.Deserializer
@@ -116,6 +123,26 @@ class AppModule {
             .build()
     }
 
+
+    @Provides
+    @Singleton
+    fun provideDeviceGroupRepository(
+        sensoricsDatabase: SensoricsDatabase,
+        deviceGroupMapper: DeviceGroupMapper
+    ): DeviceGroupRepository {
+        return DeviceGroupRepositoryImpl(sensoricsDatabase.deviceGroupDao(), deviceGroupMapper)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeviceGroupDeviceJoinRepository(
+        sensoricsDatabase: SensoricsDatabase,
+        deviceMapper: DeviceMapper,
+        deviceGroupDeviceJoinMapper: DeviceGroupDeviceJoinMapper
+    ): DeviceGroupDeviceJoinRepository {
+        return DeviceGroupDeviceJoinRepositoryImpl(sensoricsDatabase.deviceGroupDeviceJoinDao(), deviceMapper,deviceGroupDeviceJoinMapper)
+    }
+
     @Provides
     @Singleton
     fun provideNotificationDisplay(
@@ -161,8 +188,10 @@ class AppModule {
     @Singleton
     fun provideGenerateReadingsUseCase(
         formatMatcher: FormatMatcher,
-        deserializer: Deserializer
-    ) = GenerateReadingsUseCase(formatMatcher, deserializer)
+        deserializer: Deserializer,
+        deviceGroupRepository: DeviceGroupRepository,
+        deviceGroupDeviceJoinRepository: DeviceGroupDeviceJoinRepository
+    ) = GenerateReadingsUseCase(formatMatcher, deserializer, deviceGroupDeviceJoinRepository, deviceGroupRepository)
 
     @Provides
     @Singleton

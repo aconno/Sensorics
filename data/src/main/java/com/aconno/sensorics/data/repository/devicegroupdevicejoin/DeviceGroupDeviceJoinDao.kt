@@ -3,9 +3,13 @@ package com.aconno.sensorics.data.repository.devicegroupdevicejoin
 import androidx.room.*
 import com.aconno.sensorics.data.repository.devices.DeviceEntity
 import io.reactivex.Maybe
+import io.reactivex.Single
 
 @Dao
 abstract class DeviceGroupDeviceJoinDao {
+
+    @Query("SELECT * FROM device_group_device_join")
+    abstract fun getAll(): Single<List<DeviceGroupDeviceJoinEntity>>
 
     @Query(
         "SELECT * FROM devices JOIN device_group_device_join ON devices.macAddress = device_group_device_join.deviceId WHERE deviceGroupId = :deviceGroupId"
@@ -22,4 +26,6 @@ abstract class DeviceGroupDeviceJoinDao {
 
     @Delete
     abstract fun delete(deviceGroupDeviceJoinEntity: DeviceGroupDeviceJoinEntity)
+
+
 }
