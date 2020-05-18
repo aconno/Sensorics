@@ -443,6 +443,8 @@ class SavedDevicesFragment : DaggerFragment(),
         }
         tab_layout.setAdapter(deviceGroupAdapter)
         setTabSelectedListener()
+
+        tab_layout.selectTab(deviceGroupAdapter.selectedTabIndex)
     }
 
     private fun populateDeviceGroupAdapter(initiallySelectedTab : Int) {
