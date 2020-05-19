@@ -2,6 +2,7 @@ package com.aconno.sensorics.domain.repository
 
 import com.aconno.sensorics.domain.model.DeviceGroup
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 interface DeviceGroupRepository {
@@ -13,4 +14,6 @@ interface DeviceGroupRepository {
     fun updateDeviceGroup(deviceGroup: DeviceGroup): Completable
 
     fun deleteDeviceGroup(deviceGroup: DeviceGroup): Completable
+
+    fun getDeviceGroupForDevice(deviceMacAddress : String): Maybe<DeviceGroup>
 }

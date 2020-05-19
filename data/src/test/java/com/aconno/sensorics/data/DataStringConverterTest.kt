@@ -4,6 +4,7 @@ import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.domain.ifttt.GeneralRestHttpGetParam
 import com.aconno.sensorics.domain.ifttt.RestHttpGetParam
 import com.aconno.sensorics.domain.model.Device
+import com.aconno.sensorics.domain.model.DeviceGroup
 import com.aconno.sensorics.domain.model.Reading
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -26,9 +27,9 @@ class DataStringConverterTest {
             "MA:CA:DD:RE:SS"
         )
 
-        val reading1 = Reading(System.currentTimeMillis(), device, 30, "Temperature",0, "CF01")
-        val reading2 = Reading(System.currentTimeMillis(), device, 40, "Light", 0,"CF01")
-        val reading3 = Reading(System.currentTimeMillis(), device, 50, "Accelerometer X", 0,"CF01")
+        val reading1 = Reading(System.currentTimeMillis(), device, 30, "Temperature",0, "CF01", null)
+        val reading2 = Reading(System.currentTimeMillis(), device, 40, "Light", 0,"CF01", null)
+        val reading3 = Reading(System.currentTimeMillis(), device, 50, "Accelerometer X", 0,"CF01", null)
 
         list = listOf(reading1, reading2, reading3)
 

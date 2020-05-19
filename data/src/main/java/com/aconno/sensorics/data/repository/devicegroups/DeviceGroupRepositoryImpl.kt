@@ -3,6 +3,7 @@ package com.aconno.sensorics.data.repository.devicegroups
 import com.aconno.sensorics.domain.model.DeviceGroup
 import com.aconno.sensorics.domain.repository.DeviceGroupRepository
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 class DeviceGroupRepositoryImpl(
@@ -38,4 +39,10 @@ class DeviceGroupRepositoryImpl(
             deviceGroupDao.delete(entity)
         }
     }
+
+    override fun getDeviceGroupForDevice(deviceMacAddress: String): Maybe<DeviceGroup> {
+        return deviceGroupDao.getDeviceGroupForDevice(deviceMacAddress)
+                .map(deviceGroupMapper::toDeviceGroup)
+    }
+
 }

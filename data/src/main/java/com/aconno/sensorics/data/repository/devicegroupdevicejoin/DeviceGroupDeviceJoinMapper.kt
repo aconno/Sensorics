@@ -12,4 +12,20 @@ class DeviceGroupDeviceJoinMapper @Inject constructor() {
             deviceGroupDeviceJoin.deviceId
         )
     }
+
+    fun toDeviceGroupDeviceJoin(deviceGroupDeviceJoinEntity: DeviceGroupDeviceJoinEntity): DeviceGroupDeviceJoin {
+        return DeviceGroupDeviceJoin(
+            deviceGroupDeviceJoinEntity.deviceGroupId,
+            deviceGroupDeviceJoinEntity.deviceId
+        )
+    }
+
+    fun toDeviceGroupDeviceJoinList(deviceGroupDeviceJoinEntityList: Collection<DeviceGroupDeviceJoinEntity>): List<DeviceGroupDeviceJoin> {
+        val list = mutableListOf<DeviceGroupDeviceJoin>()
+        deviceGroupDeviceJoinEntityList.forEach {
+            list.add(toDeviceGroupDeviceJoin(it))
+        }
+        return list
+
+    }
 }

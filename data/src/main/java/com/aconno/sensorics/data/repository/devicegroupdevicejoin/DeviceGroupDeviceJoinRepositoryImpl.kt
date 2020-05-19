@@ -5,6 +5,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.DeviceGroupDeviceJoin
 import com.aconno.sensorics.domain.repository.DeviceGroupDeviceJoinRepository
 import io.reactivex.Maybe
+import io.reactivex.Single
 
 class DeviceGroupDeviceJoinRepositoryImpl(
     private val deviceGroupDeviceJoinDao: DeviceGroupDeviceJoinDao,
@@ -36,6 +37,10 @@ class DeviceGroupDeviceJoinRepositoryImpl(
     override fun getDevices(): Maybe<List<Device>> {
         return deviceGroupDeviceJoinDao.getDevices()
             .map(deviceMapper::toDeviceList)
+    }
+
+    override fun getAllDeviceGroupDeviceRelations(): Single<List<DeviceGroupDeviceJoin>> {
+        return deviceGroupDeviceJoinDao.getAll().map(deviceGroupDeviceJoinMapper::toDeviceGroupDeviceJoinList)
     }
 
 }

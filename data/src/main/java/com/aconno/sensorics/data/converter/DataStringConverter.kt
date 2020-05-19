@@ -16,6 +16,7 @@ class DataStringConverter(
         private const val DATE = "date"
         private const val DEVICE = "device"
         private const val RSSI = "rssi"
+        private const val DEVICE_GROUP = "group"
 
         private const val NOT_VALID = -1
         private const val ONE_BY_ONE = 1
@@ -48,7 +49,7 @@ class DataStringConverter(
 
     private fun checkDataStringValid(): Int {
         val filteredList =
-            list.filter { it != TS && it != DEVICE && it != DATE && it != RSSI} as MutableList<String>
+            list.filter { it != TS && it != DEVICE && it != DEVICE_GROUP && it != DATE && it != RSSI} as MutableList<String>
 
         return if (filteredList.contains(VALUE) || filteredList.contains(NAME)) {
             filteredList.removeAll { it == VALUE || it == NAME }
@@ -108,6 +109,9 @@ class DataStringConverter(
                     RSSI -> {
                         newDataString.replace("\$$it", reading.rssi.toString())
                     }
+                    DEVICE_GROUP -> {
+                        newDataString.replace("\$$it", reading.deviceGroup?.groupName ?: "None")
+                    }
                     else -> {
                         throw IllegalArgumentException()
                     }
@@ -146,6 +150,9 @@ class DataStringConverter(
                         "\$$DEVICE",
                         readings[0].device.macAddress
                     )
+                }
+                DEVICE_GROUP -> {
+                    newDataString = newDataString.replace("\$$DEVICE_GROUP", readings[0].deviceGroup?.groupName ?: "None")
                 }
                 RSSI -> {
                     newDataString = newDataString.replace(
