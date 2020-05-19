@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui
 
 import android.Manifest
+import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.IntentFilter
@@ -70,6 +71,8 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
     private var showMenu: Boolean = true
 
+    private var onBluetoothOnAction : Runnable? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_toolbar)
@@ -137,21 +140,17 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     }
 
     private fun onBluetoothOff() {
-        mainMenu?.findItem(R.id.action_toggle_scan)?.isVisible = false
-        bluetoothStatusSnackbar.show()
+        stopScanning()
 
-        //Hide FAB
         (supportFragmentManager.findFragmentById(content_container.id)
                 as? SavedDevicesFragment)?.onBluetoothOff()
     }
 
     private fun onBluetoothOn() {
-        mainMenu?.findItem(R.id.action_toggle_scan)?.isVisible = true
-        bluetoothStatusSnackbar.dismiss()
-
-        //Show FAB
         (supportFragmentManager.findFragmentById(content_container.id)
                 as? SavedDevicesFragment)?.onBluetoothOn()
+
+        onBluetoothOnAction?.run()
     }
 
     override fun openLiveGraph(macAddress: String, sensorName: String) {
@@ -256,7 +255,6 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
         mainMenu?.findItem(R.id.action_toggle_scan)?.let {
             setScanMenuLabel(it)
-            it.isVisible = bluetoothViewModel.bluetoothState.value == BluetoothState.BLUETOOTH_ON
         }
 
         return true
@@ -330,18 +328,48 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
-        if (EasyPermissions.hasPermissions(this, *permissions)) {
-            bluetoothScanningViewModel.startScanning(filterByDevice)
-            mqttVirtualScanningViewModel.startScanning()
-            filterByDevice = true
-        } else {
-            EasyPermissions.requestPermissions(
-                this,
-                getString(R.string.scanning_permission_rationale),
-                SCANNING_PERMISSION_REQUEST_CODE,
-                *permissions
-            )
+        when {
+            !EasyPermissions.hasPermissions(this, *permissions) -> {
+                EasyPermissions.requestPermissions(
+                    this,
+                    getString(R.string.scanning_permission_rationale),
+                    SCANNING_PERMISSION_REQUEST_CODE,
+                    *permissions
+                )
+            }
+
+            bluetoothViewModel.bluetoothState.value == BluetoothState.BLUETOOTH_OFF -> {
+                showEnableBluetoothDialog()
+            }
+
+            else -> { //all requirements needed to start scanning are fulfilled
+                bluetoothScanningViewModel.startScanning(filterByDevice)
+                if(!filterByDevice) {
+                    (supportFragmentManager.findFragmentById(content_container.id)
+                            as? SavedDevicesFragment)?.onDeviceDiscoveryScanStarted()
+                }
+
+                mqttVirtualScanningViewModel.startScanning()
+                filterByDevice = true
+            }
         }
+
+    }
+
+    private fun showEnableBluetoothDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.bluetooth_enable_title))
+            .setPositiveButton(getString(R.string.enable)) { _, _ ->
+                onBluetoothOnAction = Runnable {
+                    onBluetoothOnAction = null
+                    startScanning()
+                }
+                bluetoothViewModel.enableBluetooth()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setCancelable(true)
+            .setMessage(getString(R.string.enable_bluetooth_message))
+            .show()
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {

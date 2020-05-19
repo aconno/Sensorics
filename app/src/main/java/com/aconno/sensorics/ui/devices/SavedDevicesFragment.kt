@@ -433,9 +433,6 @@ class SavedDevicesFragment : DaggerFragment(),
             listener?.onFABClicked()
             Timber.d("Button add device clicked")
 
-            activity?.supportFragmentManager?.let {
-                ScannedDevicesDialog().show(it, "devices_dialog")
-            }
         }
 
         if(deviceGroupAdapter.getTabsCount() == 0) {
@@ -443,6 +440,12 @@ class SavedDevicesFragment : DaggerFragment(),
         }
         tab_layout.setAdapter(deviceGroupAdapter)
         setTabSelectedListener()
+    }
+
+    fun onDeviceDiscoveryScanStarted() {
+        activity?.supportFragmentManager?.let {
+            ScannedDevicesDialog().show(it, "devices_dialog")
+        }
     }
 
     private fun populateDeviceGroupAdapter(initiallySelectedTab : Int) {
@@ -589,9 +592,8 @@ class SavedDevicesFragment : DaggerFragment(),
             deviceAdapter.disableItemSelection()
             selectionStateListener?.onItemSelectionStateExited()
 
-            if(isBluetoothOn) {
-                button_add_device.show()
-            }
+            button_add_device.show()
+
         }
     }
 
@@ -682,14 +684,10 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     fun onBluetoothOn() {
-        if(!deviceAdapter.isItemSelectionEnabled) {
-            button_add_device.show()
-        }
         isBluetoothOn = true
     }
 
     fun onBluetoothOff() {
-        button_add_device.hide()
         isBluetoothOn = false
     }
 

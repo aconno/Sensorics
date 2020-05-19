@@ -443,4 +443,6 @@
     <string name="device_newest_first">Time added (newest first)</string>
     <string name="mac_address_ascending">Mac address (0-F)</string>
     <string name="mac_address_descending">Mac address (F-0)</string>
+    <string name="bluetooth_enable_title">Enable bluetooth</string>
+    <string name="enable_bluetooth_message">Bluetooth is disabled. It must be enabled to start scanning. Do you want to enable it now?</string>
 </resources>
