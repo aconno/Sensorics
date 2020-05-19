@@ -1,6 +1,6 @@
 // Version information
 ext.versionMajor = 5
-ext.versionMinor = 3
+ext.versionMinor = 4
 ext.versionPatch = 0
 
 ext.generateVersionCode = {

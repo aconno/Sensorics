@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## [5.4.0]
+- Add device grouping and sorting
+- Add support for ACD528XX board
+- Add settings support for debug version
+- Improve publisher UI/UX
+- Fix small publisher bugs
+- Fix advertisement format matcher bug
+- Fix acnACT counter update bug
+- Fix database migrations bug
+- Fix small UI bugs
+
 ## [5.3.0]
 - Add Azure IoT Hub support
 - Add publisher backend share
@@ -21,5 +32,6 @@
 - Small code improvements
 
 [Unreleased]: https://github.com/aconno/Sensorics/compare/master...develop
+[5.4.0]: https://github.com/aconno/Sensorics/releases/tag/v5.4.0
 [5.3.0]: https://github.com/aconno/Sensorics/releases/tag/v5.3.0
 
