@@ -4,6 +4,7 @@ import com.aconno.sensorics.domain.ifttt.GeneralGooglePublishDeviceJoin
 import com.aconno.sensorics.domain.ifttt.PublishDeviceJoin
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllDeviceParameterPlaceholderStringsUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import com.aconno.sensorics.model.GooglePublishModel
@@ -18,9 +19,10 @@ class GoogleCloudPublisherViewModel(
     private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
     savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
     deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-    private val googlePublishDataMapper: GooglePublishDataMapper
+    private val googlePublishDataMapper: GooglePublishDataMapper,
+    getAllDeviceParameterPlaceholderStringsUseCase: GetAllDeviceParameterPlaceholderStringsUseCase
 ) : PublisherViewModel<GooglePublishModel>(
-    savePublishDeviceJoinUseCase, deletePublishDeviceJoinUseCase
+    savePublishDeviceJoinUseCase, deletePublishDeviceJoinUseCase,getAllDeviceParameterPlaceholderStringsUseCase
 ) {
     override fun getById(id: Long): Maybe<GooglePublishModel> {
         return getGooglePublishByIdUseCase.execute(id).map {

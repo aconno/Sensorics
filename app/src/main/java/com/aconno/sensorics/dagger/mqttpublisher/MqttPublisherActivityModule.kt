@@ -3,6 +3,7 @@ package com.aconno.sensorics.dagger.mqttpublisher
 import androidx.lifecycle.ViewModelProvider
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetMqttPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllDeviceParameterPlaceholderStringsUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
@@ -32,13 +33,15 @@ class MqttPublisherActivityModule {
         getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase,
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-        mqttPublishModelDataMapper: MqttPublishModelDataMapper
+        mqttPublishModelDataMapper: MqttPublishModelDataMapper,
+        getAllDeviceParameterPlaceholderStringsUseCase: GetAllDeviceParameterPlaceholderStringsUseCase
     ) = MqttPublisherViewModelFactory(
         addAnyPublishUseCase,
         getMqttPublishByIdUseCase,
         savePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase,
-        mqttPublishModelDataMapper
+        mqttPublishModelDataMapper,
+        getAllDeviceParameterPlaceholderStringsUseCase
     )
 
 

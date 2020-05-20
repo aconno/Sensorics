@@ -2,6 +2,7 @@ package com.aconno.sensorics.viewmodel.factory
 
 import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllDeviceParameterPlaceholderStringsUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
@@ -26,7 +27,9 @@ class RestPublisherViewModelFactory(
     private val restHttpGetParamModelMapper: RESTHttpGetParamModelMapper,
 
     private val savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
-    private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase
+    private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
+
+    private val getAllDeviceParameterPlaceholderStringsUseCase: GetAllDeviceParameterPlaceholderStringsUseCase
 ) : BaseViewModelFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val viewModel = RestPublisherViewModel(
@@ -44,7 +47,9 @@ class RestPublisherViewModelFactory(
             restHttpGetParamModelMapper,
 
             savePublishDeviceJoinUseCase,
-            deletePublishDeviceJoinUseCase
+            deletePublishDeviceJoinUseCase,
+
+            getAllDeviceParameterPlaceholderStringsUseCase
         )
         return getViewModel(viewModel, modelClass)
     }

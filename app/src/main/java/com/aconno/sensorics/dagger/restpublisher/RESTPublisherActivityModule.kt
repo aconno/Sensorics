@@ -2,6 +2,7 @@ package com.aconno.sensorics.dagger.restpublisher
 
 import androidx.lifecycle.ViewModelProvider
 import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllDeviceParameterPlaceholderStringsUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.mapper.RESTHeaderModelMapper
@@ -45,7 +46,9 @@ class RESTPublisherActivityModule {
         restHttpGetParamModelMapper: RESTHttpGetParamModelMapper,
 
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
-        deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase
+        deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
+
+        getAllDeviceParameterPlaceholderStringsUseCase: GetAllDeviceParameterPlaceholderStringsUseCase
     ) = RestPublisherViewModelFactory(
         getRestPublishByIdUseCase,
         addAnyPublishUseCase,
@@ -58,7 +61,9 @@ class RESTPublisherActivityModule {
         saveRestHttpGetParamUseCase,
         restHttpGetParamModelMapper,
         savePublishDeviceJoinUseCase,
-        deletePublishDeviceJoinUseCase
+        deletePublishDeviceJoinUseCase,
+
+        getAllDeviceParameterPlaceholderStringsUseCase
     )
 
 

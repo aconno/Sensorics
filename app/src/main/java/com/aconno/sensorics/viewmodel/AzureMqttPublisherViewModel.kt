@@ -4,6 +4,7 @@ import com.aconno.sensorics.domain.ifttt.GeneralAzureMqttPublishDeviceJoin
 import com.aconno.sensorics.domain.ifttt.PublishDeviceJoin
 import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.GetAzureMqttPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllDeviceParameterPlaceholderStringsUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import com.aconno.sensorics.model.AzureMqttPublishModel
@@ -16,9 +17,10 @@ class AzureMqttPublisherViewModel(
     private val getAzureMqttPublishByIdUseCase: GetAzureMqttPublishByIdUseCase,
     savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
     deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
-    private val azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
+    private val azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper,
+    getAllDeviceParameterPlaceholderStringsUseCase: GetAllDeviceParameterPlaceholderStringsUseCase
 ) : PublisherViewModel<AzureMqttPublishModel>(
-    savePublishDeviceJoinUseCase, deletePublishDeviceJoinUseCase
+    savePublishDeviceJoinUseCase, deletePublishDeviceJoinUseCase,getAllDeviceParameterPlaceholderStringsUseCase
 ) {
     override fun getById(id: Long): Maybe<AzureMqttPublishModel> {
         return getAzureMqttPublishByIdUseCase.execute(id).map {

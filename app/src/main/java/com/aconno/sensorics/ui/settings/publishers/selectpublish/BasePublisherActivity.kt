@@ -19,6 +19,7 @@ import com.aconno.sensorics.ui.settings.publishers.DeviceSelectFragment
 import com.aconno.sensorics.viewmodel.PublisherViewModel
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -28,6 +29,7 @@ import kotlinx.android.synthetic.main.layout_publisher_header.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -261,18 +263,42 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
         val view = View.inflate(this, R.layout.dialog_alert, null)
         val textView = view.findViewById<TextView>(R.id.message)
         textView.movementMethod = LinkMovementMethod.getInstance()
-        textView.setText(infoTextId)
+        buildPlaceholderStringsInfoText().observeOn(AndroidSchedulers.mainThread()).subscribe { text ->
+            textView.text = getString(infoTextId,text)
 
-        val builder = AlertDialog.Builder(this)
+            val builder = AlertDialog.Builder(this)
 
-        builder.setTitle(titleTextId)
-            .setView(view)
-            .setNeutralButton(
-                R.string.close
-            ) { dialog, _ ->
-                dialog.dismiss()
+            builder.setTitle(titleTextId)
+                .setView(view)
+                .setNeutralButton(
+                    R.string.close
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }.also { addDisposable(it) }
+
+
+    }
+
+    private fun buildPlaceholderStringsInfoText() : Single<String> {
+        return viewModel.getAllDeviceParameterPlaceholderStrings().map { map ->
+            val builder = StringBuilder()
+            map.entries.sortedBy { it -> it.key }.forEach {
+                val deviceName = it.key
+                val params = it.value
+                builder.append("$deviceName: ")
+                builder.append(params.joinToString(", "))
+
+                if(params.isEmpty()) {
+                    builder.append("-")
+                }
+
+                builder.append("\n")
             }
-            .show()
+
+            builder.toString()
+        }
     }
 
     protected fun millisToFormattedDateString(millis: Long): String {
