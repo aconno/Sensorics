@@ -12,6 +12,7 @@
     },
     {
       "name": "LightState",
+      "description": "light state",
       "start_index_inclusive": 6,
       "end_index_exclusive": 10,
       "reversed": true,
@@ -19,6 +20,7 @@
     },
     {
       "name": "ButtonState",
+      "description": "button state",
       "start_index_inclusive": 10,
       "end_index_exclusive": 11,
       "reversed": false,
@@ -26,6 +28,7 @@
     },
     {
       "name": "ButtonCounter",
+      "description": "button counter",
       "start_index_inclusive": 11,
       "end_index_exclusive": 12,
       "reversed": false,

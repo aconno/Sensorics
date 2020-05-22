@@ -2,10 +2,13 @@ package com.aconno.sensorics.ui.settings.publishers.selectpublish
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.aconno.sensorics.PublisherIntervalConverter
@@ -106,7 +109,7 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
 
     open fun initViews() {
         btn_info.setOnClickListener {
-            createAndShowInfoDialog(R.string.publisher_info_title, R.string.publisher_info_text)
+            createAndShowDataStringInfoDialog()
         }
     }
 
@@ -257,18 +260,43 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
             .commit()
     }
 
-    // NOTE FOR LATER DEFAULT INFO TEXT ID IS R.string.publisher_info_text
-    // DEFAULT TITLE ID IS R.string.publisher_info_title
+    @Suppress("SameParameterValue")
     protected fun createAndShowInfoDialog(titleTextId: Int, infoTextId: Int) {
         val view = View.inflate(this, R.layout.dialog_alert, null)
         val textView = view.findViewById<TextView>(R.id.message)
         textView.movementMethod = LinkMovementMethod.getInstance()
-        buildPlaceholderStringsInfoText().observeOn(AndroidSchedulers.mainThread()).subscribe { text ->
-            textView.text = getString(infoTextId,text)
+        textView.setText(infoTextId)
+
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(titleTextId)
+            .setView(view)
+            .setNeutralButton(
+                R.string.close
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+
+
+    private fun createAndShowDataStringInfoDialog() {
+        val view = View.inflate(this, R.layout.data_string_info_dialog, null)
+
+        val explanationTextView = view.findViewById<TextView>(R.id.explanation)
+        explanationTextView.movementMethod = LinkMovementMethod.getInstance()
+
+        val specificValuesTextView = view.findViewById<TextView>(R.id.specific_values)
+
+        val searchBar = view.findViewById<EditText>(R.id.search_bar)
+
+        viewModel.getAllDeviceParameterPlaceholderStrings().observeOn(AndroidSchedulers.mainThread()).subscribe { placeholdersMap ->
+            specificValuesTextView.text = buildPlaceholderStringsInfoText(placeholdersMap)
 
             val builder = AlertDialog.Builder(this)
 
-            builder.setTitle(titleTextId)
+            builder.setTitle(R.string.publisher_info_title)
                 .setView(view)
                 .setNeutralButton(
                     R.string.close
@@ -276,28 +304,54 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
                     dialog.dismiss()
                 }
                 .show()
+
+            searchBar.addTextChangedListener(
+                object : TextWatcher {
+                    override fun afterTextChanged(s: Editable?) {
+                        specificValuesTextView.text = buildPlaceholderStringsInfoText(filterPlacholdersMap(placeholdersMap,s.toString()))
+                    }
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                }
+            )
         }.also { addDisposable(it) }
 
 
     }
 
-    private fun buildPlaceholderStringsInfoText() : Single<String> {
-        return viewModel.getAllDeviceParameterPlaceholderStrings().map { map ->
-            val builder = StringBuilder()
-            map.entries.sortedBy { it -> it.key }.forEach {
-                val deviceName = it.key
-                val params = it.value
-                builder.append("$deviceName: ")
-                builder.append(params.joinToString(", "))
+    private fun filterPlacholdersMap(placeholdersMap: Map<String, List<Pair<String, String?>>>, filterString : String): Map<String, List<Pair<String, String?>>> {
+        return placeholdersMap.filter {
+            val deviceName = it.key
+            deviceName.contains(filterString,true)
+        }
+    }
 
-                if(params.isEmpty()) {
-                    builder.append("-")
-                }
+    private fun buildPlaceholderStringsInfoText(placeholdersMap : Map<String,List<Pair<String,String?>>>) : String {
+        val builder = StringBuilder()
 
+        placeholdersMap.entries.sortedBy { it -> it.key }.forEach {
+            val deviceName = it.key
+            val params = it.value
+            builder.append("$deviceName:\n")
+            params.forEach { param ->
+                builder.append("\$${param.first}")
+                param.second?.let { description -> builder.append(" => $description") }
                 builder.append("\n")
             }
 
-            builder.toString()
+            if(params.isEmpty()) {
+                builder.append("-\n")
+            }
+
+            builder.append("\n")
+        }
+
+        return builder.toString()
+    }
+
+    private fun buildPlaceholderStringsInfoText() : Single<String> {
+        return viewModel.getAllDeviceParameterPlaceholderStrings().map { map ->
+            buildPlaceholderStringsInfoText(map)
         }
     }
 

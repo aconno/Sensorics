@@ -5,6 +5,7 @@
   "format": [
     {
       "name": "Temperature",
+      "description": "temperature",
       "start_index_inclusive": 5,
       "end_index_exclusive": 9,
       "reversed": true,

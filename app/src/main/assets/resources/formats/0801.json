@@ -5,6 +5,7 @@
   "format": [
     {
       "name": "Temperature",
+      "description": "temperature",
       "start_index_inclusive": 6,
       "end_index_exclusive": 10,
       "reversed": true,
@@ -12,6 +13,7 @@
     },
     {
       "name": "Humidity",
+      "description": "humidity",
       "start_index_inclusive": 10,
       "end_index_exclusive": 14,
       "reversed": true,
@@ -19,6 +21,7 @@
     },
     {
       "name": "Pressure",
+      "description": "pressure",
       "start_index_inclusive": 14,
       "end_index_exclusive": 18,
       "reversed": true,
@@ -26,6 +29,7 @@
     },
     {
       "name": "Light",
+      "description": "light",
       "start_index_inclusive": 18,
       "end_index_exclusive": 22,
       "reversed": true,
@@ -33,6 +37,7 @@
     },
     {
       "name": "Battery Level",
+      "description": "battery level",
       "start_index_inclusive": 22,
       "end_index_exclusive": 23,
       "reversed": false,

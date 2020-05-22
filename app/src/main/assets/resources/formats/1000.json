@@ -5,6 +5,7 @@
   "format": [
     {
       "name": "Not-Useful-Data",
+      "description": "not useful data",
       "start_index_inclusive": 3,
       "end_index_exclusive": 4,
       "reversed": false,

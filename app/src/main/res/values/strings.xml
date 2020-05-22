@@ -143,6 +143,11 @@
     <string name="qos_2" translatable="false">2</string>
     <string name="dataString">Data String</string>
     <string name="publisher_info_text" formatted="true" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$group</i> => device group\n<i>$rssi</i> => rssi \n<i>$name</i> => key \n<i>$value</i> => sensor value \n\nStrings not fully substituted (if a value is missing from the reading) will not be sent. $ should not be used since any detected unknown embeddable values will result in the data not sending. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a>\n\n<b>Specific Values:</b>\n%s</string>
+    <string name="general_placholders_info" formatted="true" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$group</i> => device group\n<i>$rssi</i> => rssi \n<i>$name</i> => key \n<i>$value</i> => sensor value</string>
+    <string name="placeholders_explanation" formatted="true" translatable="false">Strings not fully substituted (if a value is missing from the reading) will not be sent. $ should not be used since any detected unknown embeddable values will result in the data not sending. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a>\n</string>
+
+    <string name="specific_values" formatted="true"><b>Specific values:</b></string>
+    <string name="specific_values_intro" formatted="true">Here is a full list of specific values for each supported device. There is also a search bar in order to make it easier to find values for specific device.</string>
     <string name="publisher_info_title">Info</string>
     <string name="title_select_publish">Select Publisher</string>
     <string name="title_app_settings">App Settings</string>
@@ -445,4 +450,5 @@
     <string name="mac_address_descending">Mac address (F-0)</string>
     <string name="bluetooth_enable_title">Enable bluetooth</string>
     <string name="enable_bluetooth_message">Bluetooth is disabled. It must be enabled to start scanning. Do you want to enable it now?</string>
+    <string name="search_by_device_name">Search by device name</string>
 </resources>

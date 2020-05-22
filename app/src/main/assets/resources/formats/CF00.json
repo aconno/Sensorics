@@ -5,6 +5,7 @@
   "format": [
     {
       "name": "Gyroscope X",
+      "description": "gyroscope - X axis",
       "start_index_inclusive": 5,
       "end_index_exclusive": 7,
       "reversed": true,
@@ -13,6 +14,7 @@
     },
     {
       "name": "Gyroscope Y",
+      "description": "gyroscope - Y axis",
       "start_index_inclusive": 7,
       "end_index_exclusive": 9,
       "reversed": true,
@@ -21,6 +23,7 @@
     },
     {
       "name": "Gyroscope Z",
+      "description": "gyroscope - Z axis",
       "start_index_inclusive": 9,
       "end_index_exclusive": 11,
       "reversed": true,
@@ -29,6 +32,7 @@
     },
     {
       "name": "Accelerometer X",
+      "description": "accelerometer - X axis",
       "start_index_inclusive": 11,
       "end_index_exclusive": 13,
       "reversed": true,
@@ -37,6 +41,7 @@
     },
     {
       "name": "Accelerometer Y",
+      "description": "accelerometer - Y axis",
       "start_index_inclusive": 13,
       "end_index_exclusive": 15,
       "reversed": true,
@@ -45,6 +50,7 @@
     },
     {
       "name": "Accelerometer Z",
+      "description": "accelerometer - Z axis",
       "start_index_inclusive": 15,
       "end_index_exclusive": 17,
       "reversed": true,
@@ -53,6 +59,7 @@
     },
     {
       "name": "Magnetometer X",
+      "description": "magnetometer - X axis",
       "start_index_inclusive": 17,
       "end_index_exclusive": 19,
       "reversed": true,
@@ -61,6 +68,7 @@
     },
     {
       "name": "Magnetometer Y",
+      "description": "magnetometer - Y axis",
       "start_index_inclusive": 19,
       "end_index_exclusive": 21,
       "reversed": true,
@@ -69,6 +77,7 @@
     },
     {
       "name": "Magnetometer Z",
+      "description": "magnetometer - Z axis",
       "start_index_inclusive": 21,
       "end_index_exclusive": 23,
       "reversed": true,
@@ -77,6 +86,7 @@
     },
     {
       "name": "Accelerometer Scale Factor",
+      "description": "accelerometer scale factor",
       "start_index_inclusive": 23,
       "end_index_exclusive": 25,
       "reversed": true,

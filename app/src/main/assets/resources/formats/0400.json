@@ -5,6 +5,7 @@
   "format": [
     {
       "name": "TmpCounter",
+      "description": "button counter",
       "start_index_inclusive": 5,
       "end_index_exclusive": 7,
       "reversed": true,
@@ -12,6 +13,7 @@
     },
     {
       "name": "BtnState",
+      "description": "button state",
       "start_index_inclusive": 7,
       "end_index_exclusive": 8,
       "reversed": false,
@@ -19,6 +21,7 @@
     },
     {
       "name": "LightLevel",
+      "description": "light level",
       "start_index_inclusive": 8,
       "end_index_exclusive": 12,
       "reversed": true,
@@ -26,6 +29,7 @@
     },
     {
       "name": "HalState",
+      "description": "HAL sensor state",
       "start_index_inclusive": 12,
       "end_index_exclusive": 13,
       "reversed": false,

@@ -56,7 +56,7 @@ abstract class PublisherViewModel<T>(
         return false
     }
 
-    fun getAllDeviceParameterPlaceholderStrings() : Single<Map<String,List<String>>> {
+    fun getAllDeviceParameterPlaceholderStrings() : Single<Map<String, List<Pair<String, String?>>>> {
         return getAllDeviceParameterPlaceholderStringsUseCase.execute().subscribeOn(Schedulers.io())
     }
 }
