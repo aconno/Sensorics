@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [5.4.1]
+- Add publisher placeholder strings information
+
 ## [5.4.0]
 - Add device grouping and sorting
 - Add support for ACD528XX board
@@ -32,6 +35,7 @@
 - Small code improvements
 
 [Unreleased]: https://github.com/aconno/Sensorics/compare/master...develop
+[5.4.1]: https://github.com/aconno/Sensorics/releases/tag/v5.4.1
 [5.4.0]: https://github.com/aconno/Sensorics/releases/tag/v5.4.0
 [5.3.0]: https://github.com/aconno/Sensorics/releases/tag/v5.3.0
 
