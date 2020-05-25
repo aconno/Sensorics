@@ -1,6 +1,7 @@
 package com.aconno.sensorics.data.converter
 
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.toSnakeCase
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -163,10 +164,7 @@ class DataStringConverter(
                 else -> {
                     val find =
                         readings.find { reading ->
-                            reading.name.replace(
-                                " ",
-                                "_"
-                            ).toLowerCase() == it
+                            reading.name.toSnakeCase() == it
                         }
                     if (find != null) {
                         newDataString = newDataString.replace("$$it", find.value.toString())

@@ -6,6 +6,7 @@ import com.aconno.sensorics.data.repository.azuremqttpublish.AzureMqttPublishRep
 import com.aconno.sensorics.data.repository.googlepublish.GooglePublishRepositoryImpl
 import com.aconno.sensorics.data.repository.mqttpublish.MqttPublishRepositoryImpl
 import com.aconno.sensorics.data.repository.restpublish.RestPublishRepositoryImpl
+import com.aconno.sensorics.domain.FormatListManager
 import com.aconno.sensorics.domain.ifttt.BasePublish
 import com.aconno.sensorics.domain.ifttt.publish.*
 import com.aconno.sensorics.domain.interactor.ifttt.UpdateAnyPublishUseCase
@@ -248,5 +249,13 @@ class PublisherModule {
             mqttPublishRepository,
             restPublishRepository
         )
+    }
+
+    @Provides
+    @PublisherScope
+    fun provideGetAllDeviceParameterPlaceholderStringsUseCase(
+        formatListManager: FormatListManager
+    ): GetAllDeviceParameterPlaceholderStringsUseCase {
+        return GetAllDeviceParameterPlaceholderStringsUseCase(formatListManager)
     }
 }

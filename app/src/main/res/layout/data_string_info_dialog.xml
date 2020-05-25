@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="12dip"
+    android:paddingEnd="10dip"
+    android:paddingStart="14dip"
+    android:paddingTop="2dip">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/general_placeholders_title"
+            style="?android:attr/textAppearanceMedium"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:padding="5dip"
+            android:text="@string/general_placholders_title"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/general_placeholders"
+            style="?android:attr/textAppearanceMedium"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:padding="5dip"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/explanation"
+            style="?android:attr/textAppearanceMedium"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:padding="5dip"
+            android:text="@string/placeholders_explanation"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/specific_values_title"
+            style="?android:attr/textAppearanceMedium"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:padding="5dip"
+            android:text="@string/specific_values"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/specific_values_initial_text"
+            style="?android:attr/textAppearanceMedium"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:padding="5dip"
+            android:text="@string/specific_values_intro"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:hint="@string/search_by_device_name"
+            />
+
+        <TextView
+            android:id="@+id/specific_values"
+            style="?android:attr/textAppearanceMedium"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:padding="5dip"
+            android:textColor="@android:color/black" />
+
+    </LinearLayout>
+
+</ScrollView>

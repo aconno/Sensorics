@@ -3,6 +3,7 @@ package com.aconno.sensorics.viewmodel.factory
 import androidx.lifecycle.ViewModel
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllDeviceParameterPlaceholderStringsUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import com.aconno.sensorics.model.mapper.GooglePublishDataMapper
@@ -15,7 +16,8 @@ class GoogleCloudPublisherViewModelFactory(
     private val savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
     private val deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
     private val googlePublishModelDataMapper: GooglePublishModelDataMapper,
-    private val googlePublishDataMapper: GooglePublishDataMapper
+    private val googlePublishDataMapper: GooglePublishDataMapper,
+    private val getAllDeviceParameterPlaceholderStringsUseCase: GetAllDeviceParameterPlaceholderStringsUseCase
 ) : BaseViewModelFactory() {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -25,7 +27,8 @@ class GoogleCloudPublisherViewModelFactory(
             googlePublishModelDataMapper,
             savePublishDeviceJoinUseCase,
             deletePublishDeviceJoinUseCase,
-            googlePublishDataMapper
+            googlePublishDataMapper,
+            getAllDeviceParameterPlaceholderStringsUseCase
         )
         return getViewModel(viewModel, modelClass)
     }

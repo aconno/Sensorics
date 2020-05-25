@@ -3,6 +3,7 @@ package com.aconno.sensorics.dagger.gcloudpublisher
 import androidx.lifecycle.ViewModelProvider
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllDeviceParameterPlaceholderStringsUseCase
 import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
 import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
 import com.aconno.sensorics.model.mapper.GooglePublishDataMapper
@@ -34,14 +35,16 @@ class GoogleCloudPublisherActivityModule {
         savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
         googlePublishModelDataMapper: GooglePublishModelDataMapper,
-        googlePublishDataMapper: GooglePublishDataMapper
+        googlePublishDataMapper: GooglePublishDataMapper,
+        getAllDeviceParameterPlaceholderStringsUseCase: GetAllDeviceParameterPlaceholderStringsUseCase
     ) = GoogleCloudPublisherViewModelFactory(
         addAnyPublishUseCase,
         getGooglePublishByIdUseCase,
         savePublishDeviceJoinUseCase,
         deletePublishDeviceJoinUseCase,
         googlePublishModelDataMapper,
-        googlePublishDataMapper
+        googlePublishDataMapper,
+        getAllDeviceParameterPlaceholderStringsUseCase
     )
 
 

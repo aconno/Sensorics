@@ -3,6 +3,7 @@ package com.aconno.sensorics.viewmodel
 import com.aconno.sensorics.domain.ifttt.GeneralRestPublishDeviceJoin
 import com.aconno.sensorics.domain.ifttt.PublishDeviceJoin
 import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllDeviceParameterPlaceholderStringsUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.restpublish.GetRestPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.repository.*
 import com.aconno.sensorics.model.RestHeaderModel
@@ -33,9 +34,11 @@ class RestPublisherViewModel(
     private val restHttpGetParamModelMapper: RESTHttpGetParamModelMapper,
 
     savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase,
-    deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase
+    deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase,
+
+    getAllDeviceParameterPlaceholderStringsUseCase: GetAllDeviceParameterPlaceholderStringsUseCase
 ) : PublisherViewModel<RestPublishModel>(
-    savePublishDeviceJoinUseCase, deletePublishDeviceJoinUseCase
+    savePublishDeviceJoinUseCase, deletePublishDeviceJoinUseCase,getAllDeviceParameterPlaceholderStringsUseCase
 ) {
 
     override fun getById(id: Long): Maybe<RestPublishModel> {
