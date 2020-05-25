@@ -1,0 +1,33 @@
+name: Sensorics Debug CI
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Test with Gradle
+      run: ./gradlew -Psensorics_fabricKey="${{ secrets.SENSORICS_FABRIC_KEY }}" -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS="${{ secrets.SENSORICS_RELEASE_KEY_ALIAS }}" -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" test
+
+  assemble_debug:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Assemble with Gradle
+      run: ./gradlew -Psensorics_fabricKey="${{ secrets.SENSORICS_FABRIC_KEY }}" -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS="${{ secrets.SENSORICS_RELEASE_KEY_ALIAS }}" -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" assembleDebug
+    - name: Archive assembled artifacts
+      uses: actions/upload-artifact@v1
+      with:
+          name: artifacts
+          path: ./app/build/outputs/apk/debug
+
