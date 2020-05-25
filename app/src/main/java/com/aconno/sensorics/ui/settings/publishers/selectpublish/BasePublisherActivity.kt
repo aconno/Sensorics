@@ -8,6 +8,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -303,7 +304,7 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
                 ) { dialog, _ ->
                     dialog.dismiss()
                 }
-                .show()
+                .show().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
             searchBar.addTextChangedListener(
                 object : TextWatcher {
