@@ -2,9 +2,9 @@ package com.aconno.sensorics.ui.settings.publishers.selectpublish
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.text.*
 import android.text.method.LinkMovementMethod
+import android.text.style.TypefaceSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -285,6 +285,9 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
     private fun createAndShowDataStringInfoDialog() {
         val view = View.inflate(this, R.layout.data_string_info_dialog, null)
 
+        val generalValuesTextView = view.findViewById<TextView>(R.id.general_placeholders)
+        generalValuesTextView.text = buildGeneralPlaceholderStringInfoText()
+
         val explanationTextView = view.findViewById<TextView>(R.id.explanation)
         explanationTextView.movementMethod = LinkMovementMethod.getInstance()
 
@@ -327,15 +330,34 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
         }
     }
 
-    private fun buildPlaceholderStringsInfoText(placeholdersMap : Map<String,List<String>>) : String {
-        val builder = StringBuilder()
+    private fun buildGeneralPlaceholderStringInfoText() : SpannableStringBuilder {
+        val placeholders = resources.getStringArray(R.array.generalDataStringPlaceholders)
+        val descriptions = resources.getStringArray(R.array.generalDataStringPlaceholderDescriptions)
+
+        val builder = SpannableStringBuilder()
+        placeholders.forEachIndexed { index, s ->
+            val placeholder = "\$${placeholders[index]}"
+            builder.append(placeholder)
+            builder.setSpan(TypefaceSpan("monospace"),builder.length-placeholder.length,builder.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            builder.append(" => ${descriptions[index]}\n")
+        }
+
+        return builder
+    }
+
+    private fun buildPlaceholderStringsInfoText(placeholdersMap : Map<String,List<String>>) : SpannableStringBuilder {
+        val builder = SpannableStringBuilder()
 
         placeholdersMap.entries.sortedBy { it -> it.key }.forEach {
             val deviceName = it.key
             val params = it.value
             builder.append("$deviceName:\n")
             params.forEach { param ->
-                builder.append("\$${param}")
+                val placeholder = "\$${param}"
+                builder.append(placeholder)
+                builder.setSpan(TypefaceSpan("monospace"),builder.length-placeholder.length,builder.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 builder.append("\n")
             }
 
@@ -346,10 +368,10 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
             builder.append("\n")
         }
 
-        return builder.toString()
+        return builder
     }
 
-    private fun buildPlaceholderStringsInfoText() : Single<String> {
+    private fun buildPlaceholderStringsInfoText() : Single<SpannableStringBuilder> {
         return viewModel.getAllDeviceParameterPlaceholderStrings().map { map ->
             buildPlaceholderStringsInfoText(map)
         }

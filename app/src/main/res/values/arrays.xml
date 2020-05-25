@@ -88,4 +88,21 @@
         <item>Button double tap</item>
         <item>Button triple tap</item>
     </string-array>
+
+    <string-array name="generalDataStringPlaceholders" translatable="false">
+        <item>ts</item>
+        <item>device</item>
+        <item>group</item>
+        <item>rssi</item>
+        <item>name</item>
+        <item>value</item>
+    </string-array>
+    <string-array name="generalDataStringPlaceholderDescriptions" translatable="false">
+        <item>timestamp</item>
+        <item>MAC address</item>
+        <item>device group</item>
+        <item>rssi</item>
+        <item>key</item>
+        <item>sensor value</item>
+    </string-array>
 </resources>

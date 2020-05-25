@@ -14,13 +14,22 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/general_placeholders_title"
+            style="?android:attr/textAppearanceMedium"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:padding="5dip"
+            android:text="@string/general_placholders_title"
+            android:textColor="@android:color/black" />
+
+        <TextView
             android:id="@+id/general_placeholders"
             style="?android:attr/textAppearanceMedium"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:linksClickable="true"
             android:padding="5dip"
-            android:text="@string/general_placholders_info"
             android:textColor="@android:color/black" />
 
         <TextView
