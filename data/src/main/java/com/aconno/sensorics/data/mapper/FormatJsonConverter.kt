@@ -33,7 +33,6 @@ class FormatJsonConverter {
     private fun toByteFormat(byteFormatJsonModel: ByteFormatJsonModel): ByteFormat {
         return ByteFormat(
             byteFormatJsonModel.name,
-            byteFormatJsonModel.description,
             byteFormatJsonModel.startIndexInclusive,
             byteFormatJsonModel.endIndexExclusive,
             byteFormatJsonModel.reversed,

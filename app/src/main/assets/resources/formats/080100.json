@@ -4,7 +4,6 @@
     "icon": "ic_sensa",
     "format": [{
             "name": "Gyroscope X",
-            "description": "gyroscope - X axis",
             "start_index_inclusive": 6,
             "end_index_exclusive": 8,
             "reversed": true,
@@ -13,7 +12,6 @@
         },
         {
             "name": "Gyroscope Y",
-            "description": "gyroscope - Y axis",
             "start_index_inclusive": 8,
             "end_index_exclusive": 10,
             "reversed": true,
@@ -22,7 +20,6 @@
         },
         {
             "name": "Gyroscope Z",
-            "description": "gyroscope - Z axis",
             "start_index_inclusive": 10,
             "end_index_exclusive": 12,
             "reversed": true,
@@ -31,7 +28,6 @@
         },
         {
             "name": "Accelerometer X",
-            "description": "accelerometer - X axis",
             "start_index_inclusive": 12,
             "end_index_exclusive": 14,
             "reversed": true,
@@ -40,7 +36,6 @@
         },
         {
             "name": "Accelerometer Y",
-            "description": "accelerometer - Y axis",
             "start_index_inclusive": 14,
             "end_index_exclusive": 16,
             "reversed": true,
@@ -49,7 +44,6 @@
         },
         {
             "name": "Accelerometer Z",
-            "description": "accelerometer - Z axis",
             "start_index_inclusive": 16,
             "end_index_exclusive": 18,
             "reversed": true,
@@ -58,7 +52,6 @@
         },
         {
             "name": "Magnetometer X",
-            "description": "magnetometer - X axis",
             "start_index_inclusive": 18,
             "end_index_exclusive": 20,
             "reversed": true,
@@ -67,7 +60,6 @@
         },
         {
             "name": "Magnetometer Y",
-            "description": "magnetometer - Y axis",
             "start_index_inclusive": 20,
             "end_index_exclusive": 22,
             "reversed": true,
@@ -76,7 +68,6 @@
         },
         {
             "name": "Magnetometer Z",
-            "description": "magnetometer - Z axis",
             "start_index_inclusive": 22,
             "end_index_exclusive": 24,
             "reversed": true,
@@ -85,7 +76,6 @@
         },
         {
             "name": "Accelerometer Scale Factor",
-            "description": "accelerometer scale factor",
             "start_index_inclusive": 24,
             "end_index_exclusive": 26,
             "reversed": true,

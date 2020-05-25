@@ -319,14 +319,14 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
 
     }
 
-    private fun filterPlacholdersMap(placeholdersMap: Map<String, List<Pair<String, String?>>>, filterString : String): Map<String, List<Pair<String, String?>>> {
+    private fun filterPlacholdersMap(placeholdersMap: Map<String, List<String>>, filterString : String): Map<String, List<String>> {
         return placeholdersMap.filter {
             val deviceName = it.key
             deviceName.contains(filterString,true)
         }
     }
 
-    private fun buildPlaceholderStringsInfoText(placeholdersMap : Map<String,List<Pair<String,String?>>>) : String {
+    private fun buildPlaceholderStringsInfoText(placeholdersMap : Map<String,List<String>>) : String {
         val builder = StringBuilder()
 
         placeholdersMap.entries.sortedBy { it -> it.key }.forEach {
@@ -334,8 +334,7 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
             val params = it.value
             builder.append("$deviceName:\n")
             params.forEach { param ->
-                builder.append("\$${param.first}")
-                param.second?.let { description -> builder.append(" => $description") }
+                builder.append("\$${param}")
                 builder.append("\n")
             }
 

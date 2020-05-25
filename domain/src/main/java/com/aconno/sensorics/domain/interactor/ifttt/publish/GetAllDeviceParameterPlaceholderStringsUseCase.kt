@@ -8,9 +8,9 @@ import java.util.Comparator
 
 class GetAllDeviceParameterPlaceholderStringsUseCase(
     private val formatListManager: FormatListManager
-) : SingleUseCase<Map<String,List<Pair<String,String?>>>> {
+) : SingleUseCase<Map<String,List<String>>> {
 
-    override fun execute(): Single<Map<String, List<Pair<String,String?>>>> {
+    override fun execute(): Single<Map<String, List<String>>> {
         return Single.fromCallable {
             formatListManager.getFormats()
                 .groupBy { it.getName() }
@@ -19,14 +19,11 @@ class GetAllDeviceParameterPlaceholderStringsUseCase(
                         .map { it.getFormat() }
                         .map {
                             it.values.map { paramFormat ->
-                                Pair(
-                                    paramFormat.name.replace(" ","").toSnakeCase(),
-                                    paramFormat.description
-                                )
+                                    paramFormat.name.replace(" ","").toSnakeCase()
                             }
                         }.toList().flatten()
                 }.mapValues {
-                    it.value.toSortedSet(kotlin.Comparator { a, b -> a.first.compareTo(b.first)  }).toList()
+                    it.value.toSortedSet().toList()
                 }
             }
         }

@@ -5,7 +5,6 @@
   "format": [
     {
       "name": "Temperature",
-      "description": "temperature",
       "start_index_inclusive": 5,
       "end_index_exclusive": 7,
       "reversed": true,
@@ -13,7 +12,6 @@
     },
     {
       "name": "R",
-      "description": "RGB color - red component",
       "start_index_inclusive": 7,
       "end_index_exclusive": 11,
       "reversed": true,
@@ -21,7 +19,6 @@
     },
     {
       "name": "G",
-      "description": "RGB color - green component",
       "start_index_inclusive": 11,
       "end_index_exclusive": 15,
       "reversed": true,
@@ -29,7 +26,6 @@
     },
     {
       "name": "B",
-      "description": "RGB color - blue component",
       "start_index_inclusive": 15,
       "end_index_exclusive": 19,
       "reversed": true,
@@ -37,7 +33,6 @@
     },
     {
       "name": "lightLux",
-      "description": "illuminance [lx]",
       "start_index_inclusive": 19,
       "end_index_exclusive": 21,
       "reversed": true,

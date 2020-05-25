@@ -5,7 +5,6 @@
   "format": [
     {
       "name": "Light",
-      "description": "light",
       "start_index_inclusive": 5,
       "end_index_exclusive": 9,
       "reversed": true,
@@ -13,7 +12,6 @@
     },
     {
       "name": "ColorTemperature",
-      "description": "color temperature",
       "start_index_inclusive": 9,
       "end_index_exclusive": 13,
       "reversed": true,
@@ -21,7 +19,6 @@
     },
     {
       "name": "IrRatio",
-      "description": "infrared ratio",
       "start_index_inclusive": 13,
       "end_index_exclusive": 17,
       "reversed": true,

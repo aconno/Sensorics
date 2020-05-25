@@ -4,7 +4,6 @@ import com.udojava.evalex.Expression
 
 data class ByteFormat(
     val name: String,
-    val description: String?,
     val startIndexInclusive: Int,
     val endIndexExclusive: Int,
     val isReversed: Boolean,
