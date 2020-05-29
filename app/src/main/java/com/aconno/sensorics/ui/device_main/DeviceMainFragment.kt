@@ -372,7 +372,10 @@ class DeviceMainFragment : DaggerFragment() {
 
         readings?.firstOrNull()?.let {
             jsonObject.put("rssi", it.rssi)
+            jsonObject.put("timestamp", it.timestamp)
+            jsonObject.put("macAddress", it.device.macAddress)
         }
+
 
         return jsonObject.toString()
     }

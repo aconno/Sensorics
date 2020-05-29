@@ -1,0 +1,64 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+    <style type="text/css">
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+    </style>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+</head>
+
+<body style="background-color:#fafafa">
+
+<div>
+    <img src="../icons/ic_sensa.png" class="center" id="acn-beacon-icon" />
+</div>
+
+<h3 class="center-align bold-text">acnBEACON</h3>
+
+<h5 class="center-align" id="acn-beacon-mac-address">AA:BB:CC:DD:EE:FF</h5>
+
+<div class="acn-beacon-name-value-container">
+    <div class="acn-beacon-param-name-container" style="display: table-cell; vertical-align: middle;">
+        <div class="acn-beacon-param-name-container">
+            <span style="display: block;" class="right-align acn-beacon-param-name ">RSSI: </span>
+        </div>
+    </div>
+
+    <span id="acn-beacon-rssi" class="acn-beacon-value" style="display: table-cell; vertical-align: middle;">-53 dBm</span>
+
+</div>
+
+<br>
+
+<div class="acn-beacon-name-value-container">
+    <div class="acn-beacon-param-name-container" style="display: table-cell; vertical-align: middle;">
+        <div class="acn-beacon-param-name-container">
+            <span style="display: block;" class="right-align acn-beacon-param-name ">Last seen: </span>
+        </div>
+    </div>
+
+    <pre><span id="acn-beacon-timestamp" class="acn-beacon-value" style="display: table-cell; vertical-align: middle;">2020-05-29  10:43:22</span></pre>
+
+</div>
+
+
+<script>
+
+        function onSensorReadings(json_values) {
+            console.log(json_values);
+
+            JSON.parse(json_values, function (key, value) {
+                console.log("KEY" + key + ", value: "+value);
+
+            });
+        }
+
+    </script>
+</body>
+
+</html>
