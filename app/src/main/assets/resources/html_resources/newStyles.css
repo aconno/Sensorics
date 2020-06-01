@@ -184,6 +184,8 @@
 
 #acn-beacon-rssi {
     font-size : 32px;
+    width : 150px;
+    text-align : right;
 }
 
 #acn-beacon-timestamp {
