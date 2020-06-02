@@ -10,6 +10,8 @@ import android.widget.Switch
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
+import com.aconno.sensorics.adapter.SelectableRecyclerViewAdapter
+import com.aconno.sensorics.domain.ifttt.outcome.PublishType
 import com.aconno.sensorics.model.*
 import kotlinx.android.synthetic.main.item_publish.view.*
 
@@ -18,59 +20,12 @@ import kotlinx.android.synthetic.main.item_publish.view.*
  * specified [OnListFragmentInteractionListener].
  */
 class PublishRecyclerViewAdapter(
-    private val mValues: MutableList<BasePublishModel>,
-    private val mListener: PublishListFragment.OnListFragmentClickListener?,
-    private val mLongClickListener: OnListItemLongClickListener?,
-    private val itemSelectedListener: OnListItemSelectedListener? = null
-) : RecyclerView.Adapter<PublishRecyclerViewAdapter.ViewHolder>() {
+    values: MutableList<BasePublishModel>,
+    clickListener: ItemClickListener<BasePublishModel>?,
+    longClickListener: ItemLongClickListener<BasePublishModel>?,
+    itemSelectedListener: ItemSelectedListener<BasePublishModel>? = null
+) : SelectableRecyclerViewAdapter<BasePublishModel,PublishRecyclerViewAdapter.PublisherKey,PublishRecyclerViewAdapter.ViewHolder>(values.toMutableList(),itemSelectedListener,clickListener,longClickListener) {
     private var mCheckedChangeListener: OnCheckedChangeListener? = null
-
-    var itemSelectionEnabled = false
-        private set
-    private var itemSelectedMap: MutableMap<BasePublishModel, Boolean> =
-        HashMap()//maps item id to current item selection state
-
-
-    fun getAllPublishers(): List<BasePublishModel> {
-        return mValues
-    }
-
-
-    fun enableItemSelection(initiallySelectedItem: BasePublishModel? = null) {
-        itemSelectionEnabled = true
-        itemSelectedMap.clear()
-        initiallySelectedItem?.let {
-            itemSelectedMap[it] = true
-        }
-        notifyDataSetChanged()
-    }
-
-    fun disableItemSelection() {
-        itemSelectionEnabled = false
-        itemSelectedMap.clear()
-        notifyDataSetChanged()
-    }
-
-    fun getNumberOfSelectedItems(): Int = itemSelectedMap.count { entry -> entry.value }
-
-    fun getSelectedItems(): List<BasePublishModel> =
-        mValues.filter { itemSelectedMap[it] == true }
-
-    fun setItemsAsSelected(items: List<BasePublishModel>) {
-        for (item in items) {
-            onItemSelectionStateChanged(true, item)
-        }
-        notifyDataSetChanged()
-    }
-
-    private fun onItemSelectionStateChanged(selected: Boolean, item: BasePublishModel) {
-        itemSelectedMap[item] = selected
-        itemSelectedListener?.apply {
-            if (selected) onListItemSelected(item)
-            else onListItemDeselected(item)
-        }
-    }
-
 
     fun setOnCheckedChangeListener(checkedChangeListener: OnCheckedChangeListener?) {
         this.mCheckedChangeListener = checkedChangeListener
@@ -82,76 +37,62 @@ class PublishRecyclerViewAdapter(
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = mValues[position]
-        holder.mNameView.text = item.name
-        holder.mEnableView.isChecked = item.enabled
 
-        with(holder.selectionButton) {
-            visibility = if (itemSelectionEnabled) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-
-            isChecked = itemSelectedMap[item] ?: false
-        }
-
-        when (item) {
-            is GooglePublishModel -> holder.mImageView.setImageResource(R.drawable.google_logo)
-            is RestPublishModel -> holder.mImageView.setImageResource(R.drawable.upload_cloud)
-            is MqttPublishModel -> holder.mImageView.setImageResource(R.drawable.mqtt_logo)
-            is AzureMqttPublishModel -> holder.mImageView.setImageResource(R.drawable.azure_logo)
-        }
-
-        with(holder.mView) {
-            tag = item
-            setOnLongClickListener {
-                mLongClickListener?.onListItemLongClick(item)
-                true
-            }
-        }
-
-        holder.mEnableView.setOnCheckedChangeListener { _, isChecked ->
-            mCheckedChangeListener?.onCheckedChange(isChecked, holder.adapterPosition)
-        }
-
-        holder.mView.setOnClickListener {
-            if (itemSelectionEnabled) {
-                holder.selectionButton.isChecked = !holder.selectionButton.isChecked
-                onItemSelectionStateChanged(holder.selectionButton.isChecked, item)
-            } else {
-                mListener?.onListFragmentClick(item)
-            }
-        }
-
-        holder.selectionButton.setOnClickListener {
-            onItemSelectionStateChanged(holder.selectionButton.isChecked, item)
-        }
-    }
-
-    override fun getItemCount(): Int = mValues.size
-
-    fun getPublishModel(position: Int) = mValues[position]
-
-    fun removePublishModel(position: Int) {
-        mValues.removeAt(position)
-        notifyItemRemoved(position)
-    }
-
-    fun addPublishModelAtPosition(basePublishModel: BasePublishModel, position: Int) {
-        mValues.add(position, basePublishModel)
-        notifyItemInserted(position)
-    }
-
-    inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val mNameView: TextView = mView.publish_name
-        val mEnableView: Switch = mView.publish_switch
-        val mImageView: ImageView = mView.publish_image
-        val selectionButton: CheckBox = mView.cb_item_selected
+    inner class ViewHolder(private val mView: View) : SelectableRecyclerViewAdapter<BasePublishModel, PublisherKey, ViewHolder>.ViewHolder(mView) {
+        private val mNameView: TextView = mView.publish_name
+        private val mEnableView: Switch = mView.publish_switch
+        private val mImageView: ImageView = mView.publish_image
+        private val selectionButton: CheckBox = mView.cb_item_selected
 
         override fun toString(): String {
             return super.toString() + " '" + mEnableView.text + "'"
+        }
+
+        override fun bind(item: BasePublishModel) {
+            mNameView.text = item.name
+            mEnableView.isChecked = item.enabled
+
+            with(selectionButton) {
+                visibility = if (isItemSelectionEnabled) {
+                    android.view.View.VISIBLE
+                } else {
+                    android.view.View.GONE
+                }
+
+                isChecked = isItemSelected(item)
+            }
+
+            when (item) {
+                is GooglePublishModel -> mImageView.setImageResource(R.drawable.google_logo)
+                is RestPublishModel -> mImageView.setImageResource(R.drawable.upload_cloud)
+                is MqttPublishModel -> mImageView.setImageResource(R.drawable.mqtt_logo)
+                is AzureMqttPublishModel -> mImageView.setImageResource(R.drawable.azure_logo)
+            }
+
+            with(mView) {
+                tag = item
+                setOnLongClickListener {
+                    onItemLongClick(item)
+                    true
+                }
+            }
+
+            mEnableView.setOnCheckedChangeListener { _, isChecked ->
+                mCheckedChangeListener?.onCheckedChange(isChecked, adapterPosition)
+            }
+
+            mView.setOnClickListener {
+                if (isItemSelectionEnabled) {
+                    selectionButton.isChecked = !selectionButton.isChecked
+                    setSelected(item,selectionButton.isChecked)
+                } else {
+                    onItemClick(item)
+                }
+            }
+
+            selectionButton.setOnClickListener {
+                setSelected(item,selectionButton.isChecked)
+            }
         }
     }
 
@@ -159,13 +100,13 @@ class PublishRecyclerViewAdapter(
         fun onCheckedChange(checked: Boolean, position: Int)
     }
 
-    interface OnListItemLongClickListener {
-        fun onListItemLongClick(item: BasePublishModel?)
+    override fun getKeyForItem(item: BasePublishModel): PublisherKey {
+        return PublisherKey(item.id,item.type)
     }
 
-    interface OnListItemSelectedListener {
-        fun onListItemSelected(item: BasePublishModel)
-        fun onListItemDeselected(item: BasePublishModel)
-    }
+    data class PublisherKey(
+        val id : Long,
+        val type : PublishType
+    )
 
 }

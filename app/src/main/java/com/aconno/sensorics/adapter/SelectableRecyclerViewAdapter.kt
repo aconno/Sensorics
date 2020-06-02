@@ -99,6 +99,18 @@ abstract class SelectableRecyclerViewAdapter<T, K, VH>(
         notifyDataSetChanged()
     }
 
+    fun clear() {
+        internalItems.clear()
+        notifyDataSetChanged()
+    }
+
+    fun removeItem(model: T) {
+        val index = internalItems.indexOf(model)
+        if(index != -1) {
+            removeItemAtPosition(index)
+        }
+
+    }
 
     interface ItemSelectedListener<in T> {
         fun onListItemSelectionStateChanged(item: T, state: Boolean)
