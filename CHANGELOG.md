@@ -4,6 +4,7 @@
 
 ## [5.4.1]
 - Add publisher placeholder strings information
+- Add acnBEACON ui
 
 ## [5.4.0]
 - Add device grouping and sorting
