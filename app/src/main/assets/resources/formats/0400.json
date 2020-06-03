@@ -1,6 +1,7 @@
 {
   "id": "0400",
   "name": "acnACT",
+  "version": "acnACT-v1",
   "icon": "ic_act",
   "format": [
     {

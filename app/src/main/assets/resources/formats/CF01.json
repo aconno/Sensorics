@@ -1,6 +1,7 @@
 {
   "id": "CF01",
   "name": "acnSENSA",
+  "version": "acnSENSA-v3",
   "icon": "ic_sensa",
   "format": [
     {

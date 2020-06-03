@@ -1,6 +1,7 @@
 {
   "id": "0D00",
   "name": "acnMEMS",
+  "version": "acnMEMS-v1",
   "icon": "ic_sensa",
   "format": [],
   "format_required": [

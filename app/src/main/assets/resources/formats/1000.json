@@ -1,6 +1,7 @@
 {
   "id": "1000",
   "name": "acnSwitch",
+  "version": "acnSwitch-v1",
   "icon": "ic_sensa",
   "format": [
     {
