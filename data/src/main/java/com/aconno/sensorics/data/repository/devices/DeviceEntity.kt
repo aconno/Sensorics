@@ -13,5 +13,6 @@ data class DeviceEntity(
     @PrimaryKey var macAddress: String,
     var icon: String,
     var connectable: Boolean = false,
-    var timeAdded : Date? = null
+    var timeAdded : Date? = null,
+    var deviceVersion : String? = null
 )

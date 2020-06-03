@@ -13,7 +13,8 @@ data class Device(
     val connectionWriteList: List<ConnectionWrite>? = null,
     val connectionReadList: List<ConnectionRead>? = null,
     val hasSettings: Boolean = false,
-    var timeAdded : Date? = null
+    var timeAdded : Date? = null,
+    var deviceVersion : String? = null
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

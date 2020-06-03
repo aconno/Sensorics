@@ -6,4 +6,5 @@ interface AdvertisementFormat : Connection {
     fun getFormat(): Map<String, ByteFormat>
     fun getRequiredFormat(): List<ByteFormatRequired>
     fun getSettingsSupport(): SettingsSupport?
+    fun getDeviceVersion() : String?
 }

@@ -10,6 +10,7 @@ class FormatJsonConverter {
         return GenericFormat(
             formatJsonModel.id,
             formatJsonModel.name,
+            formatJsonModel.version,
             formatJsonModel.icon,
             formatJsonModel.format.map { toByteFormat(it) },
             formatJsonModel.formatRequired.map { toByteFormatRequired(it) },

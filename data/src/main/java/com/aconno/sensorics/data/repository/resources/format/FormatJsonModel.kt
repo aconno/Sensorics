@@ -10,6 +10,9 @@ class FormatJsonModel(
     @SerializedName("name")
     @Expose
     var name: String,
+    @SerializedName("version")
+    @Expose
+    var version: String?,
     @SerializedName("icon")
     @Expose
     var icon: String,

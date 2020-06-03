@@ -39,7 +39,8 @@ class GenerateScanDeviceUseCase(
                 format.isConnectible(),
                 format.getConnectionWriteList(),
                 format.getConnectionReadList(),
-                hasSettingsSupport(format, parameter)
+                hasSettingsSupport(format, parameter),
+                deviceVersion = format.getDeviceVersion()
             )
         } else {
             device = Device(
@@ -47,7 +48,8 @@ class GenerateScanDeviceUseCase(
                 "",
                 parameter.macAddress,
                 format.getIcon(),
-                hasSettings = hasSettingsSupport(format, parameter)
+                hasSettings = hasSettingsSupport(format, parameter),
+                deviceVersion = format.getDeviceVersion()
             )
         }
         return device
