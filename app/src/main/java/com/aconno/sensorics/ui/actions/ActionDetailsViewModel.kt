@@ -198,7 +198,7 @@ class ActionDetailsViewModel(
     }
 
     fun getReadingTypes(device: Device): List<String> {
-        return formatMatcher.getReadingTypes(device.name)
+        return device.deviceVersion?.let { formatMatcher.getReadingTypes(it) } ?: listOf()
     }
 
     fun saveAction(

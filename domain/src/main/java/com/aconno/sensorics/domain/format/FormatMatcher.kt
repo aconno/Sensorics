@@ -78,9 +78,9 @@ class FormatMatcher(
         }
     }
 
-    fun getReadingTypes(formatName: String): List<String> {
+    fun getReadingTypes(deviceVersion: String): List<String> {
         val readingTypes = mutableListOf<String>()
-        supportedFormats.filter { it.getName() == formatName }
+        supportedFormats.filter { it.getDeviceVersion() == deviceVersion }
             .forEach {
                 readingTypes.addAll(it.getFormat().keys)
             }
