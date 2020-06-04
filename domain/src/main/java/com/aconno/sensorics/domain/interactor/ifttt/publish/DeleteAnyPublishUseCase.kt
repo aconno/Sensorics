@@ -11,7 +11,7 @@ open class DeleteAnyPublishUseCase(
         return Completable.fromCallable {
             getRepositoryForPublishUseCase.execute(parameter).map { repository ->
                 repository.deletePublish(parameter)
-            }
+            }.subscribe()
         }
     }
 }
