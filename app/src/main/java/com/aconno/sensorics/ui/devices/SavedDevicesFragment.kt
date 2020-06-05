@@ -213,9 +213,41 @@ class SavedDevicesFragment : DaggerFragment(),
                     deviceGroupOptions.showDeviceGroupsOptions()
                     return true
                 }
+                R.id.delete_devices -> {
+                    showRemoveDevicesDialog()
+                    return true
+                }
                 else -> return super.onOptionsItemSelected(item)
             }
         } ?: return super.onOptionsItemSelected(item)
+    }
+
+    private fun showRemoveDevicesDialog() {
+        AlertDialog.Builder(context)
+            .setTitle(getString(R.string.remove_devices_title))
+            .setPositiveButton(getString(R.string.remove)) { _, _ ->
+                deleteSelectedDevices()
+                exitItemSelectionState()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setCancelable(true)
+            .setMessage(getString(R.string.remove_devices_confirmation))
+            .show()
+    }
+
+    private fun deleteSelectedDevices() {
+        val devices = deviceAdapter.getSelectedItems()
+        devices.forEach {
+            deviceViewModel.deleteDevice(it.device)
+        }
+
+        val snackbarMessage =
+            if(devices.size == 1) {
+                getString(R.string.one_device_removed,devices[0].device.name)
+            } else {
+                getString(R.string.multiple_devices_removed,devices.size)
+            }
+        Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
     }
 
     @SuppressLint("InflateParams")
