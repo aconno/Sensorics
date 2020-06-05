@@ -111,7 +111,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
                 dontObserveQueue.add(true)
                 //delete device from db if undo snackbar timeout.
-                deviceViewModel.deleteDevice(deletedItem.device)
+                deletedItem?.device?.let { deviceViewModel.deleteDevice(it) }
             }
         }
     }
@@ -736,7 +736,7 @@ class SavedDevicesFragment : DaggerFragment(),
         if (viewHolder is DeviceActiveAdapter.ViewHolder) {
             // get the removed item name to display it in snack bar and backup for undo
             deletedItems.add(deviceAdapter.getDevice(position))
-            val name = deletedItems.peek().device.getRealName()
+            val name = deletedItems.peek()?.device?.getRealName() ?: return
 
             // remove the item from recycler view
             deviceAdapter.removeItemAtPosition(position)
