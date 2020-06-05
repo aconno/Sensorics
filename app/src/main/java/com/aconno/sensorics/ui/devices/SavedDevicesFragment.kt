@@ -735,8 +735,9 @@ class SavedDevicesFragment : DaggerFragment(),
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int) {
         if (viewHolder is DeviceActiveAdapter.ViewHolder) {
             // get the removed item name to display it in snack bar and backup for undo
-            deletedItems.add(deviceAdapter.getDevice(position))
-            val name = deletedItems.peek()?.device?.getRealName() ?: return
+            val deviceActive = deviceAdapter.getDevice(position)
+            deletedItems.add(deviceActive)
+            val name = deviceActive.device?.getRealName() ?: return
 
             // remove the item from recycler view
             deviceAdapter.removeItemAtPosition(position)
