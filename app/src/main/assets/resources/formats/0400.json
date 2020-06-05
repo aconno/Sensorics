@@ -4,28 +4,28 @@
   "icon": "ic_act",
   "format": [
     {
-      "name": "TmpCounter",
+      "name": "ButtonCounter",
       "start_index_inclusive": 5,
       "end_index_exclusive": 7,
       "reversed": true,
       "data_type": "SINT16"
     },
     {
-      "name": "BtnState",
+      "name": "ButtonState",
       "start_index_inclusive": 7,
       "end_index_exclusive": 8,
       "reversed": false,
       "data_type": "BYTE"
     },
     {
-      "name": "LightLevel",
+      "name": "LightState",
       "start_index_inclusive": 8,
       "end_index_exclusive": 12,
       "reversed": true,
       "data_type": "FLOAT"
     },
     {
-      "name": "HalState",
+      "name": "MagnetoState",
       "start_index_inclusive": 12,
       "end_index_exclusive": 13,
       "reversed": false,
