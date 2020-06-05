@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 - Add acnBEACON ui
+- Fix acnACT action conditions bug
 
 ## [5.4.1]
 - Add publisher placeholder strings information
