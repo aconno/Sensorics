@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+- Add multiple device removal
 - Add acnBEACON ui
 - Fix acnACT action conditions bug
 
