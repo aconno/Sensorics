@@ -456,4 +456,9 @@
     <string name="remove_actions_title">Remove actions</string>
     <string name="one_action_removed">%s removed!</string>
     <string name="multiple_actions_removed">%d actions removed!</string>
+    <string name="delete_devices">Remove</string>
+    <string name="one_device_removed">%s removed!</string>
+    <string name="multiple_devices_removed">%d devices removed!</string>
+    <string name="remove_devices_title">Remove</string>
+    <string name="remove_devices_confirmation">Are you sure you want to remove selected devices?</string>
 </resources>
