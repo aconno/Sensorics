@@ -35,4 +35,9 @@
         android:id="@+id/action_deactivate_all_actions"
         android:title="@string/deactivate_all_actions"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/delete_devices"
+        android:title="@string/delete_devices"
+        app:showAsAction="never" />
 </menu>
