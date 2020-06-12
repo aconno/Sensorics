@@ -26,8 +26,8 @@ class ResourcesRepositoryImpl(
     override fun getConfigs(): List<ResourceConfig> {
         val configFolder = File(cacheFilePath.absolutePath + CONFIGS_FILE_PATH)
         if (configFolder.exists()) {
-            return configFolder.listFiles()
-                .map {
+            return configFolder.listFiles()?.let { files ->
+                files.map {
                     Timber.d("Loading config: ${it.path}")
 
                     val configFileJsonModel = gson.fromJson(
@@ -37,8 +37,11 @@ class ResourcesRepositoryImpl(
 
                     configFileJsonModelConverter.toResourceConfig(configFileJsonModel)
                 }
+            } ?: listOf()
+
         } else {
-            throw FileNotFoundException("Configs not found...")
+            configFolder.mkdir()
+            return listOf()
         }
     }
 
@@ -49,19 +52,22 @@ class ResourcesRepositoryImpl(
     override fun getFormats(): List<AdvertisementFormat> {
         val configFolder = File(cacheFilePath.absolutePath + FORMATS_FILE_PATH)
         if (configFolder.exists()) {
-            return configFolder.listFiles()
-                .map {
-                    Timber.d("Loading format: ${it.path}")
+            return configFolder.listFiles()?.let {files ->
+                files.map {
+                Timber.d("Loading format: ${it.path}")
 
-                    val formatFileJsonModel = gson.fromJson(
-                        it.readText(),
-                        FormatJsonModel::class.java
-                    )
+                val formatFileJsonModel = gson.fromJson(
+                    it.readText(),
+                    FormatJsonModel::class.java
+                )
 
-                    formatJsonConverter.toAdvertisementFormat(formatFileJsonModel)
-                }
+                formatJsonConverter.toAdvertisementFormat(formatFileJsonModel)
+            }
+            } ?: listOf()
+
         } else {
-            throw FileNotFoundException("Formats not found...")
+            configFolder.mkdir()
+            return listOf()
         }
     }
 
