@@ -85,7 +85,7 @@ class DeviceSelectFragment : BaseFragment() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    empty_view.visibility = View.GONE
+                    empty_view?.visibility = View.GONE
                     deviceList.clear()
                     deviceList.addAll(it)
                     adapter.notifyDataSetChanged()
