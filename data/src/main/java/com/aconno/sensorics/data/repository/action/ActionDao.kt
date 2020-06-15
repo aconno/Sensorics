@@ -1,6 +1,7 @@
 package com.aconno.sensorics.data.repository.action
 
 import androidx.room.*
+import io.reactivex.Flowable
 import io.reactivex.Single
 
 @Dao
@@ -8,6 +9,8 @@ interface ActionDao {
 
     @Query("SELECT * FROM actions")
     fun getAll(): Single<List<ActionEntity>>
+
+    fun getAllAsFlowable() : Flowable<List<ActionEntity>>
 
     @Query("SELECT * FROM actions WHERE id = :actionId")
     fun getActionById(actionId: Long): Single<ActionEntity>
