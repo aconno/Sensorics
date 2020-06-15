@@ -8,10 +8,8 @@ open class DeleteAnyPublishUseCase(
     private val getRepositoryForPublishUseCase: GetRepositoryForPublishUseCase
 ) : CompletableUseCaseWithParameter<BasePublish> {
     override fun execute(parameter: BasePublish): Completable {
-        return Completable.fromCallable {
-            getRepositoryForPublishUseCase.execute(parameter).map { repository ->
+        return getRepositoryForPublishUseCase.execute(parameter).map { repository ->
                 repository.deletePublish(parameter)
-            }
-        }
+            }.ignoreElement()
     }
 }
