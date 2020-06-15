@@ -1,5 +1,6 @@
 package com.aconno.sensorics.ui
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -25,6 +26,7 @@ import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToObjectsUseC
 import com.aconno.sensorics.domain.interactor.publisher.ConvertObjectsToJsonUseCase
 import com.aconno.sensorics.ui.actions.ActionDetailsActivity
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -179,8 +181,41 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         when (item?.itemId) {
             android.R.id.home -> exitItemSelectionState()
             R.id.action_select_all -> selectAllItems()
+            R.id.remove_selected -> showRemoveSelectedActionsDialog()
             else -> super.resolveActionBarEvent(item)
         }
+    }
+
+    private fun showRemoveSelectedActionsDialog() {
+        AlertDialog.Builder(context)
+            .setTitle(getString(R.string.remove_actions_title))
+            .setPositiveButton(getString(R.string.remove)) { _, _ ->
+                removeSelectedActions()
+                exitItemSelectionState()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setCancelable(true)
+            .setMessage(getString(R.string.remove_actions_confirmation))
+            .show()
+    }
+
+    private fun removeSelectedActions() {
+        val actions = actionAdapter.getSelectedItems()
+        Completable.merge(actions.map { deleteActionUseCase.execute(it) })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                reloadActions()
+            }
+            .also { disposables.add(it) }
+
+        val snackbarMessage =
+            if(actions.size == 1) {
+                getString(R.string.one_action_removed,actions[0].name)
+            } else {
+                getString(R.string.multiple_actions_removed,actions.size)
+            }
+        Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -299,6 +334,10 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
     override fun onResume() {
         super.onResume()
 
+        reloadActions()
+    }
+
+    private fun reloadActions() {
         addDisposable(
             getAllActionsUseCase.execute()
                 .subscribeOn(Schedulers.io())
@@ -309,7 +348,6 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
                     )
                 }
         )
-
     }
 
     override fun onPause() {

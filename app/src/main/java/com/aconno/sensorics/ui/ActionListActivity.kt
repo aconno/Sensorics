@@ -49,7 +49,7 @@ class ActionListActivity : DaggerAppCompatActivity(),
             }
         }
 
-        menuResource = R.menu.share_selected_menu
+        menuResource = R.menu.selected_shareable_items_menu
         invalidateOptionsMenu()
     }
 

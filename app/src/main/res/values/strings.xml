@@ -451,6 +451,11 @@
     <string name="bluetooth_enable_title">Enable bluetooth</string>
     <string name="enable_bluetooth_message">Bluetooth is disabled. It must be enabled to start scanning. Do you want to enable it now?</string>
     <string name="search_by_device_name">Search by device name</string>
+    <string name="remove_selected">Remove</string>
+    <string name="remove_actions_confirmation">Are you sure you want to remove selected actions?</string>
+    <string name="remove_actions_title">Remove actions</string>
+    <string name="one_action_removed">%s removed!</string>
+    <string name="multiple_actions_removed">%d actions removed!</string>
     <string name="delete_devices">Remove</string>
     <string name="one_device_removed">%s removed!</string>
     <string name="multiple_devices_removed">%d devices removed!</string>

@@ -52,7 +52,7 @@ class PublishListActivity : DaggerAppCompatActivity(),
         cancelIcon?.setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY)
         supportActionBar?.setHomeAsUpIndicator(cancelIcon)
 
-        menuResource = R.menu.share_selected_menu
+        menuResource = R.menu.selected_shareable_items_menu
         invalidateOptionsMenu()
     }
 
