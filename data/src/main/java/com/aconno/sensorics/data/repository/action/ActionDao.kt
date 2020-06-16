@@ -10,6 +10,7 @@ interface ActionDao {
     @Query("SELECT * FROM actions")
     fun getAll(): Single<List<ActionEntity>>
 
+    @Query("SELECT * FROM actions")
     fun getAllAsFlowable() : Flowable<List<ActionEntity>>
 
     @Query("SELECT * FROM actions WHERE id = :actionId")
