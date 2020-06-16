@@ -1,9 +1,14 @@
 # Changelog
 
 ## [Unreleased]
+
+## [5.4.2]
 - Add multiple device removal
+- Add multiple action removal
 - Add acnBEACON ui
 - Fix acnACT action conditions bug
+- Fix actions serialization
+- Fix config folder missing bug
 
 ## [5.4.1]
 - Add publisher placeholder strings information
@@ -39,6 +44,7 @@
 
 [Unreleased]: https://github.com/aconno/Sensorics/compare/master...develop
 [5.4.1]: https://github.com/aconno/Sensorics/releases/tag/v5.4.1
+[5.4.2]: https://github.com/aconno/Sensorics/releases/tag/v5.4.2
 [5.4.0]: https://github.com/aconno/Sensorics/releases/tag/v5.4.0
 [5.3.0]: https://github.com/aconno/Sensorics/releases/tag/v5.3.0
 
