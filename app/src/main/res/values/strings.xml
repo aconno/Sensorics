@@ -461,4 +461,9 @@
     <string name="multiple_devices_removed">%d devices removed!</string>
     <string name="remove_devices_title">Remove</string>
     <string name="remove_devices_confirmation">Are you sure you want to remove selected devices?</string>
+
+    <string name="remove_publishers_confirmation">Are you sure you want to remove selected backends?</string>
+    <string name="remove_publishers_title">Remove backends</string>
+    <string name="one_publisher_removed">%s removed!</string>
+    <string name="multiple_publishers_removed">%d backends removed!</string>
 </resources>
