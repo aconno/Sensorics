@@ -7,21 +7,22 @@ import io.reactivex.disposables.Disposable
 class InputToActionsResolverImpl(
     actionsRepository: ActionsRepository
 ) : InputToActionsResolver {
-    private var disposables : MutableList<Disposable> = mutableListOf()
+    private var actionsProviderDisposable : Disposable? = null
 
     private var actionsMap : MutableMap<ResolverKey,MutableList<Action>> = mutableMapOf()
 
     init {
         actionsRepository.getAllActionsAsFlowable().subscribe {
-            actionsMap = actionsToMap(it)
-        }.also { disposables.add(it) }
+            updateMapWithActions(it)
+        }.also { actionsProviderDisposable = it }
     }
 
-    private fun actionsToMap(actions : List<Action>) : MutableMap<ResolverKey,MutableList<Action>> {
-        return mutableMapOf<ResolverKey,MutableList<Action>>().apply {
+    private fun updateMapWithActions(actions : List<Action>) {
+        actionsMap.apply {
+            clear()
             actions.forEach { action ->
                 val resolverKey = ResolverKey(action.device.macAddress,action.condition.readingType)
-                val actionsForKey = this[resolverKey] ?: mutableListOf()
+                val actionsForKey = this.getOrPut(resolverKey) { mutableListOf() }
                 actionsForKey.add(action)
                 this[resolverKey] = actionsForKey
             }
@@ -29,7 +30,7 @@ class InputToActionsResolverImpl(
     }
 
     protected fun finalize() {
-        disposables.forEach { it.dispose() }
+        actionsProviderDisposable?.dispose()
     }
 
     override fun getActionsForInputParameters(
