@@ -12,9 +12,9 @@ class InputToActionsResolverImpl(
     private var actionsMap : MutableMap<ResolverKey,MutableList<Action>> = mutableMapOf()
 
     init {
-        actionsRepository.getAllActionsAsFlowable().subscribe {
+        actionsProviderDisposable = actionsRepository.getAllActionsAsFlowable().subscribe {
             updateMapWithActions(it)
-        }.also { actionsProviderDisposable = it }
+        }
     }
 
     private fun updateMapWithActions(actions : List<Action>) {
