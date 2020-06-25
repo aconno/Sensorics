@@ -18,14 +18,12 @@ class InputToActionsResolverImpl(
     }
 
     private fun updateMapWithActions(actions : List<Action>) {
-        actionsMap.apply {
-            clear()
-            actions.forEach { action ->
-                val resolverKey = ResolverKey(action.device.macAddress,action.condition.readingType)
-                val actionsForKey = this.getOrPut(resolverKey) { mutableListOf() }
-                actionsForKey.add(action)
-                this[resolverKey] = actionsForKey
-            }
+        actionsMap.clear()
+        actions.forEach { action ->
+            val resolverKey = ResolverKey(action.device.macAddress,action.condition.readingType)
+            val actionsForKey = actionsMap.getOrPut(resolverKey) { mutableListOf() }
+            actionsForKey.add(action)
+            actionsMap[resolverKey] = actionsForKey
         }
     }
 
