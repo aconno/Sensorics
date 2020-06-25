@@ -1,28 +1,22 @@
 package com.aconno.sensorics.domain.interactor.ifttt
 
-import com.aconno.sensorics.domain.actions.Action
-import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.ifttt.Input
+import com.aconno.sensorics.domain.ifttt.outcome.InputToActionsResolver
 import com.aconno.sensorics.domain.interactor.time.GetLocalTimeOfDayInSecondsUseCase
 import com.aconno.sensorics.domain.interactor.type.SingleUseCaseWithParameter
-import io.reactivex.Observable
 import io.reactivex.Single
 
 class InputToOutcomesUseCase(
-    private val actionsRepository: ActionsRepository,
+    private val actionResolver: InputToActionsResolver,
     private val getLocalTimeOfDayInSecondsUseCase: GetLocalTimeOfDayInSecondsUseCase
 ) : SingleUseCaseWithParameter<List<Outcome>, Input> {
 
     override fun execute(parameter: Input): Single<List<Outcome>> {
-        val observable = getLocalTimeOfDayInSecondsUseCase.execute()
-            .flatMapObservable { timeOfDayInSeconds ->
-                actionsRepository.getAllActions().toObservable()
-                    .concatMap { actions ->
-                        Observable.just(actionsToOutcomes(actions, parameter, timeOfDayInSeconds))
-                    }
+        return getLocalTimeOfDayInSecondsUseCase.execute()
+            .map { timeOfDayInSeconds ->
+                actionsToOutcomes(parameter, timeOfDayInSeconds)
             }
-        return Single.fromObservable(observable)
     }
 
     /**
@@ -32,7 +26,6 @@ class InputToOutcomesUseCase(
     private val previousConditions: MutableMap<String, MutableMap<Long, Boolean>> = mutableMapOf()
 
     private fun actionsToOutcomes(
-        actions: List<Action>,
         input: Input,
         timeOfDayInSeconds: Int
     ): List<Outcome> {
@@ -41,11 +34,7 @@ class InputToOutcomesUseCase(
             mutableMapOf()
         }
 
-        actions.asSequence().filter {
-            it.device.macAddress == input.macAddress
-        }.filter { action ->
-            action.condition.readingType == input.type
-        }.filter { action ->
+        actionResolver.getActionsForInputParameters(input.macAddress,input.type).asSequence().filter { action ->
             action.active
         }.filter { action ->
             // Suppressing because of the last else if branch, I wanted it to be readable
