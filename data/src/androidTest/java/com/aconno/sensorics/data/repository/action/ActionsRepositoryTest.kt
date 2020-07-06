@@ -1,8 +1,7 @@
 package com.aconno.sensorics.data.repository.action
 
-import android.content.Context
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
 import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.data.repository.devices.DeviceDao
 import com.aconno.sensorics.data.repository.devices.DeviceMapper
@@ -86,10 +85,10 @@ class ActionsRepositoryTest {
 
         @BeforeClass @JvmStatic
         fun createDatabase() {
-            val context = ApplicationProvider.getApplicationContext<Context>()
+            val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
             database = Room.inMemoryDatabaseBuilder(context, SensoricsDatabase::class.java).build()
             actionDao = database.actionDao()
-            ari = ActionsRepositoryImpl(actionDao)
+            ari = ActionsRepositoryImpl(actionDao,ActionMapper())
             deviceDao = database.deviceDao()
             dri = DeviceRepositoryImpl(deviceDao, DeviceMapper())
         }
@@ -117,11 +116,11 @@ class ActionsRepositoryTest {
                     fakeOutcome,
                     false,
                     0,
-                    java.util.Random().nextInt()
+                    Random().nextInt()
                 ))
                 actionsRepositoryImpl.addAction(insertedActions.last())
                     .subscribeOn(Schedulers.io())
-                    .blockingAwait()
+                    .blockingGet()
             }
         }
 

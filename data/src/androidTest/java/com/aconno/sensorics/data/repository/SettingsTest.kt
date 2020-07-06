@@ -1,7 +1,7 @@
 package com.aconno.sensorics.data.repository
 
 import android.content.Context
-import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
 import com.aconno.sensorics.domain.repository.Settings
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -15,7 +15,7 @@ class SettingsTest {
 
     @Before @Throws(Exception::class)
     fun before() {
-        context = ApplicationProvider.getApplicationContext()
+        context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
         val sharedPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         settings = SettingsImpl(sharedPrefs)
     }
