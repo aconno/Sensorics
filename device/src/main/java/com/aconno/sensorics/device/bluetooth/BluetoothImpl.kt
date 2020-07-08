@@ -3,9 +3,6 @@ package com.aconno.sensorics.device.bluetooth
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattDescriptor
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanFilter
-import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.SharedPreferences
 import com.aconno.sensorics.device.BluetoothGattAttributeValueConverter
@@ -15,6 +12,10 @@ import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
+import com.troido.bless.ScanFilter
+import com.troido.bless.ScanMode
+import com.troido.bless.ScanSettings
+import com.troido.bless.rxjava3.RxBleScanner
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -31,7 +32,8 @@ class BluetoothImpl(
     private val bluetoothAdapter: BluetoothAdapter,
     private val bluetoothPermission: BluetoothPermission,
     private val bluetoothStateListener: BluetoothStateListener,
-    private val bluetoothGattAttributeValueConverter: BluetoothGattAttributeValueConverter
+    private val bluetoothGattAttributeValueConverter: BluetoothGattAttributeValueConverter,
+    private val rxBleScanner: RxBleScanner
 ) : Bluetooth, Consumer<GattCallbackPayload> {
 
     override var mtu: Int = 20
@@ -44,8 +46,6 @@ class BluetoothImpl(
     override fun getScanEvent(): Flowable<ScanEvent> {
         return scanEvent.toFlowable(BackpressureStrategy.BUFFER)
     }
-
-    private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
 
     private val gattCallback: BluetoothGattCallback = BluetoothGattCallback(connectGattResults)
     private var lastConnectedDeviceAddress: String? = null
@@ -62,42 +62,6 @@ class BluetoothImpl(
                 this.mtu = (payload.payload as? Int) ?: mtu
             }
         }
-    }
-
-    private fun getScanSettings(
-        devices: List<Device>? = null
-    ): Pair<List<ScanFilter>?, ScanSettings> {
-        val settingsBuilder = ScanSettings.Builder()
-
-        val scanMode = sharedPrefs.getString("scan_mode", null)?.toInt() ?: 3
-        when (scanMode) {
-            1 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
-            2 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_BALANCED)
-            3 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-        }
-
-        settingsBuilder.setReportDelay(0)
-
-        val scanFilterBuilder = ScanFilter.Builder()
-        val scanFilterList = mutableListOf<ScanFilter>()
-
-        if (devices != null && devices.isNotEmpty()) {
-            devices.forEach {
-                scanFilterBuilder.setDeviceAddress(it.macAddress)
-                scanFilterList.add(
-                    scanFilterBuilder.build()
-                )
-            }
-        } else {
-            scanFilterList.add(
-                scanFilterBuilder.build()
-            )
-        }
-
-        return Pair<List<ScanFilter>?, ScanSettings>(
-            scanFilterList,
-            settingsBuilder.build()
-        )
     }
 
     override fun enable() {
@@ -208,14 +172,40 @@ class BluetoothImpl(
         }
     }
 
+    private var scanningDisposable: io.reactivex.rxjava3.disposables.Disposable? = null
+
+    @Synchronized
     override fun startScanning(devices: List<Device>) {
         checkPermissionState()
         if (bluetoothAdapter.isEnabled) {
             Timber.i("Start Bluetooth scanning, devices: $devices")
-            val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
-            val scanSettings = getScanSettings(devices)
-            scanEvent.onNext(ScanEvent.start())
-            bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
+            val addresses = devices.map { it.macAddress }
+            val scanMode = when (sharedPrefs.getString("scan_mode", null)?.toInt() ?: 3) {
+                1 -> ScanMode.LOW_POWER
+                2 -> ScanMode.BALANCED
+                else -> ScanMode.LOW_LATENCY
+            }
+            scanningDisposable = rxBleScanner.scan(
+                ScanFilter.Builder().setDeviceAddresses(addresses).build(),
+                ScanSettings.Builder().scanMode(scanMode).reportDelay(0).build()
+            ).subscribeOn(io.reactivex.rxjava3.schedulers.Schedulers.io())
+                .doOnSubscribe {
+                    scanEvent.onNext(ScanEvent.start())
+                }
+                .subscribe({
+                    scanResults.onNext(
+                        ScanResult(
+                            System.currentTimeMillis(),
+                            it.device.address,
+                            it.rssi,
+                            it.rawData
+                        )
+                    )
+                }, {
+                    scanEvent.onNext(
+                        ScanEvent.failed(it.localizedMessage)
+                    )
+                })
         } else {
             Timber.w("Bluetooth is not enabled. Can't start scanning")
         }
@@ -223,23 +213,15 @@ class BluetoothImpl(
 
 
     override fun startScanning() {
-        checkPermissionState()
-        if (bluetoothAdapter.isEnabled) {
-            Timber.i("Start Bluetooth scanning")
-            val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
-            val scanSettings = getScanSettings()
-            scanEvent.onNext(ScanEvent.start())
-            bluetoothLeScanner.startScan(scanSettings.first, scanSettings.second, scanCallback)
-        } else {
-            Timber.w("Bluetooth is not enabled. Can't start scanning")
-        }
+        startScanning(emptyList())
     }
 
+    @Synchronized
     override fun stopScanning() {
-        val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
-        bluetoothLeScanner?.let {
+        scanningDisposable?.let {
             scanEvent.onNext(ScanEvent.stop())
-            it.stopScan(scanCallback)
+            it.dispose()
+            scanningDisposable = null
         }
     }
 

@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -71,6 +73,11 @@ android {
     }
 }
 dependencies {
+
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 10, TimeUnit.MINUTES
+    }
+
     implementation project(':domain')
     implementation project(':device')
     implementation project(':data')
@@ -158,6 +165,9 @@ dependencies {
     testImplementation "org.mockito:mockito-inline:$mockito_inline_version"
 
     implementation 'pub.devrel:easypermissions:3.0.0'
+
+    implementation('com.troido.bless:bless-core:0.1.0-SNAPSHOT') { changing true }
+    implementation('com.troido.bless:bless-rx:0.1.0-SNAPSHOT') { changing true }
 }
 
 repositories {

@@ -10,6 +10,10 @@ import com.aconno.sensorics.device.bluetooth.BluetoothPermission
 import com.aconno.sensorics.device.bluetooth.BluetoothPermissionImpl
 import com.aconno.sensorics.device.bluetooth.BluetoothStateListener
 import com.aconno.sensorics.domain.scanning.Bluetooth
+import com.troido.bless.BleScanner
+import com.troido.bless.BleScannerImpl
+import com.troido.bless.rxjava3.RxBleScanner
+import com.troido.bless.rxjava3.RxBleScannerImpl
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -34,7 +38,8 @@ class BluetoothModule {
         bluetoothAdapter: BluetoothAdapter,
         bluetoothPermission: BluetoothPermission,
         bluetoothStateListener: BluetoothStateListener,
-        bluetoothGattAttributeValueConverter: BluetoothGattAttributeValueConverter
+        bluetoothGattAttributeValueConverter: BluetoothGattAttributeValueConverter,
+        rxBleScanner: RxBleScanner
     ): Bluetooth =
         BluetoothImpl(
             sensoricsApplication,
@@ -42,8 +47,19 @@ class BluetoothModule {
             bluetoothAdapter,
             bluetoothPermission,
             bluetoothStateListener,
-            bluetoothGattAttributeValueConverter
+            bluetoothGattAttributeValueConverter,
+            rxBleScanner
         )
+
+    @Provides
+    @Singleton
+    fun provideRxBleScanner(bleScanner: BleScanner): RxBleScanner = RxBleScannerImpl(bleScanner)
+
+    @Provides
+    @Singleton
+    fun provideBleScanner(
+        bluetoothAdapter: BluetoothAdapter
+    ): BleScanner = BleScannerImpl(bluetoothAdapter)
 
     @Provides
     @Singleton

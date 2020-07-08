@@ -29,5 +29,7 @@ data class ScanEvent(val type: Int, val message: String) {
             SCAN_FAILED,
             "Scan failed, error code: $errorCode"
         )
+
+        fun failed(message: String?) = ScanEvent(SCAN_FAILED, message ?: "Scan failed")
     }
 }
