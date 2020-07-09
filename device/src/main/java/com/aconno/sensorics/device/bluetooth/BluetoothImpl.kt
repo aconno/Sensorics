@@ -4,8 +4,8 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattDescriptor
 import android.content.Context
-import android.content.SharedPreferences
 import com.aconno.sensorics.device.BluetoothGattAttributeValueConverter
+import com.aconno.sensorics.device.settings.LocalSettings
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.model.ScanResult
@@ -13,7 +13,6 @@ import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
 import com.troido.bless.ScanFilter
-import com.troido.bless.ScanMode
 import com.troido.bless.ScanSettings
 import com.troido.bless.rxjava3.RxBleScanner
 import io.reactivex.BackpressureStrategy
@@ -28,7 +27,7 @@ import java.util.*
 //TODO: This needs refactoring.
 class BluetoothImpl(
     private val context: Context,
-    private val sharedPrefs: SharedPreferences,
+    private val settings: LocalSettings,
     private val bluetoothAdapter: BluetoothAdapter,
     private val bluetoothPermission: BluetoothPermission,
     private val bluetoothStateListener: BluetoothStateListener,
@@ -180,11 +179,7 @@ class BluetoothImpl(
         if (bluetoothAdapter.isEnabled) {
             Timber.i("Start Bluetooth scanning, devices: $devices")
             val addresses = devices.map { it.macAddress }
-            val scanMode = when (sharedPrefs.getString("scan_mode", null)?.toInt() ?: 3) {
-                1 -> ScanMode.LOW_POWER
-                2 -> ScanMode.BALANCED
-                else -> ScanMode.LOW_LATENCY
-            }
+            val scanMode = settings.preferredBleScanMode
             scanningDisposable = rxBleScanner.scan(
                 ScanFilter.Builder().setDeviceAddresses(addresses).build(),
                 ScanSettings.Builder().scanMode(scanMode).reportDelay(0).build()

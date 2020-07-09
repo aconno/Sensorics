@@ -6,8 +6,10 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.aconno.sensorics.R
+import com.aconno.sensorics.device.settings.LocalSettings
 import com.aconno.sensorics.ui.settings.publishers.PublishListActivity
 import com.aconno.sensorics.ui.settings.virtualscanningsources.VirtualScanningSourceListActivity
+import com.troido.bless.ScanMode
 
 class SettingsFragment : PreferenceFragmentCompat(),
     Preference.OnPreferenceChangeListener {
@@ -55,41 +57,55 @@ class SettingsFragment : PreferenceFragmentCompat(),
                 true
             }
 
-        listPreference = findPreference(SCAN_MODE_KEY)
-
-        initSummaries()
+        initScanModePreference()
     }
 
-    private fun initSummaries() {
-        val scanMode = preferenceManager
-            .sharedPreferences.getString(SCAN_MODE_KEY, "3")
-
-        scanMode?.let {
-            setScanModeSummarize(scanMode)
+    private fun initScanModePreference() {
+        findPreference<ListPreference>(LocalSettings.PREFERRED_BLE_SCAN_MODE_KEY)?.let { pref ->
+            pref.entries = ScanMode.values().map { getScanModeString(it) }.toTypedArray()
+            pref.entryValues = ScanMode.values().map { it.name }.toTypedArray()
+            listPreference = pref
         }
-
-
+        initScanModeSummary()
     }
 
-    private fun setScanModeSummarize(scanMode: String) {
-        listPreference?.summary = when (scanMode.toInt()) {
-            1 -> getString(R.string.scan_mode_low_power)
-            2 -> getString(R.string.scan_mode_balanced)
-            3 -> getString(R.string.scan_mode_low_latency)
-            else -> getString(R.string.scan_mode_invalid)
+    private fun getScanModeString(mode: ScanMode): String {
+        return when (mode) {
+            ScanMode.LOW_POWER -> getString(R.string.scan_mode_low_power)
+            ScanMode.BALANCED -> getString(R.string.scan_mode_balanced)
+            ScanMode.LOW_LATENCY -> getString(R.string.scan_mode_low_latency)
         }
+    }
+
+    private fun initScanModeSummary() {
+        val modeName = preferenceManager.sharedPreferences.getString(
+            LocalSettings.PREFERRED_BLE_SCAN_MODE_KEY,
+            LocalSettings.DEFAULT_BLE_SCAN_MODE
+        )!!
+        updateScanModeSummary(modeName)
+    }
+
+    private fun updateScanModeSummary(scanMode: String) {
+        listPreference?.summary =
+            when (scanMode) {
+                ScanMode.LOW_POWER.name -> getString(R.string.scan_mode_low_power)
+                ScanMode.BALANCED.name -> getString(R.string.scan_mode_balanced)
+                ScanMode.LOW_LATENCY.name -> getString(R.string.scan_mode_low_latency)
+                else -> getString(R.string.scan_mode_invalid)
+            }
     }
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-        when (preference?.key) {
-            SCAN_MODE_KEY -> setScanModeSummarize(newValue as String)
-            else -> return false
+        return if (preference != null && preference.key == listPreference?.key) {
+            updateScanModeSummary(newValue as String)
+            true
+        } else {
+            false
         }
-        return true
     }
 
     companion object {
-        private const val SCAN_MODE_KEY = "scan_mode"
+
         private const val PUBLISHERS_KEY = "publishers"
         private const val VIRTUAL_SCANNING_SOURCES_KEY = "virtual_scanning_sources"
     }

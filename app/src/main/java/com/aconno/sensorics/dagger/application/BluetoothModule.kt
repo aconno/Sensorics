@@ -1,7 +1,6 @@
 package com.aconno.sensorics.dagger.application
 
 import android.bluetooth.BluetoothAdapter
-import android.content.SharedPreferences
 import com.aconno.sensorics.BluetoothStateReceiver
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.device.BluetoothGattAttributeValueConverter
@@ -9,6 +8,7 @@ import com.aconno.sensorics.device.bluetooth.BluetoothImpl
 import com.aconno.sensorics.device.bluetooth.BluetoothPermission
 import com.aconno.sensorics.device.bluetooth.BluetoothPermissionImpl
 import com.aconno.sensorics.device.bluetooth.BluetoothStateListener
+import com.aconno.sensorics.device.settings.LocalSettings
 import com.aconno.sensorics.domain.scanning.Bluetooth
 import com.troido.bless.BleScanner
 import com.troido.bless.BleScannerImpl
@@ -34,7 +34,7 @@ class BluetoothModule {
     @Singleton
     fun provideBluetooth(
         sensoricsApplication: SensoricsApplication,
-        sharedPreferences: SharedPreferences,
+        localSettings: LocalSettings,
         bluetoothAdapter: BluetoothAdapter,
         bluetoothPermission: BluetoothPermission,
         bluetoothStateListener: BluetoothStateListener,
@@ -43,7 +43,7 @@ class BluetoothModule {
     ): Bluetooth =
         BluetoothImpl(
             sensoricsApplication,
-            sharedPreferences,
+            localSettings,
             bluetoothAdapter,
             bluetoothPermission,
             bluetoothStateListener,

@@ -52,18 +52,6 @@
         <item>X-Csrf-Token</item>
     </string-array>
 
-    <string-array name="SettingsScanMode">
-        <item>@string/scan_mode_low_power</item>
-        <item>@string/scan_mode_balanced</item>
-        <item>@string/scan_mode_low_latency</item>
-    </string-array>
-
-    <string-array name="SettingsScanModeValues" translatable="false">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
     <string-array name="RESTMethods">
         <item>@string/rest_method_get</item>
         <item>@string/rest_method_post</item>
