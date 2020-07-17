@@ -5,28 +5,31 @@
     android:layout_height="match_parent"
     android:theme="@style/SplashTheme">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/start"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.25" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.75" />
-
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/contentDescriptionUseless"
-        android:src="@drawable/splash"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/end"
-        app:layout_constraintStart_toStartOf="@id/start"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/sensorics_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/contentDescriptionUseless"
+            android:src="@drawable/splash" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/contentDescriptionUseless"
+            android:src="@drawable/ic_aconno"
+            android:background="#00000000"
+            />
+
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
