@@ -732,8 +732,11 @@ class SavedDevicesFragment : DaggerFragment(),
                 .subscribe {
                     deviceGroupAdapter.getSelectedDeviceGroup()?.let {
                         deviceGroupViewModel.addDeviceGroupDeviceRelation(item.macAddress,it.id)
-                            .subscribe()
-                    }
+                            .subscribe {
+                                Snackbar.make(container_fragment,"Device ${item.name} added to group ${it.groupName}",Snackbar.LENGTH_SHORT).show()
+                            }
+                    } ?: Snackbar.make(container_fragment,"Added device ${item.name}",Snackbar.LENGTH_SHORT).show()
+
                 }
         )
     }
