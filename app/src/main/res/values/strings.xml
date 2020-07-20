@@ -467,5 +467,13 @@
     <string name="developers_information" formatted="true">If you are a developer and want to kickstart your IoT development using aconno hardware and software, check <a href="https://aconno.de/developers/">dev section of aconno website</a> for more information.</string>
     <string name="about_sensorics_title">About Sensorics</string>
     <string name="imprint">Imprint</string>
-    <string name="imprint_content">To be added</string>
+    <string name="imprint_intro">Sensorics is an application developed by:</string>
+    <string name="aconno_gmbh">aconno Gmbh</string>
+    <string name="aconno_address">Volmerswerther Straße 80-86</string>
+    <string name="aconno_city">40221 Düsseldorf</string>
+    <string name="aconno_country">Germany</string>
+    <string name="contact">Contact:</string>
+    <string name="aconno_telephone">Phone: +49 211 93 07 78 09</string>
+    <string name="e_mail_info_aconno_de">E-mail: info@aconno.de</string>
+    <string name="for_more_imprint_info" formatted="true">For more information, visit <a href="https://aconno.de/impressum/">aconno website</a>.</string>
 </resources>

@@ -15,6 +15,7 @@ class AboutActivity : AppCompatActivity() {
 
         toolbar.title = getString(R.string.about)
         developers_info.movementMethod = LinkMovementMethod.getInstance()
+        for_more_imprint_info.movementMethod = LinkMovementMethod.getInstance()
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
