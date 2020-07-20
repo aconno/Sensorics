@@ -142,7 +142,7 @@
     <string name="qos_0" translatable="false">0</string>
     <string name="qos_2" translatable="false">2</string>
     <string name="dataString">Data String</string>
-<!--    <string name="publisher_info_text" formatted="true" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$group</i> => device group\n<i>$rssi</i> => rssi \n<i>$name</i> => key \n<i>$value</i> => sensor value \n\nStrings not fully substituted (if a value is missing from the reading) will not be sent. $ should not be used since any detected unknown embeddable values will result in the data not sending. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a>\n\n<b>Specific Values:</b>\n%s</string>-->
+    <!--    <string name="publisher_info_text" formatted="true" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$group</i> => device group\n<i>$rssi</i> => rssi \n<i>$name</i> => key \n<i>$value</i> => sensor value \n\nStrings not fully substituted (if a value is missing from the reading) will not be sent. $ should not be used since any detected unknown embeddable values will result in the data not sending. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a>\n\n<b>Specific Values:</b>\n%s</string>-->
     <string name="general_placholders_title" formatted="true" translatable="false"><b>General: </b></string>
     <string name="placeholders_explanation" formatted="true" translatable="false">Strings not fully substituted (if a value is missing from the reading) will not be sent. $ should not be used since any detected unknown embeddable values will result in the data not sending. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a>\n</string>
 
@@ -366,7 +366,7 @@
 
 
     <string name="mqtt_server_uri">MQTT server URI</string>
-    <string translatable="false" name="mqtt_client_id">MQTT client id</string>
+    <string name="mqtt_client_id" translatable="false">MQTT client id</string>
 
     <string name="no_virtual_scanning_sources_found">There are no virtual scanning sources.\nPress plus (+) to add a new source.</string>
     <string name="virtual_scanning_sources">Virtual scanning sources</string>
@@ -461,4 +461,10 @@
     <string name="multiple_devices_removed">%d devices removed!</string>
     <string name="remove_devices_title">Remove</string>
     <string name="remove_devices_confirmation">Are you sure you want to remove selected devices?</string>
+    <string name="title_buy_beacons">Buy beacons</string>
+    <string name="buy_beacons_intro">To buy aconno beacons, contact us at aconno or buy them on Amazon, Mouser or Tindie. </string>
+    <string name="aconno">aconno</string>
+    <string name="amazon">Amazon</string>
+    <string name="mouser">Mouser</string>
+    <string name="tindie">Tindie</string>
 </resources>

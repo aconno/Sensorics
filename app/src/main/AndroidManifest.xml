@@ -33,9 +33,11 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ui.BuyBeaconsActivity"></activity>
         <activity android:name=".ui.settings.publishers.selectpublish.AzureMqttPublisherActivity" />
-        <activity android:name=".ui.MainActivity"
-            android:launchMode="singleTop"/>
+        <activity
+            android:name=".ui.MainActivity"
+            android:launchMode="singleTop" />
         <activity
             android:name=".ui.settings.virtualscanningsources.MqttVirtualScanningSourceActivity"
             android:label="@string/mqtt_virtual_scanning_source" />
@@ -86,7 +88,6 @@
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_app_settings"
             android:theme="@style/SettingsTheme" />
-
         <activity
             android:name=".ui.dfu.DfuActivity"
             android:label="@string/title_dfu" />
@@ -94,8 +95,6 @@
         <activity
             android:name=".ui.beacon_settings.BeaconSettingsActivity"
             android:label="@string/beacon_settings" />
-
-
         <activity android:name=".ui.dfu.NotificationActivity" />
 
         <service android:name=".DfuService" />
@@ -139,4 +138,5 @@
             android:name="io.fabric.ApiKey"
             android:value="${fabricAPIKey}" />
     </application>
+
 </manifest>
