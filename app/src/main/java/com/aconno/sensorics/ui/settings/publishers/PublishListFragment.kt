@@ -1,5 +1,6 @@
 package com.aconno.sensorics.ui.settings.publishers
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -25,6 +26,7 @@ import com.aconno.sensorics.ui.SwipeToDeleteCallback
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.SelectPublisherActivity
 import com.aconno.sensorics.viewmodel.PublishListViewModel
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -224,9 +226,43 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
         when (item?.itemId) {
             android.R.id.home -> exitItemSelectionState()
             R.id.action_select_all -> selectAllItems()
+            R.id.remove_selected -> showRemoveSelectedPublishersDialog()
             else -> super.resolveActionBarEvent(item)
         }
     }
+
+    private fun showRemoveSelectedPublishersDialog() {
+        AlertDialog.Builder(context)
+            .setTitle(getString(R.string.remove_publishers_title))
+            .setPositiveButton(getString(R.string.remove)) { _, _ ->
+                removeSelectedPublishers()
+                exitItemSelectionState()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setCancelable(true)
+            .setMessage(getString(R.string.remove_publishers_confirmation))
+            .show()
+    }
+
+    private fun removeSelectedPublishers() {
+        val publishers = publishAdapter.getSelectedItems()
+        Completable.merge(publishers.map { publishListViewModel.delete(it) })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                reloadPublishers()
+            }
+            .also { addDisposable(it) }
+
+        val snackbarMessage =
+            if(publishers.size == 1) {
+                getString(R.string.one_publisher_removed,publishers[0].name)
+            } else {
+                getString(R.string.multiple_publishers_removed,publishers.size)
+            }
+        Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
+    }
+
 
     private fun selectAllItems() {
         publishAdapter.setItemsAsSelected(publishAdapter.getItems())
@@ -282,6 +318,11 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
 
     override fun onResume() {
         super.onResume()
+
+        reloadPublishers()
+    }
+
+    private fun reloadPublishers() {
         publishAdapter.clear()
         publishListViewModel.getAllPublish()
             .filter { it.isNotEmpty() }
@@ -331,9 +372,9 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
                 is MqttPublishModel -> publishListViewModel.delete(model)
                 is AzureMqttPublishModel -> publishListViewModel.delete(model)
                 else -> throw IllegalArgumentException("Illegal argument provided.")
-            }.also {
-                addDisposable(it)
             }
+                .subscribe()
+                .also { addDisposable(it) }
 
             publishAdapter.removeItem(model)
 

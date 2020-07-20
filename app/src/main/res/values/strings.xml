@@ -476,4 +476,9 @@
     <string name="aconno_telephone">Phone: +49 211 93 07 78 09</string>
     <string name="e_mail_info_aconno_de">E-mail: info@aconno.de</string>
     <string name="for_more_imprint_info" formatted="true">For more information, visit <a href="https://aconno.de/impressum/">aconno website</a>.</string>
+
+    <string name="remove_publishers_confirmation">Are you sure you want to remove selected backends?</string>
+    <string name="remove_publishers_title">Remove backends</string>
+    <string name="one_publisher_removed">%s removed!</string>
+    <string name="multiple_publishers_removed">%d backends removed!</string>
 </resources>

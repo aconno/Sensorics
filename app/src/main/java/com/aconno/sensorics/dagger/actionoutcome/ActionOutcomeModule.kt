@@ -17,10 +17,18 @@ class ActionOutcomeModule {
     @Provides
     @ActionOutcomeScope
     fun provideHandleInputUseCase(
-            actionsRepository: ActionsRepository,
+            actionResolver: InputToActionsResolver,
             getLocalTimeOfDayInSecondsUseCase: GetLocalTimeOfDayInSecondsUseCase
     ): InputToOutcomesUseCase {
-        return InputToOutcomesUseCase(actionsRepository, getLocalTimeOfDayInSecondsUseCase)
+        return InputToOutcomesUseCase(actionResolver, getLocalTimeOfDayInSecondsUseCase)
+    }
+
+    @Provides
+    @ActionOutcomeScope
+    fun provideActionResolver(
+        actionsRepository: ActionsRepository
+    ): InputToActionsResolver {
+        return InputToActionsResolverImpl(actionsRepository)
     }
 
 
