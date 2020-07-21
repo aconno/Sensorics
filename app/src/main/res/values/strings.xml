@@ -142,7 +142,7 @@
     <string name="qos_0" translatable="false">0</string>
     <string name="qos_2" translatable="false">2</string>
     <string name="dataString">Data String</string>
-<!--    <string name="publisher_info_text" formatted="true" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$group</i> => device group\n<i>$rssi</i> => rssi \n<i>$name</i> => key \n<i>$value</i> => sensor value \n\nStrings not fully substituted (if a value is missing from the reading) will not be sent. $ should not be used since any detected unknown embeddable values will result in the data not sending. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a>\n\n<b>Specific Values:</b>\n%s</string>-->
+    <!--    <string name="publisher_info_text" formatted="true" translatable="false"><b>General: </b>\n<i>$ts</i> => timestamp \n<i>$device</i> => mac_address \n<i>$group</i> => device group\n<i>$rssi</i> => rssi \n<i>$name</i> => key \n<i>$value</i> => sensor value \n\nStrings not fully substituted (if a value is missing from the reading) will not be sent. $ should not be used since any detected unknown embeddable values will result in the data not sending. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a>\n\n<b>Specific Values:</b>\n%s</string>-->
     <string name="general_placholders_title" formatted="true" translatable="false"><b>General: </b></string>
     <string name="placeholders_explanation" formatted="true" translatable="false">Strings not fully substituted (if a value is missing from the reading) will not be sent. $ should not be used since any detected unknown embeddable values will result in the data not sending. <b>Important: </b> For more information <a href="https://github.com/aconno/Sensorics/blob/master/DataStringUsability.md">click</a>\n</string>
 
@@ -366,7 +366,7 @@
 
 
     <string name="mqtt_server_uri">MQTT server URI</string>
-    <string translatable="false" name="mqtt_client_id">MQTT client id</string>
+    <string name="mqtt_client_id" translatable="false">MQTT client id</string>
 
     <string name="no_virtual_scanning_sources_found">There are no virtual scanning sources.\nPress plus (+) to add a new source.</string>
     <string name="virtual_scanning_sources">Virtual scanning sources</string>
@@ -461,6 +461,21 @@
     <string name="multiple_devices_removed">%d devices removed!</string>
     <string name="remove_devices_title">Remove</string>
     <string name="remove_devices_confirmation">Are you sure you want to remove selected devices?</string>
+    <string name="about">About</string>
+    <string name="app_description">Sensorics is the standard Android application for the evolving number of aconno Bluetooth Low Energy modules and beacons.\n\nIt provides an intuitive user interface to read out the sensor data being measured by the handy and durable, industrial standard aconno beacons and modules.\n\nIt offers a huge tool set for monitoring, measuring, surveillance, predictive maintenance and much more…</string>
+    <string name="developers_information_title">For developers</string>
+    <string name="developers_information" formatted="true">If you are a developer and want to kickstart your IoT development using aconno hardware and software, check <a href="https://aconno.de/developers/">dev section of aconno website</a> for more information.</string>
+    <string name="about_sensorics_title">About Sensorics</string>
+    <string name="imprint">Imprint</string>
+    <string name="imprint_intro">Sensorics is an application developed by:</string>
+    <string name="aconno_gmbh">aconno Gmbh</string>
+    <string name="aconno_address">Volmerswerther Straße 80-86</string>
+    <string name="aconno_city">40221 Düsseldorf</string>
+    <string name="aconno_country">Germany</string>
+    <string name="contact">Contact:</string>
+    <string name="aconno_telephone">Phone: +49 211 93 07 78 09</string>
+    <string name="e_mail_info_aconno_de">E-mail: info@aconno.de</string>
+    <string name="for_more_imprint_info" formatted="true">For more information, visit <a href="https://aconno.de/impressum/">aconno website</a>.</string>
 
     <string name="remove_publishers_confirmation">Are you sure you want to remove selected backends?</string>
     <string name="remove_publishers_title">Remove backends</string>
