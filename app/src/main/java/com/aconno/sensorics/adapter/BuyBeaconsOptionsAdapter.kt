@@ -1,6 +1,5 @@
 package com.aconno.sensorics.adapter
 
-import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
+import com.aconno.sensorics.model.BuyOption
 
-class BuyBeaconsOptionsAdapter(val options : List<BuyOption>, val clickListener : OptionClickListener) : RecyclerView.Adapter<BuyBeaconsOptionsAdapter.ViewHolder>() {
+class BuyBeaconsOptionsAdapter(val options : List<BuyOption>, private val clickListener : OptionClickListener) : RecyclerView.Adapter<BuyBeaconsOptionsAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(
@@ -38,8 +38,6 @@ class BuyBeaconsOptionsAdapter(val options : List<BuyOption>, val clickListener 
         val logo : ImageView = itemView.findViewById(R.id.buy_option_logo)
         val optionName : TextView = itemView.findViewById(R.id.buy_option_name)
     }
-
-    class BuyOption(val logo : Int, val optionName : String, val optionUrl : String)
 
     interface OptionClickListener {
         fun onBuyOptionClicked(buyOption: BuyOption)
