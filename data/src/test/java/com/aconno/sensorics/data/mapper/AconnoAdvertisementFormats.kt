@@ -1,4 +1,4 @@
-package com.aconno.sensorics.device.format
+package com.aconno.sensorics.data.mapper
 
 object AconnoAdvertisementFormats {
 
