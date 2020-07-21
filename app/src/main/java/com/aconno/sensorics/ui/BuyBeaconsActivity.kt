@@ -5,7 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.aconno.sensorics.R
 import com.aconno.sensorics.R.*
 import com.aconno.sensorics.adapter.BuyBeaconsOptionsAdapter
@@ -29,8 +30,11 @@ class BuyBeaconsActivity : AppCompatActivity(), BuyBeaconsOptionsAdapter.OptionC
 
         toolbar.title = getString(string.title_buy_beacons)
 
-        buy_options.layoutManager = GridLayoutManager(this,2)
+        buy_options.layoutManager = LinearLayoutManager(this)
         buy_options.adapter = BuyBeaconsOptionsAdapter(buyOptions, this)
+        buy_options.addItemDecoration(
+            DividerItemDecoration(this,DividerItemDecoration.VERTICAL)
+        )
     }
 
     override fun onBuyOptionClicked(buyOption: BuyOption) {
