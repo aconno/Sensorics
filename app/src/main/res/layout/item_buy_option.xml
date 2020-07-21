@@ -15,15 +15,4 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <TextView
-        android:id="@+id/buy_option_name"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/buy_option_logo"
-        app:layout_constraintTop_toTopOf="@id/buy_option_logo"
-        app:layout_constraintBottom_toBottomOf="@id/buy_option_logo"
-        android:layout_marginStart="16dp"
-        />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

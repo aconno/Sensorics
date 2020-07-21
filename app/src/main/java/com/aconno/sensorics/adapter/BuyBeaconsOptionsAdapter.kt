@@ -27,7 +27,6 @@ class BuyBeaconsOptionsAdapter(val options : List<BuyOption>, private val clickL
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val buyOption = options[position]
         holder.logo.setImageResource(buyOption.logo)
-        holder.optionName.text = buyOption.optionName
 
         holder.itemView.setOnClickListener {
             clickListener.onBuyOptionClicked(buyOption)
@@ -36,7 +35,6 @@ class BuyBeaconsOptionsAdapter(val options : List<BuyOption>, private val clickL
 
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         val logo : ImageView = itemView.findViewById(R.id.buy_option_logo)
-        val optionName : TextView = itemView.findViewById(R.id.buy_option_name)
     }
 
     interface OptionClickListener {
