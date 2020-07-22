@@ -3,7 +3,6 @@ package com.aconno.sensorics.domain.format
 import com.aconno.sensorics.domain.Util
 import com.aconno.sensorics.domain.interactor.resources.GetFormatsUseCase
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -14,7 +13,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-// TODO: Fix failing tests
 @RunWith(MockitoJUnitRunner::class)
 class FormatMatcherTest {
 
@@ -33,7 +31,6 @@ class FormatMatcherTest {
         }
     }
 
-    @Ignore("Failing test")
     @Test
     fun matches_SuitableTest() {
 
@@ -44,7 +41,7 @@ class FormatMatcherTest {
         formatMatcher = FormatMatcher(mockGetFormatsUseCase(mockAdvertisementFormat))
         assertTrue(formatMatcher.matches(Util.BEACON_BYTES))
 
-        val foundFormat = formatMatcher.findFormat(bytes)!!
+        val foundFormat = formatMatcher.findFormat(Util.BEACON_BYTES)!!
         assertEquals(mockAdvertisementFormat.getRequiredFormat(), foundFormat.getRequiredFormat())
     }
 
@@ -56,9 +53,9 @@ class FormatMatcherTest {
         )
 
         formatMatcher = FormatMatcher(mockGetFormatsUseCase(mockAdvertisementFormat))
-        assertFalse(formatMatcher.matches(bytes))
+        assertFalse(formatMatcher.matches(Util.BEACON_BYTES))
 
-        assertNull(formatMatcher.findFormat(bytes))
+        assertNull(formatMatcher.findFormat(Util.BEACON_BYTES))
     }
 
     private fun mockAdvertisementFormat(

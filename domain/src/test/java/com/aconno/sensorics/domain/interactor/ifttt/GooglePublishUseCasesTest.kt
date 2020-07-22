@@ -1,28 +1,24 @@
 package com.aconno.sensorics.domain.interactor.ifttt
 
 import com.aconno.sensorics.domain.ifttt.GeneralGooglePublish
+import com.aconno.sensorics.domain.ifttt.GooglePublish
 import com.aconno.sensorics.domain.ifttt.publish.GooglePublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
-import com.aconno.sensorics.domain.interactor.ifttt.publish.AddAnyPublishUseCase
-import com.aconno.sensorics.domain.interactor.repository.DeletePublishDeviceJoinUseCase
-import com.aconno.sensorics.domain.interactor.repository.SavePublishDeviceJoinUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.*
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoMoreInteractions
+import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 
-@Ignore
 @RunWith(MockitoJUnitRunner::class)
 class GooglePublishUseCasesTest {
-    private lateinit var addAnyPublishUseCase: AddAnyPublishUseCase
+    private lateinit var addGooglePublishUseCase: AddPublishUseCase<GooglePublish>
     private lateinit var getGooglePublishByIdUseCase: GetGooglePublishByIdUseCase
-    private lateinit var savePublishDeviceJoinUseCase: SavePublishDeviceJoinUseCase
-    private lateinit var deletePublishDeviceJoinUseCase: DeletePublishDeviceJoinUseCase
-//    private lateinit var getAllGooglePublishUseCase: GetAllGooglePublishUseCase
+    private lateinit var deleteGooglePublishUseCase : DeletePublishUseCase<GooglePublish>
+    private lateinit var getAllEnabledGooglePublishUseCase : GetAllEnabledPublishUseCase<GooglePublish>
+    private lateinit var getAllGooglePublishUseCase : GetAllPublishUseCase<GooglePublish>
 
     private val id: Long = 0
 
@@ -46,54 +42,50 @@ class GooglePublishUseCasesTest {
 
     @Before
     fun setUp() {
-//        addAnyPublishUseCase = AddAnyPublishUseCase(
-//            mockGooglePublishRepository
-//        )
-//        deleteGooglePublishUseCase = DeleteGooglePublishUseCase(
-//            mockGooglePublishRepository
-//        )
-//        getAllEnabledGooglePublishUseCase = GetAllEnabledGooglePublishUseCase(
-//            mockGooglePublishRepository
-//        )
-//        getAllGooglePublishUseCase = GetAllGooglePublishUseCase(
-//            mockGooglePublishRepository
-//        )
+        addGooglePublishUseCase = AddPublishUseCase(
+            mockGooglePublishRepository
+        )
+        deleteGooglePublishUseCase = DeletePublishUseCase(
+            mockGooglePublishRepository
+        )
+        getAllEnabledGooglePublishUseCase = GetAllEnabledPublishUseCase(
+            mockGooglePublishRepository
+        )
+        getAllGooglePublishUseCase = GetAllPublishUseCase(
+            mockGooglePublishRepository
+        )
         getGooglePublishByIdUseCase = GetGooglePublishByIdUseCase(
             mockGooglePublishRepository
         )
     }
 
-    @Ignore("Failing test")
     @Test
     fun testAddGooglePublishUseCase() {
-//        addGooglePublishUseCase.execute(googlePublish).blockingGet()
+        addGooglePublishUseCase.execute(googlePublish).blockingGet()
 
         verify(mockGooglePublishRepository).addPublish(googlePublish)
         verifyNoMoreInteractions(mockGooglePublishRepository)
     }
 
-    @Ignore("Failing test")
     @Test
     fun testDeleteGooglePublishUseCase() {
-//        deleteGooglePublishUseCase.execute(googlePublish).blockingGet()
+        deleteGooglePublishUseCase.execute(googlePublish).blockingGet()
 
         verify(mockGooglePublishRepository).deletePublish(googlePublish)
         verifyNoMoreInteractions(mockGooglePublishRepository)
     }
 
-    @Ignore("Failing test")
     @Test
     fun testGetAllEnabledGooglePublishUseCase() {
-//        getAllEnabledGooglePublishUseCase.execute()
+        getAllEnabledGooglePublishUseCase.execute()
 
         verify(mockGooglePublishRepository).allEnabled
         verifyNoMoreInteractions(mockGooglePublishRepository)
     }
 
-    @Ignore("Failing test")
     @Test
     fun testGetAllGooglePublishUseCase() {
-//        getAllGooglePublishUseCase.execute()
+        getAllGooglePublishUseCase.execute()
 
         verify(mockGooglePublishRepository).all
         verifyNoMoreInteractions(mockGooglePublishRepository)
