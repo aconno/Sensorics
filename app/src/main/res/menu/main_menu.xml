@@ -20,4 +20,10 @@
         android:orderInCategory="98"
         android:title="@string/title_buy_beacons"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="99"
+        android:title="@string/about"
+        app:showAsAction="never" />
 </menu>

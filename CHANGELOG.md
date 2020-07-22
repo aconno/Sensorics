@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [5.4.3]
+- Add multiple publisher removal
+- Optimise action resolving
+
 ## [5.4.2]
 - Add multiple device removal
 - Add multiple action removal

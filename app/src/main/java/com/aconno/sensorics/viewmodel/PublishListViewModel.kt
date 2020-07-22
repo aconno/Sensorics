@@ -115,9 +115,8 @@ class PublishListViewModel(
         }
     }
 
-    fun delete(publishModel: BasePublishModel): Disposable {
+    fun delete(publishModel: BasePublishModel): Completable {
         return deleteAnyPublishUseCase.execute(modelToData(publishModel))
             .subscribeOn(Schedulers.io())
-            .subscribe()
     }
 }
