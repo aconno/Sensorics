@@ -64,7 +64,8 @@ class InMemoryRepositoryTest {
                 value = i,
                 name = "Temperature",
                 rssi = 0,
-                advertisementId = "CF01"
+                advertisementId = "CF01",
+                deviceGroup = null
             ))
         }
         return returnValue

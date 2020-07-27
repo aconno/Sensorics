@@ -1,8 +1,7 @@
 package com.aconno.sensorics.data.repository.devices
 
-import android.content.Context
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
 import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.domain.model.Device
 import org.junit.AfterClass
@@ -53,7 +52,7 @@ class DeviceRepositoryTest {
 
         @BeforeClass @JvmStatic
         fun createDatabase() {
-            val context = ApplicationProvider.getApplicationContext<Context>()
+            val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
             database = Room.inMemoryDatabaseBuilder(context, SensoricsDatabase::class.java).build()
             deviceDao = database.deviceDao()
             dri = DeviceRepositoryImpl(deviceDao, DeviceMapper())
