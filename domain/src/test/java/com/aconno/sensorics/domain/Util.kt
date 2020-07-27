@@ -43,8 +43,8 @@ class Util {
 
         val TEMPERATURE_FORMAT = ByteFormat(
             "Temperature",
-            10,
-            14,
+            5,
+            9,
             true,
             "FLOAT",
             null,
@@ -53,8 +53,8 @@ class Util {
 
         val HUMIDITY_FORMAT = ByteFormat(
             "Humidity",
-            14,
-            18,
+            9,
+            13,
             true,
             "FLOAT",
             null,
@@ -63,8 +63,8 @@ class Util {
 
         val PRESSURE_FORMAT = ByteFormat(
             "Pressure",
-            18,
-            22,
+            13,
+            17,
             true,
             "FLOAT",
             null,
@@ -73,8 +73,8 @@ class Util {
 
         val LIGHT_FORMAT = ByteFormat(
             "Light",
-            22,
-            26,
+            17,
+            21,
             true,
             "FLOAT",
             null,
@@ -83,8 +83,8 @@ class Util {
 
         val BATTERY_LEVEL_FORMAT = ByteFormat(
             "Battery Level",
-            26,
-            27,
+            21,
+            22,
             false,
             "BYTE",
             null,

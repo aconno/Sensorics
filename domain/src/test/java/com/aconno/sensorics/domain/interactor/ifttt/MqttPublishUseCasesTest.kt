@@ -1,10 +1,14 @@
 package com.aconno.sensorics.domain.interactor.ifttt
 
 import com.aconno.sensorics.domain.ifttt.GeneralMqttPublish
+import com.aconno.sensorics.domain.ifttt.MqttPublish
 import com.aconno.sensorics.domain.ifttt.publish.MqttPublishRepository
 import com.aconno.sensorics.domain.interactor.ifttt.mqttpublish.GetMqttPublishByIdUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.AddPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.DeletePublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllEnabledPublishUseCase
+import com.aconno.sensorics.domain.interactor.ifttt.publish.GetAllPublishUseCase
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -15,10 +19,11 @@ import org.mockito.junit.MockitoJUnitRunner
 @RunWith(MockitoJUnitRunner::class)
 class MqttPublishUseCasesTest {
 
-    //    private lateinit var addMqttPublishUseCase: AddMqttPublishUseCase
-//    private lateinit var deleteMqttPublishUseCase: DeleteMqttPublishUseCase
-//    private lateinit var getAllMqttPublishUseCase: GetAllMqttPublishUseCase
+    private lateinit var addMqttPublishUseCase: AddPublishUseCase<MqttPublish>
+    private lateinit var deleteMqttPublishUseCase: DeletePublishUseCase<MqttPublish>
+    private lateinit var getAllMqttPublishUseCase: GetAllPublishUseCase<MqttPublish>
     private lateinit var getMqttPublishByIdUseCase: GetMqttPublishByIdUseCase
+    private lateinit var getAllEnabledMqttPublishUseCase : GetAllEnabledPublishUseCase<MqttPublish>
 
     private val id: Long = 0
 
@@ -43,60 +48,55 @@ class MqttPublishUseCasesTest {
 
     @Before
     fun setUp() {
-//        addMqttPublishUseCase = AddMqttPublishUseCase(
-//            mockMqttPublishRepository
-//        )
-//        deleteMqttPublishUseCase = DeleteMqttPublishUseCase(
-//            mockMqttPublishRepository
-//        )
-//        getAllEnabledMqttPublishUseCase = GetAllEnabledMqttPublishUseCase(
-//            mockMqttPublishRepository
-//        )
-//        getAllMqttPublishUseCase = GetAllMqttPublishUseCase(
-//            mockMqttPublishRepository
-//        )
-//        getMqttPublishByIdUseCase = GetMqttPublishByIdUseCase(
-//            mockMqttPublishRepository
-//        )
+        addMqttPublishUseCase = AddPublishUseCase(
+            mockMqttPublishRepository
+        )
+        deleteMqttPublishUseCase = DeletePublishUseCase(
+            mockMqttPublishRepository
+        )
+        getAllEnabledMqttPublishUseCase = GetAllEnabledPublishUseCase(
+            mockMqttPublishRepository
+        )
+        getAllMqttPublishUseCase = GetAllPublishUseCase(
+            mockMqttPublishRepository
+        )
+        getMqttPublishByIdUseCase = GetMqttPublishByIdUseCase(
+            mockMqttPublishRepository
+        )
     }
 
-    @Ignore("Failing test")
     @Test
     fun testAddMqttPublishUseCase() {
-//        addMqttPublishUseCase.execute(mqttPublish).blockingGet()
+        addMqttPublishUseCase.execute(mqttPublish).blockingGet()
 
         verify(mockMqttPublishRepository).addPublish(mqttPublish)
         verifyNoMoreInteractions(mockMqttPublishRepository)
     }
 
-    @Ignore("Failing test")
     @Test
     fun testDeleteMqttPublishUseCase() {
-//        deleteMqttPublishUseCase.execute(mqttPublish).blockingGet()
+        deleteMqttPublishUseCase.execute(mqttPublish).blockingGet()
 
         verify(mockMqttPublishRepository).deletePublish(mqttPublish)
         verifyNoMoreInteractions(mockMqttPublishRepository)
     }
 
-    @Ignore("Failing test")
     @Test
     fun testGetAllEnabledMqttPublishUseCase() {
-//        getAllEnabledMqttPublishUseCase.execute()
+        getAllEnabledMqttPublishUseCase.execute()
 
         verify(mockMqttPublishRepository).allEnabled
         verifyNoMoreInteractions(mockMqttPublishRepository)
     }
 
-    @Ignore("Failing test")
     @Test
     fun testGetAllMqttPublishUseCase() {
-//        getAllMqttPublishUseCase.execute()
+        getAllMqttPublishUseCase.execute()
 
         verify(mockMqttPublishRepository).all
         verifyNoMoreInteractions(mockMqttPublishRepository)
     }
 
-    @Ignore("Failing test")
     @Test
     fun testGetMqttPublishByIdUseCase() {
         getMqttPublishByIdUseCase.execute(id)

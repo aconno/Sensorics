@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [5.5.0]
+- Add beacon addition indicator
+- Add aconno logo to splash screen
+- Add about screen
+- Add buy beacons screen
+
 ## [5.4.3]
 - Add multiple publisher removal
 - Optimise action resolving
@@ -47,8 +53,10 @@
 - Small code improvements
 
 [Unreleased]: https://github.com/aconno/Sensorics/compare/master...develop
-[5.4.1]: https://github.com/aconno/Sensorics/releases/tag/v5.4.1
+[5.5.0]: https://github.com/aconno/Sensorics/releases/tag/v5.5.0
+[5.4.3]: https://github.com/aconno/Sensorics/releases/tag/v5.4.3
 [5.4.2]: https://github.com/aconno/Sensorics/releases/tag/v5.4.2
+[5.4.1]: https://github.com/aconno/Sensorics/releases/tag/v5.4.1
 [5.4.0]: https://github.com/aconno/Sensorics/releases/tag/v5.4.0
 [5.3.0]: https://github.com/aconno/Sensorics/releases/tag/v5.3.0
 

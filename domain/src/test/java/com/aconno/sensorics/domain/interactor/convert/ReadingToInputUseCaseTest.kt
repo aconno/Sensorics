@@ -17,7 +17,7 @@ class ReadingToInputUseCaseTest {
 
     @Test
     fun execute_Test() {
-
+        //TODO: implement this
     }
 
 }

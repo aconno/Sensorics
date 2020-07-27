@@ -4,34 +4,41 @@ import com.aconno.sensorics.domain.Util
 import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.model.ScanResult
+import com.aconno.sensorics.domain.repository.DeviceGroupDeviceJoinRepository
+import com.aconno.sensorics.domain.repository.DeviceGroupRepository
 import com.aconno.sensorics.domain.serialization.Deserializer
 import com.aconno.sensorics.domain.serialization.DeserializerImpl
+import io.reactivex.Single
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 
-// TODO: Fix failing tests
 @RunWith(MockitoJUnitRunner::class)
 class GenerateReadingsUseCaseTest {
 
     private lateinit var generateReadingsUseCase: GenerateReadingsUseCase
 
-//    @Before
-//    fun setup() {
-//        val params = mockAdvertisementFormat()
-//        val formatMatcher: FormatMatcher = Mockito.mock(FormatMatcher::class.java)
-//        Mockito.`when`(formatMatcher.findFormat(Util.BEACON_BYTES))
-//            .thenReturn(params)
-//
-//        val deserializer: Deserializer = DeserializerImpl()
-//
-//        generateReadingsUseCase = GenerateReadingsUseCase(formatMatcher, deserializer)
-//    }
+    @Before
+    fun setup() {
+        val params = mockAdvertisementFormat()
+        val formatMatcher: FormatMatcher = Mockito.mock(FormatMatcher::class.java)
+        Mockito.`when`(formatMatcher.findFormat(Util.BEACON_BYTES))
+            .thenReturn(params)
 
-    @Ignore("Failing test")
+        val deserializer: Deserializer = DeserializerImpl()
+
+        val deviceGroupRepository = Mockito.mock(DeviceGroupRepository::class.java)
+        Mockito.`when`(deviceGroupRepository.getAllDeviceGroups()).thenReturn(Single.just(listOf()))
+        val deviceGroupDeviceJoinRepository = Mockito.mock(DeviceGroupDeviceJoinRepository::class.java)
+        Mockito.`when`(deviceGroupDeviceJoinRepository.getAllDeviceGroupDeviceRelations()).thenReturn(
+            Single.just(listOf()))
+
+
+        generateReadingsUseCase = GenerateReadingsUseCase(formatMatcher, deserializer,deviceGroupDeviceJoinRepository,deviceGroupRepository)
+    }
+
     @Test
     fun execute_Test() {
         //Mocking ScanResult
@@ -62,6 +69,7 @@ class GenerateReadingsUseCaseTest {
         Mockito.`when`(mockedAdvertisementFormat.getFormat()).thenReturn(Util.getListOfFormats())
         Mockito.`when`(mockedAdvertisementFormat.getIcon()).thenReturn("Icon")
         Mockito.`when`(mockedAdvertisementFormat.getName()).thenReturn("AdvertisementFormat")
+        Mockito.`when`(mockedAdvertisementFormat.id).thenReturn("012345")
 
         return mockedAdvertisementFormat
     }
