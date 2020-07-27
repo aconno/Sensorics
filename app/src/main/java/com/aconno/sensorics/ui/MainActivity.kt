@@ -270,6 +270,10 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
                 startSettingsActivity()
                 return true
             }
+            R.id.action_buy_beacons -> {
+                BuyBeaconsActivity.start(this)
+                return true
+            }
             R.id.action_about -> {
                 AboutActivity.start(this)
                 return true

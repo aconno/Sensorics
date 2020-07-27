@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/contentDescriptionUseless"
-        android:src="@drawable/ic_aconno"
+        android:src="@drawable/ic_aconno_white"
         android:background="#00000000"
         />
 
