@@ -188,6 +188,18 @@
     text-align : right;
 }
 
+#acn-beacon-rssi-at-1m {
+    font-size : 19px;
+    width : 150px;
+    text-align : left;
+}
+
+#acn-beacon-rssi-st-dev {
+    font-size : 19px;
+    width : 90px;
+    text-align : left;
+}
+
 #acn-beacon-timestamp {
     font-size : 19px;
 }
