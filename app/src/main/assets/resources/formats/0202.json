@@ -8,7 +8,7 @@
       "start_index_inclusive": 5,
       "end_index_exclusive": 6,
       "reversed": true,
-      "data_type": "INT8"
+      "data_type": "BYTE"
     },
     {
       "name": "RSSI standard deviation",
