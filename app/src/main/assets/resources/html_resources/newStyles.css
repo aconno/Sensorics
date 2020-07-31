@@ -159,7 +159,7 @@
 }
 
 #acn-beacon-icon {
-    margin-top : 15vh;
+    margin-top : 10vh;
     margin-bottom : 2vh;
     width : 20vw;
     height : 20vw;
@@ -174,7 +174,7 @@
 }
 
 #acn-beacon-mac-address {
-    margin-bottom : 10vh;
+    margin-bottom : 7vh;
 }
 
 
@@ -189,15 +189,15 @@
 }
 
 #acn-beacon-rssi-at-1m {
-    font-size : 19px;
+    font-size : 32px;
     width : 150px;
-    text-align : left;
+    text-align : right;
 }
 
 #acn-beacon-rssi-st-dev {
-    font-size : 19px;
+    font-size : 28px;
     width : 90px;
-    text-align : left;
+    text-align : center;
 }
 
 #acn-beacon-timestamp {
