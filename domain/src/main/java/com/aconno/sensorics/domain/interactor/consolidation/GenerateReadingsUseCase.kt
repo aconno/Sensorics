@@ -5,6 +5,7 @@ import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.format.ByteFormat
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.type.SingleUseCaseWithParameter
+import com.aconno.sensorics.domain.isSettingsSupportOn
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.ScanResult
@@ -99,7 +100,7 @@ class GenerateReadingsUseCase(
                 format.isConnectible(),
                 format.getConnectionWriteList(),
                 format.getConnectionReadList(),
-                hasSettingsSupport(format, parameter)
+                parameter.isSettingsSupportOn(format)
             )
         } else {
             device = Device(
@@ -107,21 +108,10 @@ class GenerateReadingsUseCase(
                 "",
                 parameter.macAddress,
                 format.getIcon(),
-                hasSettings = hasSettingsSupport(format, parameter)
+                hasSettings = parameter.isSettingsSupportOn(format)
             )
         }
         return device
     }
 
-    private fun hasSettingsSupport(
-        format: AdvertisementFormat,
-        parameter: ScanResult
-    ): Boolean {
-        format.getSettingsSupport()
-            ?.let { settingsSupport ->
-                return ByteOperations.isolateMsd(parameter.rawData)[settingsSupport.index] and settingsSupport.mask == settingsSupport.mask
-            }
-
-        return false
-    }
 }
