@@ -460,6 +460,12 @@
     <string name="multiple_devices_removed">%d devices removed!</string>
     <string name="remove_devices_title">Remove</string>
     <string name="remove_devices_confirmation">Are you sure you want to remove selected devices?</string>
+    <string name="title_buy_beacons">Buy beacons</string>
+    <string name="buy_beacons_intro">To buy aconno beacons, contact us at aconno or buy them on Amazon, Mouser or Tindie. </string>
+    <string name="aconno">aconno</string>
+    <string name="amazon">Amazon</string>
+    <string name="mouser">Mouser</string>
+    <string name="tindie">Tindie</string>
     <string name="about">About</string>
     <string name="app_description">Sensorics is the standard Android application for the evolving number of aconno Bluetooth Low Energy modules and beacons.\n\nIt provides an intuitive user interface to read out the sensor data being measured by the handy and durable, industrial standard aconno beacons and modules.\n\nIt offers a huge tool set for monitoring, measuring, surveillance, predictive maintenance and much more…</string>
     <string name="developers_information_title">For developers</string>

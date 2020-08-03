@@ -1,8 +1,7 @@
 package com.aconno.sensorics.data.repository.sync
 
-import android.content.Context
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
 import com.aconno.sensorics.data.repository.SensoricsDatabase
 import com.aconno.sensorics.domain.model.Sync
 import com.aconno.sensorics.domain.repository.SyncRepository
@@ -18,7 +17,7 @@ class SyncRepositoryTest {
 
     @Before @Throws(IOException::class)
     fun before() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
         database = Room.inMemoryDatabaseBuilder(context, SensoricsDatabase::class.java).build()
         syncRepository = SyncRepositoryImpl(database.syncDao())
     }

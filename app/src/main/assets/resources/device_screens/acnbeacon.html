@@ -38,6 +38,32 @@
 <div class="acn-beacon-name-value-container">
     <div class="acn-beacon-param-name-container" style="display: table-cell; vertical-align: middle;">
         <div class="acn-beacon-param-name-container">
+            <span style="display: block;" class="right-align acn-beacon-param-name ">RSSI at 1m: </span>
+        </div>
+    </div>
+
+    <span id="acn-beacon-rssi-at-1m" class="acn-beacon-value" style="display: table-cell; vertical-align: middle;"></span>
+
+</div>
+
+<br>
+
+<div class="acn-beacon-name-value-container">
+    <div class="acn-beacon-param-name-container" style="display: table-cell; vertical-align: middle;">
+        <div class="acn-beacon-param-name-container">
+            <span style="display: block;" class="right-align acn-beacon-param-name ">RSSI st. dev: </span>
+        </div>
+    </div>
+
+    <pre><span id="acn-beacon-rssi-st-dev" class="acn-beacon-value" style="display: table-cell; vertical-align: middle;"></span></pre>
+
+</div>
+
+<br>
+
+<div class="acn-beacon-name-value-container">
+    <div class="acn-beacon-param-name-container" style="display: table-cell; vertical-align: middle;">
+        <div class="acn-beacon-param-name-container">
             <span style="display: block;" class="right-align acn-beacon-param-name ">Last seen: </span>
         </div>
     </div>
@@ -47,14 +73,20 @@
 </div>
 
 
+
+
 <script>
 
         const MAC_ADDRESS_KEY = "macAddress";
         const RSSI_KEY = "rssi";
         const TIMESTAMP_KEY = "timestamp";
+        const RSSI_AT_1M_KEY = "RSSI at 1m";
+        const RSSI_STANDARD_DEVIATION_KEY = "RSSI standard deviation";
 
         function onSensorReadings(json_values) {
             console.log(json_values);
+            document.getElementById("acn-beacon-rssi-at-1m").innerHTML = "N/A";
+            document.getElementById("acn-beacon-rssi-st-dev").innerHTML = "N/A";
 
             JSON.parse(json_values, function (key, value) {
                 console.log("KEY" + key + ", value: "+value);
@@ -64,6 +96,10 @@
                     document.getElementById("acn-beacon-rssi").innerHTML = value + " dBm";
                 } else if(key == TIMESTAMP_KEY) {
                     document.getElementById("acn-beacon-timestamp").innerHTML = formatDate(value);
+                } else if(key == RSSI_AT_1M_KEY) {
+                    document.getElementById("acn-beacon-rssi-at-1m").innerHTML = value + " dBm";
+                } else if(key == RSSI_STANDARD_DEVIATION_KEY) {
+                    document.getElementById("acn-beacon-rssi-st-dev").innerHTML = value;
                 }
             });
         }

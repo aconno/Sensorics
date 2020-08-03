@@ -4,15 +4,15 @@ import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionsByDeviceMacAddressUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
+import io.reactivex.Single
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 
-// TODO: Fix failing tests
 @RunWith(MockitoJUnitRunner::class)
 class SetActionActiveByDeviceMacAddressUseCaseTest {
 
@@ -38,9 +38,10 @@ class SetActionActiveByDeviceMacAddressUseCaseTest {
         )
     }
 
-    @Ignore("Failing test")
     @Test
     fun testSetActionActiveByDeviceUseCase() {
+        Mockito.`when`(mockGetActionsByDeviceMacAddressUseCase.execute(ArgumentMatchers.anyString())).thenReturn(
+            Single.just(listOf()))
         mockSetActionActiveByDeviceMacAddressUseCase.execute(address, true)
 
         Mockito.verify(mockActionsRepository).getActionsByDeviceMacAddress(address)

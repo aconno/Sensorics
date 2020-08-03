@@ -19,10 +19,13 @@ import androidx.lifecycle.Observer
 import com.aconno.sensorics.*
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
+import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
+import com.aconno.sensorics.domain.isSettingsSupportOn
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.model.Reading
+import com.aconno.sensorics.domain.model.ScanResult
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.beacon_settings.BeaconSettingsActivity
@@ -57,6 +60,13 @@ class DeviceMainFragment : DaggerFragment() {
     lateinit var sensorReadingFlow: Flowable<List<Reading>> //TODO: Move this to the view model
 
     @Inject
+    @Named("composite")
+    lateinit var deviceScanResultFlow: Flowable<ScanResult>
+
+    @Inject
+    lateinit var formatMatcher : FormatMatcher
+
+    @Inject
     lateinit var filterByMacUseCase: FilterByMacUseCase
 
     @Inject
@@ -81,6 +91,8 @@ class DeviceMainFragment : DaggerFragment() {
     private var hasCache: Boolean = false
 
     var menu: Menu? = null
+
+    private lateinit var deviceScanResultFlowDisposable : Disposable
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -346,16 +358,10 @@ class DeviceMainFragment : DaggerFragment() {
             .concatMap { filterByMacUseCase.execute(it, mDevice.macAddress).toFlowable() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
-
                 val jsonValues = generateJsonArray(readings)
-                setHasSettings(readings)
 
                 web_view?.loadUrl("javascript:onSensorReadings('$jsonValues')")
             }
-    }
-
-    private fun setHasSettings(readings: List<Reading>) {
-        hasSettings = readings[0].device.hasSettings
     }
 
     private fun generateJsonArray(readings: List<Reading>?): String {
@@ -392,6 +398,20 @@ class DeviceMainFragment : DaggerFragment() {
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
             subscribeOnSensorReadings()
+            checkHasSettingsSupport()
+        }
+    }
+
+    private fun checkHasSettingsSupport() {
+        deviceScanResultFlowDisposable = deviceScanResultFlow.filter { it.macAddress == mDevice.macAddress }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                formatMatcher.findFormat(it.rawData)?.let { format ->
+                    hasSettings = it.isSettingsSupportOn(format)
+                    activity?.invalidateOptionsMenu()
+
+                    deviceScanResultFlowDisposable.dispose()
+                }
         }
     }
 

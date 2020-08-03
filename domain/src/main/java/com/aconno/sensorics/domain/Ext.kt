@@ -1,7 +1,10 @@
 package com.aconno.sensorics.domain
 
+import com.aconno.sensorics.domain.format.AdvertisementFormat
+import com.aconno.sensorics.domain.model.ScanResult
 import java.io.Closeable
 import java.lang.StringBuilder
+import kotlin.experimental.and
 
 inline fun <T : Closeable?, R> T.tryUse(block: (T) -> R, catch: (Throwable) -> R): R {
     return try {
@@ -31,4 +34,13 @@ fun String.toSnakeCase(): String {
         }
     }
     return stringBuilder.toString()
+}
+
+fun ScanResult.isSettingsSupportOn(format: AdvertisementFormat) : Boolean {
+    format.getSettingsSupport()
+        ?.let { settingsSupport ->
+            return ByteOperations.isolateMsd(rawData)[settingsSupport.index] and settingsSupport.mask == settingsSupport.mask
+        }
+
+    return false
 }
