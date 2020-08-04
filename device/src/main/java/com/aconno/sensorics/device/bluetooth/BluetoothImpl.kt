@@ -48,7 +48,6 @@ class BluetoothImpl(
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
 
     private val gattCallback: BluetoothGattCallback = BluetoothGattCallback(connectGattResults)
-    private var lastConnectedDeviceAddress: String? = null
     private var lastConnectedGatt: BluetoothGatt? = null
 
     init {
@@ -174,10 +173,7 @@ class BluetoothImpl(
     }
 
     override fun connect(address: String) {
-
-        if (lastConnectedDeviceAddress != null && address == lastConnectedDeviceAddress
-            && lastConnectedGatt != null
-        ) {
+        if (lastConnectedGatt?.device?.address == address) {
             if (lastConnectedGatt!!.connect()) {
                 gattCallback.updateConnecting()
             } else {
@@ -191,7 +187,6 @@ class BluetoothImpl(
 
             gattCallback.updateConnecting()
             lastConnectedGatt = remoteDevice.connectGatt(context, false, gattCallback)
-            lastConnectedDeviceAddress = address
         }
     }
 
