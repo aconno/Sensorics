@@ -25,6 +25,13 @@ allprojects {
         google()
         jcenter()
         maven { url "https://kotlin.bintray.com/kotlin-eap" }
+        maven {
+            url "https://maven.pkg.github.com/troido/bless"
+            credentials {
+                username = GITHUB_USERNAME
+                password = GITHUB_READ_PACKAGES_ACCESS_TOKEN
+            }
+        }
     }
 }
 

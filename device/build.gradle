@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
@@ -32,6 +34,11 @@ repositories {
 }
 
 dependencies {
+
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 10, TimeUnit.MINUTES
+    }
+
     implementation project(':domain')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -70,6 +77,9 @@ dependencies {
 
     // TODO: Move version
     implementation 'com.github.AllanHasegawa.Tempo:tempo:0.2.0'
+
+    implementation('com.troido.bless:bless-core:0.1.0-SNAPSHOT') { changing true }
+    implementation('com.troido.bless:bless-rx:0.1.0-SNAPSHOT') { changing true }
 }
 
 apply plugin: 'kotlin-android-extensions'
