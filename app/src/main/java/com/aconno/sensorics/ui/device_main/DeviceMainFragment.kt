@@ -162,10 +162,7 @@ class DeviceMainFragment : DaggerFragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         activity?.menuInflater?.inflate(R.menu.menu_readings, menu)
-        if (mDevice.connectable) {
-            menu.clear()
-            this.menu = menu
-        }
+        this.menu = menu
         setMenuItemsVisibility(menu)
     }
 
