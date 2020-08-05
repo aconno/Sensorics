@@ -17,7 +17,7 @@ jobs:
       run: |
         echo "${{ secrets.ACONNO_RELEASE_KEYSTORE }}" > keystore.asc
         gpg -d --passphrase "${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSPHRASE }}" --batch keystore.asc > app/keystore
-        ./gradlew -PRELEASE_FLAG=true -Psensorics_fabricKey="${{ secrets.SENSORICS_FABRIC_KEY }}" -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS="${{ secrets.SENSORICS_RELEASE_KEY_ALIAS }}" -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" assembleRelease
+        ./gradlew -PRELEASE_FLAG=true -Psensorics_fabricKey="${{ secrets.SENSORICS_FABRIC_KEY }}" -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS=release -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" assembleRelease
     
     - name: Create Release
       id: create_release
