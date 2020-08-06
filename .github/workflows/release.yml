@@ -7,6 +7,7 @@ on:
 
 jobs:
   test:
+    if: "false"
     name: Test
     runs-on: ubuntu-latest
     steps:
@@ -21,7 +22,6 @@ jobs:
 
   release:
     name: Create Release
-    needs: test
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -33,7 +33,9 @@ jobs:
     - name: Generate Changelog for Version
       run: |
         STATE=0
-        TAG_NAME=${{ github.ref }}
+        GITHUB_REF=${{ github.ref }}
+        TAG_NAME=${GITHUB_REF:10}
+        echo ::set-env name=TAG_NAME::$TAG_NAME
         VERSION_NUMBER=${TAG_NAME:1}
         while read line; do
           if [[ $STATE -eq 0 && "$line" =~ ^##.\[$VERSION_NUMBER\] ]]; then
@@ -41,7 +43,7 @@ jobs:
           elif [[ $STATE -eq 1 ]]; then
             if [[ $line =~ ^## || $line =~ ^\[ ]]; then
               STATE=2
-            else echo $line >> CHANGELOG_$TAG_NAME.md;
+            else echo $line >> CHANGELOG_FOR_NEW_VERSION.md;
             fi
           fi
         done < CHANGELOG.md
@@ -52,9 +54,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body_path: "CHANGELOG_${{ github.ref }}.md"
+        tag_name: ${{ env.TAG_NAME }}
+        release_name: Release ${{ env.TAG_NAME }}
+        body_path: "CHANGELOG_FOR_NEW_VERSION.md"
         draft: false
         prerelease: false
 
