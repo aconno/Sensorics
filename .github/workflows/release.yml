@@ -12,7 +12,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: set up JDK 1.8
+    - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
@@ -30,16 +30,34 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Get version
+      id: get_version
+      uses: battila7/get-version-action@v2
+    - name: Generate changelog for this version
+      run: |
+        STATE=0
+        VERSION_NAME=${{ steps.get_version.outputs.version-without-v }}
+        echo "#### Changes in this version:" >> CHANGELOG_FOR_NEW_VERSION.md
+        while read line; do
+          if [[ $STATE -eq 0 && "$line" =~ ^##.\[$VERSION_NAME\] ]]; then
+            STATE=1
+          elif [[ $STATE -eq 1 ]]; then
+            if [[ $line =~ ^## || $line =~ ^\[ ]]; then
+              STATE=2
+            else echo $line >> CHANGELOG_FOR_NEW_VERSION.md;
+            fi
+          fi
+        done < CHANGELOG.md
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: |
-          Changes in this Release
+        tag_name: ${{ steps.get_version.outputs.version }}
+        release_name: Release ${{ steps.get_version.outputs.version-without-v }}
+        body_path: "CHANGELOG_FOR_NEW_VERSION.md"
         draft: false
         prerelease: false
 
