@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [5.5.1]
 - Change acnBEACON screen layout
 - Fix acnALERT screen crash issue
 
