@@ -19,6 +19,25 @@ jobs:
     - name: Test with Gradle
       run: ./gradlew -Psensorics_fabricKey="${{ secrets.SENSORICS_FABRIC_KEY }}" -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS="${{ secrets.SENSORICS_RELEASE_KEY_ALIAS }}" -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" test
 
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Changelog for Version
+        run: |
+          STATE=0
+          TAG_NAME=${{ github.ref }}
+          VERSION_NUMBER=${TAG_NAME:1}
+          while read line; do
+            if [[ $STATE -eq 0 && "$line" =~ ^##.\[$VERSION_NUMBER\] ]]; then
+              STATE=1
+            elif [[ $STATE -eq 1 ]]; then
+              if [[ $line =~ ^## || $line =~ ^\[ ]]; then
+                STATE=2
+              else echo $line >> CHANGELOG_$TAG_NAME.md;
+              fi
+            fi
+          done < CHANGELOG.md
+
   release:
     name: Create Release
     needs: test
@@ -38,8 +57,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
-        body: |
-          Changes in this Release
+        body_path: "CHANGELOG_${{ github.ref }}.md"
         draft: false
         prerelease: false
 
