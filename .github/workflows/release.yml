@@ -37,7 +37,7 @@ jobs:
       run: |
         STATE=0
         VERSION_NAME=${{ steps.get_version.outputs.version-without-v }}
-        echo "#### Changes in this version:\n" >> CHANGELOG_FOR_NEW_VERSION.md
+        echo "#### Changes in this version:" >> CHANGELOG_FOR_NEW_VERSION.md
         while read line; do
           if [[ $STATE -eq 0 && "$line" =~ ^##.\[$VERSION_NAME\] ]]; then
             STATE=1
