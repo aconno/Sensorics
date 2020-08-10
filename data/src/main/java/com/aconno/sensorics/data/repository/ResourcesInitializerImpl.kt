@@ -2,61 +2,60 @@ package com.aconno.sensorics.data.repository
 
 import android.content.res.AssetManager
 import com.aconno.sensorics.domain.ResourcesInitializer
-import timber.log.Timber
 import java.io.File
+import java.io.IOException
 
 class ResourcesInitializerImpl(
-    private val cacheDir: File,
+    cacheDir: File,
     private val assets: AssetManager
 ) : ResourcesInitializer {
+    private val cacheFolderPath = cacheDir.absolutePath
 
+    companion object {
+        const val ASSETS_SUBFOLDER = "resources"
+        const val CACHE_SUBFOLDER = "sensorics"
+    }
+
+    @Throws(IOException::class)
     override fun init() {
-        val sensoricsFile = File(cacheDir.absolutePath + "/sensorics")
+        val cacheResourcesFolder = File(cacheFolderPath, CACHE_SUBFOLDER)
 
-        if (sensoricsFile.exists()) {
-            return
-        } else {
-            moveFilesFromAssetsToCache()
+        if (!cacheResourcesFolder.exists()) {
+            cacheResourcesFolder.mkdir()
+            copyAssetPathToCache(ASSETS_SUBFOLDER)
         }
     }
 
-    private fun moveFilesFromAssetsToCache() {
-        File("${cacheDir.absolutePath}/sensorics/")
-            .mkdir()
-
-        moveFolder("resources")
-    }
-
-    private fun moveFolder(folderName: String) {
-        assets.list(folderName)?.let { fileList ->
-            if (fileList.isEmpty()) {
-                Timber.i("$folderName + --")
-                copyFile(folderName)
+    @Throws(IOException::class)
+    private fun copyAssetPathToCache(relativeAssetPath: String) {
+        assets.list(relativeAssetPath)?.let { elementsInPath ->
+            val isFile = elementsInPath.isEmpty()
+            if (isFile) {
+                copyAssetFileToCache(relativeAssetPath)
             } else {
-                fileList.forEach { filename ->
-                    Timber.i("$folderName/$filename")
-                    moveFolder("$folderName/$filename")
+                elementsInPath.forEach { subElement ->
+                    copyAssetPathToCache("$relativeAssetPath/$subElement")
                 }
             }
         }
     }
 
-    private fun copyFile(folderPath: String) {
-        val fileInputStream = assets.open(folderPath)
-        val fileToBeWritten =
-            File(
-                "${cacheDir.absolutePath}/sensorics/${folderPath.replaceFirst("resources/", "")}"
-            )
+    @Throws(IOException::class)
+    private fun copyAssetFileToCache(assetFilePath: String) {
+        val relativeCacheFilePath = assetFilePath.replaceFirst(ASSETS_SUBFOLDER, CACHE_SUBFOLDER)
+        val cacheFileToBeWritten = File(cacheFolderPath, relativeCacheFilePath)
 
-        Timber.i(fileToBeWritten.path)
+        createParentFolders(cacheFileToBeWritten)
 
-        fileToBeWritten.parentFile.takeIf {
-            !it.exists()
-        }?.let {
-            it.mkdirs()
+        assets.open(assetFilePath).use { assetInputStream ->
+            cacheFileToBeWritten.outputStream().use {
+                assetInputStream.copyTo(it)
+            }
         }
-
-        //Saving IS into the file
-        fileToBeWritten.outputStream().use { fileInputStream.copyTo(it) }
     }
+
+    private fun createParentFolders(forFile: File) {
+        forFile.parentFile?.takeIf { !it.exists() }?.mkdirs()
+    }
+
 }
