@@ -85,6 +85,11 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-solver:$constraintlayout_version"
 
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_extensions_version"
+    implementation "androidx.core:core-ktx:$core_ktx_version"
+    implementation "androidx.fragment:fragment-ktx:$fragment_ktx_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$viewmodel_ktx_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_ktx_version"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifedata_ktx_version"
 
     implementation "androidx.room:room-runtime:$androidx_room_version"
     implementation "androidx.room:room-rxjava2:$androidx_room_version"

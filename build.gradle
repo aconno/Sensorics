@@ -67,6 +67,12 @@ ext {
     // TODO: Move to any stable version after 1.0.0 when it becomes available
     material_version = '1.1.0-rc02'
     flexbox_version = '1.0.0'
+    core_ktx_version = '1.3.1'
+    fragment_ktx_version = '1.2.5'
+    lifecycle_ktx_version = '2.2.0'
+    lifedata_ktx_version = '2.2.0'
+    viewmodel_ktx_version = '2.2.0'
+
 
     dagger_version = '2.26'
     assisted_inject_dagger_version = '0.5.2'
