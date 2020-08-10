@@ -32,7 +32,10 @@ class ResourcesInitializerImplTest {
             "sensorics",
             "sensorics/copyRoot",
             "sensorics/configs",
-            "sensorics/configs/copyConfigs"
+            "sensorics/configs/copyConfigs",
+            "sensorics/double",
+            "sensorics/double/nested",
+            "sensorics/double/nested/file"
         )
         val expectedFilesInCache = expectedFilesInAssets.map { File(cacheFolder, it).absolutePath }
 
