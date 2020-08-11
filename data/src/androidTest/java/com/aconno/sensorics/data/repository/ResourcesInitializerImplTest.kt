@@ -1,6 +1,7 @@
 package com.aconno.sensorics.data.repository
 
 import android.content.res.AssetManager
+import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import com.aconno.sensorics.data.repository.ResourcesInitializerImpl.Companion.CACHE_SUBFOLDER
 import com.google.common.truth.Truth.assertThat
@@ -26,6 +27,7 @@ class ResourcesInitializerImplTest {
         assetManager = appContext.assets
     }
 
+    @SdkSuppress(minSdkVersion = 23)
     @Test
     fun copyAssetsToCache_whenRootFolderExists_shouldNotCopyAssetsToCache() {
         File(cacheFolder, "$CACHE_SUBFOLDER/").mkdirs()
@@ -43,6 +45,7 @@ class ResourcesInitializerImplTest {
         assertThat(actualPaths).containsExactlyElementsIn(expectedFilesInCache)
     }
 
+    @SdkSuppress(minSdkVersion = 23)
     @Test
     fun copyAssetsToCache_shouldCopyAssetsToCache() {
         val expectedFilesInAssets = listOf(

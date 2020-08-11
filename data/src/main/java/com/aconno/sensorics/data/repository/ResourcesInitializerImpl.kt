@@ -17,36 +17,48 @@ class ResourcesInitializerImpl(
     }
 
     @Throws(IOException::class)
-    override fun init() {
-        val cacheResourcesFolder = File(cacheFolderPath, CACHE_SUBFOLDER)
+    override fun init() = copyAssetsIfNotInitialized()
 
-        if (!cacheResourcesFolder.exists()) {
+    @Throws(IOException::class)
+    private fun copyAssetsIfNotInitialized() {
+        val cacheResourcesFolder = File(cacheFolderPath, CACHE_SUBFOLDER)
+        val resourcesAlreadyInitialized = cacheResourcesFolder.exists()
+        if (!resourcesAlreadyInitialized) {
             cacheResourcesFolder.mkdir()
             copyAssetPathToCache(ASSETS_SUBFOLDER)
         }
     }
 
     @Throws(IOException::class)
-    private fun copyAssetPathToCache(relativeAssetPath: String) {
-        assets.list(relativeAssetPath)?.let { elementsInPath ->
-            val isFile = elementsInPath.isEmpty()
-            if (isFile) {
-                copyAssetFileToCache(relativeAssetPath)
+    private fun copyAssetPathToCache(assetPath: String) {
+        assets.list(assetPath)?.let { elementsInPath ->
+            val assetIsFile = elementsInPath.isEmpty()
+            if (assetIsFile) {
+                copyAssetToFile(assetPath)
             } else {
-                elementsInPath.forEach { subElement ->
-                    copyAssetPathToCache("$relativeAssetPath/$subElement")
-                }
+                copyAssetFolderContentToCache(elementsInPath, assetPath)
             }
         }
     }
 
     @Throws(IOException::class)
-    private fun copyAssetFileToCache(assetFilePath: String) {
+    private fun copyAssetFolderContentToCache(folderContent: Array<String>, pathToFolder: String) {
+        folderContent.forEach { pathRelativeToFolder ->
+            copyAssetPathToCache("$pathToFolder/$pathRelativeToFolder")
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun copyAssetToFile(assetFilePath: String) {
         val relativeCacheFilePath = assetFilePath.replaceFirst(ASSETS_SUBFOLDER, CACHE_SUBFOLDER)
         val cacheFileToBeWritten = File(cacheFolderPath, relativeCacheFilePath)
 
         createParentFolders(cacheFileToBeWritten)
+        copyAssetToFile(assetFilePath, cacheFileToBeWritten)
+    }
 
+    @Throws(IOException::class)
+    private fun copyAssetToFile(assetFilePath: String, cacheFileToBeWritten: File) {
         assets.open(assetFilePath).use { assetInputStream ->
             cacheFileToBeWritten.outputStream().use {
                 assetInputStream.copyTo(it)
