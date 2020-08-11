@@ -24,7 +24,6 @@ import com.aconno.sensorics.domain.repository.Settings
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceActive
 import com.aconno.sensorics.ui.ActionListActivity
-import com.aconno.sensorics.ui.IconInfo
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialog
 import com.aconno.sensorics.ui.dialogs.ScannedDevicesDialogListener
@@ -43,19 +42,17 @@ import kotlinx.android.synthetic.main.dialog_create_group.view.*
 import kotlinx.android.synthetic.main.dialog_sort_devices.view.*
 import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
-import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-
 class SavedDevicesFragment : DaggerFragment(),
     ScannedDevicesDialogListener,
-    DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener, IconInfo,
+    DeviceSwipeToDismissHelper.RecyclerItemTouchHelperListener,
     SelectableRecyclerViewAdapter.ItemClickListener<DeviceActive>,
     SelectableRecyclerViewAdapter.ItemLongClickListener<DeviceActive>,
     SelectableRecyclerViewAdapter.ItemSelectedListener<DeviceActive>,
-        DeviceGroupAdapter.DeviceGroupTabLongClickListener
+    DeviceGroupAdapter.DeviceGroupTabLongClickListener
 {
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
@@ -102,10 +99,10 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private val snackbarCallback = object : Snackbar.Callback() {
         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-            if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT
-                || event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
-                || event == Snackbar.Callback.DISMISS_EVENT_SWIPE
-                || event == Snackbar.Callback.DISMISS_EVENT_MANUAL
+            if (event == DISMISS_EVENT_TIMEOUT
+                || event == DISMISS_EVENT_CONSECUTIVE
+                || event == DISMISS_EVENT_SWIPE
+                || event == DISMISS_EVENT_MANUAL
             ) {
                 val deletedItem = deletedItems.poll()
 
@@ -772,7 +769,7 @@ class SavedDevicesFragment : DaggerFragment(),
             // get the removed item name to display it in snack bar and backup for undo
             val deviceActive = deviceAdapter.getDevice(position)
             deletedItems.add(deviceActive)
-            val name = deviceActive.device?.getRealName() ?: return
+            val name = deviceActive.device.getRealName()
 
             // remove the item from recycler view
             deviceAdapter.removeItemAtPosition(position)
@@ -816,9 +813,7 @@ class SavedDevicesFragment : DaggerFragment(),
         deviceGroupAdapter.listener = null
     }
 
-
-    override fun getIconInfoForActiveDevices(deviceNames: List<DeviceActive>): HashMap<String, String> {
-
+    private fun getIconInfoForActiveDevices(deviceNames: List<DeviceActive>): HashMap<String, String> {
         val hashMap: HashMap<String, String> = hashMapOf()
 
         deviceNames.forEach { device ->
@@ -828,11 +823,6 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
         }
         return hashMap
-    }
-
-    override fun getIconInfoForDevices(deviceNames: List<Device>): HashMap<String, String> {
-        //This method is not used.
-        return hashMapOf()
     }
 
     override fun onListItemSelectionStateChanged(item: DeviceActive, state: Boolean) {

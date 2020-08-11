@@ -15,8 +15,6 @@ import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.Settings
-import com.aconno.sensorics.model.DeviceActive
-import com.aconno.sensorics.ui.IconInfo
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -27,7 +25,7 @@ import kotlinx.android.synthetic.main.item_chip.view.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener, IconInfo {
+class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener {
 
     @Inject
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
@@ -376,8 +374,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         }
     }
 
-    override fun getIconInfoForDevices(deviceNames: List<Device>): HashMap<String, String> {
-
+    private fun getIconInfoForDevices(deviceNames: List<Device>): HashMap<String, String> {
         val hashMap: HashMap<String, String> = hashMapOf()
 
         deviceNames.forEach { device ->
@@ -388,10 +385,4 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         }
         return hashMap
     }
-
-    override fun getIconInfoForActiveDevices(deviceNames: List<DeviceActive>): HashMap<String, String> {
-        //this method is not used
-        return hashMapOf()
-    }
-
 }
