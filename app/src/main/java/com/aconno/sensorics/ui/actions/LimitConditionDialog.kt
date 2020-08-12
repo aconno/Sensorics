@@ -7,12 +7,13 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import com.aconno.sensorics.R
+import com.aconno.sensorics.domain.ifttt.LimitCondition
 import kotlinx.android.synthetic.main.dialog_condition.view.*
 
-class ConditionDialog(
+class LimitConditionDialog(
     context: Context,
     private val readingType: String,
-    private val listener: ConditionDialogListener
+    private val listener: LimitConditionDialogListener
 ) : AlertDialog(context) {
 
     @SuppressLint("InflateParams")
@@ -33,7 +34,7 @@ class ConditionDialog(
         ) { _, _ -> }
         setOnShowListener {
             getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-                onSetClicked(contentView)
+                respondWithConditionIfValid(contentView)
             }
         }
         setButton(
@@ -60,17 +61,30 @@ class ConditionDialog(
         }
     }
 
-    private fun onSetClicked(rootView: View) {
-        val conditionOperator = when {
-            rootView.view_less.isChecked -> "<"
-            rootView.view_equal.isChecked -> "="
-            rootView.view_more.isChecked -> ">"
-            else -> null
-        }
-        val conditionVariable = rootView.view_value.text.toString()
-        if (conditionOperator != null && conditionVariable.isNotBlank()) {
-            listener.onSetClicked(readingType, conditionOperator, conditionVariable)
+    private fun respondWithConditionIfValid(rootView: View) {
+        val conditionOperator = getSelectedOperator(rootView)
+        val conditionLimit = getLimitParameter(rootView)
+        if (conditionOperator != null && conditionLimit != null) {
+            val limitCondition = LimitCondition(readingType, conditionOperator, conditionLimit)
+            listener.applyLimitCondition(limitCondition)
             dismiss()
+        }
+    }
+
+    private fun getSelectedOperator(rootView: View) = when {
+        rootView.view_less.isChecked -> LimitCondition.LimitOperator.LESS_THAN
+        rootView.view_equal.isChecked -> LimitCondition.LimitOperator.EQUAL_TO
+        rootView.view_more.isChecked -> LimitCondition.LimitOperator.MORE_THAN
+        else -> null
+    }
+
+    private fun getLimitParameter(rootView: View): Float? {
+        val parameter = rootView.view_value.text.toString()
+        if (parameter.isBlank()) return null
+        return try {
+            parameter.toFloat()
+        } catch (e: NumberFormatException) {
+            null
         }
     }
 }

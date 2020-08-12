@@ -105,7 +105,7 @@ class ActionsRepositoryTest {
                 mapOf("fake" to "outcome"),
                 Outcome.OUTCOME_TYPE_NOTIFICATION
             )
-            val fakeCondition = LimitCondition("readingType", 1.5f, 1)
+            val fakeCondition = LimitCondition("readingType", 1, 1.5f)
 
             (1..actionsNum).forEach {
                 insertedActions.add(GeneralAction(

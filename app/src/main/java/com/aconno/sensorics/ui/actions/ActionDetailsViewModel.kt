@@ -30,8 +30,8 @@ class ActionDetailsViewModel(
 
     private val disposables = CompositeDisposable()
 
-    private val actionLiveData = MutableLiveData<ActionViewModel>()
-    fun getActionLiveData(): LiveData<ActionViewModel> = actionLiveData
+    private val actionLiveData = MutableLiveData<ActionBeingBuilt>()
+    fun getActionLiveData(): LiveData<ActionBeingBuilt> = actionLiveData
 
     fun getDevices(): Single<List<Device>> {
         return savedDevicesStream.firstOrError()
@@ -43,7 +43,7 @@ class ActionDetailsViewModel(
                 .subscribeOn(Schedulers.io())
                 .subscribe { action ->
                     actionLiveData.postValue(
-                        ActionViewModel(
+                        ActionBeingBuilt(
                             action.id,
                             action.name,
                             action.device,
@@ -61,7 +61,7 @@ class ActionDetailsViewModel(
     fun setDevice(device: Device, name: String, message: String) {
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
-            actionLiveData.value = ActionViewModel(
+            actionLiveData.value = ActionBeingBuilt(
                 name = name,
                 device = device
             )
@@ -79,30 +79,20 @@ class ActionDetailsViewModel(
         }
     }
 
-    fun setCondition(
-        readingType: String,
-        limitValue: String,
-        constraintType: String,
+    fun setLimitCondition(
+        limitCondition: LimitCondition,
         name: String,
         message: String
     ) {
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
-            actionLiveData.value = ActionViewModel(
+            actionLiveData.value = ActionBeingBuilt(
                 name = name,
-                condition = LimitCondition(
-                    readingType,
-                    limitValue.toFloat(),
-                    LimitCondition.typeFromString(constraintType)
-                )
+                condition = limitCondition
             )
         } else {
             actionViewModel.name = name
-            actionViewModel.condition = LimitCondition(
-                readingType,
-                limitValue.toFloat(),
-                LimitCondition.typeFromString(constraintType)
-            )
+            actionViewModel.condition = limitCondition
             val outcome = actionViewModel.outcome
             if (outcome != null) {
                 val parameters = hashMapOf<String, String>()
@@ -117,7 +107,7 @@ class ActionDetailsViewModel(
     fun clearCondition(name: String, message: String) {
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
-            actionLiveData.value = ActionViewModel(
+            actionLiveData.value = ActionBeingBuilt(
                 name = name
             )
         } else {
@@ -140,7 +130,7 @@ class ActionDetailsViewModel(
         val outcome = Outcome(parameters, outcomeType)
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
-            actionLiveData.value = ActionViewModel(
+            actionLiveData.value = ActionBeingBuilt(
                 name = name,
                 outcome = outcome
             )
@@ -154,7 +144,7 @@ class ActionDetailsViewModel(
     fun setActive(name: String, active: Boolean) {
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
-            actionLiveData.value = ActionViewModel(
+            actionLiveData.value = ActionBeingBuilt(
                 name = name,
                 active = active
             )
@@ -168,7 +158,7 @@ class ActionDetailsViewModel(
     fun setTimeFrom(name: String, timeFrom: Int) {
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
-            actionLiveData.value = ActionViewModel(
+            actionLiveData.value = ActionBeingBuilt(
                 name = name,
                 timeFrom = timeFrom
             )
@@ -184,7 +174,7 @@ class ActionDetailsViewModel(
     fun setTimeTo(name: String, timeTo: Int) {
         val actionViewModel = actionLiveData.value
         if (actionViewModel == null) {
-            actionLiveData.value = ActionViewModel(
+            actionLiveData.value = ActionBeingBuilt(
                 name = name,
                 timeTo = timeTo
             )
@@ -286,7 +276,7 @@ class ActionDetailsViewModel(
         disposables.clear()
     }
 
-    inner class ActionViewModel(
+    inner class ActionBeingBuilt(
         var id: Long = 0L,
         var name: String = "",
         var device: Device? = null,

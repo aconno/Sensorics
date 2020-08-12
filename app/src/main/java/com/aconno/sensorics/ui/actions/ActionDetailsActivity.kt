@@ -13,6 +13,7 @@ import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceSpinnerAdapter
 import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.ifttt.Condition
+import com.aconno.sensorics.domain.ifttt.LimitCondition
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.repository.Settings
 import com.google.android.material.snackbar.Snackbar
@@ -25,7 +26,7 @@ import kotlinx.android.synthetic.main.item_chip.view.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener {
+class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogListener {
     @Inject
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
 
@@ -142,7 +143,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
                     .inflate(R.layout.item_chip, container_conditions, false)
                 newView.text_title.text = readingType
                 newView.setOnClickListener {
-                    ConditionDialog(this, readingType, this).show()
+                    LimitConditionDialog(this, readingType, this).show()
                 }
                 container_conditions.addView(newView)
             } else {
@@ -150,7 +151,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
                 (view as CheckedTextView).isChecked = false
                 view.visibility = View.VISIBLE
                 view.setOnClickListener {
-                    ConditionDialog(this, readingType, this).show()
+                    LimitConditionDialog(this, readingType, this).show()
                 }
             }
         }
@@ -177,17 +178,10 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         Snackbar.make(container_activity, message, Snackbar.LENGTH_SHORT).show()
     }
 
-    override fun onSetClicked(readingType: String, constraint: String, value: String) {
+    override fun applyLimitCondition(limitCondition: LimitCondition) {
         val name = edittext_name.text.toString()
         val message = edittext_message.text.toString()
-
-        actionDetailsViewModel.setCondition(
-            readingType,
-            value,
-            constraint,
-            name,
-            message
-        )
+        actionDetailsViewModel.setLimitCondition(limitCondition, name, message)
     }
 
     private fun observeActionLiveData() {
