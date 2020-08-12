@@ -35,9 +35,9 @@ class ActionMapper @Inject constructor() {
         val name = actionEntity.name
         val condition =
                 LimitCondition(
-                        actionEntity.readingType,
-                        actionEntity.value,
-                        actionEntity.conditionType
+                    actionEntity.readingType,
+                    actionEntity.conditionType,
+                    actionEntity.value
                 )
 
         val parameters = mapOf(
