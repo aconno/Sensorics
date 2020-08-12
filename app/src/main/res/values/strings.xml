@@ -486,4 +486,6 @@
     <string name="remove_publishers_title">Remove backends</string>
     <string name="one_publisher_removed">%s removed!</string>
     <string name="multiple_publishers_removed">%d backends removed!</string>
+    <string name="enable_location_services">Enable location services</string>
+    <string name="settings">Settings</string>
 </resources>
