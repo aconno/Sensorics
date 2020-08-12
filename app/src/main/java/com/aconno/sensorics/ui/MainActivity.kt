@@ -3,14 +3,17 @@ package com.aconno.sensorics.ui
 import android.Manifest
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -45,8 +48,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallbacks,
-        ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener,
-    SavedDevicesFragment.ItemSelectionStateListener{
+    ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener,
+    SavedDevicesFragment.ItemSelectionStateListener {
 
     @Inject
     lateinit var bluetoothStateReceiver: BluetoothStateReceiver
@@ -71,7 +74,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
     private var showMenu: Boolean = true
 
-    private var onBluetoothOnAction : Runnable? = null
+    private var onBluetoothOnAction: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,7 +124,10 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
             //Disable Keep Screen On
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        registerReceiver(bluetoothStateReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
+        registerReceiver(
+            bluetoothStateReceiver,
+            IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+        )
         bluetoothViewModel.observeBluetoothState()
         bluetoothViewModel.bluetoothState.observe(this, Observer { onBluetoothStateChange(it) })
     }
@@ -151,6 +157,28 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
                 as? SavedDevicesFragment)?.onBluetoothOn()
 
         onBluetoothOnAction?.run()
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        return try {
+            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        } catch (e: Exception) {
+            Timber.e(e)
+            false
+        }
+    }
+
+    private fun showEnableLocationDialog() {
+        AlertDialog.Builder(this)
+            .setMessage(R.string.enable_location_services)
+            .setPositiveButton(getString(R.string.settings)) { _, _ ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            .setNegativeButton(getString(R.string.cancel)) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
     }
 
     override fun openLiveGraph(macAddress: String, sensorName: String) {
@@ -247,7 +275,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         mainMenu = menu
 
-        if(!showMenu) {
+        if (!showMenu) {
             return false
         }
 
@@ -350,9 +378,13 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
                 showEnableBluetoothDialog()
             }
 
+            !isLocationEnabled() -> {
+                showEnableLocationDialog()
+            }
+
             else -> { //all requirements needed to start scanning are fulfilled
                 bluetoothScanningViewModel.startScanning(filterByDevice)
-                if(!filterByDevice) {
+                if (!filterByDevice) {
                     (supportFragmentManager.findFragmentById(content_container.id)
                             as? SavedDevicesFragment)?.onDeviceDiscoveryScanStarted()
                 }
@@ -382,10 +414,14 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         Timber.d("Permissions denied, request code: $requestCode, permissions: $perms")
-        Snackbar.make(container_fragment, R.string.snackbar_permission_message, Snackbar.LENGTH_LONG)
+        Snackbar.make(
+            container_fragment,
+            R.string.snackbar_permission_message,
+            Snackbar.LENGTH_LONG
+        )
             .setAction(R.string.snackbar_settings) {
                 startActivity(
-                    Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                         data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
                     }
                 )
@@ -451,7 +487,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
         val contentFragment = supportFragmentManager
             .findFragmentById(R.id.content_container)
         var handled = false
-        if(contentFragment is SavedDevicesFragment) {
+        if (contentFragment is SavedDevicesFragment) {
             handled = contentFragment.onBackButtonPressed()
         }
 
