@@ -1,112 +1,76 @@
 package com.aconno.sensorics.ui.actions
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import androidx.fragment.app.DialogFragment
 import com.aconno.sensorics.R
-import kotlinx.android.synthetic.main.dialog_condition.*
+import kotlinx.android.synthetic.main.dialog_condition.view.*
 
-class ConditionDialog : DialogFragment() {
+class ConditionDialog(
+    context: Context,
+    private val readingType: String,
+    private val listener: ConditionDialogListener
+) : AlertDialog(context) {
 
-    private var listener: ConditionDialogListener? = null
-
-    private var sensorType: String? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            listener = context as ConditionDialogListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException("$context must implement ConditionDialogListener")
-        }
+    @SuppressLint("InflateParams")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTitle(readingType)
+        val contentView = layoutInflater.inflate(R.layout.dialog_condition, null, false)
+        setView(contentView)
+        addContentButtonsOnClickListeners(contentView)
+        addActionButtonsOnClickListeners(contentView)
+        super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        removeTitleSpacing()
-        return inflater.inflate(R.layout.dialog_condition, container)
-    }
-
-    private fun removeTitleSpacing() {
-        // Required for Lollipop (maybe others too) devices
-        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        sensorType = arguments?.let { getSensorTypeExtra(it) }
-
-        view_title.text = sensorType
-
-        view_less.setOnClickListener {
-            view_less.isChecked = !view_less.isChecked
-            view_equal.isChecked = false
-            view_more.isChecked = false
-        }
-
-        view_equal.setOnClickListener {
-            view_less.isChecked = false
-            view_equal.isChecked = !view_equal.isChecked
-            view_more.isChecked = false
-        }
-
-        view_more.setOnClickListener {
-            view_less.isChecked = false
-            view_equal.isChecked = false
-            view_more.isChecked = !view_more.isChecked
-        }
-
-        button_cancel.setOnClickListener {
-            dialog?.cancel()
-        }
-
-        button_set.setOnClickListener {
-            onSetClicked()
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
-    private fun onSetClicked() {
-        when {
-            view_less.isChecked -> "<"
-            view_equal.isChecked -> "="
-            view_more.isChecked -> ">"
-            else -> null
-        }?.takeIf { view_value.text.isNotBlank() }?.let { condition ->
-            val value = view_value.text.toString()
-            sensorType?.let {
-                listener?.onSetClicked(it, condition, value)
+    private fun addActionButtonsOnClickListeners(contentView: View) {
+        @Suppress("CAST_NEVER_SUCCEEDS")
+        setButton(
+            DialogInterface.BUTTON_POSITIVE,
+            context.getString(R.string.condition_dialog_set)
+        ) { _, _ -> }
+        setOnShowListener {
+            getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+                onSetClicked(contentView)
             }
-            dialog?.dismiss()
+        }
+        setButton(
+            DialogInterface.BUTTON_NEGATIVE,
+            context.getString(R.string.cancel)
+        ) { dialog, _ -> dialog.cancel() }
+    }
+
+    private fun addContentButtonsOnClickListeners(contentView: View) {
+        contentView.view_less.setOnClickListener {
+            contentView.view_less.isChecked = !contentView.view_less.isChecked
+            contentView.view_equal.isChecked = false
+            contentView.view_more.isChecked = false
+        }
+        contentView.view_equal.setOnClickListener {
+            contentView.view_less.isChecked = false
+            contentView.view_equal.isChecked = !contentView.view_equal.isChecked
+            contentView.view_more.isChecked = false
+        }
+        contentView.view_more.setOnClickListener {
+            contentView.view_less.isChecked = false
+            contentView.view_equal.isChecked = false
+            contentView.view_more.isChecked = !contentView.view_more.isChecked
         }
     }
 
-    companion object {
-
-        private const val TYPE_EXTRA = "type_extra"
-
-        fun newInstance(readingType: String): ConditionDialog {
-            val dialog = ConditionDialog()
-            val args = Bundle()
-            args.putString(TYPE_EXTRA, readingType)
-            dialog.arguments = args
-            return dialog
+    private fun onSetClicked(rootView: View) {
+        val conditionOperator = when {
+            rootView.view_less.isChecked -> "<"
+            rootView.view_equal.isChecked -> "="
+            rootView.view_more.isChecked -> ">"
+            else -> null
         }
-
-        private fun getSensorTypeExtra(args: Bundle): String? {
-            return args.getString(TYPE_EXTRA)
+        val conditionVariable = rootView.view_value.text.toString()
+        if (conditionOperator != null && conditionVariable.isNotBlank()) {
+            listener.onSetClicked(readingType, conditionOperator, conditionVariable)
+            dismiss()
         }
     }
 }

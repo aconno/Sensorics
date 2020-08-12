@@ -26,7 +26,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener {
-
     @Inject
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
 
@@ -143,8 +142,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
                     .inflate(R.layout.item_chip, container_conditions, false)
                 newView.text_title.text = readingType
                 newView.setOnClickListener {
-                    val dialog = ConditionDialog.newInstance(readingType)
-                    dialog.show(supportFragmentManager, "condition_dialog_fragment")
+                    ConditionDialog(this, readingType, this).show()
                 }
                 container_conditions.addView(newView)
             } else {
@@ -152,8 +150,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
                 (view as CheckedTextView).isChecked = false
                 view.visibility = View.VISIBLE
                 view.setOnClickListener {
-                    val dialog = ConditionDialog.newInstance(readingType)
-                    dialog.show(supportFragmentManager, "condition_dialog_fragment")
+                    ConditionDialog(this, readingType, this).show()
                 }
             }
         }
@@ -250,12 +247,11 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         val minutes = time % 60
         time -= minutes
         time /= 60
-        @Suppress("UnnecessaryVariable")
         val hours = time % 24
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             timepicker_time_from.hour = hours
-            timepicker_time_from.minute =minutes
+            timepicker_time_from.minute = minutes
         } else {
             timepicker_time_from.currentHour = hours
             timepicker_time_from.currentMinute = minutes
@@ -271,12 +267,11 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), ConditionDialogListener
         val minutes = time % 60
         time -= minutes
         time /= 60
-        @Suppress("UnnecessaryVariable")
         val hours = time % 24
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             timepicker_time_to.hour = hours
-            timepicker_time_to.minute =minutes
+            timepicker_time_to.minute = minutes
         } else {
             timepicker_time_to.currentHour = hours
             timepicker_time_to.currentMinute = minutes
