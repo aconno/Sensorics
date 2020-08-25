@@ -27,7 +27,7 @@ class ResourcesRepositoryImpl(
         val configFolder = File(cacheFilePath.absolutePath + CONFIGS_FILE_PATH)
         if (configFolder.exists()) {
             return configFolder.listFiles()?.let { files ->
-                files.map {
+                files.filter { !it.isDirectory }.map {
                     Timber.d("Loading config: ${it.path}")
 
                     val configFileJsonModel = gson.fromJson(
