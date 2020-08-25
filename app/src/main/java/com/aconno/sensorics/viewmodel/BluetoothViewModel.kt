@@ -21,6 +21,8 @@ class BluetoothViewModel(
         bluetoothAdapter.enable()
     }
 
+    fun isBluetoothSupported() = BluetoothAdapter.getDefaultAdapter() != null
+
     fun observeBluetoothState() {
         val bluetoothStates = bluetooth.getStateEvents()
         bluetoothStatesSubscription = bluetoothStates.subscribe { bluetoothState.value = it }
