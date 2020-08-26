@@ -488,7 +488,7 @@
     <string name="multiple_publishers_removed">%d backends removed!</string>
     <string name="enable_location_services">Enable location services</string>
     <string name="settings">Settings</string>
-    <string name="bluetooth_support">Bluetooth support</string>
-    <string name="bletooth_not_supported_message">This device does not support bluetooth which is required to use this app. You can still use the app, but its main features are not going to work as expected.</string>
+    <string name="bluetooth_not_available">Bluetooth not available</string>
+    <string name="bletooth_not_available_message">There is a problem that causes the app not being able to use bluetooth on your device. You can still use the app, but its main features are not going to work as expected.</string>
     <string name="ok">Ok</string>
 </resources>

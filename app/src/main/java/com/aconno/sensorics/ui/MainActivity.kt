@@ -98,15 +98,15 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
         scheduleWork()
         observeScanEvents()
 
-        if(!bluetoothViewModel.isBluetoothSupported() && savedInstanceState == null) {
-            displayBluetoothNotSupportedDialog()
+        if(!bluetoothViewModel.isBluetoothAvailable() && savedInstanceState == null) {
+            displayBluetoothNotAvailableDialog()
         }
     }
 
-    private fun displayBluetoothNotSupportedDialog() {
+    private fun displayBluetoothNotAvailableDialog() {
         AlertDialog.Builder(this)
-            .setTitle(getString(R.string.bluetooth_support))
-            .setMessage(getString(R.string.bletooth_not_supported_message))
+            .setTitle(getString(R.string.bluetooth_not_available))
+            .setMessage(getString(R.string.bletooth_not_available_message))
             .setPositiveButton(getString(R.string.ok)) { _, _ ->}
             .show()
     }
