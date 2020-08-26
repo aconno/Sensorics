@@ -97,6 +97,18 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
         scheduleWork()
         observeScanEvents()
+
+        if(!bluetoothViewModel.isBluetoothAvailable() && savedInstanceState == null) {
+            displayBluetoothNotAvailableDialog()
+        }
+    }
+
+    private fun displayBluetoothNotAvailableDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.bluetooth_not_available))
+            .setMessage(getString(R.string.bletooth_not_available_message))
+            .setPositiveButton(getString(R.string.ok)) { _, _ ->}
+            .show()
     }
 
     private fun scheduleWork() {

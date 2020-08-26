@@ -28,7 +28,7 @@ import java.util.*
 class BluetoothImpl(
     private val context: Context,
     private val sharedPrefs: SharedPreferences,
-    private val bluetoothAdapter: BluetoothAdapter,
+    private val bluetoothAdapter: BluetoothAdapter?,
     private val bluetoothPermission: BluetoothPermission,
     private val bluetoothStateListener: BluetoothStateListener,
     private val bluetoothGattAttributeValueConverter: BluetoothGattAttributeValueConverter
@@ -102,12 +102,12 @@ class BluetoothImpl(
 
     override fun enable() {
         checkPermissionState()
-        bluetoothAdapter.enable()
+        bluetoothAdapter?.enable()
     }
 
     override fun disable() {
         checkPermissionState()
-        bluetoothAdapter.disable()
+        bluetoothAdapter?.disable()
     }
 
     override fun readCharacteristic(serviceUUID: UUID, characteristicUUID: UUID): Boolean {
@@ -184,13 +184,13 @@ class BluetoothImpl(
                 gattCallback.updateError()
             }
         } else {
-            val remoteDevice = bluetoothAdapter.getRemoteDevice(address)
+            val remoteDevice = bluetoothAdapter?.getRemoteDevice(address)
             if (remoteDevice == null) {
                 gattCallback.updateDeviceNotFound()
             }
 
             gattCallback.updateConnecting()
-            lastConnectedGatt = remoteDevice.connectGatt(context, false, gattCallback)
+            lastConnectedGatt = remoteDevice?.connectGatt(context, false, gattCallback)
             lastConnectedDeviceAddress = address
         }
     }
@@ -210,7 +210,7 @@ class BluetoothImpl(
 
     override fun startScanning(devices: List<Device>) {
         checkPermissionState()
-        if (bluetoothAdapter.isEnabled) {
+        if (bluetoothAdapter?.isEnabled == true) {
             Timber.i("Start Bluetooth scanning, devices: $devices")
             val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
             val scanSettings = getScanSettings(devices)
@@ -224,7 +224,7 @@ class BluetoothImpl(
 
     override fun startScanning() {
         checkPermissionState()
-        if (bluetoothAdapter.isEnabled) {
+        if (bluetoothAdapter?.isEnabled == true) {
             Timber.i("Start Bluetooth scanning")
             val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
             val scanSettings = getScanSettings()
@@ -236,7 +236,7 @@ class BluetoothImpl(
     }
 
     override fun stopScanning() {
-        val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
+        val bluetoothLeScanner = bluetoothAdapter?.bluetoothLeScanner
         bluetoothLeScanner?.let {
             scanEvent.onNext(ScanEvent.stop())
             it.stopScan(scanCallback)
@@ -252,7 +252,7 @@ class BluetoothImpl(
     }
 
     override fun getStateEvents(): Flowable<BluetoothState> {
-        val currentState = Observable.just(bluetoothAdapter.state).map {
+        val currentState = Observable.just(bluetoothAdapter?.state ?: BluetoothAdapter.STATE_OFF).map {
             when (it) {
                 BluetoothAdapter.STATE_ON -> BluetoothState.BLUETOOTH_ON
                 BluetoothAdapter.STATE_OFF -> BluetoothState.BLUETOOTH_OFF

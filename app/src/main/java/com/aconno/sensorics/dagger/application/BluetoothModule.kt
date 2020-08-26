@@ -31,7 +31,7 @@ class BluetoothModule {
     fun provideBluetooth(
         sensoricsApplication: SensoricsApplication,
         sharedPreferences: SharedPreferences,
-        bluetoothAdapter: BluetoothAdapter,
+        bluetoothAdapter: BluetoothAdapter?,
         bluetoothPermission: BluetoothPermission,
         bluetoothStateListener: BluetoothStateListener,
         bluetoothGattAttributeValueConverter: BluetoothGattAttributeValueConverter
@@ -47,7 +47,7 @@ class BluetoothModule {
 
     @Provides
     @Singleton
-    fun provideBluetoothAdapter(): BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    fun provideBluetoothAdapter(): BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 
     @Provides
     @Singleton
