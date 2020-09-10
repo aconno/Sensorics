@@ -85,7 +85,11 @@
 
         function onSensorReadings(json_values) {
             console.log(json_values);
-            document.getElementById("acn-beacon-rssi-at-1m").innerHTML = "N/A";
+
+            let rssiAt1m = document.getElementById("acn-beacon-rssi-at-1m");
+            rssiAt1m.innerHTML = "N/A";
+            rssiAt1m.style.textAlign = "center";
+
             document.getElementById("acn-beacon-rssi-st-dev").innerHTML = "N/A";
 
             JSON.parse(json_values, function (key, value) {
@@ -97,7 +101,8 @@
                 } else if(key == TIMESTAMP_KEY) {
                     document.getElementById("acn-beacon-timestamp").innerHTML = formatDate(value);
                 } else if(key == RSSI_AT_1M_KEY) {
-                    document.getElementById("acn-beacon-rssi-at-1m").innerHTML = value + " dBm";
+                    rssiAt1m.innerHTML = value + " dBm";
+                    rssiAt1m.style.textAlign = "right";
                 } else if(key == RSSI_STANDARD_DEVIATION_KEY) {
                     document.getElementById("acn-beacon-rssi-st-dev").innerHTML = value;
                 }
