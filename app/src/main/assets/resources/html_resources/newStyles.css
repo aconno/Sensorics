@@ -158,59 +158,6 @@
     align-content: center;
 }
 
-#acn-beacon-icon {
-    margin-top : 10vh;
-    margin-bottom : 2vh;
-    width : 20vw;
-    height : 20vw;
-}
-
 .bold-text {
     font-weight : bold
-}
-
-.acn-beacon-param-name-container {
-    width : 26vw;
-}
-
-#acn-beacon-mac-address {
-    margin-bottom : 7vh;
-}
-
-
-.acn-beacon-param-name {
-    font-size : 16px;
-}
-
-#acn-beacon-rssi {
-    font-size : 32px;
-    width : 150px;
-    text-align : right;
-}
-
-#acn-beacon-rssi-at-1m {
-    font-size : 32px;
-    width : 150px;
-    text-align : right;
-}
-
-#acn-beacon-rssi-st-dev {
-    font-size : 28px;
-    width : 90px;
-    text-align : center;
-}
-
-#acn-beacon-timestamp {
-    font-size : 19px;
-}
-
-.acn-beacon-param-name-container {
-    display: inline-block;
-    margin-right : 3vw;
-}
-
-.acn-beacon-name-value-container {
-    display: table;
-    height: 5vh;
-    overflow: hidden;
 }
