@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased]
+- Fix advertisements not sending to backends after 30 minutes of scanning
+- Add enable location request dialog
+- Fix acnBeacon screen issues
+- Fix handling bluetooth not available issue that occurs on some devices
 
 ## [5.5.1]
 - Change acnBEACON screen layout
