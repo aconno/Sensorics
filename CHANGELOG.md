@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [5.5.2]
+- Fix publishing stopage after 30 min of scanning
+- Add enable location request dialog
+- Update acnBeacon screen
+- Fix handling bluetooth not available issue that occurs on some devices
+
 ## [5.5.1]
 - Change acnBEACON screen layout
 - Fix acnALERT screen crash issue
@@ -57,6 +63,7 @@
 - Small code improvements
 
 [Unreleased]: https://github.com/aconno/Sensorics/compare/master...develop
+[5.5.2]: https://github.com/aconno/Sensorics/releases/tag/v5.5.2
 [5.5.1]: https://github.com/aconno/Sensorics/releases/tag/v5.5.1
 [5.5.0]: https://github.com/aconno/Sensorics/releases/tag/v5.5.0
 [5.4.3]: https://github.com/aconno/Sensorics/releases/tag/v5.4.3
