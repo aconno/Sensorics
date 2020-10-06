@@ -148,7 +148,7 @@ class SavedDevicesFragment : DaggerFragment(),
             inflater.inflate(R.menu.menu_devices, menu)
         }
 
-        menu.findItem(R.id.action_start_dashboard)?.isVisible = BuildConfig.FLAVOR == "dev"
+        menu.findItem(R.id.action_start_dashboard)?.isVisible = BuildConfig.DEBUG
 
         mainMenu = menu
     }
