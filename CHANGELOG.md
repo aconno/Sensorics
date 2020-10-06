@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [5.5.3]
 - Fix sensor reading JSON construction
 - Upgrade to Firebase Crashlytics
 
@@ -64,7 +66,7 @@
 - Small bug fixes
 - Small code improvements
 
-[Unreleased]: https://github.com/aconno/Sensorics/compare/master...develop
+[5.5.3]: https://github.com/aconno/Sensorics/releases/tag/v5.5.3
 [5.5.2]: https://github.com/aconno/Sensorics/releases/tag/v5.5.2
 [5.5.1]: https://github.com/aconno/Sensorics/releases/tag/v5.5.1
 [5.5.0]: https://github.com/aconno/Sensorics/releases/tag/v5.5.0
