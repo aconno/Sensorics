@@ -87,3 +87,8 @@ lint/tmp/
 
 # Android Profiling
 *.hprof
+
+# Google Services
+google-services.json
+
+

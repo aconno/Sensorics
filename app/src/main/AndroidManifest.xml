@@ -34,7 +34,9 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".ui.BuyBeaconsActivity"></activity>
-        <activity android:name=".ui.AboutActivity" android:parentActivityName=".ui.MainActivity" />
+        <activity
+            android:name=".ui.AboutActivity"
+            android:parentActivityName=".ui.MainActivity" />
         <activity android:name=".ui.settings.publishers.selectpublish.AzureMqttPublisherActivity" />
         <activity
             android:name=".ui.MainActivity"
@@ -135,9 +137,6 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="${fabricAPIKey}" />
     </application>
 
 </manifest>

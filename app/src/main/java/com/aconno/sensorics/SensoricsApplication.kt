@@ -5,13 +5,10 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.aconno.sensorics.dagger.application.DaggerAppComponent
 import com.aconno.sensorics.dagger.worker.GeneralWorkerFactory
-import com.crashlytics.android.Crashlytics
-import com.crashlytics.android.core.CrashlyticsCore
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import io.fabric.sdk.android.Fabric
 import io.tempo.Tempo
 import io.tempo.time_sources.SlackSntpTimeSource
 import timber.log.Timber
@@ -35,8 +32,6 @@ class SensoricsApplication : Application(), HasAndroidInjector {
             Timber.plant(Timber.DebugTree())
         }
 
-        initializeFabric()
-
         WorkManager.initialize(
             this,
             Configuration.Builder().setWorkerFactory(workerFactory).build()
@@ -45,15 +40,6 @@ class SensoricsApplication : Application(), HasAndroidInjector {
         AndroidThreeTen.init(this)
 
         Tempo.initialize(this, timeSources = listOf(SlackSntpTimeSource()))
-    }
-
-    private fun initializeFabric() {
-        Crashlytics.Builder()
-            .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-            .build()
-            .also { crashlytics ->
-                Fabric.with(this, crashlytics)
-            }
     }
 
     override fun androidInjector(): AndroidInjector<Any> {

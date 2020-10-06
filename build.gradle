@@ -5,14 +5,14 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven { url 'https://maven.fabric.io/public' }
         maven { url "https://kotlin.bintray.com/kotlin-eap" }
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'io.fabric.tools:gradle:1.31.2'
+        classpath 'com.google.gms:google-services:4.3.4'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -72,7 +72,7 @@ ext {
     lifecycle_ktx_version = '2.2.0'
     lifedata_ktx_version = '2.2.0'
     viewmodel_ktx_version = '2.2.0'
-    truth_version='1.0.1'
+    truth_version = '1.0.1'
 
     dagger_version = '2.26'
     assisted_inject_dagger_version = '0.5.2'
