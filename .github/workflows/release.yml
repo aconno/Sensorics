@@ -16,6 +16,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Decode google-services.json
+      env:
+        GOOGLE_SERVICES: ${{ secrets.SENSORICS_GOOGLE_SERVICES }}
+      run: echo $GOOGLE_SERVICES > ./app/google-services.json
     - name: Test with Gradle
       run: ./gradlew -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS="${{ secrets.SENSORICS_RELEASE_KEY_ALIAS }}" -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" test
 
@@ -30,6 +34,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Decode google-services.json
+      env:
+        GOOGLE_SERVICES: ${{ secrets.SENSORICS_GOOGLE_SERVICES }}
+      run: echo $GOOGLE_SERVICES > ./app/google-services.json
     - name: Get version
       id: get_version
       uses: battila7/get-version-action@v2
