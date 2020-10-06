@@ -15,7 +15,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.Observer
 import com.aconno.sensorics.*
 import com.aconno.sensorics.device.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
@@ -35,6 +34,7 @@ import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import dagger.android.support.DaggerFragment
 import io.reactivex.Flowable
@@ -42,6 +42,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_device_main.*
+import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import java.util.*
@@ -64,7 +65,7 @@ class DeviceMainFragment : DaggerFragment() {
     lateinit var deviceScanResultFlow: Flowable<ScanResult>
 
     @Inject
-    lateinit var formatMatcher : FormatMatcher
+    lateinit var formatMatcher: FormatMatcher
 
     @Inject
     lateinit var filterByMacUseCase: FilterByMacUseCase
@@ -92,7 +93,7 @@ class DeviceMainFragment : DaggerFragment() {
 
     var menu: Menu? = null
 
-    private lateinit var deviceScanResultFlowDisposable : Disposable
+    private lateinit var deviceScanResultFlowDisposable: Disposable
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -109,7 +110,7 @@ class DeviceMainFragment : DaggerFragment() {
 
                         activity?.takeIf { isAdded }?.let { fragmentActivity ->
                             bluetoothService.getConnectResultsLiveData()
-                                .observe(fragmentActivity, Observer {
+                                .observe(fragmentActivity, {
                                     onConnectionPayloadReceived(it)
                                 })
 
@@ -174,7 +175,7 @@ class DeviceMainFragment : DaggerFragment() {
     private fun setMenuItemsVisibility(menu: Menu?) {
         menu?.let {
             it.findItem(R.id.action_start_usecases_activity).isVisible =
-                BuildConfig.FLAVOR == DEV_BUILD_FLAVOR
+                BuildConfig.DEBUG
             it.findItem(R.id.action_toggle_connect).isVisible = mDevice.connectable
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
             it.findItem(R.id.action_dfu).isVisible = hasSettings
@@ -357,30 +358,33 @@ class DeviceMainFragment : DaggerFragment() {
             .concatMap { filterByMacUseCase.execute(it, mDevice.macAddress).toFlowable() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
-                val jsonValues = generateJsonArray(readings)
-
-                web_view?.loadUrl("javascript:onSensorReadings('$jsonValues')")
+                val sensorReadingJson = generateJsonString(readings)
+                web_view?.loadUrl("javascript:onSensorReadings('$sensorReadingJson')")
             }
     }
 
-    private fun generateJsonArray(readings: List<Reading>?): String {
+    private fun generateJsonString(readings: List<Reading>): String {
+        val json = JSONObject()
+        readings.forEach {
+            json.putAndCatchException(it.name, it.value)
+        }
+        readings.firstOrNull()?.let {
+            json.putAndCatchException("rssi", it.rssi)
+            json.putAndCatchException("timestamp", it.timestamp)
+            json.putAndCatchException("macAddress", it.device.macAddress)
+        }
+        return json.toString()
+    }
 
-        val jsonObject = JSONObject()
-
-        readings?.forEach {
-            if (!it.value.toDouble().isNaN()) {
-                jsonObject.put(it.name, it.value)
+    private fun JSONObject.putAndCatchException(name: String, value: Any) {
+        try {
+            put(name, value)
+        } catch (e: JSONException) {
+            FirebaseCrashlytics.getInstance().run {
+                log("JSONException when calling put method, name: ${name}, value: ${value}, message: ${e.localizedMessage}.")
+                recordException(e)
             }
         }
-
-        readings?.firstOrNull()?.let {
-            jsonObject.put("rssi", it.rssi)
-            jsonObject.put("timestamp", it.timestamp)
-            jsonObject.put("macAddress", it.device.macAddress)
-        }
-
-
-        return jsonObject.toString()
     }
 
     override fun onDestroyView() {
@@ -402,16 +406,17 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     private fun checkHasSettingsSupport() {
-        deviceScanResultFlowDisposable = deviceScanResultFlow.filter { it.macAddress == mDevice.macAddress }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                formatMatcher.findFormat(it.rawData)?.let { format ->
-                    hasSettings = it.isSettingsSupportOn(format)
-                    activity?.invalidateOptionsMenu()
+        deviceScanResultFlowDisposable =
+            deviceScanResultFlow.filter { it.macAddress == mDevice.macAddress }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    formatMatcher.findFormat(it.rawData)?.let { format ->
+                        hasSettings = it.isSettingsSupportOn(format)
+                        activity?.invalidateOptionsMenu()
 
-                    deviceScanResultFlowDisposable.dispose()
+                        deviceScanResultFlowDisposable.dispose()
+                    }
                 }
-        }
     }
 
     inner class WebViewJavaScriptInterface {
@@ -456,8 +461,7 @@ class DeviceMainFragment : DaggerFragment() {
 
     private fun getParams() {
         val device = Gson().fromJson(
-            arguments!!.getString(KEY_DEVICE)
-            , Device::class.java
+            requireArguments().getString(KEY_DEVICE), Device::class.java
         )
         Timber.i("device is $device")
 

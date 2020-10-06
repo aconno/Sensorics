@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
 apply from: "../version.gradle"
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion compile_sdk_version
 
     defaultConfig {
         applicationId "com.aconno.sensorics"
-        manifestPlaceholders = [fabricAPIKey: sensorics_fabricKey]
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
         versionCode generateVersionCode()
@@ -35,15 +35,13 @@ android {
     buildTypes {
 
         debug {
-            applicationIdSuffix ".dev"
-            versionNameSuffix "-dev"
+            versionNameSuffix "-debug"
             applicationVariants.all { variant ->
                 variant.outputs.all {
                     outputFileName =
                             "sensorics-${defaultConfig.versionName}-${variant.buildType.name}.apk"
                 }
             }
-            ext.enableCrashlytics = false
         }
 
         release {
@@ -128,10 +126,6 @@ dependencies {
     }
     implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$eclipse_paho_mqttv3_version"
 
-    implementation("com.crashlytics.sdk.android:crashlytics:2.10.1@aar") {
-        transitive = true
-    }
-
     // TODO: Move version
     implementation "org.apache.commons:commons-text:1.8"
 
@@ -163,9 +157,11 @@ dependencies {
     testImplementation "org.mockito:mockito-inline:$mockito_inline_version"
 
     implementation 'pub.devrel:easypermissions:3.0.0'
+
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
 }
 
 repositories {
     maven { url 'https://jitpack.io' }
-    maven { url 'https://maven.fabric.io/public' }
 }

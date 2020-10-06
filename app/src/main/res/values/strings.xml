@@ -83,7 +83,7 @@
     <string name="message_no_scanned_devices">There are no new nearby devices</string>
 
     <string name="name">Name</string>
-    <string name="project_id">ProjectId</string>
+    <string name="project_id_hint">ProjectId</string>
     <string name="region">Region</string>
     <string name="device_registry">Device Registry</string>
     <string name="device">Device</string>

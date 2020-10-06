@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+- Fix sensor reading JSON construction
+- Upgrade to Firebase Crashlytics
 
 ## [5.5.2]
 - Fix publishing stopage after 30 min of scanning

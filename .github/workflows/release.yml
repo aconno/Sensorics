@@ -16,8 +16,12 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Decode google-services.json
+      env:
+        GOOGLE_SERVICES: ${{ secrets.SENSORICS_GOOGLE_SERVICES }}
+      run: echo $GOOGLE_SERVICES > ./app/google-services.json
     - name: Test with Gradle
-      run: ./gradlew -Psensorics_fabricKey="${{ secrets.SENSORICS_FABRIC_KEY }}" -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS="${{ secrets.SENSORICS_RELEASE_KEY_ALIAS }}" -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" test
+      run: ./gradlew -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS="${{ secrets.SENSORICS_RELEASE_KEY_ALIAS }}" -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" test
 
   release:
     name: Create Release
@@ -30,6 +34,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Decode google-services.json
+      env:
+        GOOGLE_SERVICES: ${{ secrets.SENSORICS_GOOGLE_SERVICES }}
+      run: echo $GOOGLE_SERVICES > ./app/google-services.json
     - name: Get version
       id: get_version
       uses: battila7/get-version-action@v2
@@ -65,7 +73,7 @@ jobs:
       run: |
         echo "${{ secrets.ACONNO_RELEASE_KEYSTORE }}" > keystore.asc
         gpg -d --passphrase "${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSPHRASE }}" --batch keystore.asc > app/keystore
-        ./gradlew -PRELEASE_FLAG=true -Psensorics_fabricKey="${{ secrets.SENSORICS_FABRIC_KEY }}" -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS=${{ secrets.SENSORICS_RELEASE_KEY_ALIAS }} -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" assembleRelease
+        ./gradlew -PRELEASE_FLAG=true -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS=${{ secrets.SENSORICS_RELEASE_KEY_ALIAS }} -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" assembleRelease
         echo ::set-env name=ASSET_NAME::$(ls ./app/build/outputs/apk/release/ | grep '.apk')
 
     - name: Upload Release Asset
