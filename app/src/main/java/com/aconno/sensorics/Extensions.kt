@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.DeviceRelationModel
 import com.google.android.material.snackbar.Snackbar
+import java.util.*
 
 fun Device.getRealName(): String {
     return if (alias.isBlank()) name else alias
@@ -24,15 +25,15 @@ fun String.toHexByte(): Byte {
     ) and 0xff).toByte()
 }
 
-fun View.visible(){
+fun View.visible() {
     visibility = View.VISIBLE
 }
 
-fun View.invisible(){
+fun View.invisible() {
     visibility = View.INVISIBLE
 }
 
-fun View.gone(){
+fun View.gone() {
     visibility = View.GONE
 }
 
@@ -85,4 +86,8 @@ fun ByteArray.print(): String {
     }
 
     return stringBuilder.toString()
+}
+
+fun String.lowercaseCapitalize(): String {
+    return this.toLowerCase(Locale.getDefault()).capitalize(Locale.getDefault())
 }

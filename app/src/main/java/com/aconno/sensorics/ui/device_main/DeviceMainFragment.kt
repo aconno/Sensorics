@@ -288,7 +288,7 @@ class DeviceMainFragment : DaggerFragment() {
                 context?.let {
                     Toast.makeText(
                         it,
-                        getString(R.string.device_not_found).toLowerCase().capitalize(),
+                        getString(R.string.device_not_found).lowercaseCapitalize(),
                         Toast.LENGTH_LONG
                     )
                 }?.show()
@@ -300,7 +300,7 @@ class DeviceMainFragment : DaggerFragment() {
 
                 Snackbar.make(
                     container_fragment,
-                    getString(R.string.connecting).toLowerCase().capitalize(),
+                    getString(R.string.connecting).lowercaseCapitalize(),
                     Snackbar.LENGTH_SHORT
                 ).show()
 
@@ -311,7 +311,7 @@ class DeviceMainFragment : DaggerFragment() {
 
                 Snackbar.make(
                     container_fragment,
-                    getString(R.string.connected).toLowerCase().capitalize(),
+                    getString(R.string.connected).lowercaseCapitalize(),
                     Snackbar.LENGTH_SHORT
                 ).show()
 
@@ -325,7 +325,7 @@ class DeviceMainFragment : DaggerFragment() {
 
                 Snackbar.make(
                     container_fragment,
-                    getString(R.string.services_discovered).toLowerCase().capitalize(),
+                    getString(R.string.services_discovered).lowercaseCapitalize(),
                     Snackbar.LENGTH_SHORT
                 ).show()
 
@@ -338,7 +338,7 @@ class DeviceMainFragment : DaggerFragment() {
 
                 Snackbar.make(
                     container_fragment,
-                    getString(R.string.disconnected).toLowerCase().capitalize(),
+                    getString(R.string.disconnected).lowercaseCapitalize(),
                     Snackbar.LENGTH_SHORT
                 ).show()
 
