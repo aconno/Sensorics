@@ -22,6 +22,7 @@ import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.isSettingsSupportOn
+import com.aconno.sensorics.domain.migrate.ValueConverters
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.model.Reading
@@ -46,6 +47,7 @@ import kotlinx.android.synthetic.main.fragment_device_main.*
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
+import java.nio.ByteOrder
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -502,6 +504,48 @@ class DeviceMainFragment : DaggerFragment() {
                     )
                 )
             }
+        }
+
+        @JavascriptInterface
+        fun writeCharacteristicRawUnsignedInt16(
+            serviceUUID: String,
+            characteristicUUID: String,
+            value: Int
+        ) {
+            addWriteCommand(
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                "BYTE",
+                ValueConverters.UINT16.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
+            )
+        }
+
+        @JavascriptInterface
+        fun writeCharacteristicRawUnsignedInt8(
+            serviceUUID: String,
+            characteristicUUID: String,
+            value: Short
+        ) {
+            addWriteCommand(
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                "BYTE",
+                ValueConverters.UINT8.serialize(value, order = ByteOrder.BIG_ENDIAN)
+            )
+        }
+
+        @JavascriptInterface
+        fun writeCharacteristicRawString(
+            serviceUUID: String,
+            characteristicUUID: String,
+            value: String
+        ) {
+            addWriteCommand(
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                "BYTE",
+                ValueConverters.ASCII_STRING.serialize(value, order = ByteOrder.BIG_ENDIAN)
+            )
         }
     }
 
