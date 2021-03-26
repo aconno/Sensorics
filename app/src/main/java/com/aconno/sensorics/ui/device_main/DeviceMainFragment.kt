@@ -694,9 +694,7 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     companion object {
-
         private const val KEY_DEVICE = "KEY_DEVICE"
-        private const val DEV_BUILD_FLAVOR = "dev"
 
         fun newInstance(
             device: Device
