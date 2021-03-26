@@ -355,10 +355,10 @@ class DeviceMainFragment : DaggerFragment() {
             }
             BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
                 setToggleActionText(R.string.disconnect)
+                web_view.loadUrl("javascript:onCharWritten('${writeCommandQueue.peek()?.charUUID?.toString()}')")
                 writeCommandQueue.poll()
                 writeCharacteristics(writeCommandQueue.peek())
-                getString(R.string.connected)
-
+                ""
             }
             BluetoothGattCallback.ACTION_BEACON_HAS_SETTINGS -> {
                 hasSettings = true
