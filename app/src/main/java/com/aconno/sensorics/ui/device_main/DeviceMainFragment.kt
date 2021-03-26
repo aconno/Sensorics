@@ -635,13 +635,12 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     private fun writeColorCharacteristic(hex: String) {
-        //val hex = Integer.toHexString(color)
-        Timber.i("hex value $hex hex $hex")
+        Timber.d("Hex color value $hex")
         val red: Byte
         val green: Byte
         val blue: Byte
-        if (hex.length >= 7) {
 
+        if (hex.length >= 7) {
             red = "0x${hex.subSequence(1, 3)}".toHexByte()
             green = "0x${hex.subSequence(3, 5)}".toHexByte()
             blue = "0x${hex.subSequence(5, 7)}".toHexByte()
@@ -651,56 +650,24 @@ class DeviceMainFragment : DaggerFragment() {
             blue = "0x00".toHexByte()
         }
 
+        listOf(red, green, blue).forEachIndexed { index, valueByte ->
+            device.connectionWriteList?.get(index + 1)?.let {
+                Timber.d("Service UUID is ${it.serviceUUID}")
+                Timber.d("Characteristic UUID is ${it.characteristicUUID}")
 
-        var deviceWrite = device.connectionWriteList?.get(1)
-        deviceWrite?.let {
+                val serviceUUID: UUID = UUID.fromString(it.serviceUUID)
+                val charUUID: UUID = UUID.fromString(it.characteristicUUID)
 
-            Timber.i("Service UUId is ${it.serviceUUID}")
+                val type: String = it.values[1].type
+                val value: ByteArray = byteArrayOf(valueByte)
 
-            val serviceUUID: UUID = UUID.fromString(it.serviceUUID)
-            val charUUID: UUID = UUID.fromString(it.characteristicUUID)
-
-            val type: String = it.values[1].type
-            val value: ByteArray = byteArrayOf(red)
-
-            addWriteCommand(
-                serviceUUID,
-                charUUID,
-                type,
-                value
-            )
-        }
-
-
-        deviceWrite = device.connectionWriteList?.get(2)
-        deviceWrite?.let {
-
-            val serviceUUID: UUID = UUID.fromString(it.serviceUUID)
-            val charUUID: UUID = UUID.fromString(it.characteristicUUID)
-            val type: String = it.values[1].type
-            val value: ByteArray = byteArrayOf(green)
-            addWriteCommand(
-                serviceUUID,
-                charUUID,
-                type,
-                value
-            )
-        }
-
-        deviceWrite = device.connectionWriteList?.get(3)
-        deviceWrite?.let {
-
-            val serviceUUID: UUID = UUID.fromString(it.serviceUUID)
-            val charUUID: UUID = UUID.fromString(it.characteristicUUID)
-            val type: String = it.values[1].type
-            val value: ByteArray = byteArrayOf(blue)
-
-            addWriteCommand(
-                serviceUUID,
-                charUUID,
-                type,
-                value
-            )
+                addWriteCommand(
+                    serviceUUID,
+                    charUUID,
+                    type,
+                    value
+                )
+            }
         }
     }
 
