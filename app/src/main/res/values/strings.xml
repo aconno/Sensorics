@@ -202,6 +202,7 @@
     <string name="connected">CONNECTED</string>
     <string name="discovered">CONNECTED</string>
     <string name="disconnected">DISCONNECTED</string>
+    <string name="services_discovered">Services discovered</string>
     <string name="error">ERROR</string>
     <string name="status_txt">Status : %s</string>
     <string name="connect">CONNECT</string>
