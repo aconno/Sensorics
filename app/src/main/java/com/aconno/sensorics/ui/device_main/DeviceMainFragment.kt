@@ -157,7 +157,7 @@ class DeviceMainFragment : DaggerFragment() {
             bluetoothAdapter != null &&
             bluetoothAdapter.isEnabled
         ) {
-            showAlertDialog(mainActivity)
+            showStartScanAlertDialog(mainActivity)
         }
     }
 
@@ -606,27 +606,18 @@ class DeviceMainFragment : DaggerFragment() {
         hasSettings = device.hasSettings
     }
 
-    private fun showAlertDialog(mainActivity: MainActivity) {
-
-        val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(
-            mainActivity
-        )
-
-        alertDialogBuilder.setTitle(resources.getString(R.string.start_scan_popup))
-        alertDialogBuilder
+    private fun showStartScanAlertDialog(mainActivity: MainActivity) {
+        AlertDialog.Builder(mainActivity)
+            .setTitle(resources.getString(R.string.start_scan_popup))
             .setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
-
                 mainActivity.startScanOperation()
-                dialog.cancel()
-
+                dialog.dismiss()
             }
             .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
-
-                dialog.cancel()
+                dialog.dismiss()
             }
-
-        val alertDialog = alertDialogBuilder.create()
-        alertDialog.show()
+            .create()
+            .show()
     }
 
     //should be called when the buzzer in acnfreight is pressed
