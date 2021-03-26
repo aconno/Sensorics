@@ -385,6 +385,7 @@ class DeviceMainFragment : DaggerFragment() {
     private fun setToggleActionText(@StringRes resId: Int) {
         menu?.let {
             it.findItem(R.id.action_toggle_connect)?.title = getString(resId)
+            it.findItem(R.id.action_toggle_connect)?.isChecked = resId != R.string.connect
         }
     }
 
