@@ -6,8 +6,11 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.Settings
 import android.view.*
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
@@ -38,6 +41,7 @@ import com.aconno.sensorics.viewmodel.resources.MainResourceViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
+import com.thanosfisherman.wifiutils.WifiUtils
 import dagger.android.support.DaggerFragment
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -468,6 +472,57 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     inner class WebViewJavaScriptInterface {
+
+        @JavascriptInterface
+        fun scanForWifi() {
+            WifiUtils.withContext(requireActivity().applicationContext).let { utils ->
+                utils.enableWifi { success ->
+                    if (!success) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            val panelIntent = Intent(Settings.Panel.ACTION_INTERNET_CONNECTIVITY)
+                            startActivityForResult(panelIntent, 0)
+
+                            Toast.makeText(
+                                requireContext(),
+                                R.string.could_not_enable_wifi,
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                            return@enableWifi
+                        } else {
+                            (context?.getSystemService(Context.WIFI_SERVICE) as? WifiManager)?.apply {
+                                isWifiEnabled = true
+                            }
+                        }
+                    }
+
+                    val snackbar = Snackbar.make(
+                        container_fragment,
+                        "Scanning...",
+                        Snackbar.LENGTH_INDEFINITE
+                    )
+
+                    requireActivity().runOnUiThread {
+                        snackbar.show()
+                    }
+
+                    utils.scanWifi { results ->
+                        requireActivity().runOnUiThread {
+                            snackbar.dismiss()
+                        }
+
+                        results.map { it.SSID }.toTypedArray().let { networks ->
+
+                            AlertDialog.Builder(requireContext())
+                                .setTitle(R.string.pick_wifi_ssid)
+                                .setItems(networks) { dialog, which ->
+                                    web_view.loadUrl("javascript:wifiPicked('${networks[which]}')")
+                                }.show()
+                        }
+                    }
+                };
+            }
+        }
 
         @JavascriptInterface
         fun openLiveGraph(sensorName: String) {
