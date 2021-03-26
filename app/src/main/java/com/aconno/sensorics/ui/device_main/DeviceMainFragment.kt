@@ -349,6 +349,8 @@ class DeviceMainFragment : DaggerFragment() {
             BluetoothGattCallback.ACTION_GATT_ERROR -> {
                 setToggleActionText(R.string.connect)
                 isServicesDiscovered = false
+                bluetoothConnectService?.disconnect()
+                writeCommandQueue.clear()
                 getString(R.string.error)
             }
             BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
