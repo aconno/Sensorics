@@ -298,26 +298,23 @@ class DeviceMainFragment : DaggerFragment() {
             BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
                 setToggleActionText(R.string.disconnect)
 
-                context?.let {
-                    Toast.makeText(
-                        it,
-                        getString(R.string.connecting).toLowerCase().capitalize(),
-                        Toast.LENGTH_SHORT
-                    )
-                }?.show()
+                Snackbar.make(
+                    container_fragment,
+                    getString(R.string.connecting).toLowerCase().capitalize(),
+                    Snackbar.LENGTH_SHORT
+                ).show()
 
                 getString(R.string.connecting)
             }
             BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
                 setToggleActionText(R.string.disconnect)
 
-                context?.let {
-                    Toast.makeText(
-                        it,
-                        getString(R.string.connected).toLowerCase().capitalize(),
-                        Toast.LENGTH_SHORT
-                    )
-                }?.show()
+                Snackbar.make(
+                    container_fragment,
+                    getString(R.string.connected).toLowerCase().capitalize(),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+
                 writeCommandQueue.clear()
 
                 getString(R.string.connected)
@@ -326,14 +323,11 @@ class DeviceMainFragment : DaggerFragment() {
                 setToggleActionText(R.string.disconnect)
                 isServicesDiscovered = true
 
-                context?.let {
-                    Toast.makeText(
-                        it,
-                        getString(R.string.services_discovered).toLowerCase().capitalize(),
-                        Toast.LENGTH_SHORT
-                    )
-                }
-                    ?.show()
+                Snackbar.make(
+                    container_fragment,
+                    getString(R.string.services_discovered).toLowerCase().capitalize(),
+                    Snackbar.LENGTH_SHORT
+                ).show()
 
                 getString(R.string.discovered)
             }
@@ -342,13 +336,11 @@ class DeviceMainFragment : DaggerFragment() {
                 isServicesDiscovered = false
                 bluetoothConnectService?.close()
 
-                context?.let {
-                    Toast.makeText(
-                        it,
-                        getString(R.string.disconnected).toLowerCase().capitalize(),
-                        Toast.LENGTH_SHORT
-                    )
-                }?.show()
+                Snackbar.make(
+                    container_fragment,
+                    getString(R.string.disconnected).toLowerCase().capitalize(),
+                    Snackbar.LENGTH_SHORT
+                ).show()
 
                 getString(R.string.disconnected)
             }
