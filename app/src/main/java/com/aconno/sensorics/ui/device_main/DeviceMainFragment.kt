@@ -483,6 +483,8 @@ class DeviceMainFragment : DaggerFragment() {
                             return@enableWifi
                         } else {
                             (context?.getSystemService(Context.WIFI_SERVICE) as? WifiManager)?.apply {
+                                // Deprecation suppressed because build version check is performed
+                                @Suppress("DEPRECATION")
                                 isWifiEnabled = true
                             }
                         }
@@ -507,12 +509,12 @@ class DeviceMainFragment : DaggerFragment() {
 
                             AlertDialog.Builder(requireContext())
                                 .setTitle(R.string.pick_wifi_ssid)
-                                .setItems(networks) { dialog, which ->
+                                .setItems(networks) { _, which ->
                                     web_view.loadUrl("javascript:wifiPicked('${networks[which]}')")
                                 }.show()
                         }
                     }
-                };
+                }
             }
         }
 
