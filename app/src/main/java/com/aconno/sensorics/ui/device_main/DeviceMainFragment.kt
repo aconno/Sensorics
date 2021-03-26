@@ -13,6 +13,7 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import com.aconno.sensorics.*
@@ -278,15 +279,40 @@ class DeviceMainFragment : DaggerFragment() {
             BluetoothGattCallback.ACTION_GATT_DEVICE_NOT_FOUND -> {
                 setToggleActionText(R.string.connect)
 
+                context?.let {
+                    Toast.makeText(
+                        it,
+                        getString(R.string.device_not_found).toLowerCase().capitalize(),
+                        Toast.LENGTH_LONG
+                    )
+                }?.show()
+
                 getString(R.string.device_not_found)
             }
             BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
                 setToggleActionText(R.string.disconnect)
 
+                context?.let {
+                    Toast.makeText(
+                        it,
+                        getString(R.string.connecting).toLowerCase().capitalize(),
+                        Toast.LENGTH_SHORT
+                    )
+                }?.show()
+
                 getString(R.string.connecting)
             }
             BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
                 setToggleActionText(R.string.disconnect)
+
+                context?.let {
+                    Toast.makeText(
+                        it,
+                        getString(R.string.connected).toLowerCase().capitalize(),
+                        Toast.LENGTH_SHORT
+                    )
+                }?.show()
+                writeCommandQueue.clear()
 
                 getString(R.string.connected)
             }
@@ -294,12 +320,29 @@ class DeviceMainFragment : DaggerFragment() {
                 setToggleActionText(R.string.disconnect)
                 isServicesDiscovered = true
 
+                context?.let {
+                    Toast.makeText(
+                        it,
+                        getString(R.string.services_discovered).toLowerCase().capitalize(),
+                        Toast.LENGTH_SHORT
+                    )
+                }
+                    ?.show()
+
                 getString(R.string.discovered)
             }
             BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
                 setToggleActionText(R.string.connect)
                 isServicesDiscovered = false
                 bluetoothConnectService?.close()
+
+                context?.let {
+                    Toast.makeText(
+                        it,
+                        getString(R.string.disconnected).toLowerCase().capitalize(),
+                        Toast.LENGTH_SHORT
+                    )
+                }?.show()
 
                 getString(R.string.disconnected)
             }
