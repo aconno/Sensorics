@@ -251,7 +251,7 @@ class DeviceMainFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupWebView()
         if (device.connectable)
-            setupConnectionForFreight()
+            setupConnection()
     }
 
     private fun setupWebView() {
@@ -387,16 +387,20 @@ class DeviceMainFragment : DaggerFragment() {
         }
     }
 
-    private fun setupConnectionForFreight() {
+    /**
+     * Starts a connection to a connectable device.
+     */
+    private fun setupConnection() {
         context?.let { appContext ->
-            Intent(
-                appContext, BluetoothConnectService::class.java
-            ).let {
+            Intent(appContext, BluetoothConnectService::class.java).let {
                 appContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
             }
         }
     }
 
+    /**
+     * Subscribes to the sensor reading flow for parsed advertisement data
+     */
     private fun subscribeOnSensorReadings() {
         sensorReadingFlowDisposable = sensorReadingFlow
             .concatMap { filterByMacUseCase.execute(it, device.macAddress).toFlowable() }
