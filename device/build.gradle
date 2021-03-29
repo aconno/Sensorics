@@ -69,7 +69,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
 
     // TODO: Move version
-    implementation 'com.github.AllanHasegawa.Tempo:tempo:0.2.0'
+    implementation "com.github.AllanHasegawa.Tempo:tempo:$tempo_version"
 }
 
 apply plugin: 'kotlin-android-extensions'
