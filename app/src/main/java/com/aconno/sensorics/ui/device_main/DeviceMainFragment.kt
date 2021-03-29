@@ -685,12 +685,12 @@ class DeviceMainFragment : DaggerFragment() {
 
 
     private fun writeCharacteristics(cmd: WriteCommand?) {
-        cmd?.let {
-            bluetoothConnectService!!.writeCharacteristic(
-                it.serviceUUID,
-                it.charUUID,
-                it.type,
-                it.value
+        cmd?.let { writeCommand ->
+            bluetoothConnectService?.writeCharacteristic(
+                writeCommand.serviceUUID,
+                writeCommand.charUUID,
+                writeCommand.type,
+                writeCommand.value
             )
         }
     }
