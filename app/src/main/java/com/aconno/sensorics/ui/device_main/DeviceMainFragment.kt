@@ -250,8 +250,10 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupWebView()
-        if (device.connectable)
+
+        if (device.connectable) {
             setupConnection()
+        }
     }
 
     private fun setupWebView() {
