@@ -282,7 +282,7 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     private fun onConnectionPayloadReceived(gattCallbackPayload: GattCallbackPayload) {
-        Timber.i(gattCallbackPayload.action)
+        Timber.d(gattCallbackPayload.action)
         val text: String = when (gattCallbackPayload.action) {
             BluetoothGattCallback.ACTION_GATT_DEVICE_NOT_FOUND -> {
                 setToggleActionText(R.string.connect)
@@ -367,7 +367,7 @@ class DeviceMainFragment : DaggerFragment() {
                 ""
             }
             BluetoothGattCallback.ACTION_BEACON_HAS_CACHE -> {
-                Timber.i("Services discovered")
+                Timber.d("Services discovered")
                 onBeaconHasCache()
 
                 ""
@@ -535,13 +535,13 @@ class DeviceMainFragment : DaggerFragment() {
 
         @JavascriptInterface
         fun buzzerPlay(checked: Boolean) {
-            Timber.i("test the buzzer value $checked")
+            Timber.d("test the buzzer value $checked")
             toggleBuzzerCharacteristic(checked)
         }
 
         @JavascriptInterface
         fun changeColorOfFreight(color: String) {
-            Timber.i("test the color value $color")
+            Timber.d("test the color value $color")
             writeColorCharacteristic(color)
         }
 
@@ -608,7 +608,7 @@ class DeviceMainFragment : DaggerFragment() {
         val device = Gson().fromJson(
             requireArguments().getString(KEY_DEVICE), Device::class.java
         )
-        Timber.i("device is $device")
+        Timber.d("device is $device")
 
         this.device = connectionCharacteristicsFinder.addCharacteristicsToDevice(device)
         hasSettings = device.hasSettings
