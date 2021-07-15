@@ -280,7 +280,7 @@ abstract class Slot(
                 0x03,
                 0xAA.toByte(),
                 0xFE.toByte(),
-                0x03 + 0x03,
+                (0x03 + 0x03).toByte(),
                 0x16,
                 0xAA.toByte(),
                 0xFE.toByte()
@@ -326,7 +326,7 @@ abstract class Slot(
                 0x03,
                 0xAA.toByte(),
                 0xFE.toByte(),
-                0x03 + 0x03,
+                (0x03 + 0x03).toByte(),
                 0x16,
                 0xAA.toByte(),
                 0xFE.toByte()
