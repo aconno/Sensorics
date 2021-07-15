@@ -15,7 +15,7 @@ class FileStorageImpl(private val context: Context) : FileStorage {
         val printWriter = PrintWriter(fileOutputStream)
         fileOutputStream.use {
             printWriter.use { out ->
-                out.appendln(reading.toCsvString())
+                out.appendLine(reading.toCsvString())
             }
         }
     }
