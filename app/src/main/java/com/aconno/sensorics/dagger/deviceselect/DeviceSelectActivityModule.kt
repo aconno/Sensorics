@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.deviceselect
 
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.aconno.sensorics.domain.interactor.repository.GetDevicesConnectedWithPublishUseCase
 import com.aconno.sensorics.domain.interactor.repository.GetSavedDevicesMaybeUseCase
 import com.aconno.sensorics.model.mapper.DeviceRelationModelMapper
@@ -18,7 +18,7 @@ class DeviceSelectActivityModule {
     fun provideGoogleCloudPublisherViewModel(
         deviceSelectFragment: DeviceSelectFragment,
         deviceSelectViewModelFactory: DeviceSelectViewModelFactory
-    ) = ViewModelProviders.of(deviceSelectFragment, deviceSelectViewModelFactory)
+    ) = ViewModelProvider(deviceSelectFragment, deviceSelectViewModelFactory)
         .get(DeviceSelectViewModel::class.java)
 
     @Provides

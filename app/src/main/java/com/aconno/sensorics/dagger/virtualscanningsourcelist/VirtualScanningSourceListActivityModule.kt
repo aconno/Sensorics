@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.virtualscanningsourcelist
 
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.aconno.sensorics.domain.interactor.virtualscanningsource.*
 import com.aconno.sensorics.domain.interactor.virtualscanningsource.mqtt.AddMqttVirtualScanningSourceUseCase
 import com.aconno.sensorics.domain.interactor.virtualscanningsource.mqtt.DeleteMqttVirtualScanningSourceUseCase
@@ -21,7 +21,7 @@ class VirtualScanningSourceListActivityModule {
     fun provideSourceListViewModel(
             activity: VirtualScanningSourceListActivity,
             sourceViewModelFactory: VirtualScanningSourceListViewModelFactory
-    ) = ViewModelProviders.of(activity, sourceViewModelFactory)
+    ) = ViewModelProvider(activity, sourceViewModelFactory)
             .get(VirtualScanningSourceListViewModel::class.java)
 
     @Provides

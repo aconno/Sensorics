@@ -11,7 +11,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.aconno.sensorics.R
 import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsFragmentListener
 import com.aconno.sensorics.domain.serialization.JavascriptCallGenerator
@@ -25,7 +25,7 @@ open class BeaconSettingsFragment() : DaggerFragment() {
     private lateinit var listener: BeaconSettingsFragmentListener
 
     private val settingsTransporter by lazy {
-        ViewModelProviders.of(requireActivity()).get(BeaconSettingsTransporterSharedViewModel::class.java)
+        ViewModelProvider(requireActivity()).get(BeaconSettingsTransporterSharedViewModel::class.java)
     }
 
     private var jsGenerator = JavascriptCallGenerator()

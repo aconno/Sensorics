@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.beacon_settings
 
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.aconno.sensorics.device.beacon.Beacon
 import com.aconno.sensorics.device.beacon.v2.BeaconImpl
 import com.aconno.sensorics.device.bluetooth.BluetoothTaskProcessorImpl
@@ -31,7 +31,7 @@ class BeaconSettingsActivityModule {
     fun provideBeaconSettingsTransporterSharedViewModel(
         beaconSettingsActivity: BeaconSettingsActivity,
         beaconSettingsViewModelFactory: BeaconSettingsSharedViewModelFactory
-    ) = ViewModelProviders.of(beaconSettingsActivity, beaconSettingsViewModelFactory)
+    ) = ViewModelProvider(beaconSettingsActivity, beaconSettingsViewModelFactory)
         .get(BeaconSettingsTransporterSharedViewModel::class.java)
 
     @Provides
@@ -39,7 +39,7 @@ class BeaconSettingsActivityModule {
     fun provideBeaconSettingsViewModel(
         beaconSettingsActivity: BeaconSettingsActivity,
         beaconSettingsViewModelFactory: BeaconSettingsViewModelFactory
-    ) = ViewModelProviders.of(beaconSettingsActivity, beaconSettingsViewModelFactory)
+    ) = ViewModelProvider(beaconSettingsActivity, beaconSettingsViewModelFactory)
         .get(BeaconSettingsViewModel::class.java)
 
     @Provides

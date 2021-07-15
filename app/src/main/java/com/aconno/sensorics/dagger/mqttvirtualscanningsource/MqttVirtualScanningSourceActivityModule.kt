@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.mqttvirtualscanningsource
 
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.aconno.sensorics.domain.interactor.virtualscanningsource.mqtt.AddMqttVirtualScanningSourceUseCase
 import com.aconno.sensorics.model.mapper.MqttVirtualScanningSourceModelDataMapper
 import com.aconno.sensorics.ui.settings.virtualscanningsources.MqttVirtualScanningSourceActivity
@@ -17,7 +17,7 @@ class MqttVirtualScanningSourceActivityModule {
     fun provideMqttVirtualScanningSourceViewModel(
             mqttVirtualScanningSourceActivity: MqttVirtualScanningSourceActivity,
             mqttVirtualScanningSourceViewModelFactory: MqttVirtualScanningSourceViewModelFactory
-    ) = ViewModelProviders.of(mqttVirtualScanningSourceActivity, mqttVirtualScanningSourceViewModelFactory)
+    ) = ViewModelProvider(mqttVirtualScanningSourceActivity, mqttVirtualScanningSourceViewModelFactory)
                     .get(MqttVirtualScanningSourceViewModel::class.java)
 
     @Provides

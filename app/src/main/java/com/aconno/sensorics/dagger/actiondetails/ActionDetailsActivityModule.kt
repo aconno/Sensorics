@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.actiondetails
 
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.GetActionByIdUseCase
@@ -37,7 +37,7 @@ class ActionDetailsActivityModule {
     fun provideActionDetailsViewModel(
         actionDetailsActivity: ActionDetailsActivity,
         actionDetailsViewModelFactory: ActionDetailsViewModelFactory
-    ) = ViewModelProviders.of(actionDetailsActivity, actionDetailsViewModelFactory)
+    ) = ViewModelProvider(actionDetailsActivity, actionDetailsViewModelFactory)
         .get(ActionDetailsViewModel::class.java)
 
 }

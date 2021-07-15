@@ -1,6 +1,6 @@
 package com.aconno.sensorics.dagger.publishlist
 
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.aconno.sensorics.domain.interactor.ifttt.UpdateAnyPublishUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.azuremqttpublish.GetAzureMqttPublishByIdUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.googlepublish.GetGooglePublishByIdUseCase
@@ -28,7 +28,7 @@ class PublishListActivityModule {
     fun providePublishListViewModel(
         activity: PublishListActivity,
         publishViewModelFactory: PublishListViewModelFactory
-    ) = ViewModelProviders.of(activity, publishViewModelFactory)
+    ) = ViewModelProvider(activity, publishViewModelFactory)
         .get(PublishListViewModel::class.java)
 
     @Provides

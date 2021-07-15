@@ -1,7 +1,6 @@
 package com.aconno.sensorics.dagger.mainactivity
 
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.aconno.sensorics.SensoricsApplication
 import com.aconno.sensorics.dagger.compositescan.CompositeScanResultsModule
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
@@ -37,7 +36,7 @@ class MainActivityModule {
     fun provideSensorListViewModel(
         mainActivity: MainActivity,
         sensorListViewModelFactory: SensorListViewModelFactory
-    ) = ViewModelProviders.of(mainActivity, sensorListViewModelFactory)
+    ) = ViewModelProvider(mainActivity, sensorListViewModelFactory)
         .get(SensorListViewModel::class.java)
 
     @Provides
@@ -55,7 +54,7 @@ class MainActivityModule {
     fun provideReadingListViewModel(
         mainActivity: MainActivity,
         readingListViewModelFactory: ReadingListViewModelFactory
-    ) = ViewModelProviders.of(mainActivity, readingListViewModelFactory)
+    ) = ViewModelProvider(mainActivity, readingListViewModelFactory)
         .get(ReadingListViewModel::class.java)
 
     @Provides
@@ -73,7 +72,7 @@ class MainActivityModule {
     fun provideBluetoothScanningViewModel(
         mainActivity: MainActivity,
         bluetoothScanningViewModelFactory: BluetoothScanningViewModelFactory
-    ) = ViewModelProviders.of(mainActivity, bluetoothScanningViewModelFactory)
+    ) = ViewModelProvider(mainActivity, bluetoothScanningViewModelFactory)
         .get(BluetoothScanningViewModel::class.java)
 
     @Provides
@@ -81,7 +80,7 @@ class MainActivityModule {
     fun provideMqttVirtualScanningViewModel(
         mainActivity: MainActivity,
         mqttVirtualScanningViewModelFactory: MqttVirtualScanningViewModelFactory
-    ) = ViewModelProviders.of(mainActivity, mqttVirtualScanningViewModelFactory)
+    ) = ViewModelProvider(mainActivity, mqttVirtualScanningViewModelFactory)
         .get(MqttVirtualScanningViewModel::class.java)
 
     @Provides
@@ -112,7 +111,7 @@ class MainActivityModule {
     @MainActivityScope
     fun provideBluetoothViewModel(
         mainActivity: MainActivity, bluetoothViewModelFactory: BluetoothViewModelFactory
-    ) = ViewModelProviders.of(
+    ) = ViewModelProvider(
         mainActivity,
         bluetoothViewModelFactory
     ).get(BluetoothViewModel::class.java)
@@ -123,7 +122,7 @@ class MainActivityModule {
     fun provideUseCasesViewModel(
         mainActivity: MainActivity,
         useCasesViewModelFactory: UseCasesViewModelFactory
-    ) = ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
+    ) = ViewModelProvider(mainActivity, useCasesViewModelFactory)
         .get(UseCasesViewModel::class.java)
 
     @Provides
@@ -131,10 +130,8 @@ class MainActivityModule {
     fun provideDeviceListViewModel(
         mainActivity: MainActivity,
         deviceListViewModelFactory: DeviceListViewModelFactory
-    ): DeviceViewModel {
-        return ViewModelProviders.of(mainActivity, deviceListViewModelFactory)
-            .get(DeviceViewModel::class.java)
-    }
+    ) = ViewModelProvider(mainActivity, deviceListViewModelFactory)
+        .get(DeviceViewModel::class.java)
 
     @Provides
     @MainActivityScope
@@ -203,7 +200,7 @@ class MainActivityModule {
     fun provideDashboardViewModel(
         mainActivity: MainActivity,
         useCasesViewModelFactory: DashboardViewModelFactory
-    ) = ViewModelProviders.of(mainActivity, useCasesViewModelFactory)
+    ) = ViewModelProvider(mainActivity, useCasesViewModelFactory)
         .get(DashboardViewModel::class.java)
 
     @Provides
@@ -229,7 +226,7 @@ class MainActivityModule {
     fun provideLiveGraphViewModel(
         liveGraphViewModelFactory: LiveGraphViewModelFactory,
         mainActivity: MainActivity
-    ) = ViewModelProviders.of(
+    ) = ViewModelProvider(
         mainActivity,
         liveGraphViewModelFactory
     ).get(LiveGraphViewModel::class.java)
@@ -245,7 +242,7 @@ class MainActivityModule {
     fun provideMainResourceViewModel(
         mainActivity: MainActivity,
         mainResourceViewModelFactory: MainResourceViewModelFactory
-    ) = ViewModelProviders.of(mainActivity, mainResourceViewModelFactory)
+    ) = ViewModelProvider(mainActivity, mainResourceViewModelFactory)
         .get(MainResourceViewModel::class.java)
 
 
