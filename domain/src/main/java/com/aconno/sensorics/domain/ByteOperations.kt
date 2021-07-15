@@ -35,7 +35,7 @@ object ByteOperations {
         var currentType: Byte = 0
         val map = mutableMapOf<Byte, MutableList<Byte>>()
 
-        bytes.forEachIndexed { i, byte ->
+        bytes.forEachIndexed { _, byte ->
             when(nextByteType) {
                 LENGTH -> {
                     bytesLeftInType = byte.toInt()
