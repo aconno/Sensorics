@@ -4,6 +4,7 @@ import com.aconno.sensorics.domain.FileStorage
 import com.aconno.sensorics.domain.interactor.type.CompletableUseCaseWithParameter
 import com.aconno.sensorics.domain.model.Reading
 import io.reactivex.Completable
+import java.util.*
 
 class LogReadingUseCase(
     private val fileStorage: FileStorage
@@ -17,7 +18,7 @@ class LogReadingUseCase(
     }
 
     private fun logReading(reading: Reading) {
-        val fileName = "${reading.name.toLowerCase()}.csv"
+        val fileName = "${reading.name.lowercase(Locale.getDefault())}.csv"
         fileStorage.storeReading(reading, fileName)
     }
 }
