@@ -40,7 +40,7 @@ class DataStringConverter(
     fun parseAndValidateDataString(everything: String): Boolean {
         val matcher = pattern.matcher(everything)
         while (matcher.find()) {
-            list.add(matcher.group().replace("$", "").toLowerCase())
+            list.add(matcher.group().replace("$", "").lowercase(Locale.getDefault()))
         }
 
         type = checkDataStringValid()
@@ -50,7 +50,7 @@ class DataStringConverter(
 
     private fun checkDataStringValid(): Int {
         val filteredList =
-            list.filter { it != TS && it != DEVICE && it != DEVICE_GROUP && it != DATE && it != RSSI} as MutableList<String>
+            list.filter { it != TS && it != DEVICE && it != DEVICE_GROUP && it != DATE && it != RSSI } as MutableList<String>
 
         return if (filteredList.contains(VALUE) || filteredList.contains(NAME)) {
             filteredList.removeAll { it == VALUE || it == NAME }
@@ -153,7 +153,10 @@ class DataStringConverter(
                     )
                 }
                 DEVICE_GROUP -> {
-                    newDataString = newDataString.replace("\$$DEVICE_GROUP", readings[0].deviceGroup?.groupName ?: "None")
+                    newDataString = newDataString.replace(
+                        "\$$DEVICE_GROUP",
+                        readings[0].deviceGroup?.groupName ?: "None"
+                    )
                 }
                 RSSI -> {
                     newDataString = newDataString.replace(
