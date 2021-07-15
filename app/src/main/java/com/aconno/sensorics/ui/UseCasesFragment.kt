@@ -52,8 +52,8 @@ class UseCasesFragment : DaggerFragment() {
             mViewModel.url.observe(this, LiveDataObserver { loadUrl(it) })
             mViewModel.urlError.observe(this, LiveDataObserver { showError() })
 
-            mViewModel.mutableShowProgress.observe(this, LiveDataObserver { showProgressBar(it) })
-            mViewModel.mutableHideProgress.observe(this, LiveDataObserver { hideProgressBar(it) })
+            mViewModel.mutableShowProgress.observe(this, LiveDataObserver { showProgressBar() })
+            mViewModel.mutableHideProgress.observe(this, LiveDataObserver { hideProgressBar() })
 
             mViewModel.initViewModel(macAddress, name)
         }
@@ -72,13 +72,13 @@ class UseCasesFragment : DaggerFragment() {
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
-    private fun hideProgressBar(it: Unit?) {
+    private fun hideProgressBar() {
         progressbar.visibility = View.GONE
         status_view.visibility = View.GONE
         activity_usecases_webview.visibility = View.VISIBLE
     }
 
-    private fun showProgressBar(it: Unit?) {
+    private fun showProgressBar() {
         progressbar.visibility = View.VISIBLE
         status_view.visibility = View.VISIBLE
         activity_usecases_webview.visibility = View.GONE
