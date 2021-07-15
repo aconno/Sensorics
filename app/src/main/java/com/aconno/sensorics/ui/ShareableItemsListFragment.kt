@@ -67,8 +67,8 @@ abstract class ShareableItemsListFragment<T> : BaseFragment() {
 
                 AlertDialog.Builder(it)
                         .setTitle(R.string.export)
-                        .setItems(options) { dialog, which ->
-                            getConvertToJsonUseCase().execute(listOf(sharedItem))
+                        .setItems(options) { _, which ->
+                            getConvertToJsonUseCase().execute(listOf(item))
                                     .subscribeOn(Schedulers.computation())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe({ result ->
