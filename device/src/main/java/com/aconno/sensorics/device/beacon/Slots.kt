@@ -38,9 +38,9 @@ abstract class Slots(
 
     @Throws(IllegalArgumentException::class)
     fun loadChangesFromJson(obj: JsonObject) {
-        obj.getArrayOrNull("slots")?.let { obj ->
+        obj.getArrayOrNull("slots")?.let { slots ->
             forEachIndexed { index, slot ->
-                obj.get(index)?.let { slotElement ->
+                slots.get(index)?.let { slotElement ->
                     slotElement.asObjectOrNull()?.let {
                         slot.loadChangesFromJson(it)
                     } ?: throw IllegalArgumentException(
