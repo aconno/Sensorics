@@ -36,7 +36,7 @@ class AudioAlarmImpl(
 
     override fun start() {
         mediaPlayer = MediaPlayer().also { player ->
-            player.setOnErrorListener { mp, what, extra ->
+            player.setOnErrorListener { mp, _, _ ->
                 Timber.e("Error occurred while playing audio.")
                 mp.stop()
                 mp.release()
