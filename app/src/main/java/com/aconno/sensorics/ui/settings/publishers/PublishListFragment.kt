@@ -137,7 +137,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     snackbar?.dismiss()
 
-                    val position = viewHolder.adapterPosition
+                    val position = viewHolder.bindingAdapterPosition
 
                     val publishModel = publishAdapter.getItem(position)
 
@@ -176,7 +176,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
         button_add_publisher.setOnClickListener {
             snackbar?.dismiss()
             exitItemSelectionState()
-            SelectPublisherActivity.start(context!!)
+            SelectPublisherActivity.start(requireContext())
         }
     }
 

@@ -131,7 +131,7 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
         val swipeToDeleteCallback = object : SwipeToDeleteCallback(this) {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
+                val position = viewHolder.bindingAdapterPosition
                 val parameter = rvAdapter.getParameterAt(position)
                 rvAdapter.removeParameterAt(position)
 

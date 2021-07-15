@@ -83,7 +83,7 @@ class VirtualScanningSourceListFragment : BaseFragment() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     snackbar?.dismiss()
 
-                    val position = viewHolder.adapterPosition
+                    val position = viewHolder.bindingAdapterPosition
 
                     val sourceModel = sourcesAdapter.getSourceModel(position)
 
@@ -121,7 +121,7 @@ class VirtualScanningSourceListFragment : BaseFragment() {
 
         button_add_virtual_scanning_source.setOnClickListener {
             snackbar?.dismiss()
-            MqttVirtualScanningSourceActivity.start(context!!) //mqtt activity is directly started since mqtt is the only supported source for now, so there is no need to have select-source-type-activity
+            MqttVirtualScanningSourceActivity.start(requireContext()) //mqtt activity is directly started since mqtt is the only supported source for now, so there is no need to have select-source-type-activity
         }
     }
 

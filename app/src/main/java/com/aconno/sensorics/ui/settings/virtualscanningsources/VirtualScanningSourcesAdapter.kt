@@ -46,7 +46,7 @@ class VirtualScanningSourcesAdapter(
         }
 
         holder.enableView.setOnCheckedChangeListener { _, isChecked ->
-            checkedChangeListener?.onCheckedChange(isChecked, holder.adapterPosition)
+            checkedChangeListener?.onCheckedChange(isChecked, holder.bindingAdapterPosition)
         }
     }
 

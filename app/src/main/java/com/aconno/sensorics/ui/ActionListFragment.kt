@@ -124,7 +124,7 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
             val swipeToDeleteCallback = object : SwipeToDeleteCallback(context) {
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val position = viewHolder.adapterPosition
+                    val position = viewHolder.bindingAdapterPosition
                     val action = actionAdapter.getItem(position)
                     actionAdapter.removeItemAtPosition(position)
 
