@@ -35,8 +35,8 @@ class UseCasesFragment : DaggerFragment() {
         super.onViewCreated(view, savedInstanceState)
         Timber.e("onViewCreated")
 
-        val macAddress = arguments?.getString(UseCasesFragment.USECASES_MAC_ADDRESS_EXTRA)
-        val name = arguments?.getString(UseCasesFragment.USECASES_NAME_EXTRA)
+        val macAddress = arguments?.getString(USECASES_MAC_ADDRESS_EXTRA)
+        val name = arguments?.getString(USECASES_NAME_EXTRA)
 
         if (macAddress != null && name != null) {
 
