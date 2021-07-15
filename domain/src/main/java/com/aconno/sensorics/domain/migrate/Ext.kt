@@ -17,7 +17,7 @@ import kotlin.math.ceil
 private val HEX_CHARS = "0123456789ABCDEF".toCharArray()
 
 fun String.hexStringToByteArray(): ByteArray {
-    this.toUpperCase().let { s ->
+    this.uppercase(Locale.getDefault()).let { s ->
         val result = ByteArray(length / 2)
 
         for (i in 0 until (length.and(0x01.inv())) step 2) {
@@ -32,7 +32,7 @@ fun String.hexStringToByteArray(): ByteArray {
     }
 }
 
-fun String.hexPairToByteGuarded(): Byte = toUpperCase().let {
+fun String.hexPairToByteGuarded(): Byte = uppercase(Locale.getDefault()).let {
     HEX_CHARS.indexOf(this[0]).let {
         if (it == -1) 0 else it
     }.shl(4).or(
@@ -43,7 +43,7 @@ fun String.hexPairToByteGuarded(): Byte = toUpperCase().let {
 }
 
 @Throws(IllegalArgumentException::class)
-fun String.hexPairToByte(): Byte = toUpperCase().let {
+fun String.hexPairToByte(): Byte = uppercase(Locale.getDefault()).let {
     HEX_CHARS.indexOf(this[0]).let {
         if (it == -1) {
             throw IllegalArgumentException("${this[0]} is not a valid hexadecimal character!")

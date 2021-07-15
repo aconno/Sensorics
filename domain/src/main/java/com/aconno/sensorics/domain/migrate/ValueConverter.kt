@@ -3,6 +3,7 @@ package com.aconno.sensorics.domain.migrate
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.Charset
+import java.util.*
 import kotlin.experimental.or
 
 
@@ -76,7 +77,7 @@ class ValueConverters {
                 Boolean::class.java
         ) {
             override fun parseInternal(string: String): Boolean? {
-                return when (string.toLowerCase()) {
+                return when (string.lowercase(Locale.getDefault())) {
                     "true", "1" -> true
                     "false", "0" -> false
                     else -> null
@@ -140,8 +141,8 @@ class ValueConverters {
 
             override fun deserializeInternal(data: ByteArray): String? {
                 return data.joinToString(":") {
-                    String.format("%02x", it)
-                }.toUpperCase()
+                                String.format("%02x", it)
+                            }.uppercase(Locale.getDefault())
             }
         }
 
