@@ -4,6 +4,7 @@ import com.aconno.sensorics.domain.format.AdvertisementFormat
 import com.aconno.sensorics.domain.model.ScanResult
 import java.io.Closeable
 import java.lang.StringBuilder
+import java.util.*
 import kotlin.experimental.and
 
 inline fun <T : Closeable?, R> T.tryUse(block: (T) -> R, catch: (Throwable) -> R): R {
@@ -19,18 +20,18 @@ inline fun <T : Closeable?, R> T.tryUse(block: (T) -> R, catch: (Throwable) -> R
 
 fun String.toSnakeCase(): String {
     if(this.find { it.isLowerCase() } == null) {
-        return this.toLowerCase()
+        return this.lowercase(Locale.getDefault())
     }
 
     val stringBuilder = StringBuilder()
     this.forEachIndexed { index, char ->
         if(char.isUpperCase() && index > 0 && this[index-1]!='-') {
-            stringBuilder.append("_${char.toLowerCase()}")
+            stringBuilder.append("_${char.lowercaseChar()}")
         } else if(char == '-') {
             stringBuilder.append("_")
         }
         else if(!char.isWhitespace()) {
-            stringBuilder.append(char.toLowerCase())
+            stringBuilder.append(char.lowercaseChar())
         }
     }
     return stringBuilder.toString()
