@@ -180,14 +180,14 @@ class DfuActivity : DaggerAppCompatActivity() {
     }
 
     private fun selectFile(uri: Uri) {
-        dfuFileUri = uri
-
-        dfuFileUri?.scheme?.let {
-            if (it == URI_SCHEMA_FILE) {
-                txt_dfu_selectedFile.text = File(uri.path).name
-            } else if (it == URI_SCHEMA_CONTENT) {
-                getFileName(uri)?.let {
-                    txt_dfu_selectedFile.text = it
+        dfuFileUri = uri.also {
+            it.scheme?.let { scheme ->
+                if (scheme == URI_SCHEMA_FILE) {
+                    txt_dfu_selectedFile.text = File(uri.path ?: "").name
+                } else if (scheme == URI_SCHEMA_CONTENT) {
+                    getFileName(uri)?.let { fileName ->
+                        txt_dfu_selectedFile.text = fileName
+                    }
                 }
             }
         }
@@ -309,7 +309,7 @@ class DfuActivity : DaggerAppCompatActivity() {
 
         fun start(context: Context, deviceMacAddress: String) {
             with(Intent(context, DfuActivity::class.java)) {
-                putExtra(DfuBaseService.EXTRA_DEVICE_ADDRESS, deviceMacAddress)
+                putExtra(EXTRA_DEVICE_ADDRESS, deviceMacAddress)
                 context.startActivity(this)
             }
         }
