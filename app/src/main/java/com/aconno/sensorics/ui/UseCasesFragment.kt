@@ -49,11 +49,15 @@ class UseCasesFragment : DaggerFragment() {
                 settings.displayZoomControls = false
             }
 
-            mViewModel.url.observe(this, LiveDataObserver { loadUrl(it) })
-            mViewModel.urlError.observe(this, LiveDataObserver { showError() })
+            mViewModel.url.observe(viewLifecycleOwner, LiveDataObserver { loadUrl(it) })
+            mViewModel.urlError.observe(viewLifecycleOwner, LiveDataObserver { showError() })
 
-            mViewModel.mutableShowProgress.observe(this, LiveDataObserver { showProgressBar() })
-            mViewModel.mutableHideProgress.observe(this, LiveDataObserver { hideProgressBar() })
+            mViewModel.mutableShowProgress.observe(
+                viewLifecycleOwner,
+                LiveDataObserver { showProgressBar() })
+            mViewModel.mutableHideProgress.observe(
+                viewLifecycleOwner,
+                LiveDataObserver { hideProgressBar() })
 
             mViewModel.initViewModel(macAddress, name)
         }
