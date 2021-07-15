@@ -1,8 +1,8 @@
 package com.aconno.sensorics.dagger.application
 
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import androidx.room.Room
 import com.aconno.sensorics.AlarmServiceControllerImpl
 import com.aconno.sensorics.BuildConfig
