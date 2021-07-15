@@ -9,6 +9,8 @@ import timber.log.Timber
 class VibratorImpl(private val context: Context) : Vibrator {
     override fun vibrate(milliseconds: Long) {
         val v = context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+
+        // TODO: Keep first case only when min SDK gets bumped to 21
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Timber.i("Vibrator started")
             v?.vibrate(
