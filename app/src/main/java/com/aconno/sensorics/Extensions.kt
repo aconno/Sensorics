@@ -88,6 +88,10 @@ fun ByteArray.print(): String {
     return stringBuilder.toString()
 }
 
+fun String.capitalize(): String {
+    return this.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+}
+
 fun String.lowercaseCapitalize(): String {
-    return this.toLowerCase(Locale.getDefault()).capitalize(Locale.getDefault())
+    return this.lowercase().capitalize()
 }
