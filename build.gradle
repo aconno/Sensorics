@@ -114,4 +114,11 @@ ext {
     espresso_core_version = '3.2.0'
 
     mockito_inline_version = '3.3.0'
+
+    apache_commons_text_version = '1.8'
+    tempo_version = '0.2.0'
+    easypermissions_version = '3.0.0'
+    wifiutils_version = '1.6.5'
+    firebase_crashlytics_version = '17.2.2'
+    firebase_analytics_version = '17.5.0'
 }

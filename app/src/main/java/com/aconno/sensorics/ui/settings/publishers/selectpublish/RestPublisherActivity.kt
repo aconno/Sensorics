@@ -89,7 +89,6 @@ class RestPublisherActivity : BasePublisherActivity<RestPublishModel>() {
 
         spinner_methods.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onItemSelected(

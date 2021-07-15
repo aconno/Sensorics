@@ -1,0 +1,284 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="../html_resources/materialize_100_min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="../html_resources/materialize_100_min.js"></script>
+
+    <style type="text/css">
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .configButtonDiv {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .configButton {
+            display: block;
+            flex-grow: 1;
+        }
+
+        ul.dropdown-content.select-dropdown li span {
+            color: #000; /* no need for !important :) */
+        }
+
+        /* label focus color */
+        .input-field.col label {
+            color: white !important;
+        }
+
+        /* label focus color */
+        .input-field input:focus + label {
+            color: white !important;
+        }
+
+        /* label focus color */
+        .input-field input + label {
+            color: white !important;
+        }
+
+        /* label underline focus color */
+        .row .input-field input:focus {
+            border-bottom: 1px solid white !important;
+            box-shadow: 0 1px 0 0 white !important;
+            color: white !important;
+        }
+
+        /* label underline focus color */
+        .row .input-field input {
+            border-bottom: 1px solid white !important;
+            box-shadow: 0 1px 0 0 white !important;
+            color: white !important;
+        }
+
+        .input-field {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
+
+        [type="radio"]:checked + span:after,
+        [type="radio"].with-gap:checked + span:after {
+            background-color: #FFFFFF !important;
+        }
+
+        [type="radio"]:checked + span:after,
+        [type="radio"].with-gap:checked + span:before,
+        [type="radio"].with-gap:checked + span:after {
+            border: 2px solid #FFFFFF !important;
+        }
+
+        [type="radio"]:not(:checked) + span:before,
+        [type="radio"]:not(:checked) + span:after {
+            border: 2px solid #FFFFFF !important;
+        }
+
+        .switch label input[type="checkbox"]:checked + .lever {
+            background-color: #FFFFFF !important;
+        }
+
+        .switch label input[type="checkbox"]:checked + .lever::after {
+            background-color: #bdbdbd;
+        }
+
+        label {
+            font-size: 1.2rem !important;
+        }
+
+        .acnact-value-small {
+            margin-top: 20px !important;
+        }
+    </style>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+    <link rel="stylesheet" href="../html_resources/webCounterStyles.css">
+    <script src="../html_resources/counter.js" type="text/javascript"></script>
+</head>
+
+<body style="background-color:#63ac50">
+<div class="acnact-value-small">
+    <span style="display: block;" class="acnact-value-small white-text">People in Room: </span>
+    <div id="odometerPeopleInRoom" style="font-size: 50px" class="odometer">000</div>
+</div>
+<div class="acnact-value-small">
+    <span style="display: block;" class="acnact-value-small white-text">People Entered Total: </span>
+    <div id="odometerPeopleEntered" style="font-size: 30px" class="odometer">000</div>
+</div>
+<div class="acnact-value-small">
+    <span style="display: block;" class="acnact-value-small white-text">People Exited Total: </span>
+    <div id="odometerPeopleExited" style="font-size: 30px" class="odometer">000</div>
+</div>
+
+<div id="noForms" style="display: block">
+    <div class="row">
+        <span style="display: block;" class="acnact-value-small white-text">Not connected!</span>
+    </div>
+</div>
+
+<div id="writingForms" style="display: block">
+    <div class="row">
+        <span style="display: block;" id="writingText" class="acnact-value-small white-text"></span>
+    </div>
+
+</div>
+
+<div id="forms" style="display: none">
+    <div class="row">
+        <span style="display: block;" class="acnact-value-small white-text">Connected!</span>
+    </div>
+
+    <div class="row">
+        <span style="display: block;" class="acnact-value-small white-text">WiFi Configuration: </span>
+    </div>
+
+    <form name="wifi">
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="wifiSsid" type="text" class="validate" autocorrect="off" autocapitalize="off">
+                <label for="wifiSsid">WiFi SSID</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="wifiPassword" type="password" class="validate" autocorrect="off" autocapitalize="off">
+                <label for="wifiPassword">WiFi Password</label>
+            </div>
+        </div>
+
+        <div class="row configButtonDiv" style="width: 98vw">
+            <!--    <input type="button" id="btnRead" class="btn green s6 configButton" value="Read">-->
+            <input type="button" id="btnScanWifi" class="btn green s6 configButton" onclick="scanWifi()"
+                   value="Scan" style="width: 44vw">
+            <input type="button" id="btnWriteWifi" class="btn green s6 configButton" onclick="writeWifiConfig()"
+                   value="Write Wifi" style="width: 44vw">
+        </div>
+    </form>
+
+    <div class="row">
+        <span style="display: block;" class="acnact-value-small white-text">Mqtt Configuration: </span>
+    </div>
+
+    <form name="mqtt">
+        <div class="row">
+            <div class="input-field col s12">
+                <select name="mqttSchema" id="mqttSchema">
+                    <option value="1">MQTT over TCP (without certificate verification)</option>
+                    <option value="2">MQTT over TLS (without certificate verification).</option>
+<!--                    <option value="3">MQTT over TLS (with server certificate verification)</option>-->
+<!--                    <option value="4">MQTT over TLS (client provides certificate).</option>-->
+<!--                    <option value="5">MQTT over TLS (with server certificate verification and provided client-->
+<!--                        certificate).-->
+<!--                    </option>-->
+<!--                    <option value="6">MQTT over WebSocket (based on TCP).</option>-->
+<!--                    <option value="7">MQTT over WebSocket Secure (based on TLS, without certificate verification).-->
+<!--                    </option>-->
+<!--                    <option value="8">MQTT over WebSocket Secure (based on TLS, with server certificate verification).-->
+<!--                    </option>-->
+<!--                    <option value="9">MQTT over WebSocket Secure (based on TLS, provided client certificate)</option>-->
+<!--                    <option value="10">MQTT over WebSocket Secure (based on TLS, with server certificate verification-->
+<!--                        and-->
+<!--                    </option>-->
+                </select>
+                <label>MQTT Schema</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="mqttBroker" type="text" class="validate" autocorrect="off" autocapitalize="off">
+                <label for="mqttBroker">MQTT Broker</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="mqttUsername" type="text" class="validate" autocorrect="off" autocapitalize="off">
+                <label for="mqttUsername">MQTT Username</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="mqttPassword" type="password" class="validate" autocorrect="off" autocapitalize="off">
+                <label for="mqttPassword">MQTT Password</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="mqttClientId" type="text" class="validate" autocorrect="off" autocapitalize="off">
+                <label for="mqttClientId">MQTT Client Id</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="mqttPort" type="number" class="validate" value="1883" autocorrect="off" autocapitalize="off">
+                <label for="mqttPort">MQTT Port</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="mqttTopic" type="text" class="validate" autocorrect="off" autocapitalize="off">
+                <label for="mqttTopic">MQTT Topic</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12 white-text">
+                Auto reconnect
+                <div class="switch">
+                    <label class="white-text">
+                        Off
+                        <input type="checkbox" name="mqttAutoReconnect" id="mqttAutoReconnect" checked="checked">
+                        <span class="lever"></span>
+                        On
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col s12 white-text">
+                QOS:
+                <p>
+                    <label>
+                        <input name="mqttQos" type="radio" value="0"/>
+                        <span class="white-text">0 - At most once</span>
+                    </label>
+                </p>
+                <p>
+                    <label>
+                        <input name="mqttQos" type="radio" value="1" checked="checked"/>
+                        <span class="white-text">1 - At least once</span>
+                    </label>
+                </p>
+                <p>
+                    <label>
+                        <input name="mqttQos" type="radio" value="2"/>
+                        <span class="white-text">2 - Exactly once</span>
+                    </label>
+                </p>
+            </div>
+        </div>
+
+        <div class="row configButtonDiv" style="width: 98vw">
+            <!--    <input type="button" id="btnRead" class="btn green s6 configButton" value="Read">-->
+            <input type="button" id="btnWriteMqtt" class="btn green s6 configButton" onclick="writeMqttConfig()"
+                   value="Write MQTT">
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript" src="./lasePeopleCounter.js"></script>
+</body>
+
+</html>

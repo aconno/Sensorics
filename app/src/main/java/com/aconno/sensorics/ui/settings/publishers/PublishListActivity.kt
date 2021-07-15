@@ -49,7 +49,7 @@ class PublishListActivity : DaggerAppCompatActivity(),
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val cancelIcon = getDrawable(R.drawable.ic_action_notify_cancel)
-        cancelIcon?.setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY)
+        cancelIcon?.setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY) // TODO: Fix
         supportActionBar?.setHomeAsUpIndicator(cancelIcon)
 
         menuResource = R.menu.selected_shareable_items_menu

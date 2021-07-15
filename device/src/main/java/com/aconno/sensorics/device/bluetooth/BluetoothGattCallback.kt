@@ -3,6 +3,7 @@ package com.aconno.sensorics.device.bluetooth
 import android.bluetooth.*
 import android.bluetooth.BluetoothGattCallback
 import com.aconno.sensorics.domain.UUIDProvider
+import com.aconno.sensorics.domain.migrate.toHex
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
@@ -72,8 +73,10 @@ class BluetoothGattCallback(
         status: Int
     ) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
+            Timber.d("Written data on ${characteristic!!.uuid}: ${characteristic.value.toHex()}")
             broadcastUpdate(ACTION_GATT_CHAR_WRITE, gatt?.services)
         } else {
+            Timber.d("Writing failed on ${characteristic!!.uuid} with error: $status")
             broadcastUpdate(ACTION_GATT_CHAR_WRITE_FAIL, gatt?.services)
         }
     }
