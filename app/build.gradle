@@ -107,7 +107,7 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
     implementation "com.google.android.material:material:$material_version"
-    implementation "com.google.android:flexbox:$flexbox_version"
+    implementation "com.google.android.flexbox:flexbox:$flexbox_version"
     implementation "com.google.code.gson:gson:$gson_version"
 
     implementation "no.nordicsemi.android:dfu:$nordic_dfu_version"

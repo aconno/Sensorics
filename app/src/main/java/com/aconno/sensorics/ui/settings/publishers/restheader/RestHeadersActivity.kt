@@ -175,9 +175,8 @@ class RestHeadersActivity : AppCompatActivity(),
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id: Int? = item?.itemId
-        when (id) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.action_publish_done -> {
                 finishActivityWithResult()
                 return true

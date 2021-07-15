@@ -262,9 +262,9 @@ class DeviceMainFragment : DaggerFragment() {
         web_view.addJavascriptInterface(WebViewJavaScriptInterface(), "app")
         web_view.settings.javaScriptEnabled = true
 
-        if (webViewBundle != null) {
-            web_view.restoreState(webViewBundle)
-        } else {
+        webViewBundle?.let { bundle ->
+            web_view.restoreState(bundle)
+        } ?: kotlin.run {
             getResourceDisposable = mainResourceViewModel.getResourcePath(device.name)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -278,7 +278,6 @@ class DeviceMainFragment : DaggerFragment() {
                         text_error_message.text = throwable.message
                     })
         }
-
     }
 
     private fun onConnectionPayloadReceived(gattCallbackPayload: GattCallbackPayload) {
@@ -438,8 +437,9 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     override fun onDestroyView() {
-        webViewBundle = Bundle()
-        web_view.saveState(webViewBundle)
+        webViewBundle = Bundle().also {
+            web_view.saveState(it)
+        }
 
         super.onDestroyView()
         getResourceDisposable?.dispose()

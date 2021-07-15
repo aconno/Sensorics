@@ -114,7 +114,7 @@ fun Byte.toHex(prefix: String = ""): String = toInt().let {
     prefix + "${HEX_CHARS[(it and 0xF0).ushr(4)]}${HEX_CHARS[(it and 0x0F)]}"
 }
 
-infix fun <T> Array<T>.chunk(size: Int): Array<Array<T>> = Array(
+inline infix fun <reified T> Array<T>.chunk(size: Int): Array<Array<T>> = Array(
     ceil(this.size / size.toDouble()).toInt()
 ) {
     this.copyOfRange(it * size, (it + 1) * size)

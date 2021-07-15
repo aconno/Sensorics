@@ -68,8 +68,8 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.add_virtual_scanning_source_action -> addOrUpdate()
             R.id.test_virtual_scanning_source_action -> testSource()
             else -> return super.onOptionsItemSelected(item)

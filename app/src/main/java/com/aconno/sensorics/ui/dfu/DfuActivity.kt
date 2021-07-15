@@ -76,7 +76,7 @@ class DfuActivity : DaggerAppCompatActivity() {
     }
 
     private fun loadParams(savedInstanceState: Bundle?) {
-        deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS)
+        deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS) ?: ""
         dfuFileUri = savedInstanceState?.getParcelable(EXTRA_FILE_PATH)
         isUpdating = savedInstanceState?.getBoolean(EXTRA_UPDATE_STATUS) ?: false
 
@@ -176,6 +176,7 @@ class DfuActivity : DaggerAppCompatActivity() {
                 selectFile(uri)
             }
         }
+        super.onActivityResult(requestCode, resultCode, resultData)
     }
 
     private fun selectFile(uri: Uri) {

@@ -1,18 +1,18 @@
 buildscript {
 
-    ext.kotlin_version = '1.4.10'
+    ext.kotlin_version = '1.5.21'
 
     repositories {
         google()
-        jcenter()
-        maven { url "https://kotlin.bintray.com/kotlin-eap" }
+        mavenCentral()
+        jcenter() // TODO: Remove ASAP Wifi Lib moves to Maven
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.3.4'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
+        classpath 'com.google.gms:google-services:4.3.8'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -23,8 +23,8 @@ allprojects {
     repositories {
         maven { url 'https://jitpack.io' }
         google()
-        jcenter()
-        maven { url "https://kotlin.bintray.com/kotlin-eap" }
+        mavenCentral()
+        jcenter() // TODO: Remove ASAP Wifi Lib moves to Maven
     }
 }
 
@@ -51,37 +51,41 @@ task clean(type: Delete) {
 
 ext {
 
-    compile_sdk_version = 29
+    compile_sdk_version = 30
     min_sdk_version = 21
-    target_sdk_version = 29
+    target_sdk_version = 30
 
-    appcompat_version = '1.1.0'
-    localbroadcastmanager_version = '1.0.0'
-    constraintlayout_version = '1.1.3'
+    appcompat_version = '1.3.0'
+
+    constraintlayout_version = '2.0.4'
+
     lifecycle_extensions_version = '2.2.0'
-    androidx_room_version = '2.2.4'
-    cardview_version = '1.0.0'
-    recyclerview_version = '1.1.0'
-    preference_version = '1.1.0'
-    work_runtime_ktx_version = '2.3.2'
-    // TODO: Move to any stable version after 1.0.0 when it becomes available
-    material_version = '1.1.0-rc02'
-    flexbox_version = '1.0.0'
-    core_ktx_version = '1.3.1'
-    fragment_ktx_version = '1.2.5'
-    lifecycle_ktx_version = '2.2.0'
-    lifedata_ktx_version = '2.2.0'
-    viewmodel_ktx_version = '2.2.0'
-    truth_version = '1.0.1'
+    core_ktx_version = '1.6.0'
+    fragment_ktx_version = '1.3.5'
+    lifecycle_ktx_version = '2.3.1'
+    lifedata_ktx_version = '2.3.1'
+    viewmodel_ktx_version = '2.3.1'
 
-    dagger_version = '2.26'
-    assisted_inject_dagger_version = '0.5.2'
-    javax_annotation_version = '1.0'
-    javax_inject_version = '1'
+    androidx_room_version = '2.3.0'
+
+    cardview_version = '1.0.0'
+    recyclerview_version = '1.2.1'
+    preference_version = '1.1.1'
+    work_runtime_ktx_version = '2.5.0'
 
     rx_java_version = '2.2.18'
     rx_android_version = '2.1.1'
     rx_kotlin_version = '2.4.0'
+
+    localbroadcastmanager_version = '1.0.0'
+    material_version = '1.4.0'
+    flexbox_version = '3.0.0'
+    truth_version = '1.0.1'
+
+    dagger_version = '2.37'
+    assisted_inject_dagger_version = '0.5.2'
+    javax_annotation_version = '1.0'
+    javax_inject_version = '1'
 
     nordic_dfu_version = '1.10.1'
     mpandroidchart_version = 'v3.1.0'
@@ -110,8 +114,8 @@ ext {
     junit_version = '4.12'
 
     arch_core_testing_version = '2.1.0'
-    test_runner_version = '1.2.0'
-    espresso_core_version = '3.2.0'
+    test_runner_version = '1.4.0'
+    espresso_core_version = '3.4.0'
 
     mockito_inline_version = '3.3.0'
 
@@ -119,6 +123,6 @@ ext {
     tempo_version = '0.2.0'
     easypermissions_version = '3.0.0'
     wifiutils_version = '1.6.5'
-    firebase_crashlytics_version = '17.2.2'
-    firebase_analytics_version = '17.5.0'
+    firebase_crashlytics_version = '18.1.0'
+    firebase_analytics_version = '19.0.0'
 }

@@ -110,7 +110,7 @@ class CacheActivity : AppCompatActivity() {
         intent?.takeIf { it.hasExtra(DEVICE_MAC_ADDRESS) }?.let {
             macAddress = it.getStringExtra(
                 DEVICE_MAC_ADDRESS
-            )
+            ) ?: ""
         }
 
         savedInstanceState?.takeIf { it.containsKey(DEVICE_MAC_ADDRESS) }?.let {
