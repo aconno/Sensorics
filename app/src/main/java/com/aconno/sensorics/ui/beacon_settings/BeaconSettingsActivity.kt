@@ -6,11 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.*
 import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsFragmentListener
@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragmentListener {
 
-    private val handler: Handler = Handler()
+    private val handler: Handler = Handler(Looper.myLooper() ?: Looper.getMainLooper())
     private var progressDialog: CancelBtnSchedulerProgressDialog? = null
     private var passwordDialog: Dialog? = null
     private var indefiniteSnackBar: Snackbar? = null
@@ -36,6 +36,7 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
 
     @Inject
     lateinit var settingsTransporter: BeaconSettingsTransporterSharedViewModel
+
     @Inject
     lateinit var viewModel: BeaconSettingsViewModel
 
@@ -44,13 +45,12 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings_framework)
 
-        if(savedInstanceState == null) {
-            val fm = supportFragmentManager
-            if (fm != null) {
-                var fragment: Fragment? = fm.findFragmentById(R.id.content_container)
-                if (fragment == null) {
-                    fragment = BeaconSettingsFragment.newInstance()
-                    fm.beginTransaction().add(R.id.content_container, fragment).commit()
+        if (savedInstanceState == null) {
+            if (supportFragmentManager.findFragmentById(R.id.content_container) == null) {
+                BeaconSettingsFragment.newInstance().let { fragment ->
+                    supportFragmentManager.beginTransaction()
+                        .add(R.id.content_container, fragment)
+                        .commit()
                 }
             }
         }
@@ -117,18 +117,18 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
     }
 
     private fun subscribeOnData() {
-        viewModel.connectionResultEvent.observe(this, Observer {
+        viewModel.connectionResultEvent.observe(this, {
             it?.let { event ->
                 newEventReceived(event)
             }
         })
-        viewModel.beaconLiveData.observe(this, Observer {
+        viewModel.beaconLiveData.observe(this, {
             it?.let { beaconData ->
                 Timber.i("handle beacon data. slots count ${beaconData.slotCount}")
                 settingsTransporter.sendBeaconJsonToObservers(beaconData.beaconJson)
             }
         })
-        settingsTransporter.beaconUpdatedJsonLiveDataForActivity.observe(this, Observer {
+        settingsTransporter.beaconUpdatedJsonLiveDataForActivity.observe(this, {
             it?.let { beaconJson ->
                 viewModel.beaconJsonUpdated(beaconJson)
             }
