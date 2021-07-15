@@ -19,6 +19,7 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
 import java.io.IOException
@@ -51,6 +52,7 @@ class RestPublisher(
                 return arrayOf()
             }
 
+            @SuppressLint("TrustAllX509TrustManager")
             @Throws(CertificateException::class)
             override fun checkClientTrusted(
                 chain: Array<X509Certificate>,
@@ -58,6 +60,7 @@ class RestPublisher(
             ) {
             }
 
+            @SuppressLint("TrustAllX509TrustManager")
             @Throws(CertificateException::class)
             override fun checkServerTrusted(
                 chain: Array<X509Certificate>,
@@ -120,7 +123,7 @@ class RestPublisher(
     }
 
     @SuppressLint("CheckResult")
-    override fun test(testConnectionCallback: Publisher.TestConnectionCallback) {
+    override fun test(testConnectionCallback: TestConnectionCallback) {
         val reading = Reading(
             System.currentTimeMillis(),
             Device("TestDevice", "Name", "MA:CA:DD:RE:SS:11"),
@@ -197,15 +200,10 @@ class RestPublisher(
 
                 }
                 "POST" -> {
-                    val i = Random().nextInt(16)
-
                     val convert = readingToStringParser.convert(message, publish.dataString)
 
                     convert.forEach {
-                        val body = RequestBody.create(
-                            getMediaType(),
-                            it.toByteArray()
-                        )
+                        val body = it.toByteArray().toRequestBody(getMediaType())
 
                         val builder = Request.Builder()
                         addHeaders(builder, message[0])
@@ -232,10 +230,7 @@ class RestPublisher(
                     val convert = readingToStringParser.convert(message, publish.dataString)
 
                     convert.forEach {
-                        val body = RequestBody.create(
-                            getMediaType(),
-                            it
-                        )
+                        val body = it.toRequestBody(getMediaType())
 
                         val builder = Request.Builder()
                         addHeaders(builder, message[0])
