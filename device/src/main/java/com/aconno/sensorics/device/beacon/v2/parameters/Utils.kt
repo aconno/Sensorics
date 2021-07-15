@@ -18,21 +18,24 @@ fun decodeHexParameterEmbedString(string: String, parameters: Parameters): ByteA
 
     val matcher: Matcher = pattern.matcher(string)
     while (matcher.find()) {
-        var match: String = matcher.group(0)
+        matcher.group(0)?.let { match ->
+            if (match.startsWith("$")) {
+                match.substring(1).let { matchedParameter ->
 
-        if (match.startsWith("$")) {
-            match = match.substring(1)
+                    val toMatch = if (matchedParameter.startsWith("\"") && matchedParameter.endsWith("\"")) {
+                        matchedParameter.substring(1, matchedParameter.length - 1)
+                    } else {
+                        matchedParameter
+                    }
 
-            if (match.startsWith("\"") && match.endsWith("\"")) {
-                match = match.substring(1, match.length - 1)
+                    parameters.flatten().find { it.name == toMatch }?.let {
+                        data.add('$'.toByte())
+                        data.addAll(ValueConverters.UINT8.serialize(it.id.toShort()).toList())
+                    }
+                }
+            } else {
+                data.add(match.substring(2).hexPairToByteGuarded())
             }
-
-            parameters.flatten().find { it.name == match }?.let {
-                data.add('$'.toByte())
-                data.addAll(ValueConverters.UINT8.serialize(it.id.toShort()).toList())
-            }
-        } else {
-            data.add(match.substring(2).hexPairToByteGuarded())
         }
     }
 
