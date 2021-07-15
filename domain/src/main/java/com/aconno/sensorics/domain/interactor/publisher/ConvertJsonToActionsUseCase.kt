@@ -31,7 +31,7 @@ class ConvertJsonToActionsUseCase : ConvertJsonToObjectsUseCase<Action>() {
     override fun execute(parameter: String): Single<List<Action>> {
         try {
 
-            val list: JsonArray = JsonParser().parse(parameter).asJsonArray
+            val list: JsonArray = JsonParser.parseString(parameter).asJsonArray
 
             list.forEach {
                 it.asJsonObject.add("id", JsonPrimitive(0))
