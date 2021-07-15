@@ -13,7 +13,7 @@ class FormatMatcher(
 
     fun matches(rawData: ByteArray): Boolean {
         val advertisementMap = ByteOperations.isolateAdvertisementTypes(rawData)
-        val advertisementLength = advertisementMap.map { it.value }.sumBy { it.size }
+        val advertisementLength = advertisementMap.map { it.value }.sumOf { it.size }
 
         return supportedFormats.filter { format ->
             advertisementLength >= format.getRequiredFormat().size // Eliminate advertisements that are too short
@@ -24,7 +24,7 @@ class FormatMatcher(
 
     fun findFormat(rawData: ByteArray): AdvertisementFormat? {
         val advertisementMap = ByteOperations.isolateAdvertisementTypes(rawData)
-        val advertisementLength = advertisementMap.map { it.value }.sumBy { it.size }
+        val advertisementLength = advertisementMap.map { it.value }.sumOf { it.size }
 
         val matchedFormats = supportedFormats.filter { format ->
             advertisementLength >= format.getRequiredFormat().size // Eliminate advertisements that are too short
