@@ -74,7 +74,7 @@ jobs:
         echo "${{ secrets.ACONNO_RELEASE_KEYSTORE }}" > keystore.asc
         gpg -d --passphrase "${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSPHRASE }}" --batch keystore.asc > app/keystore
         ./gradlew -PRELEASE_FLAG=true -PACONNO_RELEASE_KEYSTORE_PATH="keystore" -PACONNO_RELEASE_KEYSTORE_PASSWORD="${{ secrets.ACONNO_RELEASE_KEYSTORE_PASSWORD }}" -PSENSORICS_RELEASE_KEY_ALIAS=${{ secrets.SENSORICS_RELEASE_KEY_ALIAS }} -PSENSORICS_RELEASE_KEY_PASSWORD="${{ secrets.SENSORICS_RELEASE_KEY_PASSWORD }}" assembleRelease
-        echo ::set-env name=ASSET_NAME::$(ls ./app/build/outputs/apk/release/ | grep '.apk')
+        echo "ASSET_NAME=$(ls ./app/build/outputs/apk/release/ | grep '.apk')" >> $GITHUB_ENV
 
     - name: Upload Release Asset
       id: upload-release-asset
