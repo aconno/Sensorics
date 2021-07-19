@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [5.6.0]
+- Add flexible gatt support for WebViews
+- Update screens
+
 ## [5.5.3]
 - Fix sensor reading JSON construction
 - Upgrade to Firebase Crashlytics
