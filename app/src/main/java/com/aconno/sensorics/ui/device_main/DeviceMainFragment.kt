@@ -2,6 +2,7 @@ package com.aconno.sensorics.ui.device_main
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothGattCharacteristic
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -26,6 +27,7 @@ import com.aconno.sensorics.domain.format.FormatMatcher
 import com.aconno.sensorics.domain.interactor.filter.FilterByMacUseCase
 import com.aconno.sensorics.domain.isSettingsSupportOn
 import com.aconno.sensorics.domain.migrate.ValueConverters
+import com.aconno.sensorics.domain.migrate.toHex
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
 import com.aconno.sensorics.domain.model.Reading
@@ -34,6 +36,7 @@ import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.beacon_settings.BeaconSettingsActivity
 import com.aconno.sensorics.ui.cache.CacheActivity
+import com.aconno.sensorics.ui.devicecon.ReadCommand
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.dfu.DfuActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
@@ -81,6 +84,8 @@ class DeviceMainFragment : DaggerFragment() {
     lateinit var mainResourceViewModel: MainResourceViewModel
 
     private lateinit var device: Device
+
+    private val readCommandQueue: Queue<ReadCommand> = ArrayDeque()
 
     private val writeCommandQueue: Queue<WriteCommand> = ArrayDeque()
 
@@ -316,6 +321,7 @@ class DeviceMainFragment : DaggerFragment() {
                     Snackbar.LENGTH_SHORT
                 ).show()
 
+                readCommandQueue.clear()
                 writeCommandQueue.clear()
 
                 getString(R.string.connected)
@@ -349,6 +355,7 @@ class DeviceMainFragment : DaggerFragment() {
                 setToggleActionText(R.string.connect)
                 isServicesDiscovered = false
                 bluetoothConnectService?.disconnect()
+                readCommandQueue.clear()
                 writeCommandQueue.clear()
                 getString(R.string.error)
             }
@@ -369,6 +376,13 @@ class DeviceMainFragment : DaggerFragment() {
                 Timber.d("Services discovered")
                 onBeaconHasCache()
 
+                ""
+            }
+            BluetoothGattCallback.ACTION_DATA_AVAILABLE -> {
+                Timber.d("Services discovered")
+                web_view.loadUrl("javascript:onCharRead('${readCommandQueue.peek()?.charUUID?.toString()}', '${(gattCallbackPayload.payload as? BluetoothGattCharacteristic)?.value?.toHex() ?: ""}')")
+                readCommandQueue.poll()
+                readCharacteristics(readCommandQueue.peek())
                 ""
             }
             else -> ""
@@ -602,6 +616,14 @@ class DeviceMainFragment : DaggerFragment() {
                 ValueConverters.ASCII_STRING.serialize(value, order = ByteOrder.BIG_ENDIAN)
             )
         }
+
+        @JavascriptInterface
+        fun readCharacteristic(
+            serviceUUID: String,
+            characteristicUUID: String
+        ) {
+            addReadCommand(UUID.fromString(serviceUUID), UUID.fromString(characteristicUUID))
+        }
     }
 
     private fun getParams() {
@@ -685,6 +707,12 @@ class DeviceMainFragment : DaggerFragment() {
         writeCharacteristics(writeCommandQueue.peek())
     }
 
+    private fun addReadCommand(serviceUUID: UUID, charUUID: UUID) {
+        val readCommand = ReadCommand(serviceUUID, charUUID)
+        readCommandQueue.add(readCommand)
+        readCharacteristics(readCommandQueue.peek())
+    }
+
 
     private fun writeCharacteristics(cmd: WriteCommand?) {
         cmd?.let { writeCommand ->
@@ -693,6 +721,16 @@ class DeviceMainFragment : DaggerFragment() {
                 writeCommand.charUUID,
                 writeCommand.type,
                 writeCommand.value
+            )
+        }
+    }
+
+
+    private fun readCharacteristics(cmd: ReadCommand?) {
+        cmd?.let { readCommand ->
+            bluetoothConnectService?.readCharacteristic(
+                readCommand.serviceUUID,
+                readCommand.charUUID
             )
         }
     }

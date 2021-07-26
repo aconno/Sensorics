@@ -50,6 +50,13 @@ class BluetoothConnectService : DaggerService() {
         return bluetooth.writeCharacteristic(serviceUUID, characteristicUUID, type, value)
     }
 
+    fun readCharacteristic(
+        serviceUUID: UUID,
+        characteristicUUID: UUID,
+    ): Boolean {
+        return bluetooth.readCharacteristic(serviceUUID, characteristicUUID)
+    }
+
     fun enableNotifications(characteristicUUID: UUID, serviceUUID: UUID, isEnabled: Boolean) {
         bluetooth.enableCharacteristicNotification(
             characteristicUUID = characteristicUUID,
