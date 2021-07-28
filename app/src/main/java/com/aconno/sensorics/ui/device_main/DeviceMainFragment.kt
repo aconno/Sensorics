@@ -36,6 +36,7 @@ import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.beacon_settings.BeaconSettingsActivity
 import com.aconno.sensorics.ui.cache.CacheActivity
+import com.aconno.sensorics.ui.devicecon.EnableNotificationsCommand
 import com.aconno.sensorics.ui.devicecon.ReadCommand
 import com.aconno.sensorics.ui.devicecon.WriteCommand
 import com.aconno.sensorics.ui.dfu.DfuActivity
@@ -88,6 +89,8 @@ class DeviceMainFragment : DaggerFragment() {
     private val readCommandQueue: Queue<ReadCommand> = ArrayDeque()
 
     private val writeCommandQueue: Queue<WriteCommand> = ArrayDeque()
+
+    private val enableNotificationsCommandQueue: Queue<EnableNotificationsCommand> = ArrayDeque()
 
     private var sensorReadingFlowDisposable: Disposable? = null
 
@@ -323,6 +326,7 @@ class DeviceMainFragment : DaggerFragment() {
 
                 readCommandQueue.clear()
                 writeCommandQueue.clear()
+                enableNotificationsCommandQueue.clear()
 
                 getString(R.string.connected)
             }
@@ -357,6 +361,7 @@ class DeviceMainFragment : DaggerFragment() {
                 bluetoothConnectService?.disconnect()
                 readCommandQueue.clear()
                 writeCommandQueue.clear()
+                enableNotificationsCommandQueue.clear()
                 getString(R.string.error)
             }
             BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
@@ -383,6 +388,13 @@ class DeviceMainFragment : DaggerFragment() {
                 web_view.loadUrl("javascript:onCharRead('${readCommandQueue.peek()?.charUUID?.toString()}', '${(gattCallbackPayload.payload as? BluetoothGattCharacteristic)?.value?.toHex() ?: ""}')")
                 readCommandQueue.poll()
                 readCharacteristics(readCommandQueue.peek())
+                ""
+            }
+            BluetoothGattCallback.ACTION_GATT_DESCRIPTOR_WRITE -> {
+                setToggleActionText(R.string.disconnect)
+                web_view.loadUrl("javascript:onDescriptorWritten('${enableNotificationsCommandQueue.peek()?.charUUID?.toString()}')")
+                enableNotificationsCommandQueue.poll()
+                enableNotifications(enableNotificationsCommandQueue.peek())
                 ""
             }
             else -> ""
@@ -624,6 +636,19 @@ class DeviceMainFragment : DaggerFragment() {
         ) {
             addReadCommand(UUID.fromString(serviceUUID), UUID.fromString(characteristicUUID))
         }
+
+        @JavascriptInterface
+        fun enableNotifications(
+            serviceUUID: String,
+            characteristicUUID: String,
+            isEnabled: Boolean
+        ) {
+            addEnableNotificationsCommand(
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                isEnabled
+            )
+        }
     }
 
     private fun getParams() {
@@ -713,6 +738,17 @@ class DeviceMainFragment : DaggerFragment() {
         readCharacteristics(readCommandQueue.peek())
     }
 
+    private fun addEnableNotificationsCommand(
+        serviceUUID: UUID,
+        charUUID: UUID,
+        isEnabled: Boolean
+    ) {
+        val enableNotificationsCommand =
+            EnableNotificationsCommand(serviceUUID, charUUID, isEnabled)
+        enableNotificationsCommandQueue.add(enableNotificationsCommand)
+        enableNotifications(enableNotificationsCommandQueue.peek())
+    }
+
 
     private fun writeCharacteristics(cmd: WriteCommand?) {
         cmd?.let { writeCommand ->
@@ -731,6 +767,17 @@ class DeviceMainFragment : DaggerFragment() {
             bluetoothConnectService?.readCharacteristic(
                 readCommand.serviceUUID,
                 readCommand.charUUID
+            )
+        }
+    }
+
+
+    private fun enableNotifications(cmd: EnableNotificationsCommand?) {
+        cmd?.let { enableNotificationsCommand ->
+            bluetoothConnectService?.enableNotifications(
+                enableNotificationsCommand.serviceUUID,
+                enableNotificationsCommand.charUUID,
+                enableNotificationsCommand.isEnabled
             )
         }
     }
