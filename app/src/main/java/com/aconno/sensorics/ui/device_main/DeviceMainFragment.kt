@@ -3,10 +3,7 @@ package com.aconno.sensorics.ui.device_main
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGattCharacteristic
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
@@ -83,6 +80,9 @@ class DeviceMainFragment : DaggerFragment() {
 
     @Inject
     lateinit var mainResourceViewModel: MainResourceViewModel
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var device: Device
 
@@ -648,6 +648,28 @@ class DeviceMainFragment : DaggerFragment() {
                 UUID.fromString(characteristicUUID),
                 isEnabled
             )
+        }
+
+        @JavascriptInterface
+        fun storeData(
+            key: String,
+            jsonData: String
+        ) {
+            sharedPreferences.edit()
+                .putString("${this@DeviceMainFragment.device.macAddress}-$key", jsonData)
+                .apply()
+        }
+
+        @JavascriptInterface
+        fun readData(
+            key: String
+        ) {
+            sharedPreferences.getString("${this@DeviceMainFragment.device.macAddress}-$key", null)
+                ?.let { data ->
+                    web_view.loadUrl("javascript:onDataLoaded('$key', '$data')")
+                } ?: kotlin.run {
+                web_view.loadUrl("javascript:onDataLoaded('$key', null)")
+            }
         }
     }
 
