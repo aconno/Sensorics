@@ -1,0 +1,56 @@
+{
+  "id": "2100",
+  "name": "smartE",
+  "icon": "ic_act",
+  "format": [o
+    {
+      "data_type": "UINT32",
+      "end_index_exclusive": 9,
+      "formula": "",
+      "name": "Energy",
+      "reversed": true,
+      "start_index_inclusive": 5
+    },
+    {
+      "data_type": "UINT32",
+      "end_index_exclusive": 13,
+      "formula": "",
+      "name": "Power",
+      "reversed": true,
+      "start_index_inclusive": 9
+    }
+  ],
+  "format_required": [
+    {
+      "index": 0,
+      "name": "Nordic ID 1",
+      "value": "0x59"
+    },
+    {
+      "index": 1,
+      "name": "Nordic ID 2",
+      "value": "0x00"
+    },
+    {
+      "index": 2,
+      "name": "Aconno ID 1",
+      "value": "0x69"
+    },
+    {
+      "index": 3,
+      "name": "Product ID 2",
+      "value": "0x21"
+    },
+    {
+      "index": 4,
+      "name": "Version Number",
+      "value": "0x01"
+    }
+  ],
+  "settings_support": {
+    "mask": "0x80",
+    "index": 4
+  },
+  "connectable": true
+}
+
