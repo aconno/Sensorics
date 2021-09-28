@@ -588,16 +588,44 @@ class DeviceMainFragment : DaggerFragment() {
         }
 
         @JavascriptInterface
-        fun writeCharacteristicRawUnsignedInt16(
-            serviceUUID: String,
-            characteristicUUID: String,
-            value: Int
+        fun writeCharacteristicRawFloat(
+                serviceUUID: String,
+                characteristicUUID: String,
+                value: Float
         ) {
             addWriteCommand(
-                UUID.fromString(serviceUUID),
-                UUID.fromString(characteristicUUID),
-                "BYTE",
-                ValueConverters.UINT16.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
+                    UUID.fromString(serviceUUID),
+                    UUID.fromString(characteristicUUID),
+                    "BYTE",
+                    ValueConverters.FLOAT.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
+            )
+        }
+
+        @JavascriptInterface
+        fun writeCharacteristicRawUnsignedInt32(
+                serviceUUID: String,
+                characteristicUUID: String,
+                value: Long
+        ) {
+            addWriteCommand(
+                    UUID.fromString(serviceUUID),
+                    UUID.fromString(characteristicUUID),
+                    "BYTE",
+                    ValueConverters.UINT32.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
+            )
+        }
+
+        @JavascriptInterface
+        fun writeCharacteristicRawUnsignedInt16(
+                serviceUUID: String,
+                characteristicUUID: String,
+                value: Int
+        ) {
+            addWriteCommand(
+                    UUID.fromString(serviceUUID),
+                    UUID.fromString(characteristicUUID),
+                    "BYTE",
+                    ValueConverters.UINT16.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
             )
         }
 

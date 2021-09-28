@@ -1,0 +1,66 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
+
+    <style type="text/css">
+    body {
+      font-family: 'Rubik', sans-serif;
+    }
+
+    </style>
+
+    <script src="../html_resources/materialize_min.js"></script>
+    <script src="./acnAMBIENT.js"></script>
+
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+</head>
+
+<body style="background-color:#fafafa">
+<div class="row">
+    <div class="col s6 push-s6">
+        <div class="card" onclick="app.openLiveGraph('Humidity');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_humidity.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Humidity</p>
+                    <p id="humidity_value" class="value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s6 pull-s6">
+        <div class="card" onclick="app.openLiveGraph('Temperature');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_temperature.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Temperature</p>
+                    <p id="temperature_value" class="value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col s12">
+        <div class="card" onclick="app.openLiveGraph('Illumination');">
+            <div class="container">
+                <div class="card-image">
+                    <img class="imageSize center" src="../icons/ic_light.png"/>
+                </div>
+                <div class="card-content aligntext">
+                    <p class="label">Illumination</p>
+                    <p id="illumination_value" class="value">No data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

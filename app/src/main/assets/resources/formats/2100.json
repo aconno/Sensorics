@@ -2,7 +2,7 @@
   "id": "2100",
   "name": "smartE",
   "icon": "ic_act",
-  "format": [o
+  "format": [
     {
       "data_type": "UINT32",
       "end_index_exclusive": 9,
