@@ -1,6 +1,7 @@
 package com.aconno.sensorics.ui.device_main
 
 import android.annotation.SuppressLint
+import android.app.Fragment
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGattCharacteristic
 import android.content.*
@@ -57,7 +58,11 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import android.content.Intent
+import com.google.gson.JsonParser
+import com.google.gson.JsonSyntaxException
+import com.google.zxing.integration.android.IntentIntegrator
 import java.lang.Exception
+import com.google.zxing.integration.android.IntentResult
 
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -120,23 +125,23 @@ class DeviceMainFragment : DaggerFragment() {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             bluetoothConnectService =
-                    (service as? BluetoothConnectService.LocalBinder)
-                            ?.getService()
-                            ?.also { bluetoothService ->
-                                Timber.d("Connected")
+                (service as? BluetoothConnectService.LocalBinder)
+                    ?.getService()
+                    ?.also { bluetoothService ->
+                        Timber.d("Connected")
 
-                                activity?.takeIf { isAdded }?.let { fragmentActivity ->
-                                    bluetoothService.getConnectResultsLiveData()
-                                            .observe(fragmentActivity, {
-                                                onConnectionPayloadReceived(it)
-                                            })
+                        activity?.takeIf { isAdded }?.let { fragmentActivity ->
+                            bluetoothService.getConnectResultsLiveData()
+                                .observe(fragmentActivity, {
+                                    onConnectionPayloadReceived(it)
+                                })
 
-                                    bluetoothService.startConnectionStream()
+                            bluetoothService.startConnectionStream()
 
-                                    bluetoothService.connect(device.macAddress)
-                                }
+                            bluetoothService.connect(device.macAddress)
+                        }
 
-                            }
+                    }
         }
     }
 
@@ -148,9 +153,9 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_device_main, container, false)
     }
@@ -163,9 +168,9 @@ class DeviceMainFragment : DaggerFragment() {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
         if (!mainActivity.isScanning() &&
-                !device.connectable &&
-                bluetoothAdapter != null &&
-                bluetoothAdapter.isEnabled
+            !device.connectable &&
+            bluetoothAdapter != null &&
+            bluetoothAdapter.isEnabled
         ) {
             showStartScanAlertDialog(mainActivity)
         }
@@ -192,12 +197,12 @@ class DeviceMainFragment : DaggerFragment() {
     private fun setMenuItemsVisibility(menu: Menu?) {
         menu?.let {
             it.findItem(R.id.action_start_usecases_activity).isVisible =
-                    BuildConfig.DEBUG
+                BuildConfig.DEBUG
             it.findItem(R.id.action_toggle_connect).isVisible = device.connectable
             it.findItem(R.id.action_start_logging_activity).isVisible = hasSettings
             it.findItem(R.id.action_dfu).isVisible = hasSettings
             it.findItem(R.id.action_settings_framework).isVisible =
-                    if (BuildConfig.DEBUG) hasSettings else false
+                if (BuildConfig.DEBUG) hasSettings else false
             it.findItem(R.id.action_cache).isVisible = hasCache
         }
     }
@@ -229,9 +234,9 @@ class DeviceMainFragment : DaggerFragment() {
                 R.id.action_start_logging_activity -> {
                     this.view?.let {
                         Snackbar.make(
-                                it,
-                                "Functionality coming soon.",
-                                Snackbar.LENGTH_SHORT
+                            it,
+                            "Functionality coming soon.",
+                            Snackbar.LENGTH_SHORT
                         ).show()
                     }
                     //TODO: Implement Logger functionality
@@ -279,17 +284,17 @@ class DeviceMainFragment : DaggerFragment() {
             web_view.restoreState(bundle)
         } ?: kotlin.run {
             getResourceDisposable = mainResourceViewModel.getResourcePath(device.name)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            { resourcePath ->
-                                text_error_message.visibility = View.INVISIBLE
-                                web_view.loadUrl(resourcePath)
-                            },
-                            { throwable ->
-                                text_error_message.visibility = View.VISIBLE
-                                text_error_message.text = throwable.message
-                            })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { resourcePath ->
+                        text_error_message.visibility = View.INVISIBLE
+                        web_view.loadUrl(resourcePath)
+                    },
+                    { throwable ->
+                        text_error_message.visibility = View.VISIBLE
+                        text_error_message.text = throwable.message
+                    })
         }
     }
 
@@ -301,9 +306,9 @@ class DeviceMainFragment : DaggerFragment() {
 
                 context?.let {
                     Toast.makeText(
-                            it,
-                            getString(R.string.device_not_found).lowercaseCapitalize(),
-                            Toast.LENGTH_LONG
+                        it,
+                        getString(R.string.device_not_found).lowercaseCapitalize(),
+                        Toast.LENGTH_LONG
                     )
                 }?.show()
 
@@ -313,9 +318,9 @@ class DeviceMainFragment : DaggerFragment() {
                 setToggleActionText(R.string.disconnect)
 
                 Snackbar.make(
-                        container_fragment,
-                        getString(R.string.connecting).lowercaseCapitalize(),
-                        Snackbar.LENGTH_SHORT
+                    container_fragment,
+                    getString(R.string.connecting).lowercaseCapitalize(),
+                    Snackbar.LENGTH_SHORT
                 ).show()
 
                 getString(R.string.connecting)
@@ -324,9 +329,9 @@ class DeviceMainFragment : DaggerFragment() {
                 setToggleActionText(R.string.disconnect)
 
                 Snackbar.make(
-                        container_fragment,
-                        getString(R.string.connected).lowercaseCapitalize(),
-                        Snackbar.LENGTH_SHORT
+                    container_fragment,
+                    getString(R.string.connected).lowercaseCapitalize(),
+                    Snackbar.LENGTH_SHORT
                 ).show()
 
                 readCommandQueue.clear()
@@ -340,9 +345,9 @@ class DeviceMainFragment : DaggerFragment() {
                 isServicesDiscovered = true
 
                 Snackbar.make(
-                        container_fragment,
-                        getString(R.string.services_discovered).lowercaseCapitalize(),
-                        Snackbar.LENGTH_SHORT
+                    container_fragment,
+                    getString(R.string.services_discovered).lowercaseCapitalize(),
+                    Snackbar.LENGTH_SHORT
                 ).show()
 
                 getString(R.string.discovered)
@@ -353,9 +358,9 @@ class DeviceMainFragment : DaggerFragment() {
                 bluetoothConnectService?.close()
 
                 Snackbar.make(
-                        container_fragment,
-                        getString(R.string.disconnected).lowercaseCapitalize(),
-                        Snackbar.LENGTH_SHORT
+                    container_fragment,
+                    getString(R.string.disconnected).lowercaseCapitalize(),
+                    Snackbar.LENGTH_SHORT
                 ).show()
 
                 getString(R.string.disconnected)
@@ -435,12 +440,12 @@ class DeviceMainFragment : DaggerFragment() {
      */
     private fun subscribeOnSensorReadings() {
         sensorReadingFlowDisposable = sensorReadingFlow
-                .concatMap { filterByMacUseCase.execute(it, device.macAddress).toFlowable() }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { readings ->
-                    val sensorReadingJson = generateJsonString(readings)
-                    web_view?.loadUrl("javascript:onSensorReadings('$sensorReadingJson')")
-                }
+            .concatMap { filterByMacUseCase.execute(it, device.macAddress).toFlowable() }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { readings ->
+                val sensorReadingJson = generateJsonString(readings)
+                web_view?.loadUrl("javascript:onSensorReadings('$sensorReadingJson')")
+            }
     }
 
     private fun generateJsonString(readings: List<Reading>): String {
@@ -488,19 +493,51 @@ class DeviceMainFragment : DaggerFragment() {
 
     private fun checkHasSettingsSupport() {
         deviceScanResultFlowDisposable =
-                deviceScanResultFlow.filter { it.macAddress == device.macAddress }
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe {
-                            formatMatcher.findFormat(it.rawData)?.let { format ->
-                                hasSettings = it.isSettingsSupportOn(format)
-                                activity?.invalidateOptionsMenu()
+            deviceScanResultFlow.filter { it.macAddress == device.macAddress }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    formatMatcher.findFormat(it.rawData)?.let { format ->
+                        hasSettings = it.isSettingsSupportOn(format)
+                        activity?.invalidateOptionsMenu()
 
-                                deviceScanResultFlowDisposable.dispose()
-                            }
-                        }
+                        deviceScanResultFlowDisposable.dispose()
+                    }
+                }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            if (result.contents == null) {
+                this.showToast("Cancelled")
+            } else {
+                try {
+                    val jsonData = JsonParser.parseString(result.contents)
+                    jsonData.asJsonObject.addProperty(
+                        "macAddress",
+                        device.macAddress.replace(":", "")
+                    )
+                    web_view?.loadUrl("javascript:onQrCodeRead('$jsonData')")
+                } catch (e: JsonSyntaxException) {
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
     }
 
     inner class WebViewJavaScriptInterface {
+
+        @JavascriptInterface
+        fun scanQrCode() {
+            IntentIntegrator.forSupportFragment(this@DeviceMainFragment).apply {
+                setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+                setPrompt("Scan a QR Code")
+                setBeepEnabled(true)
+                setOrientationLocked(true)
+                setBarcodeImageEnabled(true)
+            }.initiateScan()
+        }
 
         @JavascriptInterface
         fun scanForWifi() {
@@ -512,9 +549,9 @@ class DeviceMainFragment : DaggerFragment() {
                             startActivityForResult(panelIntent, 0)
 
                             Toast.makeText(
-                                    requireContext(),
-                                    R.string.could_not_enable_wifi,
-                                    Toast.LENGTH_LONG
+                                requireContext(),
+                                R.string.could_not_enable_wifi,
+                                Toast.LENGTH_LONG
                             ).show()
 
                             return@enableWifi
@@ -528,9 +565,9 @@ class DeviceMainFragment : DaggerFragment() {
                     }
 
                     val snackbar = Snackbar.make(
-                            container_fragment,
-                            "Scanning...",
-                            Snackbar.LENGTH_INDEFINITE
+                        container_fragment,
+                        "Scanning...",
+                        Snackbar.LENGTH_INDEFINITE
                     )
 
                     requireActivity().runOnUiThread {
@@ -545,10 +582,10 @@ class DeviceMainFragment : DaggerFragment() {
                         results.map { it.SSID }.toTypedArray().let { networks ->
 
                             AlertDialog.Builder(requireContext())
-                                    .setTitle(R.string.pick_wifi_ssid)
-                                    .setItems(networks) { _, which ->
-                                        web_view.loadUrl("javascript:wifiPicked('${networks[which]}')")
-                                    }.show()
+                                .setTitle(R.string.pick_wifi_ssid)
+                                .setItems(networks) { _, which ->
+                                    web_view.loadUrl("javascript:wifiPicked('${networks[which]}')")
+                                }.show()
                         }
                     }
                 }
@@ -582,125 +619,125 @@ class DeviceMainFragment : DaggerFragment() {
                 it.characteristicName == characteristicName
             }?.let {
                 writeCharacteristics(
-                        WriteCommand(
-                                UUID.fromString(it.serviceUUID),
-                                UUID.fromString(it.characteristicUUID),
-                                type,
-                                byteArrayOf(value)
-                        )
+                    WriteCommand(
+                        UUID.fromString(it.serviceUUID),
+                        UUID.fromString(it.characteristicUUID),
+                        type,
+                        byteArrayOf(value)
+                    )
                 )
             }
         }
 
         @JavascriptInterface
         fun writeCharacteristicRawFloat(
-                serviceUUID: String,
-                characteristicUUID: String,
-                value: Float
+            serviceUUID: String,
+            characteristicUUID: String,
+            value: Float
         ) {
             addWriteCommand(
-                    UUID.fromString(serviceUUID),
-                    UUID.fromString(characteristicUUID),
-                    "BYTE",
-                    ValueConverters.FLOAT.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                "BYTE",
+                ValueConverters.FLOAT.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
             )
         }
 
         @JavascriptInterface
         fun writeCharacteristicRawUnsignedInt32(
-                serviceUUID: String,
-                characteristicUUID: String,
-                value: Long
+            serviceUUID: String,
+            characteristicUUID: String,
+            value: Long
         ) {
             addWriteCommand(
-                    UUID.fromString(serviceUUID),
-                    UUID.fromString(characteristicUUID),
-                    "BYTE",
-                    ValueConverters.UINT32.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                "BYTE",
+                ValueConverters.UINT32.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
             )
         }
 
         @JavascriptInterface
         fun writeCharacteristicRawUnsignedInt16(
-                serviceUUID: String,
-                characteristicUUID: String,
-                value: Int
+            serviceUUID: String,
+            characteristicUUID: String,
+            value: Int
         ) {
             addWriteCommand(
-                    UUID.fromString(serviceUUID),
-                    UUID.fromString(characteristicUUID),
-                    "BYTE",
-                    ValueConverters.UINT16.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                "BYTE",
+                ValueConverters.UINT16.serialize(value, order = ByteOrder.LITTLE_ENDIAN)
             )
         }
 
         @JavascriptInterface
         fun writeCharacteristicRawUnsignedInt8(
-                serviceUUID: String,
-                characteristicUUID: String,
-                value: Short
+            serviceUUID: String,
+            characteristicUUID: String,
+            value: Short
         ) {
             addWriteCommand(
-                    UUID.fromString(serviceUUID),
-                    UUID.fromString(characteristicUUID),
-                    "BYTE",
-                    ValueConverters.UINT8.serialize(value, order = ByteOrder.BIG_ENDIAN)
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                "BYTE",
+                ValueConverters.UINT8.serialize(value, order = ByteOrder.BIG_ENDIAN)
             )
         }
 
         @JavascriptInterface
         fun writeCharacteristicRawString(
-                serviceUUID: String,
-                characteristicUUID: String,
-                value: String
+            serviceUUID: String,
+            characteristicUUID: String,
+            value: String
         ) {
             addWriteCommand(
-                    UUID.fromString(serviceUUID),
-                    UUID.fromString(characteristicUUID),
-                    "BYTE",
-                    ValueConverters.ASCII_STRING.serialize(value, order = ByteOrder.BIG_ENDIAN)
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                "BYTE",
+                ValueConverters.ASCII_STRING.serialize(value, order = ByteOrder.BIG_ENDIAN)
             )
         }
 
         @JavascriptInterface
         fun readCharacteristic(
-                serviceUUID: String,
-                characteristicUUID: String
+            serviceUUID: String,
+            characteristicUUID: String
         ) {
             addReadCommand(UUID.fromString(serviceUUID), UUID.fromString(characteristicUUID))
         }
 
         @JavascriptInterface
         fun enableNotifications(
-                serviceUUID: String,
-                characteristicUUID: String,
-                isEnabled: Boolean
+            serviceUUID: String,
+            characteristicUUID: String,
+            isEnabled: Boolean
         ) {
             addEnableNotificationsCommand(
-                    UUID.fromString(serviceUUID),
-                    UUID.fromString(characteristicUUID),
-                    isEnabled
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                isEnabled
             )
         }
 
         @JavascriptInterface
         fun storeData(
-                key: String,
-                jsonData: String
+            key: String,
+            jsonData: String
         ) {
             sharedPreferences.edit()
-                    .putString("${this@DeviceMainFragment.device.macAddress}-$key", jsonData)
-                    .apply()
+                .putString("${this@DeviceMainFragment.device.macAddress}-$key", jsonData)
+                .apply()
         }
 
         @JavascriptInterface
         fun readData(
-                key: String
+            key: String
         ) {
             sharedPreferences.getString("${this@DeviceMainFragment.device.macAddress}-$key", null)
-                    ?.let { data ->
-                        web_view.loadUrl("javascript:onDataLoaded('$key', '$data')")
-                    } ?: kotlin.run {
+                ?.let { data ->
+                    web_view.loadUrl("javascript:onDataLoaded('$key', '$data')")
+                } ?: kotlin.run {
                 web_view.loadUrl("javascript:onDataLoaded('$key', null)")
             }
         }
@@ -708,7 +745,7 @@ class DeviceMainFragment : DaggerFragment() {
 
     private fun getParams() {
         val device = Gson().fromJson(
-                requireArguments().getString(KEY_DEVICE), Device::class.java
+            requireArguments().getString(KEY_DEVICE), Device::class.java
         )
         Timber.d("device is $device")
 
@@ -718,16 +755,16 @@ class DeviceMainFragment : DaggerFragment() {
 
     private fun showStartScanAlertDialog(mainActivity: MainActivity) {
         AlertDialog.Builder(mainActivity)
-                .setTitle(resources.getString(R.string.start_scan_popup))
-                .setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
-                    mainActivity.startScanOperation()
-                    dialog.dismiss()
-                }
-                .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
+            .setTitle(resources.getString(R.string.start_scan_popup))
+            .setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
+                mainActivity.startScanOperation()
+                dialog.dismiss()
+            }
+            .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 
     //should be called when the buzzer in acnfreight is pressed
@@ -735,10 +772,10 @@ class DeviceMainFragment : DaggerFragment() {
         device.connectionWriteList?.get(0)?.let { writeConnection ->
             writeConnection.values[if (turnOn) 0 else 1].let { writeValue ->
                 addWriteCommand(
-                        UUID.fromString(writeConnection.serviceUUID),
-                        UUID.fromString(writeConnection.characteristicUUID),
-                        writeValue.type,
-                        byteArrayOf(writeValue.value.toHexByte())
+                    UUID.fromString(writeConnection.serviceUUID),
+                    UUID.fromString(writeConnection.characteristicUUID),
+                    writeValue.type,
+                    byteArrayOf(writeValue.value.toHexByte())
                 )
             }
         }
@@ -772,10 +809,10 @@ class DeviceMainFragment : DaggerFragment() {
                 val value: ByteArray = byteArrayOf(valueByte)
 
                 addWriteCommand(
-                        serviceUUID,
-                        charUUID,
-                        type,
-                        value
+                    serviceUUID,
+                    charUUID,
+                    type,
+                    value
                 )
             }
         }
@@ -794,12 +831,12 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     private fun addEnableNotificationsCommand(
-            serviceUUID: UUID,
-            charUUID: UUID,
-            isEnabled: Boolean
+        serviceUUID: UUID,
+        charUUID: UUID,
+        isEnabled: Boolean
     ) {
         val enableNotificationsCommand =
-                EnableNotificationsCommand(serviceUUID, charUUID, isEnabled)
+            EnableNotificationsCommand(serviceUUID, charUUID, isEnabled)
         enableNotificationsCommandQueue.add(enableNotificationsCommand)
         enableNotifications(enableNotificationsCommandQueue.peek())
     }
@@ -808,10 +845,10 @@ class DeviceMainFragment : DaggerFragment() {
     private fun writeCharacteristics(cmd: WriteCommand?) {
         cmd?.let { writeCommand ->
             bluetoothConnectService?.writeCharacteristic(
-                    writeCommand.serviceUUID,
-                    writeCommand.charUUID,
-                    writeCommand.type,
-                    writeCommand.value
+                writeCommand.serviceUUID,
+                writeCommand.charUUID,
+                writeCommand.type,
+                writeCommand.value
             )
         }
     }
@@ -820,8 +857,8 @@ class DeviceMainFragment : DaggerFragment() {
     private fun readCharacteristics(cmd: ReadCommand?) {
         cmd?.let { readCommand ->
             bluetoothConnectService?.readCharacteristic(
-                    readCommand.serviceUUID,
-                    readCommand.charUUID
+                readCommand.serviceUUID,
+                readCommand.charUUID
             )
         }
     }
@@ -830,9 +867,9 @@ class DeviceMainFragment : DaggerFragment() {
     private fun enableNotifications(cmd: EnableNotificationsCommand?) {
         cmd?.let { enableNotificationsCommand ->
             bluetoothConnectService?.enableNotifications(
-                    enableNotificationsCommand.serviceUUID,
-                    enableNotificationsCommand.charUUID,
-                    enableNotificationsCommand.isEnabled
+                enableNotificationsCommand.serviceUUID,
+                enableNotificationsCommand.charUUID,
+                enableNotificationsCommand.isEnabled
             )
         }
     }
@@ -845,7 +882,7 @@ class DeviceMainFragment : DaggerFragment() {
         private const val KEY_DEVICE = "KEY_DEVICE"
 
         fun newInstance(
-                device: Device
+            device: Device
         ): DeviceMainFragment {
             val deviceMainFragment = DeviceMainFragment()
             deviceMainFragment.arguments = Bundle().apply {

@@ -132,6 +132,17 @@
         <span style="display: block;" class="acnact-value-small white-text">Connected!</span>
     </div>
 
+
+    <form name="loadConfigFromQr">
+        <div class="row configButtonDiv" style="width: 98vw">
+            <input type="text" hidden value="holder"/>
+            <!--    <input type="button" id="btnRead" class="btn green s6 configButton" value="Read">-->
+            <input type="button" id="btnLoadConfigFromQr" class="btn green s6 configButton"
+                   onclick="loadConfigFromQrCode()"
+                   value="Load Config From QR">
+        </div>
+    </form>
+
     <div class="row">
         <span style="display: block;" class="acnact-value-small white-text">WiFi Configuration: </span>
     </div>
@@ -169,7 +180,7 @@
             <div class="input-field col s12">
                 <select name="mqttSchema" id="mqttSchema">
                     <option value="1">MQTT over TCP (without certificate verification)</option>
-                    <option value="2">MQTT over TLS (without certificate verification).</option>
+                    <option value="2">MQTT over TLS (without certificate verification)</option>
                     <!--                    <option value="3">MQTT over TLS (with server certificate verification)</option>-->
                     <!--                    <option value="4">MQTT over TLS (client provides certificate).</option>-->
                     <!--                    <option value="5">MQTT over TLS (with server certificate verification and provided client-->
@@ -251,19 +262,19 @@
                 QOS:
                 <p>
                     <label>
-                        <input name="mqttQos" type="radio" value="0"/>
+                        <input name="mqttQos" type="radio" id="mqttQos0" value="0"/>
                         <span class="white-text">0 - At most once</span>
                     </label>
                 </p>
                 <p>
                     <label>
-                        <input name="mqttQos" type="radio" value="1" checked="checked"/>
+                        <input name="mqttQos" type="radio" id="mqttQos1" value="1" checked="checked"/>
                         <span class="white-text">1 - At least once</span>
                     </label>
                 </p>
                 <p>
                     <label>
-                        <input name="mqttQos" type="radio" value="2"/>
+                        <input name="mqttQos" type="radio" id="mqttQos2" value="2"/>
                         <span class="white-text">2 - Exactly once</span>
                     </label>
                 </p>
@@ -309,7 +320,8 @@
         <div class="row configButtonDiv" style="width: 98vw">
             <input type="text" hidden value="holder"/>
             <!--    <input type="button" id="btnRead" class="btn green s6 configButton" value="Read">-->
-            <input type="button" id="btnResetPeopleCount" class="btn green s6 configButton" onclick="resetPeopleCountToZero()"
+            <input type="button" id="btnResetPeopleCount" class="btn green s6 configButton"
+                   onclick="resetPeopleCountToZero()"
                    value="Reset People Count">
         </div>
     </form>

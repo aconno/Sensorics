@@ -31,6 +31,24 @@ odPeopleEntered = createOdometer('#odometerPeopleEntered');
 odPeopleExited  = createOdometer('#odometerPeopleExited');
 odPeopleInRoom  = createOdometer('#odometerPeopleInRoom');
 
+function onQrCodeRead(json_values) {
+    let data                                                                    = JSON.parse(json_values);
+    document.getElementById("wifiSsid").value                                   = data["wifi"]["ssid"];
+    document.getElementById("wifiPassword").value                               = data["wifi"]["password"];
+    document.getElementById("mqttSchema").value                                 = data["mqtt"]["schema"];
+    var elems                                                                   = document.querySelectorAll('select');
+    var instances                                                               = M.FormSelect.init(elems);
+    document.getElementById("mqttBroker").value                                 = data["mqtt"]["broker"];
+    document.getElementById("mqttUsername").value                               = data["mqtt"]["username"];
+    document.getElementById("mqttPassword").value                               = data["mqtt"]["password"];
+    document.getElementById("mqttClientId").value                               = data["macAddress"];
+    document.getElementById("mqttAutoReconnect").checked                        = data["mqtt"]["autoReconnect"];
+    document.getElementById("mqttPort").value                                   = data["mqtt"]["port"];
+    document.getElementById("mqttTopic").value                                  = data["mqtt"]["topic"];
+    document.getElementById("mqttQos" + data["mqtt"]["qos"].toString()).checked = true;
+    M.updateTextFields();
+}
+
 function onSensorReadings(json_values) {
     console.log(json_values);
 
@@ -157,6 +175,10 @@ let peopleCountEnteredUuid       = "00110051-1111-1111-1111-111111111111";
 let peopleCountExitedUuid        = "00110052-1111-1111-1111-111111111111";
 let peopleCountInvertDirectionId = "00110053-1111-1111-1111-111111111111";
 let peopleCountDoorHeightId      = "00110054-1111-1111-1111-111111111111";
+
+function loadConfigFromQrCode() {
+    app.scanQrCode();
+}
 
 function writeSensorConfiguration() {
 //    let doorHeight      = document.getElementById("sensorConfigurationDoorHeight").value;
