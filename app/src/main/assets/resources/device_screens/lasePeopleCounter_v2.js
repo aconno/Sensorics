@@ -11,6 +11,11 @@ const PEOPLE_IN_ROOM_KEY = "PeopleInRoom";
 
 // "uuid": "00110021-1111-1111-1111-111111111111"
 
+let UINT32_MAX = 4294967295;
+
+let peopleEnteredFieldTouched = false;
+let peopleExitedFieldTouched  = false;
+
 function createOdometer(elementId) {
     return new Odometer({
         el: document.querySelector(elementId),
@@ -34,11 +39,15 @@ function onSensorReadings(json_values) {
         if (key === PEOPLE_ENTERED_KEY) {
             let entered = parseInt(value);
             odPeopleEntered.update(entered);
-            document.getElementById("peopleEntered").value = entered;
+            if (!peopleEnteredFieldTouched) {
+                document.getElementById("peopleEntered").value = entered;
+            }
         } else if (key === PEOPLE_EXITED_KEY) {
             let exited = parseInt(value);
             odPeopleExited.update(exited);
-            document.getElementById("peopleExited").value = exited;
+            if (!peopleExitedFieldTouched) {
+                document.getElementById("peopleExited").value = exited;
+            }
         } else if (key === PEOPLE_IN_ROOM_KEY) {
             odPeopleInRoom.update(parseInt(value));
         }
@@ -125,48 +134,46 @@ function makeItAnInt(it) {
         it.value = Math.floor(doorHeight);
     }
 
-    if (doorHeight < 0) {
-        it.value = Math.floor(220);
+    if (doorHeight < 0 || doorHeight > UINT32_MAX) {
+        it.value = Math.floor(0);
     }
 }
 
-let mqttServiceUuid       = "00110020-1111-1111-1111-111111111111";
-let mqttSchemaUuid        = "00110021-1111-1111-1111-111111111111";
-let mqttClientIdUuid      = "00110022-1111-1111-1111-111111111111";
-let mqttUsernameUuid      = "00110023-1111-1111-1111-111111111111";
-let mqttPasswordUuid      = "00110024-1111-1111-1111-111111111111";
-let mqttBrokerUuid        = "00110025-1111-1111-1111-111111111111";
-let mqttAutoReconnectUuid = "00110026-1111-1111-1111-111111111111";
-let mqttPortUuid          = "00110027-1111-1111-1111-111111111111";
-let mqttTopicUuid         = "00110028-1111-1111-1111-111111111111";
-let mqttQosUuid           = "00110029-1111-1111-1111-111111111111";
-
-let wifiServiceUuid  = "00110070-1111-1111-1111-111111111111";
-let wifiSsidUuid     = "00110071-1111-1111-1111-111111111111";
-let wifiPasswordUuid = "00110072-1111-1111-1111-111111111111";
-
-let peopleCountServiceUuid               = "00110050-1111-1111-1111-111111111111";
-let peopleCountEnteredUuid               = "00110051-1111-1111-1111-111111111111";
-let peopleCountExitedUuid                = "00110052-1111-1111-1111-111111111111";
-let sensorConfigurationInvertDirectionId = "00110053-1111-1111-1111-111111111111";
-let sensorConfigurationDoorHeightId      = "00110054-1111-1111-1111-111111111111";
+let mqttServiceUuid              = "00110020-1111-1111-1111-111111111111";
+let mqttSchemaUuid               = "00110021-1111-1111-1111-111111111111";
+let mqttClientIdUuid             = "00110022-1111-1111-1111-111111111111";
+let mqttUsernameUuid             = "00110023-1111-1111-1111-111111111111";
+let mqttPasswordUuid             = "00110024-1111-1111-1111-111111111111";
+let mqttBrokerUuid               = "00110025-1111-1111-1111-111111111111";
+let mqttAutoReconnectUuid        = "00110026-1111-1111-1111-111111111111";
+let mqttPortUuid                 = "00110027-1111-1111-1111-111111111111";
+let mqttTopicUuid                = "00110028-1111-1111-1111-111111111111";
+let mqttQosUuid                  = "00110029-1111-1111-1111-111111111111";
+let wifiServiceUuid              = "00110070-1111-1111-1111-111111111111";
+let wifiSsidUuid                 = "00110071-1111-1111-1111-111111111111";
+let wifiPasswordUuid             = "00110072-1111-1111-1111-111111111111";
+let peopleCountServiceUuid       = "00110050-1111-1111-1111-111111111111";
+let peopleCountEnteredUuid       = "00110051-1111-1111-1111-111111111111";
+let peopleCountExitedUuid        = "00110052-1111-1111-1111-111111111111";
+let peopleCountInvertDirectionId = "00110053-1111-1111-1111-111111111111";
+let peopleCountDoorHeightId      = "00110054-1111-1111-1111-111111111111";
 
 function writeSensorConfiguration() {
-    let doorHeight      = document.getElementById("sensorConfigurationDoorHeight").value;
+//    let doorHeight      = document.getElementById("sensorConfigurationDoorHeight").value;
     let invertDirection = document.getElementById("sensorConfigurationInvertDirection").checked;
 
 
-    if (doorHeight.length == 0) {
-        alert("Please fill out all necessary fields!");
-        return;
-    }
+//    if (doorHeight.length == 0) {
+//        alert("Please fill out all necessary fields!");
+//        return;
+//    }
 
-    doorHeight = Math.floor(parseFloat(doorHeight));
-    if (isNaN(doorHeight)) {
-        doorHeight = 220;
-    }
+//    doorHeight = Math.floor(parseFloat(doorHeight));
+//    if (isNaN(doorHeight)) {
+//        doorHeight = 220;
+//    }
 
-    console.log("doorHeight: " + doorHeight.toString());
+//    console.log("doorHeight: " + doorHeight.toString());
     console.log("invertDirection: " + invertDirection.toString());
 
     totalToWrite = 1; // Change to 2 after door height
@@ -174,8 +181,8 @@ function writeSensorConfiguration() {
     setWritingText(`${totalToWrite - leftToWrite}/${totalToWrite} written...`);
     setFormsVisible(false);
 
-    // app.writeCharacteristicRawUnsignedInt32(sensorConfigurationServiceId, sensorConfigurationDoorHeightId, doorHeight);
-    app.writeCharacteristicRawUnsignedInt8(sensorConfigurationServiceId, sensorConfigurationInvertDirectionId, invertDirection ? 1 : 0);
+    // app.writeCharacteristicRawUnsignedInt32(peopleCountServiceUuid, peopleCountDoorHeightId, doorHeight);
+    app.writeCharacteristicRawUnsignedInt8(peopleCountServiceUuid, peopleCountInvertDirectionId, invertDirection ? 1 : 0);
 }
 
 function writePeopleCount() {
@@ -210,7 +217,7 @@ function writePeopleCount() {
     app.writeCharacteristicRawUnsignedInt32(peopleCountServiceUuid, peopleCountExitedUuid, peopleExited);
 }
 
-function resetPeopleCount() {
+function resetPeopleCountToZero() {
     console.log("Resetting people count...")
     let peopleEntered = 0;
     let peopleExited  = 0;
@@ -221,8 +228,8 @@ function resetPeopleCount() {
 
     setFormsVisible(false);
 
-    app.writeCharacteristicRawUnsignedInt32(peopleCountServiceUuid, peopleCountEnteredUuid, peopleEntered);
     app.writeCharacteristicRawUnsignedInt32(peopleCountServiceUuid, peopleCountExitedUuid, peopleExited);
+    app.writeCharacteristicRawUnsignedInt32(peopleCountServiceUuid, peopleCountEnteredUuid, peopleEntered);
 }
 
 function writeWifiConfig() {

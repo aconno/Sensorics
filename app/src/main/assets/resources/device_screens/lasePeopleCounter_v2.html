@@ -170,20 +170,20 @@
                 <select name="mqttSchema" id="mqttSchema">
                     <option value="1">MQTT over TCP (without certificate verification)</option>
                     <option value="2">MQTT over TLS (without certificate verification).</option>
-<!--                    <option value="3">MQTT over TLS (with server certificate verification)</option>-->
-<!--                    <option value="4">MQTT over TLS (client provides certificate).</option>-->
-<!--                    <option value="5">MQTT over TLS (with server certificate verification and provided client-->
-<!--                        certificate).-->
-<!--                    </option>-->
-<!--                    <option value="6">MQTT over WebSocket (based on TCP).</option>-->
-<!--                    <option value="7">MQTT over WebSocket Secure (based on TLS, without certificate verification).-->
-<!--                    </option>-->
-<!--                    <option value="8">MQTT over WebSocket Secure (based on TLS, with server certificate verification).-->
-<!--                    </option>-->
-<!--                    <option value="9">MQTT over WebSocket Secure (based on TLS, provided client certificate)</option>-->
-<!--                    <option value="10">MQTT over WebSocket Secure (based on TLS, with server certificate verification-->
-<!--                        and-->
-<!--                    </option>-->
+                    <!--                    <option value="3">MQTT over TLS (with server certificate verification)</option>-->
+                    <!--                    <option value="4">MQTT over TLS (client provides certificate).</option>-->
+                    <!--                    <option value="5">MQTT over TLS (with server certificate verification and provided client-->
+                    <!--                        certificate).-->
+                    <!--                    </option>-->
+                    <!--                    <option value="6">MQTT over WebSocket (based on TCP).</option>-->
+                    <!--                    <option value="7">MQTT over WebSocket Secure (based on TLS, without certificate verification).-->
+                    <!--                    </option>-->
+                    <!--                    <option value="8">MQTT over WebSocket Secure (based on TLS, with server certificate verification).-->
+                    <!--                    </option>-->
+                    <!--                    <option value="9">MQTT over WebSocket Secure (based on TLS, provided client certificate)</option>-->
+                    <!--                    <option value="10">MQTT over WebSocket Secure (based on TLS, with server certificate verification-->
+                    <!--                        and-->
+                    <!--                    </option>-->
                 </select>
                 <label>MQTT Schema</label>
             </div>
@@ -219,7 +219,8 @@
 
         <div class="row">
             <div class="input-field col s12">
-                <input id="mqttPort" type="number" class="validate" value="1883" autocorrect="off" autocapitalize="off" required>
+                <input id="mqttPort" type="number" class="validate" value="1883" autocorrect="off" autocapitalize="off"
+                       required>
                 <label for="mqttPort">MQTT Port</label>
             </div>
         </div>
@@ -283,14 +284,16 @@
     <form name="setPeopleCount">
         <div class="row">
             <div class="input-field col s12">
-                <input id="peopleEntered" type="number" class="validate" value="0" onkeyup="makeItAnInt(this)" required>
+                <input id="peopleEntered" type="number" class="validate" value="0"
+                       onkeyup="makeItAnInt(this);peopleEnteredFieldTouched = true;" required>
                 <label for="peopleEntered">People Entered</label>
             </div>
         </div>
 
         <div class="row">
             <div class="input-field col s12">
-                <input id="peopleExited" type="number" class="validate" value="0" onkeyup="makeItAnInt(this)" required>
+                <input id="peopleExited" type="number" class="validate" value="0"
+                       onkeyup="makeItAnInt(this);peopleExitedFieldTouched = true;" required>
                 <label for="peopleExited">People Exited</label>
             </div>
         </div>
@@ -304,8 +307,9 @@
 
     <form name="resetPeopleCount">
         <div class="row configButtonDiv" style="width: 98vw">
+            <input type="text" hidden value="holder"/>
             <!--    <input type="button" id="btnRead" class="btn green s6 configButton" value="Read">-->
-            <input type="button" id="btnResetPeopleCount" class="btn green s6 configButton" onclick="resetPeopleCount()"
+            <input type="button" id="btnResetPeopleCount" class="btn green s6 configButton" onclick="resetPeopleCountToZero()"
                    value="Reset People Count">
         </div>
     </form>
@@ -315,12 +319,12 @@
     </div>
 
     <form name="setSensorConfiguration">
-        <div class="row">
-            <div class="input-field col s12">
-                <input id="sensorConfigurationDoorHeight" type="number" min="0" step="1" class="validate" value="220" onkeyup="makeItAnInt(this)" required><span style="margin-left: -45px" class="white-text">cm</span>
-                <label for="sensorConfigurationDoorHeight">Door Height</label>
-            </div>
-        </div>
+        <!--        <div class="row">-->
+        <!--            <div class="input-field col s12">-->
+        <!--                <input id="sensorConfigurationDoorHeight" type="number" min="0" step="1" class="validate" value="220" onkeyup="makeItAnInt(this)" required><span style="margin-left: -45px" class="white-text">cm</span>-->
+        <!--                <label for="sensorConfigurationDoorHeight">Door Height</label>-->
+        <!--            </div>-->
+        <!--        </div>-->
 
         <div class="row">
             <div class="input-field col s12 white-text">
@@ -328,7 +332,8 @@
                 <div class="switch">
                     <label class="white-text">
                         Off
-                        <input type="checkbox" name="sensorConfigurationInvertDirection" id="sensorConfigurationInvertDirection">
+                        <input type="checkbox" name="sensorConfigurationInvertDirection"
+                               id="sensorConfigurationInvertDirection">
                         <span class="lever"></span>
                         On
                     </label>
@@ -338,7 +343,8 @@
 
         <div class="row configButtonDiv" style="width: 98vw">
             <!--    <input type="button" id="btnRead" class="btn green s6 configButton" value="Read">-->
-            <input type="button" id="btnSetSensorConfiguration" class="btn green s6 configButton" onclick="writeSensorConfiguration()"
+            <input type="button" id="btnSetSensorConfiguration" class="btn green s6 configButton"
+                   onclick="writeSensorConfiguration()"
                    value="Write Sensor Configuration" style="width: 44vw">
         </div>
     </form>
