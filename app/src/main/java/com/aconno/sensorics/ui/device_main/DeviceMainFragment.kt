@@ -519,6 +519,14 @@ class DeviceMainFragment : DaggerFragment() {
                     )
                     web_view?.loadUrl("javascript:onQrCodeRead('$jsonData')")
                 } catch (e: JsonSyntaxException) {
+                    if(result.contents.startsWith("WIFI")) {
+                        result.contents.split(";").let {
+                            val ssid = it[0].split(":S:").last()
+                            val encryption = it[1].substring(2)
+                            val password = it[2].substring(2)
+                            web_view?.loadUrl("javascript:wifiPicked('$ssid', '$password')")
+                        }
+                    }
                 }
             }
         } else {

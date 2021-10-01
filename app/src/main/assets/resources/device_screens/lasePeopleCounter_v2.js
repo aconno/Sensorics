@@ -86,9 +86,12 @@ function onCharWritten(charUuid) {
     }
 }
 
-function wifiPicked(ssid) {
+function wifiPicked(ssid, password = "") {
     console.log(ssid)
     document.getElementById("wifiSsid").value = ssid;
+    if(password.length > 0) {
+        document.getElementById("wifiPassword").value = password;
+    }
     M.updateTextFields();
 }
 
