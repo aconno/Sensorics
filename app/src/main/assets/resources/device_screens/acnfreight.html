@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="style.css"/>
     <link href="../html_resources/Rubik.css" rel="stylesheet">
     <link rel="stylesheet" href="../html_resources/materialize_min_new.css">
 
@@ -10,6 +10,7 @@
         body {
             font-family: 'Rubik', sans-serif;
         }
+
     </style>
     <script src="../html_resources/materialize_min.js"></script>
     <link rel="stylesheet" href="../html_resources/newStyles.css">
@@ -17,25 +18,27 @@
 
 <body style="background-color:#fafafa; margin: 50px;" class="aligntext">
 
-    <div>
-        <p class="label">
-            <span>Status: </span>
-            <span id="status"></span>
-        </p>
-    </div>
+<div>
+    <p class="label">
+        <span>Status: </span>
+        <span id="status"></span>
+    </p>
+</div>
 
-    <div class="acnfreight-margin">
-        <img src="../icons/speaker_off.png" id="speaker" onclick="connect();" />
-    </div>
+<div class="acnfreight-margin">
+    <img src="../icons/speaker_off.png" id="speaker" onclick="connect();"/>
+</div>
 
-    <div class="acnfreight-margin">
-        <p><input type="color" id="primary_color" class="field-radio" onchange="changeColor(this.value);"></p>
-    </div>
+<div class="acnfreight-margin">
+    <p><input type="color" id="primary_color" class="field-radio"
+              onchange="changeColor(this.value);"></p>
+</div>
 
-    <div>
-        <input type="submit" class="acnfreight-btn" id="close" value="TURN LED ON" onclick="switchLED();">
-    </div>
-    <script>
+<div>
+    <input type="submit" class="acnfreight-btn" id="close" value="TURN LED ON"
+           onclick="switchLED();">
+</div>
+<script>
         const BLACK = '#000000';
         var isChecked = 0;
         var colorPicked = BLACK;
@@ -96,7 +99,8 @@
         }
 
 
-    </script>
+
+</script>
 
 </body>
 
