@@ -285,7 +285,7 @@ class DeviceMainFragment : DaggerFragment() {
                 .subscribe(
                     { resourcePath ->
                         text_error_message.visibility = View.INVISIBLE
-                        web_view.loadUrl("https://aconno.de/sensorics/device_screens/acnBASE.html")
+                        web_view.loadUrl(resourcePath)
                     },
                     { throwable ->
                         text_error_message.visibility = View.VISIBLE
