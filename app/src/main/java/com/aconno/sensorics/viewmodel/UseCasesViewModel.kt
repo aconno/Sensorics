@@ -47,7 +47,9 @@ class UseCasesViewModel(
     private fun success(localUrl: String?) {
         Timber.d(localUrl)
         mutableHideProgress.postValue(Unit)
-        mutableUrl.postValue(localUrl)
+        localUrl?.let {
+            mutableUrl.postValue(it)
+        }
     }
 
     private fun error(error: Throwable?) {

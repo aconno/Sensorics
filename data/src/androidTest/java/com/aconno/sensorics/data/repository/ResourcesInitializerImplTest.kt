@@ -71,8 +71,7 @@ class ResourcesInitializerImplTest {
         return Files.find(
             rootFolder.toPath(),
             Int.MAX_VALUE,
-            { _: Path, _: BasicFileAttributes -> true },
-            emptyArray()
+            { _: Path, _: BasicFileAttributes -> true }
         ).toList().map { it.toAbsolutePath().toString() }
     }
 }

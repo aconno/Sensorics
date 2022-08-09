@@ -21,12 +21,13 @@ class AddRestHeaderDialog : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (arguments != null
-            && arguments!!.containsKey(ADD_REST_HEADER_DIALOG_KEY)
-            && arguments!!.containsKey(ADD_REST_HEADER_DIALOG_POS_KEY)
-        ) {
-            restHeaderModel = arguments!!.getParcelable(ADD_REST_HEADER_DIALOG_KEY)
-            position = arguments!!.getInt(ADD_REST_HEADER_DIALOG_POS_KEY)
+        arguments?.let {
+            if (it.containsKey(ADD_REST_HEADER_DIALOG_KEY) &&
+                it.containsKey(ADD_REST_HEADER_DIALOG_POS_KEY)
+            ) {
+                restHeaderModel = it.getParcelable(ADD_REST_HEADER_DIALOG_KEY)
+                position = it.getInt(ADD_REST_HEADER_DIALOG_POS_KEY)
+            }
         }
     }
 

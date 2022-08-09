@@ -23,12 +23,13 @@ class AddRestHttpGetParamDialog : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (arguments != null
-            && arguments!!.containsKey(ADD_REST_HTTPGET_PARAMS_DIALOG_KEY)
-            && arguments!!.containsKey(ADD_REST_HTTPGET_PARAMS_DIALOG_POS_KEY)
-        ) {
-            restHttpGetParamModel = arguments!!.getParcelable(ADD_REST_HTTPGET_PARAMS_DIALOG_KEY)
-            position = arguments!!.getInt(ADD_REST_HTTPGET_PARAMS_DIALOG_POS_KEY)
+        requireArguments().let { arguments ->
+            if (arguments.containsKey(ADD_REST_HTTPGET_PARAMS_DIALOG_KEY)
+                && arguments.containsKey(ADD_REST_HTTPGET_PARAMS_DIALOG_POS_KEY)
+            ) {
+                restHttpGetParamModel = arguments.getParcelable(ADD_REST_HTTPGET_PARAMS_DIALOG_KEY)
+                position = arguments.getInt(ADD_REST_HTTPGET_PARAMS_DIALOG_POS_KEY)
+            }
         }
     }
 

@@ -33,7 +33,7 @@ class DashboardFragment : DaggerFragment() {
             settings.javaScriptEnabled = true
         }
 
-        mViewModel.url.observe(this, LiveDataObserver { loadUrl(it) })
+        mViewModel.url.observe(viewLifecycleOwner, LiveDataObserver { loadUrl(it) })
 
         mViewModel.initViewModel()
     }
