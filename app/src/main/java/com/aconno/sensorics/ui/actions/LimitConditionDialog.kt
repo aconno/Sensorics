@@ -44,20 +44,28 @@ class LimitConditionDialog(
     }
 
     private fun addContentButtonsOnClickListeners(contentView: View) {
-        contentView.view_less.setOnClickListener {
-            contentView.view_less.isChecked = !contentView.view_less.isChecked
-            contentView.view_equal.isChecked = false
-            contentView.view_more.isChecked = false
-        }
-        contentView.view_equal.setOnClickListener {
-            contentView.view_less.isChecked = false
-            contentView.view_equal.isChecked = !contentView.view_equal.isChecked
-            contentView.view_more.isChecked = false
-        }
-        contentView.view_more.setOnClickListener {
-            contentView.view_less.isChecked = false
-            contentView.view_equal.isChecked = false
-            contentView.view_more.isChecked = !contentView.view_more.isChecked
+        val views = listOf(
+            contentView.view_less,
+            contentView.view_equal,
+            contentView.view_more,
+            contentView.view_changed
+        )
+
+        views.forEach { view ->
+            view.setOnClickListener {
+                views.forEach {
+                    it.isChecked = if (view == it) {
+                        !view.isChecked
+                    } else {
+                        false
+                    }
+                    contentView.view_value.visibility = if (view == contentView.view_changed) {
+                        View.GONE
+                    } else {
+                        View.VISIBLE
+                    }
+                }
+            }
         }
     }
 
@@ -75,16 +83,25 @@ class LimitConditionDialog(
         rootView.view_less.isChecked -> LimitCondition.LimitOperator.LESS_THAN
         rootView.view_equal.isChecked -> LimitCondition.LimitOperator.EQUAL_TO
         rootView.view_more.isChecked -> LimitCondition.LimitOperator.MORE_THAN
+        rootView.view_changed.isChecked -> LimitCondition.LimitOperator.CHANGED
         else -> null
     }
 
     private fun getLimitParameter(rootView: View): Float? {
         val parameter = rootView.view_value.text.toString()
-        if (parameter.isBlank()) return null
-        return try {
-            parameter.toFloat()
-        } catch (e: NumberFormatException) {
-            null
+
+        return if (parameter.isBlank()) {
+            if (!rootView.view_changed.isChecked) {
+                null
+            } else {
+                0f
+            }
+        } else {
+            try {
+                parameter.toFloat()
+            } catch (e: NumberFormatException) {
+                null
+            }
         }
     }
 }

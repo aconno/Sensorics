@@ -220,7 +220,7 @@ class MqttVirtualScanningService : DaggerService() {
                 }
                 .flatMapIterable { it }
                 .concatMap {
-                    inputToOutcomesUseCase.execute(it)
+                    inputToOutcomesUseCase.execute(it, null)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .toFlowable()

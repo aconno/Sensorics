@@ -1,6 +1,7 @@
 package com.aconno.sensorics.dagger.actionoutcome
 
 import com.aconno.sensorics.domain.AlarmServiceController
+import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.actions.ActionsRepository
 import com.aconno.sensorics.domain.ifttt.NotificationDisplay
@@ -38,17 +39,21 @@ class ActionOutcomeModule {
             notificationDisplay: NotificationDisplay,
             textToSpeechPlayer: TextToSpeechPlayer,
             vibrator: Vibrator,
-            alarmServiceController: AlarmServiceController
+            alarmServiceController: AlarmServiceController,
+            smsSender: SmsSender
     ): RunOutcomeUseCase {
         val notificationOutcomeExecutor = NotificationOutcomeExecutor(notificationDisplay)
         val textToSpeechOutcomeExecutor = TextToSpeechOutcomeExecutor(textToSpeechPlayer)
         val vibrationOutcomeExecutor = VibrationOutcomeExecutor(vibrator)
         val alarmOutcomeExecutor = AlarmOutcomeExecutor(alarmServiceController)
+        val smsOutcomeExecutor = SmsOutcomeExecutor(smsSender)
+
         val outcomeExecutorSelector = OutcomeExecutorSelector(
                 notificationOutcomeExecutor,
                 textToSpeechOutcomeExecutor,
                 vibrationOutcomeExecutor,
-                alarmOutcomeExecutor
+                alarmOutcomeExecutor,
+                smsOutcomeExecutor
         )
 
         return RunOutcomeUseCase(outcomeExecutorSelector)

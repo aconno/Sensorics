@@ -1,0 +1,52 @@
+{
+  "id": "6400",
+  "name": "acnSchmersalEmergencySwitch",
+  "icon": "ic_schmersal",
+  "format": [
+    {
+      "name": "TIMESTAMP",
+      "data_type": "UINT32",
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 9,
+      "reversed": true
+    },
+    {
+      "name": "STATE",
+      "data_type": "BYTE",
+      "start_index_inclusive": 9,
+      "end_index_exclusive": 10,
+      "reversed": true
+    }
+  ],
+  "format_required": [
+    {
+      "index": 0,
+      "name": "Nordic ID 1",
+      "value": "0x59"
+    },
+    {
+      "index": 1,
+      "name": "Nordic ID 2",
+      "value": "0x00"
+    },
+    {
+      "index": 2,
+      "name": "Aconno ID",
+      "value": "0x45"
+    },
+    {
+      "index": 3,
+      "name": "Product ID",
+      "value": "0x64"
+    },
+    {
+      "index": 4,
+      "name": "Version Number",
+      "value": "0x00"
+    }
+  ],
+  "settings_support": {
+    "index": 4,
+    "mask": "0x80"
+  }
+}

@@ -119,7 +119,8 @@ class BluetoothGattCallback(
         if (status == BluetoothGatt.GATT_SUCCESS) {
             broadcastUpdate(ACTION_GATT_MTU_CHANGED, mtu)
         } else {
-            Timber.e("Couldn't change MTU!")
+            broadcastUpdate(ACTION_GATT_MTU_CHANGED, mtu)
+            Timber.e("Couldn't change MTU to wanted mtu! Set to ${mtu}")
         }
     }
 

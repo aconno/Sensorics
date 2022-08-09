@@ -37,6 +37,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dialog_padding_conditions"
                 android:text="@string/condition_more" />
+
+            <CheckedTextView
+                android:id="@+id/view_changed"
+                style="@style/ChipView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dialog_padding_conditions"
+                android:text="@string/condition_changed" />
         </LinearLayout>
     </HorizontalScrollView>
 

@@ -123,13 +123,14 @@ function setWritingText(text) {
 }
 
 function onStatusReading(text) {
-    if (text.localeCompare("CONNECTED") === 0 || text.localeCompare("VERBUNDEN") === 0) {
+    if (text.localeCompare("CONNECTED") === 0 || text.localeCompare("VERBUNDEN") === 0 || text.localeCompare("SERVICES DISCOVERED") === 0 || text.localeCompare("DIENSTE ENTDECKT")) {
         setConnected(true);
         setWritingText("");
     } else if (text.localeCompare("DEVICE NOT FOUND") === 0 || text.localeCompare("GERÄT NICHT GEFUNDEN") === 0) {
         setConnected(false);
         setWritingText("");
     } else if (text.localeCompare("DISCONNECTED") === 0 || text.localeCompare("GETRENNT") === 0) {
+        console.log("setConnected false")
         setConnected(false);
         setWritingText("");
     } else if (text.localeCompare("ERROR") === 0 || text.localeCompare("ERROR") === 0) {

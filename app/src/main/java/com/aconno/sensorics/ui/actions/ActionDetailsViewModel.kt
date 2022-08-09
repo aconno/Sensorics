@@ -58,100 +58,100 @@ class ActionDetailsViewModel(
         )
     }
 
-    fun setDevice(device: Device, name: String, message: String) {
-        val actionViewModel = actionLiveData.value
-        if (actionViewModel == null) {
-            actionLiveData.value = ActionBeingBuilt(
-                name = name,
-                device = device
-            )
-        } else {
+    fun setDevice(device: Device, name: String, message1: String, message2: String) {
+        actionLiveData.value?.let { actionViewModel ->
             actionViewModel.name = name
             actionViewModel.device = device
             val outcome = actionViewModel.outcome
             if (outcome != null) {
                 val parameters = hashMapOf<String, String>()
-                parameters[Outcome.TEXT_MESSAGE] = message
+                parameters[Outcome.TEXT_MESSAGE] = message1
+                parameters[Outcome.PHONE_NUMBER] = message2
                 val newOutcome = Outcome(parameters, outcome.type)
                 actionViewModel.outcome = newOutcome
             }
             actionLiveData.value = actionViewModel
+        } ?: kotlin.run {
+            actionLiveData.value = ActionBeingBuilt(
+                name = name,
+                device = device
+            )
         }
     }
 
     fun setLimitCondition(
         limitCondition: LimitCondition,
         name: String,
-        message: String
+        message1: String,
+        message2: String
     ) {
-        val actionViewModel = actionLiveData.value
-        if (actionViewModel == null) {
-            actionLiveData.value = ActionBeingBuilt(
-                name = name,
-                condition = limitCondition
-            )
-        } else {
+        actionLiveData.value?.let { actionViewModel ->
             actionViewModel.name = name
             actionViewModel.condition = limitCondition
             val outcome = actionViewModel.outcome
             if (outcome != null) {
                 val parameters = hashMapOf<String, String>()
-                parameters[Outcome.TEXT_MESSAGE] = message
+                parameters[Outcome.TEXT_MESSAGE] = message1
+                parameters[Outcome.PHONE_NUMBER] = message2
                 val newOutcome = Outcome(parameters, outcome.type)
                 actionViewModel.outcome = newOutcome
             }
             actionLiveData.value = actionViewModel
+        } ?: kotlin.run {
+            actionLiveData.value = ActionBeingBuilt(
+                name = name,
+                condition = limitCondition
+            )
         }
     }
 
-    fun clearCondition(name: String, message: String) {
-        val actionViewModel = actionLiveData.value
-        if (actionViewModel == null) {
-            actionLiveData.value = ActionBeingBuilt(
-                name = name
-            )
-        } else {
+    fun clearCondition(name: String, message1: String, message2: String) {
+        actionLiveData.value?.let { actionViewModel ->
             actionViewModel.name = name
             actionViewModel.condition = null
             val outcome = actionViewModel.outcome
             if (outcome != null) {
                 val parameters = hashMapOf<String, String>()
-                parameters[Outcome.TEXT_MESSAGE] = message
+                parameters[Outcome.TEXT_MESSAGE] = message1
+                parameters[Outcome.PHONE_NUMBER] = message2
                 val newOutcome = Outcome(parameters, outcome.type)
                 actionViewModel.outcome = newOutcome
             }
             actionLiveData.value = actionViewModel
+        } ?: kotlin.run {
+            actionLiveData.value = ActionBeingBuilt(
+                name = name
+            )
         }
     }
 
-    fun setOutcome(outcomeType: Int, message: String, name: String) {
+    fun setOutcome(outcomeType: Int, message1: String, message2: String, name: String) {
         val parameters = hashMapOf<String, String>()
-        parameters[Outcome.TEXT_MESSAGE] = message
+        parameters[Outcome.TEXT_MESSAGE] = message1
+        parameters[Outcome.PHONE_NUMBER] = message2
         val outcome = Outcome(parameters, outcomeType)
-        val actionViewModel = actionLiveData.value
-        if (actionViewModel == null) {
+        actionLiveData.value?.let { actionViewModel ->
+            actionViewModel.name = name
+            actionViewModel.outcome = outcome
+            actionLiveData.value = actionViewModel
+        } ?: kotlin.run {
             actionLiveData.value = ActionBeingBuilt(
                 name = name,
                 outcome = outcome
             )
-        } else {
-            actionViewModel.name = name
-            actionViewModel.outcome = outcome
-            actionLiveData.value = actionViewModel
         }
     }
 
     fun setActive(name: String, active: Boolean) {
-        val actionViewModel = actionLiveData.value
-        if (actionViewModel == null) {
+        actionLiveData.value?.let { actionViewModel ->
+            actionViewModel.name = name
+            actionViewModel.active = active
+            actionLiveData.value = actionViewModel
+        } ?: kotlin.run {
             actionLiveData.value = ActionBeingBuilt(
                 name = name,
                 active = active
             )
-        } else {
-            actionViewModel.name = name
-            actionViewModel.active = active
-            actionLiveData.value = actionViewModel
         }
     }
 
@@ -194,7 +194,8 @@ class ActionDetailsViewModel(
     fun saveAction(
         application: Application,
         name: String,
-        message: String
+        message1: String,
+        message2: String
     ): Completable {
         val id = actionLiveData.value?.id ?: 0L
         if (name.isBlank()) {
@@ -247,7 +248,8 @@ class ActionDetailsViewModel(
         }
         val parameters = hashMapOf<String, String>()
 
-        parameters[Outcome.TEXT_MESSAGE] = message
+        parameters[Outcome.TEXT_MESSAGE] = message1
+        parameters[Outcome.PHONE_NUMBER] = message2
         val newOutcome = Outcome(parameters, outcome.type)
         val action = GeneralAction(
             id,

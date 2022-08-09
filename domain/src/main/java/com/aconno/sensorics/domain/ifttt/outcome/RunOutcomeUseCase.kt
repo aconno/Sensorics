@@ -26,7 +26,8 @@ class OutcomeExecutorSelector(
     private val notificationOutcomeExecutor: NotificationOutcomeExecutor,
     private val textToSpeechOutcomeExecutor: TextToSpeechOutcomeExecutor,
     private val vibrationOutcomeExecutor: VibrationOutcomeExecutor,
-    private val alarmOutcomeExecutor: AlarmOutcomeExecutor
+    private val alarmOutcomeExecutor: AlarmOutcomeExecutor,
+    private val smsOutcomeExecutor: SmsOutcomeExecutor
 ) {
     fun selectOutcomeExecutor(outcome: Outcome): OutcomeExecutor {
         return when (outcome.type) {
@@ -34,6 +35,7 @@ class OutcomeExecutorSelector(
             Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH -> textToSpeechOutcomeExecutor
             Outcome.OUTCOME_TYPE_VIBRATION -> vibrationOutcomeExecutor
             Outcome.OUTCOME_TYPE_ALARM -> alarmOutcomeExecutor
+            Outcome.OUTCOME_TYPE_SMS -> smsOutcomeExecutor
             else -> throw IllegalArgumentException("Invalid Outcome type.")
         }
     }

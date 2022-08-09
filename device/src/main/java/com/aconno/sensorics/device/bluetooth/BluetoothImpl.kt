@@ -134,6 +134,10 @@ class BluetoothImpl(
                     gatt.writeCharacteristic(characteristic)
                 }
         } ?: false
+
+//                                  10FA011800200028143000380040004A04776173647364
+//                0A0961636E50696D70656B10FA011800200028143000380040004A0477617364
+//                0a0961636e50696d70656b10fa011800200028143000380040004a0477617364
     }
 
     override fun readDescriptor(

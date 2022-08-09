@@ -1,10 +1,7 @@
 package com.aconno.sensorics
 
 import android.app.Notification
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Build
 import android.os.IBinder
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -13,10 +10,7 @@ import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
 import com.aconno.sensorics.data.publisher.MqttPublisher
 import com.aconno.sensorics.data.publisher.RestPublisher
 import com.aconno.sensorics.domain.Publisher
-import com.aconno.sensorics.domain.ifttt.AzureMqttPublish
-import com.aconno.sensorics.domain.ifttt.GooglePublish
-import com.aconno.sensorics.domain.ifttt.MqttPublish
-import com.aconno.sensorics.domain.ifttt.RestPublish
+import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.ifttt.outcome.RunOutcomeUseCase
 import com.aconno.sensorics.domain.interactor.LogReadingUseCase
 import com.aconno.sensorics.domain.interactor.convert.ReadingToInputUseCase
@@ -84,6 +78,9 @@ class BluetoothScanningService : DaggerService() {
 
     @Inject
     lateinit var notification: Notification
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     @Inject
     lateinit var localBroadcastManager: LocalBroadcastManager
@@ -156,7 +153,7 @@ class BluetoothScanningService : DaggerService() {
                 Timber.tag("Sensorics - BLE").d("Restarting")
                 bluetooth.apply {
                     stopScanning()
-                    if(deviceList == null) startScanning() else startScanning(deviceList)
+                    if (deviceList == null) startScanning() else startScanning(deviceList)
                 }
             }
         }
@@ -201,10 +198,22 @@ class BluetoothScanningService : DaggerService() {
                 }
                 .flatMapIterable { it }
                 .concatMap {
-                    inputToOutcomesUseCase.execute(it)
+                    val key = "${it.macAddress}-${it.type}"
+
+                    val lastInput = GeneralInput(
+                        it.macAddress,
+                        sharedPreferences.getFloat(key, 6969.420f),
+                        it.type,
+                        it.timestamp
+                    )
+
+                    sharedPreferences.edit().putFloat(key, it.value).commit()
+
+                    inputToOutcomesUseCase.execute(it, lastInput)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .toFlowable()
+
                 }
                 .flatMapIterable { it }
                 .subscribe {

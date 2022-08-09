@@ -57,6 +57,7 @@
     <string name="condition_less">Less</string>
     <string name="condition_equal">Equal</string>
     <string name="condition_more">More</string>
+    <string name="condition_changed">Changed</string>
     <string name="condition_value_hint">Value</string>
     <string name="condition_dialog_set">Set</string>
     <string name="cancel">Cancel</string>
@@ -494,4 +495,6 @@
     <string name="ok">Ok</string>
     <string name="could_not_enable_wifi">Could not enable wifi, please enable manually</string>
     <string name="pick_wifi_ssid">Pick WiFi SSID</string>
+    <string name="mtu_changed">MTU Changed</string>
+    <string name="sms">SMS</string>
 </resources>

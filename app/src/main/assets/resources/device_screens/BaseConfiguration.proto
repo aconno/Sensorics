@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package aconno;
+
+enum AdvertisementField {
+  None = 0;
+  Appearance = 1;
+  DeviceName = 2;
+  ManufSpecificData = 3;
+}
+
+message BaseConfiguration {
+  string productName = 1;
+
+  uint32 acnBeaconInterval = 2;
+  int32 acnBeaconTxPower = 3;
+  uint32 acnBeaconBurstCount = 4;
+
+  bool iBeaconEnable = 5;
+  uint32 iBeaconInterval = 6;
+  int32 iBeaconTxPower = 7;
+  uint32 iBeaconBurstCount = 8;
+  uint32 iBeaconMajor = 9;
+  uint32 iBeaconMinor = 10;
+
+  bool customAdvEnable = 11;
+  uint32 customAdvInterval = 12;
+  int32 customAdvTxPower = 13;
+  uint32 customAdvBurst = 14;
+  uint32 customAdvFieldFlags = 15;
+  uint32 customAdvAppearance = 16;
+  uint32 customAdvCompanyId = 17;
+  bytes customAdvData = 18;
+
+  string password = 19;
+}

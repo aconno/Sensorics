@@ -28,6 +28,7 @@
     <string name="condition_less">Kleiner</string>
     <string name="condition_equal">Gleich</string>
     <string name="condition_more">Größer</string>
+    <string name="condition_changed">Geändert</string>
     <string name="condition_value_hint">Wert</string>
     <string name="condition_dialog_set">Festlegen</string>
     <string name="cancel">Abbrechen</string>
@@ -420,5 +421,7 @@
     <string name="remove_publishers_title">Backends entfernen</string>
     <string name="one_publisher_removed">%s entfernt!</string>
     <string name="multiple_publishers_removed">%d Backends entfernt!</string>
+    <string name="mtu_changed">MTU Changed</string>
+    <string name="sms">SMS</string>
 
 </resources>

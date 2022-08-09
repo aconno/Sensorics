@@ -18,15 +18,13 @@ import com.aconno.sensorics.data.repository.devicegroups.DeviceGroupRepositoryIm
 import com.aconno.sensorics.data.repository.devices.DeviceMapper
 import com.aconno.sensorics.data.repository.sync.SyncDao
 import com.aconno.sensorics.data.repository.sync.SyncRepositoryImpl
-import com.aconno.sensorics.device.DeviceAudioManagerImpl
-import com.aconno.sensorics.device.DeviceTelephonyManagerImpl
-import com.aconno.sensorics.device.TextToSpeechPlayerImpl
-import com.aconno.sensorics.device.VibratorImpl
+import com.aconno.sensorics.device.*
 import com.aconno.sensorics.device.notification.IntentProvider
 import com.aconno.sensorics.device.notification.NotificationDisplayImpl
 import com.aconno.sensorics.device.notification.NotificationFactory
 import com.aconno.sensorics.domain.AlarmServiceController
 import com.aconno.sensorics.domain.DeviceAudioManager
+import com.aconno.sensorics.domain.SmsSender
 import com.aconno.sensorics.domain.Vibrator
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinder
 import com.aconno.sensorics.domain.format.ConnectionCharacteristicsFinderImpl
@@ -102,12 +100,16 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideSmsSender(): SmsSender = SmsSenderImpl()
+
+    @Provides
+    @Singleton
     fun provideSensoricsDatabase(sensoricsApplication: SensoricsApplication): SensoricsDatabase {
         return Room.databaseBuilder(
-                sensoricsApplication,
-                SensoricsDatabase::class.java,
-                "Sensorics"
-            )
+            sensoricsApplication,
+            SensoricsDatabase::class.java,
+            "Sensorics"
+        )
             .addMigrations(SensoricsDatabase.MIGRATION_11_12)
             .addMigrations(SensoricsDatabase.MIGRATION_12_13)
             .addMigrations(SensoricsDatabase.MIGRATION_13_14)
@@ -116,7 +118,7 @@ class AppModule {
             .addMigrations(SensoricsDatabase.MIGRATION_16_17)
             .addMigrations(SensoricsDatabase.MIGRATION_17_18)
             .apply {
-                if(!BuildConfig.DEBUG) {
+                if (!BuildConfig.DEBUG) {
                     fallbackToDestructiveMigration()
                 }
             }
@@ -140,7 +142,11 @@ class AppModule {
         deviceMapper: DeviceMapper,
         deviceGroupDeviceJoinMapper: DeviceGroupDeviceJoinMapper
     ): DeviceGroupDeviceJoinRepository {
-        return DeviceGroupDeviceJoinRepositoryImpl(sensoricsDatabase.deviceGroupDeviceJoinDao(), deviceMapper,deviceGroupDeviceJoinMapper)
+        return DeviceGroupDeviceJoinRepositoryImpl(
+            sensoricsDatabase.deviceGroupDeviceJoinDao(),
+            deviceMapper,
+            deviceGroupDeviceJoinMapper
+        )
     }
 
     @Provides
@@ -191,7 +197,12 @@ class AppModule {
         deserializer: Deserializer,
         deviceGroupRepository: DeviceGroupRepository,
         deviceGroupDeviceJoinRepository: DeviceGroupDeviceJoinRepository
-    ) = GenerateReadingsUseCase(formatMatcher, deserializer, deviceGroupDeviceJoinRepository, deviceGroupRepository)
+    ) = GenerateReadingsUseCase(
+        formatMatcher,
+        deserializer,
+        deviceGroupDeviceJoinRepository,
+        deviceGroupRepository
+    )
 
     @Provides
     @Singleton

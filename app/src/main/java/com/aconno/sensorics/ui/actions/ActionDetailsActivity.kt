@@ -121,9 +121,10 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
                 Timber.d("Item selected, position: $position")
                 val device = deviceSpinnerAdapter.getDevice(position)
                 val name = edittext_name.text.toString()
-                val message = edittext_message.text.toString()
+                val message1 = edittext_message1.text.toString()
+                val message2 = edittext_message2.text.toString()
 
-                actionDetailsViewModel.setDevice(device, name, message)
+                actionDetailsViewModel.setDevice(device, name, message1, message2)
             }
         }
     }
@@ -168,8 +169,9 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
                 view.isChecked = true
             } else {
                 val name = edittext_name.text.toString()
-                val message = edittext_message.text.toString()
-                actionDetailsViewModel.clearCondition(name, message)
+                val message1 = edittext_message1.text.toString()
+                val message2 = edittext_message2.text.toString()
+                actionDetailsViewModel.clearCondition(name, message1, message2)
             }
         }
     }
@@ -180,8 +182,9 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
 
     override fun applyLimitCondition(limitCondition: LimitCondition) {
         val name = edittext_name.text.toString()
-        val message = edittext_message.text.toString()
-        actionDetailsViewModel.setLimitCondition(limitCondition, name, message)
+        val message1 = edittext_message1.text.toString()
+        val message2 = edittext_message2.text.toString()
+        actionDetailsViewModel.setLimitCondition(limitCondition, name, message1, message2)
     }
 
     private fun observeActionLiveData() {
@@ -288,12 +291,17 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
         button_outcome_alarm.setOnClickListener {
             setOutcomeData(Outcome.OUTCOME_TYPE_ALARM)
         }
+
+        button_outcome_sms.setOnClickListener {
+            setOutcomeData(Outcome.OUTCOME_TYPE_SMS)
+        }
     }
 
     private fun setOutcomeData(type: Int) {
-        val message = edittext_message.text.toString()
+        val message1 = edittext_message1.text.toString()
+        val message2 = edittext_message2.text.toString()
         val name = edittext_name.text.toString()
-        actionDetailsViewModel.setOutcome(type, message, name)
+        actionDetailsViewModel.setOutcome(type, message1, message2, name)
     }
 
     private fun setOutcome(outcome: Outcome?) {
@@ -301,31 +309,42 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
         button_outcome_text_to_speech.isChecked = false
         button_outcome_vibration.isChecked = false
         button_outcome_alarm.isChecked = false
-        edittext_message.visibility = View.GONE
+        button_outcome_sms.isChecked = false
+        edittext_message1.visibility = View.GONE
+        edittext_message2.visibility = View.GONE
 
         outcome?.let {
             when (outcome.type) {
                 Outcome.OUTCOME_TYPE_NOTIFICATION -> {
                     button_outcome_notification.isChecked = true
-                    edittext_message.visibility = View.VISIBLE
+                    edittext_message1.visibility = View.VISIBLE
+                    edittext_message1.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
                 }
 
                 Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH -> {
                     button_outcome_text_to_speech.isChecked = true
-                    edittext_message.visibility = View.VISIBLE
+                    edittext_message1.visibility = View.VISIBLE
+                    edittext_message1.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
                 }
                 Outcome.OUTCOME_TYPE_VIBRATION -> button_outcome_vibration.isChecked = true
                 Outcome.OUTCOME_TYPE_ALARM -> button_outcome_alarm.isChecked = true
+                Outcome.OUTCOME_TYPE_SMS -> {
+                    button_outcome_sms.isChecked = true
+                    edittext_message1.visibility = View.VISIBLE
+                    edittext_message2.visibility = View.VISIBLE
+                    edittext_message1.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
+                    edittext_message2.setText(outcome.parameters[Outcome.PHONE_NUMBER] ?: "")
+                }
             }
-            edittext_message.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
         }
     }
 
     private fun setSaveButtonListener() {
         button_save.setOnClickListener {
-            val message = edittext_message.text.toString()
+            val message1 = edittext_message1.text.toString()
+            val message2 = edittext_message2.text.toString()
             val name = edittext_name.text.toString()
-            actionDetailsViewModel.saveAction(application, name, message)
+            actionDetailsViewModel.saveAction(application, name, message1, message2)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({

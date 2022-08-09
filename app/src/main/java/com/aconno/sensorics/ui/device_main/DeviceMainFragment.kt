@@ -11,10 +11,6 @@ import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
 import android.view.*
-import android.webkit.JavascriptInterface
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -58,11 +54,15 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import android.content.Intent
+import android.util.Log
+import android.webkit.*
+import com.aconno.sensorics.domain.migrate.hexStringToByteArray
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
 import com.google.zxing.integration.android.IntentIntegrator
 import java.lang.Exception
 import com.google.zxing.integration.android.IntentResult
+import java.io.FileInputStream
 
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -132,9 +132,9 @@ class DeviceMainFragment : DaggerFragment() {
 
                         activity?.takeIf { isAdded }?.let { fragmentActivity ->
                             bluetoothService.getConnectResultsLiveData()
-                                .observe(fragmentActivity, {
+                                .observe(fragmentActivity) {
                                     onConnectionPayloadReceived(it)
-                                })
+                                }
 
                             bluetoothService.startConnectionStream()
 
@@ -265,10 +265,6 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupWebView()
-
-        if (device.connectable) {
-            setupConnection()
-        }
     }
 
     private fun setupWebView() {
@@ -289,7 +285,7 @@ class DeviceMainFragment : DaggerFragment() {
                 .subscribe(
                     { resourcePath ->
                         text_error_message.visibility = View.INVISIBLE
-                        web_view.loadUrl(resourcePath)
+                        web_view.loadUrl("https://aconno.de/sensorics/device_screens/acnBASE.html")
                     },
                     { throwable ->
                         text_error_message.visibility = View.VISIBLE
@@ -320,7 +316,7 @@ class DeviceMainFragment : DaggerFragment() {
                 Snackbar.make(
                     container_fragment,
                     getString(R.string.connecting).lowercaseCapitalize(),
-                    Snackbar.LENGTH_SHORT
+                    Snackbar.LENGTH_INDEFINITE
                 ).show()
 
                 getString(R.string.connecting)
@@ -344,13 +340,18 @@ class DeviceMainFragment : DaggerFragment() {
                 setToggleActionText(R.string.disconnect)
                 isServicesDiscovered = true
 
+                bluetoothConnectService?.bluetooth?.requestMtu(517)
+
                 Snackbar.make(
                     container_fragment,
                     getString(R.string.services_discovered).lowercaseCapitalize(),
                     Snackbar.LENGTH_SHORT
                 ).show()
 
-                getString(R.string.discovered)
+                getString(R.string.services_discovered)
+            }
+            BluetoothGattCallback.ACTION_GATT_MTU_CHANGED -> {
+                getString(R.string.mtu_changed)
             }
             BluetoothGattCallback.ACTION_GATT_DISCONNECTED -> {
                 setToggleActionText(R.string.connect)
@@ -394,8 +395,13 @@ class DeviceMainFragment : DaggerFragment() {
                 ""
             }
             BluetoothGattCallback.ACTION_DATA_AVAILABLE -> {
-                Timber.d("Services discovered")
-                web_view.loadUrl("javascript:onCharRead('${readCommandQueue.peek()?.charUUID?.toString()}', '${(gattCallbackPayload.payload as? BluetoothGattCharacteristic)?.value?.toHex() ?: ""}')")
+                web_view.loadUrl(
+                    "javascript:onCharRead('${
+                        readCommandQueue.peek()?.charUUID?.toString()
+                    }', '${
+                        (gattCallbackPayload.payload as? BluetoothGattCharacteristic)?.value?.toHex() ?: ""
+                    }')"
+                )
                 readCommandQueue.poll()
                 readCharacteristics(readCommandQueue.peek())
                 ""
@@ -413,6 +419,7 @@ class DeviceMainFragment : DaggerFragment() {
         text.takeIf {
             it.isNotBlank()
         }.let {
+            Timber.d("javascript:onStatusReading('$text')")
             web_view.loadUrl("javascript:onStatusReading('$text')")
         }
     }
@@ -488,6 +495,10 @@ class DeviceMainFragment : DaggerFragment() {
             super.onPageFinished(view, url)
             subscribeOnSensorReadings()
             checkHasSettingsSupport()
+
+            if (device.connectable) {
+                setupConnection()
+            }
         }
     }
 
@@ -507,29 +518,31 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (result != null) {
-            if (result.contents == null) {
-                this.showToast("Cancelled")
-            } else {
+        result?.let { intentResult ->
+            intentResult.contents?.let { contents ->
                 try {
-                    val jsonData = JsonParser.parseString(result.contents)
+                    val jsonData = JsonParser.parseString(contents)
                     jsonData.asJsonObject.addProperty(
                         "macAddress",
                         device.macAddress.replace(":", "")
                     )
                     web_view?.loadUrl("javascript:onQrCodeRead('$jsonData')")
                 } catch (e: JsonSyntaxException) {
-                    if(result.contents.startsWith("WIFI")) {
-                        result.contents.split(";").let {
+                    if (contents.startsWith("WIFI")) {
+                        contents.split(";").let {
                             val ssid = it[0].split(":S:").last()
                             val encryption = it[1].substring(2)
                             val password = it[2].substring(2)
                             web_view?.loadUrl("javascript:wifiPicked('$ssid', '$password')")
                         }
+                    } else {
+                        this.showToast("Error in QR code!")
                     }
                 }
+            } ?: run {
+                this.showToast("Cancelled")
             }
-        } else {
+        } ?: run {
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
@@ -704,6 +717,20 @@ class DeviceMainFragment : DaggerFragment() {
                 UUID.fromString(characteristicUUID),
                 "BYTE",
                 ValueConverters.ASCII_STRING.serialize(value, order = ByteOrder.BIG_ENDIAN)
+            )
+        }
+
+        @JavascriptInterface
+        fun writeCharacteristicHexString(
+            serviceUUID: String,
+            characteristicUUID: String,
+            value: String
+        ) {
+            addWriteCommand(
+                UUID.fromString(serviceUUID),
+                UUID.fromString(characteristicUUID),
+                "BYTE",
+                value.hexStringToByteArray()
             )
         }
 
