@@ -65,7 +65,7 @@ class ActionListActivity : DaggerAppCompatActivity(),
         actions_toolbar.title = getString(R.string.selected_items_count, selectedItems)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         mainMenu = menu
         mainMenu?.clear()
         menuInflater.inflate(menuResource, menu)

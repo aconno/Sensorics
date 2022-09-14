@@ -17,7 +17,7 @@ class MqttPublisherViewModelFactory(
     private val mqttPublishModelDataMapper: MqttPublishModelDataMapper,
     private val getAllDeviceParameterPlaceholderStringsUseCase: GetAllDeviceParameterPlaceholderStringsUseCase
 ) : BaseViewModelFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = MqttPublisherViewModel(
             savePublishDeviceJoinUseCase,
             deletePublishDeviceJoinUseCase,

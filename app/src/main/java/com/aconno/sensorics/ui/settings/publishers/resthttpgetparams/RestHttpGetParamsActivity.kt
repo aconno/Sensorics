@@ -181,7 +181,7 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
             .show()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.rest_headers_menu, menu)
         return true

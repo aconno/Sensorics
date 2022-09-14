@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 @Suppress("UNCHECKED_CAST")
 class BeaconSettingsSharedViewModelFactory @Inject constructor() : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(BeaconSettingsTransporterSharedViewModel::class.java)) {
             BeaconSettingsTransporterSharedViewModel() as T
         } else {

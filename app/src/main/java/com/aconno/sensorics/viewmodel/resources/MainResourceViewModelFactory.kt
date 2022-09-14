@@ -8,7 +8,7 @@ class MainResourceViewModelFactory(
     private val getMainResourceUseCase: GetMainResourceUseCase
 ) : BaseViewModelFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = MainResourceViewModel(getMainResourceUseCase)
         return getViewModel(viewModel, modelClass)
     }

@@ -20,7 +20,7 @@ class DeviceListViewModelFactory(
 
 ) : BaseViewModelFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = DeviceViewModel(
             deviceStream,
             getSavedDevicesUseCase,

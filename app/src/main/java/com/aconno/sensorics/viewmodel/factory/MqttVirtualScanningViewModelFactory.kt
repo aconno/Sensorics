@@ -8,7 +8,7 @@ class MqttVirtualScanningViewModelFactory(
     private val sensoricsApplication: SensoricsApplication
 ) : BaseViewModelFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = MqttVirtualScanningViewModel(sensoricsApplication)
         return getViewModel(viewModel, modelClass)
     }

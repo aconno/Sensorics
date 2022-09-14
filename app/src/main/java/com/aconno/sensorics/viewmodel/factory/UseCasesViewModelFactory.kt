@@ -13,7 +13,7 @@ class UseCasesViewModelFactory(
     private val getUseCaseResourceUseCase: GetUseCaseResourceUseCase
 ) : BaseViewModelFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = UseCasesViewModel(
             readingsStream,
             filterByMacUseCase,

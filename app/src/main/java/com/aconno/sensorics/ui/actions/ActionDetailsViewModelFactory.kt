@@ -17,7 +17,7 @@ class ActionDetailsViewModelFactory(
     private val getIconUseCase: GetIconUseCase
 ) : BaseViewModelFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = ActionDetailsViewModel(
             savedDevicesStream,
             formatMatcher,

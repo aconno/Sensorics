@@ -18,7 +18,7 @@ class VirtualScanningSourceListViewModelFactory(
         private val mqttVirtualScanningSourceModelDataMapper : MqttVirtualScanningSourceModelDataMapper
 ) : BaseViewModelFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = VirtualScanningSourceListViewModel(
                 getAllMqttSourcesUseCase,
                 deleteMqttSourcesUseCase,

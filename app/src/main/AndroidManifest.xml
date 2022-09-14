@@ -109,6 +109,7 @@
 
         <activity
             android:name=".ui.SplashActivity"
+            android:exported="true"
             android:noHistory="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -121,6 +122,7 @@
 
         <receiver
             android:name=".device.notification.AlarmNotificationReceiver"
+            android:exported="true"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.troido.intent.action.ACTION_ALARM_SNOOZE" />

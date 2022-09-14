@@ -31,7 +31,7 @@ class PublishListViewModelFactory(
     private val azureMqttPublishModelDataMapper: AzureMqttPublishModelDataMapper
 ) : BaseViewModelFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = PublishListViewModel(
             getRestPublishByIdUseCase,
             getGooglePublishByIdUseCase,

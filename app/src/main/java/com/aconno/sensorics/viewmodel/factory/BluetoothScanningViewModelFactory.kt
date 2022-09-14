@@ -10,7 +10,7 @@ class BluetoothScanningViewModelFactory(
     private val sensoricsApplication: SensoricsApplication
 ) : BaseViewModelFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = BluetoothScanningViewModel(sensoricsApplication, bluetooth)
         return getViewModel(viewModel, modelClass)
     }

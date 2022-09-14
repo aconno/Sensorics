@@ -8,7 +8,7 @@ import io.reactivex.Flowable
 class DashboardViewModelFactory(
     private val readingsStream: Flowable<List<Reading>>
 ) : BaseViewModelFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = DashboardViewModel(
             readingsStream
         )

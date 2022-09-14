@@ -54,7 +54,7 @@ class MqttVirtualScanningSourceActivity : BaseActivity() {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.add_virtual_scanning_source_menu, menu)
 

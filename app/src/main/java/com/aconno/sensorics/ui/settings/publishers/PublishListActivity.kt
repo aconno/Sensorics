@@ -69,7 +69,7 @@ class PublishListActivity : DaggerAppCompatActivity(),
     }
 
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         mainMenu = menu
         mainMenu?.clear()
         menuInflater.inflate(menuResource, menu)

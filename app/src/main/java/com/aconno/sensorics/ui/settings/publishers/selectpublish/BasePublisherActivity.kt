@@ -205,7 +205,7 @@ abstract class BasePublisherActivity<M> : BaseActivity() where M : BasePublishMo
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.add_publish_menu, menu)
 
         menu?.findItem(R.id.action_publish_done)?.let { item ->

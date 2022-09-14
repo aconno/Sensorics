@@ -11,7 +11,7 @@ class ReadingListViewModelFactory(
     private val filterByMacUseCase: FilterByMacUseCase
 ) : BaseViewModelFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = ReadingListViewModel(
             readingsStream,
             filterByMacUseCase

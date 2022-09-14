@@ -87,7 +87,7 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
         super.onDestroy()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.beacon_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }

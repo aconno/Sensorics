@@ -44,6 +44,7 @@ import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
+import java.lang.IllegalStateException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -154,6 +155,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
         when (bluetoothState) {
             BluetoothState.BLUETOOTH_OFF -> onBluetoothOff()
             BluetoothState.BLUETOOTH_ON -> onBluetoothOn()
+            else -> throw IllegalStateException()
         }
     }
 
@@ -284,7 +286,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
             .forEach { it.onDevicesDialogItemClick(item) }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         mainMenu = menu
 
         if (!showMenu) {
@@ -367,6 +369,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 

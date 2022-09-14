@@ -11,7 +11,7 @@ class BeaconSettingsViewModelFactory(
     private val beacon: Beacon,
     private val webViewAppBeaconMapper: WebViewAppBeaconMapper
 ) : BaseViewModelFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = BeaconSettingsViewModel(bluetooth, beacon, webViewAppBeaconMapper)
         return getViewModel(viewModel, modelClass)
     }

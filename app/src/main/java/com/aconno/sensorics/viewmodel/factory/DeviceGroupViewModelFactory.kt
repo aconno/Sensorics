@@ -14,7 +14,7 @@ class DeviceGroupViewModelFactory(
     private val getDevicesInDeviceGroupUseCase: GetDevicesInDeviceGroupUseCase,
     private val getDevicesBelongingSomeDeviceGroupUseCase: GetDevicesBelongingSomeDeviceGroupUseCase
 )  : BaseViewModelFactory() {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val viewModel = DeviceGroupViewModel(
             saveDeviceGroupUseCase,
             getSavedDeviceGroupsUseCase,
