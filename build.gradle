@@ -80,14 +80,14 @@ ext {
     localbroadcastmanager_version = '1.1.0' //1.0.0
     material_version = '1.6.1' //1.4.0
     flexbox_version = '3.0.0'
-    truth_version = '1.0.1'
+    truth_version = '1.1.3' //1.0.1
 
     dagger_version = '2.43.2' //2.37
     assisted_inject_dagger_version = '0.8.1' //0.5.2
     javax_annotation_version = '1.0' //
     javax_inject_version = '1' //
 
-    nordic_dfu_version = '1.10.1'
+    nordic_dfu_version = '2.1.0' //1.10.1
     mpandroidchart_version = 'v3.1.0'
     gson_version = '2.9.1' //2.8.6
     materialtabstrip_version = '1.1.1'
@@ -95,34 +95,34 @@ ext {
 
     json_web_token_version = '0.9.1'
 
-    eclipse_paho_mqttv3_version = '1.2.2'
+    eclipse_paho_mqttv3_version = '1.2.5' //1.2.2
     eclipse_paho_android_service_version = '1.1.1'
 
-    timber_version = '4.7.1'
-    threetenabp_version = '1.2.2'
+    timber_version = '5.0.1' //4.7.1
+    threetenabp_version = '1.4.0' //1.2.2
 
-    leak_canary_version = '2.2'
+    leak_canary_version = '2.9.1' //2.2
     robolectric_version = '4.3.1'
-    eval_ex_version = '2.5'
+    eval_ex_version = '2.7' //2.5
     azure_iot_device_client_version = '1.20.0'
 
     coroutines_version = '1.6.4' //1.3.3
 
-    retrofit_version = '2.7.2'
-    okhttp3_version = '4.4.0'
+    retrofit_version = '2.9.0' //2.7.2
+    okhttp3_version = '5.0.0-alpha.10' //4.4.0
 
-    junit_version = '4.12'
+    junit_version = '4.13.2' //4.12
 
     arch_core_testing_version = '2.1.0'
     test_runner_version = '1.4.0'
     espresso_core_version = '3.4.0'
 
-    mockito_inline_version = '3.3.0'
+    mockito_inline_version = '4.8.0' //3.3.0
 
-    apache_commons_text_version = '1.8'
+    apache_commons_text_version = '1.9' //1.8
     tempo_version = '0.2.0'
     easypermissions_version = '3.0.0'
     wifiutils_version = '1.6.5'
-    firebase_crashlytics_version = '18.1.0'
-    firebase_analytics_version = '19.0.0'
+    firebase_crashlytics_version = '18.2.13' //18.1.0
+    firebase_analytics_version = '21.1.1' //19.0.0
 }
