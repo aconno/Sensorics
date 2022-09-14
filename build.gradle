@@ -68,28 +68,28 @@ ext {
 
     androidx_room_version = '2.4.3' //2.3.0
 
-    cardview_version = '1.0.0'
-    recyclerview_version = '1.2.1'
+    cardview_version = '1.0.0' //
+    recyclerview_version = '1.2.1' //
     preference_version = '1.2.0' //1.1.1
-    work_runtime_ktx_version = '2.5.0' //2.5.0
+    work_runtime_ktx_version = '2.5.0'
 
     rx_java_version = '2.2.21' //2.2.18
     rx_android_version = '2.1.1' //2.1.1
     rx_kotlin_version = '2.4.0' //2.4.0
 
-    localbroadcastmanager_version = '1.0.0'
-    material_version = '1.4.0'
+    localbroadcastmanager_version = '1.1.0' //1.0.0
+    material_version = '1.6.1' //1.4.0
     flexbox_version = '3.0.0'
     truth_version = '1.0.1'
 
     dagger_version = '2.43.2' //2.37
     assisted_inject_dagger_version = '0.8.1' //0.5.2
-    javax_annotation_version = '1.0'
-    javax_inject_version = '1'
+    javax_annotation_version = '1.0' //
+    javax_inject_version = '1' //
 
     nordic_dfu_version = '1.10.1'
     mpandroidchart_version = 'v3.1.0'
-    gson_version = '2.8.6'
+    gson_version = '2.9.1' //2.8.6
     materialtabstrip_version = '1.1.1'
     circleprogress_version = '1.2.1'
 
