@@ -62,7 +62,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     private fun initSummaries() {
         val scanMode = preferenceManager
-            .sharedPreferences.getString(SCAN_MODE_KEY, "3")
+            .sharedPreferences?.getString(SCAN_MODE_KEY, "3")
 
         scanMode?.let {
             setScanModeSummarize(scanMode)
@@ -80,8 +80,8 @@ class SettingsFragment : PreferenceFragmentCompat(),
         }
     }
 
-    override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-        when (preference?.key) {
+    override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
+        when (preference.key) {
             SCAN_MODE_KEY -> setScanModeSummarize(newValue as String)
             else -> return false
         }
