@@ -35,8 +35,8 @@ class MqttVirtualScanningSourceModel(
         parcel.readInt()
     )
 
-    override fun writeToParcel(parcel: Parcel?, flags: Int) {
-        parcel?.apply {
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.apply {
             writeLong(id)
             writeString(name)
             writeByte(if (enabled) 1 else 0)

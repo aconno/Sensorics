@@ -494,9 +494,9 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
             parcel.readSerializable() as PublishType
         )
 
-        override fun writeToParcel(dest: Parcel?, flags: Int) {
-            dest?.writeLong(id)
-            dest?.writeSerializable(type)
+        override fun writeToParcel(dest: Parcel, flags: Int) {
+            dest.writeLong(id)
+            dest.writeSerializable(type)
         }
 
         override fun describeContents(): Int = 0
