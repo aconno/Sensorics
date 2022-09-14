@@ -4,9 +4,9 @@
   "icon": "ic_freight",
   "format": [
     {
-      "name": "State",
-      "start_index_inclusive": 5,
-      "end_index_exclusive": 6,
+      "name": "Move",
+      "start_index_inclusive": 4,
+      "end_index_exclusive": 5,
       "reversed": true,
       "data_type": "UINT8"
     }
