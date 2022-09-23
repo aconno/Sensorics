@@ -1,0 +1,52 @@
+{
+  "id": "E000",
+  "name": "acnDOOR",
+  "icon": "ic_door",
+  "format": [
+    {
+      "name": "Temperature",
+      "start_index_inclusive": 5,
+      "end_index_exclusive": 9,
+      "reversed": true,
+      "data_type": "FLOAT"
+    },
+    {
+      "name": "DoorState",
+      "start_index_inclusive": 9,
+      "end_index_exclusive": 10,
+      "reversed": false,
+      "data_type": "BYTE"
+    }
+  ],
+  "format_required": [
+    {
+      "name": "Nordic ID 1",
+      "index": 0,
+      "value": "0x59"
+    },
+    {
+      "name": "Nordic ID 2",
+      "index": 1,
+      "value": "0x00"
+    },
+    {
+      "name": "Aconno ID",
+      "index": 2,
+      "value": "0x69"
+    },
+    {
+      "name": "Product ID",
+      "index": 3,
+      "value": "0xE0"
+    },
+    {
+      "name": "Version Number",
+      "index": 4,
+      "value": "0x00"
+    }
+  ],
+  "settings_support": {
+    "mask": "0x80",
+    "index": 4
+  }
+}
