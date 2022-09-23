@@ -1,0 +1,45 @@
+<html>
+
+<head>
+    <link href="../html_resources/Rubik.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+    <style type="text/css">
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+
+        img {
+            margin: auto;
+        }
+
+    </style>
+    <link rel="stylesheet" href="../html_resources/newStyles.css">
+</head>
+
+<body style="background-color:#fafafa;" class="aligntext">
+
+<div>
+    <p class="label">
+        <span>Status: </span>
+        <span id="status">NOT CONNECTED</span>
+    </p>
+</div>
+
+<img style="height: 70vh" id="image" src="./bdf100_assets/0.png"/>
+
+<form>
+    <input type="checkbox" id="led1" onclick="writeData();"/>
+    <label for="led1">Led 1</label>
+    <!--<input type="number" min="0" max="255" id="led1pwm">-->
+    <input type="checkbox" id="led2" onclick="writeData();"/>
+    <label for="led2">Led 2</label>
+    <!--<input type="number" min="0" max="255" id="led2pwm">-->
+    <input type="checkbox" id="led3" onclick="writeData();"/>
+    <label for="led3">Led 3</label>
+    <!--<input type="number" min="0" max="255" id="led3pwm">-->
+</form>
+
+<script src="./BDF100.js" type="text/javascript"></script>
+</body>
+</html>
