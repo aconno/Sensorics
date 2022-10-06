@@ -54,15 +54,11 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import android.content.Intent
-import android.util.Log
 import android.webkit.*
 import com.aconno.sensorics.domain.migrate.hexStringToByteArray
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
 import com.google.zxing.integration.android.IntentIntegrator
-import java.lang.Exception
-import com.google.zxing.integration.android.IntentResult
-import java.io.FileInputStream
 
 
 @SuppressLint("SetJavaScriptEnabled")

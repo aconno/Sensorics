@@ -11,12 +11,16 @@ const RSSI_STANDARD_DEVIATION_KEY = "RSSI standard deviation";
 const protobufServiceUuid = "00111000-4455-6677-8899-aabbccddeeff";
 const protobufCharacteristicReadUuid = "00111001-4455-6677-8899-aabbccddeeff";
 const protobufCharacteristicWriteUuid = "00111002-4455-6677-8899-aabbccddeeff";
+const passwordCharacteristicUuid = "00111003-4455-6677-8899-aabbccddeeff";
 const deviceInformationServiceUuid = "0000180A-0000-1000-8000-00805f9b34fb";
 const manufacturerNameStringCharacteristicUuid = "00002a29-0000-1000-8000-00805f9b34fb";
 const modelNumberStringCharacteristicUuid = "00002a24-0000-1000-8000-00805f9b34fb";
 const hardwareRevisionStringCharacteristicUuid = "00002a27-0000-1000-8000-00805f9b34fb";
 const firmwareRevisionStringCharacteristicUuid = "00002a26-0000-1000-8000-00805f9b34fb";
 const softwareRevisionStringCharacteristicUuid = "00002a28-0000-1000-8000-00805f9b34fb";
+
+let authenticated = false;
+let password = null;
 
 function onCharWritten(charUuid) {
     leftToWrite--;
@@ -98,7 +102,13 @@ function onCharRead(charUuid, hexData) {
         window.update_device_information_service_data({
             "software_version": hexToString(hexData)
         });
-    }
+    } else if (charUuid === passwordCharacteristicUuid) {
+        if (hexData.length >= 2 && hexData.substring(0, 2) === "01") {
+            authenticated = true;
+            setAuthenticated(true);
+            read_data();
+        }
+     }
 }
 
 function setFormsVisible(visible) {
@@ -108,6 +118,16 @@ function setFormsVisible(visible) {
         formsDiv.style.display = "block";
     } else {
         formsDiv.style.display = "none";
+    }
+}
+
+function setAuthenticated(authenticated) {
+    let formsDiv = document.getElementById("root");
+
+    if (authenticated) {
+        formsDiv.style.filter = "blur(0px)";
+    } else {
+        formsDiv.style.filter = "blur(1px)";
     }
 }
 
@@ -133,12 +153,29 @@ function setWritingText(text) {
 }
 
 function read_data() {
-    app.readCharacteristic(protobufServiceUuid, protobufCharacteristicReadUuid);
-    app.readCharacteristic(deviceInformationServiceUuid, manufacturerNameStringCharacteristicUuid);
-    app.readCharacteristic(deviceInformationServiceUuid, modelNumberStringCharacteristicUuid);
-    app.readCharacteristic(deviceInformationServiceUuid, hardwareRevisionStringCharacteristicUuid);
-    app.readCharacteristic(deviceInformationServiceUuid, firmwareRevisionStringCharacteristicUuid);
-    app.readCharacteristic(deviceInformationServiceUuid, softwareRevisionStringCharacteristicUuid);
+    if (authenticated) {
+        app.readCharacteristic(protobufServiceUuid, protobufCharacteristicReadUuid);
+        app.readCharacteristic(deviceInformationServiceUuid, manufacturerNameStringCharacteristicUuid);
+        app.readCharacteristic(deviceInformationServiceUuid, modelNumberStringCharacteristicUuid);
+        app.readCharacteristic(deviceInformationServiceUuid, hardwareRevisionStringCharacteristicUuid);
+        app.readCharacteristic(deviceInformationServiceUuid, firmwareRevisionStringCharacteristicUuid);
+        app.readCharacteristic(deviceInformationServiceUuid, softwareRevisionStringCharacteristicUuid);
+    } else {
+        let password = prompt("Enter password: ","");
+        let password_hex = (new TextEncoder()).encode(password).reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '').toUpperCase();
+
+        console.log(password_hex);
+
+        app.writeCharacteristicHexString(
+            protobufServiceUuid,
+            passwordCharacteristicUuid,
+            password_hex
+        );
+
+        setTimeout(function () {
+            app.readCharacteristic(protobufServiceUuid, passwordCharacteristicUuid);
+        }, 1000);
+    }
 }
 
 function onStatusReading(text) {
@@ -148,24 +185,30 @@ function onStatusReading(text) {
     if (text.localeCompare("CONNECTED") === 0 || text.localeCompare("VERBUNDEN") === 0) {
         setConnected(true);
         setWritingText("");
-        read_data();
     } else if (text.localeCompare("SERVICES DISCOVERED") === 0 || text.localeCompare("DIENSTE ENTDECKT") === 0) {
         setConnected(true);
         setWritingText("");
         console.log("Requesting!")
-    } else if (text.localeCompare("MTU CHANGED") === 0) {
         setTimeout(function () {
             read_data();
         }, 500);
+    } else if (text.localeCompare("MTU CHANGED") === 0) {
+        console.log("Mtu changed!")
     } else if (text.localeCompare("DEVICE NOT FOUND") === 0 || text.localeCompare("GERÄT NICHT GEFUNDEN") === 0) {
         setConnected(false);
         setWritingText("");
+        authenticated = false;
+        setAuthenticated(false);
     } else if (text.localeCompare("DISCONNECTED") === 0 || text.localeCompare("GETRENNT") === 0) {
         setConnected(false);
         setWritingText("");
+        authenticated = false;
+        setAuthenticated(false);
     } else if (text.localeCompare("ERROR") === 0 || text.localeCompare("ERROR") === 0) {
         setWritingText("Error")
         setFormsVisible(true);
+        authenticated = false;
+        setAuthenticated(false);
     } else {
         console.log(text)
     }
