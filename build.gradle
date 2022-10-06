@@ -1,18 +1,18 @@
 buildscript {
 
-    ext.kotlin_version = '1.7.10' //1.5.21
+    ext.kotlin_version = '1.7.20' //'1.6.21' //1.5.21
 
     repositories {
         google()
         mavenCentral()
-        jcenter() // TODO: Remove ASAP Wifi Lib moves to Maven
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.2'
+        classpath 'com.android.tools.build:gradle:7.3.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.3.10'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.0'
+        classpath 'com.google.gms:google-services:4.3.13'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
+        classpath 'com.android.tools.build:gradle:7.3.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -24,7 +24,6 @@ allprojects {
         maven { url 'https://jitpack.io' }
         google()
         mavenCentral()
-        jcenter() // TODO: Remove ASAP Wifi Lib moves to Maven
     }
 }
 
@@ -122,7 +121,7 @@ ext {
     apache_commons_text_version = '1.10.0'
     tempo_version = '0.2.0'
     easypermissions_version = '3.0.0'
-    wifiutils_version = '1.6.5'
-    firebase_crashlytics_version = '18.2.13' //18.1.0
-    firebase_analytics_version = '21.1.1' //19.0.0
+    wifiutils_version = '1.6.6'
+    firebase_crashlytics_version = '18.2.13'
+    firebase_analytics_version = '21.1.1'
 }

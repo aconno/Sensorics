@@ -11,6 +11,10 @@ import com.aconno.sensorics.PublisherIntervalConverter
 import com.aconno.sensorics.R
 import com.aconno.sensorics.data.converter.DataStringConverter
 import com.aconno.sensorics.data.publisher.RestPublisher
+import com.aconno.sensorics.databinding.ActivityRestPublisherBinding
+import com.aconno.sensorics.databinding.LayoutDatastringBinding
+import com.aconno.sensorics.databinding.LayoutPublisherHeaderBinding
+import com.aconno.sensorics.databinding.LayoutRestBinding
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.RestHeaderModel
@@ -27,14 +31,15 @@ import com.google.gson.Gson
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_rest_publisher.*
-import kotlinx.android.synthetic.main.layout_datastring.*
-import kotlinx.android.synthetic.main.layout_publisher_header.*
-import kotlinx.android.synthetic.main.layout_rest.*
 import java.util.*
 import javax.inject.Inject
 
 class RestPublisherActivity : BasePublisherActivity<RestPublishModel>() {
+
+    private lateinit var binding: ActivityRestPublisherBinding
+    private lateinit var layoutDatastringBinding: LayoutDatastringBinding
+    private lateinit var layoutPublisherHeaderBinding: LayoutPublisherHeaderBinding
+    private lateinit var layoutRestBinding: LayoutRestBinding
 
     @Inject
     lateinit var restPublisherViewModel: RestPublisherViewModel
@@ -46,9 +51,15 @@ class RestPublisherActivity : BasePublisherActivity<RestPublishModel>() {
     private var restHttpGetParamList: MutableList<RestHttpGetParamModel> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_rest_publisher)
 
-        setSupportActionBar(custom_toolbar)
+        binding = ActivityRestPublisherBinding.inflate(layoutInflater)
+        layoutDatastringBinding = LayoutDatastringBinding.inflate(layoutInflater)
+        layoutPublisherHeaderBinding = LayoutPublisherHeaderBinding.inflate(layoutInflater)
+        layoutRestBinding = LayoutRestBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.customToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(true)
 
         super.onCreate(savedInstanceState)
@@ -87,29 +98,30 @@ class RestPublisherActivity : BasePublisherActivity<RestPublishModel>() {
     override fun initViews() {
         super.initViews()
 
-        spinner_methods.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
+        layoutRestBinding.spinnerMethods.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
 
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
 
-                when (position) {
-                    0 -> view_switcher.displayedChild = 1
-                    1, 2 -> view_switcher.displayedChild = 0
+                    when (position) {
+                        0 -> layoutDatastringBinding.viewSwitcher.displayedChild = 1
+                        1, 2 -> layoutDatastringBinding.viewSwitcher.displayedChild = 0
+                    }
                 }
             }
-        }
 
-        text_http_headers.setOnClickListener {
+        layoutRestBinding.textHttpHeaders.setOnClickListener {
             RestHeadersActivity.start(this, restHeaderList)
         }
 
-        text_http_get_params.setOnClickListener {
+        layoutDatastringBinding.textHttpGetParams.setOnClickListener {
             RestHttpGetParamsActivity.start(this, restHttpGetParamList)
         }
 
@@ -120,13 +132,13 @@ class RestPublisherActivity : BasePublisherActivity<RestPublishModel>() {
     override fun setFields(model: RestPublishModel) {
         super.setFields(model)
 
-        edit_url.setText(model.url)
+        layoutRestBinding.editUrl.setText(model.url)
         val selection = when (model.method) {
             "GET" -> 0
             "POST" -> 1
             else -> 2
         }
-        spinner_methods.setSelection(selection)
+        layoutRestBinding.spinnerMethods.setSelection(selection)
 
         addDisposable(
             restPublisherViewModel.getRESTHeadersById(model.id)
@@ -150,11 +162,12 @@ class RestPublisherActivity : BasePublisherActivity<RestPublishModel>() {
     }
 
     private fun updateHeaderText() {
-        text_http_headers.text = getString(R.string.headers, restHeaderList.size)
+        layoutRestBinding.textHttpHeaders.text = getString(R.string.headers, restHeaderList.size)
     }
 
     private fun updateHttpGetParamText() {
-        text_http_get_params.text = getString(R.string.http_get_params, restHttpGetParamList.size)
+        layoutDatastringBinding.textHttpGetParams.text =
+            getString(R.string.http_get_params, restHttpGetParamList.size)
     }
 
     override fun processViewModelSaveId(id: Long, model: RestPublishModel): Completable {
@@ -185,12 +198,12 @@ class RestPublisherActivity : BasePublisherActivity<RestPublishModel>() {
     }
 
     override fun toPublishModel(): RestPublishModel? {
-        val name = edit_name.text.toString().trim()
-        val url = edit_url.text.toString().trim()
-        val method = spinner_methods.selectedItem.toString()
-        val timeType = spinner_interval_time.selectedItem.toString()
-        val timeCount = edit_interval_count.text.toString()
-        val dataString = edit_datastring.text.toString()
+        val name = layoutPublisherHeaderBinding.editName.text.toString().trim()
+        val url = layoutRestBinding.editUrl.text.toString().trim()
+        val method = layoutRestBinding.spinnerMethods.selectedItem.toString()
+        val timeType = layoutPublisherHeaderBinding.spinnerIntervalTime.selectedItem.toString()
+        val timeCount = layoutPublisherHeaderBinding.editIntervalCount.text.toString()
+        val dataString = layoutDatastringBinding.editDatastring.text.toString()
         if (viewModel.checkFieldsAreEmpty(
                 name,
                 url,
@@ -215,17 +228,17 @@ class RestPublisherActivity : BasePublisherActivity<RestPublishModel>() {
             } else if (!isDataStringValid()) {
                 if (method == "GET") {
                     Toast.makeText(
-                            this,
-                            getString(R.string.http_get_params_not_valid),
-                            Toast.LENGTH_SHORT
-                        )
+                        this,
+                        getString(R.string.http_get_params_not_valid),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 } else {
                     Toast.makeText(
-                            this,
-                            getString(R.string.data_string_not_valid),
-                            Toast.LENGTH_SHORT
-                        )
+                        this,
+                        getString(R.string.data_string_not_valid),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
 
@@ -254,7 +267,7 @@ class RestPublisherActivity : BasePublisherActivity<RestPublishModel>() {
             if (model?.method == "GET") {
                 converter.parseAndValidateDataString(Gson().toJson(restHttpGetParamList))
             } else {
-                converter.parseAndValidateDataString(edit_datastring.text.toString())
+                converter.parseAndValidateDataString(layoutDatastringBinding.editDatastring.text.toString())
             }
         }
     }

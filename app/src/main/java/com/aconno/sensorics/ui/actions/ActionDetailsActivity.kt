@@ -11,6 +11,8 @@ import android.widget.CheckedTextView
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.DeviceSpinnerAdapter
+import com.aconno.sensorics.databinding.ActivityActionDetailsBinding
+import com.aconno.sensorics.databinding.ItemChipBinding
 import com.aconno.sensorics.domain.actions.outcomes.Outcome
 import com.aconno.sensorics.domain.ifttt.Condition
 import com.aconno.sensorics.domain.ifttt.LimitCondition
@@ -21,12 +23,13 @@ import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_action_details.*
-import kotlinx.android.synthetic.main.item_chip.view.*
 import timber.log.Timber
 import javax.inject.Inject
 
 class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogListener {
+
+    private lateinit var binding: ActivityActionDetailsBinding
+
     @Inject
     lateinit var actionDetailsViewModel: ActionDetailsViewModel
 
@@ -39,7 +42,11 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_action_details)
+
+        binding = ActivityActionDetailsBinding.inflate(layoutInflater)
+        val view = binding.root
+
+        setContentView(view)
 
         setDevicesSpinnerAdapter()
         setDevicesSelectListener()
@@ -62,18 +69,18 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
 
     override fun onResume() {
         super.onResume()
-        container_activity.requestFocus()
+        binding.containerActivity.requestFocus()
     }
 
     private fun setActiveSwitchListener() {
-        switch_active.setOnCheckedChangeListener { _, checked ->
-            val name = edittext_name.text.toString()
+        binding.switchActive.setOnCheckedChangeListener { _, checked ->
+            val name = binding.editTextName.text.toString()
             actionDetailsViewModel.setActive(name, checked)
         }
     }
 
     private fun setDevicesSpinnerAdapter() {
-        spinner_devices.adapter = deviceSpinnerAdapter
+        binding.spinnerDevices.adapter = deviceSpinnerAdapter
         disposables.add(
             actionDetailsViewModel.getDevices()
                 .subscribe({ devices ->
@@ -95,7 +102,7 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
                             deviceSpinnerAdapter.getDevices()
                                 .indexOfFirst { it.macAddress == defaultDeviceMac }
                         if (defaultPosition != -1) {
-                            spinner_devices.setSelection(defaultPosition)
+                            binding.spinnerDevices.setSelection(defaultPosition)
                         }
                     },
                     { throwable ->
@@ -106,27 +113,28 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
     }
 
     private fun setDevicesSelectListener() {
-        spinner_devices.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.spinnerDevices.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                Timber.d("Nothing selected")
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    Timber.d("Nothing selected")
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    Timber.d("Item selected, position: $position")
+                    val device = deviceSpinnerAdapter.getDevice(position)
+                    val name = binding.editTextName.text.toString()
+                    val message1 = binding.editTextMessage1.text.toString()
+                    val message2 = binding.editTextMessage2.text.toString()
+
+                    actionDetailsViewModel.setDevice(device, name, message1, message2)
+                }
             }
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                Timber.d("Item selected, position: $position")
-                val device = deviceSpinnerAdapter.getDevice(position)
-                val name = edittext_name.text.toString()
-                val message1 = edittext_message1.text.toString()
-                val message2 = edittext_message2.text.toString()
-
-                actionDetailsViewModel.setDevice(device, name, message1, message2)
-            }
-        }
     }
 
     private fun invalidateConditions(device: Device) {
@@ -138,17 +146,23 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
 
     private fun initConditionViews(readingTypes: List<String>, condition: Condition?) {
         readingTypes.forEachIndexed { index, readingType ->
-            val view = container_conditions.getChildAt(index)
+            val view = binding.containerConditions.getChildAt(index)
             if (view == null) {
-                val newView = LayoutInflater.from(this)
-                    .inflate(R.layout.item_chip, container_conditions, false)
-                newView.text_title.text = readingType
-                newView.setOnClickListener {
+//                val newView = LayoutInflater.from(this)
+//                    .inflate(R.layout.item_chip, binding.containerConditions, false)
+
+                val newBinding =
+                    ItemChipBinding.inflate(layoutInflater, binding.containerConditions, false)
+
+                newBinding.textTitle.text = readingType
+                newBinding.root.setOnClickListener {
                     LimitConditionDialog(this, readingType, this).show()
                 }
-                container_conditions.addView(newView)
+                binding.containerConditions.addView(newBinding.root)
             } else {
-                view.text_title.text = readingType
+                val newBinding =
+                    ItemChipBinding.inflate(layoutInflater, binding.containerConditions, false)
+                newBinding.textTitle.text = readingType
                 (view as CheckedTextView).isChecked = false
                 view.visibility = View.VISIBLE
                 view.setOnClickListener {
@@ -156,34 +170,34 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
                 }
             }
         }
-        if (container_conditions.childCount > readingTypes.size) {
-            for (index in readingTypes.size until container_conditions.childCount) {
-                container_conditions.getChildAt(index).visibility = View.GONE
+        if (binding.containerConditions.childCount > readingTypes.size) {
+            for (index in readingTypes.size until binding.containerConditions.childCount) {
+                binding.containerConditions.getChildAt(index).visibility = View.GONE
             }
         }
         condition?.let {
             val position = readingTypes.indexOf(condition.readingType)
-            val view = container_conditions.getChildAt(position)
+            val view = binding.containerConditions.getChildAt(position)
             if (view is CheckedTextView) {
                 view.text = condition.toString()
                 view.isChecked = true
             } else {
-                val name = edittext_name.text.toString()
-                val message1 = edittext_message1.text.toString()
-                val message2 = edittext_message2.text.toString()
+                val name = binding.editTextName.text.toString()
+                val message1 = binding.editTextMessage1.text.toString()
+                val message2 = binding.editTextMessage2.text.toString()
                 actionDetailsViewModel.clearCondition(name, message1, message2)
             }
         }
     }
 
     private fun showSnackbarMessage(message: String) {
-        Snackbar.make(container_activity, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.containerActivity, message, Snackbar.LENGTH_SHORT).show()
     }
 
     override fun applyLimitCondition(limitCondition: LimitCondition) {
-        val name = edittext_name.text.toString()
-        val message1 = edittext_message1.text.toString()
-        val message2 = edittext_message2.text.toString()
+        val name = binding.editTextName.text.toString()
+        val message1 = binding.editTextMessage1.text.toString()
+        val message2 = binding.editTextMessage2.text.toString()
         actionDetailsViewModel.setLimitCondition(limitCondition, name, message1, message2)
     }
 
@@ -202,19 +216,19 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
     }
 
     private fun setName(name: String) {
-        edittext_name.setText(name)
+        binding.editTextName.setText(name)
     }
 
     private fun setActive(active: Boolean) {
-        switch_active.isChecked = active
+        binding.switchActive.isChecked = active
     }
 
     private fun setDevice(device: Device?) {
         device?.let {
             val position = deviceSpinnerAdapter.getDevicePosition(device)
             Timber.i("Position-------- $position")
-            if (spinner_devices.selectedItemPosition != position) {
-                spinner_devices.setSelection(position)
+            if (binding.spinnerDevices.selectedItemPosition != position) {
+                binding.spinnerDevices.setSelection(position)
             } else {
                 invalidateConditions(device)
             }
@@ -222,17 +236,20 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
     }
 
     private fun setTimeChangeListeners() {
-        timepicker_time_from.setIs24HourView(true)
-        timepicker_time_from.setOnTimeChangedListener { _, hour, minute ->
-            val name = edittext_name.text.toString()
+        binding.timePickerTimeFrom.setIs24HourView(true)
+        binding.timePickerTimeFrom.setOnTimeChangedListener { _, hour, minute ->
+            val name = binding.editTextName.text.toString()
             actionDetailsViewModel.setTimeFrom(name, hour * 3600 + minute * 60)
         }
 
-        timepicker_time_to.setIs24HourView(true)
-        timepicker_time_to.setOnTimeChangedListener { _, hour, minute ->
-            val name = edittext_name.text.toString()
-            actionDetailsViewModel.setTimeTo(name, hour * 3600 + minute * 60)
+        binding.timePickerTimeTo.apply {
+            setIs24HourView(true)
+            setOnTimeChangedListener { _, hour, minute ->
+                val name = binding.editTextName.text.toString()
+                actionDetailsViewModel.setTimeTo(name, hour * 3600 + minute * 60)
+            }
         }
+
     }
 
     @Suppress("DEPRECATION")
@@ -247,11 +264,16 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
         val hours = time % 24
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            timepicker_time_from.hour = hours
-            timepicker_time_from.minute = minutes
+            binding.timePickerTimeFrom.apply {
+                hour = hours
+                minute = minutes
+            }
+
         } else {
-            timepicker_time_from.currentHour = hours
-            timepicker_time_from.currentMinute = minutes
+            binding.timePickerTimeFrom.apply {
+                currentHour = hours
+                currentMinute = minutes
+            }
         }
     }
 
@@ -267,83 +289,88 @@ class ActionDetailsActivity : DaggerAppCompatActivity(), LimitConditionDialogLis
         val hours = time % 24
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            timepicker_time_to.hour = hours
-            timepicker_time_to.minute = minutes
+            binding.timePickerTimeTo.apply {
+                hour = hours
+                minute = minutes
+            }
+
         } else {
-            timepicker_time_to.currentHour = hours
-            timepicker_time_to.currentMinute = minutes
+            binding.timePickerTimeTo.apply {
+                currentHour = hours
+                currentMinute = minutes
+            }
         }
     }
 
     private fun setOutcomeSelectListeners() {
-        button_outcome_notification.setOnClickListener {
+        binding.buttonOutcomeNotification.setOnClickListener {
             setOutcomeData(Outcome.OUTCOME_TYPE_NOTIFICATION)
         }
 
-        button_outcome_text_to_speech.setOnClickListener {
+        binding.buttonOutcomeTextToSpeech.setOnClickListener {
             setOutcomeData(Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH)
         }
 
-        button_outcome_vibration.setOnClickListener {
+        binding.buttonOutcomeVibration.setOnClickListener {
             setOutcomeData(Outcome.OUTCOME_TYPE_VIBRATION)
         }
 
-        button_outcome_alarm.setOnClickListener {
+        binding.buttonOutcomeAlarm.setOnClickListener {
             setOutcomeData(Outcome.OUTCOME_TYPE_ALARM)
         }
 
-        button_outcome_sms.setOnClickListener {
+        binding.buttonOutcomeSms.setOnClickListener {
             setOutcomeData(Outcome.OUTCOME_TYPE_SMS)
         }
     }
 
     private fun setOutcomeData(type: Int) {
-        val message1 = edittext_message1.text.toString()
-        val message2 = edittext_message2.text.toString()
-        val name = edittext_name.text.toString()
+        val message1 = binding.editTextMessage1.text.toString()
+        val message2 = binding.editTextMessage2.text.toString()
+        val name = binding.editTextName.text.toString()
         actionDetailsViewModel.setOutcome(type, message1, message2, name)
     }
 
     private fun setOutcome(outcome: Outcome?) {
-        button_outcome_notification.isChecked = false
-        button_outcome_text_to_speech.isChecked = false
-        button_outcome_vibration.isChecked = false
-        button_outcome_alarm.isChecked = false
-        button_outcome_sms.isChecked = false
-        edittext_message1.visibility = View.GONE
-        edittext_message2.visibility = View.GONE
+        binding.buttonOutcomeNotification.isChecked = false
+        binding.buttonOutcomeTextToSpeech.isChecked = false
+        binding.buttonOutcomeVibration.isChecked = false
+        binding.buttonOutcomeAlarm.isChecked = false
+        binding.buttonOutcomeSms.isChecked = false
+        binding.editTextMessage1.visibility = View.GONE
+        binding.editTextMessage2.visibility = View.GONE
 
         outcome?.let {
             when (outcome.type) {
                 Outcome.OUTCOME_TYPE_NOTIFICATION -> {
-                    button_outcome_notification.isChecked = true
-                    edittext_message1.visibility = View.VISIBLE
-                    edittext_message1.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
+                    binding.buttonOutcomeNotification.isChecked = true
+                    binding.editTextMessage1.visibility = View.VISIBLE
+                    binding.editTextMessage1.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
                 }
 
                 Outcome.OUTCOME_TYPE_TEXT_TO_SPEECH -> {
-                    button_outcome_text_to_speech.isChecked = true
-                    edittext_message1.visibility = View.VISIBLE
-                    edittext_message1.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
+                    binding.buttonOutcomeTextToSpeech.isChecked = true
+                    binding.editTextMessage1.visibility = View.VISIBLE
+                    binding.editTextMessage1.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
                 }
-                Outcome.OUTCOME_TYPE_VIBRATION -> button_outcome_vibration.isChecked = true
-                Outcome.OUTCOME_TYPE_ALARM -> button_outcome_alarm.isChecked = true
+                Outcome.OUTCOME_TYPE_VIBRATION -> binding.buttonOutcomeVibration.isChecked = true
+                Outcome.OUTCOME_TYPE_ALARM -> binding.buttonOutcomeAlarm.isChecked = true
                 Outcome.OUTCOME_TYPE_SMS -> {
-                    button_outcome_sms.isChecked = true
-                    edittext_message1.visibility = View.VISIBLE
-                    edittext_message2.visibility = View.VISIBLE
-                    edittext_message1.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
-                    edittext_message2.setText(outcome.parameters[Outcome.PHONE_NUMBER] ?: "")
+                    binding.buttonOutcomeSms.isChecked = true
+                    binding.editTextMessage1.visibility = View.VISIBLE
+                    binding.editTextMessage2.visibility = View.VISIBLE
+                    binding.editTextMessage1.setText(outcome.parameters[Outcome.TEXT_MESSAGE] ?: "")
+                    binding.editTextMessage2.setText(outcome.parameters[Outcome.PHONE_NUMBER] ?: "")
                 }
             }
         }
     }
 
     private fun setSaveButtonListener() {
-        button_save.setOnClickListener {
-            val message1 = edittext_message1.text.toString()
-            val message2 = edittext_message2.text.toString()
-            val name = edittext_name.text.toString()
+        binding.buttonSave.setOnClickListener {
+            val message1 = binding.editTextMessage1.text.toString()
+            val message2 = binding.editTextMessage2.text.toString()
+            val name = binding.editTextName.text.toString()
             actionDetailsViewModel.saveAction(application, name, message1, message2)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

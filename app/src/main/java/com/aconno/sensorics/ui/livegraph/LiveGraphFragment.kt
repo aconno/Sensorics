@@ -6,13 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.ActivityGraphBinding
 import com.aconno.sensorics.ui.graph.BleGraph
 import com.aconno.sensorics.viewmodel.LiveGraphViewModel
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.activity_graph.*
 import javax.inject.Inject
 
 class LiveGraphFragment : DaggerFragment() {
+
+    private var binding: ActivityGraphBinding? = null
 
     @Inject
     lateinit var liveGraphViewModel: LiveGraphViewModel
@@ -38,20 +40,21 @@ class LiveGraphFragment : DaggerFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.activity_graph, container, false)
+        binding = ActivityGraphBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     private fun loadGraph(type: String) {
         val graph: BleGraph = liveGraphViewModel.getGraph(type)
-        line_chart.description = graph.getDescription()
-        line_chart.data = graph.lineData
-        line_chart.invalidate()
+        binding?.lineChart?.description = graph.getDescription()
+        binding?.lineChart?.data = graph.lineData
+        binding?.lineChart?.invalidate()
     }
 
     private fun updateGraph() {
-        line_chart.data?.notifyDataChanged()
-        line_chart.notifyDataSetChanged()
-        line_chart.invalidate()
+        binding?.lineChart?.data?.notifyDataChanged()
+        binding?.lineChart?.notifyDataSetChanged()
+        binding?.lineChart?.invalidate()
     }
 
     override fun onResume() {
@@ -59,6 +62,11 @@ class LiveGraphFragment : DaggerFragment() {
         liveGraphViewModel.setMacAddressAndGraphName(macAddress, graphName)
         liveGraphViewModel.getUpdates().observe(this, Observer { updateGraph() })
         loadGraph(graphName)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
     }
 
     companion object {

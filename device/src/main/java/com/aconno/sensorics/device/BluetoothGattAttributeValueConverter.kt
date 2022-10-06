@@ -14,6 +14,7 @@ class BluetoothGattAttributeValueConverter @Inject constructor() {
          * Characteristic value format type float (32-bit float)
          */
         private const val FORMAT_STRING = 0x36
+
         /**
          * Characteristic value format type float (32-bit float)
          */
@@ -33,7 +34,7 @@ class BluetoothGattAttributeValueConverter @Inject constructor() {
             "FLOAT" -> FORMAT_FLOAT
             "STRING" -> FORMAT_STRING
             "BYTE" -> FORMAT_BYTE
-            else -> BluetoothGattCharacteristic.FORMAT_UINT8
+            else -> FORMAT_UINT8
         }
     }
 
@@ -64,9 +65,8 @@ class BluetoothGattAttributeValueConverter @Inject constructor() {
      */
     fun setValue(descriptor: BluetoothGattDescriptor, type: String, value: Any) {
 
-        val realType = getType(type)
-
-        when (realType) {
+        @Suppress("DEPRECATION")
+        when (getType(type)) {
             FORMAT_BYTE -> descriptor.value = value as ByteArray
             else -> throw IllegalArgumentException("$type Format is not supported.")
         }

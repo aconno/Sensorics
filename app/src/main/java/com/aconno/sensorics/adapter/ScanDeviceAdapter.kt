@@ -2,14 +2,13 @@ package com.aconno.sensorics.adapter
 
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.ItemScandeviceBinding
 import com.aconno.sensorics.domain.model.ScanDevice
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.item_scandevice.view.*
 
 class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
 
@@ -49,9 +48,11 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_scandevice, parent, false)
-        return ViewHolder(view)
+
+        val binding =
+            ItemScandeviceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -62,21 +63,22 @@ class ScanDeviceAdapter : RecyclerView.Adapter<ScanDeviceAdapter.ViewHolder>() {
         holder.bind(devices[position])
     }
 
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(val binding: ItemScandeviceBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(scanDevice: ScanDevice) {
 
             if (!hasIconPath(scanDevice.device.name)) {
-                view.image_icon.setImageResource(R.drawable.ic_sensa)
+                binding.imageIcon.setImageResource(R.drawable.ic_sensa)
             } else {
                 val icon = Drawable.createFromPath(iconPathHashMap[scanDevice.device.name])
-                view.image_icon.setImageDrawable(icon)
+                binding.imageIcon.setImageDrawable(icon)
             }
 
-            view.text_name.text = scanDevice.device.name
-            view.text_mac_address.text = scanDevice.device.macAddress
-            view.text_rssi.text = scanDevice.rssi.toString()
-            view.setOnClickListener {
+            binding.textName.text = scanDevice.device.name
+            binding.textMacAddress.text = scanDevice.device.macAddress
+            binding.textRssi.text = scanDevice.rssi.toString()
+            binding.root.setOnClickListener {
                 clickedDeviceStream.onNext(scanDevice)
             }
         }

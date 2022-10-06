@@ -57,7 +57,7 @@ class VirtualScanningSourceListViewModel(
         return getAllMqttSourcesUseCase.execute().map {
             it.map { source ->
                 when(source) {
-                    is MqttVirtualScanningSource -> mqttVirtualScanningSourceModelDataMapper.toMqttVirtualScanningSourceModel(source) as BaseVirtualScanningSourceModel
+                    is MqttVirtualScanningSource -> mqttVirtualScanningSourceModelDataMapper.toMqttVirtualScanningSourceModel(source)
                     else -> throw RuntimeException("Invalid virtual scanning source type")
                 }
 

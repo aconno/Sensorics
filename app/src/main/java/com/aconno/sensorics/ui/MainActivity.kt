@@ -24,6 +24,9 @@ import androidx.lifecycle.Observer
 import androidx.work.*
 import com.aconno.sensorics.*
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.ActivityBuyBeaconsBinding
+import com.aconno.sensorics.databinding.ActivityToolbarBinding
+import com.aconno.sensorics.databinding.FragmentSavedDevicesBinding
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.scanning.BluetoothState
 import com.aconno.sensorics.domain.scanning.ScanEvent
@@ -40,8 +43,6 @@ import com.aconno.sensorics.viewmodel.BluetoothViewModel
 import com.aconno.sensorics.viewmodel.MqttVirtualScanningViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_toolbar.*
-import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
@@ -52,6 +53,8 @@ import javax.inject.Inject
 class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallbacks,
     ScannedDevicesDialogListener, SavedDevicesFragmentListener, LiveGraphOpener,
     SavedDevicesFragment.ItemSelectionStateListener {
+
+    private lateinit var binding: ActivityToolbarBinding
 
     @Inject
     lateinit var bluetoothStateReceiver: BluetoothStateReceiver
@@ -80,18 +83,22 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_toolbar)
+
+        binding = ActivityToolbarBinding.inflate(layoutInflater)
+        val view = binding.root
+
+        setContentView(view)
 
         bluetoothStatusSnackbar = Snackbar.make(
-            content_container,
+            binding.contentContainer,
             R.string.bt_disabled,
             Snackbar.LENGTH_INDEFINITE
         ).setAction(R.string.enable) {
             bluetoothViewModel.enableBluetooth()
         }.setActionTextColor(ContextCompat.getColor(this, R.color.primaryColor))
 
-        toolbar.title = getString(R.string.app_name)
-        setSupportActionBar(toolbar)
+        binding.toolbar.title = getString(R.string.app_name)
+        setSupportActionBar(binding.toolbar)
 
         if (savedInstanceState == null) {
             showSavedDevicesFragment()
@@ -100,7 +107,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
         scheduleWork()
         observeScanEvents()
 
-        if(!bluetoothViewModel.isBluetoothAvailable() && savedInstanceState == null) {
+        if (!bluetoothViewModel.isBluetoothAvailable() && savedInstanceState == null) {
             displayBluetoothNotAvailableDialog()
         }
     }
@@ -109,7 +116,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.bluetooth_not_available))
             .setMessage(getString(R.string.bletooth_not_available_message))
-            .setPositiveButton(getString(R.string.ok)) { _, _ ->}
+            .setPositiveButton(getString(R.string.ok)) { _, _ -> }
             .show()
     }
 
@@ -163,12 +170,12 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     private fun onBluetoothOff() {
         stopScanning()
 
-        (supportFragmentManager.findFragmentById(content_container.id)
+        (supportFragmentManager.findFragmentById(binding.contentContainer.id)
                 as? SavedDevicesFragment)?.onBluetoothOff()
     }
 
     private fun onBluetoothOn() {
-        (supportFragmentManager.findFragmentById(content_container.id)
+        (supportFragmentManager.findFragmentById(binding.contentContainer.id)
                 as? SavedDevicesFragment)?.onBluetoothOn()
 
         onBluetoothOnAction?.run()
@@ -198,7 +205,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
     override fun openLiveGraph(macAddress: String, sensorName: String) {
         supportFragmentManager.beginTransaction().add(
-            content_container.id,
+            binding.contentContainer.id,
             LiveGraphFragment.newInstance(macAddress, sensorName)
         ).addToBackStack(null).commit()
     }
@@ -261,7 +268,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     //call the html page
     fun showSensorValues(device: Device) {
         supportFragmentManager.beginTransaction()
-            .replace(content_container.id, getReadingListFragment(device))
+            .replace(binding.contentContainer.id, getReadingListFragment(device))
             .addToBackStack(null)
             .commit()
     }
@@ -277,7 +284,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
     private fun showSavedDevicesFragment() {
         supportFragmentManager.beginTransaction()
-            .replace(content_container.id, SavedDevicesFragment())
+            .replace(binding.contentContainer.id, SavedDevicesFragment())
             .commit()
     }
 
@@ -413,7 +420,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
             else -> { //all requirements needed to start scanning are fulfilled
                 bluetoothScanningViewModel.startScanning(filterByDevice)
                 if (!filterByDevice) {
-                    (supportFragmentManager.findFragmentById(content_container.id)
+                    (supportFragmentManager.findFragmentById(binding.contentContainer.id)
                             as? SavedDevicesFragment)?.onDeviceDiscoveryScanStarted()
                 }
 
@@ -441,9 +448,13 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+
+        val fragmentBinding =
+            FragmentSavedDevicesBinding.inflate(layoutInflater, binding.root, false)
+
         Timber.d("Permissions denied, request code: $requestCode, permissions: $perms")
         Snackbar.make(
-            container_fragment,
+            fragmentBinding.containerFragment, //TODO: Expression container_fragment replaced with this line. Check if this is correct.
             R.string.snackbar_permission_message,
             Snackbar.LENGTH_LONG
         )
@@ -466,7 +477,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     fun onDashboardClicked() {
         supportFragmentManager.beginTransaction()
             .replace(
-                content_container.id,
+                binding.contentContainer.id,
                 DashboardFragment.newInstance()
             )
             .addToBackStack(null)
@@ -476,7 +487,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     fun onUseCaseClicked(macAddress: String, deviceName: String) {
         supportFragmentManager.beginTransaction()
             .replace(
-                content_container.id,
+                binding.contentContainer.id,
                 UseCasesFragment.newInstance(macAddress, deviceName)
             )
             .addToBackStack(null)
@@ -537,7 +548,7 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     }
 
     override fun onItemSelectionStateExited() {
-        toolbar.title = getString(R.string.app_name)
+        binding.toolbar.title = getString(R.string.app_name)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         showMenu = true
@@ -545,6 +556,6 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
     }
 
     override fun onSelectedItemsCountChanged(selectedItems: Int) {
-        toolbar.title = getString(R.string.selected_items_count, selectedItems)
+        binding.toolbar.title = getString(R.string.selected_items_count, selectedItems)
     }
 }

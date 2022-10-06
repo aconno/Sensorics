@@ -15,4 +15,13 @@ class GooglePublishModel(
     timeMillis: Long,
     lastTimeMillis: Long,
     dataString: String
-) : BasePublishModel(id, PublishType.GOOGLE, name, enabled, timeType, timeMillis, lastTimeMillis, dataString)
+) : BasePublishModel(
+    id,
+    PublishType.GOOGLE,
+    name,
+    enabled,
+    timeType,
+    timeMillis,
+    lastTimeMillis,
+    dataString
+)

@@ -5,9 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.ItemDeviceSwitchBinding
 import com.aconno.sensorics.getRealName
 import com.aconno.sensorics.model.DeviceRelationModel
-import kotlinx.android.synthetic.main.item_device_switch.view.*
 
 
 class DeviceSelectAdapter(
@@ -16,9 +16,11 @@ class DeviceSelectAdapter(
 ) : RecyclerView.Adapter<DeviceSelectAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_device_switch, parent, false)
-        return ViewHolder(view)
+
+        val binding =
+            ItemDeviceSwitchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -28,17 +30,18 @@ class DeviceSelectAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(itemList[position])
         itemCheckChangeListener?.let {
-            holder.view.switch_device!!.setOnCheckedChangeListener { _, isChecked ->
+            holder.binding.switchDevice.setOnCheckedChangeListener { _, isChecked ->
                 it.onItemCheckedChange(position, isChecked)
             }
         }
     }
 
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(val binding: ItemDeviceSwitchBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(deviceRelationModel: DeviceRelationModel) {
-            view.name.text = deviceRelationModel.getRealName()
-            view.mac_address.text = deviceRelationModel.macAddress
-            view.switch_device.isChecked = deviceRelationModel.related
+            binding.name.text = deviceRelationModel.getRealName()
+            binding.macAddress.text = deviceRelationModel.macAddress
+            binding.switchDevice.isChecked = deviceRelationModel.related
         }
     }
 

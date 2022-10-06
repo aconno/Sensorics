@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.*
 import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsFragmentListener
+import com.aconno.sensorics.databinding.ActivitySettingsFrameworkBinding
 import com.aconno.sensorics.ui.beacon_settings.fragments.BeaconSettingsFragment
 import com.aconno.sensorics.ui.dialogs.CancelBtnSchedulerProgressDialog
 import com.aconno.sensorics.ui.dialogs.PasswordDialog
@@ -22,11 +23,12 @@ import com.aconno.sensorics.viewmodel.BeaconSettingsTransporterSharedViewModel
 import com.aconno.sensorics.viewmodel.BeaconSettingsViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_settings_framework.*
 import timber.log.Timber
 import javax.inject.Inject
 
 class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragmentListener {
+
+    private lateinit var binding: ActivitySettingsFrameworkBinding
 
     private val handler: Handler = Handler(Looper.myLooper() ?: Looper.getMainLooper())
     private var progressDialog: CancelBtnSchedulerProgressDialog? = null
@@ -43,7 +45,11 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings_framework)
+
+        binding = ActivitySettingsFrameworkBinding.inflate(layoutInflater)
+        val view = binding.root
+
+        setContentView(view)
 
         if (savedInstanceState == null) {
             if (supportFragmentManager.findFragmentById(R.id.content_container) == null) {
@@ -54,7 +60,6 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
                 }
             }
         }
-
 
         setupUI()
         subscribeOnData()
@@ -107,7 +112,7 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
     }
 
     private fun setupUI() {
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         /*Set titlebar */
         supportActionBar?.subtitle = deviceMac
 
@@ -117,22 +122,22 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
     }
 
     private fun subscribeOnData() {
-        viewModel.connectionResultEvent.observe(this, {
+        viewModel.connectionResultEvent.observe(this) {
             it?.let { event ->
                 newEventReceived(event)
             }
-        })
-        viewModel.beaconLiveData.observe(this, {
+        }
+        viewModel.beaconLiveData.observe(this) {
             it?.let { beaconData ->
                 Timber.i("handle beacon data. slots count ${beaconData.slotCount}")
                 settingsTransporter.sendBeaconJsonToObservers(beaconData.beaconJson)
             }
-        })
-        settingsTransporter.beaconUpdatedJsonLiveDataForActivity.observe(this, {
+        }
+        settingsTransporter.beaconUpdatedJsonLiveDataForActivity.observe(this) {
             it?.let { beaconJson ->
                 viewModel.beaconJsonUpdated(beaconJson)
             }
-        })
+        }
     }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
@@ -257,7 +262,7 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
     }
 
     private fun showTryAgainPasswordSnackBar() {
-        indefiniteSnackBar = ll_settings_root.snack(
+        indefiniteSnackBar = binding.llSettingsRoot.snack(
             R.string.cant_connect_without_password,
             Snackbar.LENGTH_INDEFINITE
         ) {
@@ -272,7 +277,7 @@ class BeaconSettingsActivity : DaggerAppCompatActivity(), BeaconSettingsFragment
 
     private fun showTryAgainToConnectSnackBar() {
         indefiniteSnackBar =
-            ll_settings_root.snack(R.string.error_occurred, Snackbar.LENGTH_INDEFINITE) {
+            binding.llSettingsRoot.snack(R.string.error_occurred, Snackbar.LENGTH_INDEFINITE) {
                 action(
                     R.string.try_again,
                     ContextCompat.getColor(applicationContext, R.color.primaryColor)

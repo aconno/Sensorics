@@ -9,19 +9,24 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.ActivityActionListBinding
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_action_list.*
 
 class ActionListActivity : DaggerAppCompatActivity(),
     ActionListFragment.ItemSelectionStateListener {
 
     private var mainMenu: Menu? = null
     private var menuResource: Int = R.menu.share_all_menu
+    private lateinit var binding: ActivityActionListBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_action_list)
-        actions_toolbar.title = getString(R.string.actions)
+
+        binding = ActivityActionListBinding.inflate(layoutInflater)
+        val view = binding.root
+
+        setContentView(view)
+        binding.actionsToolbar.title = getString(R.string.actions)
 
         val fragment: Fragment? = supportFragmentManager.findFragmentById(
             R.id.action_list_container
@@ -35,7 +40,7 @@ class ActionListActivity : DaggerAppCompatActivity(),
 
         invalidateOptionsMenu()
 
-        setSupportActionBar(actions_toolbar)
+        setSupportActionBar(binding.actionsToolbar)
     }
 
 
@@ -54,7 +59,7 @@ class ActionListActivity : DaggerAppCompatActivity(),
     }
 
     override fun onItemSelectionStateExited() {
-        actions_toolbar.title = getString(R.string.actions)
+        binding.actionsToolbar.title = getString(R.string.actions)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         menuResource = R.menu.share_all_menu
@@ -62,7 +67,7 @@ class ActionListActivity : DaggerAppCompatActivity(),
     }
 
     override fun onSelectedItemsCountChanged(selectedItems: Int) {
-        actions_toolbar.title = getString(R.string.selected_items_count, selectedItems)
+        binding.actionsToolbar.title = getString(R.string.selected_items_count, selectedItems)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {

@@ -7,19 +7,22 @@ import android.widget.Toast
 import com.aconno.sensorics.PublisherIntervalConverter
 import com.aconno.sensorics.R
 import com.aconno.sensorics.data.publisher.AzureMqttPublisher
+import com.aconno.sensorics.databinding.*
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.AzureMqttPublishModel
 import com.aconno.sensorics.model.mapper.AzureMqttPublishModelDataMapper
 import com.aconno.sensorics.viewmodel.AzureMqttPublisherViewModel
 import com.aconno.sensorics.viewmodel.PublisherViewModel
-import kotlinx.android.synthetic.main.activity_azure_mqtt_publisher.*
-import kotlinx.android.synthetic.main.layout_azure_mqtt.*
-import kotlinx.android.synthetic.main.layout_datastring.*
-import kotlinx.android.synthetic.main.layout_publisher_header.*
 import javax.inject.Inject
 
 class AzureMqttPublisherActivity : BasePublisherActivity<AzureMqttPublishModel>() {
+
+    private lateinit var binding: ActivityAzureMqttPublisherBinding
+    private lateinit var layoutAzureBinding: LayoutAzureMqttBinding
+    private lateinit var layoutDatastringBinding: LayoutDatastringBinding
+    private lateinit var layoutPublisherBinding: LayoutPublisherHeaderBinding
+
     @Inject
     lateinit var azureMqttPublisherViewModel: AzureMqttPublisherViewModel
 
@@ -27,9 +30,16 @@ class AzureMqttPublisherActivity : BasePublisherActivity<AzureMqttPublishModel>(
         get() = azureMqttPublisherViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_azure_mqtt_publisher)
 
-        setSupportActionBar(custom_toolbar)
+        binding = ActivityAzureMqttPublisherBinding.inflate(layoutInflater)
+        layoutAzureBinding = LayoutAzureMqttBinding.inflate(layoutInflater)
+        layoutDatastringBinding = LayoutDatastringBinding.inflate(layoutInflater)
+        layoutPublisherBinding = LayoutPublisherHeaderBinding.inflate(layoutInflater)
+
+        val view = binding.root
+        setContentView(view)
+
+        setSupportActionBar(binding.customToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(true)
 
         initViews()
@@ -39,7 +49,7 @@ class AzureMqttPublisherActivity : BasePublisherActivity<AzureMqttPublishModel>(
     override fun initViews() {
         super.initViews()
 
-        iot_credentials_info.setOnClickListener {
+        layoutAzureBinding.iotCredentialsInfo.setOnClickListener {
             createAndShowInfoDialog(R.string.iot_hub_info_title, R.string.iot_hub_info_text)
         }
     }
@@ -47,20 +57,20 @@ class AzureMqttPublisherActivity : BasePublisherActivity<AzureMqttPublishModel>(
     override fun setFields(model: AzureMqttPublishModel) {
         super.setFields(model)
 
-        edit_iot_hub_name.setText(model.iotHubName)
-        edit_device_id.setText(model.deviceId)
-        edit_shared_access_key.setText(model.sharedAccessKey)
-        edit_datastring.setText(model.dataString)
+        layoutAzureBinding.editIotHubName.setText(model.iotHubName)
+        layoutAzureBinding.editDeviceId.setText(model.deviceId)
+        layoutAzureBinding.editSharedAccessKey.setText(model.sharedAccessKey)
+        layoutDatastringBinding.editDatastring.setText(model.dataString)
     }
 
     override fun toPublishModel(): AzureMqttPublishModel? {
-        val name = edit_name.text.toString().trim()
-        val iotHubName = edit_iot_hub_name.text.toString().trim()
-        val deviceId = edit_device_id.text.toString().trim()
-        val sharedAccessKey = edit_shared_access_key.text.toString().trim()
-        val timeType = spinner_interval_time.selectedItem.toString()
-        val timeCount = edit_interval_count.text.toString()
-        val datastring = edit_datastring.text.toString()
+        val name = layoutPublisherBinding.editName.text.toString().trim()
+        val iotHubName = layoutAzureBinding.editIotHubName.text.toString().trim()
+        val deviceId = layoutAzureBinding.editDeviceId.text.toString().trim()
+        val sharedAccessKey = layoutAzureBinding.editSharedAccessKey.text.toString().trim()
+        val timeType = layoutPublisherBinding.spinnerIntervalTime.selectedItem.toString()
+        val timeCount = layoutPublisherBinding.editIntervalCount.text.toString()
+        val datastring = layoutDatastringBinding.editDatastring.text.toString()
 
         if (viewModel.checkFieldsAreEmpty(
                 name,
@@ -81,10 +91,10 @@ class AzureMqttPublisherActivity : BasePublisherActivity<AzureMqttPublishModel>(
         } else {
             if (!isDataStringValid()) {
                 Toast.makeText(
-                        this,
-                        getString(R.string.data_string_not_valid),
-                        Toast.LENGTH_SHORT
-                    )
+                    this,
+                    getString(R.string.data_string_not_valid),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
 
                 return null

@@ -45,7 +45,6 @@ import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_device_main.*
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
@@ -55,6 +54,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import android.content.Intent
 import android.webkit.*
+import com.aconno.sensorics.databinding.FragmentDeviceMainBinding
 import com.aconno.sensorics.domain.migrate.hexStringToByteArray
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
@@ -63,6 +63,8 @@ import com.google.zxing.integration.android.IntentIntegrator
 
 @SuppressLint("SetJavaScriptEnabled")
 class DeviceMainFragment : DaggerFragment() {
+
+    private var binding: FragmentDeviceMainBinding? = null
 
     @Inject
     lateinit var connectionCharacteristicsFinder: ConnectionCharacteristicsFinder
@@ -112,6 +114,8 @@ class DeviceMainFragment : DaggerFragment() {
     var menu: Menu? = null
 
     private lateinit var deviceScanResultFlowDisposable: Disposable
+
+    private var serviceIsBound: Boolean = false
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -174,8 +178,9 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     override fun onDetach() {
-        if (device.connectable)
-            context?.unbindService(serviceConnection)
+        if (serviceIsBound) {
+            requireContext().unbindService(serviceConnection)
+        }
         super.onDetach()
     }
 
@@ -265,28 +270,29 @@ class DeviceMainFragment : DaggerFragment() {
     }
 
     private fun setupWebView() {
-        web_view.webChromeClient = WebChromeClient()
-        web_view.webViewClient = MyWebViewClient()
-        web_view.addJavascriptInterface(WebViewJavaScriptInterface(), "app")
-        web_view.settings.javaScriptEnabled = true
-        web_view.settings.allowContentAccess = true
-        web_view.settings.allowFileAccess = true
-
+        binding?.webView?.apply {
+            webChromeClient = WebChromeClient()
+            webViewClient = MyWebViewClient()
+            addJavascriptInterface(WebViewJavaScriptInterface(), "app")
+            settings.javaScriptEnabled = true
+            settings.allowContentAccess = true
+            settings.allowFileAccess = true
+        }
 
         webViewBundle?.let { bundle ->
-            web_view.restoreState(bundle)
+            binding?.webView?.restoreState(bundle)
         } ?: kotlin.run {
             getResourceDisposable = mainResourceViewModel.getResourcePath(device.name)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { resourcePath ->
-                        text_error_message.visibility = View.INVISIBLE
-                        web_view.loadUrl(resourcePath)
+                        binding?.textErrorMessage?.visibility = View.INVISIBLE
+                        binding?.webView?.loadUrl(resourcePath)
                     },
                     { throwable ->
-                        text_error_message.visibility = View.VISIBLE
-                        text_error_message.text = throwable.message
+                        binding?.textErrorMessage?.visibility = View.VISIBLE
+                        binding?.textErrorMessage?.text = throwable.message
                     })
         }
     }
@@ -310,22 +316,26 @@ class DeviceMainFragment : DaggerFragment() {
             BluetoothGattCallback.ACTION_GATT_CONNECTING -> {
                 setToggleActionText(R.string.disconnect)
 
-                Snackbar.make(
-                    container_fragment,
-                    getString(R.string.connecting).lowercaseCapitalize(),
-                    Snackbar.LENGTH_INDEFINITE
-                ).show()
+                binding?.containerFragment?.let {
+                    Snackbar.make(
+                        it,
+                        getString(R.string.connecting).lowercaseCapitalize(),
+                        Snackbar.LENGTH_INDEFINITE
+                    ).show()
+                }
 
                 getString(R.string.connecting)
             }
             BluetoothGattCallback.ACTION_GATT_CONNECTED -> {
                 setToggleActionText(R.string.disconnect)
 
-                Snackbar.make(
-                    container_fragment,
-                    getString(R.string.connected).lowercaseCapitalize(),
-                    Snackbar.LENGTH_SHORT
-                ).show()
+                binding?.containerFragment?.let {
+                    Snackbar.make(
+                        it,
+                        getString(R.string.connected).lowercaseCapitalize(),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
 
                 readCommandQueue.clear()
                 writeCommandQueue.clear()
@@ -339,11 +349,13 @@ class DeviceMainFragment : DaggerFragment() {
 
                 bluetoothConnectService?.bluetooth?.requestMtu(517)
 
-                Snackbar.make(
-                    container_fragment,
-                    getString(R.string.services_discovered).lowercaseCapitalize(),
-                    Snackbar.LENGTH_SHORT
-                ).show()
+                binding?.containerFragment?.let {
+                    Snackbar.make(
+                        it,
+                        getString(R.string.services_discovered).lowercaseCapitalize(),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
 
                 getString(R.string.services_discovered)
             }
@@ -355,11 +367,13 @@ class DeviceMainFragment : DaggerFragment() {
                 isServicesDiscovered = false
                 bluetoothConnectService?.close()
 
-                Snackbar.make(
-                    container_fragment,
-                    getString(R.string.disconnected).lowercaseCapitalize(),
-                    Snackbar.LENGTH_SHORT
-                ).show()
+                binding?.containerFragment?.let {
+                    Snackbar.make(
+                        it,
+                        getString(R.string.disconnected).lowercaseCapitalize(),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
 
                 getString(R.string.disconnected)
             }
@@ -374,7 +388,7 @@ class DeviceMainFragment : DaggerFragment() {
             }
             BluetoothGattCallback.ACTION_GATT_CHAR_WRITE -> {
                 setToggleActionText(R.string.disconnect)
-                web_view.loadUrl("javascript:onCharWritten('${writeCommandQueue.peek()?.charUUID?.toString()}')")
+                binding?.webView?.loadUrl("javascript:onCharWritten('${writeCommandQueue.peek()?.charUUID?.toString()}')")
                 writeCommandQueue.poll()
                 writeCharacteristics(writeCommandQueue.peek())
                 ""
@@ -392,7 +406,7 @@ class DeviceMainFragment : DaggerFragment() {
                 ""
             }
             BluetoothGattCallback.ACTION_DATA_AVAILABLE -> {
-                web_view.loadUrl(
+                binding?.webView?.loadUrl(
                     "javascript:onCharRead('${
                         readCommandQueue.peek()?.charUUID?.toString()
                     }', '${
@@ -405,7 +419,7 @@ class DeviceMainFragment : DaggerFragment() {
             }
             BluetoothGattCallback.ACTION_GATT_DESCRIPTOR_WRITE -> {
                 setToggleActionText(R.string.disconnect)
-                web_view.loadUrl("javascript:onDescriptorWritten('${enableNotificationsCommandQueue.peek()?.charUUID?.toString()}')")
+                binding?.webView?.loadUrl("javascript:onDescriptorWritten('${enableNotificationsCommandQueue.peek()?.charUUID?.toString()}')")
                 enableNotificationsCommandQueue.poll()
                 enableNotifications(enableNotificationsCommandQueue.peek())
                 ""
@@ -417,7 +431,7 @@ class DeviceMainFragment : DaggerFragment() {
             it.isNotBlank()
         }.let {
             Timber.d("javascript:onStatusReading('$text')")
-            web_view.loadUrl("javascript:onStatusReading('$text')")
+            binding?.webView?.loadUrl("javascript:onStatusReading('$text')")
         }
     }
 
@@ -434,7 +448,8 @@ class DeviceMainFragment : DaggerFragment() {
     private fun setupConnection() {
         context?.let { appContext ->
             Intent(appContext, BluetoothConnectService::class.java).let {
-                appContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
+                serviceIsBound =
+                    appContext.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
             }
         }
     }
@@ -448,7 +463,7 @@ class DeviceMainFragment : DaggerFragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { readings ->
                 val sensorReadingJson = generateJsonString(readings)
-                web_view?.loadUrl("javascript:onSensorReadings('$sensorReadingJson')")
+                binding?.webView?.loadUrl("javascript:onSensorReadings('$sensorReadingJson')")
             }
     }
 
@@ -478,12 +493,14 @@ class DeviceMainFragment : DaggerFragment() {
 
     override fun onDestroyView() {
         webViewBundle = Bundle().also {
-            web_view.saveState(it)
+            binding?.webView?.saveState(it)
         }
 
         super.onDestroyView()
         getResourceDisposable?.dispose()
         sensorReadingFlowDisposable?.dispose()
+
+        binding = null
     }
 
     inner class MyWebViewClient : WebViewClient() {
@@ -523,14 +540,14 @@ class DeviceMainFragment : DaggerFragment() {
                         "macAddress",
                         device.macAddress.replace(":", "")
                     )
-                    web_view?.loadUrl("javascript:onQrCodeRead('$jsonData')")
+                    binding?.webView?.loadUrl("javascript:onQrCodeRead('$jsonData')")
                 } catch (e: JsonSyntaxException) {
                     if (contents.startsWith("WIFI")) {
                         contents.split(";").let {
                             val ssid = it[0].split(":S:").last()
                             val encryption = it[1].substring(2)
                             val password = it[2].substring(2)
-                            web_view?.loadUrl("javascript:wifiPicked('$ssid', '$password')")
+                            binding?.webView?.loadUrl("javascript:wifiPicked('$ssid', '$password')")
                         }
                     } else {
                         this.showToast("Error in QR code!")
@@ -582,19 +599,21 @@ class DeviceMainFragment : DaggerFragment() {
                         }
                     }
 
-                    val snackbar = Snackbar.make(
-                        container_fragment,
-                        "Scanning...",
-                        Snackbar.LENGTH_INDEFINITE
-                    )
+                    val snackbar = binding?.containerFragment?.let {
+                        Snackbar.make(
+                            it,
+                            "Scanning...",
+                            Snackbar.LENGTH_INDEFINITE
+                        )
+                    }
 
                     requireActivity().runOnUiThread {
-                        snackbar.show()
+                        snackbar?.show()
                     }
 
                     utils.scanWifi { results ->
                         requireActivity().runOnUiThread {
-                            snackbar.dismiss()
+                            snackbar?.dismiss()
                         }
 
                         results.map { it.SSID }.toTypedArray().let { networks ->
@@ -602,7 +621,7 @@ class DeviceMainFragment : DaggerFragment() {
                             AlertDialog.Builder(requireContext())
                                 .setTitle(R.string.pick_wifi_ssid)
                                 .setItems(networks) { _, which ->
-                                    web_view.loadUrl("javascript:wifiPicked('${networks[which]}')")
+                                    binding?.webView?.loadUrl("javascript:wifiPicked('${networks[which]}')")
                                 }.show()
                         }
                     }
@@ -768,9 +787,9 @@ class DeviceMainFragment : DaggerFragment() {
         ) {
             sharedPreferences.getString("${this@DeviceMainFragment.device.macAddress}-$key", null)
                 ?.let { data ->
-                    web_view.loadUrl("javascript:onDataLoaded('$key', '$data')")
+                    binding?.webView?.loadUrl("javascript:onDataLoaded('$key', '$data')")
                 } ?: kotlin.run {
-                web_view.loadUrl("javascript:onDataLoaded('$key', null)")
+                binding?.webView?.loadUrl("javascript:onDataLoaded('$key', null)")
             }
         }
     }

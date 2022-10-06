@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-parcelize'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -15,6 +16,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     kotlinOptions {
@@ -70,5 +75,3 @@ dependencies {
 
     implementation "com.github.AllanHasegawa.Tempo:tempo:$tempo_version"
 }
-
-apply plugin: 'kotlin-android-extensions'

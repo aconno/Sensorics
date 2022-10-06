@@ -6,35 +6,39 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.aconno.sensorics.R
-import kotlinx.android.synthetic.main.activity_select_publisher.*
+import com.aconno.sensorics.databinding.ActivitySelectPublisherBinding
 
 class SelectPublisherActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivitySelectPublisherBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_select_publisher)
-        setSupportActionBar(custom_toolbar)
 
-        google_cloud_iot.setOnClickListener {
+        binding = ActivitySelectPublisherBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+        setSupportActionBar(binding.customToolbar)
+
+        binding.googleCloudIot.setOnClickListener {
             GoogleCloudPublisherActivity.start(
                 this@SelectPublisherActivity
             )
         }
 
-        http_backend.setOnClickListener {
+        binding.httpBackend.setOnClickListener {
             RestPublisherActivity.start(
                 this@SelectPublisherActivity
             )
         }
 
-        mqtt_backend.setOnClickListener {
+        binding.mqttBackend.setOnClickListener {
             MqttPublisherActivity.start(
                 this@SelectPublisherActivity
             )
         }
 
-        azure_mqtt_backend.setOnClickListener {
+        binding.azureMqttBackend.setOnClickListener {
             AzureMqttPublisherActivity.start(this@SelectPublisherActivity)
         }
     }

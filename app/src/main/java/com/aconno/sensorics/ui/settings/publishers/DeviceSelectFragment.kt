@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.FragmentDevicesBinding
 import com.aconno.sensorics.domain.ifttt.outcome.PublishType
 import com.aconno.sensorics.model.BasePublishModel
 import com.aconno.sensorics.model.DeviceRelationModel
@@ -15,7 +16,6 @@ import com.aconno.sensorics.viewmodel.DeviceSelectViewModel
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_devices.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -23,6 +23,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class DeviceSelectFragment : BaseFragment() {
+
+    private var binding: FragmentDevicesBinding? = null
 
     @Inject
     lateinit var deviceSelectViewModel: DeviceSelectViewModel
@@ -56,20 +58,25 @@ class DeviceSelectFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_devices, container, false)
-        val listView = view.findViewById<RecyclerView>(R.id.list_devices)
+
+        binding = FragmentDevicesBinding.inflate(inflater, container, false)
 
         adapter = DeviceSelectAdapter(
             deviceList,
             itemCheckChangeListener
         )
-        listView.layoutManager = LinearLayoutManager(context)
-        listView.adapter = adapter
-        listView.isNestedScrollingEnabled = false
+        binding?.listDevices?.layoutManager = LinearLayoutManager(context)
+        binding?.listDevices?.adapter = adapter
+        binding?.listDevices?.isNestedScrollingEnabled = false
 
         queryDevices()
 
-        return view
+        return binding?.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
     }
 
     private fun queryDevices() {
@@ -85,7 +92,7 @@ class DeviceSelectFragment : BaseFragment() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    empty_view?.visibility = View.GONE
+                    binding?.emptyView?.visibility = View.GONE
                     deviceList.clear()
                     deviceList.addAll(it)
                     adapter.notifyDataSetChanged()

@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 apply from: "../version.gradle"
 apply plugin: 'com.google.gms.google-services'
@@ -49,6 +49,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     kotlinOptions {
@@ -157,7 +161,8 @@ dependencies {
 
     implementation "pub.devrel:easypermissions:$easypermissions_version"
 
-    implementation "com.thanosfisherman.wifiutils:wifiutils:$wifiutils_version"
+    //implementation "com.thanosfisherman.wifiutils:wifiutils:$wifiutils_version"
+    implementation "io.github.thanosfisherman.wifiutils:wifiutils:$wifiutils_version"
 
     implementation "com.google.firebase:firebase-crashlytics:$firebase_crashlytics_version"
     implementation "com.google.firebase:firebase-analytics:$firebase_analytics_version"

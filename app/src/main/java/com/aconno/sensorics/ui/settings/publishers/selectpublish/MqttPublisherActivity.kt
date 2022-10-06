@@ -10,20 +10,25 @@ import android.widget.Toast
 import com.aconno.sensorics.PublisherIntervalConverter
 import com.aconno.sensorics.R
 import com.aconno.sensorics.data.publisher.MqttPublisher
+import com.aconno.sensorics.databinding.ActivityMqttPublisherBinding
+import com.aconno.sensorics.databinding.LayoutDatastringBinding
+import com.aconno.sensorics.databinding.LayoutMqttBinding
+import com.aconno.sensorics.databinding.LayoutPublisherHeaderBinding
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.MqttPublishModel
 import com.aconno.sensorics.model.mapper.MqttPublishModelDataMapper
 import com.aconno.sensorics.viewmodel.MqttPublisherViewModel
 import com.aconno.sensorics.viewmodel.PublisherViewModel
-import kotlinx.android.synthetic.main.activity_mqtt_publisher.*
-import kotlinx.android.synthetic.main.layout_datastring.*
-import kotlinx.android.synthetic.main.layout_mqtt.*
-import kotlinx.android.synthetic.main.layout_publisher_header.*
 import java.util.regex.Pattern
 import javax.inject.Inject
 
 class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
+
+    private lateinit var binding: ActivityMqttPublisherBinding
+    private lateinit var layoutDatastringBinding: LayoutDatastringBinding
+    private lateinit var layoutMqttBinding: LayoutMqttBinding
+    private lateinit var layoutPublisherHeaderBinding: LayoutPublisherHeaderBinding
 
     @Inject
     lateinit var mqttPublisherViewModel: MqttPublisherViewModel
@@ -32,30 +37,36 @@ class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
         get() = mqttPublisherViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_mqtt_publisher)
 
-        setSupportActionBar(custom_toolbar)
+        binding = ActivityMqttPublisherBinding.inflate(layoutInflater)
+        layoutDatastringBinding = LayoutDatastringBinding.inflate(layoutInflater)
+        layoutMqttBinding = LayoutMqttBinding.inflate(layoutInflater)
+        layoutPublisherHeaderBinding = LayoutPublisherHeaderBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.customToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(true)
 
         super.onCreate(savedInstanceState)
     }
 
     override fun onTestConnectionSuccess() {
-        edit_url_mqtt?.error = null
+        layoutMqttBinding.editUrlMqtt.error = null
     }
 
     override fun onTestConnectionFail(exception: Throwable?) {
         exception?.message?.let { m ->
-            if (m.contains(edit_url_mqtt?.text.toString())) {
-                edit_url_mqtt?.error = getString(R.string.mqtt_format)
+            if (m.contains(layoutMqttBinding.editUrlMqtt.text.toString())) {
+                layoutMqttBinding.editUrlMqtt.error = getString(R.string.mqtt_format)
             } else {
-                edit_url_mqtt?.error = null
+                layoutMqttBinding.editUrlMqtt.error = null
             }
         }
     }
 
     fun validateMqttUrl(): Boolean {
-        return edit_url_mqtt?.text?.toString()?.trim()?.let { text ->
+        return layoutMqttBinding.editUrlMqtt.text?.toString()?.trim()?.let { text ->
             VALID_MQTT_URL_PATTERN.matcher(text).takeIf {
                 it.matches()
             }?.toMatchResult()?.let { result ->
@@ -67,12 +78,12 @@ class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
     override fun setFields(model: MqttPublishModel) {
         super.setFields(model)
 
-        edit_url_mqtt.addTextChangedListener(object : TextWatcher {
+        layoutMqttBinding.editUrlMqtt.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if (!validateMqttUrl()) {
-                    edit_url_mqtt?.error = getString(R.string.mqtt_format)
+                    layoutMqttBinding.editUrlMqtt.error = getString(R.string.mqtt_format)
                 } else {
-                    edit_url_mqtt?.error = null
+                    layoutMqttBinding.editUrlMqtt.error = null
                 }
             }
 
@@ -81,32 +92,32 @@ class MqttPublisherActivity : BasePublisherActivity<MqttPublishModel>() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        edit_url_mqtt.setText(model.url)
-        edit_clientid_mqtt.setText(model.clientId)
-        edit_username_mqtt.setText(model.username)
-        edit_password_mqtt.setText(model.password)
-        edit_topic_mqtt.setText(model.topic)
+        layoutMqttBinding.editUrlMqtt.setText(model.url)
+        layoutMqttBinding.editClientIdMqtt.setText(model.clientId)
+        layoutMqttBinding.editUsernameMqtt.setText(model.username)
+        layoutMqttBinding.editPasswordMqtt.setText(model.password)
+        layoutMqttBinding.editTopicMqtt.setText(model.topic)
 
         when (model.qos) {
-            0 -> qos_0.isChecked = true
-            1 -> qos_1.isChecked = true
-            2 -> qos_2.isChecked = true
+            0 -> layoutMqttBinding.qos0.isChecked = true
+            1 -> layoutMqttBinding.qos1.isChecked = true
+            2 -> layoutMqttBinding.qos2.isChecked = true
         }
     }
 
     override fun toPublishModel(): MqttPublishModel? {
-        val name = edit_name.text.toString().trim()
-        val url = edit_url_mqtt.text.toString().trim()
-        val clientId = edit_clientid_mqtt.text.toString().trim()
-        val username = edit_username_mqtt.text.toString().trim()
-        val password = edit_password_mqtt.text.toString().trim()
-        val topic = edit_topic_mqtt.text.toString().trim()
+        val name = layoutPublisherHeaderBinding.editName.text.toString().trim()
+        val url = layoutMqttBinding.editUrlMqtt.text.toString().trim()
+        val clientId = layoutMqttBinding.editClientIdMqtt.text.toString().trim()
+        val username = layoutMqttBinding.editUsernameMqtt.text.toString().trim()
+        val password = layoutMqttBinding.editPasswordMqtt.text.toString().trim()
+        val topic = layoutMqttBinding.editTopicMqtt.text.toString().trim()
         val qos = findViewById<RadioButton>(
-            radio_group_mqtt.checkedRadioButtonId
+            layoutMqttBinding.radioGroupMqtt.checkedRadioButtonId
         ).text.toString().toInt()
-        val timeType = spinner_interval_time.selectedItem.toString()
-        val timeCount = edit_interval_count.text.toString()
-        val datastring = edit_datastring.text.toString()
+        val timeType = layoutPublisherHeaderBinding.spinnerIntervalTime.selectedItem.toString()
+        val timeCount = layoutPublisherHeaderBinding.editIntervalCount.text.toString()
+        val datastring = layoutDatastringBinding.editDatastring.text.toString()
 
         if (viewModel.checkFieldsAreEmpty(
                 name,

@@ -11,9 +11,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.SelectableRecyclerViewAdapter
+import com.aconno.sensorics.databinding.ItemPublishBinding
 import com.aconno.sensorics.domain.ifttt.outcome.PublishType
 import com.aconno.sensorics.model.*
-import kotlinx.android.synthetic.main.item_publish.view.*
 
 /**
  * [RecyclerView.Adapter] that can display a [BasePublishModel] and makes a call to the
@@ -24,7 +24,12 @@ class PublishRecyclerViewAdapter(
     clickListener: ItemClickListener<BasePublishModel>?,
     longClickListener: ItemLongClickListener<BasePublishModel>?,
     itemSelectedListener: ItemSelectedListener<BasePublishModel>? = null
-) : SelectableRecyclerViewAdapter<BasePublishModel,PublishRecyclerViewAdapter.PublisherKey,PublishRecyclerViewAdapter.ViewHolder>(values.toMutableList(),itemSelectedListener,clickListener,longClickListener) {
+) : SelectableRecyclerViewAdapter<BasePublishModel, PublishRecyclerViewAdapter.PublisherKey, PublishRecyclerViewAdapter.ViewHolder>(
+    values.toMutableList(),
+    itemSelectedListener,
+    clickListener,
+    longClickListener
+) {
     private var mCheckedChangeListener: OnCheckedChangeListener? = null
 
     fun setOnCheckedChangeListener(checkedChangeListener: OnCheckedChangeListener?) {
@@ -32,17 +37,19 @@ class PublishRecyclerViewAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_publish, parent, false)
-        return ViewHolder(view)
+
+        val binding = ItemPublishBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        return ViewHolder(binding)
     }
 
 
-    inner class ViewHolder(private val mView: View) : SelectableRecyclerViewAdapter<BasePublishModel, PublisherKey, ViewHolder>.ViewHolder(mView) {
-        private val mNameView: TextView = mView.publish_name
-        private val mEnableView: Switch = mView.publish_switch
-        private val mImageView: ImageView = mView.publish_image
-        private val selectionButton: CheckBox = mView.cb_item_selected
+    inner class ViewHolder(private val binding: ItemPublishBinding) :
+        SelectableRecyclerViewAdapter<BasePublishModel, PublisherKey, ViewHolder>.ViewHolder(binding.root) {
+        private val mNameView: TextView = binding.publishName
+        private val mEnableView: Switch = binding.publishSwitch
+        private val mImageView: ImageView = binding.publishImage
+        private val selectionButton: CheckBox = binding.cbItemSelected
 
         override fun toString(): String {
             return super.toString() + " '" + mEnableView.text + "'"
@@ -69,7 +76,7 @@ class PublishRecyclerViewAdapter(
                 is AzureMqttPublishModel -> mImageView.setImageResource(R.drawable.azure_logo)
             }
 
-            with(mView) {
+            with(binding.root) {
                 tag = item
                 setOnLongClickListener {
                     onItemLongClick(item)
@@ -81,17 +88,17 @@ class PublishRecyclerViewAdapter(
                 mCheckedChangeListener?.onCheckedChange(isChecked, adapterPosition)
             }
 
-            mView.setOnClickListener {
+            binding.root.setOnClickListener {
                 if (isItemSelectionEnabled) {
                     selectionButton.isChecked = !selectionButton.isChecked
-                    setSelected(item,selectionButton.isChecked)
+                    setSelected(item, selectionButton.isChecked)
                 } else {
                     onItemClick(item)
                 }
             }
 
             selectionButton.setOnClickListener {
-                setSelected(item,selectionButton.isChecked)
+                setSelected(item, selectionButton.isChecked)
             }
         }
     }
@@ -101,12 +108,12 @@ class PublishRecyclerViewAdapter(
     }
 
     override fun getKeyForItem(item: BasePublishModel): PublisherKey {
-        return PublisherKey(item.id,item.type)
+        return PublisherKey(item.id, item.type)
     }
 
     data class PublisherKey(
-        val id : Long,
-        val type : PublishType
+        val id: Long,
+        val type: PublishType
     )
 
 }

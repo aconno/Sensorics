@@ -16,4 +16,13 @@ class MqttPublishModel(
     timeMillis: Long,
     lastTimeMillis: Long,
     dataString: String
-) : BasePublishModel(id, PublishType.MQTT, name, enabled, timeType, timeMillis, lastTimeMillis, dataString)
+) : BasePublishModel(
+    id,
+    PublishType.MQTT,
+    name,
+    enabled,
+    timeType,
+    timeMillis,
+    lastTimeMillis,
+    dataString
+)

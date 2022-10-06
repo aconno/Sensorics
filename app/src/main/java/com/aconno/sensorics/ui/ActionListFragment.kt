@@ -14,9 +14,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
+import com.aconno.sensorics.action
 import com.aconno.sensorics.adapter.ActionAdapter
 import com.aconno.sensorics.adapter.ItemClickListener
 import com.aconno.sensorics.adapter.SelectableRecyclerViewAdapter
+import com.aconno.sensorics.databinding.FragmentActionListBinding
 import com.aconno.sensorics.domain.actions.Action
 import com.aconno.sensorics.domain.interactor.ifttt.action.AddActionUseCase
 import com.aconno.sensorics.domain.interactor.ifttt.action.DeleteActionUseCase
@@ -30,7 +32,6 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_action_list.*
 import javax.inject.Inject
 
 /**
@@ -47,6 +48,8 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
     private var snackbar: Snackbar? = null
     override val sharedFileNamePrefix = "actions"
     override val exportedFileName: String = "actions.json"
+
+    private var binding: FragmentActionListBinding? = null
 
     private var selectionStateListener: ItemSelectionStateListener? = null
 
@@ -86,7 +89,9 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_action_list, container, false)
+        binding = FragmentActionListBinding.inflate(inflater, container, false)
+
+        return binding?.root
     }
 
     override fun onAttach(context: Context) {
@@ -110,15 +115,16 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         }
 
 
-        action_list.adapter = actionAdapter
-
-        action_list.itemAnimator = DefaultItemAnimator()
-        action_list.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                DividerItemDecoration.VERTICAL
+        binding?.actionList?.apply {
+            adapter = actionAdapter
+            itemAnimator = DefaultItemAnimator()
+            addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    DividerItemDecoration.VERTICAL
+                )
             )
-        )
+        }
 
         context?.let { context ->
             val swipeToDeleteCallback = object : SwipeToDeleteCallback(context) {
@@ -128,37 +134,54 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
                     val action = actionAdapter.getItem(position)
                     actionAdapter.removeItemAtPosition(position)
 
-                    snackbar = Snackbar
-                        .make(container_fragment, "${action.name} removed!", Snackbar.LENGTH_LONG)
-                    snackbar?.setAction("UNDO") {
-                        actionAdapter.addItemAtPosition(action, position)
-                    }
-
-                    snackbar?.addCallback(object : Snackbar.Callback() {
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            if (event == DISMISS_EVENT_TIMEOUT
-                                || event == DISMISS_EVENT_CONSECUTIVE
-                                || event == DISMISS_EVENT_SWIPE
-                                || event == DISMISS_EVENT_MANUAL
-                            ) {
-                                deleteActionUseCase.execute(action)
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe()
+                    snackbar = binding?.containerFragment?.let {
+                        Snackbar.make(
+                            it,
+                            String.format(
+                                getString(R.string.action_removed),
+                                action.name
+                            ), //"${action.name} removed!",
+                            Snackbar.LENGTH_LONG
+                        ).apply {
+                            this.action(R.string.undo) {
+                                actionAdapter.addItemAtPosition(action, position)
                             }
+                            this.addCallback(object : Snackbar.Callback() {
+                                override fun onDismissed(
+                                    transientBottomBar: Snackbar?,
+                                    event: Int
+                                ) {
+                                    if (event == DISMISS_EVENT_TIMEOUT
+                                        || event == DISMISS_EVENT_CONSECUTIVE
+                                        || event == DISMISS_EVENT_SWIPE
+                                        || event == DISMISS_EVENT_MANUAL
+                                    ) {
+                                        deleteActionUseCase.execute(action)
+                                            .subscribeOn(Schedulers.io())
+                                            .subscribe()
+                                    }
+                                }
+                            })
+                            this.setActionTextColor(Color.YELLOW)
+                            this.show()
                         }
-                    })
-                    snackbar?.setActionTextColor(Color.YELLOW)
-                    snackbar?.show()
+                    }
                 }
             }
-            ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(action_list)
+            ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(binding?.actionList)
         }
 
-        add_action_button.setOnClickListener {
+        binding?.addActionButton?.setOnClickListener {
             snackbar?.dismiss()
             exitItemSelectionState()
             startAddActionActivity()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        binding = null
     }
 
     override fun onItemLongClick(item: Action) {
@@ -210,17 +233,20 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
             .also { disposables.add(it) }
 
         val snackbarMessage =
-            if(actions.size == 1) {
-                getString(R.string.one_action_removed,actions[0].name)
+            if (actions.size == 1) {
+                getString(R.string.one_action_removed, actions[0].name)
             } else {
-                getString(R.string.multiple_actions_removed,actions.size)
+                getString(R.string.multiple_actions_removed, actions.size)
             }
-        Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
+        binding?.containerFragment?.let {
+            Snackbar.make(it, snackbarMessage, Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         exitItemSelectionState()
+
     }
 
     private fun selectAllItems() {
@@ -260,11 +286,13 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         val actionsToAddToAdapter: MutableList<Action> = mutableListOf()
 
         if (actions.isEmpty()) { //in case of user tries to import an empty file
-            Snackbar.make(
-                container_fragment,
-                getString(R.string.empty_import_file),
-                Snackbar.LENGTH_SHORT
-            ).show()
+            binding?.containerFragment?.let {
+                Snackbar.make(
+                    it,
+                    getString(R.string.empty_import_file),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
         }
 
         val updateAdapterLazily =
@@ -272,28 +300,30 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
                 if (actions.size == failed + imported) {
                     addActionsToActionAdapter(actionsToAddToAdapter)
 
-                    Snackbar.make(
-                        container_fragment,
-                        when (imported) {
-                            0 -> getString(R.string.import_error)
-                            1 -> if (failed == 0) getString(R.string.import_one_action_success)
-                            else getString(
-                                R.string.action_import_partial_success,
-                                imported,
-                                actions.size
-                            )
-                            else -> if (failed == 0) getString(
-                                R.string.import_multiple_actions_success,
-                                imported
-                            )
-                            else getString(
-                                R.string.action_import_partial_success,
-                                imported,
-                                actions.size
-                            )
-                        },
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                    binding?.let {
+                        Snackbar.make(
+                            it.containerFragment,
+                            when (imported) {
+                                0 -> getString(R.string.import_error)
+                                1 -> if (failed == 0) getString(R.string.import_one_action_success)
+                                else getString(
+                                    R.string.action_import_partial_success,
+                                    imported,
+                                    actions.size
+                                )
+                                else -> if (failed == 0) getString(
+                                    R.string.import_multiple_actions_success,
+                                    imported
+                                )
+                                else getString(
+                                    R.string.action_import_partial_success,
+                                    imported,
+                                    actions.size
+                                )
+                            },
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
 
@@ -364,9 +394,9 @@ class ActionListFragment : ShareableItemsListFragment<Action>(), ItemClickListen
         }
 
         if (actions.isEmpty()) {
-            action_list_empty_view.visibility = View.VISIBLE
+            binding?.actionListEmptyView?.visibility = View.VISIBLE
         } else {
-            action_list_empty_view.visibility = View.INVISIBLE
+            binding?.actionListEmptyView?.visibility = View.INVISIBLE
         }
 
         actionAdapter.checkedChangeListener = checkedChangeListener

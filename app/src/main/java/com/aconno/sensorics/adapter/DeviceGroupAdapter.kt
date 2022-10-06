@@ -5,20 +5,20 @@ import com.google.android.material.tabs.TabLayout
 import java.lang.IllegalArgumentException
 
 class DeviceGroupAdapter {
-    var listener : DeviceGroupAdapterListener? = null
-    var tabLongClickListener : DeviceGroupTabLongClickListener? = null
+    var listener: DeviceGroupAdapterListener? = null
+    var tabLongClickListener: DeviceGroupTabLongClickListener? = null
 
-    private var allDevicesTabIndex : Int? = null
-    lateinit var allDevicesTabName : String
+    private var allDevicesTabIndex: Int? = null
+    lateinit var allDevicesTabName: String
 
-    private var othersTabIndex : Int? = null
-    lateinit var othersTabName : String
+    private var othersTabIndex: Int? = null
+    lateinit var othersTabName: String
 
-    private var tabToDeviceGroupMap : MutableMap<Int, DeviceGroup> = mutableMapOf()
+    private var tabToDeviceGroupMap: MutableMap<Int, DeviceGroup> = mutableMapOf()
     var selectedTabIndex = 0
 
 
-    fun getTabsCount() : Int {
+    fun getTabsCount(): Int {
         var tabsCount = getDeviceGroups().size
         allDevicesTabIndex?.let { tabsCount++ }
         othersTabIndex?.let { tabsCount++ }
@@ -36,12 +36,13 @@ class DeviceGroupAdapter {
         listener?.onTabAdded(othersTabIndex ?: 0)
     }
 
-    fun addTabForDeviceGroup(group : DeviceGroup) {
-        val tabPosition = if(othersTabIndex == null) { //if there is others tabs, then add tab for device group before it
-            getTabsCount()
-        } else {
-            getTabsCount() - 1
-        }
+    fun addTabForDeviceGroup(group: DeviceGroup) {
+        val tabPosition =
+            if (othersTabIndex == null) { //if there is others tabs, then add tab for device group before it
+                getTabsCount()
+            } else {
+                getTabsCount() - 1
+            }
 
         tabToDeviceGroupMap[tabPosition] = group
 
@@ -52,27 +53,27 @@ class DeviceGroupAdapter {
         listener?.onTabAdded(tabPosition)
     }
 
-    fun isAllDevicesTabActive() : Boolean {
+    fun isAllDevicesTabActive(): Boolean {
         return selectedTabIndex == allDevicesTabIndex
     }
 
-    fun isOthersTabActive() : Boolean {
+    fun isOthersTabActive(): Boolean {
         return selectedTabIndex == othersTabIndex
     }
 
-    fun isDeviceGroupTabActive() : Boolean {
+    fun isDeviceGroupTabActive(): Boolean {
         return !isAllDevicesTabActive() && !isOthersTabActive()
     }
 
-    fun getSelectedDeviceGroup() : DeviceGroup? {
+    fun getSelectedDeviceGroup(): DeviceGroup? {
         return tabToDeviceGroupMap[selectedTabIndex]
     }
 
-    fun getDeviceGroups() : List<DeviceGroup> {
+    fun getDeviceGroups(): List<DeviceGroup> {
         return tabToDeviceGroupMap.entries.sortedBy { it.key }.map { it.value }
     }
 
-    fun indexOfDeviceGroupTab(deviceGroup: DeviceGroup) : Int? {
+    fun indexOfDeviceGroupTab(deviceGroup: DeviceGroup): Int? {
         return tabToDeviceGroupMap.filter { it.value == deviceGroup }.entries.firstOrNull()?.key
     }
 
@@ -81,19 +82,19 @@ class DeviceGroupAdapter {
         othersTabIndex = null
     }
 
-    private fun removeTabAtIndex(index : Int) {
+    private fun removeTabAtIndex(index: Int) {
         allDevicesTabIndex?.let {
-            allDevicesTabIndex = if(it > index) it-1 else it
+            allDevicesTabIndex = if (it > index) it - 1 else it
         }
         othersTabIndex?.let {
-            othersTabIndex = if(it > index) it-1 else it
+            othersTabIndex = if (it > index) it - 1 else it
         }
         tabToDeviceGroupMap = mutableMapOf<Int, DeviceGroup>()
             .apply {
                 tabToDeviceGroupMap.forEach {
-                    if(it.key > index) {
-                        this[it.key-1] = it.value
-                    } else if(it.key < index) {
+                    if (it.key > index) {
+                        this[it.key - 1] = it.value
+                    } else if (it.key < index) {
                         this[it.key] = it.value
                     }
                 }
@@ -104,28 +105,31 @@ class DeviceGroupAdapter {
 
     fun removeTabForDeviceGroup(deviceGroup: DeviceGroup) {
         val tabIndex = indexOfDeviceGroupTab(deviceGroup)
-        tabIndex?.let {index ->
+        tabIndex?.let { index ->
             removeTabAtIndex(index)
         }
     }
 
     fun updateDeviceGroup(deviceGroup: DeviceGroup) {
-        val deviceGroupEntry = tabToDeviceGroupMap.filter { it.value.id == deviceGroup.id }.entries.firstOrNull() ?: return
+        val deviceGroupEntry =
+            tabToDeviceGroupMap.filter { it.value.id == deviceGroup.id }.entries.firstOrNull()
+                ?: return
         tabToDeviceGroupMap[deviceGroupEntry.key] = deviceGroup
 
         listener?.onTabChanged(deviceGroupEntry.key)
     }
 
-    fun bindTab(tab : TabLayout.Tab, index : Int) {
+    fun bindTab(tab: TabLayout.Tab, index: Int) {
         val tabName =
-            when(index) {
+            when (index) {
                 allDevicesTabIndex -> allDevicesTabName
                 othersTabIndex -> othersTabName
-                else -> tabToDeviceGroupMap[index]?.groupName ?: throw IllegalArgumentException("Index is out of bounds")
+                else -> tabToDeviceGroupMap[index]?.groupName
+                    ?: throw IllegalArgumentException("Index is out of bounds")
             }
         tab.text = tabName
 
-        when(index) {
+        when (index) {
             allDevicesTabIndex -> tab.view.setOnLongClickListener {
                 tabLongClickListener?.onAllDevicesTabLongClick() ?: false
             }
@@ -133,7 +137,8 @@ class DeviceGroupAdapter {
                 tabLongClickListener?.onOthersTabLongClick() ?: false
             }
             else -> {
-                val deviceGroup = tabToDeviceGroupMap[index] ?: throw IllegalArgumentException("Index is out of bounds")
+                val deviceGroup = tabToDeviceGroupMap[index]
+                    ?: throw IllegalArgumentException("Index is out of bounds")
                 tab.view.setOnLongClickListener {
                     tabLongClickListener?.onDeviceGroupTabLongClick(deviceGroup) ?: false
                 }
@@ -144,15 +149,15 @@ class DeviceGroupAdapter {
 
     interface DeviceGroupAdapterListener {
         fun onDatasetChanged()
-        fun onTabAdded(index : Int)
-        fun onTabRemoved(index : Int)
-        fun onTabChanged(index : Int)
+        fun onTabAdded(index: Int)
+        fun onTabRemoved(index: Int)
+        fun onTabChanged(index: Int)
     }
 
     interface DeviceGroupTabLongClickListener {
-        fun onDeviceGroupTabLongClick(deviceGroup: DeviceGroup) : Boolean
-        fun onAllDevicesTabLongClick() : Boolean
-        fun onOthersTabLongClick() : Boolean
+        fun onDeviceGroupTabLongClick(deviceGroup: DeviceGroup): Boolean
+        fun onAllDevicesTabLongClick(): Boolean
+        fun onOthersTabLongClick(): Boolean
     }
 
 }

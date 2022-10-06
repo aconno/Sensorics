@@ -7,13 +7,10 @@ import android.os.Handler
 import android.transition.Fade
 import android.transition.TransitionManager
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
-import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.DialogIndeterminateProgressBinding
 import com.aconno.sensorics.domain.DisposableValue
-import kotlinx.android.synthetic.main.dialog_indeterminate_progress.*
-import kotlinx.android.synthetic.main.dialog_indeterminate_progress.view.*
 
 class CancelBtnSchedulerProgressDialog(
     private val activity: Activity,
@@ -21,6 +18,8 @@ class CancelBtnSchedulerProgressDialog(
     private val cancelBanAppearAfter: Long = 15000,
     private val cancelledByUser: () -> Unit
 ) : AlertDialog(activity) {
+
+    private lateinit var binding: DialogIndeterminateProgressBinding
 
     private lateinit var cancelBtn: Button
     private var disposableMessage: DisposableValue<String>? = null
@@ -32,17 +31,13 @@ class CancelBtnSchedulerProgressDialog(
         }
 
     private fun setMessageOrScheduleWhenInitialized(msg: String) {
-        if (message != null) {
-            message.text = msg
-        } else {
-            disposableMessage = DisposableValue(msg)
-        }
+        binding.message.text = msg
     }
 
     private var cancelBtnAppearingRunnable = Runnable {
         val fadeTransition = Fade()
         fadeTransition.duration = 3000
-        TransitionManager.beginDelayedTransition(root, fadeTransition)
+        TransitionManager.beginDelayedTransition(binding.root, fadeTransition)
         cancelBtn.visibility = View.VISIBLE
     }
 
@@ -59,12 +54,12 @@ class CancelBtnSchedulerProgressDialog(
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val view = layoutInflater.inflate(
-            R.layout.dialog_indeterminate_progress,
-            null as ViewGroup?
-        )
-        cancelBtn = view.cancelBtn
-        setView(view)
+
+        binding = DialogIndeterminateProgressBinding.inflate(layoutInflater)
+
+        cancelBtn = binding.cancelBtn
+        setView(binding.root)
+
         setOnDismissListener {
             handler.removeCallbacksAndMessages(null)
         }
@@ -74,7 +69,7 @@ class CancelBtnSchedulerProgressDialog(
             cancelledByUser()
             dismiss()
         }
-        view.message.text = disposableMessage?.value
+        binding.message.text = disposableMessage?.value
         super.onCreate(savedInstanceState)
     }
 

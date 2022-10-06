@@ -2,14 +2,19 @@ package com.aconno.sensorics.ui
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import com.aconno.sensorics.R
-import kotlinx.android.synthetic.main.view_sensor_card.view.*
+import com.aconno.sensorics.databinding.ViewSensorCardBinding
 
 /**
  * @author aconno
  */
 class SensorCardView(context: Context, attrs: AttributeSet?, defStyle: Int) :
     SquareCardView(context, attrs) {
+
+    //TODO: check if the binding is correct
+    private var binding: ViewSensorCardBinding =
+        ViewSensorCardBinding.inflate(LayoutInflater.from(context))
 
     constructor(context: Context) : this(context, null, 0)
 
@@ -22,7 +27,7 @@ class SensorCardView(context: Context, attrs: AttributeSet?, defStyle: Int) :
     }
 
     fun update(newName: String, newValue: String) {
-        name.text = newName
-        value.text = newValue
+        binding.name.text = newName
+        binding.value.text = newValue
     }
 }

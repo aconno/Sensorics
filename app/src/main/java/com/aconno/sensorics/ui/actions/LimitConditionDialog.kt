@@ -7,8 +7,8 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.DialogConditionBinding
 import com.aconno.sensorics.domain.ifttt.LimitCondition
-import kotlinx.android.synthetic.main.dialog_condition.view.*
 
 class LimitConditionDialog(
     context: Context,
@@ -19,14 +19,17 @@ class LimitConditionDialog(
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTitle(readingType)
-        val contentView = layoutInflater.inflate(R.layout.dialog_condition, null, false)
-        setView(contentView)
-        addContentButtonsOnClickListeners(contentView)
-        addActionButtonsOnClickListeners(contentView)
+
+        val binding = DialogConditionBinding.inflate(layoutInflater, null, false)
+
+        setView(binding.root)
+        addContentButtonsOnClickListeners(binding)
+        addActionButtonsOnClickListeners(binding)
+
         super.onCreate(savedInstanceState)
     }
 
-    private fun addActionButtonsOnClickListeners(contentView: View) {
+    private fun addActionButtonsOnClickListeners(binding: DialogConditionBinding) {
         @Suppress("CAST_NEVER_SUCCEEDS")
         setButton(
             DialogInterface.BUTTON_POSITIVE,
@@ -34,7 +37,7 @@ class LimitConditionDialog(
         ) { _, _ -> }
         setOnShowListener {
             getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-                respondWithConditionIfValid(contentView)
+                respondWithConditionIfValid(binding)
             }
         }
         setButton(
@@ -43,12 +46,12 @@ class LimitConditionDialog(
         ) { dialog, _ -> dialog.cancel() }
     }
 
-    private fun addContentButtonsOnClickListeners(contentView: View) {
+    private fun addContentButtonsOnClickListeners(binding: DialogConditionBinding) {
         val views = listOf(
-            contentView.view_less,
-            contentView.view_equal,
-            contentView.view_more,
-            contentView.view_changed
+            binding.viewLess,
+            binding.viewEqual,
+            binding.viewMore,
+            binding.viewChanged
         )
 
         views.forEach { view ->
@@ -59,7 +62,7 @@ class LimitConditionDialog(
                     } else {
                         false
                     }
-                    contentView.view_value.visibility = if (view == contentView.view_changed) {
+                    binding.viewValue.visibility = if (view == binding.viewChanged) {
                         View.GONE
                     } else {
                         View.VISIBLE
@@ -69,9 +72,10 @@ class LimitConditionDialog(
         }
     }
 
-    private fun respondWithConditionIfValid(rootView: View) {
-        val conditionOperator = getSelectedOperator(rootView)
-        val conditionLimit = getLimitParameter(rootView)
+    private fun respondWithConditionIfValid(binding: DialogConditionBinding) {
+        val conditionOperator = getSelectedOperator(binding)
+        val conditionLimit = getLimitParameter(binding)
+
         if (conditionOperator != null && conditionLimit != null) {
             val limitCondition = LimitCondition(readingType, conditionOperator, conditionLimit)
             listener.applyLimitCondition(limitCondition)
@@ -79,19 +83,19 @@ class LimitConditionDialog(
         }
     }
 
-    private fun getSelectedOperator(rootView: View) = when {
-        rootView.view_less.isChecked -> LimitCondition.LimitOperator.LESS_THAN
-        rootView.view_equal.isChecked -> LimitCondition.LimitOperator.EQUAL_TO
-        rootView.view_more.isChecked -> LimitCondition.LimitOperator.MORE_THAN
-        rootView.view_changed.isChecked -> LimitCondition.LimitOperator.CHANGED
+    private fun getSelectedOperator(binding: DialogConditionBinding) = when {
+        binding.viewLess.isChecked -> LimitCondition.LimitOperator.LESS_THAN
+        binding.viewEqual.isChecked -> LimitCondition.LimitOperator.EQUAL_TO
+        binding.viewMore.isChecked -> LimitCondition.LimitOperator.MORE_THAN
+        binding.viewChanged.isChecked -> LimitCondition.LimitOperator.CHANGED
         else -> null
     }
 
-    private fun getLimitParameter(rootView: View): Float? {
-        val parameter = rootView.view_value.text.toString()
+    private fun getLimitParameter(binding: DialogConditionBinding): Float? {
+        val parameter = binding.viewValue.text.toString()
 
         return if (parameter.isBlank()) {
-            if (!rootView.view_changed.isChecked) {
+            if (!binding.viewChanged.isChecked) {
                 null
             } else {
                 0f

@@ -64,6 +64,8 @@
 
     <string name="vibration">Vibration</string>
 
+    <string name="action_removed">%1$s removed!</string>
+
     <string name="sensor_card_image_content_description">Sensor card image</string>
 
     <string name="service_notification_title">Sensorics</string>
@@ -465,10 +467,10 @@
     <string name="remove_devices_confirmation">Are you sure you want to remove selected devices?</string>
     <string name="title_buy_beacons">Buy beacons</string>
     <string name="buy_beacons_intro">To buy aconno beacons, contact us at aconno or buy them on Amazon, Mouser or Tindie. </string>
-    <string name="aconno">aconno</string>
-    <string name="amazon">Amazon</string>
-    <string name="mouser">Mouser</string>
-    <string name="tindie">Tindie</string>
+    <string name="aconno" translatable="false">aconno</string>
+    <string name="amazon" translatable="false">Amazon</string>
+    <string name="mouser" translatable="false">Mouser</string>
+    <string name="tindie" translatable="false">Tindie</string>
     <string name="about">About</string>
     <string name="app_description">Sensorics is the standard Android application for the evolving number of aconno Bluetooth Low Energy modules and beacons.\n\nIt provides an intuitive user interface to read out the sensor data being measured by the handy and durable, industrial standard aconno beacons and modules.\n\nIt offers a huge tool set for monitoring, measuring, surveillance, predictive maintenance and much more…</string>
     <string name="developers_information_title">For developers</string>
@@ -493,9 +495,14 @@
     <string name="settings">Settings</string>
     <string name="bluetooth_not_available">Bluetooth not available</string>
     <string name="bletooth_not_available_message">There is a problem that causes the app not being able to use bluetooth on your device. You can still use the app, but its main features are not going to work as expected.</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="could_not_enable_wifi">Could not enable wifi, please enable manually</string>
     <string name="pick_wifi_ssid">Pick WiFi SSID</string>
     <string name="mtu_changed">MTU Changed</string>
     <string name="sms">SMS</string>
+
+    <string name="rename_beacon">Rename Beacon</string>
+    <string name="parameter_removed">Parameter %s removed!</string>
+    <string name="header_removed">Header %s removed!</string>
+    <string name="undo_uppercase">UNDO</string>
 </resources>

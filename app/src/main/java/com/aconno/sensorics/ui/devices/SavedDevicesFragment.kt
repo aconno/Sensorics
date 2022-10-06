@@ -17,6 +17,9 @@ import com.aconno.sensorics.adapter.DeviceActiveAdapter
 import com.aconno.sensorics.adapter.DeviceGroupAdapter
 import com.aconno.sensorics.adapter.DeviceSwipeToDismissHelper
 import com.aconno.sensorics.adapter.SelectableRecyclerViewAdapter
+import com.aconno.sensorics.databinding.DialogCreateGroupBinding
+import com.aconno.sensorics.databinding.DialogSortDevicesBinding
+import com.aconno.sensorics.databinding.FragmentSavedDevicesBinding
 import com.aconno.sensorics.domain.interactor.ifttt.action.SetActionActiveByDeviceMacAddressUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.DeviceGroup
@@ -37,10 +40,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.dialog_create_group.*
-import kotlinx.android.synthetic.main.dialog_create_group.view.*
-import kotlinx.android.synthetic.main.dialog_sort_devices.view.*
-import kotlinx.android.synthetic.main.fragment_saved_devices.*
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -52,15 +51,17 @@ class SavedDevicesFragment : DaggerFragment(),
     SelectableRecyclerViewAdapter.ItemClickListener<DeviceActive>,
     SelectableRecyclerViewAdapter.ItemLongClickListener<DeviceActive>,
     SelectableRecyclerViewAdapter.ItemSelectedListener<DeviceActive>,
-    DeviceGroupAdapter.DeviceGroupTabLongClickListener
-{
+    DeviceGroupAdapter.DeviceGroupTabLongClickListener {
+
+    private var binding: FragmentSavedDevicesBinding? = null
+
     @Inject
     lateinit var deviceViewModel: DeviceViewModel
 
     @Inject
     lateinit var deviceGroupViewModel: DeviceGroupViewModel
 
-    val deviceGroupAdapter : DeviceGroupAdapter = DeviceGroupAdapter()
+    val deviceGroupAdapter: DeviceGroupAdapter = DeviceGroupAdapter()
 
     private var deviceGroupOptions = DeviceGroupOptions()
 
@@ -88,14 +89,15 @@ class SavedDevicesFragment : DaggerFragment(),
 
     private var savedInstanceStateSelectedTab = 0
 
-    private var isBluetoothOn : Boolean = false //needed in order to know when to show or hide FAB (it has to be hidden during item selection state so this is neede to know if it should be shown when exiting item selection state)
+    private var isBluetoothOn: Boolean =
+        false //needed in order to know when to show or hide FAB (it has to be hidden during item selection state so this is neede to know if it should be shown when exiting item selection state)
 
     private var mainMenu: Menu? = null
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
-    private var deviceSort : DeviceSort = DeviceSort()
+    private var deviceSort: DeviceSort = DeviceSort()
 
     private val snackbarCallback = object : Snackbar.Callback() {
         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
@@ -127,7 +129,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
         compositeDisposable = CompositeDisposable()
 
-        deviceAdapter = DeviceActiveAdapter(this,this,this)
+        deviceAdapter = DeviceActiveAdapter(this, this, this)
 
         deviceGroupAdapter.tabLongClickListener = this
     }
@@ -140,10 +142,12 @@ class SavedDevicesFragment : DaggerFragment(),
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
-        if(deviceAdapter.isItemSelectionEnabled) {
+        if (deviceAdapter.isItemSelectionEnabled) {
             inflater.inflate(R.menu.menu_selected_devices, menu)
-            menu.findItem(R.id.action_remove_devices_from_group)?.isVisible = deviceGroupAdapter.isDeviceGroupTabActive()
-            menu.findItem(R.id.action_rename_device)?.isVisible = deviceAdapter.getNumberOfSelectedItems()==1
+            menu.findItem(R.id.action_remove_devices_from_group)?.isVisible =
+                deviceGroupAdapter.isDeviceGroupTabActive()
+            menu.findItem(R.id.action_rename_device)?.isVisible =
+                deviceAdapter.getNumberOfSelectedItems() == 1
         } else {
             inflater.inflate(R.menu.menu_devices, menu)
         }
@@ -177,7 +181,8 @@ class SavedDevicesFragment : DaggerFragment(),
                     return true
                 }
                 R.id.action_deactivate_all_actions -> {
-                    deactivateAllActionsForDevices(deviceAdapter.getSelectedItems().map { it.device })
+                    deactivateAllActionsForDevices(
+                        deviceAdapter.getSelectedItems().map { it.device })
                     exitItemSelectionState()
                     return true
                 }
@@ -190,11 +195,13 @@ class SavedDevicesFragment : DaggerFragment(),
                     if (deviceViewModel.getDeviceActiveList().isNotEmpty()) {
                         ActionListActivity.start(context)
                     } else {
-                        Snackbar.make(
-                                container_fragment,
+                        binding?.containerFragment?.let {
+                            Snackbar.make(
+                                it,
                                 R.string.message_no_saved_devices_cannot_open_actions,
                                 Snackbar.LENGTH_LONG
-                        ).show()
+                            ).show()
+                        }
                     }
                     return true
                 }
@@ -239,51 +246,56 @@ class SavedDevicesFragment : DaggerFragment(),
         }
 
         val snackbarMessage =
-            if(devices.size == 1) {
-                getString(R.string.one_device_removed,devices[0].device.name)
+            if (devices.size == 1) {
+                getString(R.string.one_device_removed, devices[0].device.name)
             } else {
-                getString(R.string.multiple_devices_removed,devices.size)
+                getString(R.string.multiple_devices_removed, devices.size)
             }
-        Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
+        binding?.containerFragment?.let {
+            Snackbar.make(it, snackbarMessage, Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     @SuppressLint("InflateParams")
     private fun showSortDevicesDialog() {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_sort_devices,null)
+        //TODO: inspect changes
+        val dialogBinding = DialogSortDevicesBinding.inflate(layoutInflater, null, false)
+//        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_sort_devices, null)
+        val dialogView = dialogBinding.root
 
         val attr = deviceSort.sortByAttribute
         val order = deviceSort.sortOrder
         when {
             attr == DeviceSort.SortAttributes.NAME && order == DeviceSort.SortOrder.ASCENDING ->
-                dialogView.sort_by_radio_group.check(R.id.name_ascending_option)
+                dialogBinding.sortByRadioGroup.check(R.id.name_ascending_option)
             attr == DeviceSort.SortAttributes.NAME && order == DeviceSort.SortOrder.DESCENDING ->
-                dialogView.sort_by_radio_group.check(R.id.name_descending_option)
+                dialogBinding.sortByRadioGroup.check(R.id.name_descending_option)
 
             attr == DeviceSort.SortAttributes.MAC_ADDRESS && order == DeviceSort.SortOrder.ASCENDING ->
-                dialogView.sort_by_radio_group.check(R.id.mac_address_ascending_option)
+                dialogBinding.sortByRadioGroup.check(R.id.mac_address_ascending_option)
             attr == DeviceSort.SortAttributes.MAC_ADDRESS && order == DeviceSort.SortOrder.DESCENDING ->
-                dialogView.sort_by_radio_group.check(R.id.mac_address_descending_option)
+                dialogBinding.sortByRadioGroup.check(R.id.mac_address_descending_option)
 
             attr == DeviceSort.SortAttributes.TIME && order == DeviceSort.SortOrder.ASCENDING ->
-                dialogView.sort_by_radio_group.check(R.id.oldest_first_option)
+                dialogBinding.sortByRadioGroup.check(R.id.oldest_first_option)
             attr == DeviceSort.SortAttributes.TIME && order == DeviceSort.SortOrder.DESCENDING ->
-                dialogView.sort_by_radio_group.check(R.id.newest_first_option)
+                dialogBinding.sortByRadioGroup.check(R.id.newest_first_option)
         }
 
         AlertDialog.Builder(context)
             .setTitle(getString(R.string.sort_devices_title))
             .setPositiveButton(getString(R.string.sort)) { _, _ ->
                 deviceSort = DeviceSort().apply {
-                    sortByAttribute = when(dialogView.sort_by_radio_group.checkedRadioButtonId) {
-                        R.id.name_ascending_option,R.id.name_descending_option -> DeviceSort.SortAttributes.NAME
-                        R.id.mac_address_ascending_option,R.id.mac_address_descending_option -> DeviceSort.SortAttributes.MAC_ADDRESS
-                        R.id.oldest_first_option,R.id.newest_first_option -> DeviceSort.SortAttributes.TIME
+                    sortByAttribute = when (dialogBinding.sortByRadioGroup.checkedRadioButtonId) {
+                        R.id.name_ascending_option, R.id.name_descending_option -> DeviceSort.SortAttributes.NAME
+                        R.id.mac_address_ascending_option, R.id.mac_address_descending_option -> DeviceSort.SortAttributes.MAC_ADDRESS
+                        R.id.oldest_first_option, R.id.newest_first_option -> DeviceSort.SortAttributes.TIME
                         else -> throw IllegalStateException()
                     }
 
-                    sortOrder = when(dialogView.sort_by_radio_group.checkedRadioButtonId) {
-                        R.id.name_ascending_option,R.id.mac_address_ascending_option,R.id.oldest_first_option -> DeviceSort.SortOrder.ASCENDING
-                        R.id.name_descending_option,R.id.mac_address_descending_option,R.id.newest_first_option -> DeviceSort.SortOrder.DESCENDING
+                    sortOrder = when (dialogBinding.sortByRadioGroup.checkedRadioButtonId) {
+                        R.id.name_ascending_option, R.id.mac_address_ascending_option, R.id.oldest_first_option -> DeviceSort.SortOrder.ASCENDING
+                        R.id.name_descending_option, R.id.mac_address_descending_option, R.id.newest_first_option -> DeviceSort.SortOrder.DESCENDING
                         else -> throw IllegalStateException()
                     }
 
@@ -301,7 +313,8 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     private fun showMoveDevicesDialog() {
-        val deviceGroups = deviceGroupAdapter.getDeviceGroups().filter { it != deviceGroupAdapter.getSelectedDeviceGroup() }
+        val deviceGroups = deviceGroupAdapter.getDeviceGroups()
+            .filter { it != deviceGroupAdapter.getSelectedDeviceGroup() }
         val groupsNames = deviceGroups.map { it.groupName }.toTypedArray()
 
         val builder = AlertDialog.Builder(context)
@@ -320,25 +333,44 @@ class SavedDevicesFragment : DaggerFragment(),
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .setCancelable(true)
-            .setMessage(getString(R.string.remove_devices_from_group_confirmation,
-                deviceGroupAdapter.getSelectedDeviceGroup()?.groupName ?: ""))
+            .setMessage(
+                getString(
+                    R.string.remove_devices_from_group_confirmation,
+                    deviceGroupAdapter.getSelectedDeviceGroup()?.groupName ?: ""
+                )
+            )
             .show()
     }
 
     private fun removeSelectedDevicesFromDeviceGroup() {
         val selectedDevices = deviceAdapter.getSelectedItems().map { it.device }
-        val deviceGroup = deviceGroupAdapter.getSelectedDeviceGroup() ?: throw IllegalStateException()
+        val deviceGroup =
+            deviceGroupAdapter.getSelectedDeviceGroup() ?: throw IllegalStateException()
         addDisposable(
-            deviceGroupViewModel.removeDevicesFromDeviceGroup(selectedDevices,deviceGroup)
+            deviceGroupViewModel.removeDevicesFromDeviceGroup(selectedDevices, deviceGroup)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     val snackbarMessage =
-                        if(selectedDevices.size == 1) {
-                            getString(R.string.one_device_removed_from_group_message,selectedDevices[0].name,deviceGroup.groupName)
+                        if (selectedDevices.size == 1) {
+                            getString(
+                                R.string.one_device_removed_from_group_message,
+                                selectedDevices[0].name,
+                                deviceGroup.groupName
+                            )
                         } else {
-                            getString(R.string.devices_removed_from_group_message,selectedDevices.size,deviceGroup.groupName)
+                            getString(
+                                R.string.devices_removed_from_group_message,
+                                selectedDevices.size,
+                                deviceGroup.groupName
+                            )
                         }
-                    Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
+                    binding?.containerFragment?.let {
+                        Snackbar.make(
+                            it,
+                            snackbarMessage,
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
 
                     exitItemSelectionState()
                     filterAndDisplayDevices(deviceViewModel.getDeviceActiveList())
@@ -347,19 +379,33 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
 
-    private fun moveSelectedDevicesToDeviceGroup(deviceGroup : DeviceGroup) {
+    private fun moveSelectedDevicesToDeviceGroup(deviceGroup: DeviceGroup) {
         val selectedDevices = deviceAdapter.getSelectedItems().map { it.device }
         addDisposable(
-            deviceGroupViewModel.moveDevicesToDeviceGroup(selectedDevices,deviceGroup)
+            deviceGroupViewModel.moveDevicesToDeviceGroup(selectedDevices, deviceGroup)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     val snackbarMessage =
-                        if(selectedDevices.size == 1) {
-                            getString(R.string.one_device_moved_message,selectedDevices[0].name,deviceGroup.groupName)
+                        if (selectedDevices.size == 1) {
+                            getString(
+                                R.string.one_device_moved_message,
+                                selectedDevices[0].name,
+                                deviceGroup.groupName
+                            )
                         } else {
-                            getString(R.string.devices_moved_message,selectedDevices.size,deviceGroup.groupName)
+                            getString(
+                                R.string.devices_moved_message,
+                                selectedDevices.size,
+                                deviceGroup.groupName
+                            )
                         }
-                    Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
+                    binding?.containerFragment?.let {
+                        Snackbar.make(
+                            it,
+                            snackbarMessage,
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
 
                     exitItemSelectionState()
                     filterAndDisplayDevices(deviceViewModel.getDeviceActiveList())
@@ -377,10 +423,11 @@ class SavedDevicesFragment : DaggerFragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_saved_devices, container, false)
+        binding = FragmentSavedDevicesBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
-    private fun filterAndDisplayDevices(devices : List<DeviceActive>) {
+    private fun filterAndDisplayDevices(devices: List<DeviceActive>) {
         val sortedDevices = deviceSort.sortDevices(devices)
 
         when {
@@ -391,15 +438,23 @@ class SavedDevicesFragment : DaggerFragment(),
                 deviceGroupViewModel.getDevicesBelongingSomeDeviceGroup()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { devicesBelongingSomeDeviceGroup ->
-                        displayPreferredDevices(sortedDevices.filter { !devicesBelongingSomeDeviceGroup.contains(it.device) && !deletedItems.contains(it) })
+                        displayPreferredDevices(sortedDevices.filter {
+                            !devicesBelongingSomeDeviceGroup.contains(
+                                it.device
+                            ) && !deletedItems.contains(it)
+                        })
                     }
             }
             else -> {
                 val deviceGroup = deviceGroupAdapter.getSelectedDeviceGroup() ?: return
                 deviceGroupViewModel.getDevicesFromDeviceGroup(deviceGroup.id)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {devicesInGroup ->
-                        displayPreferredDevices(sortedDevices.filter { devicesInGroup.contains(it.device) && !deletedItems.contains(it) })
+                    .subscribe { devicesInGroup ->
+                        displayPreferredDevices(sortedDevices.filter {
+                            devicesInGroup.contains(it.device) && !deletedItems.contains(
+                                it
+                            )
+                        })
                     }
             }
         }
@@ -409,8 +464,8 @@ class SavedDevicesFragment : DaggerFragment(),
         super.onViewCreated(view, savedInstanceState)
         Timber.i("Saved devices fragment View created")
 
-        list_devices.layoutManager = LinearLayoutManager(context)
-        list_devices.adapter = deviceAdapter
+        binding?.listDevices?.layoutManager = LinearLayoutManager(context)
+        binding?.listDevices?.adapter = deviceAdapter
         savedInstanceStateSelectedTab = 0
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(ITEM_SELECTION_ENABLED_KEY)) {
@@ -423,8 +478,8 @@ class SavedDevicesFragment : DaggerFragment(),
 
         }
 
-        list_devices.itemAnimator = DefaultItemAnimator()
-        list_devices.addItemDecoration(
+        binding?.listDevices?.itemAnimator = DefaultItemAnimator()
+        binding?.listDevices?.addItemDecoration(
             DividerItemDecoration(
                 context,
                 DividerItemDecoration.VERTICAL
@@ -433,7 +488,7 @@ class SavedDevicesFragment : DaggerFragment(),
 
         val itemTouchHelperCallback =
             DeviceSwipeToDismissHelper(0, ItemTouchHelper.LEFT, this)
-        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(list_devices)
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding?.listDevices)
 
         deviceSort.loadFromPreferences(sharedPreferences)
 
@@ -456,7 +511,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
         )
 
-        button_add_device.setOnClickListener {
+        binding?.buttonAddDevice?.setOnClickListener {
             snackbar?.dismiss()
             exitItemSelectionState()
             listener?.onFABClicked()
@@ -464,13 +519,13 @@ class SavedDevicesFragment : DaggerFragment(),
 
         }
 
-        if(deviceGroupAdapter.getTabsCount() == 0) {
+        if (deviceGroupAdapter.getTabsCount() == 0) {
             populateDeviceGroupAdapter(savedInstanceStateSelectedTab)
         }
-        tab_layout.setAdapter(deviceGroupAdapter)
+        binding?.tabLayout?.setAdapter(deviceGroupAdapter)
         setTabSelectedListener()
 
-        tab_layout.selectTab(deviceGroupAdapter.selectedTabIndex)
+        binding?.tabLayout?.selectTab(deviceGroupAdapter.selectedTabIndex)
     }
 
     fun onDeviceDiscoveryScanStarted() {
@@ -479,9 +534,11 @@ class SavedDevicesFragment : DaggerFragment(),
         }
     }
 
-    private fun populateDeviceGroupAdapter(initiallySelectedTab : Int) {
-        deviceGroupAdapter.allDevicesTabName = context?.getString(R.string.all_devices) ?: throw IllegalStateException()
-        deviceGroupAdapter.othersTabName = context?.getString(R.string.unsorted_devices) ?: throw IllegalStateException()
+    private fun populateDeviceGroupAdapter(initiallySelectedTab: Int) {
+        deviceGroupAdapter.allDevicesTabName =
+            context?.getString(R.string.all_devices) ?: throw IllegalStateException()
+        deviceGroupAdapter.othersTabName =
+            context?.getString(R.string.unsorted_devices) ?: throw IllegalStateException()
         deviceGroupAdapter.addAllDevicesTab()
 
         addDisposable(
@@ -492,10 +549,10 @@ class SavedDevicesFragment : DaggerFragment(),
                         deviceGroupAdapter.addTabForDeviceGroup(it)
                     }
 
-                    if(it.isNotEmpty()) {
+                    if (it.isNotEmpty()) {
                         deviceGroupAdapter.addOthersTab()
                     }
-                    tab_layout.selectTab(initiallySelectedTab)
+                    binding?.tabLayout?.selectTab(initiallySelectedTab)
                 }
         )
 
@@ -503,7 +560,7 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     private fun setTabSelectedListener() {
-        tab_layout.addOnTabSelectedListener(
+        binding?.tabLayout?.addOnTabSelectedListener(
             object : TabLayout.OnTabSelectedListener {
                 override fun onTabReselected(tab: TabLayout.Tab?) {
                 }
@@ -514,8 +571,10 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab?) {
-                    deviceGroupAdapter.selectedTabIndex = tab_layout.selectedTabPosition
-                    if(savedInstanceStateSelectedItems != null) {
+                    binding?.tabLayout?.selectedTabPosition?.let {
+                        deviceGroupAdapter.selectedTabIndex = it
+                    }
+                    if (savedInstanceStateSelectedItems != null) {
                         enableItemSelection()
                     }
                     filterAndDisplayDevices(deviceViewModel.getDeviceActiveList())
@@ -526,7 +585,7 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun onDeviceGroupTabLongClick(deviceGroup: DeviceGroup): Boolean {
-        if(deviceGroup != deviceGroupAdapter.getSelectedDeviceGroup() || deviceAdapter.isItemSelectionEnabled) {
+        if (deviceGroup != deviceGroupAdapter.getSelectedDeviceGroup() || deviceAdapter.isItemSelectionEnabled) {
             return false
         }
         deviceGroupOptions.showDeviceGroupsOptions()
@@ -534,7 +593,7 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun onAllDevicesTabLongClick(): Boolean {
-        if(!deviceGroupAdapter.isAllDevicesTabActive() || deviceAdapter.isItemSelectionEnabled) {
+        if (!deviceGroupAdapter.isAllDevicesTabActive() || deviceAdapter.isItemSelectionEnabled) {
             return false
         }
         deviceGroupOptions.showDeviceGroupsOptions()
@@ -542,7 +601,7 @@ class SavedDevicesFragment : DaggerFragment(),
     }
 
     override fun onOthersTabLongClick(): Boolean {
-        if(!deviceGroupAdapter.isOthersTabActive() || deviceAdapter.isItemSelectionEnabled) {
+        if (!deviceGroupAdapter.isOthersTabActive() || deviceAdapter.isItemSelectionEnabled) {
             return false
         }
         deviceGroupOptions.showDeviceGroupsOptions()
@@ -562,30 +621,34 @@ class SavedDevicesFragment : DaggerFragment(),
     private fun displayPreferredDevices(preferredDevices: List<DeviceActive>?) {
         preferredDevices?.let {
             if (preferredDevices.isEmpty()) {
-                empty_view?.visibility = View.VISIBLE
+                binding?.emptyView?.visibility = View.VISIBLE
 
                 when {
                     deviceGroupAdapter.isAllDevicesTabActive() -> {
-                        empty_view.text = getString(R.string.no_devices_plus_button_label)
+                        binding?.emptyView?.text = getString(R.string.no_devices_plus_button_label)
                     }
                     deviceGroupAdapter.isOthersTabActive() -> {
-                        empty_view.text = getString(R.string.no_unsorted_devices)
+                        binding?.emptyView?.text = getString(R.string.no_unsorted_devices)
                     }
                     else -> {
-                        empty_view.text = getString(R.string.no_devices_in_group)
+                        binding?.emptyView?.text = getString(R.string.no_devices_in_group)
                     }
                 }
                 deviceAdapter.setDevices(listOf())
             } else {
-                empty_view?.visibility = View.INVISIBLE
+                binding?.emptyView?.visibility = View.INVISIBLE
                 deviceAdapter.setDevices(preferredDevices)
                 deviceAdapter.setIcons(getIconInfoForActiveDevices(preferredDevices))
 
-                if(savedInstanceStateSelectedTab == deviceGroupAdapter.selectedTabIndex) {
+                if (savedInstanceStateSelectedTab == deviceGroupAdapter.selectedTabIndex) {
                     savedInstanceStateSelectedItems?.let { selectedItems ->
 
-                        if(deviceAdapter.isItemSelectionEnabled) {
-                            deviceAdapter.setItemsAsSelected(preferredDevices.filter { selectedItems.contains(it.device.macAddress) })
+                        if (deviceAdapter.isItemSelectionEnabled) {
+                            deviceAdapter.setItemsAsSelected(preferredDevices.filter {
+                                selectedItems.contains(
+                                    it.device.macAddress
+                                )
+                            })
                         }
                         savedInstanceStateSelectedItems = null
                     }
@@ -606,7 +669,7 @@ class SavedDevicesFragment : DaggerFragment(),
         deviceAdapter.enableItemSelection(initiallySelectedItem)
         selectionStateListener?.onSelectedItemsCountChanged(deviceAdapter.getNumberOfSelectedItems())
         selectionStateListener?.onItemSelectionStateEntered()
-        button_add_device.hide()
+        binding?.buttonAddDevice?.hide()
     }
 
 
@@ -623,17 +686,22 @@ class SavedDevicesFragment : DaggerFragment(),
             deviceAdapter.disableItemSelection()
             selectionStateListener?.onItemSelectionStateExited()
 
-            button_add_device.show()
+            binding?.buttonAddDevice?.show()
 
         }
     }
 
 
-    private fun setActionsStateForDevices(devices : List<Device>, state : Boolean, successMessage : String, failMessage : String) {
+    private fun setActionsStateForDevices(
+        devices: List<Device>,
+        state: Boolean,
+        successMessage: String,
+        failMessage: String
+    ) {
         val completables = mutableListOf<Completable>()
             .apply {
                 devices.forEach {
-                    add(setActionActiveByDeviceMacAddressUseCase.execute(it.macAddress,state))
+                    add(setActionActiveByDeviceMacAddressUseCase.execute(it.macAddress, state))
                 }
 
             }
@@ -658,24 +726,34 @@ class SavedDevicesFragment : DaggerFragment(),
         )
     }
 
-    private fun activateAllActionsForDevices(devices : List<Device>) {
-        val successMessage = if(devices.size==1) {
-            getString(R.string.activated_all_actions_for_one_device,devices[0].name)
+    private fun activateAllActionsForDevices(devices: List<Device>) {
+        val successMessage = if (devices.size == 1) {
+            getString(R.string.activated_all_actions_for_one_device, devices[0].name)
         } else {
-            getString(R.string.activated_all_actions,devices.size)
+            getString(R.string.activated_all_actions, devices.size)
         }
 
-        setActionsStateForDevices(devices,true,successMessage,getString(R.string.error_activating_all_actions))
+        setActionsStateForDevices(
+            devices,
+            true,
+            successMessage,
+            getString(R.string.error_activating_all_actions)
+        )
     }
 
-    private fun deactivateAllActionsForDevices(devices : List<Device>) {
-        val successMessage = if(devices.size==1) {
-            getString(R.string.deactivated_all_actions_for_one_device,devices[0].name)
+    private fun deactivateAllActionsForDevices(devices: List<Device>) {
+        val successMessage = if (devices.size == 1) {
+            getString(R.string.deactivated_all_actions_for_one_device, devices[0].name)
         } else {
-            getString(R.string.deactivated_all_actions,devices.size)
+            getString(R.string.deactivated_all_actions, devices.size)
         }
 
-        setActionsStateForDevices(devices,false,successMessage,getString(R.string.error_deactivating_all_actions))
+        setActionsStateForDevices(
+            devices,
+            false,
+            successMessage,
+            getString(R.string.error_deactivating_all_actions)
+        )
     }
 
     override fun onItemLongClick(item: DeviceActive) {
@@ -694,13 +772,17 @@ class SavedDevicesFragment : DaggerFragment(),
 
         return builder
             .setView(inflate)
-            .setTitle("Rename Beacon")
+            .setTitle(getString(R.string.rename_beacon))
             .setPositiveButton(getString(R.string.rename)) { dialog, _ ->
                 input.text.toString().let { text ->
                     if (!text.isBlank()) {
                         deviceViewModel.updateDevice(device, text)
 
-                        Completable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                        Completable.timer(
+                            300,
+                            TimeUnit.MILLISECONDS,
+                            AndroidSchedulers.mainThread()
+                        )
                             .subscribe {
                                 exitItemSelectionState()
                             }
@@ -728,11 +810,23 @@ class SavedDevicesFragment : DaggerFragment(),
             deviceViewModel.saveDevice(item)
                 .subscribe {
                     deviceGroupAdapter.getSelectedDeviceGroup()?.let {
-                        deviceGroupViewModel.addDeviceGroupDeviceRelation(item.macAddress,it.id)
+                        deviceGroupViewModel.addDeviceGroupDeviceRelation(item.macAddress, it.id)
                             .subscribe {
-                                Snackbar.make(container_fragment,"Device ${item.name} added to group ${it.groupName}",Snackbar.LENGTH_SHORT).show()
+                                binding?.containerFragment?.let { it1 ->
+                                    Snackbar.make(
+                                        it1,
+                                        "Device ${item.name} added to group ${it.groupName}",
+                                        Snackbar.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
-                    } ?: Snackbar.make(container_fragment,"Added device ${item.name}",Snackbar.LENGTH_SHORT).show()
+                    } ?: binding?.containerFragment?.let {
+                        Snackbar.make(
+                            it,
+                            "Added device ${item.name}",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
 
                 }
         )
@@ -778,8 +872,10 @@ class SavedDevicesFragment : DaggerFragment(),
             }
 
             // showing snack bar with Undo option
-            snackbar = Snackbar
-                .make(container_fragment, "$name removed!", Snackbar.LENGTH_LONG)
+            snackbar = binding?.containerFragment?.let {
+                Snackbar
+                    .make(it, "$name removed!", Snackbar.LENGTH_LONG)
+            }
             snackbar?.setAction("UNDO") {
                 //Prevent it to be removed from snackbarCallback
                 snackbar?.removeCallback(snackbarCallback)
@@ -790,7 +886,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 deletedItems.remove(lastDevice)
 
                 if (position == 0) {
-                    empty_view.visibility = View.INVISIBLE
+                    binding?.emptyView?.visibility = View.INVISIBLE
                 }
             }
 
@@ -829,7 +925,7 @@ class SavedDevicesFragment : DaggerFragment(),
         val selectedItemsCount = deviceAdapter.getNumberOfSelectedItems()
         selectionStateListener?.onSelectedItemsCountChanged(selectedItemsCount)
 
-        mainMenu?.findItem(R.id.action_rename_device)?.isVisible = selectedItemsCount==1
+        mainMenu?.findItem(R.id.action_rename_device)?.isVisible = selectedItemsCount == 1
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -843,17 +939,19 @@ class SavedDevicesFragment : DaggerFragment(),
             )
         }
 
-        outState.putInt(SELECTED_TAB_KEY,deviceGroupAdapter.selectedTabIndex)
+        outState.putInt(SELECTED_TAB_KEY, deviceGroupAdapter.selectedTabIndex)
     }
 
     private inner class DeviceGroupOptions {
 
         fun showDeviceGroupsOptions() {
             val options =
-                if(deviceGroupAdapter.isDeviceGroupTabActive())
-                    arrayOf(getString(R.string.create_new_group),
+                if (deviceGroupAdapter.isDeviceGroupTabActive())
+                    arrayOf(
+                        getString(R.string.create_new_group),
                         getString(R.string.remove_group),
-                        getString(R.string.edit_group_name))
+                        getString(R.string.edit_group_name)
+                    )
                 else
                     arrayOf(getString(R.string.create_new_group))
 
@@ -861,7 +959,7 @@ class SavedDevicesFragment : DaggerFragment(),
             val builder = AlertDialog.Builder(context)
             builder.setTitle(getString(R.string.device_group_options))
             builder.setItems(options) { _, which ->
-                when(options[which]) {
+                when (options[which]) {
                     getString(R.string.create_new_group) -> showCreateNewGroupDialog()
                     getString(R.string.remove_group) -> showRemoveGroupDialog()
                     getString(R.string.edit_group_name) -> showEditGroupDialog()
@@ -872,25 +970,38 @@ class SavedDevicesFragment : DaggerFragment(),
 
         @SuppressLint("InflateParams")
         private fun showEditGroupDialog() {
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_group,null)
+
+            //TODO: inspect changes
+            val dialogBinding = DialogCreateGroupBinding.inflate(layoutInflater, null, false)
+
+//            val dialogView =
+//                LayoutInflater.from(context).inflate(R.layout.dialog_create_group, null)
+
+            val dialogView = dialogBinding.root
 
             val dialog = AlertDialog.Builder(context)
                 .setTitle(getString(R.string.rename_group_title))
-                .setPositiveButton(getString(R.string.rename),null)
+                .setPositiveButton(getString(R.string.rename), null)
                 .setCancelable(true)
-                .setNegativeButton(getString(R.string.cancel),null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .setView(dialogView)
                 .show()
 
-            dialog.group_name.setText(deviceGroupAdapter.getSelectedDeviceGroup()?.groupName ?: "")
+            dialogBinding.groupName.setText(
+                deviceGroupAdapter.getSelectedDeviceGroup()?.groupName ?: ""
+            )
             dialog.getButton(Dialog.BUTTON_POSITIVE)
                 .setOnClickListener {
-                    val newName = dialogView.group_name.text.toString()
-                    val deviceGroup = deviceGroupAdapter.getSelectedDeviceGroup() ?: return@setOnClickListener
+                    val newName = dialogBinding.groupName.text.toString()
+                    val deviceGroup =
+                        deviceGroupAdapter.getSelectedDeviceGroup() ?: return@setOnClickListener
 
-                    if(deviceGroupAdapter.getDeviceGroups().find { it.groupName == newName && it!=deviceGroup } != null) {
-                        dialogView.group_name_layout.error = getString(R.string.device_group_name_taken)
-                        dialogView.group_name_layout.isErrorEnabled = true
+                    if (deviceGroupAdapter.getDeviceGroups()
+                            .find { it.groupName == newName && it != deviceGroup } != null
+                    ) {
+                        dialogBinding.groupNameLayout.error =
+                            getString(R.string.device_group_name_taken)
+                        dialogBinding.groupNameLayout.isErrorEnabled = true
                         return@setOnClickListener
                     }
                     dialog.dismiss()
@@ -899,7 +1010,7 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
         }
 
-        private fun updateSelectedGroupName(newName : String) {
+        private fun updateSelectedGroupName(newName: String) {
             val deviceGroup = deviceGroupAdapter.getSelectedDeviceGroup() ?: return
             deviceGroup.groupName = newName
 
@@ -921,8 +1032,12 @@ class SavedDevicesFragment : DaggerFragment(),
                 }
                 .setNegativeButton(getString(R.string.cancel), null)
                 .setCancelable(true)
-                .setMessage(getString(R.string.remove_group_confirmation,
-                    deviceGroupAdapter.getSelectedDeviceGroup()?.groupName ?: ""))
+                .setMessage(
+                    getString(
+                        R.string.remove_group_confirmation,
+                        deviceGroupAdapter.getSelectedDeviceGroup()?.groupName ?: ""
+                    )
+                )
                 .show()
         }
 
@@ -931,30 +1046,39 @@ class SavedDevicesFragment : DaggerFragment(),
             deviceGroupViewModel.deleteDeviceGroup(deviceGroup)
             deviceGroupAdapter.removeTabForDeviceGroup(deviceGroup)
 
-            if(deviceGroupAdapter.getDeviceGroups().isEmpty()) { //if no more device groups, no need to show others tab
+            if (deviceGroupAdapter.getDeviceGroups()
+                    .isEmpty()
+            ) { //if no more device groups, no need to show others tab
                 deviceGroupAdapter.removeOthersTab()
             }
         }
 
         @SuppressLint("InflateParams")
         private fun showCreateNewGroupDialog() {
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_create_group,null)
+//            val dialogView =
+//                LayoutInflater.from(context).inflate(R.layout.dialog_create_group, null)
+
+            val dialogBinding = DialogCreateGroupBinding.inflate(layoutInflater, null, false)
+            val dialogView = dialogBinding.root
 
             val dialog = AlertDialog.Builder(context)
                 .setTitle(getString(R.string.create_new_group_title))
-                .setPositiveButton(getString(R.string.create),null)
-                .setNegativeButton(getString(R.string.cancel),null)
+                .setPositiveButton(getString(R.string.create), null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .setCancelable(true)
                 .setView(dialogView)
                 .show()
 
             dialog.getButton(Dialog.BUTTON_POSITIVE)
                 .setOnClickListener {
-                    val name = dialogView.group_name.text.toString()
+                    val name = dialogBinding.groupName.text.toString()
 
-                    if(deviceGroupAdapter.getDeviceGroups().find { it.groupName == name } != null) {
-                        dialogView.group_name_layout.error = getString(R.string.device_group_name_taken)
-                        dialogView.group_name_layout.isErrorEnabled = true
+                    if (deviceGroupAdapter.getDeviceGroups()
+                            .find { it.groupName == name } != null
+                    ) {
+                        dialogBinding.groupNameLayout.error =
+                            getString(R.string.device_group_name_taken)
+                        dialogBinding.groupNameLayout.isErrorEnabled = true
                         return@setOnClickListener
                     }
                     dialog.dismiss()
@@ -964,15 +1088,17 @@ class SavedDevicesFragment : DaggerFragment(),
         }
 
 
-        private fun createNewGroup(groupName : String) {
+        private fun createNewGroup(groupName: String) {
             addDisposable(
                 deviceGroupViewModel.saveDeviceGroup(groupName)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { deviceGroup ->
                         deviceGroupAdapter.addTabForDeviceGroup(deviceGroup)
-                        tab_layout.selectTab(deviceGroupAdapter.indexOfDeviceGroupTab(deviceGroup) ?: 0)
+                        binding?.tabLayout?.selectTab(
+                            deviceGroupAdapter.indexOfDeviceGroupTab(deviceGroup) ?: 0
+                        )
 
-                        if(deviceGroupAdapter.getDeviceGroups().size == 1) { //if this is the first device group, then it is time to show tab containing devices not belonging to any group
+                        if (deviceGroupAdapter.getDeviceGroups().size == 1) { //if this is the first device group, then it is time to show tab containing devices not belonging to any group
                             deviceGroupAdapter.addOthersTab()
                         }
                     }

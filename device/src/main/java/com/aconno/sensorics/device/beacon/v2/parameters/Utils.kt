@@ -29,7 +29,7 @@ fun decodeHexParameterEmbedString(string: String, parameters: Parameters): ByteA
                     }
 
                     parameters.flatten().find { it.name == toMatch }?.let {
-                        data.add('$'.toByte())
+                        data.add('$'.code.toByte())
                         data.addAll(ValueConverters.UINT8.serialize(it.id.toShort()).toList())
                     }
                 }
@@ -61,7 +61,7 @@ fun encodeHexAsParameterEmbedString(bytes: ByteArray, parameters: Parameters): S
                 }
                 nextIsParameter = false
             }
-            byte == '$'.toByte() -> nextIsParameter = true
+            byte == '$'.code.toByte() -> nextIsParameter = true
             else -> builder.append(byte.toHex("0x")).append(' ')
         }
     }

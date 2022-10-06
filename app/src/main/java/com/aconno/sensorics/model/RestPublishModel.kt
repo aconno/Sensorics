@@ -12,4 +12,13 @@ class RestPublishModel(
     timeMillis: Long,
     lastTimeMillis: Long,
     dataString: String
-) : BasePublishModel(id, PublishType.REST, name, enabled, timeType, timeMillis, lastTimeMillis, dataString)
+) : BasePublishModel(
+    id,
+    PublishType.REST,
+    name,
+    enabled,
+    timeType,
+    timeMillis,
+    lastTimeMillis,
+    dataString
+)

@@ -12,17 +12,18 @@ import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.aconno.sensorics.R
 import com.aconno.sensorics.dagger.beacon_settings.BeaconSettingsFragmentListener
+import com.aconno.sensorics.databinding.FragmentBeaconSettingsBinding
 import com.aconno.sensorics.domain.serialization.JavascriptCallGenerator
 import com.aconno.sensorics.viewmodel.BeaconSettingsTransporterSharedViewModel
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.fragment_beacon_settings.*
 import timber.log.Timber
 
 open class BeaconSettingsFragment() : DaggerFragment() {
 
     private lateinit var listener: BeaconSettingsFragmentListener
+
+    private var binding: FragmentBeaconSettingsBinding? = null
 
     private val settingsTransporter by lazy {
         ViewModelProvider(requireActivity()).get(BeaconSettingsTransporterSharedViewModel::class.java)
@@ -36,6 +37,7 @@ open class BeaconSettingsFragment() : DaggerFragment() {
      * again in the current fragment. So we need to avoid event circularity
      */
     private var occurredAfterUpdateSent = false
+
     /**
      * In some cases we need retrieve data after updating it in current fragment
      */
@@ -73,7 +75,8 @@ open class BeaconSettingsFragment() : DaggerFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_beacon_settings,container,false)
+        binding = FragmentBeaconSettingsBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,26 +84,28 @@ open class BeaconSettingsFragment() : DaggerFragment() {
         setupVebViewWithWebClient(SettingsFragmentsWebViewClient())
 
         if (savedInstanceState != null)
-            web_view.restoreState(savedInstanceState)
+            binding?.webView?.restoreState(savedInstanceState)
     }
 
     private fun setupVebViewWithWebClient(mandatoryWebViewClient: WebViewClient) {
-        with(web_view) {
-            settings.builtInZoomControls = false
-            settings.javaScriptEnabled = true
-            web_view.webChromeClient = WebAppChromeClient()
-            settings.allowFileAccess = true
-            settings.allowFileAccessFromFileURLs = true
-            settings.allowUniversalAccessFromFileURLs = true
-            settings.allowContentAccess = true
-            addJavascriptInterface(this@BeaconSettingsFragment, "native")
-            webViewClient = mandatoryWebViewClient
-            loadUrl(HTML_FILE_PATH)
+        binding?.let {
+            with(it.webView) {
+                settings.builtInZoomControls = false
+                settings.javaScriptEnabled = true
+                binding?.webView?.webChromeClient = WebAppChromeClient()
+                settings.allowFileAccess = true
+                settings.allowFileAccessFromFileURLs = true
+                settings.allowUniversalAccessFromFileURLs = true
+                settings.allowContentAccess = true
+                addJavascriptInterface(this@BeaconSettingsFragment, "native")
+                webViewClient = mandatoryWebViewClient
+                loadUrl(HTML_FILE_PATH)
+            }
         }
     }
 
     fun receivedBeaconInfo(beaconInfo: String) {
-        web_view?.loadUrl(
+        binding?.webView?.loadUrl(
             jsGenerator.generateCall("setBeaconInformation", beaconInfo)
         )
     }
@@ -140,15 +145,20 @@ open class BeaconSettingsFragment() : DaggerFragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
+
     inner class WebAppChromeClient : WebChromeClient() {
         override fun onProgressChanged(view: WebView?, newProgress: Int) {
-            if (newProgress < 100 && progress_page.visibility == ProgressBar.GONE) {
-                progress_page.visibility = ProgressBar.VISIBLE
+            if (newProgress < 100 && binding?.progressPage?.visibility == ProgressBar.GONE) {
+                binding?.progressPage?.visibility = ProgressBar.VISIBLE
             }
 
-            progress_page.progress = newProgress;
+            binding?.progressPage?.progress = newProgress;
             if (newProgress == 100) {
-                progress_page.visibility = ProgressBar.GONE
+                binding?.progressPage?.visibility = ProgressBar.GONE
             }
         }
     }
@@ -167,7 +177,7 @@ open class BeaconSettingsFragment() : DaggerFragment() {
             "file:///android_asset/resources/settings/views/main/SettingsMain.html"
 
 
-        fun newInstance() : BeaconSettingsFragment {
+        fun newInstance(): BeaconSettingsFragment {
             return BeaconSettingsFragment()
         }
     }

@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -16,19 +17,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.LongItemClickListener
+import com.aconno.sensorics.databinding.ActivityRestHttpgetparamsBinding
 import com.aconno.sensorics.model.RestHttpGetParamModel
 import com.aconno.sensorics.ui.SwipeToDeleteCallback
 import com.aconno.sensorics.ui.settings.publishers.restheader.ItemClickListenerWithPos
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_rest_httpgetparams.*
-import kotlinx.android.synthetic.main.activity_rest_httpgetparams.empty_view
-import kotlinx.android.synthetic.main.activity_rest_httpgetparams.recyclerView
-import kotlinx.android.synthetic.main.activity_rest_httpgetparams.toolbar
 
 
 class RestHttpGetParamsActivity : AppCompatActivity(),
     AddRestHttpGetParamDialog.OnFragmentInteractionListener,
     LongItemClickListener<RestHttpGetParamModel> {
+
+    private lateinit var binding: ActivityRestHttpgetparamsBinding
 
     private lateinit var initialHttpGetParams: ArrayList<RestHttpGetParamModel>
     private lateinit var httpgetParams: ArrayList<RestHttpGetParamModel>
@@ -80,43 +80,49 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_rest_httpgetparams)
+
+        val content = findViewById<ViewGroup>(android.R.id.content)
+        binding = ActivityRestHttpgetparamsBinding.inflate(layoutInflater, content)
+
+        //setContentView(R.layout.activity_rest_httpgetparams)
         setupActionBar()
 
-        val httpgetParamsExtra = intent.getParcelableArrayExtra(REST_HTTPGET_PARAMS_ACTIVITY_LIST_KEY)
-        httpgetParams = ArrayList(httpgetParamsExtra?.toList()?.map { it as RestHttpGetParamModel } ?: emptyList())
+        val httpgetParamsExtra =
+            intent.getParcelableArrayExtra(REST_HTTPGET_PARAMS_ACTIVITY_LIST_KEY)
+        httpgetParams = ArrayList(httpgetParamsExtra?.toList()?.map { it as RestHttpGetParamModel }
+            ?: emptyList())
         initialHttpGetParams = ArrayList(httpgetParams)
 
         initView()
     }
 
     private fun setupActionBar() {
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.title = getString(R.string.rest_http_get_params_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun initView() {
         if (httpgetParams.isNotEmpty()) {
-            empty_view.visibility = View.GONE
+            binding.emptyView.visibility = View.GONE
         }
 
         rvAdapter = RestHttpGetParamsAdapter(
             httpgetParams,
             onItemClickListener, this
         )
-        with(recyclerView) {
+        with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(context)
             adapter = rvAdapter
 
             val dividerItemDecoration = DividerItemDecoration(
-                recyclerView.context,
+                binding.recyclerView.context,
                 (layoutManager as LinearLayoutManager).orientation
             )
             this.addItemDecoration(dividerItemDecoration)
         }
 
-        button_addHttpGetParam.setOnClickListener {
+        binding.buttonAddHttpGetParam.setOnClickListener {
             AddRestHttpGetParamDialog.newInstance(
                 null,
                 -1
@@ -136,8 +142,12 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
                 rvAdapter.removeParameterAt(position)
 
                 snackbar = Snackbar
-                    .make(empty_view, "Parameter ${parameter.key} removed!", Snackbar.LENGTH_LONG)
-                snackbar?.setAction("UNDO") {
+                    .make(
+                        binding.emptyView,
+                        String.format(getString(R.string.parameter_removed), parameter.key),
+                        Snackbar.LENGTH_LONG
+                    )
+                snackbar?.setAction(getString(R.string.undo_uppercase)) {
                     rvAdapter.addParameterAtPosition(parameter, position)
                 }
 
@@ -156,14 +166,20 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
                 snackbar?.show()
             }
         }
-        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(recyclerView)
+        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(binding.recyclerView)
     }
 
     override fun onBackPressed() {
-        if(initialHttpGetParams != httpgetParams) {
+        if (initialHttpGetParams != httpgetParams) {
             AlertDialog.Builder(this).setMessage(getString(R.string.unsaved_changes_dialog_message))
-                .setPositiveButton(getString(R.string.save_changes), unsavedChangesDialogClickListener)
-                .setNegativeButton(getString(R.string.discard_changes),unsavedChangesDialogClickListener)
+                .setPositiveButton(
+                    getString(R.string.save_changes),
+                    unsavedChangesDialogClickListener
+                )
+                .setNegativeButton(
+                    getString(R.string.discard_changes),
+                    unsavedChangesDialogClickListener
+                )
                 .show()
 
         } else {
@@ -202,13 +218,13 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
         return super.onOptionsItemSelected(item)
     }
 
-    private fun deleteItem(item : RestHttpGetParamModel) {
+    private fun deleteItem(item: RestHttpGetParamModel) {
         val index = httpgetParams.indexOf(item)
         httpgetParams.remove(item)
         rvAdapter.notifyItemRemoved(index)
 
         if (httpgetParams.isEmpty()) {
-            empty_view.visibility = View.VISIBLE
+            binding.emptyView.visibility = View.VISIBLE
         }
     }
 
@@ -228,7 +244,7 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
     }
 
     override fun onFragmentInteraction(position: Int, key: String, value: String) {
-        empty_view.visibility = View.GONE
+        binding.emptyView.visibility = View.GONE
 
         if (position == -1) {
             httpgetParams.add(
@@ -239,12 +255,12 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
             rvAdapter.notifyItemInserted(rvAdapter.itemCount)
         } else {
             httpgetParams[position] =
-                    RestHttpGetParamModel(
-                        httpgetParams[position].id,
-                        httpgetParams[position].rId,
-                        key,
-                        value
-                    )
+                RestHttpGetParamModel(
+                    httpgetParams[position].id,
+                    httpgetParams[position].rId,
+                    key,
+                    value
+                )
             rvAdapter.notifyItemChanged(position)
         }
     }

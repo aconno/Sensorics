@@ -31,7 +31,7 @@
                 android:paddingBottom="80dp">
 
                 <EditText
-                    android:id="@+id/edittext_name"
+                    android:id="@+id/edit_text_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
@@ -144,7 +144,7 @@
                 </com.google.android.flexbox.FlexboxLayout>
 
                 <EditText
-                    android:id="@+id/edittext_message2"
+                    android:id="@+id/edit_text_message_2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
@@ -156,7 +156,7 @@
                     tools:visibility="visible" />
 
                 <EditText
-                    android:id="@+id/edittext_message1"
+                    android:id="@+id/edit_text_message_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/screen_edge_left_right_margin"
@@ -189,7 +189,7 @@
                             android:textColor="@color/primaryTextColor" />
 
                         <TimePicker
-                            android:id="@+id/timepicker_time_from"
+                            android:id="@+id/time_picker_time_from"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/screen_edge_left_right_margin"
@@ -214,7 +214,7 @@
                             android:textColor="@color/primaryTextColor" />
 
                         <TimePicker
-                            android:id="@+id/timepicker_time_to"
+                            android:id="@+id/time_picker_time_to"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/item_vertical_spacing"

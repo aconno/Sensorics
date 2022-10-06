@@ -1,20 +1,19 @@
 package com.aconno.sensorics.ui.settings.virtualscanningsources
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.ItemVirtualScanningSourceBinding
 import com.aconno.sensorics.model.BaseVirtualScanningSourceModel
 import com.aconno.sensorics.model.MqttVirtualScanningSourceModel
-import kotlinx.android.synthetic.main.item_virtual_scanning_source.view.*
 
 class VirtualScanningSourcesAdapter(
-        private val sourceList: MutableList<BaseVirtualScanningSourceModel>,
-        private val clickListener: OnListItemClickListener?
+    private val sourceList: MutableList<BaseVirtualScanningSourceModel>,
+    private val clickListener: OnListItemClickListener?
 ) : RecyclerView.Adapter<VirtualScanningSourcesAdapter.ViewHolder>() {
     private var checkedChangeListener: OnCheckedChangeListener? = null
 
@@ -24,9 +23,14 @@ class VirtualScanningSourcesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_virtual_scanning_source, parent, false)
-        return ViewHolder(view)
+
+        val binding = ItemVirtualScanningSourceBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -38,9 +42,9 @@ class VirtualScanningSourcesAdapter(
             is MqttVirtualScanningSourceModel -> holder.imageView.setImageResource(R.drawable.mqtt_logo)
         }
 
-        with(holder.rootView) {
+        with(holder.binding.root) {
             tag = item
-            setOnClickListener{
+            setOnClickListener {
                 clickListener?.onListItemClick(item)
             }
         }
@@ -65,10 +69,11 @@ class VirtualScanningSourcesAdapter(
     }
 
 
-    inner class ViewHolder(val rootView: View) : RecyclerView.ViewHolder(rootView) {
-        val nameView: TextView = rootView.virtual_scanning_source_name
-        val enableView: Switch = rootView.virtual_scanning_source_switch
-        val imageView: ImageView = rootView.virtual_scanning_source_image
+    inner class ViewHolder(val binding: ItemVirtualScanningSourceBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        val nameView: TextView = binding.virtualScanningSourceName
+        val enableView: Switch = binding.virtualScanningSourceSwitch
+        val imageView: ImageView = binding.virtualScanningSourceImage
 
         override fun toString(): String {
             return super.toString() + " '" + enableView.text + "'"

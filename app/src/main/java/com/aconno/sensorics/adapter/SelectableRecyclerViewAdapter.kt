@@ -106,7 +106,7 @@ abstract class SelectableRecyclerViewAdapter<T, K, VH>(
 
     fun removeItem(model: T) {
         val index = internalItems.indexOf(model)
-        if(index != -1) {
+        if (index != -1) {
             removeItemAtPosition(index)
         }
 

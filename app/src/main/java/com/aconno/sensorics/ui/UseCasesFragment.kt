@@ -11,15 +11,16 @@ import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.aconno.sensorics.LiveDataObserver
-import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.FragmentUseCasesBinding
 import com.aconno.sensorics.viewmodel.UseCasesViewModel
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.fragment_use_cases.*
 import timber.log.Timber
 import javax.inject.Inject
 
 
 class UseCasesFragment : DaggerFragment() {
+
+    private var binding: FragmentUseCasesBinding? = null
 
     @Inject
     lateinit var mViewModel: UseCasesViewModel
@@ -28,7 +29,11 @@ class UseCasesFragment : DaggerFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_use_cases, container, false)
+    ): View? {
+        binding = FragmentUseCasesBinding.inflate(inflater, container, false)
+
+        return binding?.root
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,7 +45,7 @@ class UseCasesFragment : DaggerFragment() {
 
         if (macAddress != null && name != null) {
 
-            activity_usecases_webview.apply {
+            binding?.activityUsecasesWebview?.apply {
                 webChromeClient = WebChromeClient()
                 webViewClient = MyWebViewClient()
                 settings.javaScriptEnabled = true
@@ -63,6 +68,11 @@ class UseCasesFragment : DaggerFragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
+
     private fun showError() {
         context?.let {
             val builder = AlertDialog.Builder(it)
@@ -77,15 +87,15 @@ class UseCasesFragment : DaggerFragment() {
     }
 
     private fun hideProgressBar() {
-        progressbar.visibility = View.GONE
-        status_view.visibility = View.GONE
-        activity_usecases_webview.visibility = View.VISIBLE
+        binding?.progressbar?.visibility = View.GONE
+        binding?.statusView?.visibility = View.GONE
+        binding?.activityUsecasesWebview?.visibility = View.VISIBLE
     }
 
     private fun showProgressBar() {
-        progressbar.visibility = View.VISIBLE
-        status_view.visibility = View.VISIBLE
-        activity_usecases_webview.visibility = View.GONE
+        binding?.progressbar?.visibility = View.VISIBLE
+        binding?.statusView?.visibility = View.VISIBLE
+        binding?.activityUsecasesWebview?.visibility = View.GONE
     }
 
     override fun onDetach() {
@@ -94,7 +104,7 @@ class UseCasesFragment : DaggerFragment() {
     }
 
     private fun loadUrl(url: String) {
-        activity_usecases_webview.loadUrl(url)
+        binding?.activityUsecasesWebview?.loadUrl(url)
     }
 
     inner class MyWebViewClient : WebViewClient() {

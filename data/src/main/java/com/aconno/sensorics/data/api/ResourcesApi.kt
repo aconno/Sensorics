@@ -28,7 +28,7 @@ class ResourcesApi(
 
                 val response = okHttpClient.newCall(request).execute()
 
-                response.body?.let {
+                response.body.let {
                     val stringRepresentations = it.string()
                     return gson.fromJson<ResourceDelta>(
                         stringRepresentations,
@@ -50,7 +50,7 @@ class ResourcesApi(
         val response = okHttpClient.newCall(request).execute()
 
         return if (response.isSuccessful) {
-            response.body?.byteStream()
+            response.body.byteStream()
         } else {
             null
         }

@@ -8,6 +8,26 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/activity_about.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/activity_action_details.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/activity_action_list.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/activity_azure_mqtt_publisher.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/activity_rest_headers.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/activity_rest_httpgetparams.xml" value="0.23484848484848486" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/activity_toolbar.xml" value="0.2" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/dialog_condition.xml" value="0.264" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/dialog_create_group.xml" value="0.264" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/dialog_indeterminate_progress.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/fragment_dashboard.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/fragment_device_main.xml" value="0.264" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/fragment_saved_devices.xml" value="0.2" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/item_action.xml" value="0.26458333333333334" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/item_chip.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/item_reading.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/layout/layout_datastring.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/menu/add_publish_menu.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/menu/add_virtual_scanning_source_menu.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/renat/AndroidStudioProjects/Sensorics/app/src/main/res/menu/main_menu.xml" value="0.264" />
         <entry key="app/src/main/res/layout/activity_action_details.xml" value="0.3609375" />
       </map>
     </option>

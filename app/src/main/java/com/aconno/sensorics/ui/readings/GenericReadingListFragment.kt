@@ -6,16 +6,21 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.aconno.sensorics.BuildConfig
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.FragmentGenericReadingListBinding
+import com.aconno.sensorics.databinding.ItemReadingBinding
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.ui.ActionListActivity
 import com.aconno.sensorics.ui.MainActivity
 import com.aconno.sensorics.ui.livegraph.LiveGraphOpener
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.fragment_generic_reading_list.*
-import kotlinx.android.synthetic.main.item_reading.view.*
+//import kotlinx.android.synthetic.main.fragment_generic_reading_list.*
+//import kotlinx.android.synthetic.main.item_reading.view.*
 import javax.inject.Inject
 
 class GenericReadingListFragment : DaggerFragment() {
+
+    private var binding: FragmentGenericReadingListBinding? = null
+    private var itemReadingBinding: ItemReadingBinding? = null
 
     @Inject
     lateinit var readingListViewModel: ReadingListViewModel
@@ -66,7 +71,10 @@ class GenericReadingListFragment : DaggerFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_generic_reading_list, container, false)
+        binding = FragmentGenericReadingListBinding.inflate(inflater, container, false)
+        itemReadingBinding = ItemReadingBinding.inflate(inflater, container, false)
+
+        return binding?.root
     }
 
     override fun onResume() {
@@ -79,13 +87,23 @@ class GenericReadingListFragment : DaggerFragment() {
             })
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+        itemReadingBinding = null
+    }
+
     private fun addReadings(readings: List<Reading>) {
         readings.sortedBy { it.name }.forEach { reading ->
             val view = views[reading.name]
             if (view == null) {
-                val newView =
-                    LayoutInflater.from(context)
-                        .inflate(R.layout.item_reading, list_readings, false)
+//                val newView =
+//                    LayoutInflater.from(context)
+//                        .inflate(R.layout.item_reading, binding?.listReadings, false)
+
+                val newBinding =
+                    ItemReadingBinding.inflate(layoutInflater, binding?.listReadings, false)
+                val newView = newBinding.root
 
                 newView.setOnClickListener {
                     if (activity is LiveGraphOpener) {
@@ -93,12 +111,14 @@ class GenericReadingListFragment : DaggerFragment() {
                     }
                 }
 
-                newView.text_reading_name.text = reading.name
-                newView.text_reading_value.text = String.format("%.2f", reading.value.toFloat())
-                list_readings.addView(newView)
+                newBinding.textReadingName.text = reading.name
+                newBinding.textReadingValue.text = String.format("%.2f", reading.value.toFloat())
+                binding?.listReadings?.addView(newView)
                 views[reading.name] = newView
             } else {
-                view.text_reading_value.text = String.format("%.2f", reading.value.toFloat())
+                val newBinding =
+                    ItemReadingBinding.inflate(layoutInflater, binding?.listReadings, false)
+                newBinding.textReadingValue.text = String.format("%.2f", reading.value.toFloat())
             }
         }
     }

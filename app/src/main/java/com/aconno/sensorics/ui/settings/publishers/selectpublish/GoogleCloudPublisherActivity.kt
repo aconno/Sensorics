@@ -9,21 +9,30 @@ import android.widget.Toast
 import com.aconno.sensorics.PublisherIntervalConverter
 import com.aconno.sensorics.R
 import com.aconno.sensorics.data.publisher.GoogleCloudPublisher
+import com.aconno.sensorics.databinding.ActivityGoogleCloudPublisherBinding
+import com.aconno.sensorics.databinding.LayoutDatastringBinding
+import com.aconno.sensorics.databinding.LayoutGoogleBinding
+import com.aconno.sensorics.databinding.LayoutPublisherHeaderBinding
 import com.aconno.sensorics.domain.Publisher
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.model.GooglePublishModel
 import com.aconno.sensorics.model.mapper.GooglePublishModelDataMapper
 import com.aconno.sensorics.viewmodel.GoogleCloudPublisherViewModel
 import com.aconno.sensorics.viewmodel.PublisherViewModel
-import kotlinx.android.synthetic.main.activity_google_cloud_publisher.*
-import kotlinx.android.synthetic.main.layout_datastring.*
-import kotlinx.android.synthetic.main.layout_google.*
-import kotlinx.android.synthetic.main.layout_publisher_header.*
+//import kotlinx.android.synthetic.main.activity_google_cloud_publisher.*
+//import kotlinx.android.synthetic.main.layout_datastring.*
+//import kotlinx.android.synthetic.main.layout_google.*
+//import kotlinx.android.synthetic.main.layout_publisher_header.*
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
 import javax.inject.Inject
 
 class GoogleCloudPublisherActivity : BasePublisherActivity<GooglePublishModel>() {
+
+    private lateinit var binding: ActivityGoogleCloudPublisherBinding
+    private lateinit var layoutDatastringBinding: LayoutDatastringBinding
+    private lateinit var layoutGoogleBinding: LayoutGoogleBinding
+    private lateinit var layoutPublisherBinding: LayoutPublisherHeaderBinding
 
     @Inject
     lateinit var googleViewModel: GoogleCloudPublisherViewModel
@@ -33,9 +42,15 @@ class GoogleCloudPublisherActivity : BasePublisherActivity<GooglePublishModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_google_cloud_publisher)
 
-        setSupportActionBar(custom_toolbar)
+        binding = ActivityGoogleCloudPublisherBinding.inflate(layoutInflater)
+        layoutDatastringBinding = LayoutDatastringBinding.inflate(layoutInflater)
+        layoutGoogleBinding = LayoutGoogleBinding.inflate(layoutInflater)
+        layoutPublisherBinding = LayoutPublisherHeaderBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.customToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(true)
 
         super.onCreate(savedInstanceState)
@@ -55,7 +70,7 @@ class GoogleCloudPublisherActivity : BasePublisherActivity<GooglePublishModel>()
                 )
 
                 if (isFileValidPKCS8(getPrivateKeyData(path))) {
-                    edit_privatekey.text = path
+                    layoutGoogleBinding.editPrivatekey.text = path
                 } else {
                     Toast.makeText(
                         this,
@@ -71,7 +86,7 @@ class GoogleCloudPublisherActivity : BasePublisherActivity<GooglePublishModel>()
     override fun initViews() {
         super.initViews()
 
-        edit_privatekey.setOnClickListener {
+        layoutGoogleBinding.editPrivatekey.setOnClickListener {
 
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.type = "*/*"
@@ -87,23 +102,23 @@ class GoogleCloudPublisherActivity : BasePublisherActivity<GooglePublishModel>()
     override fun setFields(model: GooglePublishModel) {
         super.setFields(model)
 
-        edit_projectid.setText(model.projectId)
-        edit_region.setText(model.region)
-        edit_deviceregistry.setText(model.deviceRegistry)
-        edit_device.setText(model.device)
-        edit_privatekey.text = model.privateKey
+        layoutGoogleBinding.editProjectid.setText(model.projectId)
+        layoutGoogleBinding.editRegion.setText(model.region)
+        layoutGoogleBinding.editDeviceregistry.setText(model.deviceRegistry)
+        layoutGoogleBinding.editDevice.setText(model.device)
+        layoutGoogleBinding.editPrivatekey.text = model.privateKey
     }
 
     override fun toPublishModel(): GooglePublishModel? {
-        val name = edit_name.text.toString().trim()
-        val projectId = edit_projectid.text.toString().trim()
-        val region = edit_region.text.toString().trim()
-        val deviceRegistry = edit_deviceregistry.text.toString().trim()
-        val device = edit_device.text.toString().trim()
-        val privateKey = edit_privatekey.text.toString().trim()
-        val timeType = spinner_interval_time.selectedItem.toString()
-        val timeCount = edit_interval_count.text.toString()
-        val datastring = edit_datastring.text.toString()
+        val name = layoutPublisherBinding.editName.text.toString().trim()
+        val projectId = layoutGoogleBinding.editProjectid.text.toString().trim()
+        val region = layoutGoogleBinding.editRegion.text.toString().trim()
+        val deviceRegistry = layoutGoogleBinding.editDeviceregistry.text.toString().trim()
+        val device = layoutGoogleBinding.editDevice.text.toString().trim()
+        val privateKey = layoutGoogleBinding.editPrivatekey.text.toString().trim()
+        val timeType = layoutPublisherBinding.spinnerIntervalTime.selectedItem.toString()
+        val timeCount = layoutPublisherBinding.editIntervalCount.text.toString()
+        val datastring = layoutDatastringBinding.editDatastring.text.toString()
 
         if (viewModel.checkFieldsAreEmpty(
                 name,
@@ -122,10 +137,10 @@ class GoogleCloudPublisherActivity : BasePublisherActivity<GooglePublishModel>()
         } else {
             if (!isDataStringValid()) {
                 Toast.makeText(
-                        this,
-                        getString(R.string.data_string_not_valid),
-                        Toast.LENGTH_SHORT
-                    )
+                    this,
+                    getString(R.string.data_string_not_valid),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
 
                 return null

@@ -1,11 +1,12 @@
 package com.aconno.sensorics.adapter
 
+import android.app.Application
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.ItemActionBinding
 import com.aconno.sensorics.domain.actions.Action
-import kotlinx.android.synthetic.main.item_action.view.*
 
 class ActionAdapter(
     actions: MutableList<Action>,
@@ -15,13 +16,14 @@ class ActionAdapter(
 ) : SelectableRecyclerViewAdapter<Action, Long, ActionAdapter.ViewHolder>(
     actions, itemSelectedListener, clickListener, longClickListener
 ) {
+
     var checkedChangeListener: OnCheckedChangeListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.item_action, parent, false
-        )
-        return ViewHolder(view)
+
+        val binding = ItemActionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        return ViewHolder(binding)
     }
 
     override fun getKeyForItem(item: Action): Long {
@@ -29,44 +31,44 @@ class ActionAdapter(
     }
 
     inner class ViewHolder(
-        val view: View
-    ) : SelectableRecyclerViewAdapter<Action, Long, ViewHolder>.ViewHolder(view) {
+        val binding: ItemActionBinding
+    ) : SelectableRecyclerViewAdapter<Action, Long, ViewHolder>.ViewHolder(binding.root) {
+
         override fun bind(item: Action) {
-            with(itemView.cb_item_selected) {
+            with(binding.cbItemSelected) {
                 visibility = if (isItemSelectionEnabled) View.VISIBLE else View.GONE
                 isChecked = isItemSelected(item)
             }
 
+            binding.textName.text = item.name
+            binding.textMacAddress.text = item.device.macAddress
+            binding.textCondition.text = item.condition.toStringRepresentation()
+            binding.textOutcome.text = item.outcome.toString()
+            binding.actionSwitch.isChecked = item.active
 
-            view.text_name.text = item.name
-            view.text_mac_address.text = item.device.macAddress
-            view.text_condition.text = item.condition.toStringRepresentation()
-            view.text_outcome.text = item.outcome.toString()
-            view.action_switch.isChecked = item.active
-
-            view.action_switch.setOnClickListener {
-                checkedChangeListener?.onCheckedChange(item, view.action_switch.isChecked)
+            binding.actionSwitch.setOnClickListener {
+                checkedChangeListener?.onCheckedChange(item, binding.actionSwitch.isChecked)
             }
 
-            view.setOnClickListener {
+            binding.root.setOnClickListener {
                 if (isItemSelectionEnabled) {
-                    itemView.cb_item_selected.isChecked = !itemView.cb_item_selected.isChecked
-                    setSelected(item, itemView.cb_item_selected.isChecked)
+                    binding.cbItemSelected.isChecked = !binding.cbItemSelected.isChecked
+                    setSelected(item, binding.cbItemSelected.isChecked)
                 } else {
                     onItemClick(item)
                 }
             }
 
-            itemView.cb_item_selected.setOnClickListener { _ ->
-                setSelected(item, itemView.cb_item_selected.isChecked)
+            binding.cbItemSelected.setOnClickListener { _ ->
+                setSelected(item, binding.cbItemSelected.isChecked)
             }
 
-            view.setOnLongClickListener {
+            binding.root.setOnLongClickListener {
                 onItemLongClick(item)
                 true
             }
 
-            view.tag = item.id
+            binding.root.tag = item.id
         }
     }
 

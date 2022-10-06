@@ -18,9 +18,9 @@ import androidx.core.content.getSystemService
 import com.aconno.sensorics.DfuService
 import com.aconno.sensorics.R
 import com.aconno.sensorics.action
+import com.aconno.sensorics.databinding.ActivityDfuBinding
 import com.aconno.sensorics.snack
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_dfu.*
 import no.nordicsemi.android.dfu.DfuBaseService
 import no.nordicsemi.android.dfu.DfuBaseService.EXTRA_DEVICE_ADDRESS
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter
@@ -31,6 +31,8 @@ import java.io.File
 
 
 class DfuActivity : DaggerAppCompatActivity() {
+
+    private lateinit var binding: ActivityDfuBinding
 
     private lateinit var deviceAddress: String
     private var dfuFileUri: Uri? = null
@@ -46,15 +48,19 @@ class DfuActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dfu)
+
+        binding = ActivityDfuBinding.inflate(layoutInflater)
+        val view = binding.root
+
+        setContentView(view)
         loadParams(savedInstanceState)
         setupToolbar()
 
-        iv_dfu_selectFile?.setOnClickListener {
+        binding.ivDfuSelectFile.setOnClickListener {
             openFileChooser()
         }
 
-        btn_dfu_flash?.setOnClickListener {
+        binding.btnDfuFlash.setOnClickListener {
             flash()
         }
 
@@ -64,9 +70,9 @@ class DfuActivity : DaggerAppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        toolbar.title = getString(R.string.dfu)
-        toolbar.subtitle = deviceAddress
-        setSupportActionBar(toolbar)
+        binding.toolbar.title = getString(R.string.dfu)
+        binding.toolbar.subtitle = deviceAddress
+        setSupportActionBar(binding.toolbar)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -87,7 +93,7 @@ class DfuActivity : DaggerAppCompatActivity() {
         ) {
             val progress = intent.getIntExtra(DfuBaseService.EXTRA_PROGRESS, 0)
             setStatusText(getString(R.string.dfuactivity_status_updating))
-            prg_dfu_progress.progress = progress
+            binding.prgDfuProgress.progress = progress
 
             isUpdating = true
         }
@@ -96,9 +102,9 @@ class DfuActivity : DaggerAppCompatActivity() {
     private fun updateUI(value: Boolean) {
         if (value) {
             canGoBack = false
-            vs_dfu_container?.displayedChild = 1
+            binding.vsDfuContainer.displayedChild = 1
         } else {
-            vs_dfu_container?.displayedChild = 0
+            binding.vsDfuContainer.displayedChild = 0
         }
     }
 
@@ -117,7 +123,7 @@ class DfuActivity : DaggerAppCompatActivity() {
             if (canGoBack) {
                 isUpdating = false
             } else {
-                vs_dfu_container?.snack(getString(R.string.dfu_snack_msg_work_in_progress)) {
+                binding.vsDfuContainer.snack(getString(R.string.dfu_snack_msg_work_in_progress)) {
                     action(
                         getString(R.string.dfu_snack_action_goback),
                         ContextCompat.getColor(applicationContext, R.color.primaryDarkColor)
@@ -151,7 +157,7 @@ class DfuActivity : DaggerAppCompatActivity() {
             starterDFU.setZip(dfuFileUri!!)
             starterDFU.start(applicationContext, DfuService::class.java)
         } else {
-            ll_dfu_root?.snack(getString(R.string.dfu_snack_msg_file_selection)) {
+            binding.llDfuRoot.snack(getString(R.string.dfu_snack_msg_file_selection)) {
                 action(
                     getString(R.string.dfu_snack_action_select),
                     ContextCompat.getColor(applicationContext, R.color.primaryDarkColor)
@@ -185,10 +191,10 @@ class DfuActivity : DaggerAppCompatActivity() {
         dfuFileUri = uri.also {
             it.scheme?.let { scheme ->
                 if (scheme == URI_SCHEMA_FILE) {
-                    txt_dfu_selectedFile.text = File(uri.path ?: "").name
+                    binding.txtDfuSelectedFile.text = File(uri.path ?: "").name
                 } else if (scheme == URI_SCHEMA_CONTENT) {
                     getFileName(uri)?.let { fileName ->
-                        txt_dfu_selectedFile.text = fileName
+                        binding.txtDfuSelectedFile.text = fileName
                     }
                 }
             }
@@ -267,11 +273,11 @@ class DfuActivity : DaggerAppCompatActivity() {
             )
 
             setStatusText(getString(R.string.dfuactivity_status_updating))
-            prg_dfu_progress.progress = percent
+            binding.prgDfuProgress.progress = percent
 
-            txt_dfu_speed.text = getString(R.string.speed_format, speed)
-            txt_dfu_avgSpeed.text = getString(R.string.avg_speed_format, avgSpeed)
-            txt_dfu_parts.text = getString(R.string.parts_format, currentPart, partsTotal)
+            binding.txtDfuSpeed.text = getString(R.string.speed_format, speed)
+            binding.txtDfuAvgSpeed.text = getString(R.string.avg_speed_format, avgSpeed)
+            binding.txtDfuParts.text = getString(R.string.parts_format, currentPart, partsTotal)
         }
 
         override fun onError(deviceAddress: String, error: Int, errorType: Int, message: String) {
@@ -306,8 +312,8 @@ class DfuActivity : DaggerAppCompatActivity() {
         status: String,
         @ColorRes textColor: Int = R.color.black
     ) {
-        txt_dfu_status.text = getString(R.string.status_format, status)
-        txt_dfu_status.setTextColor(ContextCompat.getColor(applicationContext, textColor))
+        binding.txtDfuStatus.text = getString(R.string.status_format, status)
+        binding.txtDfuStatus.setTextColor(ContextCompat.getColor(applicationContext, textColor))
     }
 
     companion object {

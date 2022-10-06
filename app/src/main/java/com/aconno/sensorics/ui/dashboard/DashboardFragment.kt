@@ -14,6 +14,8 @@ import javax.inject.Inject
 
 class DashboardFragment : DaggerFragment() {
 
+    private var binding: FragmentDashboardBinding? = null
+
     @Inject
     lateinit var mViewModel: DashboardViewModel
 
@@ -21,13 +23,19 @@ class DashboardFragment : DaggerFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_dashboard, container, false)
+    ): View? {
+
+        binding = FragmentDashboardBinding.inflate(inflater, container, false)
+        return binding?.root
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activity_dashboard_webview.apply {
+        val dashboardBinding = FragmentDashboardBinding.inflate(layoutInflater, null, false)
+
+        dashboardBinding.activityDashboardWebview.apply {
             webViewClient = WebViewClient()
             settings.javaScriptEnabled = true
         }
@@ -37,8 +45,14 @@ class DashboardFragment : DaggerFragment() {
         mViewModel.initViewModel()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
+
     private fun loadUrl(url: String) {
-        activity_dashboard_webview.loadUrl(url)
+        val dashboardBinding = FragmentDashboardBinding.inflate(layoutInflater, null, false)
+        dashboardBinding.activityDashboardWebview.loadUrl(url)
     }
 
     override fun onResume() {

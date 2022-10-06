@@ -10,19 +10,21 @@ import android.view.Window
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.ScanDeviceAdapter
+import com.aconno.sensorics.databinding.DialogDevicesBinding
 import com.aconno.sensorics.domain.interactor.resources.GetIconUseCase
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.ScanDevice
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.dialog_devices.*
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
 
 class ScannedDevicesDialog : DisposerDialogFragment() {
+
+    private lateinit var binding: DialogDevicesBinding
 
     @Inject
     @Named("composite")
@@ -56,7 +58,8 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         removeTitleSpacing()
-        return inflater.inflate(R.layout.dialog_devices, container)
+        binding = DialogDevicesBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     private fun removeTitleSpacing() {
@@ -67,12 +70,12 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        text_empty.setText(R.string.message_no_scanned_devices)
+        binding.textEmpty.setText(R.string.message_no_scanned_devices)
 
-        list_devices.layoutManager = LinearLayoutManager(context)
-        list_devices.adapter = adapter
+        binding.listDevices.layoutManager = LinearLayoutManager(context)
+        binding.listDevices.adapter = adapter
 
-        button_cancel.setOnClickListener {
+        binding.buttonCancel.setOnClickListener {
             dismiss()
         }
 
@@ -85,7 +88,7 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
                     adapter.removeScanDevice(it)
 
                     if (adapter.itemCount == 0) {
-                        text_empty.visibility = View.VISIBLE
+                        binding.textEmpty.visibility = View.VISIBLE
                     }
                 }
         )
@@ -118,7 +121,7 @@ class ScannedDevicesDialog : DisposerDialogFragment() {
                         }
                     }
 
-                    text_empty.visibility = View.INVISIBLE
+                    binding.textEmpty.visibility = View.INVISIBLE
                     adapter.addScanDevice(scanDevice)
                 }
         )

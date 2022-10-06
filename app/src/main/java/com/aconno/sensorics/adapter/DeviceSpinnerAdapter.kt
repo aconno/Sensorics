@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.SpinnerAdapter
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.ItemSpinnerDeviceBinding
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.getRealName
-import kotlinx.android.synthetic.main.item_spinner_device.view.*
 
 class DeviceSpinnerAdapter : SpinnerAdapter, BaseAdapter() {
+
+    private lateinit var binding: ItemSpinnerDeviceBinding
 
     private val devices = mutableListOf<Device>()
     private var iconsMap: HashMap<String, String> = hashMapOf()
@@ -44,32 +46,36 @@ class DeviceSpinnerAdapter : SpinnerAdapter, BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val device = devices[position]
-        val context = parent.context
         val iconPath = iconsMap[device.name]
 
+        val binding =
+            ItemSpinnerDeviceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
         if (convertView == null) {
-            val newView =
-                LayoutInflater.from(context).inflate(R.layout.item_spinner_device, parent, false)
 
             if (iconPath == null) {
-                newView.image_icon.setImageResource(R.drawable.ic_sensa)
+                binding.imageIcon.setImageResource(R.drawable.ic_sensa)
             } else {
                 val icon = Drawable.createFromPath(iconPath)
-                newView.image_icon.setImageDrawable(icon)
+                binding.imageIcon.setImageDrawable(icon)
             }
 
-            newView.text_name.text = device.getRealName()
-            newView.text_mac_address.text = device.macAddress
-            return newView
+            binding.textName.text = device.getRealName()
+            binding.textMacAddress.text = device.macAddress
+            return binding.root
+
         } else {
+
             if (iconPath == null) {
-                convertView.image_icon.setImageResource(R.drawable.ic_sensa)
+                binding.imageIcon.setImageResource(R.drawable.ic_sensa)
             } else {
                 val icon = Drawable.createFromPath(iconPath)
-                convertView.image_icon.setImageDrawable(icon)
+                binding.imageIcon.setImageDrawable(icon)
             }
-            convertView.text_name.text = device.getRealName()
-            convertView.text_mac_address.text = device.macAddress
+            binding.textName.text = device.getRealName()
+            binding.textMacAddress.text = device.macAddress
+
+            //TODO: see if this is the right view to return
             return convertView
         }
     }

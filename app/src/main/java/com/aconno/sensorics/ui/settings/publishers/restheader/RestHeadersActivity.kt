@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -16,17 +17,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.LongItemClickListener
+import com.aconno.sensorics.databinding.ActivityRestHeadersBinding
+import com.aconno.sensorics.databinding.FragmentActionListBinding
 import com.aconno.sensorics.model.RestHeaderModel
 import com.aconno.sensorics.ui.SwipeToDeleteCallback
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_rest_headers.*
-import kotlinx.android.synthetic.main.fragment_action_list.*
 
 
 class RestHeadersActivity : AppCompatActivity(),
     AddRestHeaderDialog.OnFragmentInteractionListener,
     LongItemClickListener<RestHeaderModel> {
+
+    private lateinit var binding: ActivityRestHeadersBinding
+    private lateinit var fragmentActionListBinding: FragmentActionListBinding
 
     private lateinit var initialHeaders: ArrayList<RestHeaderModel>
     private lateinit var headers: ArrayList<RestHeaderModel>
@@ -78,7 +81,13 @@ class RestHeadersActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_rest_headers)
+
+        val content = findViewById<ViewGroup>(android.R.id.content)
+        binding = ActivityRestHeadersBinding.inflate(layoutInflater, content)
+
+        fragmentActionListBinding = FragmentActionListBinding.inflate(layoutInflater)
+
+        //setContentView(R.layout.activity_rest_headers)
         setupActionBar()
 
         val headersExtra = intent.getParcelableArrayExtra(REST_HEADERS_ACTIVITY_LIST_KEY)
@@ -89,32 +98,32 @@ class RestHeadersActivity : AppCompatActivity(),
     }
 
     private fun setupActionBar() {
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.title = getString(R.string.rest_headers_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun initView() {
         if (headers.isNotEmpty()) {
-            empty_view.visibility = View.GONE
+            binding.emptyView.visibility = View.GONE
         }
 
         rvAdapter = RestHeadersAdapter(
             headers,
             onItemClickListener, this
         )
-        with(recyclerView) {
+        with(binding.recyclerView) {
             layoutManager = LinearLayoutManager(context)
             adapter = rvAdapter
 
             val dividerItemDecoration = DividerItemDecoration(
-                recyclerView.context,
+                binding.recyclerView.context,
                 (layoutManager as LinearLayoutManager).orientation
             )
             this.addItemDecoration(dividerItemDecoration)
         }
 
-        button_addHeader.setOnClickListener {
+        binding.buttonAddHeader.setOnClickListener {
             AddRestHeaderDialog.newInstance(
                 null,
                 -1
@@ -135,8 +144,12 @@ class RestHeadersActivity : AppCompatActivity(),
                 rvAdapter.removeHeaderAt(position)
 
                 snackbar = Snackbar
-                    .make(empty_view, "Header ${header.key} removed!", Snackbar.LENGTH_LONG)
-                snackbar?.setAction("UNDO") {
+                    .make(
+                        binding.emptyView,
+                        String.format(getString(R.string.header_removed), header.key),
+                        Snackbar.LENGTH_LONG
+                    )
+                snackbar?.setAction(getString(R.string.undo_uppercase)) {
                     rvAdapter.addHeaderAtPosition(header, position)
                 }
 
@@ -155,7 +168,7 @@ class RestHeadersActivity : AppCompatActivity(),
                 snackbar?.show()
             }
         }
-        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(recyclerView)
+        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(binding.recyclerView)
     }
 
 
@@ -191,10 +204,16 @@ class RestHeadersActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        if(initialHeaders != headers) {
+        if (initialHeaders != headers) {
             AlertDialog.Builder(this).setMessage(getString(R.string.unsaved_changes_dialog_message))
-                .setPositiveButton(getString(R.string.save_changes), unsavedChangesDialogClickListener)
-                .setNegativeButton(getString(R.string.discard_changes),unsavedChangesDialogClickListener)
+                .setPositiveButton(
+                    getString(R.string.save_changes),
+                    unsavedChangesDialogClickListener
+                )
+                .setNegativeButton(
+                    getString(R.string.discard_changes),
+                    unsavedChangesDialogClickListener
+                )
                 .show()
 
         } else {
@@ -202,13 +221,13 @@ class RestHeadersActivity : AppCompatActivity(),
         }
     }
 
-    private fun deleteItem(item : RestHeaderModel) {
+    private fun deleteItem(item: RestHeaderModel) {
         val index = headers.indexOf(item)
         headers.remove(item)
         rvAdapter.notifyItemRemoved(index)
 
         if (headers.isEmpty()) {
-            empty_view.visibility = View.VISIBLE
+            binding.emptyView.visibility = View.VISIBLE
         }
     }
 
@@ -228,7 +247,7 @@ class RestHeadersActivity : AppCompatActivity(),
     }
 
     override fun onFragmentInteraction(position: Int, key: String, value: String) {
-        empty_view.visibility = View.GONE
+        binding.emptyView.visibility = View.GONE
 
         if (position == -1) {
             headers.add(
@@ -239,12 +258,12 @@ class RestHeadersActivity : AppCompatActivity(),
             rvAdapter.notifyItemInserted(rvAdapter.itemCount)
         } else {
             headers[position] =
-                    RestHeaderModel(
-                        headers[position].id,
-                        headers[position].rId,
-                        key,
-                        value
-                    )
+                RestHeaderModel(
+                    headers[position].id,
+                    headers[position].rId,
+                    key,
+                    value
+                )
             rvAdapter.notifyItemChanged(position)
         }
     }

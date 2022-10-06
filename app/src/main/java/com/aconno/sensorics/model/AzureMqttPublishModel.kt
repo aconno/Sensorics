@@ -13,4 +13,13 @@ class AzureMqttPublishModel(
     timeMillis: Long,
     lastTimeMillis: Long,
     dataString: String
-) : BasePublishModel(id, PublishType.AZURE_MQTT, name, enabled, timeType, timeMillis, lastTimeMillis, dataString)
+) : BasePublishModel(
+    id,
+    PublishType.AZURE_MQTT,
+    name,
+    enabled,
+    timeType,
+    timeMillis,
+    lastTimeMillis,
+    dataString
+)

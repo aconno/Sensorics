@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.*
 import com.aconno.sensorics.R
 import com.aconno.sensorics.adapter.SelectableRecyclerViewAdapter
+import com.aconno.sensorics.databinding.FragmentPublishListBinding
 import com.aconno.sensorics.domain.ifttt.*
 import com.aconno.sensorics.domain.ifttt.outcome.PublishType
 import com.aconno.sensorics.domain.interactor.publisher.ConvertJsonToObjectsUseCase
@@ -31,7 +32,6 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_publish_list.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -47,6 +47,8 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
     SelectableRecyclerViewAdapter.ItemSelectedListener<BasePublishModel> {
 
     private var snackbar: Snackbar? = null
+
+    private var binding: FragmentPublishListBinding? = null
 
     @Inject
     lateinit var publishListViewModel: PublishListViewModel
@@ -98,7 +100,8 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_publish_list, container, false)
+        binding = FragmentPublishListBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -114,12 +117,13 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
             if (savedInstanceState.getBoolean(ITEM_SELECTION_ENABLED_KEY)) {
                 enableItemSelection()
                 savedInstanceStateSelectedItems =
-                    savedInstanceState.getParcelableArray(SELECTED_ITEMS_KEY)?.map { it as SelectedItem }?.toTypedArray()
+                    savedInstanceState.getParcelableArray(SELECTED_ITEMS_KEY)
+                        ?.map { it as SelectedItem }?.toTypedArray()
             }
 
         }
 
-        view_publish_list.apply {
+        binding?.viewPublishList?.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = publishAdapter
 
@@ -143,37 +147,42 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
 
                     publishAdapter.removeItemAtPosition(position)
 
-                    snackbar = Snackbar.make(
-                        container_fragment,
-                        "${publishModel.name} removed!",
-                        Snackbar.LENGTH_LONG
-                    ).apply {
-                        setAction(getString(R.string.undo)) {
-                            publishAdapter.addItemAtPosition(publishModel,position)
-                        }
-
-                        addCallback(object : Snackbar.Callback() {
-                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                if (event == DISMISS_EVENT_TIMEOUT
-                                    || event == DISMISS_EVENT_CONSECUTIVE
-                                    || event == DISMISS_EVENT_SWIPE
-                                    || event == DISMISS_EVENT_MANUAL
-                                ) {
-                                    selectedItem = publishModel
-                                    deleteSelectedItem()
-                                }
+                    snackbar = binding?.containerFragment?.let {
+                        Snackbar.make(
+                            it,
+                            "${publishModel.name} removed!",
+                            Snackbar.LENGTH_LONG
+                        ).apply {
+                            setAction(getString(R.string.undo)) {
+                                publishAdapter.addItemAtPosition(publishModel, position)
                             }
-                        })
 
-                        setActionTextColor(Color.YELLOW)
+                            addCallback(object : Snackbar.Callback() {
+                                override fun onDismissed(
+                                    transientBottomBar: Snackbar?,
+                                    event: Int
+                                ) {
+                                    if (event == DISMISS_EVENT_TIMEOUT
+                                        || event == DISMISS_EVENT_CONSECUTIVE
+                                        || event == DISMISS_EVENT_SWIPE
+                                        || event == DISMISS_EVENT_MANUAL
+                                    ) {
+                                        selectedItem = publishModel
+                                        deleteSelectedItem()
+                                    }
+                                }
+                            })
 
-                        show()
+                            setActionTextColor(Color.YELLOW)
+
+                            show()
+                        }
                     }
                 }
-            }).attachToRecyclerView(view_publish_list)
+            }).attachToRecyclerView(binding?.viewPublishList)
         }
 
-        button_add_publisher.setOnClickListener {
+        binding?.buttonAddPublisher?.setOnClickListener {
             snackbar?.dismiss()
             exitItemSelectionState()
             SelectPublisherActivity.start(requireContext())
@@ -255,12 +264,14 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
             .also { addDisposable(it) }
 
         val snackbarMessage =
-            if(publishers.size == 1) {
-                getString(R.string.one_publisher_removed,publishers[0].name)
+            if (publishers.size == 1) {
+                getString(R.string.one_publisher_removed, publishers[0].name)
             } else {
-                getString(R.string.multiple_publishers_removed,publishers.size)
+                getString(R.string.multiple_publishers_removed, publishers.size)
             }
-        Snackbar.make(container_fragment,snackbarMessage,Snackbar.LENGTH_SHORT).show()
+        binding?.containerFragment?.let {
+            Snackbar.make(it, snackbarMessage, Snackbar.LENGTH_SHORT).show()
+        }
     }
 
 
@@ -350,13 +361,14 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
     }
 
     private fun initPublishList(publishers: List<BasePublishModel>) {
-        empty_view.visibility = View.GONE
+        binding?.emptyView?.visibility = View.GONE
         publishAdapter.addItems(publishers)
         if (savedInstanceStateSelectedItems != null && publishAdapter.isItemSelectionEnabled) {
             publishAdapter.setItemsAsSelected(
                 publishAdapter.getItems()
                     .filter {
-                        savedInstanceStateSelectedItems!!.find { item -> item.id == it.id && item.type == it.type } != null }
+                        savedInstanceStateSelectedItems!!.find { item -> item.id == it.id && item.type == it.type } != null
+                    }
             )
         }
 
@@ -380,7 +392,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
 
             if (publishAdapter.itemCount == 0) {
                 // Because activity may quit before the snackbar is finished
-                empty_view?.visibility = View.VISIBLE
+                binding?.emptyView?.visibility = View.VISIBLE
             }
 
             //Let GC collect removed instance
@@ -420,23 +432,32 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
                         initPublishList(list)
                     } else {
                         list.forEachIndexed { index, model ->
-                            publishAdapter.addItemAtPosition(model,offset + index)
+                            publishAdapter.addItemAtPosition(model, offset + index)
                         }
                     }
 
-                    Snackbar.make(container_fragment,
-                        when (list.size) {
-                            1 -> getString(R.string.import_one_backend_success)
-                            else -> getString(R.string.import_multiple_backends_success, list.size)
-                        },
-                        Snackbar.LENGTH_SHORT).show()
+                    binding?.containerFragment?.let { it1 ->
+                        Snackbar.make(
+                            it1,
+                            when (list.size) {
+                                1 -> getString(R.string.import_one_backend_success)
+                                else -> getString(
+                                    R.string.import_multiple_backends_success,
+                                    list.size
+                                )
+                            },
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
 
                 }, {
-                    Snackbar.make(
-                        container_fragment,
-                        getString(R.string.import_error),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                    binding?.containerFragment?.let { it1 ->
+                        Snackbar.make(
+                            it1,
+                            getString(R.string.import_error),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 }).also {
                     addDisposable(it)
                 }
@@ -470,7 +491,8 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
         if (publishAdapter.isItemSelectionEnabled) {
             outState.putParcelableArray(
                 SELECTED_ITEMS_KEY,
-                publishAdapter.getSelectedItems().map { SelectedItem(it.id,it.type) }.toTypedArray()
+                publishAdapter.getSelectedItems().map { SelectedItem(it.id, it.type) }
+                    .toTypedArray()
             )
         }
     }
@@ -488,7 +510,7 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
         private const val SELECTED_ITEMS_KEY = "SELECTED_ITEMS_KEY"
     }
 
-    class SelectedItem(val id : Long, val type : PublishType) : Parcelable {
+    class SelectedItem(val id: Long, val type: PublishType) : Parcelable {
         constructor(parcel: Parcel) : this(
             parcel.readLong(),
             parcel.readSerializable() as PublishType
@@ -511,6 +533,11 @@ class PublishListFragment : ShareableItemsListFragment<BasePublish>(),
             }
         }
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
     }
 
     /**

@@ -5,38 +5,38 @@ import com.aconno.sensorics.domain.virtualscanningsources.mqtt.MqttVirtualScanni
 import com.aconno.sensorics.model.MqttVirtualScanningSourceModel
 import javax.inject.Inject
 
-class MqttVirtualScanningSourceModelDataMapper @Inject constructor(){
+class MqttVirtualScanningSourceModelDataMapper @Inject constructor() {
 
 
-    fun toMqttVirtualScanningSourceModel(virtualScanningSource: MqttVirtualScanningSource) : MqttVirtualScanningSourceModel {
+    fun toMqttVirtualScanningSourceModel(virtualScanningSource: MqttVirtualScanningSource): MqttVirtualScanningSourceModel {
         return MqttVirtualScanningSourceModel(
-                virtualScanningSource.id,
-                virtualScanningSource.name,
-                virtualScanningSource.enabled,
-                virtualScanningSource.protocol,
-                virtualScanningSource.address,
-                virtualScanningSource.port,
-                virtualScanningSource.path,
-                virtualScanningSource.clientId,
-                virtualScanningSource.username,
-                virtualScanningSource.password,
-                virtualScanningSource.qualityOfService
+            virtualScanningSource.id,
+            virtualScanningSource.name,
+            virtualScanningSource.enabled,
+            virtualScanningSource.protocol,
+            virtualScanningSource.address,
+            virtualScanningSource.port,
+            virtualScanningSource.path,
+            virtualScanningSource.clientId,
+            virtualScanningSource.username,
+            virtualScanningSource.password,
+            virtualScanningSource.qualityOfService
         )
     }
 
-    fun toMqttVirtualScanningSource(virtualScanningSourceModel: MqttVirtualScanningSourceModel) : MqttVirtualScanningSource {
+    fun toMqttVirtualScanningSource(virtualScanningSourceModel: MqttVirtualScanningSourceModel): MqttVirtualScanningSource {
         return GeneralMqttVirtualScanningSource(
-                virtualScanningSourceModel.id,
-                virtualScanningSourceModel.name,
-                virtualScanningSourceModel.enabled,
-                virtualScanningSourceModel.protocol,
-                virtualScanningSourceModel.address,
-                virtualScanningSourceModel.port,
-                virtualScanningSourceModel.path,
-                virtualScanningSourceModel.clientId,
-                virtualScanningSourceModel.username,
-                virtualScanningSourceModel.password,
-                virtualScanningSourceModel.qualityOfService
+            virtualScanningSourceModel.id,
+            virtualScanningSourceModel.name,
+            virtualScanningSourceModel.enabled,
+            virtualScanningSourceModel.protocol,
+            virtualScanningSourceModel.address,
+            virtualScanningSourceModel.port,
+            virtualScanningSourceModel.path,
+            virtualScanningSourceModel.clientId,
+            virtualScanningSourceModel.username,
+            virtualScanningSourceModel.password,
+            virtualScanningSourceModel.qualityOfService
         )
     }
 

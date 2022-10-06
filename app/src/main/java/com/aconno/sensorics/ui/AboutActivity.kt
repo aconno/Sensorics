@@ -6,26 +6,33 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import com.aconno.sensorics.R
-import kotlinx.android.synthetic.main.activity_about.*
+import com.aconno.sensorics.databinding.ActivityAboutBinding
 
 class AboutActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityAboutBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_about)
 
-        toolbar.title = getString(R.string.about)
-        developers_info.movementMethod = LinkMovementMethod.getInstance()
-        for_more_imprint_info.movementMethod = LinkMovementMethod.getInstance()
+        binding = ActivityAboutBinding.inflate(layoutInflater)
+        val view = binding.root
 
-        setSupportActionBar(toolbar)
+        setContentView(view)
+
+        binding.toolbar.title = getString(R.string.about)
+        binding.developersInfo.movementMethod = LinkMovementMethod.getInstance()
+        binding.forMoreImprintInfo.movementMethod = LinkMovementMethod.getInstance()
+
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
     }
 
     companion object {
 
-        fun start(context : Context) {
-            context.startActivity(Intent(context,AboutActivity::class.java))
+        fun start(context: Context) {
+            context.startActivity(Intent(context, AboutActivity::class.java))
         }
     }
 }

@@ -31,7 +31,7 @@
         android:layout_marginTop="12dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_clientid_mqtt"
+            android:id="@+id/edit_client_id_mqtt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"

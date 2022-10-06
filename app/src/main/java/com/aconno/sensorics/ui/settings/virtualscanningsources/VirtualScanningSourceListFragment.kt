@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.*
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.FragmentVirtualScanningSourcesBinding
 import com.aconno.sensorics.model.BaseVirtualScanningSourceModel
 import com.aconno.sensorics.model.MqttVirtualScanningSourceModel
 import com.aconno.sensorics.model.mapper.MqttVirtualScanningSourceModelDataMapper
@@ -17,11 +18,14 @@ import com.aconno.sensorics.viewmodel.VirtualScanningSourceListViewModel
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_publish_list.*
-import kotlinx.android.synthetic.main.fragment_virtual_scanning_sources.*
+//import kotlinx.android.synthetic.main.fragment_publish_list.*
+//import kotlinx.android.synthetic.main.fragment_virtual_scanning_sources.*
 import javax.inject.Inject
 
 class VirtualScanningSourceListFragment : BaseFragment() {
+
+    private var binding: FragmentVirtualScanningSourcesBinding? = null
+
     @Inject
     lateinit var sourcesListViewModel: VirtualScanningSourceListViewModel
 
@@ -38,42 +42,44 @@ class VirtualScanningSourceListFragment : BaseFragment() {
 
     private var selectedItem: BaseVirtualScanningSourceModel? = null
 
-    private val checkedChangeListener: VirtualScanningSourcesAdapter.OnCheckedChangeListener = object :
+    private val checkedChangeListener: VirtualScanningSourcesAdapter.OnCheckedChangeListener =
+        object :
             VirtualScanningSourcesAdapter.OnCheckedChangeListener {
-        override fun onCheckedChange(checked: Boolean, position: Int) {
-            val item = sourcesList[position]
-            item.enabled = checked
-            addDisposable(sourcesListViewModel.update(item))
+            override fun onCheckedChange(checked: Boolean, position: Int) {
+                val item = sourcesList[position]
+                item.enabled = checked
+                addDisposable(sourcesListViewModel.update(item))
+            }
         }
-    }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_virtual_scanning_sources, container, false)
+        binding = FragmentVirtualScanningSourcesBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         sourcesAdapter = VirtualScanningSourcesAdapter(sourcesList,
-                object : VirtualScanningSourcesAdapter.OnListItemClickListener {
-                    override fun onListItemClick(item: BaseVirtualScanningSourceModel?) {
-                        listener?.onListFragmentClick(item)
-                    }
-                })
+            object : VirtualScanningSourcesAdapter.OnListItemClickListener {
+                override fun onListItemClick(item: BaseVirtualScanningSourceModel?) {
+                    listener?.onListFragmentClick(item)
+                }
+            })
 
-        virtual_scanning_sources_list.apply {
+        binding?.virtualScanningSourcesList?.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = sourcesAdapter
 
             itemAnimator = DefaultItemAnimator()
             addItemDecoration(
-                    DividerItemDecoration(
-                            context,
-                            (layoutManager as LinearLayoutManager).orientation
-                    )
+                DividerItemDecoration(
+                    context,
+                    (layoutManager as LinearLayoutManager).orientation
+                )
             )
         }
 
@@ -89,37 +95,42 @@ class VirtualScanningSourceListFragment : BaseFragment() {
 
                     sourcesAdapter.removeSourceModel(position)
 
-                    snackbar = Snackbar.make(
-                            virtual_scanning_sources_fragment_container,
+                    snackbar = binding?.virtualScanningSourcesFragmentContainer?.let {
+                        Snackbar.make(
+                            it,
                             "${sourceModel.name} removed!",
                             Snackbar.LENGTH_LONG
-                    ).apply {
-                        setAction(getString(R.string.undo)) {
-                            sourcesAdapter.addSourceModelAtPosition(sourceModel,position)
-                        }
+                        ).apply {
+                            setAction(getString(R.string.undo)) {
+                                sourcesAdapter.addSourceModelAtPosition(sourceModel, position)
+                            }
 
-                        addCallback(object : Snackbar.Callback() {
-                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                if (event == DISMISS_EVENT_TIMEOUT
+                            addCallback(object : Snackbar.Callback() {
+                                override fun onDismissed(
+                                    transientBottomBar: Snackbar?,
+                                    event: Int
+                                ) {
+                                    if (event == DISMISS_EVENT_TIMEOUT
                                         || event == DISMISS_EVENT_CONSECUTIVE
                                         || event == DISMISS_EVENT_SWIPE
                                         || event == DISMISS_EVENT_MANUAL
-                                ) {
-                                    selectedItem = sourceModel
-                                    deleteSelectedItem()
+                                    ) {
+                                        selectedItem = sourceModel
+                                        deleteSelectedItem()
+                                    }
                                 }
-                            }
-                        })
+                            })
 
-                        setActionTextColor(Color.YELLOW)
+                            setActionTextColor(Color.YELLOW)
 
-                        show()
+                            show()
+                        }
                     }
                 }
-            }).attachToRecyclerView(virtual_scanning_sources_list)
+            }).attachToRecyclerView(binding?.virtualScanningSourcesList)
         }
 
-        button_add_virtual_scanning_source.setOnClickListener {
+        binding?.buttonAddVirtualScanningSource?.setOnClickListener {
             snackbar?.dismiss()
             MqttVirtualScanningSourceActivity.start(requireContext()) //mqtt activity is directly started since mqtt is the only supported source for now, so there is no need to have select-source-type-activity
         }
@@ -128,7 +139,9 @@ class VirtualScanningSourceListFragment : BaseFragment() {
     private fun deleteSelectedItem() {
         selectedItem?.let { model ->
             when (model) {
-                is MqttVirtualScanningSourceModel -> sourcesListViewModel.deleteMqttVirtulScanningSource(model)
+                is MqttVirtualScanningSourceModel -> sourcesListViewModel.deleteMqttVirtulScanningSource(
+                    model
+                )
                 else -> throw IllegalArgumentException("Illegal argument provided.")
             }.also {
                 addDisposable(it)
@@ -137,7 +150,7 @@ class VirtualScanningSourceListFragment : BaseFragment() {
             sourcesList.remove(model)
 
             if (sourcesList.isEmpty()) {
-                no_virtual_scanning_sources?.visibility = View.VISIBLE
+                binding?.noVirtualScanningSources?.visibility = View.VISIBLE
             }
 
             selectedItem = null
@@ -156,13 +169,13 @@ class VirtualScanningSourceListFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         sourcesListViewModel.getAllVirtualScanningSources()
-                .filter { it.isNotEmpty() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { sources -> initVirtualScanningSourceList(sources) }
-                .also {
-                    addDisposable(it)
-                }
+            .filter { it.isNotEmpty() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { sources -> initVirtualScanningSourceList(sources) }
+            .also {
+                addDisposable(it)
+            }
     }
 
     override fun onPause() {
@@ -174,7 +187,7 @@ class VirtualScanningSourceListFragment : BaseFragment() {
     }
 
     private fun initVirtualScanningSourceList(sources: List<BaseVirtualScanningSourceModel>) {
-        no_virtual_scanning_sources.visibility = View.GONE
+        binding?.noVirtualScanningSources?.visibility = View.GONE
         sourcesList.addAll(sources)
         sourcesAdapter.notifyDataSetChanged()
         sourcesAdapter.setOnCheckedChangeListener(checkedChangeListener)
@@ -183,6 +196,11 @@ class VirtualScanningSourceListFragment : BaseFragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
     }
 
     companion object {

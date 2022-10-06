@@ -8,13 +8,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.ActivityPublishListBinding
 import com.aconno.sensorics.model.*
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.AzureMqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.GoogleCloudPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.MqttPublisherActivity
 import com.aconno.sensorics.ui.settings.publishers.selectpublish.RestPublisherActivity
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.synthetic.main.activity_publish_list.*
 
 
 /**
@@ -24,12 +24,17 @@ class PublishListActivity : DaggerAppCompatActivity(),
     PublishListFragment.OnListFragmentClickListener,
     PublishListFragment.ItemSelectionStateListener {
 
+    private lateinit var binding: ActivityPublishListBinding
+
     private var mainMenu: Menu? = null
     private var menuResource: Int = R.menu.share_all_menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_publish_list)
+
+        binding = ActivityPublishListBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
 
         supportFragmentManager.findFragmentById(
             R.id.publish_list_container
@@ -41,7 +46,7 @@ class PublishListActivity : DaggerAppCompatActivity(),
 
         invalidateOptionsMenu()
 
-        setSupportActionBar(custom_toolbar)
+        setSupportActionBar(binding.customToolbar)
     }
 
 
@@ -57,7 +62,7 @@ class PublishListActivity : DaggerAppCompatActivity(),
     }
 
     override fun onItemSelectionStateExited() {
-        custom_toolbar.title = getString(R.string.title_publish_list)
+        binding.customToolbar.title = getString(R.string.title_publish_list)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
         menuResource = R.menu.share_all_menu
@@ -65,7 +70,7 @@ class PublishListActivity : DaggerAppCompatActivity(),
     }
 
     override fun onSelectedItemsCountChanged(selectedItems: Int) {
-        custom_toolbar.title = getString(R.string.selected_items_count, selectedItems)
+        binding.customToolbar.title = getString(R.string.selected_items_count, selectedItems)
     }
 
 
