@@ -1,7 +1,11 @@
 package com.aconno.sensorics.device.bluetooth
 
+import android.Manifest
 import android.bluetooth.*
 import android.bluetooth.BluetoothGattCallback
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
 import com.aconno.sensorics.domain.UUIDProvider
 import com.aconno.sensorics.domain.migrate.toHex
 import com.aconno.sensorics.domain.model.GattCallbackPayload
@@ -11,12 +15,20 @@ import java.util.*
 
 
 class BluetoothGattCallback(
+    private val context: Context,
     private val connectGattResults: PublishSubject<GattCallbackPayload>
 ) : BluetoothGattCallback() {
 
     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
         if (newState == BluetoothProfile.STATE_CONNECTED) {
             broadcastUpdate(ACTION_GATT_CONNECTED)
+            if (ActivityCompat.checkSelfPermission(
+                    this.context,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
             gatt?.discoverServices()
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
             broadcastUpdate(ACTION_GATT_DISCONNECTED, status)
@@ -73,6 +85,7 @@ class BluetoothGattCallback(
         status: Int
     ) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
+            @Suppress("DEPRECATION")
             Timber.d("Written data on ${characteristic!!.uuid}: ${characteristic.value.toHex()}")
             broadcastUpdate(ACTION_GATT_CHAR_WRITE, gatt?.services)
         } else {
@@ -120,7 +133,7 @@ class BluetoothGattCallback(
             broadcastUpdate(ACTION_GATT_MTU_CHANGED, mtu)
         } else {
             broadcastUpdate(ACTION_GATT_MTU_CHANGED, mtu)
-            Timber.e("Couldn't change MTU to wanted mtu! Set to ${mtu}")
+            Timber.e("Couldn't change MTU to wanted mtu! Set to $mtu")
         }
     }
 
@@ -189,13 +202,16 @@ class BluetoothGattCallback(
         const val ACTION_GATT_DEVICE_NOT_FOUND = "com.aconno.sensorics.ACTION_GATT_DEVICE_NOT_FOUND"
         const val ACTION_GATT_CONNECTED = "com.aconno.sensorics.ACTION_GATT_CONNECTED"
         const val ACTION_GATT_DISCONNECTED = "com.aconno.sensorics.ACTION_GATT_DISCONNECTED"
-        const val ACTION_GATT_SERVICES_DISCOVERED = "com.aconno.sensorics.ACTION_GATT_SERVICES_DISCOVERED"
+        const val ACTION_GATT_SERVICES_DISCOVERED =
+            "com.aconno.sensorics.ACTION_GATT_SERVICES_DISCOVERED"
 
         const val ACTION_BEACON_HAS_SETTINGS = "com.aconno.sensorics.ACTION_BEACON_HAS_SETTINGS"
         const val ACTION_BEACON_HAS_CACHE = "com.aconno.sensorics.ACTION_BEACON_HAS_CACHE"
 
-        const val ACTION_BEACON_HAS_PARAMETER_SAVE = "com.aconno.sensorics.ACTION_BEACON_HAS_PARAMETER_SAVE"
-        const val ACTION_BEACON_HAS_PARAMETER_BULK = "com.aconno.sensorics.ACTION_BEACON_HAS_PARAMETER_BULK"
+        const val ACTION_BEACON_HAS_PARAMETER_SAVE =
+            "com.aconno.sensorics.ACTION_BEACON_HAS_PARAMETER_SAVE"
+        const val ACTION_BEACON_HAS_PARAMETER_BULK =
+            "com.aconno.sensorics.ACTION_BEACON_HAS_PARAMETER_BULK"
         const val ACTION_BEACON_HAS_SLOT_SAVE = "com.aconno.sensorics.ACTION_BEACON_HAS_SLOT_SAVE"
         const val ACTION_BEACON_HAS_SLOT_BULK = "com.aconno.sensorics.ACTION_BEACON_HAS_SLOT_BULK"
 
@@ -206,9 +222,11 @@ class BluetoothGattCallback(
         const val ACTION_GATT_CHAR_WRITE = "com.aconno.sensorics.ACTION_GATT_CHAR_WRITE"
         const val ACTION_GATT_CHAR_WRITE_FAIL = "com.aconno.sensorics.ACTION_GATT_CHAR_WRITE_FAIL"
         const val ACTION_GATT_DESCRIPTOR_READ = "com.aconno.sensorics.ACTION_GATT_DESCRIPTOR_READ"
-        const val ACTION_GATT_DESCRIPTOR_READ_FAIL = "com.aconno.sensorics.ACTION_GATT_DESCRIPTOR_READ_FAIL"
+        const val ACTION_GATT_DESCRIPTOR_READ_FAIL =
+            "com.aconno.sensorics.ACTION_GATT_DESCRIPTOR_READ_FAIL"
         const val ACTION_GATT_DESCRIPTOR_WRITE = "com.aconno.sensorics.ACTION_GATT_DESCRIPTOR_WRITE"
-        const val ACTION_GATT_DESCRIPTOR_WRITE_FAIL = "com.aconno.sensorics.ACTION_GATT_DESCRIPTOR_WRITE_FAIL"
+        const val ACTION_GATT_DESCRIPTOR_WRITE_FAIL =
+            "com.aconno.sensorics.ACTION_GATT_DESCRIPTOR_WRITE_FAIL"
 
         private const val SETTINGS_SERVICE_UUID = "cc52c000-9adb-4c37-bc48-376f5fee8851"
 

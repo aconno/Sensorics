@@ -52,7 +52,7 @@ class RestHttpGetParamsActivity : AppCompatActivity(),
         }
 
     private var unsavedChangesDialogClickListener: DialogInterface.OnClickListener =
-        DialogInterface.OnClickListener { dialog, which ->
+        DialogInterface.OnClickListener { _, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
                     finishActivityWithResult()

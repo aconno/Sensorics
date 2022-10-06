@@ -102,6 +102,7 @@ class CacheActivity : AppCompatActivity() {
     private fun onCharacteristicChanged(payload: Any?) {
         val characteristic = payload as? BluetoothGattCharacteristic
         characteristic?.let {
+            @Suppress("DEPRECATION")
             Timber.d(it.value.print())
         }
     }

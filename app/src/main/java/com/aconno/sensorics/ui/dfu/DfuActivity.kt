@@ -10,9 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
 import android.provider.OpenableColumns
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import com.aconno.sensorics.DfuService
 import com.aconno.sensorics.R
 import com.aconno.sensorics.action
@@ -282,7 +284,16 @@ class DfuActivity : DaggerAppCompatActivity() {
 
     private fun onComplete() {
         canGoBack = true
-        val vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                applicationContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {

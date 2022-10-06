@@ -1,0 +1,45 @@
+.buttons_container {
+    display: grid;
+}
+
+.parent_grid_container {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    width: 100%;
+    height: 100%;
+}
+
+.move_button {
+    user-select: none;
+    height: 50px;
+    width: 120px;
+}
+
+button > img,
+button > span {
+    vertical-align: middle;
+}
+
+.row {
+    display: flex;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#icon {
+    width: 100%;
+}
+
+.arrow {
+    display: inline-block;
+    width: 20px;
+    user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}

@@ -3,6 +3,7 @@ package com.aconno.sensorics
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import com.aconno.sensorics.device.notification.AlarmNotificationReceiver
 import com.aconno.sensorics.device.notification.AlertNotificationReceiver
 import com.aconno.sensorics.device.notification.IntentProvider
@@ -19,7 +20,7 @@ class IntentProviderImpl : IntentProvider {
             context,
             0,
             contentIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
 
@@ -32,11 +33,14 @@ class IntentProviderImpl : IntentProvider {
             context,
             requestCode,
             contentIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
 
-    override fun getAlertNotificationDeleteIntent(context: Context,notificationId : Int): PendingIntent {
+    override fun getAlertNotificationDeleteIntent(
+        context: Context,
+        notificationId: Int
+    ): PendingIntent {
         val outcome = Intent(context, AlertNotificationReceiver::class.java)
 
         outcome.action = AlertNotificationReceiver.DISMISS
@@ -46,7 +50,8 @@ class IntentProviderImpl : IntentProvider {
         )
 
         val requestCode = 0
-        val flags = 0
+        val flags =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         return PendingIntent.getBroadcast(context, requestCode, outcome, flags)
     }
 
@@ -56,7 +61,8 @@ class IntentProviderImpl : IntentProvider {
         outcome.action = AlarmServiceController.ACTION_ALARM_SNOOZE
 
         val requestCode = 0
-        val flags = 0
+        val flags =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         return PendingIntent.getBroadcast(context, requestCode, outcome, flags)
     }
 }

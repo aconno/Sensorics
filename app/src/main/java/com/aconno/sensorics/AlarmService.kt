@@ -55,7 +55,6 @@ class AlarmService : DaggerService() {
         }
     }
 
-    @Nullable
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
@@ -116,6 +115,6 @@ class AlarmService : DaggerService() {
     }
 
     companion object {
-        private val NOTIFICATION_ID = 1
+        private const val NOTIFICATION_ID = 1
     }
 }

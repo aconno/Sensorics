@@ -8,9 +8,7 @@ import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.Reading
 import com.aconno.sensorics.domain.model.Sync
 import com.aconno.sensorics.domain.repository.SyncRepository
-import com.microsoft.azure.sdk.iot.device.DeviceClient
-import com.microsoft.azure.sdk.iot.device.IotHubClientProtocol
-import com.microsoft.azure.sdk.iot.device.Message
+import com.microsoft.azure.sdk.iot.device.*
 import com.microsoft.azure.sdk.iot.device.transport.IotHubConnectionStatus
 import timber.log.Timber
 import java.util.*
@@ -44,14 +42,15 @@ class AzureMqttPublisher(
             Timber.d("Failed to instantiate device client: ${ex.message}")
             null
         }
-        deviceClient?.registerConnectionStatusChangeCallback(
-            { status, _, throwable, _ ->
 
-                Timber.d("Azure publisher connection status update: $status")
+        deviceClient?.setConnectionStatusChangeCallback(
+            { status ->
 
-                throwable?.printStackTrace()
+                Timber.d("Azure publisher connection status update: ${status.newStatus}")
 
-                when (status) {
+                status.cause?.printStackTrace()
+
+                when (status.newStatus) {
                     IotHubConnectionStatus.DISCONNECTED -> {
                         Timber.d("Azure publisher connection lost")
                         connectionOpened = false
@@ -88,10 +87,12 @@ class AzureMqttPublisher(
             val reading = readings.first()
             val time = System.currentTimeMillis()
             Timber.e(
-                "Sync done at: ${Pair(
-                    reading.device.macAddress,
-                    reading.advertisementId
-                )} $time"
+                "Sync done at: ${
+                    Pair(
+                        reading.device.macAddress,
+                        reading.advertisementId
+                    )
+                } $time"
             )
             syncRepository.save(
                 Sync(
@@ -130,7 +131,8 @@ class AzureMqttPublisher(
         tryingToConnect = true
 
         try {
-            deviceClient?.open()
+            //TODO check if the withRetry argument is set correctly
+            deviceClient?.open(false)
             connectionOpened = true
         } catch (ex: Exception) {
             Timber.d("Failed to connect to publisher.")
@@ -172,8 +174,8 @@ class AzureMqttPublisher(
             message.messageId = UUID.randomUUID().toString()
 
             deviceClient?.sendEventAsync(message,
-                { responseStatus, _ -> Timber.d("Message response status: $responseStatus") }
-                , null)
+                { responseStatus, _, _ -> Timber.d("Message response status: $responseStatus") },
+                null)
         } catch (e: Exception) {
             Timber.d("Message failed to send")
             e.printStackTrace()
@@ -182,7 +184,7 @@ class AzureMqttPublisher(
 
     override fun closeConnection() {
         try {
-            deviceClient?.closeNow()
+            deviceClient?.close()
         } catch (ex: Exception) {
             Timber.d("Exception while closing connection: ${ex.message}")
         }
@@ -207,12 +209,13 @@ class AzureMqttPublisher(
             return
         }
         try {
-            testClient.open()
+            //TODO check if the withRetry argument is set correctly
+            testClient.open(false)
             testConnectionCallback.onConnectionSuccess()
         } catch (e: Exception) {
             testConnectionCallback.onConnectionFail(e)
         } finally {
-            testClient.closeNow()
+            testClient.close()
         }
 
     }

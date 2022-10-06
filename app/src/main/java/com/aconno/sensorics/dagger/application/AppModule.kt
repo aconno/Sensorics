@@ -100,7 +100,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideSmsSender(): SmsSender = SmsSenderImpl()
+    fun provideSmsSender(sensoricsApplication: SensoricsApplication): SmsSender =
+        SmsSenderImpl(sensoricsApplication.applicationContext)
 
     @Provides
     @Singleton

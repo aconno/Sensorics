@@ -7,10 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebViewClient
 import com.aconno.sensorics.LiveDataObserver
-import com.aconno.sensorics.R
+import com.aconno.sensorics.databinding.FragmentDashboardBinding
 import com.aconno.sensorics.viewmodel.DashboardViewModel
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.fragment_dashboard.*
 import javax.inject.Inject
 
 class DashboardFragment : DaggerFragment() {

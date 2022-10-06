@@ -12,6 +12,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
@@ -375,10 +376,22 @@ class MainActivity : DaggerAppCompatActivity(), EasyPermissions.PermissionCallba
 
     @AfterPermissionGranted(SCANNING_PERMISSION_REQUEST_CODE)
     private fun startScanning() {
-        val permissions = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.READ_PHONE_STATE
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.SEND_SMS
+            )
+        }
         when {
             !EasyPermissions.hasPermissions(this, *permissions) -> {
                 EasyPermissions.requestPermissions(

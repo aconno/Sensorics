@@ -55,71 +55,71 @@ ext {
     min_sdk_version = 21
     target_sdk_version = 33  //32 //30
 
-    appcompat_version = '1.5.0' //1.3.0
+    appcompat_version = '1.5.1'
 
     constraintlayout_version = '2.0.4'
 
-    lifecycle_extensions_version = '2.2.0' //
-    core_ktx_version = '1.9.0' //1.6.0
-    fragment_ktx_version = '1.5.2' //1.3.5
-    lifecycle_ktx_version = '2.5.1' //2.3.1
-    lifedata_ktx_version = '2.5.1' //2.3.1
-    viewmodel_ktx_version = '2.5.1' //2.3.1
+    lifecycle_extensions_version = '2.2.0'
+    core_ktx_version = '1.9.0'
+    fragment_ktx_version = '1.5.3'
+    lifecycle_ktx_version = '2.5.1'
+    lifedata_ktx_version = '2.5.1'
+    viewmodel_ktx_version = '2.5.1'
 
-    androidx_room_version = '2.4.3' //2.3.0
+    androidx_room_version = '2.4.3'
 
-    cardview_version = '1.0.0' //
-    recyclerview_version = '1.2.1' //
-    preference_version = '1.2.0' //1.1.1
-    work_runtime_ktx_version = '2.5.0'
+    cardview_version = '1.0.0'
+    recyclerview_version = '1.2.1'
+    preference_version = '1.2.0'
+    work_runtime_ktx_version = '2.7.1'
 
-    rx_java_version = '2.2.21' //2.2.18
-    rx_android_version = '2.1.1' //2.1.1
-    rx_kotlin_version = '2.4.0' //2.4.0
+    rx_java_version = '2.2.21'
+    rx_android_version = '2.1.1'
+    rx_kotlin_version = '2.4.0'
 
-    localbroadcastmanager_version = '1.1.0' //1.0.0
-    material_version = '1.6.1' //1.4.0
+    localbroadcastmanager_version = '1.1.0'
+    material_version = '1.6.1'
     flexbox_version = '3.0.0'
-    truth_version = '1.1.3' //1.0.1
+    truth_version = '1.1.3'
 
-    dagger_version = '2.43.2' //2.37
-    assisted_inject_dagger_version = '0.8.1' //0.5.2
-    javax_annotation_version = '1.0' //
-    javax_inject_version = '1' //
+    dagger_version = '2.44'
+    assisted_inject_dagger_version = '0.8.1'
+    javax_annotation_version = '1.0'
+    javax_inject_version = '1'
 
-    nordic_dfu_version = '2.1.0' //1.10.1
+    nordic_dfu_version = '2.2.0'
     mpandroidchart_version = 'v3.1.0'
-    gson_version = '2.9.1' //2.8.6
+    gson_version = '2.9.1'
     materialtabstrip_version = '1.1.1'
     circleprogress_version = '1.2.1'
 
     json_web_token_version = '0.9.1'
 
-    eclipse_paho_mqttv3_version = '1.2.5' //1.2.2
+    eclipse_paho_mqttv3_version = '1.2.5'
     eclipse_paho_android_service_version = '1.1.1'
 
-    timber_version = '5.0.1' //4.7.1
-    threetenabp_version = '1.4.0' //1.2.2
+    timber_version = '5.0.1'
+    threetenabp_version = '1.4.1'
 
-    leak_canary_version = '2.9.1' //2.2
+    leak_canary_version = '2.9.1'
     robolectric_version = '4.3.1'
-    eval_ex_version = '2.7' //2.5
-    azure_iot_device_client_version = '1.20.0'
+    eval_ex_version = '2.7'
+    azure_iot_device_client_version = '2.1.1'
 
-    coroutines_version = '1.6.4' //1.3.3
+    coroutines_version = '1.6.4'
 
-    retrofit_version = '2.9.0' //2.7.2
-    okhttp3_version = '5.0.0-alpha.10' //4.4.0
+    retrofit_version = '2.9.0'
+    okhttp3_version = '5.0.0-alpha.10'
 
-    junit_version = '4.13.2' //4.12
+    junit_version = '4.13.2'
 
     arch_core_testing_version = '2.1.0'
     test_runner_version = '1.4.0'
     espresso_core_version = '3.4.0'
 
-    mockito_inline_version = '4.8.0' //3.3.0
+    mockito_inline_version = '4.8.0'
 
-    apache_commons_text_version = '1.9' //1.8
+    apache_commons_text_version = '1.10.0'
     tempo_version = '0.2.0'
     easypermissions_version = '3.0.0'
     wifiutils_version = '1.6.5'

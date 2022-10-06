@@ -1,13 +1,17 @@
 package com.aconno.sensorics.device.bluetooth
 
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattDescriptor
+import android.Manifest
+import android.bluetooth.*
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.startActivity
 import com.aconno.sensorics.device.BluetoothGattAttributeValueConverter
 import com.aconno.sensorics.domain.model.Device
 import com.aconno.sensorics.domain.model.GattCallbackPayload
@@ -47,7 +51,8 @@ class BluetoothImpl(
 
     private val scanCallback: ScanCallback = BluetoothScanCallback(scanResults, scanEvent)
 
-    private val gattCallback: BluetoothGattCallback = BluetoothGattCallback(connectGattResults)
+    private val gattCallback: BluetoothGattCallback =
+        BluetoothGattCallback(context, connectGattResults)
     private var lastConnectedDeviceAddress: String? = null
     private var lastConnectedGatt: BluetoothGatt? = null
 
@@ -69,8 +74,7 @@ class BluetoothImpl(
     ): Pair<List<ScanFilter>?, ScanSettings> {
         val settingsBuilder = ScanSettings.Builder()
 
-        val scanMode = sharedPrefs.getString("scan_mode", null)?.toInt() ?: 3
-        when (scanMode) {
+        when (sharedPrefs.getString("scan_mode", null)?.toInt() ?: 3) {
             1 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
             2 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_BALANCED)
             3 -> settingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -102,15 +106,26 @@ class BluetoothImpl(
 
     override fun enable() {
         checkPermissionState()
-        bluetoothAdapter?.enable()
+        checkConnectPermission()
+        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+        startActivity(context, enableBtIntent, null)
     }
 
     override fun disable() {
         checkPermissionState()
-        bluetoothAdapter?.disable()
+        checkConnectPermission()
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
+            @Suppress("DEPRECATION")
+            bluetoothAdapter?.disable()
+        } else {
+            // Starting with Build.VERSION_CODES.TIRAMISU (API level 33), applications are not allowed to enable/disable Bluetooth
+        }
     }
 
     override fun readCharacteristic(serviceUUID: UUID, characteristicUUID: UUID): Boolean {
+        checkConnectPermission()
+
         return lastConnectedGatt?.let { gatt ->
             gatt.getService(serviceUUID)
                 ?.getCharacteristic(characteristicUUID)
@@ -126,12 +141,23 @@ class BluetoothImpl(
         type: String,
         value: Any
     ): Boolean {
+        checkConnectPermission()
+
         return lastConnectedGatt?.let { gatt ->
             gatt.getService(serviceUUID)
                 ?.getCharacteristic(characteristicUUID)
                 ?.let { characteristic ->
-                    bluetoothGattAttributeValueConverter.setValue(characteristic, type, value)
-                    gatt.writeCharacteristic(characteristic)
+                    if (Build.VERSION.SDK_INT < 33) {
+                        bluetoothGattAttributeValueConverter.setValue(characteristic, type, value)
+                        @Suppress("DEPRECATION")
+                        gatt.writeCharacteristic(characteristic)
+                    } else {
+                        gatt.writeCharacteristic(
+                            characteristic,
+                            value as ByteArray,
+                            BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+                        ) == BluetoothStatusCodes.SUCCESS
+                    }
                 }
         } ?: false
 
@@ -145,6 +171,8 @@ class BluetoothImpl(
         characteristicUUID: UUID,
         descriptorUUID: UUID
     ): Boolean {
+        checkConnectPermission()
+
         return lastConnectedGatt?.let { gatt ->
             gatt.getService(serviceUUID)
                 ?.getCharacteristic(characteristicUUID)
@@ -162,6 +190,8 @@ class BluetoothImpl(
         type: String,
         value: Any
     ): Boolean {
+        checkConnectPermission()
+
         return lastConnectedGatt?.let { gatt ->
             gatt.getService(serviceUUID)
                 ?.getCharacteristic(characteristicUUID)
@@ -174,10 +204,12 @@ class BluetoothImpl(
     }
 
     override fun requestMtu(mtu: Int): Boolean {
+        checkConnectPermission()
         return lastConnectedGatt?.requestMtu(mtu) ?: false
     }
 
     override fun connect(address: String) {
+        checkConnectPermission()
 
         if (lastConnectedDeviceAddress != null && address == lastConnectedDeviceAddress
             && lastConnectedGatt != null
@@ -194,18 +226,23 @@ class BluetoothImpl(
             }
 
             gattCallback.updateConnecting()
+
             lastConnectedGatt = remoteDevice?.connectGatt(context, false, gattCallback)
             lastConnectedDeviceAddress = address
         }
     }
 
     override fun disconnect() {
+        checkConnectPermission()
+
         if (lastConnectedGatt != null) {
             lastConnectedGatt!!.disconnect()
         }
     }
 
     override fun closeConnection() {
+        checkConnectPermission()
+
         if (lastConnectedGatt != null) {
             lastConnectedGatt!!.close()
             lastConnectedGatt = null
@@ -214,6 +251,9 @@ class BluetoothImpl(
 
     override fun startScanning(devices: List<Device>) {
         checkPermissionState()
+
+        checkScanPermission()
+
         if (bluetoothAdapter?.isEnabled == true) {
             Timber.i("Start Bluetooth scanning, devices: $devices")
             val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
@@ -228,6 +268,9 @@ class BluetoothImpl(
 
     override fun startScanning() {
         checkPermissionState()
+
+        checkScanPermission()
+
         if (bluetoothAdapter?.isEnabled == true) {
             Timber.i("Start Bluetooth scanning")
             val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
@@ -240,6 +283,8 @@ class BluetoothImpl(
     }
 
     override fun stopScanning() {
+        checkScanPermission()
+
         val bluetoothLeScanner = bluetoothAdapter?.bluetoothLeScanner
         bluetoothLeScanner?.let {
             scanEvent.onNext(ScanEvent.stop())
@@ -256,13 +301,14 @@ class BluetoothImpl(
     }
 
     override fun getStateEvents(): Flowable<BluetoothState> {
-        val currentState = Observable.just(bluetoothAdapter?.state ?: BluetoothAdapter.STATE_OFF).map {
-            when (it) {
-                BluetoothAdapter.STATE_ON -> BluetoothState.BLUETOOTH_ON
-                BluetoothAdapter.STATE_OFF -> BluetoothState.BLUETOOTH_OFF
-                else -> BluetoothState.BLUETOOTH_OFF
+        val currentState =
+            Observable.just(bluetoothAdapter?.state ?: BluetoothAdapter.STATE_OFF).map {
+                when (it) {
+                    BluetoothAdapter.STATE_ON -> BluetoothState.BLUETOOTH_ON
+                    BluetoothAdapter.STATE_OFF -> BluetoothState.BLUETOOTH_OFF
+                    else -> BluetoothState.BLUETOOTH_OFF
+                }
             }
-        }
 
         return currentState.mergeWith(bluetoothStateListener.getBluetoothStates())
             .toFlowable(BackpressureStrategy.BUFFER)
@@ -273,6 +319,8 @@ class BluetoothImpl(
         serviceUUID: UUID,
         isEnabled: Boolean
     ): Boolean {
+        checkConnectPermission()
+
         lastConnectedGatt?.let { bluetoothGatt ->
             val characteristic = bluetoothGatt.getService(serviceUUID)
                 .getCharacteristic(characteristicUUID) ?: return false
@@ -285,20 +333,51 @@ class BluetoothImpl(
                     )
                 )
 
-                descriptor.value =
+                val value =
                     if (isEnabled) BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE else byteArrayOf(
                         0x00,
                         0x00
                     )
-                return bluetoothGatt.writeDescriptor(descriptor)
+
+                if (Build.VERSION.SDK_INT >= 33) {
+                    return bluetoothGatt.writeDescriptor(
+                        descriptor,
+                        value
+                    ) == BluetoothStatusCodes.SUCCESS
+                } else {
+                    @Suppress("DEPRECATION")
+                    return bluetoothGatt.writeDescriptor(descriptor.apply {
+                        this.value = value
+                    })
+                }
             }
         }
 
         return false
     }
 
+    private fun checkConnectPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            throw BluetoothException("Bluetooth permission not granted")
+        }
+    }
+
     private fun checkPermissionState() {
         if (!bluetoothPermission.isGranted) throw BluetoothException("Bluetooth permission not granted")
+    }
+
+    private fun checkScanPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            throw BluetoothException("Bluetooth permission not granted")
+        }
     }
 
     companion object {

@@ -2,6 +2,7 @@ package com.aconno.sensorics
 
 import android.app.Application
 import androidx.work.Configuration
+import androidx.work.WorkManagerInitializer
 import androidx.work.WorkManager
 import com.aconno.sensorics.dagger.application.DaggerAppComponent
 import com.aconno.sensorics.dagger.worker.GeneralWorkerFactory

@@ -162,7 +162,7 @@ dependencies {
     implementation "com.google.firebase:firebase-crashlytics:$firebase_crashlytics_version"
     implementation "com.google.firebase:firebase-analytics:$firebase_analytics_version"
 
-    implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 }
 
 repositories {

@@ -153,7 +153,8 @@ class DeviceMainFragment : DaggerFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_device_main, container, false)
+        binding = FragmentDeviceMainBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onResume() {

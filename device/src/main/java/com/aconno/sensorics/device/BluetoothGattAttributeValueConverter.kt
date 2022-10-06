@@ -42,10 +42,9 @@ class BluetoothGattAttributeValueConverter @Inject constructor() {
      */
     fun setValue(characteristic: BluetoothGattCharacteristic, type: String, value: Any) {
 
-        val realType = getType(type)
-
-        when (realType) {
-            FORMAT_BYTE -> characteristic.value = value as ByteArray
+        @Suppress("DEPRECATION")
+        when (val realType = getType(type)) {
+             FORMAT_BYTE ->characteristic.value = value as ByteArray
             FORMAT_STRING -> characteristic.setValue(value as String)
             FORMAT_UINT8, FORMAT_UINT16, FORMAT_UINT32, FORMAT_SINT8, FORMAT_SINT16, FORMAT_SINT32 -> characteristic.setValue(
                 value as Int,

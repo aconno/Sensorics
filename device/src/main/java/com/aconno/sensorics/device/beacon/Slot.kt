@@ -356,11 +356,11 @@ abstract class Slot(
                 )
                 put(
                     KEY_ADVERTISING_CONTENT_IBEACON_MAJOR,
-                    ValueConverters.UINT16.deserialize(it.copyOfRange(25, 27)).toString()
+                    UINT16.deserialize(it.copyOfRange(25, 27)).toString()
                 )
                 put(
                     KEY_ADVERTISING_CONTENT_IBEACON_MINOR,
-                    ValueConverters.UINT16.deserialize(it.copyOfRange(27, 29)).toString()
+                    UINT16.deserialize(it.copyOfRange(27, 29)).toString()
                 )
             }
         }, {
@@ -371,16 +371,16 @@ abstract class Slot(
                         it[KEY_ADVERTISING_CONTENT_IBEACON_UUID]
                             ?: DEFAULT_ADVERTISING_CONTENT_IBEACON_UUID
                     )
-                } catch (ex : IllegalArgumentException) {
+                } catch (ex: IllegalArgumentException) {
                     UUID.fromString(DEFAULT_ADVERTISING_CONTENT_IBEACON_UUID)
                 }
 
-            val major: Int = if(it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR]?.isNotEmpty() != true) {
+            val major: Int = if (it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR]?.isNotEmpty() != true) {
                 0
             } else {
                 it[KEY_ADVERTISING_CONTENT_IBEACON_MAJOR]?.toInt() ?: 0
             }
-            val minor: Int = if(it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]?.isNotEmpty() != true) {
+            val minor: Int = if (it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]?.isNotEmpty() != true) {
                 0
             } else {
                 it[KEY_ADVERTISING_CONTENT_IBEACON_MINOR]?.toInt() ?: 0
@@ -388,8 +388,8 @@ abstract class Slot(
 
             byteArrayOf(0x02, 0x01, 0x06, 0x1A, 0xFF.toByte(), 0x00, 0x4C, 0x02, 0x15) +
                     uuid.toBytes() +
-                    ValueConverters.UINT16.serialize(major) +
-                    ValueConverters.UINT16.serialize(minor) +
+                    UINT16.serialize(major) +
+                    UINT16.serialize(minor) +
                     byteArrayOf(0x01)
         }),
         DEVICE_INFO("DeviceInfo", false),
@@ -456,7 +456,7 @@ abstract class Slot(
         }
 
         fun clear() {
-            for (i in 0 until data.size) {
+            for (i in data.indices) {
                 data[i] = 0x00
             }
         }
@@ -499,7 +499,7 @@ abstract class Slot(
             val map: MutableMap<Byte, MutableList<Byte>> = mutableMapOf()
             var currentId: Byte? = null
             var lengthLeft = 0
-            for (i in 0 until advertisement.size) {
+            for (i in advertisement.indices) {
                 if (lengthLeft == 0) {
                     lengthLeft = advertisement[i].toInt()
                 } else {
